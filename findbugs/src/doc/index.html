@@ -37,67 +37,166 @@
 					</h1>
 
 					<p>
-						This is the web page for FindBugs, a program which looks for bugs
+						This is the web page for FindBugs, a program which uses static analysis
+						to  look for bugs
 						in Java code.&nbsp; It is free software, distributed under the
 						terms of the
 						<a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU
 							Public License</a>. The name FindBugs&trade; and the
 						<a href="buggy-sm.png">FindBugs logo</a> are trademarked by
 						<a href="http://www.umd.edu">The University of Maryland</a>.
-					</p>
-	
-					<p>	FindBugs is sponsored by <a
-							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify Software</a> and by <a
-							href="http://www.surelogic.com">SureLogic</a>, with additional support provided by Sun Microsystems and Google.
+						FindBugs is <a href='#sponsored">sponsored</a> by <a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify Software</a>
+							and <a
+							href="http://www.surelogic.com/">SureLogic</a>.
 							</p>
 					
 				
-					<p>
-						<a
-							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify Software</a>,  sells security tools,
-						including Fortify Source Code Analysis, which which uses static
-						analysis to search for security vulnerabilities (much as FindBugs
-						uses static analysis to look for general code quality problems.
-						FindBugs is integrated into Fortify's tools, providing an
-						integrated tool set to look for and audit both security and
-						quality problems (<a href="pressRelease.pdf">press release</a>).
-					</p>
-					
-					<p>
-						<a
-							href="http://www.surelogic.com/">SureLogic</a> provides a suite of static and dynamic tools designed
-							to find concurrency errors, such as data races and design errors. Starting Fall 2007, SureLogic will provide
-							training, consulting and support for FindBugs on a commercial basis, and will be contributing to the FindBugs open source effort. 
-							</p>
-					<p>
-						Fortify Software now provides
-						<a href="http://opensource.fortifysoftware.com/">Java Open
-							Review, a free analysis and on-line reviewing service</a> to selected
-						open source projects. This provides analysis for both correctness
-						issues identified by FindBugs and security issues (such as SQL
-						injection and Cross-site scripting identified by Fortify's
-						<a
-							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Source
-							Code Analysis</a>, and provides a on-line auditing and commenting
-						facility for contributors of each project. Defect warnings are not
-						visible to the general public, only to contributors of each
-						project. There is a place on the web page where you can request
-						that your project be included in the set of projects reviewed.
-					</p>
-					<p>
+								<p>
 						FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp;
 						However, it can analyze programs compiled for any version of Java.
 						The current version of FindBugs is @VERSION@, released on
 						@RELEASE_DATE@.
-					</p>
-
-					<p>
 						<a href="reportingBugs.html">We are very interested in getting feedback on how to improve
 						FindBugs</a>.
 					</p>
+					<p>
+				<a href=#moreSoftware">More</a> |
+<a href="#sample">Output</a> |
+<a href="#try">Try</a> |
+<a href="#changes">Changes</a> |
+<a href="#talks">Talks</a> |
+<a href="#papers">Papers </a> |
+<a href="#sponsors">Sponsors</a> |
+<a href="#support">Support</a> 
+					
+					<h1><a name="moreSoftware">Additional open source projects</a></h1>
+					<p>The following software is being made available by the University of Maryland and the FindBugs project.
+					The software is still preliminary, and needs volunteers to help mature it.
+					<ul>
+					<li><a href="http://code.google.com/p/multithreadedtc/">Multithreaded test case</a>, a framework designed to make it
+					easy to create test cases for concurrent software in which multiple threads must coordindate their activity to perform a test
+					(e.g., testing a concurrent blocking queue, with one thread that blocks when it trys to add to a full queue, and another thread that
+					unblocks the first by removing an element).
+					</li>
+					<li><a href="http://code.google.com/p/checked-uncontended-lock/">Checked uncontended lock</a>, an implementation of the Java 5 Lock 
+					and ReadWriteLock interfaces that throw exceptions if they detect lock contention. These locks are designed to be used for debugging,
+					and can be used in places where you don't believe you need to use a lock but want to verify that at runtime.
+					</li>
+					</ul>
+
+									
+					  
+					<h1>
+						<a name="sample">Sample output</a>
+					</h1>
+
+					<p>
+						As an example of the kind of issues FindBugs can identify,
+						<a href="demo.html">we provide our results</a> on the Sun's JDK
+						1.6.0-b51, Eclipse, Netbeans, Glassfish and JBoss. We present
+						these results as a table showing the number of warnings we
+						generate, an html report generated by FindBugs, and using a Java
+						Webstart demo of FindBugs that loads the results of our analysis
+						and the relevant source, so that you can view the source
+						corresponding to each of our warnings and judge for yourself the
+						accuracy of Findbugs.
+					</p>
+
+					<p>
+						Briefly, this table gives the number of warnings we found in
+						various applications we use as benchmarks:
+					</p>
+
+					<table border="2">
+<tr><th rowspan="2">Application</th><th colspan="2">Details</th><th colspan="2">Correctness bugs</th><th rowspan="2">Bad Practice</th><th rowspan="2">Dodgy</th><th rowspan="2">KNCSS
+</th></tr><tr><th>HTML</th><th>WebStart</th><th>NP bugs</th><th>Other
+</th></tr><tr><td align="right">Sun JDK 1.7.0-b12</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk7/index.html">All</a> 
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk7/index.jnlp">All</a> 
+						<a href="http://findbugs.cs.umd.edu/demo/jdk7/small.jnlp">Small</a> 
+	</td><td align="right">68</td><td align="right">180</td><td align="right">954</td><td align="right">654</td><td align="right">597
+
+</td></tr><tr><td align="right">eclipse-SDK-3.3M7-solaris-gtk</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.html">All</a>
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.jnlp">All</a>
+					<a href="http://findbugs.cs.umd.edu/demo/eclipse/small.jnlp">Small</a>
+	</td><td align="right">146</td><td align="right">259</td><td align="right">1,079</td><td align="right">643</td><td align="right">1,447
+
+</td></tr><tr><td align="right">netbeans-6_0-m8</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.html">All</a>
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.jnlp">All</a>
+					<a href="http://findbugs.cs.umd.edu/demo/netbeans/small.jnlp">Small</a>
+	</td><td align="right">189</td><td align="right">305</td><td align="right">3,010</td><td align="right">1,112</td><td align="right">1,022
+
+</td></tr><tr><td align="right">glassfish-v2-b43</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.html">All</a>
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.jnlp">All</a>
+					<a href="http://findbugs.cs.umd.edu/demo/glassfish/small.jnlp">Small</a>
+	</td><td align="right">146</td><td align="right">154</td><td align="right">964</td><td align="right">1,222</td><td align="right">2,176
+
+</td></tr><tr><td align="right">jboss-4.0.5</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.html">All</a>
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.jnlp">All</a>
+					<a href="http://findbugs.cs.umd.edu/demo/jboss/small.jnlp">Small</a>
+	</td><td align="right">30</td><td align="right">57</td><td align="right">263</td><td align="right">214</td><td align="right">178
+
+</td></tr></table>
+					<p>
+						<em>KNCSS</em> - Thousands of lines of non-commenting source
+						statements
+
+					</p>
+					<h1>
+						<a name="try">Try FindBugs now on your project!</a>
+					</h1>
+					<p>
+						Using Java Web Start you can try the GUI version of FindBugs now
+						on your project. As long as you have a 1.4 or better JRE
+						installed, you can
+						<a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">run
+							FindBugs now</a>. If you are using Java 1.5 or later, you will see
+						the new GUI that we wrote over the summer.
+					</p>
 
 					<h1>
-						Talks about FindBugs
+						<a name="changes">Change history</a>
+					</h1>
+				<p> The current version of FindBugs is s @VERSION@. Changes since version 1.1.3:</p>
+					<ul>
+					<li>In null pointer analysis, try to be better about always showing two locations: where it is known null and
+					where it is dereferenced.
+					<li>Interprocedural analysis of which methods return nonnull values
+					<li>Use method calls to select order in which classes are analyzed, and order in which methods
+					are analyzed, to improve interprocedural analysis results.
+					<li>Significant improvements in memory footprint, memory allocation and CPU utilization 
+					    (20-30% reduction in all three) 
+					<li>Added a project name, to provide better descriptions in the HTML output.
+					<li>Stopped reporting transient fields
+					of classes not marked as serializable. Transient is used by other persistence frameworks.
+					<li>Improvements to detector for SQL injection (Thanks to Matt Hargett for
+					his contributions).
+					<li>Changed open/save options in GUI2 to not distinguish between FindBugs projects
+					and saved FindBugs analysis results.
+					<li>Improvements to detection of serious non-short-circuit evaluation.
+					 <li>Eclipse plugin changes:
+					<ul>
+					<li>Created Bug User Annotations and Bug Tree Views
+					<li>Use different icons for different bug priorities
+					<li>Provide more information in Bug Details view
+					</ul>
+					</ul>
+		
+					<p>
+						<a href="Changes.html">Older versions...</a>
+					</p>
+	<h1>
+						<a name="talks">Talks about FindBugs</a>
 					</h1>
 					<ul>
 						<li>
@@ -130,7 +229,7 @@
 								Posse podcast interview with Bill Pugh and Brian Goetz</a>
 						</li>
 					</ul>
-					<h1>Papers about FindBugs</h1>
+					<h1><a name="papers">Papers about FindBugs</a></h1>
 					<ul>
 					<li><a href="http://findbugs.cs.umd.edu/papers/MoreNullPointerBugs07.pdf">Finding More Null Pointer Bugs, 
 					But Not Too Many</a>, by
@@ -147,264 +246,51 @@
                      June, 2007
 					</ul>
 					
-					
-					  
-					<h1>
-						Sample output
-					</h1>
-
-					<p>
-						As an example of the kind of issues FindBugs can identify,
-						<a href="demo.html">we provide our results</a> on the Sun's JDK
-						1.6.0-b51, Eclipse, Netbeans, Glassfish and JBoss. We present
-						these results as a table showing the number of warnings we
-						generate, an html report generated by FindBugs, and using a Java
-						Webstart demo of FindBugs that loads the results of our analysis
-						and the relevant source, so that you can view the source
-						corresponding to each of our warnings and judge for yourself the
-						accuracy of Findbugs.
-					</p>
-
-					<p>
-						Briefly, this table gives the number of warnings we found in
-						various applications we use as benchmarks:
-					</p>
-
-					<table border="2">
-						<tr>
-							<th rowspan="2">
-								Application
-							</th>
-							<th colspan="2">
-								Correctness bugs
-							</th>
-							<th rowspan="2">
-								Bad Practice
-							</th>
-							<th rowSpan="2">
-								Dodgy
-							</th>
-							<th rowspan="2">
-								KNCSS
-							</th>
-						</tr>
-						<tr>
-							<th>
-								NP bugs
-							</th>
-							<th>
-								Other
-							</th>
-						</tr>
-						<tr>
-							<td align="right">
-								Sun JDK 1.6.0-b51
-							</td>
-							<td align="right">
-								190
-							</td>
-							<td align="right">
-								342
-							</td>
-							<td align="right">
-								1,774
-							</td>
-							<td align="right">
-								1,244
-							</td>
-							<td align="right">
-								979
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								Sun JDK 1.6.0-b99
-							</td>
-							<td align="right">
-								187
-							</td>
-							<td align="right">
-								330
-							</td>
-							<td align="right">
-								1,623
-							</td>
-							<td align="right">
-								1,191
-							</td>
-							<td align="right">
-								960
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								Warnings in b99 introduced by a change to existing code since
-								b51
-							</td>
-							<td align="right">
-								14
-							</td>
-							<td align="right">
-								16
-							</td>
-							<td align="right">
-								68
-							</td>
-							<td align="right">
-								30
-							</td>
-							<td align="right">
-								n/a
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								eclipse-SDK-3.2-solaris-gtk
-							</td>
-
-							<td align="right">
-								236
-							</td>
-							<td align="right">
-								335
-							</td>
-							<td align="right">
-								1,592
-							</td>
-							<td align="right">
-								972
-							</td>
-							<td align="right">
-								1,577
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								netbeans-6_0-daily-bin-200607191800
-							</td>
-							<td align="right">
-								201
-							</td>
-							<td align="right">
-								339
-							</td>
-							<td align="right">
-								2,771
-							</td>
-							<td align="right">
-								1,262
-							</td>
-							<td align="right">
-								1,066
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								glassfish-v2-b09-appserv
-							</td>
-
-							<td align="right">
-								297
-							</td>
-							<td align="right">
-								316
-							</td>
-							<td align="right">
-								1,946
-							</td>
-							<td align="right">
-								1,876
-							</td>
-							<td align="right">
-								958
-
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								jboss-4.0.2
-							</td>
-							<td align="right">
-								104
-							</td>
-							<td align="right">
-								140
-							</td>
-							<td align="right">
-								1,234
-							</td>
-							<td align="right">
-								483
-							</td>
-							<td align="right">
-								516
-
-							</td>
-						</tr>
-					</table>
-					<p>
-						<em>KNCSS</em> - Thousands of lines of non-commenting source
-						statements
-
-					</p>
-					<h1>
-						Try FindBugs now on your project!
-					</h1>
-					<p>
-						Using Java Web Start you can try the GUI version of FindBugs now
-						on your project. As long as you have a 1.4 or better JRE
-						installed, you can
-						<a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">run
-							FindBugs now</a>. If you are using Java 1.5 or later, you will see
-						the new GUI that we wrote over the summer.
-					</p>
 
 					<h1>
-						Change history
+						<a name="sponsors">Sponsors</a>
 					</h1>
-				<p> Changes since version 1.1.3</p>
-					<ul>
-					<li>In null pointer analysis, try to be better about always showing two locations: where it is known null and
-					where it is dereferenced.
-					<li>Interprocedural analysis of which methods return nonnull values
-					<li>Use method calls to select order in which classes are analyzed, and order in which methods
-					are analyzed, to improve interprocedural analysis results.
-					<li>Significant improvements in memory footprint, memory allocation and CPU utilization 
-					    (20-30% reduction in all three) 
-					<li>Added a project name, to provide better descriptions in the HTML output.
-					<li>Stopped reporting transient fields
-					of classes not marked as serializable. Transient is used by other persistence frameworks.
-					<li>Improvements to detector for SQL injection (Thanks to Matt Hargett for
-					his contributions
-					<li>Changed open/save options in GUI2 to not distinguish between FindBugs projects
-					and saved FindBugs analysis results.
-					<li>Improvements to detection of serious non-short-circuit evaluation.
-					 <li>Eclipse plugin changes:
-					<ul>
-					<li>Created Bug User Annotations and Bug Tree Views
-					<li>Use different icons for different bug priorities
-					<li>Provide more information in Bug Details view
-					</ul>
-					</ul>
-		
-					<p>
-						<a href="Changes.html">Older versions...</a>
-					</p>
-
-					<h1>
-						Support
-					</h1>
-
-					<p>
-						This work has been supported by
+						<p>
+						Financial support for the open source FindBugs project is provided by our sponsors, 
 						<a
 							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify
-							Software</a>,
+							Software</a>, amd <a
+							href="http://www.surelogic.com/">SureLogic</a>,
+		<p>
+						<a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify Software</a>  sells security tools,
+						including Fortify Source Code Analysis, which which uses static
+						analysis to search for security vulnerabilities (much as FindBugs
+						uses static analysis to look for general code quality problems.
+						FindBugs is integrated into Fortify's tools, providing an
+						integrated tool set to look for and audit both security and
+						quality problems (<a href="pressRelease.pdf">press release</a>).
+					</p>
+					
+					<p>
+						<a
+							href="http://www.surelogic.com/">SureLogic</a> provides a suite of static and dynamic tools designed
+							to find concurrency errors, such as data races and design errors. Starting Fall 2007, SureLogic will provide
+							training, consulting and support for FindBugs on a commercial basis, and will be contributing to the FindBugs open source effort. 
+							</p>
+					<p>
+						Fortify Software now provides
+						<a href="http://opensource.fortifysoftware.com/">Java Open
+							Review, a free analysis and on-line reviewing service</a> to selected
+						open source projects. This provides analysis for both correctness
+						issues identified by FindBugs and security issues (such as SQL
+						injection and Cross-site scripting identified by Fortify's
+						<a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Source
+							Code Analysis</a>, and provides a on-line auditing and commenting
+						facility for contributors of each project. Defect warnings are not
+						visible to the general public, only to contributors of each
+						project. There is a place on the web page where you can request
+						that your project be included in the set of projects reviewed.
+					</p>
+	<h1><a name="support">Additional Support</a></h1>
+					<p>
+						Additional financial support for the FindBugs project has been provided by 
 						<a href="http://www.google.com">Google</a>,
 						<a href="http://www.sun.com">Sun Microsystems</a>,
 						<a href="http://www.nsf.gov">National Science Foundation</a>
