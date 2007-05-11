@@ -200,7 +200,12 @@ public enum Sortables implements Comparator<StringPair>
 		@Override
 		public String getFrom(BugInstance bug)
 		{
-			return bug.getBugPattern().getCategory();
+
+			BugPattern bugPattern = bug.getBugPattern();
+			if (bugPattern == null) {
+				return "?";
+			}
+			return bugPattern.getCategory();
 		}
 
 		@Override
@@ -240,7 +245,9 @@ public enum Sortables implements Comparator<StringPair>
 		@Override
 		public String getFrom(BugInstance bug)
 		{
-			return bug.getBugPattern().getAbbrev();
+			BugPattern bugPattern = bug.getBugPattern();
+			if (bugPattern == null) return null;
+			return bugPattern.getAbbrev();
 		}
 
 		@Override
@@ -261,7 +268,7 @@ public enum Sortables implements Comparator<StringPair>
 		public String getFrom(BugInstance bug)
 		{
 			if((bug.getBugPattern()) == null)
-				return "Missing bug pattern";
+				return "?";
 			else return bug.getBugPattern().getType();
 		}
 
