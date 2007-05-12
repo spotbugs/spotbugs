@@ -147,7 +147,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
 
 			int jumpAtEnd = 0;
-			if (asUnsignedByte(code[end]) == GOTO) {
+			if (end < code.length && asUnsignedByte(code[end]) == GOTO) {
 				jumpAtEnd = getUnsignedShort(code, end + 1);
 				if (jumpAtEnd < handled) jumpAtEnd = 0;
 			}
