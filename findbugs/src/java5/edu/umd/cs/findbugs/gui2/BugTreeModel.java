@@ -382,42 +382,33 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			pleaseWait();
 			rebuildingThread = new Thread()
 			{
+				 BugTreeModel newModel;
 				@Override
 				public void run()
 				{	
 					try
 					{
-						/* Start Time */
-
-
-						Debug.println(Thread.currentThread() + " start");
-//						System.out.println(st.getOrder());
-						BugTreeModel newModel = new BugTreeModel(BugTreeModel.this);
-						Debug.println("The new model is TreeModel # " +newModel);
+						newModel = new BugTreeModel(BugTreeModel.this);
 						newModel.listeners = listeners;
 						newModel.resetData();
 						newModel.data.sortList();
-
-
-						JTree newTree = new JTree(newModel);
-
-
-						newModel.tree = newTree;
-						Debug.println("Making new tree from Rebuild, this happens in swing thread");
-						MainFrame.getInstance().newTree(newTree,newModel);
-
-
-						rebuildingThread = null;
-//						System.out.println(Thread.currentThread() + " finish");
 					}
 					finally
 					{
+						rebuildingThread = null;
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								if (newModel != null) {
+								JTree newTree = new JTree(newModel);
+								newModel.tree = newTree;
+								MainFrame.getInstance().newTree(newTree,newModel);
+								}
 						getOffListenerList();
 						MainFrame.getInstance().setRebuilding(false);
 						PreferencesFrame.getInstance().thaw();
 						//st.thawOrder should be the last thing that happens, otherwise a very determined user could slip a new order in before we allow him to rebuild the tree, things get out of sync, nothing bad happens, it just looks wrong until he resorts.
 						st.thawOrder();
-						Debug.println(Thread.currentThread() + " finally");
+							}});
 					}
 				}
 			};

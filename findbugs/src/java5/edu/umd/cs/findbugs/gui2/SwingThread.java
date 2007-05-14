@@ -19,9 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * @author pugh
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface SwingThread {
 
 }

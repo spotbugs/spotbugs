@@ -384,6 +384,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 		frozen=true;
 	}
 
+	@SwingThread
 	public void thawOrder() {
 		frozen=false;
 		orderUpdate();

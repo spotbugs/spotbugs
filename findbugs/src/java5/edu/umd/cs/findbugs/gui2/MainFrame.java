@@ -438,6 +438,7 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	BugCollection bugCollection;
+	@SwingThread
 	void setProjectAndBugCollection(Project project, BugCollection bugCollection) {
 		// setRebuilding(false);
 		if (bugCollection == null) {
@@ -1919,6 +1920,7 @@ public class MainFrame extends FBFrame implements LogSync
 		sourceFinder=sf;
 	}
 
+	@SwingThread
 	public void setRebuilding(boolean b)
 	{
 		tableheader.setReorderingAllowed(!b);
@@ -2091,16 +2093,20 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param file
 	 * @return
 	 */
+	@SwingThread
 	private void loadAnalysisFromInputStream(final InputStream in) {
 		// showWaitCard();
-
+		MainFrame.this.setRebuilding(true);
 		new Thread(new Runnable(){
 			public void run()
 			{
-				MainFrame.this.setRebuilding(true);
-				Project project = new Project();
-				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
-				setProjectAndBugCollection(project, bc);
+
+				final Project project = new Project();
+				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						setProjectAndBugCollection(project, bc);
+					}});
 			}
 		}).start();
 		return;
