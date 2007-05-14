@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -117,6 +118,10 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		}
 	}
 
+	@Override
+    public ProjectStats getProjectStats() {
+	    return bugCollection.getProjectStats();
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
