@@ -24,20 +24,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.model.MovedClassMap;
 
@@ -140,9 +143,29 @@ public class Update {
 		fuzzyBugPatternMatcher.setExactBugPatternMatch(false);
 	}
 
+	HashSet<String> sourceFilesInCollection(BugCollection collection) {
+		HashSet<String> result = new HashSet<String>();
+		for(PackageStats pStats : collection.getProjectStats().getPackageStats()) {
+			for(ClassStats cStats : pStats.getClassStats()) {
+				result.add(cStats.getSourceFile());
+			}
+		}
+		return result;
+	}
 	public BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection, boolean copyDeadBugs, boolean incrementalAnalysis) {
 
+		if (false) {
+		System.out.println("merging");
+		System.out.println("Bugs in old collection:");
+		System.out.println(origCollection.getProjectStats());
+		for(BugInstance bug : origCollection.getCollection()) 
+			System.out.println(bug.getMessage());
+		System.out.println("Bugs in new collection:");
+		System.out.println(newCollection.getProjectStats());
+		for(BugInstance bug : newCollection.getCollection()) 
+			System.out.println(bug.getMessage());
+		}
 		mapFromNewToOldBug.clear();
 
 		matchedOldBugs.clear();
@@ -218,6 +241,7 @@ public class Update {
 		int addedInNewCode = 0;
 		int deadBugInDeadCode = 0;
 
+		HashSet<String> analyzedSourceFiles = sourceFilesInCollection(newCollection);
 		// Copy unmatched bugs
 		if (copyDeadBugs || incrementalAnalysis)
 			for (BugInstance bug : origCollection.getCollection())
@@ -228,7 +252,9 @@ public class Update {
 
 					ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
 					String className = classBugFoundIn.getClassName();
-					if (newCollection.getProjectStats().getClassStats(className) != null) {
+					String sourceFile = classBugFoundIn.getSourceFileName();
+					boolean removed = sourceFile != null && analyzedSourceFiles.contains(sourceFile) || newCollection.getProjectStats().getClassStats(className) != null;
+					if (removed) {
 						if (!copyDeadBugs)
 							continue;
 						newBug.setRemovedByChangeOfPersistingClass(true);

@@ -71,8 +71,8 @@ public class FindBugsSummaryStats extends PreorderVisitor
 		   else
 			   linesNCSS += classCodeSize / 10;
 		   if (stats != null) 
-			stats.addClass(getDottedClassName(), obj.isInterface(),
-					linesNCSS);
+			stats.addClass(getDottedClassName(), obj.getSourceFileName(),
+					obj.isInterface(), linesNCSS);
 			totalCodeSize += classCodeSize;
 			totalNCSS += linesNCSS;
 			totalMethods += methods;

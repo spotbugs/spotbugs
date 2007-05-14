@@ -143,7 +143,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						getRequiredAttribute(attributes, "interface", qName));
 					int size = Integer.valueOf(
 						getRequiredAttribute(attributes, "size", qName));
-					bugCollection.getProjectStats().addClass(className, isInterface, size);
+					String sourceFile =  attributes.getValue("sourceFile");
+					bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
 				}
 			} else if (outerElement.equals("Project")) {
 				if (qName.equals("FindBugsFilter")) 

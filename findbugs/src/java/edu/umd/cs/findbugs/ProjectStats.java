@@ -27,9 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -59,6 +60,14 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private Date timestamp;
 	private Footprint baseFootprint;
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(totalClasses).append(" classes: ");
+		for(PackageStats pStats : getPackageStats())
+			for(ClassStats cStats : pStats.getClassStats()) 
+				buf.append(cStats.getName()).append(" ");
+		return buf.toString();
+	}
 	/**
 	 * Constructor. Creates an empty object.
 	 */
@@ -111,14 +120,28 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 
 	/**
+     * Report that a class has been analyzed.
+     *
+     * @param className   the full name of the class
+     * @param isInterface true if the class is an interface
+     * @param size        a normalized class size value;
+     *                    see detect/FindBugsSummaryStats.
+     * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
+     */
+    public void addClass(String className, boolean isInterface, int size) {
+        addClass(className, null, isInterface, size);
+    }
+
+	/**
 	 * Report that a class has been analyzed.
 	 *
 	 * @param className   the full name of the class
+	 * @param sourceFile TODO
 	 * @param isInterface true if the class is an interface
 	 * @param size        a normalized class size value;
 	 *                    see detect/FindBugsSummaryStats.
 	 */
-	public void addClass(String className, boolean isInterface, int size) {
+	public void addClass(String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
@@ -126,7 +149,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		else
 			packageName = className.substring(0, lastDot);
 		PackageStats stat = getPackageStats(packageName);
-		stat.addClass(className, isInterface, size);
+		stat.addClass(className, sourceFile, isInterface, size);
 		totalClasses++;
 		totalSize += size;
 	}

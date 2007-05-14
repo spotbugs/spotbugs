@@ -21,10 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
@@ -37,14 +37,16 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class PackageStats implements XMLWriteable {
 
 	public static class ClassStats implements XMLWriteable, Cloneable {
-		private String name;
+		private final String name;
+		private final String sourceFile;
 		private boolean isInterface;
 		// nBugs[0] is total; nBugs[n] is total for bug priority n
-		private int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
+		private final int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
 		private int size;
 
-		public ClassStats(String name) {
+		public ClassStats(String name, String sourceFile) {
 			this.name = name;
+			this.sourceFile = sourceFile;
 		}
 
 		@Override
@@ -81,10 +83,15 @@ public class PackageStats implements XMLWriteable {
 		public String getName() {
 			return name;
 		}
+		public @CheckForNull String getSourceFile() {
+			return sourceFile;
+		}
 		public void writeXML(XMLOutput xmlOutput) throws IOException {
 			xmlOutput.startTag("ClassStats");
 
 			xmlOutput.addAttribute("class", name);
+			if (sourceFile != null) 
+				xmlOutput.addAttribute("sourceFile", sourceFile);
 			xmlOutput.addAttribute("interface", String.valueOf(isInterface));
 			xmlOutput.addAttribute("size", String.valueOf(size));
 			xmlOutput.addAttribute("bugs", String.valueOf(nBugs[0]));
@@ -132,10 +139,17 @@ public class PackageStats implements XMLWriteable {
 	public int getBugsAtPriority(int p) {
 		return nBugs[p];
 	}
-	private ClassStats getClassStats(String name) {
+	/**
+     * @deprecated Use {@link #getClassStats(String,String)} instead
+     */
+    private ClassStats getClassStats(String name) {
+        return getClassStats(name, null);
+    }
+
+	private ClassStats getClassStats(String name, String sourceFile) {
 		ClassStats result = packageMembers.get(name);
 		if ( result == null ) {
-			result = new ClassStats(name);
+			result = new ClassStats(name, sourceFile);
 			packageMembers.put(name, result);
 		}
 
@@ -151,11 +165,19 @@ public class PackageStats implements XMLWriteable {
 		++nBugs[bug.getPriority()];
 		++nBugs[0];
 
-		getClassStats(bug.getPrimaryClass().getClassName()).addError(bug);
+		ClassAnnotation primaryClass = bug.getPrimaryClass();
+		getClassStats(primaryClass.getClassName(), primaryClass.getSourceFileName()).addError(bug);
 	}
 
-	public void addClass(String name, boolean isInterface, int size) {
-		ClassStats classStats = getClassStats(name);
+	/**
+     * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
+     */
+    public void addClass(String name, boolean isInterface, int size) {
+        addClass(name, null, isInterface, size);
+    }
+
+	public void addClass(String name, String sourceFile, boolean isInterface, int size) {
+		ClassStats classStats = getClassStats(name, sourceFile);
 		classStats.setInterface(isInterface);
 		classStats.setSize(size);
 		this.size += size;
@@ -164,6 +186,7 @@ public class PackageStats implements XMLWriteable {
 	public String getPackageName() {
 		return packageName;
 	}
+
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException{
 
