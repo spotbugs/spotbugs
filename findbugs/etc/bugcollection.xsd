@@ -195,6 +195,7 @@
 										<xs:element name="ClassStats" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:attribute name="class" type="xs:string" use="required" />
+												<xs:attribute name="sourceFile" type="xs:string" use="optional" />
 												<xs:attribute name="interface" type="xs:boolean" use="required" />
 												<xs:attribute name="size" type="xs:unsignedLong" use="required" />
 												<xs:attribute name="bugs" type="xs:unsignedInt" use="required" />
