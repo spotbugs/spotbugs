@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
+import java.awt.PageAttributes.OriginType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.filter.Filter;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -57,6 +59,7 @@ public class SetBugDatabaseInfo {
 
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
+		String exclusionFilterFile;
 	 boolean withMessages = false;
 
 		long revisionTimestamp = 0L;
@@ -69,6 +72,7 @@ public class SetBugDatabaseInfo {
 			addSwitch("-resetSource", "remove all source search paths");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
+			addOption("-suppressWarnings", "exclusion filter file", "Update the project to suppress all of the warnings contained in the suppression file (replaces previous suppressions)");
 			addSwitch("-withMessages", "Add bug descriptions");
 		}
 
@@ -89,6 +93,8 @@ public class SetBugDatabaseInfo {
 				throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
+			else if (option.equals("-suppressWarnings"))
+				exclusionFilterFile = argument;
 			else if (option.equals("-timestamp"))
 				revisionTimestamp = Date.parse(argument);
 
@@ -127,6 +133,9 @@ public class SetBugDatabaseInfo {
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
 		origCollection.setWithMessages(commandLine.withMessages);
 
+		if (commandLine.exclusionFilterFile != null) {
+			project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
+		}
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
 
