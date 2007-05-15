@@ -66,8 +66,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ArrayList<String> stackTrace;
 	private int nestingOfIgnoredElements = 0;
 	private final File base;
+	private final String topLevelName;
 
-	public SAXBugCollectionHandler(BugCollection bugCollection, Project project, File base) {
+	public SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project, File base) {
+		this.topLevelName = topLevelName;
 		this.bugCollection = bugCollection;
 		this.project = project;
 
@@ -75,6 +77,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		this.textBuffer = new StringBuffer();
 		this.stackTrace = new ArrayList<String>();
 		this.base = base;
+	
+	}
+	public SAXBugCollectionHandler(BugCollection bugCollection, Project project, File base) {
+		this("BugCollection", bugCollection, project, base);
+	}
+	public SAXBugCollectionHandler(Project project, File base) {
+		this("Project", null, project, base);
+	}
+	public SAXBugCollectionHandler(Filter filter, File base) {
+		this("FindBugsFilter", null, null, base);
+		this.filter = filter;
+		pushCompoundMatcher(filter);
 	}
 
 	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
@@ -96,7 +110,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			// ignore it
 		} else if (elementStack.isEmpty()) {
 			// We should be parsing the outer BugCollection element.
-			if (!qName.equals("BugCollection"))
+			if (!qName.equals(topLevelName))
 				throw new SAXException(
 						"Invalid top-level element (expected BugCollection, saw " + qName + ")");
 
@@ -483,7 +497,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		} else if (elementStack.size() > 1) {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
-			if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") || qName.equals("FindBugsFilter"))
+			if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") )
 				matcherStack.pop();
 			else if (outerElement.equals("BugCollection")) {
 				if (qName.equals("BugInstance")) {
