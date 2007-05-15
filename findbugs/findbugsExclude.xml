@@ -11,11 +11,14 @@
     <Bug pattern="MS_PKGPROTECT"/>
   </Match>
   <Match>
-    <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
+  </Match>
+  <Match>
+    <BugCode name="SE"/>
     <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
   <Match>
-    <Bug pattern="SE_BAD_FIELD"/>
-    <Class name="~edu.umd.cs.findbugs.gui.*"/>
+    <BugCode name="SE"/>
+    <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
 </FindBugsFilter>
