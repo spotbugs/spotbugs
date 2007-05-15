@@ -147,14 +147,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
 				}
 			} else if (outerElement.equals("Project")) {
-				if (qName.equals("FindBugsFilter")) 
+				if (isTopLevelFilter(qName))  {
 					filter = new Filter();
 					matcherStack.clear();
-					matcherStack.push(filter);
+					pushCompoundMatcher(filter);
 					project.setSuppressionFilter(filter);
-			} else if (outerElement.equals("FindBugsFilter")) {
+				}
+			} else if (isTopLevelFilter(outerElement) ) {
 				 if (qName.equals("Match")) {
-						matcherStack.push(new AndMatcher());
+					 pushCompoundMatcher(new AndMatcher());
 				 }
 			} else if (outerElement.equals("Match") || outerElement.equals("And") || outerElement.equals("Or")) {
 				parseMatcher(qName, attributes);
@@ -199,8 +200,25 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		elementStack.add(qName);
 	}
 
+	private boolean isTopLevelFilter(String qName) {
+	    return qName.equals("FindBugsFilter") || qName.equals("SuppressionFilter");
+    }
+
 	private void addMatcher(Matcher m) {
-		matcherStack.peek().addChild(m);
+		if (m == null) throw new IllegalArgumentException("matcher must not be null");
+		CompoundMatcher peek = matcherStack.peek();
+		if (peek == null)
+			throw new NullPointerException("Top of stack is null");
+		peek.addChild(m);
+	}
+	private void pushCompoundMatcherAsChild(CompoundMatcher m) {
+		addMatcher(m);
+		pushCompoundMatcher(m);
+	}
+	private void pushCompoundMatcher(CompoundMatcher m) {
+		if (m == null) 
+			throw new IllegalArgumentException("matcher must not be null");
+		matcherStack.push(m);
 	}
 	private void parseMatcher(String qName, Attributes attributes) {
 	    if (qName.equals("Bug")) {
@@ -232,15 +250,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			String type = attributes.getValue("type");
 			addMatcher(new FieldMatcher(name, type));
 	    } else if (qName.equals("Or")) {
-	    	OrMatcher matcher = new OrMatcher();
-	    	addMatcher(matcher);
-	    	matcherStack.push(matcher);
+	    	CompoundMatcher matcher = new OrMatcher();
+	    	pushCompoundMatcherAsChild(matcher);
+	    	
 	    } else if (qName.equals("And")) {
 	    	AndMatcher matcher = new AndMatcher();
-	    	addMatcher(matcher);
-	    	matcherStack.push(matcher);
+	    	pushCompoundMatcherAsChild(matcher);
 	    }
     }
+
 
 	private void parseBugInstanceContents(String qName, Attributes attributes) throws SAXException {
 	    // Parsing an attribute or property of a BugInstance
