@@ -31,11 +31,11 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author rafal@caltha.pl
  */
 public class BugMatcher implements Matcher {
-	private StringSetMatch codes;
+	private final StringSetMatch codes;
 
-	private StringSetMatch patterns;
+	private final StringSetMatch patterns;
 
-	private StringSetMatch categories;
+	private final StringSetMatch categories;
 
 	/**
 	 * Constructor.
@@ -70,6 +70,18 @@ public class BugMatcher implements Matcher {
 		String value = matches.toString();
 		if (value.length() != 0)
 			xmlOutput.addAttribute(name, value);
+	}
+	@Override public String toString() {
+		StringBuffer buf = new StringBuffer("Bug(");
+		if (!codes.isEmpty())
+			buf.append("code = \"").append(codes).append("\" ");
+		if (!patterns.isEmpty())
+			buf.append("pattern = \"").append(patterns).append("\" ");
+		if (!categories.isEmpty())
+			buf.append("category = \"").append(categories).append("\" ");
+		buf.setLength(buf.length()-1);
+		buf.append(")");
+		return buf.toString();
 	}
 
 }

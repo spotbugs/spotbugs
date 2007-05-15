@@ -51,6 +51,9 @@ public class AndMatcher extends CompoundMatcher {
 		writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("And");
 	}
+	public String toString() {
+		return "And(" + super.toString() +")";
+	}
 
 }
 

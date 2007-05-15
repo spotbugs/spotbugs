@@ -57,6 +57,16 @@ public abstract class CompoundMatcher implements Matcher {
 		for(Matcher m : childList) 
 			m.writeXML(xmlOutput);
 	}
+	
+	@Override
+	public String toString() {
+		if (childList.isEmpty()) return "";
+		StringBuffer buf = new StringBuffer();
+		for(Matcher m : childList) 
+			buf.append(m).append(" ");
+		buf.setLength(buf.length()-1);
+		return buf.toString();
+	}
 }
 
 // vim:ts=4

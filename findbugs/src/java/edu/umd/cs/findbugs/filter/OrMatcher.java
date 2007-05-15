@@ -47,6 +47,11 @@ public class OrMatcher extends CompoundMatcher {
 		writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("Or");
 	}
+	@Override
+	public String toString() {
+		return "Or(" + super.toString() +")";
+	}
+
 }
 
 // vim:ts=4

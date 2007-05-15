@@ -55,6 +55,10 @@ public class Filter extends OrMatcher {
 	public Filter() {
 
 	}
+	
+	public static Filter parseFilter(String fileName) throws IOException {
+		return new Filter(fileName);
+	}
 	/**
 	 * Constructor.
 	 * 
@@ -62,7 +66,7 @@ public class Filter extends OrMatcher {
 	 * @throws IOException
 	 * @throws FilterException
 	 */
-	public Filter(String fileName) throws IOException, FilterException {
+	public Filter(String fileName) throws IOException {
 		parse(fileName);
 	}
 
@@ -74,7 +78,7 @@ public class Filter extends OrMatcher {
 	 * @throws IOException
 	 * @throws FilterException
 	 */
-	private void parse(String fileName) throws IOException, FilterException {
+	private void parse(String fileName) throws IOException {
 
 		Document filterDoc = null;
 

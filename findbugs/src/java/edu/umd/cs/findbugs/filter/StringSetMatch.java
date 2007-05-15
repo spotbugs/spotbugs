@@ -50,6 +50,9 @@ public class StringSetMatch {
 		}
 	}
 
+	public boolean isEmpty() {
+		return strings.isEmpty();
+	}
 	/**
 	 * Returns true if the given string is contained in the value set.
 	 * 
