@@ -2,22 +2,10 @@
 
 <FindBugsFilter>
   <Match>
+    <Bug pattern="NM_CLASS_NOT_EXCEPTION,EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_PKGPROTECT,MS_MUTABLE_ARRAY"/>
+  </Match>
+  <Match>
     <Priority value="3"/>
-  </Match>
-  <Match>
-    <Bug pattern="EI_EXPOSE_REP"/>
-  </Match>
-  <Match>
-    <Bug pattern="EI_EXPOSE_REP2"/>
-  </Match>
-  <Match>
-    <Bug pattern="MS_PKGPROTECT"/>
-  </Match>
-  <Match>
-    <Bug pattern="MS_MUTABLE_ARRAY"/>
-  </Match>
-  <Match>
-    <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
   </Match>
   <Match>
     <BugCode name="Se"/>
