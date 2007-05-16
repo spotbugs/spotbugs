@@ -103,7 +103,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 
 		String whereEqual = getDottedClassName();
 		boolean classThatDefinesEqualsIsAbstract = false;
-		boolean classThatDefinesHashCodeIsAbstract = false;
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
 		boolean inheritedEqualsIsAbstract = false;
@@ -131,7 +130,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 				whereHashCode = "java.lang.Object";
 			} else {
 				whereHashCode = wh.getClassName();
-				classThatDefinesHashCodeIsAbstract = wh.isAbstract();
 				Method m = findMethod(wh, "hashCode", "()I");
 				if (m != null && m.isFinal())
 					inheritedHashCodeIsFinal = true;

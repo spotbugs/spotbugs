@@ -294,8 +294,6 @@ public class IsNullValueAnalysis
 		if (fact.isValid()) {
 			IsNullValueFrame tmpFact = null;
 
-			final int numSlots = fact.getNumSlots();
-
 			if (!NO_SPLIT_DOWNGRADE_NSP) {
 				// Downgrade NSP to DNR on non-exception control splits
 				if (!edge.isExceptionEdge()

@@ -119,7 +119,9 @@ public class Version {
 		} finally {
 			try {
 			if (in != null) in.close();
-			} catch (IOException e) { }
+			} catch (IOException e) { 
+				assert true; // nothing to do here
+			}
 		}
 		RELEASE = release;
 		ECLIPSE_UI_VERSION = eclipse_ui_version;

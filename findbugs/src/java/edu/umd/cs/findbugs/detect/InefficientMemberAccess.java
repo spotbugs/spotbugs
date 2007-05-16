@@ -47,17 +47,12 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 
 	@Override
 		 public void sawOpcode(int seen) {
-		int varSlot;
+
 		if (seen == INVOKESTATIC) {
 			String methodName = getNameConstantOperand();
 			if (!methodName.startsWith(ACCESS_PREFIX))
 				return;
-			try {
-				varSlot = Integer.parseInt(methodName.substring(ACCESS_PREFIX.length()));
-			}
-			catch (NumberFormatException nfe) {
-				return;
-			}
+			
 			String methodSig = getSigConstantOperand();
 			Type[] argTypes = Type.getArgumentTypes(methodSig);
 			if ((argTypes.length < 1) || (argTypes.length > 2))

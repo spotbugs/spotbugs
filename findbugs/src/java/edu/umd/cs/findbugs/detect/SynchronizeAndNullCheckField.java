@@ -44,15 +44,12 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
 
 	@Override
 	public void visit(Method obj) {
-		prevOpcode = -1;
 		gottenField = null;
 		currState = 0;
 		syncOnField = false;
 		syncField = null;
 	}
 
-	int prevOpcode;
-	int locationOfMonitorEnter;
 	FieldAnnotation gottenField;
 	boolean syncOnField;
 	FieldAnnotation syncField;

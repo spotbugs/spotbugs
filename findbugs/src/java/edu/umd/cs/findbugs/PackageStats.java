@@ -139,12 +139,7 @@ public class PackageStats implements XMLWriteable {
 	public int getBugsAtPriority(int p) {
 		return nBugs[p];
 	}
-	/**
-     * @deprecated Use {@link #getClassStats(String,String)} instead
-     */
-    private ClassStats getClassStats(String name) {
-        return getClassStats(name, null);
-    }
+
 
 	private ClassStats getClassStats(String name, String sourceFile) {
 		ClassStats result = packageMembers.get(name);

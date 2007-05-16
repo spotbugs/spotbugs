@@ -19,13 +19,14 @@
 
 package edu.umd.cs.findbugs.sourceViewer;
 
-import java.awt.Rectangle;
 import java.awt.Container;
+import java.awt.Rectangle;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.util.Collection;
+
 import javax.swing.JTextPane;
-import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -161,7 +162,7 @@ public class NavigableTextPane extends JTextPane {
 		scrollYToVisibleImpl((startY+endY)/2, max/2);
 	}
 
-	public static class DistanceComparator implements Comparator<Integer> {
+	public static class DistanceComparator implements Comparator<Integer>, Serializable {
 		private final int origin;
 		public DistanceComparator(int origin) {
 			this.origin = origin;

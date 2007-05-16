@@ -46,7 +46,7 @@ public class DontUseEnum extends PreorderDetector {
 
 
 	private boolean isVisible(FieldOrMethod obj) {
-	    return (obj.getAccessFlags() | ACC_PUBLIC) != 0 || (obj.getAccessFlags() | ACC_PROTECTED) != 0;
+	    return (obj.getAccessFlags() & ACC_PUBLIC) != 0 || (obj.getAccessFlags() & ACC_PROTECTED) != 0;
     }
 
 

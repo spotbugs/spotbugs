@@ -128,7 +128,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 			// Meet is intersection
 			result.and(fact);
 		}
-		boolean isBackEdge = edge.isBackwardInBytecode();
+		
 	}
 
 	public boolean same(UnconditionalDerefSet fact1, UnconditionalDerefSet fact2) {
