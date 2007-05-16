@@ -106,7 +106,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		pushCompoundMatcher(filter);
 	}
 
-	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
+	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage");
 
 	public boolean discardedElement(String qName) {
 		return ignoredElement.matcher(qName).matches();
