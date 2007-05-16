@@ -49,6 +49,7 @@
 	<property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
 	<property name="scripts.stamp" value="${build.dir}/scripts.stamp"/>
+	<property name="allClassFiles.jar" value="${build.dir}/allClassFiles.jar"/>
 	<property name="doc.props.file" value="${etc.dir}/doc.properties"/>
 	<property name="version.props.file" value="${build.dir}/version.properties"/>
 	
@@ -240,6 +241,16 @@
 	</target>
 		
 	<!-- Build jar files. -->
+	<target name="allClassFilesJar" depends="classes,validate,version">
+		<jar destfile="${allClassFiles.jar}">
+					<fileset dir="${classes.dir}">
+						<include name="**/*.class"/>
+										<include name="**/*.properties"/>
+										<include name="**/*.db"/>
+										<include name="**/*.xsl"/>
+						</fileset>
+					</jar>
+		</target>
 	<target name="jars" depends="classes, validate,version">
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
