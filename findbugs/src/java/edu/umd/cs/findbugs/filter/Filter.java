@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 
 import org.dom4j.Attribute;
@@ -33,6 +34,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -48,6 +50,8 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class Filter extends OrMatcher {
 	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
+	private IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<Matcher, Boolean>();
+	
 	/**
 	 * Constructor for empty filter
 	 * 
@@ -56,6 +60,16 @@ public class Filter extends OrMatcher {
 
 	}
 	
+	
+	public void disable(Matcher m) {
+		disabled.put(m, true);
+	}
+	public boolean isEnabled(Matcher m) {
+		return isEnabled(m);
+	}
+	public void enable(Matcher m) {
+		disabled.remove(m);
+	}
 	public static Filter parseFilter(String fileName) throws IOException {
 		return new Filter(fileName);
 	}
@@ -70,6 +84,17 @@ public class Filter extends OrMatcher {
 		parse(fileName);
 	}
 
+	@Override
+	public boolean match(BugInstance bugInstance) {
+		Iterator<Matcher> i = childIterator();
+		while (i.hasNext()) {
+			Matcher child = i.next();
+			if (!disabled.containsKey(child) 
+					&& child.match(bugInstance))
+				return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Parse and load the given filter file.
@@ -238,7 +263,11 @@ public class Filter extends OrMatcher {
 			Iterator<Matcher> i = childIterator();
 			while (i.hasNext()) {
 				AndMatcher child = (AndMatcher) i.next();
-				xmlOutput.openTag("Match");
+				xmlOutput.startTag("Match");
+				if (disabled.containsKey(child))
+					xmlOutput.addAttribute("disabled", "true");
+				xmlOutput.stopTag(false);
+				
 				child.writeChildrenXML(xmlOutput);
 				xmlOutput.closeTag("Match");
 			}
