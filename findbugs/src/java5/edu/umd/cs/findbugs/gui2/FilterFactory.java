@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
