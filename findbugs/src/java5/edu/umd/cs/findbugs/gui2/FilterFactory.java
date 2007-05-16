@@ -26,8 +26,10 @@ import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.DesignationMatcher;
+import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
+import edu.umd.cs.findbugs.filter.RelationalOp;
 
 /**
  * @author pugh
@@ -62,8 +64,9 @@ public class FilterFactory {
 			return new DesignationMatcher(s.getFrom(bug));
 			
 		case FIRSTVERSION:
+			return new FirstVersionMatcher(s.getFrom(bug),RelationalOp.EQ);
 		case LASTVERSION:
-			throw new UnsupportedOperationException();
+			return new LastVersionMatcher(s.getFrom(bug),RelationalOp.EQ);
 		case PACKAGE:
 			String p = Sortables.CLASS.getFrom(bug);
 			int lastDot = p.lastIndexOf('.');

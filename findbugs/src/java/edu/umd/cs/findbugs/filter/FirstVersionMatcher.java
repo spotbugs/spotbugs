@@ -32,9 +32,12 @@ public class FirstVersionMatcher implements Matcher {
 	final private RelationalOp relOp;
 
 	public FirstVersionMatcher(String versionAsString, String relOpAsString) {
-			this.version = Integer.parseInt(versionAsString);
-			this.relOp = RelationalOp.byName(relOpAsString);
+		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
 	}
+	public FirstVersionMatcher(String versionAsString, RelationalOp relOp) {
+		this(Integer.parseInt(versionAsString), relOp);
+	}
+	
 	public FirstVersionMatcher(int version, RelationalOp relOp) {
 		this.version = version;
 		this.relOp = relOp;

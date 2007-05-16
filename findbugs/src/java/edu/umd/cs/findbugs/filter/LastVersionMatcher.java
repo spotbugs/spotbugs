@@ -32,8 +32,10 @@ public class LastVersionMatcher implements Matcher {
 	final private RelationalOp relOp;
 
 	public LastVersionMatcher(String versionAsString, String relOpAsString) {
-			this.version = Integer.parseInt(versionAsString);
-			this.relOp = RelationalOp.byName(relOpAsString);
+		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
+	}
+	public LastVersionMatcher(String versionAsString, RelationalOp relOp) {
+		this(Integer.parseInt(versionAsString), relOp);
 	}
 	public LastVersionMatcher(int version, RelationalOp relOp) {
 		this.version = version;
