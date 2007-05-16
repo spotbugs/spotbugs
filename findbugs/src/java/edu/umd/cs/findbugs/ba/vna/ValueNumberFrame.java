@@ -473,9 +473,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 		return previouslyKnownAs;
 	}
-	private  void assignPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> newValue) {
-		previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(newValue);
-	}
+	
 
 }
 
