@@ -72,7 +72,7 @@ public class SetBugDatabaseInfo {
 			addSwitch("-resetSource", "remove all source search paths");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
-			addOption("-suppressWarnings", "exclusion filter file", "Update the project to suppress all of the warnings contained in the suppression file (replaces previous suppressions)");
+			addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
 			addSwitch("-withMessages", "Add bug descriptions");
 		}
 
@@ -93,7 +93,7 @@ public class SetBugDatabaseInfo {
 				throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
-			else if (option.equals("-suppressWarnings"))
+			else if (option.equals("-suppress"))
 				exclusionFilterFile = argument;
 			else if (option.equals("-timestamp"))
 				revisionTimestamp = Date.parse(argument);

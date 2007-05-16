@@ -44,11 +44,12 @@ public class AndMatcher extends CompoundMatcher {
 	}
 	public void writeXML(XMLOutput xmlOutput)  throws IOException {
 		if (numberChildren() == 1) {
+			// System.out.println("One child: " + this);
 			childIterator().next().writeXML(xmlOutput);
 			return;
 		}
 		xmlOutput.openTag("And");
-		writeChildrenXML(xmlOutput);
+		super.writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("And");
 	}
 	public String toString() {

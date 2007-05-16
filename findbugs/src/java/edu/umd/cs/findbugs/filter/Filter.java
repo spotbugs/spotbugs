@@ -20,11 +20,11 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
@@ -33,10 +33,16 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SAXBugCollectionHandler;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Strings;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -78,10 +84,16 @@ public class Filter extends OrMatcher {
 	 * 
 	 * @param fileName name of the filter file
 	 * @throws IOException
+	 * @throws SAXException 
 	 * @throws FilterException
 	 */
 	public Filter(String fileName) throws IOException {
-		parse(fileName);
+		try {
+	        parse(fileName);
+	        if (false) System.out.println("Parsed: " + this);
+        } catch (SAXException e) {
+	        throw new IOException(e.getMessage());
+        }
 	}
 
 	@Override
@@ -101,15 +113,35 @@ public class Filter extends OrMatcher {
 	 * 
 	 * @param fileName name of the filter file
 	 * @throws IOException
+	 * @throws SAXException 
 	 * @throws FilterException
 	 */
-	private void parse(String fileName) throws IOException {
+	private void parse(String fileName) throws IOException, SAXException {
 
+		
+		if (true) {
+			File file = new File(fileName);
+			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this,file);
+			XMLReader xr = XMLReaderFactory.createXMLReader();
+			xr.setContentHandler(handler);
+			xr.setErrorHandler(handler);
+			FileInputStream fileInputStream = new FileInputStream(file);
+			try {
+			Reader reader = Util.getReader(fileInputStream);
+			xr.parse(new InputSource(reader));
+			} finally {
+				Util.closeSilently(fileInputStream);
+			}
+			return;
+			
+		}
 		Document filterDoc = null;
 
+		FileInputStream fileInputStream = new FileInputStream(fileName);
+		
 		try {
 			SAXReader reader = new SAXReader();
-			filterDoc = reader.read(new BufferedInputStream(new FileInputStream(fileName)));
+			filterDoc = reader.read(new BufferedInputStream(fileInputStream));
 		} catch (DocumentException e) {
 			throw new FilterException("Couldn't parse filter file " + fileName, e);
 		}

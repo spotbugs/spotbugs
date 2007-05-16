@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -71,6 +72,20 @@ public class Util {
 	public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {
 		return  getWriter(new FileOutputStream(filename));
 	}
-
+	
+	public static void closeSilently(InputStream in) {
+		try {
+			in.close();
+		} catch (IOException e) {
+			assert true;
+		}
+	}
+	public static void closeSilently(OutputStream out) {
+		try {
+			out.close();
+		} catch (IOException e) {
+			assert true;
+		}
+	}
 
 }

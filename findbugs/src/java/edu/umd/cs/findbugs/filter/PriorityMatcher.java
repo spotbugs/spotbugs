@@ -32,6 +32,10 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class PriorityMatcher implements Matcher {
 	private int priority;
 
+	@Override
+    public String toString() {
+		return "priority=="+priority;
+	}
 	/**
 	 * Constructor.
 	 * 
