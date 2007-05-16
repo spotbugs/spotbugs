@@ -2,6 +2,9 @@
 
 <FindBugsFilter>
   <Match>
+    <Priority value="3"/>
+  </Match>
+  <Match>
     <Bug pattern="EI_EXPOSE_REP"/>
   </Match>
   <Match>
@@ -11,14 +14,17 @@
     <Bug pattern="MS_PKGPROTECT"/>
   </Match>
   <Match>
+    <Bug pattern="MS_MUTABLE_ARRAY"/>
+  </Match>
+  <Match>
     <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
   </Match>
   <Match>
-    <BugCode name="SE"/>
+    <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
   <Match>
-    <BugCode name="SE"/>
+    <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
 </FindBugsFilter>
