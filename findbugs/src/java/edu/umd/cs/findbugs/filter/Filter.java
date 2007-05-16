@@ -65,7 +65,7 @@ public class Filter extends OrMatcher {
 		disabled.put(m, true);
 	}
 	public boolean isEnabled(Matcher m) {
-		return isEnabled(m);
+		return disabled.containsKey(m);
 	}
 	public void enable(Matcher m) {
 		disabled.remove(m);

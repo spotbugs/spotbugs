@@ -55,7 +55,7 @@ public class DesignationMatcher implements Matcher {
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.startTag("Designation");
-		addAttribute(xmlOutput, "designations", designations);
+		addAttribute(xmlOutput, "designation", designations);
 		xmlOutput.stopTag(true);
 	}
 

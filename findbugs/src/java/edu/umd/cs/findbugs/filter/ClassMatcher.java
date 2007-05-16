@@ -44,8 +44,9 @@ public class ClassMatcher implements Matcher {
 	public boolean match(BugInstance bugInstance) {
 		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
 		String bugClassName = primaryClassAnnotation.getClassName();
-		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className);
-		return className.match(bugClassName);
+		boolean result =  className.match(bugClassName);
+		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
+		return result;
 	}
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.openCloseTag("Class", new XMLAttributeList().addAttribute("name", className.getSpec()));

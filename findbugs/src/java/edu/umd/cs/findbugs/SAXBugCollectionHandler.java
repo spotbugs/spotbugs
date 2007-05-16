@@ -33,8 +33,11 @@ import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.CompoundMatcher;
+import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FieldMatcher;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.LocalMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.MethodMatcher;
@@ -234,13 +237,19 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			throw new IllegalArgumentException("matcher must not be null");
 		matcherStack.push(m);
 	}
-	private void parseMatcher(String qName, Attributes attributes) {
+	private void parseMatcher(String qName, Attributes attributes) throws SAXException {
 	    if (qName.equals("Bug")) {
 	    	addMatcher(new BugMatcher(attributes.getValue("code"),
 	    			attributes.getValue("pattern"),
 	    			attributes.getValue("category")));
 	    } else if (qName.equals("Class")) {
 	    	addMatcher(new ClassMatcher(attributes.getValue("name")));
+	    } else if (qName.equals("FirstVersion")) {
+	    	addMatcher(new FirstVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes, "relOp", qName)));
+	    } else if (qName.equals("LastVersion")) {
+	    	addMatcher(new LastVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes, "relOp", qName)));
+	    } else if (qName.equals("Designation")) {
+	    	addMatcher(new DesignationMatcher(getRequiredAttribute(attributes, "designation", qName)));
 	    } else if (qName.equals("BugCode")) {
 	    	addMatcher(new BugMatcher(attributes.getValue("name"),"",""));
 	    } else if (qName.equals("Local")) {

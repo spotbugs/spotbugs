@@ -31,6 +31,7 @@ public abstract class RelationalOp {
 	public abstract boolean check(Comparable x, Comparable y);
 
 	final String value;
+	final String name;
 
 	private static final Map<String, RelationalOp> map = new HashMap<String, RelationalOp>();
 	public static RelationalOp byName(String s) {
@@ -39,50 +40,60 @@ public abstract class RelationalOp {
 	public static Collection<RelationalOp> values() {
 		return map.values();
 	}
-	private RelationalOp(String value) {
+	/**
+     * @deprecated Use {@link #RelationalOp(String,String)} instead
+     */
+    private RelationalOp(String value) {
+        this(value, "xxx");
+    }
+	private RelationalOp(String value, String name) {
 		this.value = value;
+		this.name = name;
 	}
 
 	public String toString() {
 		return value;
 	}
+	public String getName() {
+		return name;
+	}
 
-	public static final RelationalOp EQ = new RelationalOp("==") {
+	public static final RelationalOp EQ = new RelationalOp("==", "EQ") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) == 0;
 		}
 
 	};
 
-	public static final RelationalOp LEQ = new RelationalOp("<=") {
+	public static final RelationalOp LEQ = new RelationalOp("<=", "LEQ") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) <= 0;
 		}
 
 	};
 
-	public static final RelationalOp NEQ = new RelationalOp("!=") {
+	public static final RelationalOp NEQ = new RelationalOp("!=", "NEQ") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) != 0;
 		}
 
 	};
 
-	public static final RelationalOp GEQ = new RelationalOp(">=") {
+	public static final RelationalOp GEQ = new RelationalOp(">=", "GEQ") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) >= 0;
 		}
 
 	};
 
-	public static final RelationalOp LT = new RelationalOp("<") {
+	public static final RelationalOp LT = new RelationalOp("<", "LT") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) < 0;
 		}
 
 	};
 
-	public static final RelationalOp GT = new RelationalOp(">") {
+	public static final RelationalOp GT = new RelationalOp(">", "GT") {
 		public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) > 0;
 		}

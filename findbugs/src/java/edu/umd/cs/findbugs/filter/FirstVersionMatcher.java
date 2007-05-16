@@ -43,9 +43,9 @@ public class FirstVersionMatcher implements Matcher {
 		this.relOp = relOp;
 }
 	public boolean match(BugInstance bugInstance) {
-		return bugInstance.getFirstVersion() == version;
+		return  relOp.check(bugInstance.getFirstVersion(), version);
 	}
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("FirstVersion", new XMLAttributeList().addAttribute("value", Integer.toString(version)));
+		xmlOutput.openCloseTag("FirstVersion", new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName()));
 	}
 }

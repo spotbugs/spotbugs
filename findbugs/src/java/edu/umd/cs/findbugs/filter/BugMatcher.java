@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
@@ -31,6 +32,8 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author rafal@caltha.pl
  */
 public class BugMatcher implements Matcher {
+	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
+
 	private final StringSetMatch codes;
 
 	private final StringSetMatch patterns;
@@ -54,8 +57,12 @@ public class BugMatcher implements Matcher {
 	}
 
 	public boolean match(BugInstance bugInstance) {
-		return codes.match(bugInstance.getAbbrev()) || patterns.match(bugInstance.getType())
-		        || categories.match(bugInstance.getBugPattern().getCategory());
+		boolean result1 =  codes.match(bugInstance.getAbbrev());
+		boolean result2 = patterns.match(bugInstance.getType());
+		boolean result3 =categories.match(bugInstance.getBugPattern().getCategory());
+		if (DEBUG) System.out.println("Matching " + bugInstance.getAbbrev() +"/" + bugInstance.getType() +"/" + bugInstance.getBugPattern().getCategory()+ " with " + this + ", result = " + result1 + "/" + result2 + "/" + result3);
+		
+		return result1 || result2 || result3;
 	}
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {

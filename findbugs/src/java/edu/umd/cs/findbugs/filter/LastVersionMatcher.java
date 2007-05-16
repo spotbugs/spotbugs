@@ -45,11 +45,12 @@ public class LastVersionMatcher implements Matcher {
 		return relOp.check(bugInstance.getLastVersion(), version);
 	}
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("LastVersion", new XMLAttributeList().addAttribute("value", Integer.toString(version)));
+		xmlOutput.openCloseTag("LastVersion", new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName()));
 	}
 	
 	public String toString() {
 		if (version == -1 && relOp == RelationalOp.NEQ) return "active bug";
+		else if (version == -1 && relOp == RelationalOp.EQ) return "dead bug";
 		return "lastVersion " + relOp + " " + version;
 	}
 }
