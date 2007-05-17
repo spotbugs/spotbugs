@@ -46,7 +46,7 @@ public class SuppressionMatcher extends ArrayList<BugInstance> implements Matche
 			return false;
 		return super.add(bugInstance);
 	}
-	 public void writeXML(XMLOutput xmlOutput) throws IOException {
+	 public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		    throw new UnsupportedOperationException(); 
 	    }
 }

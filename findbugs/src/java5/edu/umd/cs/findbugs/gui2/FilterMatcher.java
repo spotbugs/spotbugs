@@ -177,7 +177,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		return this.value.compareTo(that.value);
 	}
 	
-	 public void writeXML(XMLOutput xmlOutput) throws IOException {
+	 public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		    throw new UnsupportedOperationException(); 
 	    }
 }

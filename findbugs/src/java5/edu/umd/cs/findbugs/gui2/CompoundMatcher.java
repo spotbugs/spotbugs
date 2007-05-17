@@ -43,7 +43,7 @@ public class CompoundMatcher extends HashSet<Matcher> implements Matcher
 		return true;
 	}
 
-    public void writeXML(XMLOutput xmlOutput) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 	    throw new UnsupportedOperationException(); 
     }
 }
