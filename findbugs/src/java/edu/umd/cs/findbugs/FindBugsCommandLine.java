@@ -148,7 +148,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	    				bugCollection.readXML(f.getPath(), project);
 	    				return project;
 	    			} catch (DocumentException e) {
-	    				throw new IOException("Couldn't read saved XML in project directory", e);
+	    				IOException ioe = new IOException("Couldn't read saved XML in project directory");
+	    				ioe.initCause(e);
+	    				throw ioe;
 	    			}
 	    		}
 	    	}
