@@ -24,6 +24,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -175,7 +176,7 @@ public class FindDeadLocalStores implements Detector {
 		CFG cfg = classContext.getCFG(method);
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 		BitSet complainedAbout = new BitSet();
-		TypeDataflow typeDateflow = classContext.getTypeDataflow(method);
+		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
 		// Get number of locals that are parameters.
 		int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
@@ -187,6 +188,12 @@ public class FindDeadLocalStores implements Detector {
 		countLocalStoresLoadsAndIncrements(localStoreCount, localLoadCount, localIncrementCount, cfg);
 		for (int i = 0; i < localsThatAreParameters; i++)
 			localStoreCount[i]++;
+		
+		// For each source line, keep track of # times
+		// the line was a live store.  This can eliminate false positives
+		// due to inlining of finally blocks.
+		BitSet liveStoreSourceLineSet = new BitSet();
+		
 		// Scan method for
 		// - dead stores
 		// - stores to parameters that are dead upon entry to the method
@@ -219,6 +226,20 @@ public class FindDeadLocalStores implements Detector {
 
 				LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
+				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
+						methodGen, javaClass.getSourceFileName(), location.getHandle());
+
+				if (DEBUG) {
+					System.out.println("    Store at " + sourceLineAnnotation.getStartLine() + "@" +
+							location.getHandle().getPosition() + " is " +
+							(storeLive ? "live" : "dead"));
+				}
+
+				// Note source lines of live stores.
+				if (storeLive && sourceLineAnnotation.getStartLine() > 0) {
+					liveStoreSourceLineSet.set(sourceLineAnnotation.getStartLine());
+				}
+
 				String name = lvAnnotation.getName();
 				if (name.charAt(0) == '$' || name.charAt(0) == '_')
 					propertySet.addProperty(DeadLocalStoreProperty.SYNTHETIC_NAME);
@@ -229,6 +250,7 @@ public class FindDeadLocalStores implements Detector {
 				boolean isParameter = local < localsThatAreParameters;
 				if (isParameter)
 					propertySet.addProperty(DeadLocalStoreProperty.IS_PARAMETER);
+
 				// Is this a store to a parameter which was dead on entry to the
 				// method?
 				boolean parameterThatIsDeadAtEntry = isParameter
@@ -242,11 +264,15 @@ public class FindDeadLocalStores implements Detector {
 							javaClass.getSourceFileName(), location.getHandle());
 					complainedAbout.set(local);
 				}
+				
 				if (storeLive)
 					continue;
-				TypeFrame typeFrame = typeDateflow.getAnalysis().getFactAtLocation(location);
+				
+				TypeFrame typeFrame = typeDataflow.getAnalysis().getFactAtLocation(location);
 				Type typeOfValue = null;
-				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) typeOfValue = typeFrame.getTopType();
+				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) {
+					typeOfValue = TypeFrame.getTopType();
+				}
 
 				boolean storeOfNull = false;
 				InstructionHandle prevInsHandle = location.getHandle().getPrev();
@@ -269,6 +295,7 @@ public class FindDeadLocalStores implements Detector {
 
 				if (typeOfValue instanceof BasicType || Type.STRING.equals(typeOfValue))
 					propertySet.addProperty(DeadLocalStoreProperty.BASE_VALUE);
+				
 				// Ignore assignments that were killed by a subsequent
 				// assignment.
 				boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);
@@ -347,13 +374,15 @@ public class FindDeadLocalStores implements Detector {
 
 				if (localStoreCount[local] > 3)
 					propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
+				
 				int priority = propertySet.computePriority(NORMAL_PRIORITY);
 				if (priority <= Detector.EXP_PRIORITY) {
 
 					// Report the warning
 					BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL"
-							: "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(methodGen, javaClass.getSourceFileName()).add(
-							lvAnnotation);
+							: "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(
+									methodGen,
+									javaClass.getSourceFileName()).add(lvAnnotation);
 
 					// If in relaxed reporting mode, encode heuristic
 					// information.
@@ -364,8 +393,6 @@ public class FindDeadLocalStores implements Detector {
 						// Turn all warning properties into BugProperties
 						propertySet.decorateBugInstance(bugInstance);
 					}
-					SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-							methodGen, javaClass.getSourceFileName(), location.getHandle());
 
 					if (DEBUG) {
 						System.out.println(javaClass.getSourceFileName() + " : " + methodGen.getName());
@@ -380,6 +407,24 @@ public class FindDeadLocalStores implements Detector {
 					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
 			}
 		}
+if(false){ // TODO: need to decide whether or not to enable this		
+		// Eliminate any accumulated warnings for instructions
+		// that (due to inlining) *can* be live stores.
+	entryLoop:
+		for (Iterator<Map.Entry<BugInstance, List<SourceLineAnnotation>>> i = accumulator.entrySetIterator();
+				i.hasNext(); ) {
+			Map.Entry<BugInstance, List<SourceLineAnnotation>> entry = i.next();
+			
+			for (SourceLineAnnotation annotation : entry.getValue()) {
+				if (liveStoreSourceLineSet.get(annotation.getStartLine())) {
+					// This instruction can be a live store; don't report
+					// it as a warning.
+					i.remove();
+					continue entryLoop;
+				}
+			}
+		}
+}		
 		accumulator.reportAccumulatedBugs();
 	}
 
