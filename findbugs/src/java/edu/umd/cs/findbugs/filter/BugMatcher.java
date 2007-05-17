@@ -65,8 +65,10 @@ public class BugMatcher implements Matcher {
 		return result1 || result2 || result3;
 	}
 
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		xmlOutput.startTag("Bug");
+		if (disabled) xmlOutput.addAttribute("disabled", "true");
+		
 		addAttribute(xmlOutput, "code", codes);
 		addAttribute(xmlOutput, "pattern", patterns);
 		addAttribute(xmlOutput, "category", categories);

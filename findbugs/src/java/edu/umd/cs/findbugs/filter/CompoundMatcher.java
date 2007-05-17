@@ -55,7 +55,7 @@ public abstract class CompoundMatcher implements Matcher {
 	}
 	public void writeChildrenXML(XMLOutput xmlOutput)  throws IOException {
 		for(Matcher m : childList) 
-			m.writeXML(xmlOutput);
+			m.writeXML(xmlOutput, false);
 	}
 	
 	@Override

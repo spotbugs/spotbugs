@@ -63,8 +63,10 @@ public class MethodMatcher implements Matcher {
 			return false;
 		return true;
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Method", new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature);
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("Method", attributes);
 	}
 }
 

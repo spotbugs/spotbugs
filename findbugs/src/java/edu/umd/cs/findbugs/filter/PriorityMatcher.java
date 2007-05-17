@@ -49,7 +49,9 @@ public class PriorityMatcher implements Matcher {
 	public boolean match(BugInstance bugInstance) {
 		return bugInstance.getPriority() == priority;
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Priority", new XMLAttributeList().addAttribute("value", Integer.toString(priority)));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(priority));
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("Priority", attributes);
 	}
 }

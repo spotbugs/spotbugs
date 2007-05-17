@@ -76,7 +76,7 @@ public class SuppressionMatcher implements Matcher {
 			}
 		return false;
 		}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		  // no-op; these aren't saved to XML
 		}
 

@@ -38,7 +38,7 @@ abstract public class WarningSuppressor implements Matcher {
 	return true;
 	}
 	
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 	  // no-op; these aren't saved to XML
 	}
 }

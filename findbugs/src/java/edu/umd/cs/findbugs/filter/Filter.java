@@ -292,20 +292,19 @@ public class Filter extends OrMatcher {
 			
 			xmlOutput.beginDocument();
 			xmlOutput.openTag("FindBugsFilter");
-			Iterator<Matcher> i = childIterator();
-			while (i.hasNext()) {
-				AndMatcher child = (AndMatcher) i.next();
-				xmlOutput.startTag("Match");
-				if (disabled.containsKey(child))
-					xmlOutput.addAttribute("disabled", "true");
-				xmlOutput.stopTag(false);
-				
-				child.writeChildrenXML(xmlOutput);
-				xmlOutput.closeTag("Match");
-			}
+			writeBodyAsXML(xmlOutput);
 			xmlOutput.closeTag("FindBugsFilter");
 			xmlOutput.finish();
 		}
+
+
+	public void writeBodyAsXML(XMLOutput xmlOutput) throws IOException {
+	    Iterator<Matcher> i = childIterator();
+	    while (i.hasNext()) {
+	    	Matcher child = (Matcher) i.next();
+	    	child.writeXML(xmlOutput, disabled.containsKey(child));
+	    }
+    }
 		
 }
 

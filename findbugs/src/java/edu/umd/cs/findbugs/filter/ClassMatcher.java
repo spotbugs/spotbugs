@@ -48,8 +48,10 @@ public class ClassMatcher implements Matcher {
 		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
 		return result;
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Class", new XMLAttributeList().addAttribute("name", className.getSpec()));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", className.getSpec());
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("Class", attributes);
 	}
 }
 

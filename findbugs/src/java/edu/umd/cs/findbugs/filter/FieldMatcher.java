@@ -65,7 +65,9 @@ public class FieldMatcher implements Matcher {
 			return false;
 		return true;
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Field", new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature);
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("Field", attributes);
 	}
 }

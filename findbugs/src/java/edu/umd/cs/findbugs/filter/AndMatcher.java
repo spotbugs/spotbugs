@@ -42,13 +42,15 @@ public class AndMatcher extends CompoundMatcher {
 		return true;
 
 	}
-	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
 		if (numberChildren() == 1) {
 			// System.out.println("One child: " + this);
-			childIterator().next().writeXML(xmlOutput);
+			childIterator().next().writeXML(xmlOutput, disabled);
 			return;
 		}
-		xmlOutput.openTag("And");
+		xmlOutput.startTag("And");
+		if (disabled) xmlOutput.addAttribute("disabled", "true");
+		xmlOutput.stopTag(false);;	
 		super.writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("And");
 	}

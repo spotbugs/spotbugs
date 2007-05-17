@@ -53,8 +53,9 @@ public class DesignationMatcher implements Matcher {
 		return designations.match(bugInstance.getUserDesignationKey());
 	}
 
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		xmlOutput.startTag("Designation");
+		if (disabled) xmlOutput.addAttribute("disabled","true");
 		addAttribute(xmlOutput, "designation", designations);
 		xmlOutput.stopTag(true);
 	}

@@ -38,12 +38,14 @@ public class OrMatcher extends CompoundMatcher {
 		return false;
 	}
 
-	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException {
 		if (numberChildren() == 1) {
-			childIterator().next().writeXML(xmlOutput);
+			childIterator().next().writeXML(xmlOutput, false);
 			return;
 		}
-		xmlOutput.openTag("Or");
+		xmlOutput.startTag("Or");
+		if (disabled) xmlOutput.addAttribute("disabled","true");
+		xmlOutput.stopTag(false);
 		writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("Or");
 	}

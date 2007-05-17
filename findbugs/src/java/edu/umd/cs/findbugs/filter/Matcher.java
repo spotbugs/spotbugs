@@ -39,7 +39,7 @@ public interface Matcher {
 	 */
 	public boolean match(BugInstance bugInstance);
 	
-	public void writeXML(XMLOutput xmlOutput)  throws IOException;
+	public void writeXML(XMLOutput xmlOutput, boolean disabled)  throws IOException;
 }
 
 // vim:ts=4

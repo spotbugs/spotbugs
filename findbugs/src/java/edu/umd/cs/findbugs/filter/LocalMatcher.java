@@ -50,7 +50,9 @@ public class LocalMatcher implements Matcher {
 		}
 		return true;
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Local", new XMLAttributeList().addAttribute("name", name.getSpec()));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec());
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("Local", attributes);
 	}
 }

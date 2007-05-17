@@ -709,7 +709,7 @@ public class Project implements XMLWriteable {
 
 		if (suppressionFilter != null && suppressionFilter.numberChildren() > 0) {
 			xmlOutput.openTag("SuppressionFilter");
-			suppressionFilter.writeXML(xmlOutput);
+			suppressionFilter.writeBodyAsXML(xmlOutput);
 			xmlOutput.closeTag("SuppressionFilter");
 		}
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);

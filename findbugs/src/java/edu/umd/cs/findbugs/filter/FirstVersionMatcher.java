@@ -45,7 +45,9 @@ public class FirstVersionMatcher implements Matcher {
 	public boolean match(BugInstance bugInstance) {
 		return  relOp.check(bugInstance.getFirstVersion(), version);
 	}
-	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("FirstVersion", new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName()));
+	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName());
+		if (disabled) attributes.addAttribute("disabled", "true");
+		xmlOutput.openCloseTag("FirstVersion", attributes);
 	}
 }
