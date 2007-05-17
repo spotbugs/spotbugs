@@ -506,6 +506,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBugPopupMenu() {
 		JPopupMenu popupMenu = new JPopupMenu();
 
+		if (false) {
 		JMenuItem suppressMenuItem = newJMenuItem("menu.suppress", "Suppress this bug");
 
 		suppressMenuItem.addActionListener(new ActionListener(){
@@ -514,7 +515,7 @@ public class MainFrame extends FBFrame implements LogSync
 				//This MUST be done in this order:
 				//getIndexOfChild relies on the fact that things have not yet been removed from the tree!
 				TreePath path=tree.getSelectionPath();
-				FilterMatcher.notifyListeners(FilterListener.Action.SUPPRESSING, path);
+				FilterActivity.notifyListeners(FilterListener.Action.SUPPRESSING, path);
 				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
 				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
 				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  
@@ -527,6 +528,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 
 		popupMenu.add(suppressMenuItem);
+		}
 
 		JMenuItem filterMenuItem = newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 
@@ -1197,7 +1199,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setupTreeListeners();
 				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
 				MainFrame.this.getSorter().addColumnModelListener(newModel);
-				FilterMatcher.addFilterListener(newModel);
+				FilterActivity.addFilterListener(newModel);
 				MainFrame.this.setSorting(true);
 
 			}
@@ -1856,6 +1858,10 @@ public class MainFrame extends FBFrame implements LogSync
 	public JTree getTree()
 	{
 		return tree;
+	}
+	
+	public BugTreeModel getBugTreeModel() {
+		return (BugTreeModel)getTree().getModel();
 	}
 
 	static class CutAction extends TextAction {

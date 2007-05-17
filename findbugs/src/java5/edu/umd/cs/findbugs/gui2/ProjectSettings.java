@@ -148,7 +148,7 @@ public class ProjectSettings implements Serializable
 		filters.add(filter);
 		allMatchers.add(filter);
 		if (!(filter instanceof StackedFilterMatcher))
-			FilterMatcher.notifyListeners(FilterListener.Action.FILTERING,null);
+			FilterActivity.notifyListeners(FilterListener.Action.FILTERING,null);
 		else 
 		{
 			StackedFilterMatcher theSame= (StackedFilterMatcher) filter;
@@ -181,7 +181,7 @@ public class ProjectSettings implements Serializable
 					if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s))
 						finalPath.add(almostPath.get(x));
 				}
-				BugTreeModel model=((BugTreeModel)(MainFrame.getInstance().getTree().getModel()));
+				BugTreeModel model=(MainFrame.getInstance().getBugTreeModel());
 				try {
 					model.sendEvent(model.removeBranch(finalPath), BugTreeModel.TreeModification.REMOVE);
 				}
@@ -192,7 +192,7 @@ public class ProjectSettings implements Serializable
 			}
 			else
 			{
-				FilterMatcher.notifyListeners(FilterListener.Action.FILTERING,null);
+				FilterActivity.notifyListeners(FilterListener.Action.FILTERING,null);
 				throw new IllegalStateException("What huh?  How'd they add a stacked filter matcher bigger than the number of branches in the tree?!");
 			}
 		}
@@ -213,7 +213,7 @@ public class ProjectSettings implements Serializable
 				filters.get(filters.indexOf(i)).setActive(true);
 				//FIXME Do I need to do this for allMatchers too?  Or are the filters all the same, with both just holding references?
 			}
-		FilterMatcher.notifyListeners(FilterListener.Action.FILTERING, null);
+		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 	}
@@ -221,7 +221,7 @@ public class ProjectSettings implements Serializable
 	public boolean removeFilter(FilterMatcher filter)
 	{
 		boolean result = filters.remove(filter) && allMatchers.remove(filter);
-		FilterMatcher.notifyListeners(FilterListener.Action.UNFILTERING,null);
+		FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING,null);
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 		return result;

@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.util.Comparator;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**
  * @author Alex Mont
@@ -34,7 +34,7 @@ public class SortableStringComparator implements Comparator<String> {
 		mySortable = theSortable;
 	}
 	public int compare(String one, String two) {
-		return mySortable.compare(new StringPair(mySortable, one), new StringPair(mySortable, two));
+		return mySortable.compare(new SortableValue(mySortable, one), new SortableValue(mySortable, two));
 	}
 
 }

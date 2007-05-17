@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.gui2;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.filter.Matcher;
+
 /**
  * These are the branches in our tree, each branch forms a complete query that could be sent 
  * to the main bugset to return all the bugs it contains
@@ -40,13 +42,13 @@ import java.util.Iterator;
  * 
  * @author All of us
  */
-public class BugAspects implements Iterable<BugAspects.StringPair>
+public class BugAspects implements Iterable<BugAspects.SortableValue>
 {
 	private static final long serialVersionUID = -5503915081879996968L;
 	private int count=-1;
-	private ArrayList<BugAspects.StringPair> lst = new ArrayList<BugAspects.StringPair>();
+	private ArrayList<BugAspects.SortableValue> lst = new ArrayList<BugAspects.SortableValue>();
 
-	public StringPair last() {
+	public SortableValue last() {
 		return lst.get(lst.size() - 1);
 	}
 	public int size() {
@@ -87,18 +89,21 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 
 	public BugAspects(BugAspects a)
 	{
-		lst = new ArrayList<StringPair>(a.lst);
+		lst = new ArrayList<SortableValue>(a.lst);
 		count = a.count;
 	}
 
-	public void add(StringPair sp) {
+	public void add(SortableValue sp) {
 		lst.add(sp);
 	}
-	public BugAspects addToNew(StringPair sp)
+	public BugAspects addToNew(SortableValue sp)
 	{
 		BugAspects result = new BugAspects(this);
 		result.lst.add(sp);
 		return result;
+	}
+	public Matcher getMatcher() {
+		return FilterFactory.makeMatcher(lst);
 	}
 	public StackedFilterMatcher getStackedFilterMatcher(){
 		FilterMatcher[] filters = new FilterMatcher[lst.size()];
@@ -112,12 +117,12 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 	{        
 		return theSet.getBugsMatchingFilter(this.getStackedFilterMatcher());
 	}
-	static class StringPair
+	static class SortableValue
 	{
 		final public Sortables key;
 		final public String value;
 
-		public StringPair(Sortables key, String value)
+		public SortableValue(Sortables key, String value)
 		{
 			this.key = key;
 			this.value = value;
@@ -132,9 +137,9 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		@Override
 		public boolean equals(Object that)
 		{
-			if (!(that instanceof StringPair))
+			if (!(that instanceof SortableValue))
 				return false;
-			StringPair thatStringPair = ((StringPair)that);
+			SortableValue thatStringPair = ((SortableValue)that);
 			return this.key.equals(thatStringPair.key) && this.value.equals(thatStringPair.value);
 		}
 
@@ -145,7 +150,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		}
 	}
 
-	public Iterator<StringPair> iterator() {
+	public Iterator<SortableValue> iterator() {
 		return lst.iterator();
 	}
 }

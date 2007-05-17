@@ -21,13 +21,11 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.lang.RuntimeException;
-import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
@@ -35,6 +33,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * FilterMatchers are Filters, pass in a StringPair like Priority, High
  * and all the high priority bugs disappear, Its that easy.
  */
+@Deprecated
 public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMatcher>
 {
 	enum FilterWhere {FILTER_EXACTLY, FILTER_AT_OR_AFTER, FILTER_AT_OR_BEFORE, FILTER_ALL_BUT};
@@ -44,9 +43,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	private String value;
 	private FilterWhere mode;
 	protected boolean active;
-	private static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
-
-	public FilterMatcher(StringPair sp)
+	public FilterMatcher(SortableValue sp)
 	{
 		this(sp.key, sp.value);
 	}
@@ -82,9 +79,9 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		{
 			this.active = active;
 			if (active==true)
-				notifyListeners(FilterListener.Action.FILTERING, null);
+				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 			else
-				notifyListeners(FilterListener.Action.UNFILTERING, null);
+				FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
 		}
 	}
 
@@ -119,37 +116,6 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		case FILTER_AT_OR_BEFORE: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " " + filterBy.formatValue(value);
 		case FILTER_ALL_BUT: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.not_equal_to", "not equal to") + " " + filterBy.formatValue(value);
 		default: throw new RuntimeException();
-		}
-	}
-
-	public static boolean addFilterListener(FilterListener newListener)
-	{
-		return listeners.add(newListener);
-	}
-
-	public static void removeFilterListener(FilterListener toRemove)
-	{
-		listeners.remove(toRemove);
-	}
-
-	public static void notifyListeners(FilterListener.Action whatsGoingOnCode,
-			TreePath optionalPath) {
-		HashSet<FilterListener> listeners = (HashSet<FilterListener>) FilterMatcher.listeners
-				.clone();
-		switch (whatsGoingOnCode) {
-		case FILTERING:
-		case UNFILTERING:
-			for (FilterListener i : listeners)
-				i.clearCache();
-			break;
-		case SUPPRESSING:
-			for (FilterListener i : listeners)
-				i.suppressBug(optionalPath);
-			break;
-		case UNSUPPRESSING:
-			for (FilterListener i : listeners)
-				i.unsuppressBug(optionalPath);
-			break;
 		}
 	}
 

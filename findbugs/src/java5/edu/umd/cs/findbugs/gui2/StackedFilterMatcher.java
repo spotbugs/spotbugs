@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
  * Filter out bugs which fail (match) all filters.
  * This is what happens when you filter out a branch.
  */
+@Deprecated
 public class StackedFilterMatcher extends FilterMatcher
 {
 	private static final long serialVersionUID = 3958267780332359162L;
@@ -109,25 +110,25 @@ public class StackedFilterMatcher extends FilterMatcher
 				{
 					if (active==true)
 					{
-						event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).removeBranch(finalPath);
+						event=(MainFrame.getInstance().getBugTreeModel()).removeBranch(finalPath);
 						whatToDo=BugTreeModel.TreeModification.REMOVE;
 					}
 					else
 					{
-						event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).insertBranch(finalPath);
+						event=(MainFrame.getInstance().getBugTreeModel()).insertBranch(finalPath);
 						whatToDo=BugTreeModel.TreeModification.INSERT;
 					}
 				}
 				else 
 				{
-					event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).restructureBranch(finalPath,active);//if active is true, this removes, if active if false, it inserts
+					event=(MainFrame.getInstance().getBugTreeModel()).restructureBranch(finalPath,active);//if active is true, this removes, if active if false, it inserts
 					if (active) whatToDo=BugTreeModel.TreeModification.REMOVERESTRUCTURE;
 					else whatToDo=BugTreeModel.TreeModification.INSERTRESTRUCTURE;
 				}
 
 			if (active==true)
 				this.active=active;
-			((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).sendEvent(event,whatToDo);		
+			(MainFrame.getInstance().getBugTreeModel()).sendEvent(event,whatToDo);		
 			}
 			catch (BranchOperationException e)
 			{

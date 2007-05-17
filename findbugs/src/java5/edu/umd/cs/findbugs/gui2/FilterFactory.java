@@ -31,12 +31,23 @@ import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**
  * @author pugh
  */
 public class FilterFactory {
 
+	public static Matcher makeMatcher(Collection<SortableValue> sortables) {
+		if (sortables.size() == 1) {
+			for (SortableValue s : sortables)
+				return makeMatcher(s);
+		}
+		AndMatcher matcher = new AndMatcher();
+		for (SortableValue s : sortables)
+			matcher.addChild(makeMatcher(s));
+		return matcher;
+	}
 	public static Matcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
 		if (sortables.size() == 1) {
 			for (Sortables s : sortables)
@@ -79,6 +90,43 @@ public class FilterFactory {
 			
 		case TYPE:
 			return new BugMatcher(null, s.getFrom(bug), null);
+
+		case DIVIDER:
+		default:
+			throw new IllegalArgumentException();
+
+		}
+
+	}
+
+	private static Matcher makeMatcher(SortableValue sv) {
+		Sortables s = sv.key;
+		String value = sv.value;
+		switch (s) {
+		case BUGCODE:
+			return new BugMatcher(value, null, null);
+		case CATEGORY:
+			return new BugMatcher(null, null, value);
+		case CLASS:
+			return new ClassMatcher(value);
+		case DESIGNATION:
+			return new DesignationMatcher(value);
+			
+		case FIRSTVERSION:
+			return new FirstVersionMatcher(value,RelationalOp.EQ);
+		case LASTVERSION:
+			return new LastVersionMatcher(value,RelationalOp.EQ);
+		case PACKAGE:
+			String p = value;
+			int lastDot = p.lastIndexOf('.');
+			if (lastDot > 0)
+				p = p.substring(0, lastDot);
+			return new ClassMatcher("~" + p + "\\.[^.]+");
+		case PRIORITY:
+			return new PriorityMatcher(value);
+			
+		case TYPE:
+			return new BugMatcher(null, value, null);
 
 		case DIVIDER:
 		default:

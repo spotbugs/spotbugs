@@ -46,7 +46,7 @@ import javax.swing.tree.TreePath;
 
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /*
  * Our TreeModel.  Once upon a time it was a simple model, that queried data, its BugSet, for what to show under each branch
@@ -114,7 +114,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			this.data = data;
 			BugSet.setAsRootAndCache(this.data);
 			root.setCount(data.size());
-			FilterMatcher.addFilterListener(this);
+			FilterActivity.addFilterListener(this);
 			if (DEBUG) 
 				this.addTreeModelListener(new TreeModelListener() {
 
@@ -154,7 +154,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 
 		public void getOffListenerList()
 		{
-			FilterMatcher.removeFilterListener(this);
+			FilterActivity.removeFilterListener(this);
 			st.removeColumnModelListener(this);
 			tree.removeTreeExpansionListener(this);
 		}
@@ -226,7 +226,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 
 		/*This contract has been changed to return a HashList of Stringpair, our own data structure in which finding the index of an object in the list is very fast*/
 
-		private HashList<StringPair> enumsThatExist(BugAspects a)
+		private HashList<SortableValue> enumsThatExist(BugAspects a)
 		{
 		//			long start = bean.getCurrentThreadCpuTime();
 //			System.out.println(" ## enumsThatExist [a = " + a + "]");
@@ -255,13 +255,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 								st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().indexOf(a.last().key) + 1));
 
 					String[] all = key.getAll(data.query(a));
-					ArrayList<StringPair> result = new ArrayList<StringPair>();
+					ArrayList<SortableValue> result = new ArrayList<SortableValue>();
 					for (String i : all)
-						result.add(new StringPair(key, i));
+						result.add(new SortableValue(key, i));
 //			System.out.println(" ## before sort: " + (bean.getCurrentThreadCpuTime() - start));
 //					Collections.sort(result, key);
 //			System.out.println(" ## after sort: " + (bean.getCurrentThreadCpuTime() - start));
-					return new HashList<StringPair>(result);
+					return new HashList<SortableValue>(result);
 //			}
 //			finally
 //			{
@@ -287,7 +287,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			}
 			else
 			{
-				HashList<StringPair> stringPairs = enumsThatExist((BugAspects) parent);
+				HashList<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
 				if (stringPairs==null)
 				{
 					//XXX-Threading difficulties-stringpairs is null somehow
@@ -318,13 +318,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		}
 
 
-		private static StringPair[] getValues(Sortables key)
+		private static SortableValue[] getValues(Sortables key)
 		{
 			String[] values= key.getAllSorted();
-			StringPair[] result = new StringPair[values.length];
+			SortableValue[] result = new SortableValue[values.length];
 			for (int i = 0; i < values.length; i++)
 			{
-				result[i] = new StringPair(key, values[i]);
+				result[i] = new SortableValue(key, values[i]);
 			}
 			return result;
 
@@ -517,8 +517,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			BugSet.setAsRootAndCache(data);//FIXME:  Should this be in resetData?  Does this allow our main list to not be the same as the data in our tree?
 			root.setCount(data.size());
 
-//			for (TreeModelListener l: listeners)
-//				l.treeStructureChanged(new TreeModelEvent(this,new Object[]{root}));
 			rebuild();
 		}
 
@@ -680,7 +678,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				for (int y=0; y<=x;y++)
 				{
 					Sortables s = order.get(y);
-					toBug[x].add(new StringPair(s,s.getFrom(b)));
+					toBug[x].add(new SortableValue(s,s.getFrom(b)));
 				}
 			}
 			//Add this array as elements of the path
@@ -856,7 +854,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				for (int y=0; y<=x;y++)
 				{
 					Sortables s = order.get(y);
-					toBug[x].add(new StringPair(s,stringsToBranch.get(y)));
+					toBug[x].add(new SortableValue(s,stringsToBranch.get(y)));
 				}
 			}
 

@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.gui2.SortableStringComparator;
 
 /**
@@ -52,8 +52,8 @@ import edu.umd.cs.findbugs.gui2.SortableStringComparator;
 public class BugSet implements Iterable<BugLeafNode>{
 
 	private HashList<BugLeafNode> mainList;
-	private HashMap<StringPair,BugSet> doneMap;
-	private HashMap<StringPair,Boolean>   doneContainsMap;
+	private HashMap<SortableValue,BugSet> doneMap;
+	private HashMap<SortableValue,Boolean>   doneContainsMap;
 	private HashMap<Sortables,HashList<String>> sortablesToStrings;
 
 
@@ -90,8 +90,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 	BugSet(Collection<? extends BugLeafNode> filteredSet)
 	{
 		this.mainList=new HashList<BugLeafNode>(filteredSet);
-		doneMap=new HashMap<StringPair,BugSet>();
-		doneContainsMap=new HashMap<StringPair,Boolean>();
+		doneMap=new HashMap<SortableValue,BugSet>();
+		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		cacheSortables();
 	}
 
@@ -182,8 +182,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 	BugSet(BugSet copySet)
 	{
 		this.mainList=copySet.mainList;
-		doneMap=new HashMap<StringPair,BugSet>();
-		doneContainsMap=new HashMap<StringPair,Boolean>();
+		doneMap=new HashMap<SortableValue,BugSet>();
+		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		cacheSortables();
 	}
 
@@ -200,7 +200,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 * @param keyValuePair
 	 * @return
 	 */
-	BugSet query(StringPair keyValuePair)
+	BugSet query(SortableValue keyValuePair)
 	{
 		if (doneMap.containsKey(keyValuePair))
 			return doneMap.get(keyValuePair);
@@ -248,7 +248,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 * @param keyValuePair
 	 * @return true if a bug leaf from filterNoCache() matches the pair
 	 */	
-	public boolean contains(StringPair keyValuePair)
+	public boolean contains(SortableValue keyValuePair)
 	{
 		if (doneContainsMap.containsKey(keyValuePair))
 			return doneContainsMap.get(keyValuePair);
@@ -272,7 +272,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	public BugSet query(BugAspects a)
 	{
 		BugSet result=this;
-		for (StringPair sp:a)
+		for (SortableValue sp:a)
 		{
 			result=result.query(sp);
 		}
@@ -309,8 +309,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 	BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables)
 	{
 		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
-		doneMap=new HashMap<StringPair,BugSet>();
-		doneContainsMap=new HashMap<StringPair,Boolean>();
+		doneMap=new HashMap<SortableValue,BugSet>();
+		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		if (cacheSortables)
 			cacheSortables();
 	}

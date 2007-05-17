@@ -27,7 +27,7 @@ import javax.swing.tree.TreePath;
  */
 public interface FilterListener
 {
-	enum Action {FILTERING, UNFILTERING, SUPPRESSING, UNSUPPRESSING};
+	enum Action {FILTERING, UNFILTERING, @Deprecated SUPPRESSING, UNSUPPRESSING};
 
 
 	public void clearCache();

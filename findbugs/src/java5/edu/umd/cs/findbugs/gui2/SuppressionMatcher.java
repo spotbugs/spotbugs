@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 /**
  * A list of all bugs to filter out, only we call it suppressing them
  */
+@Deprecated
 public class SuppressionMatcher extends ArrayList<BugInstance> implements Matcher
 {
 	private static final long serialVersionUID = -689204051024507484L;

@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**
  * A useful enum for dealing with all the types of filterable and sortable data in BugInstances
@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  * @author Reuven
  */
 
-public enum Sortables implements Comparator<StringPair>
+public enum Sortables implements Comparator<SortableValue>
 {
 
 	FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version"))
@@ -73,7 +73,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			// Numerical (zero is first)
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
@@ -110,7 +110,7 @@ public enum Sortables implements Comparator<StringPair>
 			}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			if (one.value.equals(two.value)) return 0;
 
@@ -149,7 +149,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			// Numerical
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
@@ -164,7 +164,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			// If both have dollar signs and are of the same outer class, compare the numbers after the dollar signs.
 			try
@@ -257,7 +257,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			return formatValue(one.value).compareTo(formatValue(two.value));
 		}
@@ -299,7 +299,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 
 		@Override
-		public int compare(StringPair one, StringPair two)
+		public int compare(SortableValue one, SortableValue two)
 		{
 			throw new UnsupportedOperationException();
 		}
@@ -333,7 +333,7 @@ public enum Sortables implements Comparator<StringPair>
 		return value;
 	}
 
-	public int compare(StringPair one, StringPair two)
+	public int compare(SortableValue one, SortableValue two)
 	{
 		// Lexicographical by default
 		return one.value.compareTo(two.value);
@@ -347,9 +347,9 @@ public enum Sortables implements Comparator<StringPair>
 	public String[] getAllSorted(BugSet set)
 	{
 		String[] values = getAll(set);
-		StringPair[] pairs = new StringPair[values.length];
+		SortableValue[] pairs = new SortableValue[values.length];
 		for (int i = 0; i < values.length; i++)
-			pairs[i] = new StringPair(this, values[i]);
+			pairs[i] = new SortableValue(this, values[i]);
 		Arrays.sort(pairs, this);
 		for (int i = 0; i < values.length; i++)
 			values[i] = pairs[i].value;
@@ -363,7 +363,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			public int compare(BugLeafNode one, BugLeafNode two)
 			{
-				return key.compare(new StringPair(key, key.getFrom(one.getBug())), new StringPair(key, key.getFrom(two.getBug())));
+				return key.compare(new SortableValue(key, key.getFrom(one.getBug())), new SortableValue(key, key.getFrom(two.getBug())));
 			}
 		};
 	}

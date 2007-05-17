@@ -76,7 +76,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -348,8 +348,8 @@ public class PreferencesFrame extends FBDialog {
 
 					if (ProjectSettings.getInstance().getAllMatchers().match(b))
 					{
-						TreePath fullPathToBug=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).getPathToNewlyUnsuppressedBug(b);
-						FilterMatcher.notifyListeners(FilterListener.Action.UNSUPPRESSING,fullPathToBug);				
+						TreePath fullPathToBug=(MainFrame.getInstance().getBugTreeModel()).getPathToNewlyUnsuppressedBug(b);
+						FilterActivity.notifyListeners(FilterListener.Action.UNSUPPRESSING,fullPathToBug);				
 					}
 				}
 

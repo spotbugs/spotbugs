@@ -23,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 
 /**
@@ -55,7 +55,7 @@ public class BugLeafNode {
 		return bug.getMessageWithoutPrefix();
 	}
 
-	public boolean matches(StringPair keyValuePair) {
+	public boolean matches(SortableValue keyValuePair) {
 /*		
 		try
 		{
@@ -98,7 +98,7 @@ public class BugLeafNode {
 	public boolean matches(BugAspects aspects) {
 		if(aspects.size() == 0)
 			return true;
-		for(BugAspects.StringPair strPair : aspects){
+		for(BugAspects.SortableValue strPair : aspects){
 			if(!matches(strPair))
 				return false;
 		}
