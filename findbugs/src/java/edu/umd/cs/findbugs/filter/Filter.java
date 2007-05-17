@@ -75,7 +75,7 @@ public class Filter extends OrMatcher {
 		disabled.put(m, true);
 	}
 	public boolean isEnabled(Matcher m) {
-		return disabled.containsKey(m);
+		return !disabled.containsKey(m);
 	}
 	public void enable(Matcher m) {
 		disabled.remove(m);
@@ -100,6 +100,10 @@ public class Filter extends OrMatcher {
         }
 	}
 
+	
+	public boolean contains(Matcher child) {
+		return children.contains(child);
+	}
 	@Override
 	public void addChild(Matcher child) {
 		super.addChild(child);
@@ -110,7 +114,7 @@ public class Filter extends OrMatcher {
 		Iterator<Matcher> i = childIterator();
 		while (i.hasNext()) {
 			Matcher child = i.next();
-			if (!disabled.containsKey(child) 
+			if (isEnabled(child) 
 					&& child.match(bugInstance))
 				return true;
 		}

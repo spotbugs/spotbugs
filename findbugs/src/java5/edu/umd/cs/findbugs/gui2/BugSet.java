@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.gui2.SortableStringComparator;
@@ -129,7 +130,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		ArrayList<BugLeafNode> bugNodes=new ArrayList<BugLeafNode>();
 		for(BugLeafNode p:mainList)
 		{
-			if (ProjectSettings.getInstance().getAllMatchers().match(p.getBug()))
+			if (ProjectSettings.getInstance().getSuppressionFilter().match(p.getBug()))
 				bugNodes.add(p);
 		}
 
@@ -165,7 +166,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	/** used to update the status bar in mainframe with the number of bugs that are filtered out */ 
 	static int countFilteredBugs()
 	{
-		CompoundMatcher cm=ProjectSettings.getInstance().getAllMatchers();
+		Filter cm=ProjectSettings.getInstance().getSuppressionFilter();
 		int result = 0;
 		for (BugLeafNode bug : mainBugSet.mainList)
 			if (!cm.match(bug.getBug()))
@@ -308,7 +309,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 
 	BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables)
 	{
-		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
+		this.mainList=new HashList<BugLeafNode>(filteredSet);
 		doneMap=new HashMap<SortableValue,BugSet>();
 		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		if (cacheSortables)
@@ -318,7 +319,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	public BugSet filterNoCache()
 	{
 
-		Matcher m=ProjectSettings.getInstance().getAllMatchers();
+		Matcher m=ProjectSettings.getInstance().getSuppressionFilter();
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
 		for(BugLeafNode p:mainList)
 		{

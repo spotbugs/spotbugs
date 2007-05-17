@@ -30,8 +30,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import sun.security.action.GetPropertyAction;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
 /**
@@ -96,10 +99,6 @@ public class ProjectSettings implements Serializable
 		{
 			instance = (ProjectSettings) new ObjectInputStream(in).readObject();
 			PreferencesFrame.getInstance().updateFilterPanel();
-			for (BugInstance bug: instance.getSuppressionMatcher())
-			{
-				PreferencesFrame.getInstance().suppressionsChanged(new BugLeafNode(bug));
-			}
 			in.close();
 		}
 		catch (ClassNotFoundException e)
@@ -128,19 +127,10 @@ public class ProjectSettings implements Serializable
 		}
 	}
 
-	SuppressionMatcher getSuppressionMatcher()
-	{
-		return suppressionMatcher;
-	}
 
-	void setSuppressionMatcher(SuppressionMatcher suppressionMatcher)
+	Filter getSuppressionFilter()
 	{
-		this.suppressionMatcher = suppressionMatcher;
-	}
-
-	CompoundMatcher getAllMatchers()
-	{
-		return allMatchers;
+		return MainFrame.getInstance().getProject().getSuppressionFilter();
 	}
 
 	public void addFilter(FilterMatcher filter)

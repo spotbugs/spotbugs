@@ -506,30 +506,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBugPopupMenu() {
 		JPopupMenu popupMenu = new JPopupMenu();
 
-		if (false) {
-		JMenuItem suppressMenuItem = newJMenuItem("menu.suppress", "Suppress this bug");
-
-		suppressMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){				
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				//This MUST be done in this order:
-				//getIndexOfChild relies on the fact that things have not yet been removed from the tree!
-				TreePath path=tree.getSelectionPath();
-				FilterActivity.notifyListeners(FilterListener.Action.SUPPRESSING, path);
-				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
-				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
-				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  
-				clearSourcePane();
-				updateStatusBar();
-
-				setProjectChanged(true);
-			}
-
-		});
-
-		popupMenu.add(suppressMenuItem);
-		}
-
+		
 		JMenuItem filterMenuItem = newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 
 		filterMenuItem.addActionListener(new ActionListener(){
@@ -573,7 +550,7 @@ public class MainFrame extends FBFrame implements LogSync
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 				StackedFilterMatcher sfm = currentSelectedBugAspects.getStackedFilterMatcher();
-				if (!ProjectSettings.getInstance().getAllMatchers().contains(sfm))
+				if (!ProjectSettings.getInstance().getSuppressionFilter().contains(sfm))
 					ProjectSettings.getInstance().addFilter(sfm);
 
 				setProjectChanged(true);
@@ -766,7 +743,7 @@ public class MainFrame extends FBFrame implements LogSync
 		editMenu.addSeparator();
 		//editMenu.add(selectAllMenuItem);
 //		editMenu.addSeparator();
-		if (!MAC_OS_X) {
+		if (true || !MAC_OS_X) {
 			// Preferences goes in Findbugs menu and is handled by OSXAdapter
 			editMenu.add(preferencesMenuItem);
 		}

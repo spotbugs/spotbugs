@@ -21,18 +21,19 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class CompoundMatcher implements Matcher {
-	private List<Matcher> childList = new LinkedList<Matcher>();
+	protected LinkedHashSet<Matcher> children = new LinkedHashSet<Matcher>();
 
 	@Override
 	public int hashCode() {
 		int result = this.getClass().hashCode();
-		for(Matcher m : childList) 
+		for(Matcher m : children) 
 			result += m.hashCode();
 		return result;
 	}
@@ -41,28 +42,28 @@ public abstract class CompoundMatcher implements Matcher {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 		CompoundMatcher m = (CompoundMatcher) o;
-		return childList.equals(m.childList);
+		return children.equals(m.children);
 	}
 	public int numberChildren() {
-		return childList.size();
+		return children.size();
 	}
 	public void addChild(Matcher child) {
-		childList.add(child);
+		children.add(child);
 	}
 
 	public Iterator<Matcher> childIterator() {
-		return childList.iterator();
+		return children.iterator();
 	}
 	public void writeChildrenXML(XMLOutput xmlOutput)  throws IOException {
-		for(Matcher m : childList) 
+		for(Matcher m : children) 
 			m.writeXML(xmlOutput, false);
 	}
 	
 	@Override
 	public String toString() {
-		if (childList.isEmpty()) return "";
+		if (children.isEmpty()) return "";
 		StringBuffer buf = new StringBuffer();
-		for(Matcher m : childList) 
+		for(Matcher m : children) 
 			buf.append(m).append(" ");
 		buf.setLength(buf.length()-1);
 		return buf.toString();

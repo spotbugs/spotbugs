@@ -43,12 +43,10 @@ public class HashList<E> extends ArrayList<E>
 
 	public HashList()
 	{
-		super();
 	}
 
 	public HashList(Collection<? extends E> c)
 	{
-		super();
 		addAll(c);
 	}
 

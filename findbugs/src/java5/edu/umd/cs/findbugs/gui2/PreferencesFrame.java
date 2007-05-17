@@ -137,7 +137,6 @@ public class PreferencesFrame extends FBDialog {
 
 		mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());		
 
-		mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions_tab", "Suppressions"), createSuppressionPane());
 		MainFrame.getInstance().updateStatusBar();
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
@@ -311,79 +310,7 @@ public class PreferencesFrame extends FBDialog {
 		fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
 	}
 
-	/**
-	 * Create list of particular bugs that are suppressed by
-	 * the user.
-	 * @return
-	 */
-	private JPanel createSuppressionPane() 
-	{
-		JPanel suppressP = new JPanel();
-		suppressP.setLayout(new BorderLayout());
-		final JTable table=new JTable();
-		JScrollPane scrollable= new JScrollPane(table);
-
-		suppressionTableModel=new UneditableTableModel(new Object[0][4],new String[]{edu.umd.cs.findbugs.L10N.getLocalString("pref.name", "Name"),edu.umd.cs.findbugs.L10N.getLocalString("pref.type", "Type"),edu.umd.cs.findbugs.L10N.getLocalString("pref.description", "Description"),edu.umd.cs.findbugs.L10N.getLocalString("pref.comments", "Comments")});
-		table.setModel(suppressionTableModel);
-		table.doLayout();
-		table.setCellEditor(null);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);	
-		table.setRowHeight((int)(Driver.getFontSize() * 1.25) + table.getRowMargin());
-
-		suppressP.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions", "Bug Suppressions")),BorderLayout.NORTH);
-		suppressP.add(scrollable,BorderLayout.CENTER);
-		suppressP.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions", "Bug Suppressions")));
-		suppressP.add(scrollable);
-
-		ActionListener buttonListener=new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				int[] selectedBugs=table.getSelectedRows();
-				//ArrayList<BugInstance> bugsToUnsuppress=new ArrayList<BugInstance>();
-				for(int x=selectedBugs.length-1;x>=0;x--)
-				{
-					int rowNumber=selectedBugs[x];
-					BugInstance b=ProjectSettings.getInstance().getSuppressionMatcher().get(rowNumber);
-					ProjectSettings.getInstance().getSuppressionMatcher().remove(b);//Suppressions IS the bugSuppression filter
-					suppressionTableModel.removeRow(rowNumber);
-
-					if (ProjectSettings.getInstance().getAllMatchers().match(b))
-					{
-						TreePath fullPathToBug=(MainFrame.getInstance().getBugTreeModel()).getPathToNewlyUnsuppressedBug(b);
-						FilterActivity.notifyListeners(FilterListener.Action.UNSUPPRESSING,fullPathToBug);				
-					}
-				}
-
-				MainFrame.getInstance().updateStatusBar();
-			}
-		};
-
-		unsuppressButton=new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.unsuppress_btn", "Unsuppress"));
-
-		table.addKeyListener(new KeyListener(){
-
-			public void keyTyped(KeyEvent key) 
-			{
-				if ((int)key.getKeyChar()==KeyEvent.VK_BACK_SPACE || (int) key.getKeyChar()==KeyEvent.VK_DELETE)
-					unsuppressButton.doClick();
-			}
-			public void keyPressed(KeyEvent arg0) 
-			{
-			}
-			public void keyReleased(KeyEvent arg0) 
-			{
-			}
-
-		});
-
-//		unsuppressButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),JPanel.WHEN_IN_FOCUSED_WINDOW);
-//		unsuppressButton.getActionMap().put(JPanel.WHEN_IN_FOCUSED_WINDOW,buttonListener);
-
-		unsuppressButton.addActionListener(buttonListener);
-		suppressP.add(unsuppressButton,BorderLayout.SOUTH);
-
-		return suppressP;
-	}
-
+	
 	/**
 	 * Create a JPanel to display the filtering controls.
 	 */
