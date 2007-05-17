@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 
@@ -112,21 +114,61 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
 			DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
-			String projectFile = argument;
-
-			// Convert project file to be an absolute path
-			projectFile = new File(projectFile).getAbsolutePath();
-
-			try {
-				project = new Project();
-				project.read(projectFile);
-			} catch (IOException e) {
-				System.err.println("Error opening " + projectFile);
-				e.printStackTrace(System.err);
-				throw e;
-			}
+			project = readProject(argument);
 		} else {
 			throw new IllegalStateException();
 		}
 	}
+
+	/**
+	 * Read Project from named file.
+	 * 
+     * @param argument command line argument containing project file name
+     * @return the Project
+     * @throws IOException
+     */
+    private Project readProject(String argument) throws IOException {
+	    String projectFileName = argument;
+	    
+	    File projectFile = new File(projectFileName);
+	    
+	    if (projectFile.isDirectory()) {
+	    	// New-style (GUI2) project directory.
+	    	// We read in the bug collection in order to read the project
+	    	// information as a side effect.
+	    	// Inefficient, but effective.
+
+	    	File[] contents = projectFile.listFiles();
+	    	for (File f : contents) {
+	    		if (f.getName().endsWith(".xml")) {
+	    			SortedBugCollection bugCollection = new SortedBugCollection();
+	    			
+	    			try {
+	    				Project project = new Project();
+	    				bugCollection.readXML(f.getPath(), project);
+	    				return project;
+	    			} catch (DocumentException e) {
+	    				throw new IOException("Couldn't read saved XML in project directory", e);
+	    			}
+	    		}
+	    	}
+    		throw new IOException("No saved XML found in project directory " + projectFileName);
+	    	
+	    } else {
+	    	// Old-style (original GUI) project file
+	    	
+	    	// Convert project file to be an absolute path
+	    	projectFileName = new File(projectFileName).getAbsolutePath();
+
+	    	try {
+	    		Project project = new Project();
+	    		project.read(projectFileName);
+	    		return project;
+	    	} catch (IOException e) {
+	    		System.err.println("Error opening " + projectFileName);
+	    		e.printStackTrace(System.err);
+	    		throw e;
+	    	}
+	    }
+    }
 }
