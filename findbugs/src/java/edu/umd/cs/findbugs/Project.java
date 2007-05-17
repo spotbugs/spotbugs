@@ -923,6 +923,8 @@ public class Project implements XMLWriteable {
      * @return Returns the suppressionFilter.
      */
     public Filter getSuppressionFilter() {
+    	if (suppressionFilter == null)
+    		suppressionFilter = new Filter();
 	    return suppressionFilter;
     }
 }

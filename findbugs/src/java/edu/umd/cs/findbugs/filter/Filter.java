@@ -67,6 +67,10 @@ public class Filter extends OrMatcher {
 	}
 	
 	
+	public void setEnabled(Matcher m, boolean value) {
+		if (value) enable(m);
+		else disable(m);
+	}
 	public void disable(Matcher m) {
 		disabled.put(m, true);
 	}
@@ -96,6 +100,11 @@ public class Filter extends OrMatcher {
         }
 	}
 
+	@Override
+	public void addChild(Matcher child) {
+		super.addChild(child);
+		enable(child);
+	}
 	@Override
 	public boolean match(BugInstance bugInstance) {
 		Iterator<Matcher> i = childIterator();

@@ -77,6 +77,8 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.Matcher;
 
 
 /**
@@ -474,11 +476,19 @@ public class PreferencesFrame extends FBDialog {
 	void updateFilterPanel()
 	{
 		ArrayList<JCheckBox> boxes = new ArrayList<JCheckBox>();
-		for (FilterMatcher i : ProjectSettings.getInstance().getAllFilters())
-		{
-			JCheckBox box = new JCheckBox(i.toString());
-			box.addItemListener(new FilterCheckBoxListener(i));
-			box.setSelected(i.isActive());
+		final Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
+		
+		for(Iterator<Matcher> i = f.childIterator(); i.hasNext(); ) {
+			final Matcher m = i.next();
+			JCheckBox box = new JCheckBox(m.toString());
+			box.addItemListener(new ItemListener(){
+				public void itemStateChanged(ItemEvent evt) {
+					f.setEnabled(m, ((JCheckBox) evt.getSource()).isSelected());
+					MainFrame.getInstance().updateStatusBar();
+					MainFrame.getInstance().setProjectChanged(true);
+	                
+                }});
+			box.setSelected(f.isEnabled(m));
 			boxes.add(box);
 		}
 
@@ -514,6 +524,7 @@ public class PreferencesFrame extends FBDialog {
 			MainFrame.getInstance().setProjectChanged(true);
 		}	
 	}
+
 
 	public void suppressionsChanged(BugLeafNode bugLeaf)
 	{

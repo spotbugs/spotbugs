@@ -1906,6 +1906,9 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 	}	
 
+	public Project getProject() {
+		return curProject;
+	}
 	public void setProject(Project p) {
 		curProject=p;
 	}

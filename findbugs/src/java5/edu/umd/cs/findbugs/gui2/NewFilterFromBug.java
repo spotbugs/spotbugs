@@ -24,19 +24,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.tree.TreeModel;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.Matcher;
 
 /**
  * Allows you to make a new Filter by right clicking (control clicking) on a bug in the tree
@@ -44,8 +45,7 @@ import edu.umd.cs.findbugs.BugInstance;
 @SuppressWarnings("serial")
 public class NewFilterFromBug extends FBDialog
 {
-	private HashMap<JRadioButton, Sortables> map = new HashMap<JRadioButton, Sortables>();
-	private JRadioButton selectedRadioButton = null;
+	private HashMap<JCheckBox, Sortables> map = new HashMap<JCheckBox, Sortables>();
 	static List<NewFilterFromBug> listOfAllFrames=new ArrayList<NewFilterFromBug>();
 
 	public NewFilterFromBug(final BugInstance bug)
@@ -57,20 +57,13 @@ public class NewFilterFromBug extends FBDialog
 
 		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-		ButtonGroup group = new ButtonGroup();
 		for (Sortables s : Sortables.values())
 		{
 			if (s.equals(Sortables.DIVIDER))
 				continue;
-			JRadioButton radio = new JRadioButton(s.toString() + " is " + s.formatValue(s.getFrom(bug)));
-			radio.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt)
-				{
-					selectedRadioButton = (JRadioButton) evt.getSource();
-				}
-			});
+			JCheckBox radio = new JCheckBox(s.toString() + " is " + s.formatValue(s.getFrom(bug)));
+			
 			map.put(radio, s);
-			group.add(radio);
 			center.add(radio);
 		}
 		add(center, BorderLayout.CENTER);
@@ -81,18 +74,16 @@ public class NewFilterFromBug extends FBDialog
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				if (selectedRadioButton != null)
+				HashSet<Sortables> set = new HashSet<Sortables>();
+				for(Map.Entry<JCheckBox,Sortables> e : map.entrySet()) {
+					if (e.getKey().isSelected()) set.add(e.getValue());
+				}
+				if (!set.isEmpty() )
 				{
-					FilterMatcher newFilter=new FilterMatcher(map.get(selectedRadioButton), map.get(selectedRadioButton).getFrom(bug));
-					ArrayList<FilterMatcher> filters=ProjectSettings.getInstance().getAllFilters();
-					if (!filters.contains(newFilter))
-					{	
-						ProjectSettings.getInstance().addFilter(newFilter);
-					}
-					else //if filter is already there, turn it on
-					{
-						filters.get(filters.indexOf(newFilter)).setActive(true);
-					}
+					Matcher m = FilterFactory.makeMatcher(set, bug);
+					Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
+					
+					f.addChild(m);
 
 					PreferencesFrame.getInstance().updateFilterPanel();
 					NewFilterFromBug.this.dispose();
