@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1286,20 +1286,18 @@ public class FindNullDeref implements Detector,
 	}
 
 	private boolean isDoomed(Location loc) {
-		if (!MARK_DOOMED) return false;
+		if (!MARK_DOOMED) {
+			return false;
+		}
 
 		ReturnPathTypeDataflow rptDataflow;
 		try {
 			rptDataflow = classContext.getReturnPathTypeDataflow(method);
 
+			ReturnPathType rpt = rptDataflow.getFactAtLocation(loc);
 
-		ReturnPathType rpt = rptDataflow.getFactAtLocation(loc);
-
-		return  !rpt.canReturnNormally();
-		} catch (CFGBuilderException e) {
-			AnalysisContext.logError("Error getting return path type", e);
-		   return false;
-		} catch (DataflowAnalysisException e) {
+			return  !rpt.canReturnNormally();
+		} catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error getting return path type", e);
 			return false;
 		}
