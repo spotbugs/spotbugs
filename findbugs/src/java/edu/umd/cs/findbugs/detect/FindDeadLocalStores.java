@@ -105,6 +105,16 @@ public class FindDeadLocalStores implements Detector {
 		}
 	}
 
+	/**
+	 * System property to enable a feature that suppresses warnings if
+	 * there is at least one live store on the line where the warning
+	 * would be reported.  Eliminates some FPs due to inlining/duplication
+	 * of finally blocks.  But, kills some legitimate warnings where
+	 * there are truly multiple stores on the same line.
+	 */
+	private static final boolean SUPPRESS_IF_AT_LEAST_ONE_LIVE_STORE_ON_LINE =
+		SystemProperties.getBoolean("findbugs.dls.suppressIfOneLiveStore");
+
 	// private static final Set<String> classesAlreadyReportedOn = new
 	// HashSet<String>();
 	/**
@@ -188,12 +198,12 @@ public class FindDeadLocalStores implements Detector {
 		countLocalStoresLoadsAndIncrements(localStoreCount, localLoadCount, localIncrementCount, cfg);
 		for (int i = 0; i < localsThatAreParameters; i++)
 			localStoreCount[i]++;
-		
+
 		// For each source line, keep track of # times
 		// the line was a live store.  This can eliminate false positives
 		// due to inlining of finally blocks.
 		BitSet liveStoreSourceLineSet = new BitSet();
-		
+
 		// Scan method for
 		// - dead stores
 		// - stores to parameters that are dead upon entry to the method
@@ -254,20 +264,20 @@ public class FindDeadLocalStores implements Detector {
 				// Is this a store to a parameter which was dead on entry to the
 				// method?
 				boolean parameterThatIsDeadAtEntry = isParameter
-						&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
+				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 				if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 
 					// TODO: add warning properties?
 					pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
 							storeLive ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
-							javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
-							javaClass.getSourceFileName(), location.getHandle());
+									javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
+											javaClass.getSourceFileName(), location.getHandle());
 					complainedAbout.set(local);
 				}
-				
+
 				if (storeLive)
 					continue;
-				
+
 				TypeFrame typeFrame = typeDataflow.getAnalysis().getFactAtLocation(location);
 				Type typeOfValue = null;
 				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) {
@@ -295,7 +305,7 @@ public class FindDeadLocalStores implements Detector {
 
 				if (typeOfValue instanceof BasicType || Type.STRING.equals(typeOfValue))
 					propertySet.addProperty(DeadLocalStoreProperty.BASE_VALUE);
-				
+
 				// Ignore assignments that were killed by a subsequent
 				// assignment.
 				boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);
@@ -374,7 +384,7 @@ public class FindDeadLocalStores implements Detector {
 
 				if (localStoreCount[local] > 3)
 					propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
-				
+
 				int priority = propertySet.computePriority(NORMAL_PRIORITY);
 				if (priority <= Detector.EXP_PRIORITY) {
 
@@ -407,14 +417,30 @@ public class FindDeadLocalStores implements Detector {
 					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
 			}
 		}
-if(false){ // TODO: need to decide whether or not to enable this		
+
+		suppressWarningsIfOneLiveStoreOnLine(accumulator, liveStoreSourceLineSet);
+
+		accumulator.reportAccumulatedBugs();
+	}
+
+	/**
+	 * If feature is enabled, suppress warnings where there is at least
+	 * one live store on the line where the warning would be reported.
+	 * 
+	 * @param accumulator            BugAccumulator containing warnings for method
+	 * @param liveStoreSourceLineSet bitset of lines where at least one live store was seen
+	 */
+	private void suppressWarningsIfOneLiveStoreOnLine(BugAccumulator accumulator, BitSet liveStoreSourceLineSet) {
+		if (!SUPPRESS_IF_AT_LEAST_ONE_LIVE_STORE_ON_LINE) {
+			return;
+		}
+
 		// Eliminate any accumulated warnings for instructions
 		// that (due to inlining) *can* be live stores.
 	entryLoop:
 		for (Iterator<Map.Entry<BugInstance, List<SourceLineAnnotation>>> i = accumulator.entrySetIterator();
 				i.hasNext(); ) {
 			Map.Entry<BugInstance, List<SourceLineAnnotation>> entry = i.next();
-			
 			for (SourceLineAnnotation annotation : entry.getValue()) {
 				if (liveStoreSourceLineSet.get(annotation.getStartLine())) {
 					// This instruction can be a live store; don't report
@@ -424,8 +450,6 @@ if(false){ // TODO: need to decide whether or not to enable this
 				}
 			}
 		}
-}		
-		accumulator.reportAccumulatedBugs();
 	}
 
 	/**
@@ -517,4 +541,4 @@ if(false){ // TODO: need to decide whether or not to enable this
 	}
 }
 
-// vim:ts=4
+//vim:ts=4
