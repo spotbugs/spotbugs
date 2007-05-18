@@ -145,6 +145,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				String timestamp = attributes.getValue("timestamp");
 				long tsval = parseLong(timestamp, -1L);
 				bugCollection.setTimestamp(tsval);
+				// Read and set timestamp.
+				String analysisTimestamp = attributes.getValue("analysisTimestamp");
+				if (analysisTimestamp != null) { 
+					bugCollection.setAnalysisTimestamp(parseLong(analysisTimestamp, -1L));
+				}
 
 				// Set release name, if present.
 				String releaseName = attributes.getValue("release");
