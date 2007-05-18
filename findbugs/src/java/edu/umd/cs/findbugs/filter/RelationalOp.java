@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public abstract class RelationalOp {
 
-	public abstract boolean check(Comparable x, Comparable y);
+	public abstract <T> boolean check(Comparable<T> x, Comparable<T> y);
 
 	final String value;
 	final String name;
