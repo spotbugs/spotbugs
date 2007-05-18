@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.filter;
 
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 /**
  * Matches a String value against a predefined specification.
  * 
@@ -39,10 +41,19 @@ import java.util.regex.Pattern;
 public class NameMatch {
 
 	private String spec;
-	private String exact;
+	private @CheckForNull String exact;
 
-	private Pattern pattern;
+	private @CheckForNull Pattern pattern;
 
+	@Override
+    public int hashCode() {
+		return spec.hashCode();
+	}
+	@Override
+    public boolean equals(Object o) {
+		if (!(o instanceof NameMatch)) return false;
+		return spec.equals(((NameMatch)o).spec);
+	}
 	public String getValue() {
 		if (exact != null) return exact;
 		return pattern.toString();

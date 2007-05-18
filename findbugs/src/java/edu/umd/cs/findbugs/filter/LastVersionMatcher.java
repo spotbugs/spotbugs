@@ -27,22 +27,11 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 /**
  * Matcher to select BugInstances with a particular last version.
  */
-public class LastVersionMatcher implements Matcher {
+public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	
 	public final static  LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.EQ);
-	final private int version;
-	final private RelationalOp relOp;
-
-	@Override
-    public int hashCode() {
-		return version+relOp.hashCode();
-	}
-	@Override
-    public boolean equals(Object o) {
-		if (!(o instanceof LastVersionMatcher)) return false;
-		LastVersionMatcher m = (LastVersionMatcher)o;
-		return version == m.version && relOp.equals(m.relOp);
-	}
+	
+	
 	public LastVersionMatcher(String versionAsString, String relOpAsString) {
 		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
 	}
@@ -50,9 +39,8 @@ public class LastVersionMatcher implements Matcher {
 		this(Integer.parseInt(versionAsString), relOp);
 	}
 	public LastVersionMatcher(int version, RelationalOp relOp) {
-		this.version = version;
-		this.relOp = relOp;
-}
+		super(version,relOp);
+	}
 	public boolean match(BugInstance bugInstance) {
 		return relOp.check(bugInstance.getLastVersion(), version);
 	}

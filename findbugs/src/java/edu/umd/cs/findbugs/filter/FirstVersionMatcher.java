@@ -27,10 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 /**
  * Matcher to select BugInstances with a particular first version.
  */
-public class FirstVersionMatcher implements Matcher {
-	final private int version;
-	final private RelationalOp relOp;
-
+public class FirstVersionMatcher extends VersionMatcher implements Matcher {
 	public FirstVersionMatcher(String versionAsString, String relOpAsString) {
 		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
 	}
@@ -39,8 +36,7 @@ public class FirstVersionMatcher implements Matcher {
 	}
 	
 	public FirstVersionMatcher(int version, RelationalOp relOp) {
-		this.version = version;
-		this.relOp = relOp;
+		super(version,relOp);
 }
 	public boolean match(BugInstance bugInstance) {
 		return  relOp.check(bugInstance.getFirstVersion(), version);

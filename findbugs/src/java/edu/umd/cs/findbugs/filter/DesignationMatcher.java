@@ -53,6 +53,16 @@ public class DesignationMatcher implements Matcher {
 		return designations.match(bugInstance.getUserDesignationKey());
 	}
 
+	@Override
+    public int hashCode() {
+		return designations.hashCode();
+	}
+	@Override
+    public boolean equals(Object o) {
+		if (!(o instanceof DesignationMatcher)) return false;
+		DesignationMatcher other = (DesignationMatcher) o;
+		return designations.equals(other.designations);
+	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		xmlOutput.startTag("Designation");
 		if (disabled) xmlOutput.addAttribute("disabled","true");

@@ -36,6 +36,15 @@ import edu.umd.cs.findbugs.BugInstance;
 public class StringSetMatch {
 	private Set<String> strings = new HashSet<String>();
 
+	@Override
+    public int hashCode() {
+		return strings.hashCode();
+	}
+	@Override
+    public boolean equals(Object o) {
+		if (!(o instanceof StringSetMatch)) return false;
+		return strings.equals(((StringSetMatch)o).strings);
+	}
 	/**
 	 * Constructor.
 	 * 

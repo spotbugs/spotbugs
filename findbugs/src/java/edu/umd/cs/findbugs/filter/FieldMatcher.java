@@ -24,33 +24,21 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * @author rafal@caltha.pl
  */
-public class FieldMatcher implements Matcher {
-	final private NameMatch name;
-	@CheckForNull final private String signature;
+public class FieldMatcher extends MemberMatcher implements Matcher {
 
 	public FieldMatcher(String name) {
-		this.name = new NameMatch(name);
-		this.signature = null;
+		super(name);
 	}
 
 	public FieldMatcher(String name, String type) {
-		if (name == null) {
-			if (type == null)
-				throw new FilterException("Field element must have either name or type attribute");
-			else
-				name = "~.*"; // any name
-		
-		}
-		this.name = new NameMatch(name);
-		if (type != null)
-			this.signature = SignatureUtil.createFieldSignature(type);
-		else this.signature = null;
+		super(name, SignatureUtil.createFieldSignature(type));
 	}
 
 	public boolean match(BugInstance bugInstance) {
@@ -65,6 +53,7 @@ public class FieldMatcher implements Matcher {
 			return false;
 		return true;
 	}
+	
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature);
 		if (disabled) attributes.addAttribute("disabled", "true");

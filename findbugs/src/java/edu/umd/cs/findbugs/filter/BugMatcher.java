@@ -65,6 +65,16 @@ public class BugMatcher implements Matcher {
 		return result1 || result2 || result3;
 	}
 
+	@Override
+    public int hashCode() {
+		return codes.hashCode() + patterns.hashCode() + categories.hashCode();
+	}
+	@Override
+    public boolean equals(Object o) {
+		if (!(o instanceof BugMatcher)) return false;
+		BugMatcher other = (BugMatcher) o;
+		return codes.equals(other.codes) && patterns.equals(other.patterns) && categories.equals(other.categories);
+	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		xmlOutput.startTag("Bug");
 		if (disabled) xmlOutput.addAttribute("disabled", "true");

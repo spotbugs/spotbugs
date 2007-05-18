@@ -27,6 +27,9 @@ import java.util.StringTokenizer;
 public class SignatureUtil {
 
 	public static String createMethodSignature(String params, String returns) {
+		if (params == null && returns == null) return null;
+		if (params == null) throw new NullPointerException("params is null but returns is nonnull");
+		if (returns == null) throw new NullPointerException("returns is null but params is nonnull");
 		StringBuffer buf = new StringBuffer();
 
 		buf.append('(');
@@ -42,6 +45,7 @@ public class SignatureUtil {
 	}
 
 	public static String createFieldSignature(String type) {
+		if (type == null) return null;
 		return typeToSignature(type);
 	}
 

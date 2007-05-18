@@ -46,6 +46,16 @@ public class PriorityMatcher implements Matcher {
 			this.priority = Integer.parseInt(priorityAsString);
 	}
 
+	@Override
+    public int hashCode() {
+		return priority;
+	}
+	@Override
+    public boolean equals(Object o) {
+		if (!(o instanceof PriorityMatcher)) return false;
+		PriorityMatcher other = (PriorityMatcher) o;
+		return priority == other.priority;
+	}
 	public boolean match(BugInstance bugInstance) {
 		return bugInstance.getPriority() == priority;
 	}
