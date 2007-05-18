@@ -29,20 +29,20 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public class FirstVersionMatcher extends VersionMatcher implements Matcher {
 	public FirstVersionMatcher(String versionAsString, String relOpAsString) {
-		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
+		this(Long.parseLong(versionAsString), RelationalOp.byName(relOpAsString));
 	}
 	public FirstVersionMatcher(String versionAsString, RelationalOp relOp) {
-		this(Integer.parseInt(versionAsString), relOp);
+		this(Long.parseLong(versionAsString), relOp);
 	}
 	
-	public FirstVersionMatcher(int version, RelationalOp relOp) {
+	public FirstVersionMatcher(long version, RelationalOp relOp) {
 		super(version,relOp);
 }
 	public boolean match(BugInstance bugInstance) {
 		return  relOp.check(bugInstance.getFirstVersion(), version);
 	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName());
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",relOp.getName());
 		if (disabled) attributes.addAttribute("disabled", "true");
 		xmlOutput.openCloseTag("FirstVersion", attributes);
 	}

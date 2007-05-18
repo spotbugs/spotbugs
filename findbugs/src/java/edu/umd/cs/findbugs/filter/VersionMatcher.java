@@ -24,12 +24,12 @@ package edu.umd.cs.findbugs.filter;
  */
 public class VersionMatcher {
 
-	protected final int version;
+	protected final long version;
 	protected final RelationalOp relOp;
 	
 	@Override
     public int hashCode() {
-		return version+relOp.hashCode();
+		return (int)version+relOp.hashCode();
 	}
 	@Override
     public boolean equals(Object o) {
@@ -38,7 +38,7 @@ public class VersionMatcher {
 		return version == m.version && relOp.equals(m.relOp);
 	}
 
-	public VersionMatcher(int version, RelationalOp relOp) {
+	public VersionMatcher(long version, RelationalOp relOp) {
 		this.version = version;
 		this.relOp = relOp;
 	}

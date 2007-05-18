@@ -33,19 +33,19 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	
 	
 	public LastVersionMatcher(String versionAsString, String relOpAsString) {
-		this(Integer.parseInt(versionAsString), RelationalOp.byName(relOpAsString));
+		this(Long.parseLong(versionAsString), RelationalOp.byName(relOpAsString));
 	}
 	public LastVersionMatcher(String versionAsString, RelationalOp relOp) {
-		this(Integer.parseInt(versionAsString), relOp);
+		this(Long.parseLong(versionAsString), relOp);
 	}
-	public LastVersionMatcher(int version, RelationalOp relOp) {
+	public LastVersionMatcher(long version, RelationalOp relOp) {
 		super(version,relOp);
 	}
 	public boolean match(BugInstance bugInstance) {
 		return relOp.check(bugInstance.getLastVersion(), version);
 	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Integer.toString(version)).addAttribute("relOp",relOp.getName());
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("value", Long.toString(version)).addAttribute("relOp",relOp.getName());
 		if (disabled) attributes.addAttribute("disabled", "true");
 		xmlOutput.openCloseTag("LastVersion", attributes);
 	}
