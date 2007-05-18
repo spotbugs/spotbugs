@@ -461,6 +461,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 			updateStatusBar();
 		}
+		PreferencesFrame.getInstance().updateFilterPanel();
 		setProjectChanged(false);
 		reconfigMenuItem.setEnabled(true);
 		newProject();
