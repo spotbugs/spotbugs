@@ -193,7 +193,6 @@ public class AboutDialog extends javax.swing.JDialog {
 		getContentPane().add(jSeparator1, gridBagConstraints);
 
 		okButton.setMnemonic('O');
-		okButton.setText("OK");
 		okButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {

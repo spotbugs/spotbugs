@@ -110,6 +110,8 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
@@ -174,7 +176,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 
-	private static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 	final static String WINDOW_MODIFIED = "windowModified";
 
 	NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
@@ -549,10 +551,12 @@ public class MainFrame extends FBFrame implements LogSync
 			{
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
-				StackedFilterMatcher sfm = currentSelectedBugAspects.getStackedFilterMatcher();
-				if (!ProjectSettings.getInstance().getSuppressionFilter().contains(sfm))
-					ProjectSettings.getInstance().addFilter(sfm);
-
+				Matcher m = currentSelectedBugAspects.getMatcher();
+				Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
+				suppressionFilter.addChild(m);
+				PreferencesFrame.getInstance().updateFilterPanel();
+				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+				
 				setProjectChanged(true);
 			}
 		});

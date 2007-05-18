@@ -178,12 +178,7 @@ public class NewFilterFrame extends FBDialog
 				close();
 			}
 		});
-		south.setLayout(new BoxLayout(south, BoxLayout.X_AXIS));
-		south.add(Box.createHorizontalGlue());
-		south.add(okButton);
-		south.add(Box.createHorizontalStrut(2));
-		south.add(cancelButton);
-		south.add(Box.createHorizontalStrut(3));
+		Util.addOkAndCancelButtons(south, okButton, cancelButton);
 
 		list.addMouseListener(new MouseAdapter()
 		{

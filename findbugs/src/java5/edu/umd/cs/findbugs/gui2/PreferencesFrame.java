@@ -328,7 +328,6 @@ public class PreferencesFrame extends FBDialog {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 1;
-		//filterPanel.add(new JScrollPane(new CheckBoxList(new JCheckBox[]{ new JCheckBox("Dummy Filter #1 with an extremely long name that should necessitate the use of a scroll bar"), new JCheckBox("Dummy Filter #2") })), gbc);
 		filterPanel.add(new JScrollPane(filterCheckBoxList), gbc);
 		updateFilterPanel();
 
@@ -409,7 +408,10 @@ public class PreferencesFrame extends FBDialog {
 			box.addItemListener(new ItemListener(){
 				public void itemStateChanged(ItemEvent evt) {
 					boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
+					boolean wasSelected = f.isEnabled(m);
+					if (isSelected == wasSelected) return;
 					f.setEnabled(m, isSelected);
+					FilterActivity.notifyListeners(isSelected ? FilterListener.Action.FILTERING :  FilterListener.Action.UNFILTERING, null);
 					MainFrame.getInstance().updateStatusBar();
 					MainFrame.getInstance().setProjectChanged(true);
 	                

@@ -69,7 +69,7 @@ public class NewFilterFromBug extends FBDialog
 		add(center, BorderLayout.CENTER);
 
 		JPanel south = new JPanel();
-		JButton okButton = new JButton("OK");
+		JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -91,7 +91,7 @@ public class NewFilterFromBug extends FBDialog
 				}
 			}
 		});
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -99,11 +99,7 @@ public class NewFilterFromBug extends FBDialog
 				NewFilterFromBug.this.dispose();
 			}
 		});
-		south.setLayout(new BoxLayout(south, BoxLayout.X_AXIS));
-		south.add(Box.createHorizontalGlue());
-		south.add(okButton);
-		south.add(Box.createHorizontalStrut(5));
-		south.add(cancelButton);
+		Util.addOkAndCancelButtons(south, okButton, cancelButton);
 		add(south, BorderLayout.SOUTH);
 
 		pack();
