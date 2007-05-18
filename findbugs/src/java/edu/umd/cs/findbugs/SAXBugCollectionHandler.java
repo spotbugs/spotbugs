@@ -113,13 +113,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 	}
 
+	private static boolean DEBUG = false;
 	@Override
 	public void startElement(String uri, String name, String qName, Attributes attributes)
 	throws SAXException {
 		// URI should always be empty.
 		// So, qName is the name of the element.
 
-		if (false) System.out.println(elementStack + " " + qName + " " + matcherStack);
+		if (DEBUG) System.out.println(elementStack + " " + qName + " " + matcherStack);
 		if (discardedElement(qName)) {
 			nestingOfIgnoredElements++;
 		} else if (nestingOfIgnoredElements > 0) {
@@ -249,11 +250,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						String sourceFile =  attributes.getValue("sourceFile");
 						bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
 					}
-				}  else if (isTopLevelFilter(outerElement) ) {
-					if (qName.equals("Match")) {
-						pushCompoundMatcherAsChild(new AndMatcher());
-					}
-				} else if (outerElement.equals("Match") || outerElement.equals("And") || outerElement.equals("Or")) {
+
+				} else if (isTopLevelFilter(outerElement) || outerElement.equals("Match") || outerElement.equals("And") || outerElement.equals("Or")) {
 					parseMatcher(qName, attributes);
 				} else if (outerElement.equals("ClassFeatures")) {
 					if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
@@ -355,8 +353,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else if (qName.equals("Or")) {
 	    	CompoundMatcher matcher = new OrMatcher();
 	    	pushCompoundMatcherAsChild(matcher);
-	    	
-	    } else if (qName.equals("And")) {
+	    } else if (qName.equals("And") || qName.equals("Match")) {
 	    	AndMatcher matcher = new AndMatcher();
 	    	pushCompoundMatcherAsChild(matcher);
 	    }
@@ -513,7 +510,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	public void endElement(String uri, String name, String qName) throws SAXException {
 		// URI should always be empty.
 		// So, qName is the name of the element.
-		if (false) System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
+		if (DEBUG) System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
 		
 		if (discardedElement(qName)) {
 			nestingOfIgnoredElements--;
