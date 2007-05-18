@@ -120,7 +120,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		// URI should always be empty.
 		// So, qName is the name of the element.
 
-		if (DEBUG) System.out.println(elementStack + " " + qName + " " + matcherStack);
 		if (discardedElement(qName)) {
 			nestingOfIgnoredElements++;
 		} else if (nestingOfIgnoredElements > 0) {
@@ -316,6 +315,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		matcherStack.push(m);
 	}
 	private void parseMatcher(String qName, Attributes attributes) throws SAXException {
+		if (DEBUG) System.out.println(elementStack + " " + qName + " " + matcherStack);
+		
 	    if (qName.equals("Bug")) {
 	    	addMatcher(new BugMatcher(attributes.getValue("code"),
 	    			attributes.getValue("pattern"),
@@ -510,7 +511,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	public void endElement(String uri, String name, String qName) throws SAXException {
 		// URI should always be empty.
 		// So, qName is the name of the element.
-		if (DEBUG) System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
 		
 		if (discardedElement(qName)) {
 			nestingOfIgnoredElements--;
@@ -519,9 +519,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		} else if (elementStack.size() > 1) {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
-			if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") )
+			if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") || isTopLevelFilter(qName)) {
+				if (DEBUG) System.out.println("  ending " + elementStack + " " + qName + " " + matcherStack);
+				
 				matcherStack.pop();
-			else if (outerElement.equals(BUG_COLLECTION)) {
+			} else if (outerElement.equals(BUG_COLLECTION)) {
 				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance, false);
 				   // TODO: check this
