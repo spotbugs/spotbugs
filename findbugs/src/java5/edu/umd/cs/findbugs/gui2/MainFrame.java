@@ -747,7 +747,7 @@ public class MainFrame extends FBFrame implements LogSync
 		editMenu.addSeparator();
 		//editMenu.add(selectAllMenuItem);
 //		editMenu.addSeparator();
-		if (true || !MAC_OS_X) {
+		if (!MAC_OS_X) {
 			// Preferences goes in Findbugs menu and is handled by OSXAdapter
 			editMenu.add(preferencesMenuItem);
 		}
