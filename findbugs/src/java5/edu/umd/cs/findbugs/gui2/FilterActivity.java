@@ -25,6 +25,8 @@ import java.util.HashSet;
 
 import javax.swing.tree.TreePath;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 /**
  * @author pugh
  */
@@ -43,8 +45,8 @@ public class FilterActivity {
     }
 
 	public static void notifyListeners(FilterListener.Action whatsGoingOnCode,
-    		TreePath optionalPath) {
-		Collection<FilterListener> listeners = new ArrayList<FilterListener>( FilterActivity.listeners);
+    		@CheckForNull TreePath optionalPath) {
+		Collection<FilterListener> listeners = new ArrayList<FilterListener>(FilterActivity.listeners);
     	switch (whatsGoingOnCode) {
     	case FILTERING:
     	case UNFILTERING:

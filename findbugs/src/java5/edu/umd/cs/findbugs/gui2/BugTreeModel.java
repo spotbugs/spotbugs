@@ -46,6 +46,7 @@ import javax.swing.tree.TreePath;
 
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /*
@@ -90,7 +91,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 /**
  * The treeModel for our JTree
  */
-	public class BugTreeModel implements TreeModel, TableColumnModelListener, FilterListener, TreeExpansionListener
+	public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeExpansionListener
 	{	
 		private BugAspects root = new BugAspects();
 		private SorterTableColumnModel st;
@@ -114,7 +115,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			this.data = data;
 			BugSet.setAsRootAndCache(this.data);
 			root.setCount(data.size());
-			FilterActivity.addFilterListener(this);
+			FilterActivity.addFilterListener(bugTreeFilterListener);
 			if (DEBUG) 
 				this.addTreeModelListener(new TreeModelListener() {
 
@@ -154,7 +155,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public void getOffListenerList()
 		{
-			FilterActivity.removeFilterListener(this);
+			FilterActivity.removeFilterListener(bugTreeFilterListener);
 			st.removeColumnModelListener(this);
 			tree.removeTreeExpansionListener(this);
 		}
@@ -164,7 +165,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			return root;
 		}
 
-		public Object getChild(Object o, int index)
+		public @NonNull Object getChild(Object o, int index) {
+			Object result = getChild0(o,index);
+			assert o != null : "child " + index + " of " + o + " is null";
+			return result;
+		}
+		
+		public @NonNull Object getChild0(Object o, int index)
 		{
 			BugAspects a = (BugAspects) o;
 			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
@@ -366,6 +373,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		 */
 		private void rebuild()
 		{
+			if (TRACE) System.out.println("rebuilding bug tree model");
 			PreferencesFrame.getInstance().freeze();
 			st.freezeOrder();
 			MainFrame.getInstance().setRebuilding(true);
@@ -506,13 +514,18 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			}
 		}
 
+		public static boolean TRACE = false;
 		public void resetData()//FIXME:  Does this need a setAsRootAndCache() on the new BugSet?
 		{
+			if (TRACE) System.out.println("Reseting data in bug tree model");
 			data=new BugSet(data);
 		}
 
+		FilterListener bugTreeFilterListener = new MyFilterListener();
+		class MyFilterListener implements FilterListener {
 		public void clearCache()
 		{
+			if (TRACE) System.out.println("clearing cache in bug tree model");
 			resetData();
 			BugSet.setAsRootAndCache(data);//FIXME:  Should this be in resetData?  Does this allow our main list to not be the same as the data in our tree?
 			root.setCount(data.size());
@@ -522,6 +535,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public void unsuppressBug(TreePath path)
 		{
+			if (TRACE) System.out.println("unsuppressing bug");
 			if (path==null)
 				return;
 			TreePath pathToFirstDeleted=null;
@@ -587,6 +601,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public void suppressBug(TreePath path)
 		{
+			if (TRACE) System.out.println("unsuppressing bug");
 			Debug.println(path);
 			Object[] objPath=path.getParentPath().getPath();
 			ArrayList<Object> reconstruct=new ArrayList<Object>();
@@ -614,7 +629,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 			if (path.getParentPath()==null)//They are suppressing the last bug in the tree
 			{
-				event=new TreeModelEvent(this,path,new int[]{0},new Object[]{this.getChild(root,0)});
+				event=new TreeModelEvent(this,path,new int[]{0},new Object[]{BugTreeModel.this.getChild(root,0)});
 				root.setCount(0);
 			}
 			else
@@ -643,7 +658,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				l.treeNodesRemoved(event);
 			}
 		}
-
+		}
 		void treeNodeChanged(TreePath path)
 		{
 			Debug.println("Tree Node Changed: " + path);

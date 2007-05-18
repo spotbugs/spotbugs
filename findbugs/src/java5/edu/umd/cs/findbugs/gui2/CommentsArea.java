@@ -626,12 +626,12 @@ public class CommentsArea {
 
 			theNode.getBug().getNonnullUserDesignation().setDesignationKey(
 					selection);
-			model.suppressBug(path);
+			model.bugTreeFilterListener.suppressBug(path);
 			TreePath unsuppressPath = model.getPathToBug(theNode.getBug());
 			if (unsuppressPath != null)// If choosing their designation has not
 										// moved the bug under any filters
 			{
-				model.unsuppressBug(unsuppressPath);
+				model.bugTreeFilterListener.unsuppressBug(unsuppressPath);
 				// tree.setSelectionPath(unsuppressPath);
 			}
 			for (TreePath pathToNode : listOfNodesToReconstruct) {

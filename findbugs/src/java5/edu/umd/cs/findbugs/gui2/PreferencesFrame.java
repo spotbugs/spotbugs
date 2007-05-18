@@ -408,7 +408,8 @@ public class PreferencesFrame extends FBDialog {
 			JCheckBox box = new JCheckBox(m.toString());
 			box.addItemListener(new ItemListener(){
 				public void itemStateChanged(ItemEvent evt) {
-					f.setEnabled(m, ((JCheckBox) evt.getSource()).isSelected());
+					boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
+					f.setEnabled(m, isSelected);
 					MainFrame.getInstance().updateStatusBar();
 					MainFrame.getInstance().setProjectChanged(true);
 	                

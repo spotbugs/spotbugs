@@ -86,6 +86,7 @@ public class NewFilterFromBug extends FBDialog
 					f.addChild(m);
 
 					PreferencesFrame.getInstance().updateFilterPanel();
+					FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 					NewFilterFromBug.this.dispose();
 				}
 			}

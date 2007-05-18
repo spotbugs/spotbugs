@@ -1176,7 +1176,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setupTreeListeners();
 				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
 				MainFrame.this.getSorter().addColumnModelListener(newModel);
-				FilterActivity.addFilterListener(newModel);
+				FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
 				MainFrame.this.setSorting(true);
 
 			}
