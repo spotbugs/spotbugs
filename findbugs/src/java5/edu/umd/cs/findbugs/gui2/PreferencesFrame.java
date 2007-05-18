@@ -102,10 +102,8 @@ public class PreferencesFrame extends FBDialog {
 
 	private static PreferencesFrame instance;
 	private CheckBoxList filterCheckBoxList = new CheckBoxList();
-	private UneditableTableModel suppressionTableModel;
 	private JButton addButton;
-	private JButton unsuppressButton;
-
+	
 	JButton removeButton;
 	JButton removeAllButton;
 	boolean frozen=false;
@@ -453,32 +451,10 @@ public class PreferencesFrame extends FBDialog {
 	}
 
 
-	public void suppressionsChanged(BugLeafNode bugLeaf)
-	{
-		BugInstance b=bugLeaf.getBug();
-		BugPattern bp=b.getBugPattern();
-		Object[] bugData=new Object[suppressionTableModel.getColumnCount()];
-		bugData[0]=b.getPrimarySourceLineAnnotation();
-		bugData[1]=bp.getType();
-		bugData[2]=b.getMessage();
-		bugData[3]=b.getAnnotationText();
-
-		suppressionTableModel.addRow(bugData);
-	}	
-
-	public void clearSuppressions()
-	{
-		int size=suppressionTableModel.getRowCount();
-		for (int x=0; x<size;x++)
-		{
-			suppressionTableModel.removeRow(0);
-		}
-	}
 	void freeze()
 	{
 		frozen=true;
 		filterCheckBoxList.setEnabled(false);
-		unsuppressButton.setEnabled(false);
 		addButton.setEnabled(false);
 		removeButton.setEnabled(false);
 	}
@@ -486,7 +462,6 @@ public class PreferencesFrame extends FBDialog {
 	void thaw()
 	{
 		filterCheckBoxList.setEnabled(true);
-		unsuppressButton.setEnabled(true);
 		addButton.setEnabled(true);
 		removeButton.setEnabled(true);
 		frozen=false;

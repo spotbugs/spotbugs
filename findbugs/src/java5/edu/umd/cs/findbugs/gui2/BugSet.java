@@ -128,9 +128,11 @@ public class BugSet implements Iterable<BugLeafNode>{
 			}
 
 		ArrayList<BugLeafNode> bugNodes=new ArrayList<BugLeafNode>();
+		Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
+		
 		for(BugLeafNode p:mainList)
 		{
-			if (ProjectSettings.getInstance().getSuppressionFilter().match(p.getBug()))
+			if (!suppressionFilter.match(p.getBug()))
 				bugNodes.add(p);
 		}
 
@@ -169,7 +171,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		Filter cm=ProjectSettings.getInstance().getSuppressionFilter();
 		int result = 0;
 		for (BugLeafNode bug : mainBugSet.mainList)
-			if (!cm.match(bug.getBug()))
+			if (cm.match(bug.getBug()))
 				result++;
 
 		return result;
@@ -323,7 +325,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
 		for(BugLeafNode p:mainList)
 		{
-			if (m.match(p.getBug()))
+			if (!m.match(p.getBug()))
 				people.add(p);
 		}
 		return new BugSet(people,false);

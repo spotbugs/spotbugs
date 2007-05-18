@@ -35,6 +35,7 @@ import sun.security.action.GetPropertyAction;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
 /**
@@ -49,21 +50,18 @@ public class ProjectSettings implements Serializable
 	private ProjectSettings() 
 	{
 		allMatchers = new CompoundMatcher();
-		suppressionMatcher = new SuppressionMatcher();
 		filters = new ArrayList<FilterMatcher>();
-		allMatchers.add(suppressionMatcher);
 	}
 	private static ProjectSettings instance;
 	public static ProjectSettings newInstance()
 	{
 		instance = new ProjectSettings();
-		DeadBugFilter dbf=new DeadBugFilter(Sortables.LASTVERSION, "-1", FilterMatcher.FilterWhere.FILTER_ALL_BUT);
+		LastVersionMatcher dbf= LastVersionMatcher.DEAD_BUG_MATCHER;
+		
 		//Important: add the deadbug filter directly to filters and allmatchers, dont go through addFilter, otherwise it causes a
 		//tree to rebuild.
-		instance.filters.add(dbf);
-		instance.allMatchers.add(dbf);
+		MainFrame.getInstance().getProject().getSuppressionFilter().addChild(dbf);
 		PreferencesFrame.getInstance().updateFilterPanel();
-		PreferencesFrame.getInstance().clearSuppressions();
 		return instance;
 	}
 	public static ProjectSettings getInstance()
@@ -73,11 +71,7 @@ public class ProjectSettings implements Serializable
 		return instance;
 	}
 
-	/**
-	 * The matcher suppressing all user-selected bugs.
-	 */
-	private SuppressionMatcher suppressionMatcher;
-
+	
 	/**
 	 * The list of all defined filters
 	 */
@@ -130,7 +124,9 @@ public class ProjectSettings implements Serializable
 
 	Filter getSuppressionFilter()
 	{
-		return MainFrame.getInstance().getProject().getSuppressionFilter();
+		Project project = MainFrame.getInstance().getProject();
+		if (project == null) throw new NullPointerException("project is null");
+		return project.getSuppressionFilter();
 	}
 
 	public void addFilter(FilterMatcher filter)

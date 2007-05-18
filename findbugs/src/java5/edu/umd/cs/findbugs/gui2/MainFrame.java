@@ -208,7 +208,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private RecentMenu recentMenuCache;
 	private JMenu recentMenu;
 	private JMenuItem preferencesMenuItem;
-	private Project curProject;
+	private Project curProject = new Project();
 	private JScrollPane treeScrollPane;
 	SourceFinder sourceFinder;
 	private Object lock = new Object();
