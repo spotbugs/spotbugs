@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
@@ -38,16 +39,30 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class FilterFactory {
 
-	public static Matcher makeMatcher(Collection<SortableValue> sortables) {
+	
+	public static Matcher makeOrMatcher(Collection<SortableValue> sortables)
+	{
+		return makeMatcher(sortables,false);
+	}
+	public static Matcher makeAndMatcher(Collection<SortableValue> sortables) {
+		return makeMatcher(sortables,true);
+	}
+	private static Matcher makeMatcher(Collection<SortableValue> sortables, boolean andOr)
+	{
 		if (sortables.size() == 1) {
 			for (SortableValue s : sortables)
 				return makeMatcher(s);
 		}
-		AndMatcher matcher = new AndMatcher();
+		edu.umd.cs.findbugs.filter.CompoundMatcher matcher;
+		if (andOr==true)
+			matcher = new AndMatcher();
+		else
+			matcher = new OrMatcher();
 		for (SortableValue s : sortables)
 			matcher.addChild(makeMatcher(s));
-		return matcher;
+		return matcher;		
 	}
+	
 	public static Matcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
 		if (sortables.size() == 1) {
 			for (Sortables s : sortables)

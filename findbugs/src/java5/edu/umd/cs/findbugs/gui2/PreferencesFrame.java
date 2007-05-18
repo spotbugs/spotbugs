@@ -353,20 +353,20 @@ public class PreferencesFrame extends FBDialog {
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				int[] selected = filterCheckBoxList.getSelectedIndices();
+				Object[] selected=filterCheckBoxList.getSelectedValues();
+				boolean needsRebuild=false;
 				if (selected.length == 0)
 					return;
-				if (selected.length == 1){
-					ProjectSettings.getInstance().removeFilter(ProjectSettings.getInstance().getAllFilters().get(selected[0]));
-					MainFrame.getInstance().setProjectChanged(true);
+				for (Object o: selected)
+				{
+					MatchBox box=(MatchBox) o;
+					if (MainFrame.getInstance().getProject().getSuppressionFilter().isEnabled(box.getMatcher()))
+						needsRebuild=true;
+					MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
 				}
-				else{
-					for (int i : selected)
-						ProjectSettings.getInstance().removeFilter(ProjectSettings.getInstance().getAllFilters().get(i));
-					MainFrame.getInstance().setProjectChanged(true);
-				}
+				FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+				MainFrame.getInstance().setProjectChanged(true);
 				updateFilterPanel();
-
 			}
 		});
 		gbc.gridy = 2;
@@ -377,16 +377,15 @@ public class PreferencesFrame extends FBDialog {
 				{
 					public void actionPerformed(ActionEvent evt)
 					{
-						ArrayList<FilterMatcher> theList = ProjectSettings.getInstance().getAllFilters();
-						int len = theList.size();
-						if(len > 0)
-						{
-							for (int j=len-1; j>=0; j--) // we have to go backwards because removing the first item changes the indices of all the rest
-								ProjectSettings.getInstance().removeFilter(ProjectSettings.getInstance().getAllFilters().get(j));
-							MainFrame.getInstance().setProjectChanged(true);
-						}
-						updateFilterPanel();
+						boolean needsRebuild=false;
+						if (MainFrame.getInstance().getProject().getSuppressionFilter().numberChildren()>0)
+							needsRebuild=true;
+						MainFrame.getInstance().getProject().getSuppressionFilter().clear();
 
+						if (needsRebuild)//TODO This will rebuild even if all the filters being cleared were disabled
+							FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+						MainFrame.getInstance().setProjectChanged(true);
+						updateFilterPanel();
 					}
 				});		
 		gbc.gridy = 3;
@@ -397,14 +396,23 @@ public class PreferencesFrame extends FBDialog {
 		return filterPanel;
 	}
 
+	private class MatchBox extends JCheckBox{
+		Matcher m;
+		MatchBox(String text, Matcher m){
+			super(text);
+			this.m=m;
+		}
+		Matcher getMatcher(){return m;}
+	}
+	
 	void updateFilterPanel()
 	{
-		ArrayList<JCheckBox> boxes = new ArrayList<JCheckBox>();
+		ArrayList<MatchBox> boxes = new ArrayList<MatchBox>();
 		final Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
 		
 		for(Iterator<Matcher> i = f.childIterator(); i.hasNext(); ) {
 			final Matcher m = i.next();
-			JCheckBox box = new JCheckBox(m.toString());
+			MatchBox box = new MatchBox(m.toString(),m);
 			box.addItemListener(new ItemListener(){
 				public void itemStateChanged(ItemEvent evt) {
 					boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
@@ -420,7 +428,7 @@ public class PreferencesFrame extends FBDialog {
 			boxes.add(box);
 		}
 
-		filterCheckBoxList.setListData(boxes.toArray(new JCheckBox[boxes.size()]));
+		filterCheckBoxList.setListData(boxes.toArray(new MatchBox[boxes.size()]));
 	}
 
 	private static class UneditableTableModel extends DefaultTableModel

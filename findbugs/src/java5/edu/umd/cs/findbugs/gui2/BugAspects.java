@@ -103,7 +103,7 @@ public class BugAspects implements Iterable<BugAspects.SortableValue>
 		return result;
 	}
 	public Matcher getMatcher() {
-		return FilterFactory.makeMatcher(lst);
+		return FilterFactory.makeAndMatcher(lst);
 	}
 	public StackedFilterMatcher getStackedFilterMatcher(){
 		FilterMatcher[] filters = new FilterMatcher[lst.size()];

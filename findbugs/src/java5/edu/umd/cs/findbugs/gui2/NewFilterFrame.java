@@ -155,18 +155,16 @@ public class NewFilterFrame extends FBDialog
 			{
 				Sortables key = (Sortables) comboBox.getSelectedItem();
 				String[] values = key.getAllSorted();
-//				for (int i : list.getSelectedIndices())
-//				{
-//					FilterMatcher fm=new FilterMatcher(key,values[i]);
-//					if (!ProjectSettings.getInstance().getAllMatchers().contains(fm))
-//						ProjectSettings.getInstance().addFilter(fm);
-//				}
-				FilterMatcher[] newFilters = new FilterMatcher[list.getSelectedIndices().length];
-				for (int i = 0; i < newFilters.length; i++)
-					newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]], FilterMatcher.FilterWhere.values()[filterModeComboBox.getSelectedIndex()]);
-				ProjectSettings.getInstance().addFilters(newFilters);
+				
+				ArrayList<SortableValue> filterMe=new ArrayList<SortableValue>();
+				for (int i : list.getSelectedIndices())
+				{
+					filterMe.add(new BugAspects.SortableValue(key,values[i]));
+				}
+				MainFrame.getInstance().getProject().getSuppressionFilter().addChild(FilterFactory.makeOrMatcher(filterMe));
+				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 				PreferencesFrame.getInstance().updateFilterPanel();
-				MainFrame.getInstance().setProjectChanged(newFilters.length > 0);
+				MainFrame.getInstance().setProjectChanged(true);
 				close();
 			}
 		});
