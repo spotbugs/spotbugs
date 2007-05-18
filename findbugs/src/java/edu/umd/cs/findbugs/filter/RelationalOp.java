@@ -51,7 +51,8 @@ public abstract class RelationalOp {
 		this.name = name;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return value;
 	}
 	public String getName() {
@@ -59,42 +60,48 @@ public abstract class RelationalOp {
 	}
 
 	public static final RelationalOp EQ = new RelationalOp("==", "EQ") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) == 0;
 		}
 
 	};
 
 	public static final RelationalOp LEQ = new RelationalOp("<=", "LEQ") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) <= 0;
 		}
 
 	};
 
 	public static final RelationalOp NEQ = new RelationalOp("!=", "NEQ") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) != 0;
 		}
 
 	};
 
 	public static final RelationalOp GEQ = new RelationalOp(">=", "GEQ") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) >= 0;
 		}
 
 	};
 
 	public static final RelationalOp LT = new RelationalOp("<", "LT") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) < 0;
 		}
 
 	};
 
 	public static final RelationalOp GT = new RelationalOp(">", "GT") {
-		public boolean check(Comparable x, Comparable y) {
+		@Override
+        public boolean check(Comparable x, Comparable y) {
 			return x.compareTo(y) > 0;
 		}
 

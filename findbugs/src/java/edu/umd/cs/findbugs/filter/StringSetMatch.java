@@ -63,7 +63,8 @@ public class StringSetMatch {
 		return strings.contains(string.trim());
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		if (strings.isEmpty()) return "";
 		StringBuffer result = new StringBuffer();
 		for(String s : strings)

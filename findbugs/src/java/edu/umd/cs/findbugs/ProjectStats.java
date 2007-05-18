@@ -60,7 +60,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private Date timestamp;
 	private Footprint baseFootprint;
 
-	public String toString() {
+	@Override
+    public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(totalClasses).append(" classes: ");
 		for(PackageStats pStats : getPackageStats())

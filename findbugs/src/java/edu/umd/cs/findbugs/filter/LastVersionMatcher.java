@@ -62,7 +62,8 @@ public class LastVersionMatcher implements Matcher {
 		xmlOutput.openCloseTag("LastVersion", attributes);
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		if (version == -1 && relOp == RelationalOp.NEQ) return "active bug";
 		else if (version == -1 && relOp == RelationalOp.EQ) return "dead bug";
 		return "lastVersion " + relOp + " " + version;
