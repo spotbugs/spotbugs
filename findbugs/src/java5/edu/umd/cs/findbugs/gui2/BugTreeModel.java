@@ -165,27 +165,37 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			return root;
 		}
 
-		public @NonNull Object getChild(Object o, int index) {
+		public Object getChild(Object o, int index) {
 			Object result = getChild0(o,index);
 			assert o != null : "child " + index + " of " + o + " is null";
 			return result;
 		}
 		
-		public @NonNull Object getChild0(Object o, int index)
+		public  Object getChild0(Object o, int index)
 		{
 			BugAspects a = (BugAspects) o;
 			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
 				return data.get(index);
 
-
-			if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+			try
 			{
-				BugAspects child=a.addToNew(enumsThatExist(a).get(index));
-				child.setCount(data.query(child).size());
-				return child;
-			}	
+				if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+				{
+					BugAspects child=a.addToNew(enumsThatExist(a).get(index));
+					child.setCount(data.query(child).size());
+					return child;
+				}	
 			else
 				return data.query(a).get(index);
+			}
+			catch (IndexOutOfBoundsException e)
+			{
+				Debug.println("IndexOutOfBounds caught: I am treemodel #" + this + "I am no longer the current treemodel," +
+						" my data is cached and I return bad values for getChild.  Something is wrong with rebuild," +
+						" since the tree is asking both of us for children");
+				return null;
+			}
+
 		}
 
 		public int getChildCount(Object o)
