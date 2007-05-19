@@ -50,6 +50,12 @@ public abstract class CompoundMatcher implements Matcher {
 	public void addChild(Matcher child) {
 		children.add(child);
 	}
+	public void removeChild(Matcher child) {
+		children.remove(child);
+	}
+	public void clear() {
+		children.clear();
+	}
 
 	public Iterator<Matcher> childIterator() {
 		return children.iterator();

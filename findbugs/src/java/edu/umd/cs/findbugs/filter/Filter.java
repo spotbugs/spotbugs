@@ -110,6 +110,16 @@ public class Filter extends OrMatcher {
 		enable(child);
 	}
 	@Override
+	public void removeChild(Matcher child) {
+		enable(child);//Remove from disabled before removing it
+		super.removeChild(child);		
+	}
+	@Override
+	public void clear(){
+		disabled.clear();
+		super.clear();
+	}
+	@Override
 	public boolean match(BugInstance bugInstance) {
 		Iterator<Matcher> i = childIterator();
 		while (i.hasNext()) {
