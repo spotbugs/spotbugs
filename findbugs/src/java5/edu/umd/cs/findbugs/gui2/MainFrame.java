@@ -53,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import javax.swing.Action;
@@ -80,6 +81,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
@@ -115,6 +118,8 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
+import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
+import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 
 @SuppressWarnings("serial")
@@ -550,13 +555,47 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
+				//TODO This code does a smarter version of filtering that is only possible for branches, and does so correctly
+				//However, it is still somewhat of a hack, because if we ever add more tree listeners than simply the bugtreemodel,
+				//They will not be called by this code.  Using FilterActivity to notify all listeners will however destroy any
+				//benefit of using the smarter deletion method.
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
+				int startCount;
+				TreePath path=MainFrame.getInstance().getTree().getSelectionPath();
+				TreePath deletePath=path;
+				startCount=((BugAspects)(path.getLastPathComponent())).getCount();
+				int count=((BugAspects)(path.getParentPath().getLastPathComponent())).getCount();
+				while(count==startCount)
+				{
+					deletePath=deletePath.getParentPath();
+					if (deletePath.getParentPath()==null)//We are at the top of the tree, don't let this be removed, rebuild tree from root.
+					{
+						Matcher m = currentSelectedBugAspects.getMatcher();
+						Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
+						suppressionFilter.addChild(m);
+						PreferencesFrame.getInstance().updateFilterPanel();
+						FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+						return;
+					}
+					count=((BugAspects)(deletePath.getParentPath().getLastPathComponent())).getCount();
+				} 
+/*				 
+				deletePath should now be a path to the highest 
+				ancestor branch with the same number of elements
+				as the branch to be deleted
+				in other words, the branch that we actually have 
+				to remove in order to correctly remove the selected branch.
+*/
+				BugTreeModel model=MainFrame.getInstance().getBugTreeModel();
+				TreeModelEvent event=new TreeModelEvent(this,deletePath.getParentPath(),
+					new int[]{model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),deletePath.getLastPathComponent())},
+					new Object[]{deletePath.getLastPathComponent()});
 				Matcher m = currentSelectedBugAspects.getMatcher();
-				Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
+				Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
 				suppressionFilter.addChild(m);
 				PreferencesFrame.getInstance().updateFilterPanel();
-				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+				model.sendEvent(event, TreeModification.REMOVE);
+//				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 				
 				setProjectChanged(true);
 			}
