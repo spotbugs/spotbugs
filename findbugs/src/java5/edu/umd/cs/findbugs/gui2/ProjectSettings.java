@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import sun.security.action.GetPropertyAction;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
