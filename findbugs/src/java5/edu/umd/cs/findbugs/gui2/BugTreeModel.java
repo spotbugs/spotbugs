@@ -177,25 +177,15 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
 				return data.get(index);
 
-			try
+
+			if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
 			{
-				if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
-				{
-					BugAspects child=a.addToNew(enumsThatExist(a).get(index));
-					child.setCount(data.query(child).size());
-					return child;
-				}	
+				BugAspects child=a.addToNew(enumsThatExist(a).get(index));
+				child.setCount(data.query(child).size());
+				return child;
+			}	
 			else
 				return data.query(a).get(index);
-			}
-			catch (IndexOutOfBoundsException e)
-			{
-				Debug.println("IndexOutOfBounds caught: I am treemodel #" + this + "I am no longer the current treemodel," +
-						" my data is cached and I return bad values for getChild.  Something is wrong with rebuild," +
-						" since the tree is asking both of us for children");
-				return null;
-			}
-
 		}
 
 		public int getChildCount(Object o)
