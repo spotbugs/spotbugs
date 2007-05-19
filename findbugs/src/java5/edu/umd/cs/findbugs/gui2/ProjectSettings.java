@@ -121,6 +121,7 @@ public class ProjectSettings implements Serializable
 	}
 
 
+	@Deprecated 
 	Filter getSuppressionFilter()
 	{
 		Project project = MainFrame.getInstance().getProject();
