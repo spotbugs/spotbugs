@@ -109,11 +109,13 @@ import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
@@ -446,7 +448,11 @@ public class MainFrame extends FBFrame implements LogSync
 
 	BugCollection bugCollection;
 	@SwingThread
-	void setProjectAndBugCollection(Project project, BugCollection bugCollection) {
+	void setProjectAndBugCollection(Project project, @CheckForNull BugCollection bugCollection) {
+		Filter suppressionMatcher = project.getSuppressionFilter();
+		if (suppressionMatcher != null) {
+			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+		}
 		// setRebuilding(false);
 		if (bugCollection == null) {
 			showTreeCard();

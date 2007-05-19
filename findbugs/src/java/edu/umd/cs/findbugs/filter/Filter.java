@@ -107,6 +107,14 @@ public class Filter extends OrMatcher {
 	public boolean contains(Matcher child) {
 		return children.contains(child);
 	}
+	
+	/**
+	 * Add if not present, but do not enable if already present and disabled
+	 * @param child
+	 */
+	public void softAdd(Matcher child) {
+		super.addChild(child);
+	}
 	@Override
 	public void addChild(Matcher child) {
 		super.addChild(child);

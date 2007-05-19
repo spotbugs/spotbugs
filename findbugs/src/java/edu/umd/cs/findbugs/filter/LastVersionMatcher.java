@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	
-	public final static  LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.EQ);
+	public final static  LastVersionMatcher DEAD_BUG_MATCHER = new LastVersionMatcher(-1, RelationalOp.NEQ);
 	
 	
 	public LastVersionMatcher(String versionAsString, String relOpAsString) {
@@ -52,8 +52,8 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	
 	@Override
     public String toString() {
-		if (version == -1 && relOp == RelationalOp.NEQ) return "active bugs";
-		else if (version == -1 && relOp == RelationalOp.EQ) return "dead bugs";
+		if (version == -1 && relOp == RelationalOp.EQ) return "active bugs";
+		else if (version == -1 && relOp == RelationalOp.NEQ) return "dead bugs";
 		return "lastVersion " + relOp + " " + version;
 	}
 }

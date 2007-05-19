@@ -49,6 +49,8 @@ import edu.umd.cs.findbugs.XMLBugReporter;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
@@ -152,6 +154,10 @@ public class BugLoader {
 			{
 				SortedBugCollection col=new SortedBugCollection();
 				col.readXML(in, project);
+				Filter suppressionMatcher = project.getSuppressionFilter();
+				if (suppressionMatcher != null) {
+					suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+				}
 				return col;
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(mainFrame,"This file contains no bug data");
