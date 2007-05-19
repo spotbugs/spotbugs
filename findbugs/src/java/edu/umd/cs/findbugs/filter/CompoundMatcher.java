@@ -44,16 +44,16 @@ public abstract class CompoundMatcher implements Matcher {
 		CompoundMatcher m = (CompoundMatcher) o;
 		return children.equals(m.children);
 	}
-	public int numberChildren() {
+	protected int numberChildren() {
 		return children.size();
 	}
 	public void addChild(Matcher child) {
 		children.add(child);
 	}
-	public void removeChild(Matcher child) {
+	protected void removeChild(Matcher child) {
 		children.remove(child);
 	}
-	public void clear() {
+	protected void clear() {
 		children.clear();
 	}
 

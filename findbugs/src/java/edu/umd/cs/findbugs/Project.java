@@ -707,7 +707,7 @@ public class Project implements XMLWriteable {
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
-		if (suppressionFilter != null && suppressionFilter.numberChildren() > 0) {
+		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
 			suppressionFilter.writeBodyAsXML(xmlOutput);
 			xmlOutput.closeTag("SuppressionFilter");

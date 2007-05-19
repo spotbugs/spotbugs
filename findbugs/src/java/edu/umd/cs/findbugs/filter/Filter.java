@@ -66,6 +66,9 @@ public class Filter extends OrMatcher {
 
 	}
 	
+	public boolean isEmpty() {
+		return super.numberChildren() == 0;
+	}
 	
 	public void setEnabled(Matcher m, boolean value) {
 		if (value) enable(m);

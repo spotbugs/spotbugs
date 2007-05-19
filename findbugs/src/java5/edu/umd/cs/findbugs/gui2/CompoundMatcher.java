@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * Holds a bunch of matchers, and only matches a bug if all
  * the submatchers match it.  Matchetymatch.
  */
+@Deprecated
 public class CompoundMatcher extends HashSet<Matcher> implements Matcher
 {
 	private static final long serialVersionUID = -6167545252176658833L;

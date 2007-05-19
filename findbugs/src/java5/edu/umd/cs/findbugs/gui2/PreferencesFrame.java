@@ -378,9 +378,10 @@ public class PreferencesFrame extends FBDialog {
 					public void actionPerformed(ActionEvent evt)
 					{
 						boolean needsRebuild=false;
-						if (MainFrame.getInstance().getProject().getSuppressionFilter().numberChildren()>0)
+						Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
+						if (!suppressionFilter.isEmpty())
 							needsRebuild=true;
-						MainFrame.getInstance().getProject().getSuppressionFilter().clear();
+						suppressionFilter.clear();
 
 						if (needsRebuild)//TODO This will rebuild even if all the filters being cleared were disabled
 							FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
