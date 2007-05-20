@@ -144,23 +144,28 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visit(Code obj) {
+		synchronizationNestingLevel = 0;
 		seenStaticGetCalendarAt = Integer.MIN_VALUE;
 		seenStaticGetDateFormatAt = Integer.MIN_VALUE;
 		registerStaticStoreCalendarAt.clear();
 		registerStaticStoreDateFormatAt.clear();
 		super.visit(obj);
 	}
-
+    int synchronizationNestingLevel = 0;
 	/**
 	 * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
 	 */
+	
 	@Override
 	public void sawOpcode(int seen) {
 		/* check simple case first. must be called before the rest, because it will set some fields if appropriate */
 		if (simpleCase(seen)) {
 			return;
 		}
-
+		if (seen == MONITORENTER)
+			synchronizationNestingLevel++;
+		else if (seen == MONITOREXIT && synchronizationNestingLevel > 0)
+			synchronizationNestingLevel--;
 		// trickier case ----------------------->>
 		/* store to a register */
 		if (seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
@@ -257,7 +262,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				isStatic = field != null && field.isStatic();
 			}
 			if (!isStatic) return false;
-			
+			if (getMethod().isSynchronized() || synchronizationNestingLevel > 0) return false;
 			if (tType.subclassOf(calendarType)) {
 				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
 						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this));
