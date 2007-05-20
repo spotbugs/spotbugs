@@ -133,7 +133,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				break;
 			}
 			if (tType != null) {
-				reporter.reportBug(new BugInstance(this, tType, NORMAL_PRIORITY).addClass(currentClass).addField(
+				reporter.reportBug(new BugInstance(this, tType, tTyp == 1 ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(
 						currentClass, aField.getName(), tFieldSig, tIsStatic));
 			}
 		}
@@ -256,19 +256,26 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			OpcodeStack.Item invokedOn = stack.getStackItem(numArguments);
 			XField field = invokedOn.getXField();
 			boolean isStatic = field != null && field.isStatic();
-			if (!isStatic && getNameConstantOperand().equals("equals") && numArguments == 1) {
+			String nameInvokedMethod = getNameConstantOperand();
+			if (!isStatic && nameInvokedMethod.equals("equals") && numArguments == 1) {
 				OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
 				field = passedAsArgument.getXField();
 				isStatic = field != null && field.isStatic();
 			}
 			if (!isStatic) return false;
 			if (getMethod().isSynchronized() || synchronizationNestingLevel > 0) return false;
+			if (getMethodName().equals("<clinit>")) return false;
+			int priority = LOW_PRIORITY;
+			
+			if (nameInvokedMethod.startsWith("set")) priority--;
+			
 			if (tType.subclassOf(calendarType)) {
-				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
+				priority--;
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", priority)
 						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this));
 				return true;
 			} else if (tType.subclassOf(dateFormatType)) {
-				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE",  NORMAL_PRIORITY)
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE",  priority)
 						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this));
 				return true;
 			}
