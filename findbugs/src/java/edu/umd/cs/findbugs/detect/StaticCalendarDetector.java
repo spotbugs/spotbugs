@@ -265,7 +265,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			if (!isStatic) return false;
 			if (getMethod().isSynchronized() || synchronizationNestingLevel > 0) return false;
 			if (getMethodName().equals("<clinit>")) return false;
-			int priority = LOW_PRIORITY;
+			int priority = NORMAL_PRIORITY;
 			
 			if (nameInvokedMethod.startsWith("set")) priority--;
 			
