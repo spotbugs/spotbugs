@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +32,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -80,6 +83,13 @@ public class Util {
 			assert true;
 		}
 	}
+	public static void closeSilently(Reader in) {
+		try {
+			in.close();
+		} catch (IOException e) {
+			assert true;
+		}
+	}
 	public static void closeSilently(OutputStream out) {
 		try {
 			out.close();
@@ -87,5 +97,35 @@ public class Util {
 			assert true;
 		}
 	}
+	static final Pattern tag = Pattern.compile("^\\s*<(\\w+)");
+	public static String getXMLType(InputStream in) throws IOException {
+		if (!in.markSupported())
+			throw new IllegalArgumentException("Input stream does not support mark");
 
+		in.mark(5000);
+		BufferedReader r = null;
+		try {
+			r = new BufferedReader(Util.getReader(in), 2000);
+
+			String s;
+			int count = 0;
+			while (count < 4) {
+				s = r.readLine();
+				if (s == null)
+					break;
+				Matcher m = tag.matcher(s);
+				if (m.find())
+					return m.group(1);
+			}
+			throw new IOException("Didn't find xml tag");
+		} finally {
+			in.reset();
+		}
+
+	}
+	public static IOException makeIOException(String msg, Throwable cause) {
+		IOException e = new IOException(msg);
+		e.initCause(cause);
+		return e;
+	}
 }

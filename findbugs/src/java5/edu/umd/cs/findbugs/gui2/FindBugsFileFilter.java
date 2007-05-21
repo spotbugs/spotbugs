@@ -9,35 +9,23 @@
  * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
+import javax.swing.filechooser.*;
 
-import javax.swing.filechooser.FileFilter;
+/**
+ * @author pugh
+ */
+abstract class FindBugsFileFilter extends FileFilter {
 
-public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
+	 abstract SaveType getSaveType();
 
-	public static final  FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
-	@Override
-	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".xml") || arg0.isDirectory();
-	}
-
-	@Override
-	public String getDescription() {
-		return "FindBugs analysis results (.xml)";
-	}
-
-    @Override
-    SaveType getSaveType() {
-    	return SaveType.XML_ANALYSIS;
-    }
 }

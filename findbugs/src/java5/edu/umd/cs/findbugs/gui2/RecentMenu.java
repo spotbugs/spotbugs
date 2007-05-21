@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import edu.umd.cs.findbugs.gui2.MainFrame.SaveType;
 
 /**
  * @author Dan

@@ -137,28 +137,25 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	    	// We read in the bug collection in order to read the project
 	    	// information as a side effect.
 	    	// Inefficient, but effective.
+	    	String name = projectFile.getAbsolutePath() + File.separator + projectFile.getName() + ".xml";
+	    	File f = new File(name);
+	    	SortedBugCollection bugCollection = new SortedBugCollection();
 
-	    	File[] contents = projectFile.listFiles();
-	    	for (File f : contents) {
-	    		if (f.getName().endsWith(".xml")) {
-	    			SortedBugCollection bugCollection = new SortedBugCollection();
-	    			
-	    			try {
-	    				Project project = new Project();
-	    				bugCollection.readXML(f.getPath(), project);
-	    				return project;
-	    			} catch (DocumentException e) {
-	    				IOException ioe = new IOException("Couldn't read saved XML in project directory");
-	    				ioe.initCause(e);
-	    				throw ioe;
-	    			}
-	    		}
+	    	try {
+	    		Project project = new Project();
+	    		bugCollection.readXML(f.getPath(), project);
+	    		return project;
+	    	} catch (DocumentException e) {
+	    		IOException ioe = new IOException("Couldn't read saved XML in project directory");
+	    		ioe.initCause(e);
+	    		throw ioe;
 	    	}
-    		throw new IOException("No saved XML found in project directory " + projectFileName);
-	    	
+
+	    } else if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
+	    	return project = Project.readXML(projectFile);
 	    } else {
 	    	// Old-style (original GUI) project file
-	    	
+
 	    	// Convert project file to be an absolute path
 	    	projectFileName = new File(projectFileName).getAbsolutePath();
 

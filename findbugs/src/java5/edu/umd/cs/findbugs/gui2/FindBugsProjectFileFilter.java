@@ -23,7 +23,7 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public final class FindBugsProjectFileFilter extends FileFilter {
+public final class FindBugsProjectFileFilter extends FindBugsFileFilter {
 
 	public static final  FindBugsProjectFileFilter INSTANCE = new FindBugsProjectFileFilter();
 
@@ -37,5 +37,10 @@ public final class FindBugsProjectFileFilter extends FileFilter {
 	@Override
 	public String getDescription() {
 		return "FindBugs project directory";
+	}
+
+	@Override
+	SaveType getSaveType() {
+		return SaveType.FBP_FILE;
 	}
 }

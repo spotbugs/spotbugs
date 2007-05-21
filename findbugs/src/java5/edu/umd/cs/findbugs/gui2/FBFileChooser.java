@@ -73,6 +73,7 @@ public class FBFileChooser extends JFileChooser {
 
 	private static void workAroundJFileChooserBug() {
 		//Travis McLeskey
+		// http://www.mcleskey.org/bugs.html
 		try {
 			Object o = javax.swing.UIManager.getBorder( "TableHeader.cellBorder" );
 			Method m = o.getClass().getMethod( "setHorizontalShift",

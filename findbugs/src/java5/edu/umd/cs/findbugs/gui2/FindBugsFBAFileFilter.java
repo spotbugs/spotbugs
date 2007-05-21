@@ -23,21 +23,23 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
+public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
 
-	public static final  FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
+	public static final  FindBugsFBAFileFilter INSTANCE = new FindBugsFBAFileFilter();
+
+	private FindBugsFBAFileFilter() {};
 	@Override
 	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".xml") || arg0.isDirectory();
+		return arg0.getName().endsWith(".fba");
 	}
 
 	@Override
 	public String getDescription() {
-		return "FindBugs analysis results (.xml)";
+		return "FindBugs analysis file (.fba)";
 	}
 
     @Override
     SaveType getSaveType() {
-    	return SaveType.XML_ANALYSIS;
+    	return SaveType.FBA_FILE;
     }
 }

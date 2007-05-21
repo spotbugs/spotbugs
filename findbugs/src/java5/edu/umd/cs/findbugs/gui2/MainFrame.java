@@ -229,7 +229,6 @@ public class MainFrame extends FBFrame implements LogSync
 	private Logger logger = new ConsoleLogger(this);
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 
-	enum SaveType {NOT_KNOWN, PROJECT, XML_ANALYSIS};
 	SaveType saveType = SaveType.NOT_KNOWN;
 	FBFileChooser saveOpenFileChooser;
 	@CheckForNull private File saveFile = null;
@@ -912,7 +911,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		boolean loading = true;
 		SaveType fileType = SaveType.NOT_KNOWN;
-		while (loading)
+		tryAgain: while (loading)
 		{
 			int value=saveOpenFileChooser.showOpenDialog(MainFrame.this);
 			if(value!=JFileChooser.APPROVE_OPTION) return;
@@ -921,34 +920,39 @@ public class MainFrame extends FBFrame implements LogSync
 			fileType = convertFilterToType(saveOpenFileChooser.getFileFilter());
 			final File f = saveOpenFileChooser.getSelectedFile();
 
-			if(fileType == SaveType.PROJECT){
+			switch (fileType) {
+
+
+			case PROJECT:
 				File xmlFile= new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");		
 
 				if (!xmlFile.exists())
 				{
 					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
 					loading=true;
-					continue;
+					continue tryAgain;
 				}
 
 				openProject(f);
-			}
-			else if(fileType == SaveType.XML_ANALYSIS){
+				break;
+			case XML_ANALYSIS:
 				if(!f.getName().endsWith(".xml")){
 					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.not_xml_data_lbl", "This is not a saved bug XML data file."));
 					loading=true;
-					continue;
+					continue tryAgain;
 				}
 
 				if(!openAnalysis(f)){
 					//TODO: Deal if something happens when loading analysis
 					JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
 					loading=true;
-					continue;
+					continue tryAgain;
 				}
+				break;
 			}
 		}
 	}
+
 
 	private boolean saveAs(){
 		saveOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
@@ -1039,12 +1043,8 @@ public class MainFrame extends FBFrame implements LogSync
 	 * Returns SaveType equivalent depending on what kind of FileFilter passed.
 	 */
 	private	SaveType convertFilterToType(FileFilter f){
-		String des = f.getDescription();
-		if(FindBugsAnalysisFileFilter.INSTANCE.getDescription().equals(des))
-			return SaveType.XML_ANALYSIS;
-
-		if(FindBugsProjectFileFilter.INSTANCE.getDescription().equals(des))
-			return SaveType.PROJECT;
+		if (f instanceof FindBugsFileFilter)
+			return ((FindBugsFileFilter)f).getSaveType();
 
 		return SaveType.NOT_KNOWN;
 	}
@@ -1606,6 +1606,9 @@ public class MainFrame extends FBFrame implements LogSync
 			saveOpenFileChooser.setAcceptAllFileFilterUsed(false);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsProjectFileFilter.INSTANCE);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsAnalysisFileFilter.INSTANCE);
+			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBPFileFilter.INSTANCE);
+			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBAFileFilter.INSTANCE);
+			saveOpenFileChooser.setFileFilter(FindBugsAnalysisFileFilter.INSTANCE);
 
 			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
 			JToolTip tempToolTip = tableheader.createToolTip();

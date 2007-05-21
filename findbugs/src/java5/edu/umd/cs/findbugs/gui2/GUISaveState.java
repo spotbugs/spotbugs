@@ -41,7 +41,6 @@ import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.gui2.MainFrame.SaveType;
 
 /**
  * Saves all the stuff that should be saved for each run,
@@ -172,12 +171,17 @@ public class GUISaveState{
 
 	public ArrayList<File> getRecent(SaveType s)
 	{
-		if (s==SaveType.PROJECT)
+		switch(s) {
+		case PROJECT:
+		case FBP_FILE:
+
 			return getRecentProjects();
-		if (s==SaveType.XML_ANALYSIS)
+		case XML_ANALYSIS:
+		case FBA_FILE:
 			return getRecentAnalyses();
-		else
+		default:
 			throw new IllegalStateException("Your file is not of any valid save type--GetRecent");
+		}
 	}
 	public ArrayList<File> getRecentProjects()
 	{
@@ -194,12 +198,19 @@ public class GUISaveState{
 		addRecentFile(f, SaveType.PROJECT);
 	}
 
-	public void addRecentFile(File f, SaveType s)
-	{
-		if (s==SaveType.PROJECT)
+	public void addRecentFile(File f, SaveType s) {
+		switch (s) {
+		case PROJECT:
+		case FBP_FILE:
 			recentProjects.add(f);
-		else if (s==SaveType.XML_ANALYSIS)
+			break;
+		case XML_ANALYSIS:
+		case FBA_FILE:
 			recentAnalyses.add(f);
+			break;
+		default:
+			throw new IllegalArgumentException("unknown save type");
+		}
 	}
 
 	public void projectReused(File f)
@@ -209,8 +220,9 @@ public class GUISaveState{
 
 	public void projectReused(File f, SaveType s)
 	{
-		if (s==SaveType.PROJECT)
-		{
+		switch (s) {
+		case PROJECT:
+		case FBP_FILE:
 			if (!recentProjects.contains(f))
 			{
 				throw new IllegalStateException("Selected a recent project that doesn't exist?");
@@ -220,9 +232,10 @@ public class GUISaveState{
 				recentProjects.remove(f);
 				recentProjects.add(f);
 			}
-		}
-		else if (s==SaveType.XML_ANALYSIS)
-		{
+			break;
+		case XML_ANALYSIS:
+			
+		case FBA_FILE:
 			if (!recentAnalyses.contains(f))
 			{
 				throw new IllegalStateException("Selected a recent project that doesn't exist?");
@@ -231,7 +244,11 @@ public class GUISaveState{
 			{
 				recentAnalyses.remove(f);
 				recentAnalyses.add(f);
-			}					}
+			}		
+			break;
+		case NOT_KNOWN:
+			throw new IllegalArgumentException("Unknown save type");
+			}
 	}
 
 	public void projectNotFound(File f)

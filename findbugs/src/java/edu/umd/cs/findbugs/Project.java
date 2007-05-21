@@ -25,13 +25,18 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -42,10 +47,18 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
@@ -526,6 +539,7 @@ public class Project implements XMLWriteable {
 	 *                         all files should be made relative
 	 * @throws IOException if an error occurs while writing
 	 */
+	@Deprecated
 	public void write(String outputFile, boolean useRelativePaths, String relativeBase)
 			throws IOException {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
@@ -561,6 +575,62 @@ public class Project implements XMLWriteable {
 
 		// Project successfully saved
 		isModified = false;
+	}
+
+	public static Project readXML(File f) throws IOException {
+		Project project = new Project();
+		InputStream in = new BufferedInputStream(new FileInputStream(f));
+		String tag = Util.getXMLType(in);
+		SAXBugCollectionHandler handler;
+		if (tag.equals("Project")) {
+			handler = new SAXBugCollectionHandler(project, f);
+		} else if (tag.equals("BugCollection")) {
+			SortedBugCollection bugs = new SortedBugCollection();
+			handler = new SAXBugCollectionHandler(bugs, project, f);
+		} else throw new IOException("Can't load a project from a " + tag + " file");
+		try {
+			XMLReader xr = null;
+			if (true) try { 
+				xr = XMLReaderFactory.createXMLReader();
+			} catch (SAXException e) {
+				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
+			}
+
+			if (xr == null) {
+				xr = new org.dom4j.io.aelfred.SAXDriver();
+			}
+			xr.setContentHandler(handler);
+			xr.setErrorHandler(handler);
+
+			Reader reader = Util.getReader(in);
+
+			xr.parse(new InputSource(reader));
+		} catch (SAXParseException e) {
+			throw Util.makeIOException("Parse error at line " + e.getLineNumber()
+					+ " : " + e.getColumnNumber(), e);
+		} catch (SAXException e) {
+			// FIXME: throw SAXException from method?
+			throw Util.makeIOException("Sax error ", e);
+		}
+		finally {
+			in.close();
+		}
+
+		// Presumably, project is now up-to-date
+		project.setModified(false);
+
+		return project;
+
+	}
+	public  void writeXML(File f) throws IOException {
+		OutputStream out  = new FileOutputStream(f);
+		try {
+		XMLOutput xmlOutput= new OutputStreamXMLOutput(out);
+
+		writeXML(xmlOutput);
+		} finally {
+			Util.closeSilently(out);
+		}
 	}
 
 	/**
@@ -635,6 +705,8 @@ public class Project implements XMLWriteable {
 		}
 	}
 
+	
+	
 	/**
 	 * Read a line from a BufferedReader, ignoring blank lines
 	 * and comments.
