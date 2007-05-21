@@ -72,13 +72,15 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.lang.String", "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.lang.String", "<init>", "([BLjava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.lang.String", "<init>", "(Ljava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigDecimal;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 
