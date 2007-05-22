@@ -65,25 +65,17 @@ public class RecentMenu{
 	}
 
 	LimitedArrayList<File> recentFiles;//Originally called recentProjects before merge two lists into one.
-	//LimitedArrayList<File> recentAnalyses;
 	JMenu recentMenu;
 
 	public RecentMenu(JMenu menu)
 	{
 		recentFiles=new LimitedArrayList<File>();
-		//recentAnalyses=new LimitedArrayList<File>();
 		recentMenu=menu;
-		//recentMenu.add("Recent Projects:").setEnabled(false);
-
-		for (File f: GUISaveState.getInstance().getRecentProjects())
+		
+		for (File f: GUISaveState.getInstance().getRecentFiles())
 		{
 			recentFiles.add(f);
 		}
-
-		/*for (File f: GUISaveState.getInstance().getRecentAnalyses())
-		{
-			recentAnalyses.add(f);
-		}*/
 
 		makeRecentMenu();
 	}
@@ -91,7 +83,6 @@ public class RecentMenu{
 	public void makeRecentMenu()
 	{
 		recentMenu.removeAll();
-		//recentMenu.add("Recent Projects:").setEnabled(false);
 		for (File f: recentFiles)
 		{
 			Debug.println(f);
@@ -103,28 +94,7 @@ public class RecentMenu{
 
 			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.PROJECT));
 		}
-		//recentMenu.addSeparator();
-		//recentMenu.add("Recent Analyses:").setEnabled(false);
-		/*for (File f: recentAnalyses)
-		{
-			Debug.println(f);
-			if (!f.exists())
-			{
-				if (MainFrame.DEBUG) System.err.println("a analysis project was not found, removing it from menu");
-				continue;
-			}
-
-			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.XML_ANALYSIS));
-		}*/
-	}
-
-	public void addRecentFile(final File f, final SaveType localSaveType)
-	{
-		//if (localSaveType==SaveType.PROJECT)
-			recentFiles.add(f);
-/*		else if (localSaveType==SaveType.XML_ANALYSIS)
-			recentAnalyses.add(f);*/
-		makeRecentMenu();
+		
 	}
 
 	/**

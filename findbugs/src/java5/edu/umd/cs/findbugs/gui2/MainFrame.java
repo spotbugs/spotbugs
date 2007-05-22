@@ -336,7 +336,7 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	/*
-	 * A lot of if(false) here as switching from special cases based on localSaveType
+	 * A lot of if(false) here is for switching from special cases based on localSaveType
 	 * to depending on the SaveType.forFile(f) method. Can delete when sure works.
 	 */
 	JMenuItem createRecentItem(final File f, final SaveType localSaveType)
@@ -2426,7 +2426,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * storing is the location of the file.
 	 */
 	private void addFileToRecent(File xmlFile, SaveType st){
-		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
+		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentFiles();
 		if (!xmlFiles.contains(xmlFile))
 		{
 			GUISaveState.getInstance().addRecentFile(xmlFile);

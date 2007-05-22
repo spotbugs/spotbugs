@@ -109,7 +109,7 @@ public class GUISaveState{
 	private boolean useDefault=false;
 	private SorterTableColumnModel starterTable;
 	private ArrayList<File> recentProjects;
-	private ArrayList<File> recentAnalyses;
+	//private ArrayList<File> recentAnalyses;
 	private byte[] dockingLayout;
 	private Rectangle frameBounds;
 
@@ -157,7 +157,6 @@ public class GUISaveState{
 	private GUISaveState()
 	{
 		recentProjects=new ArrayList<File>();
-		recentAnalyses=new ArrayList<File>();
 //		projectsToLocations=new HashMap<String,String>();
 		previousComments=new LinkedList<String>();
 	}
@@ -167,56 +166,6 @@ public class GUISaveState{
 		if (instance==null)
 			instance=new GUISaveState();
 		return instance;
-	}
-
-	public ArrayList<File> getRecent(SaveType s)
-	{
-		switch(s) {
-		case PROJECT:
-		case FBP_FILE:
-
-			return getRecentProjects();
-		case XML_ANALYSIS:
-		case FBA_FILE:
-			return getRecentAnalyses();
-		default:
-			throw new IllegalStateException("Your file is not of any valid save type--GetRecent");
-		}
-	}
-	
-	public ArrayList<File> getRecentProjects()
-	{
-		return recentProjects;
-	}
-
-	public ArrayList<File> getRecentAnalyses()
-	{
-		return recentAnalyses;
-	}
-
-	public void addRecentProject(File f)
-	{
-		addRecentFile(f, SaveType.PROJECT);
-	}
-
-	public void addRecentFile(File f, SaveType s) {
-		switch (s) {
-		case PROJECT:
-		case FBP_FILE:
-			recentProjects.add(f);
-			break;
-		case XML_ANALYSIS:
-		case FBA_FILE:
-			recentAnalyses.add(f);
-			break;
-		default:
-			throw new IllegalArgumentException("unknown save type");
-		}
-	}
-
-	public void projectReused(File f)
-	{
-		fileReused(f, SaveType.PROJECT);
 	}
 
 	/**
@@ -265,66 +214,6 @@ public class GUISaveState{
 			recentProjects.remove(f);
 
 	}
-	
-	public void fileReused(File f, SaveType s)
-	{
-		switch (s) {
-		case PROJECT:
-		case FBP_FILE:
-			if (!recentProjects.contains(f))
-			{
-				throw new IllegalStateException("Selected a recent project that doesn't exist?");
-			}
-			else
-			{
-				recentProjects.remove(f);
-				recentProjects.add(f);
-			}
-			break;
-		case XML_ANALYSIS:
-			
-		case FBA_FILE:
-			if (!recentAnalyses.contains(f))
-			{
-				throw new IllegalStateException("Selected a recent project that doesn't exist?");
-			}
-			else
-			{
-				recentAnalyses.remove(f);
-				recentAnalyses.add(f);
-			}		
-			break;
-		case NOT_KNOWN:
-			throw new IllegalArgumentException("Unknown save type");
-			}
-	}
-
-	public void projectNotFound(File f)
-	{
-		projectNotFound(f, SaveType.PROJECT);
-	}
-
-	public void projectNotFound(File f, SaveType s)
-	{
-		if (s==SaveType.PROJECT)
-		{
-			if (!recentProjects.contains(f))
-			{
-				throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
-			}
-			else
-				recentProjects.remove(f);
-		}
-		else if (s==SaveType.XML_ANALYSIS)
-		{
-			if (!recentAnalyses.contains(f))
-			{
-				throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
-			}
-			else
-				recentAnalyses.remove(f);				
-		}
-	}
 
 	/**
 	 * The file to start the loading of Bugs from.
@@ -346,7 +235,6 @@ public class GUISaveState{
 	{
 		GUISaveState newInstance=new GUISaveState();
 		newInstance.recentProjects=new ArrayList<File>();
-		newInstance.recentAnalyses=new ArrayList<File>();
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
 
 		newInstance.tabSize = p.getInt(TAB_SIZE, 4);
@@ -367,12 +255,6 @@ public class GUISaveState{
 		for (int x=0;x<size;x++)
 		{
 			newInstance.recentProjects.add(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
-		}
-
-		int size2=Math.min(MAXNUMRECENTANALYSES,p.getInt(GUISaveState.NUMANALYSES,0));
-		for (int x=0;x<size2;x++)
-		{
-			newInstance.recentAnalyses.add(new File(p.get(GUISaveState.RECENTANALYSISKEYS[x],"")));
 		}
 
 		int sorterSize=p.getInt(GUISaveState.SORTERTABLELENGTH,-1);
@@ -456,27 +338,16 @@ public class GUISaveState{
 		}
 
 		int size=recentProjects.size();
-		int size2=recentAnalyses.size();
 		while (recentProjects.size()>MAXNUMRECENTPROJECTS)
 		{
 			recentProjects.remove(0);
 		}
-		while (recentAnalyses.size()>MAXNUMRECENTANALYSES)
-		{
-			recentAnalyses.remove(0);
-		}
 
 		p.putInt(GUISaveState.NUMPROJECTS,Math.min(size,MAXNUMRECENTPROJECTS));
-		p.putInt(GUISaveState.NUMANALYSES,Math.min(size2,MAXNUMRECENTANALYSES));
 		for (int x=0; x<Math.min(size,MAXNUMRECENTPROJECTS);x++)
 		{
 			File file=recentProjects.get(x);
 			p.put(GUISaveState.RECENTPROJECTKEYS[x],file.getAbsolutePath());
-		}
-		for (int x=0; x<Math.min(size2,MAXNUMRECENTANALYSES);x++)
-		{
-			File file=recentAnalyses.get(x);
-			p.put(GUISaveState.RECENTANALYSISKEYS[x],file.getAbsolutePath());			
 		}
 
 		p.putByteArray(DOCKINGLAYOUT, dockingLayout);
