@@ -113,6 +113,7 @@ import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
@@ -1180,16 +1181,24 @@ public class MainFrame extends FBFrame implements LogSync
      * @return
      */
     private SaveReturn saveFBAFile(File saveFile2) {
-	    // TODO Auto-generated method stub
-	    return null;
+	    return saveAnalysis(saveFile2);
     }
 	/**
      * @param saveFile2
      * @return
      */
     private SaveReturn saveFBPFile(File saveFile2) {
-	    // TODO Auto-generated method stub
-	    return null;
+    		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+    		try {
+	            curProject.writeXML(saveFile2);
+            } catch (IOException e) {
+	            AnalysisContext.logError("Couldn't save FBP file to " + saveFile2, e);
+	            return SaveReturn.SAVE_IO_EXCEPTION;
+            }
+
+    		setProjectChanged(false);
+
+    		return SaveReturn.SAVE_SUCCESSFUL;
     }
     
     
@@ -2077,6 +2086,10 @@ public class MainFrame extends FBFrame implements LogSync
 		tableheader.setReorderingAllowed(b);
 	}
 
+	
+	private void setSaveMenu() {
+		saveMenuItem.setEnabled(projectChanged && saveFile != null && saveType != SaveType.FBP_FILE && saveFile.exists());
+	}
 	/**
 	 * Called when something in the project is changed and the change needs to be saved.
 	 * This method should be called instead of using projectChanged = b.
@@ -2088,14 +2101,13 @@ public class MainFrame extends FBFrame implements LogSync
 		if(projectChanged == b)
 			return;
 
-		if(saveFile != null && saveFile.exists())
-			saveMenuItem.setEnabled(b);
+		projectChanged = b;
+		setSaveMenu();
 //		if(projectDirectory != null && projectDirectory.exists())
 //			saveProjectMenuItem.setEnabled(b);
 
 		getRootPane().putClientProperty(WINDOW_MODIFIED, Boolean.valueOf(b));
 
-		projectChanged = b;
 	}
 
 	public boolean getProjectChanged(){
