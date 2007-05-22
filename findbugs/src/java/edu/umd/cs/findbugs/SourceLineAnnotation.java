@@ -733,6 +733,37 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		return createUnknown(className);
 	}
-}
 
+
+/**
+ * @param className
+ * @return
+ */
+	static SourceLineAnnotation getSourceAnnotationForClass(String className, String sourceFileName) {
+
+		int lastLine = -1;
+		int firstLine = Integer.MAX_VALUE;
+
+		try {
+			JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(className);
+			for (Method m : targetClass.getMethods()) {
+				Code c = m.getCode();
+				if (c != null) {
+					LineNumberTable table = c.getLineNumberTable();
+					if (table != null)
+						for (LineNumber line : table.getLineNumberTable()) {
+							lastLine = Math.max(lastLine, line.getLineNumber());
+							firstLine = Math.min(firstLine, line.getLineNumber());
+						}
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+		}
+		if (firstLine < Integer.MAX_VALUE)
+			return new SourceLineAnnotation(className, sourceFileName,
+					firstLine, lastLine, -1, -1);
+		return   SourceLineAnnotation.createUnknown(className, sourceFileName);
+	}
+}
 // vim:ts=4

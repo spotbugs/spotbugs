@@ -120,8 +120,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 				.getClassLine(className);
 
 			if (classLine == null)
-				sourceLines = new SourceLineAnnotation(
-						className, sourceFileName, -1,-1, -1, -1);
+				sourceLines = SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
 			else sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
 			}
