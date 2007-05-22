@@ -35,7 +35,10 @@ public abstract class RelationalOp {
 
 	private static final Map<String, RelationalOp> map = new HashMap<String, RelationalOp>();
 	public static RelationalOp byName(String s) {
-		return map.get(s);
+		RelationalOp relationalOp = map.get(s);
+		if (relationalOp == null) 
+			throw new IllegalArgumentException("Could not find relOp named " + s + " in " + map.keySet());
+		return relationalOp;
 	}
 	public static Collection<RelationalOp> values() {
 		return map.values();
@@ -49,6 +52,7 @@ public abstract class RelationalOp {
 	private RelationalOp(String value, String name) {
 		this.value = value;
 		this.name = name;
+		map.put(name, this);
 	}
 
 	@Override
