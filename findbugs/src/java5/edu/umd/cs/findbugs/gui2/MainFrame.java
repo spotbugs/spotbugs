@@ -921,7 +921,7 @@ public class MainFrame extends FBFrame implements LogSync
 			fileType = convertFilterToType(saveOpenFileChooser.getFileFilter());
 			final File f = saveOpenFileChooser.getSelectedFile();
 
-			if(fileType.isValid(f)){
+			if(!fileType.isValid(f)){
 				JOptionPane.showMessageDialog(saveOpenFileChooser,
 						"That file is not compatible with the chosen file type", "Invalid File",
 						JOptionPane.WARNING_MESSAGE);
