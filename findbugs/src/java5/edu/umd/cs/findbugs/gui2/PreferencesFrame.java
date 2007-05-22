@@ -397,7 +397,7 @@ public class PreferencesFrame extends FBDialog {
 		return filterPanel;
 	}
 
-	private class MatchBox extends JCheckBox{
+	private static class MatchBox extends JCheckBox{
 		Matcher m;
 		MatchBox(String text, Matcher m){
 			super(text);

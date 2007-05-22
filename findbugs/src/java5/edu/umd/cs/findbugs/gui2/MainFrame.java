@@ -924,7 +924,8 @@ public class MainFrame extends FBFrame implements LogSync
 
 
 			case PROJECT:
-				File xmlFile= new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");		
+				File xmlFile = OriginalGUI2ProjectFile.fileContainingXMLData(f);
+				
 
 				if (!xmlFile.exists())
 				{

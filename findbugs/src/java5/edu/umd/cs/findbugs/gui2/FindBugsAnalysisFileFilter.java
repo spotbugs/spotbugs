@@ -28,7 +28,9 @@ public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 	public static final  FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
 	@Override
 	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".xml") || arg0.isDirectory();
+		boolean accept = arg0.getName().endsWith(".xml") || (OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists());
+		System.out.println(arg0.getName() + " FindBugsAnalysisFileFilter " + accept);
+		return accept;
 	}
 
 	@Override

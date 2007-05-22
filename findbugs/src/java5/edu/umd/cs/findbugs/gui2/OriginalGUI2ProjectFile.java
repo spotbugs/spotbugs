@@ -9,39 +9,26 @@
  * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston MA 02111-1307, USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 
-import javax.swing.filechooser.FileFilter;
-
-public final class FindBugsProjectFileFilter extends FindBugsFileFilter {
-
-	public static final  FindBugsProjectFileFilter INSTANCE = new FindBugsProjectFileFilter();
-
-
-	@Override
-	public boolean accept(File arg0) {
-		//return arg0.getName().endsWith(".fb") || arg0.isDirectory();
-		if (!arg0.isDirectory()) return false;
-		return (OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists());
+/**
+ * @author pugh
+ */
+final public class OriginalGUI2ProjectFile {
+	private OriginalGUI2ProjectFile(){};
+	
+	static File fileContainingXMLData(File projectDir) {
+		return new File(projectDir,  projectDir.getName() + ".xml");		
 	}
 
-	@Override
-	public String getDescription() {
-		return "FindBugs project directory";
-	}
-
-	@Override
-	SaveType getSaveType() {
-		return SaveType.PROJECT;
-	}
 }
