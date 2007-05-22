@@ -36,6 +36,14 @@ public FindBugsFileFilter getFilter() {
 			throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
 	}
 }
+public boolean isValid(File f) {
+	if (this == PROJECT) {
+		return OriginalGUI2ProjectFile.isValid(f);
+	}
+	if (f.isDirectory()) return false;
+	FindBugsFileFilter filter = getFilter();
+	return filter.accept(f);
+}
 public String getFileExtension() {
 	switch (this) {
 	case PROJECT:
