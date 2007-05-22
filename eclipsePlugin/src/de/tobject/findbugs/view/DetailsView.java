@@ -186,7 +186,8 @@ public class DetailsView extends ViewPart {
 
 			} catch (Exception e2) {
 				FindbugsPlugin.getDefault().logException(
-						e2, "Could not create HTMLTextPresenter");
+						new RuntimeException(e.getMessage(), e), 
+                        "Could not create a org.eclipse.swt.widgets.Composite.Browser");
             }
 
 		}
