@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -32,7 +33,15 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
+import edu.umd.cs.findbugs.ba.LockSet;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
@@ -125,7 +134,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 					tBugType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
 				}
 				if (tBugType != null) {
-					reporter.reportBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClass(currentClass).addField(
+					reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(
 					        currentClass, aField.getName(), tFieldSig, true));
 				}
 			} catch (ClassNotFoundException e) {
@@ -141,6 +150,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visitMethod(Method obj) {
+		if (getMethodName().equals("<clinit>")) return; // don't look at class initializers
 		try {
 			super.visitMethod(obj);
 			currentMethod = obj;
@@ -151,6 +161,11 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		} catch (DataflowAnalysisException e) {
 			reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
 		}
+	}
+	
+	@Override
+	public void visit(Code obj) {
+		if (getMethodName().equals("<clinit>")) return; // don't look at class initializers
 	}
 
 	/**
