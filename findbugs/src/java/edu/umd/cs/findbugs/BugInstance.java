@@ -257,9 +257,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getPriorityTypeAbbreviation()
 	{
 		String priorityString = getPriorityAbbreviation();
-		 return priorityString + " " + getBugPattern().getCategoryAbbrev();
-
+		return priorityString + " " + getCategoryAbbrev();
 	}
+
+	public String getCategoryAbbrev() {
+	    BugPattern bugPattern = getBugPattern();
+	    if (bugPattern == null) return "?";
+		return bugPattern.getCategoryAbbrev();
+    }
 
 	public String getPriorityString() {
 		//first, get the priority
