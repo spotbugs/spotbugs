@@ -30,7 +30,7 @@ public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
 	private FindBugsFBAFileFilter() {};
 	@Override
 	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".fba");
+		return arg0.getName().endsWith(".fba") || arg0.isDirectory();
 	}
 
 	@Override

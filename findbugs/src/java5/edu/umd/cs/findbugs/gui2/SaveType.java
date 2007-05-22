@@ -31,7 +31,7 @@ public FindBugsFileFilter getFilter() {
 	case FBP_FILE:
 		return FindBugsFBPFileFilter.INSTANCE;
 	case FBA_FILE:
-		return FindBugsFBPFileFilter.INSTANCE;
+		return FindBugsFBAFileFilter.INSTANCE;
 	default: 
 			throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
 	}

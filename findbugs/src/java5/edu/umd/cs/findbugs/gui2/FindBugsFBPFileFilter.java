@@ -30,7 +30,7 @@ public final class FindBugsFBPFileFilter extends FindBugsFileFilter {
 	private FindBugsFBPFileFilter() {};
 	@Override
 	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".fbp");
+		return arg0.getName().endsWith(".fbp") || arg0.isDirectory();
 	}
 
 	@Override

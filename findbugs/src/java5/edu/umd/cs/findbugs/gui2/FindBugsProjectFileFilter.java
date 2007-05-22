@@ -31,8 +31,9 @@ public final class FindBugsProjectFileFilter extends FindBugsFileFilter {
 	@Override
 	public boolean accept(File arg0) {
 		//return arg0.getName().endsWith(".fb") || arg0.isDirectory();
-		if (!arg0.isDirectory()) return false;
-		return (OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists());
+		if (arg0.isDirectory()) return true;
+//		return (OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists());
+		return false;
 	}
 
 	@Override
