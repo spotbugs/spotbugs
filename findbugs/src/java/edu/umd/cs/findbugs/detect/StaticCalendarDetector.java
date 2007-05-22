@@ -150,7 +150,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visitMethod(Method obj) {
-		if (getMethodName().equals("<clinit>")) return; // don't look at class initializers
 		try {
 			super.visitMethod(obj);
 			currentMethod = obj;
@@ -163,10 +162,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		}
 	}
 	
-	@Override
-	public void visit(Code obj) {
-		if (getMethodName().equals("<clinit>")) return; // don't look at class initializers
-	}
 
 	/**
 	 * Checks for method invocations ({@link org.apache.bcel.generic.INVOKEVIRTUAL})
@@ -206,6 +201,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				return;
 			}
 
+			if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName())) return;
 			if (getNameConstantOperand().equals("equals") && numArguments == 1) {
 				OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
 				field = passedAsArgument.getXField();
