@@ -67,9 +67,9 @@ private static String getFileExtension(File f) {
 public static SaveType forFile(File f) {
 	String extension = getFileExtension(f);
 	if (OriginalGUI2ProjectFile.isValid(f)) return PROJECT;
-	if (extension.equals(".fbp")) return FBP_FILE;
-	if (extension.equals(".fba")) return FBA_FILE;
-	if (extension.equals(".xml")) return XML_ANALYSIS;
+	if (extension.equals("fbp")) return FBP_FILE;
+	if (extension.equals("fba")) return FBA_FILE;
+	if (extension.equals("xml")) return XML_ANALYSIS;
 	return NOT_KNOWN;
 }
 }
