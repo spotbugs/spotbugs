@@ -885,8 +885,7 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	/**
-	 * This method is for when the user wants to open a project or analysis.
-	 *
+	 * This method is for when the user wants to open a file.
 	 */
 	private void open(){
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
@@ -920,13 +919,18 @@ public class MainFrame extends FBFrame implements LogSync
 			fileType = convertFilterToType(saveOpenFileChooser.getFileFilter());
 			final File f = saveOpenFileChooser.getSelectedFile();
 
+			if(fileType.isValid(f)){
+				JOptionPane.showMessageDialog(saveOpenFileChooser,
+						"That file is not compatible with the chosen file type", "Invalid File",
+						JOptionPane.WARNING_MESSAGE);
+				loading = true;
+				continue;
+			}
+			
 			switch (fileType) {
-
-
 			case PROJECT:
 				File xmlFile = OriginalGUI2ProjectFile.fileContainingXMLData(f);
 				
-
 				if (!xmlFile.exists())
 				{
 					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
@@ -950,11 +954,45 @@ public class MainFrame extends FBFrame implements LogSync
 					continue tryAgain;
 				}
 				break;
+			case FBP_FILE:
+				if(!openFBPFile(f)){
+					//TODO: Deal if something happens when loading analysis
+					JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+					loading=true;
+					continue tryAgain;
+				}
+				break;
+			case FBA_FILE:
+				if(!openFBAFile(f)){
+					//TODO: Deal if something happens when loading analysis
+					JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+					loading=true;
+					continue tryAgain;
+				}
+				break;
 			}
 		}
 	}
 
 
+	/**
+	 * Method called to open FBA file.
+     * @param f
+     * @return
+     */
+    private boolean openFBAFile(File f) {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+	/**
+	 * Method called to open FBP file.
+     * @param f
+     * @return
+     */
+    private boolean openFBPFile(File f) {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 	private boolean saveAs(){
 		saveOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
