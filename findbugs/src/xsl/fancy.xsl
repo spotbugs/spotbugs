@@ -24,6 +24,14 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
          encoding="UTF-8"/>
 
+    <!-- 
+        Parameter for specifying HTMLized sources location; if current dir, use "./" 
+        If not passed, no links to sources are generated.
+        because of back-compatibility reasons. 
+        The source filename should be package.class.java.html
+        The source can have line no anchors like #11 -->
+    <xsl:param name="htmlsrcpath"></xsl:param>
+
    <!--xsl:key name="lbc-category-key"    match="/BugCollection/BugInstance" use="@category" /-->
    <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
    <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
@@ -118,6 +126,9 @@
          }
          a, a:link , a:active, a:visited, a:hover {
             text-decoration: none; color: black;
+         }
+         .b-r a {
+            text-decoration: underline; color: blue;
          }
          div, span {
             vertical-align: top;
@@ -345,7 +356,17 @@
             <div style="display:none;">
                <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:attribute>
                <xsl:for-each select="*/Message">
-                  <div class="b-r"><xsl:apply-templates /></div>
+                   <xsl:choose>
+                    <xsl:when test="parent::SourceLine and $htmlsrcpath != '' ">
+                      <div class="b-r"><a>
+                        <xsl:attribute name="href"><xsl:value-of select="$htmlsrcpath"/><xsl:value-of select="../@sourcepath" />.html#<xsl:value-of select="../@start" /></xsl:attribute>
+                        <xsl:apply-templates />
+                      </a></div>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <div class="b-r"><xsl:apply-templates /></div>
+                    </xsl:otherwise>
+                   </xsl:choose>
                </xsl:for-each>
                <div class="b-d">
                   <xsl:value-of select="LongMessage" disable-output-escaping="no" />
