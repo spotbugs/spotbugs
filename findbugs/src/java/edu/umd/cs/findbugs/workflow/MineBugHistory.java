@@ -54,7 +54,7 @@ public class MineBugHistory {
 	static final int ACTIVE_NOW = 6;
 	static final int TUPLE_SIZE = 7;
 
-	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH:mm");
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH:mm");
 
 	static class Version {
 		long sequence;
