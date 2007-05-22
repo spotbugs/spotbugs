@@ -619,12 +619,11 @@ public class Project implements XMLWriteable {
 	}
 	public  void writeXML(File f) throws IOException {
 		OutputStream out  = new FileOutputStream(f);
+		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 		try {
-		XMLOutput xmlOutput= new OutputStreamXMLOutput(out);
-
-		writeXML(xmlOutput);
+			writeXML(xmlOutput);
 		} finally {
-			Util.closeSilently(out);
+			xmlOutput.finish();
 		}
 	}
 
