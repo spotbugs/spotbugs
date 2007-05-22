@@ -335,15 +335,21 @@ public class MainFrame extends FBFrame implements LogSync
 		System.exit(0);
 	}
 
+	/*
+	 * A lot of if(false) here as switching from special cases based on localSaveType
+	 * to depending on the SaveType.forFile(f) method. Can delete when sure works.
+	 */
 	JMenuItem createRecentItem(final File f, final SaveType localSaveType)
 	{
 		String name = f.getName();
-
+		
+		if(false){
 		if(!f.getName().endsWith(".xml"))
 			Debug.println("File does not end with .xml!!");
 
 		if(localSaveType == SaveType.PROJECT && f.getName().endsWith(".xml")){
 			name = f.getName().substring(0, f.getName().length()-4);
+		}
 		}
 
 		final JMenuItem item=new JMenuItem(name);
@@ -357,12 +363,12 @@ public class MainFrame extends FBFrame implements LogSync
 					if (!f.exists())
 					{
 						JOptionPane.showMessageDialog(null,edu.umd.cs.findbugs.L10N.getLocalString("msg.proj_not_found", "This project can no longer be found"));
-						GUISaveState.getInstance().projectNotFound(f,localSaveType);
+						GUISaveState.getInstance().fileNotFound(f);
 						return;
 					}
-					GUISaveState.getInstance().projectReused(f,localSaveType);//Move to front in GUISaveState, so it will be last thing to be removed from the list
+					GUISaveState.getInstance().fileReused(f);//Move to front in GUISaveState, so it will be last thing to be removed from the list
 
-					MainFrame.this.recentMenuCache.addRecentFile(f,localSaveType);
+					MainFrame.this.recentMenuCache.addRecentFile(f);
 
 					if (!f.exists())
 						throw new IllegalStateException ("User used a recent projects menu item that didn't exist.");
@@ -388,6 +394,31 @@ public class MainFrame extends FBFrame implements LogSync
 						//IF no, do nothing.
 					}
 
+					SaveType st = SaveType.forFile(f);
+					boolean result = true;
+					switch(st){
+					case PROJECT:
+						openProject(f);
+						break;
+					case XML_ANALYSIS:
+						result = openAnalysis(f, st);
+						break;
+					case FBP_FILE:
+						result = openFBPFile(f);
+						break;
+					case FBA_FILE:
+						result = openFBAFile(f);
+						break;
+					}
+					
+					if(!result){
+						JOptionPane.showMessageDialog(MainFrame.getInstance(),
+								"There was an error in opening the file", "Recent Menu Opening Error",
+								JOptionPane.WARNING_MESSAGE);
+					}
+					
+					
+					if(false){
 					if (localSaveType==SaveType.PROJECT)
 					{
 						if(false){ //Old stuff still here in case openProject doesn't work.
@@ -416,6 +447,7 @@ public class MainFrame extends FBFrame implements LogSync
 						}
 
 						openAnalysis(f, localSaveType);
+					}
 					}
 
 					if(false){
@@ -2237,6 +2269,7 @@ public class MainFrame extends FBFrame implements LogSync
 			return false;
 		}
 	}
+	
 	private void prepareForFileLoad(File f, SaveType saveType) {
 	    setRebuilding(true);
 		//This creates a new filters and suppressions so don't use the previoues one.
@@ -2368,7 +2401,8 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		}).start();
 
-		addFileToRecent(xmlFile, SaveType.PROJECT);
+//		addFileToRecent(xmlFile, SaveType.PROJECT);
+		addFileToRecent(dir, SaveType.PROJECT);
 
 		clearSourcePane();
 		clearSummaryTab();
@@ -2395,9 +2429,9 @@ public class MainFrame extends FBFrame implements LogSync
 		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
 		if (!xmlFiles.contains(xmlFile))
 		{
-			GUISaveState.getInstance().addRecentFile(xmlFile, st);
+			GUISaveState.getInstance().addRecentFile(xmlFile);
 		}
-		MainFrame.this.recentMenuCache.addRecentFile(xmlFile,st);
+		MainFrame.this.recentMenuCache.addRecentFile(xmlFile);
 	}
 
 	private void newProjectMenu() {

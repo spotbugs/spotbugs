@@ -64,26 +64,26 @@ public class RecentMenu{
 		}
 	}
 
-	LimitedArrayList<File> recentProjects;
-	LimitedArrayList<File> recentAnalyses;
+	LimitedArrayList<File> recentFiles;//Originally called recentProjects before merge two lists into one.
+	//LimitedArrayList<File> recentAnalyses;
 	JMenu recentMenu;
 
 	public RecentMenu(JMenu menu)
 	{
-		recentProjects=new LimitedArrayList<File>();
-		recentAnalyses=new LimitedArrayList<File>();
+		recentFiles=new LimitedArrayList<File>();
+		//recentAnalyses=new LimitedArrayList<File>();
 		recentMenu=menu;
-		recentMenu.add("Recent Projects:").setEnabled(false);
+		//recentMenu.add("Recent Projects:").setEnabled(false);
 
 		for (File f: GUISaveState.getInstance().getRecentProjects())
 		{
-			recentProjects.add(f);
+			recentFiles.add(f);
 		}
 
-		for (File f: GUISaveState.getInstance().getRecentAnalyses())
+		/*for (File f: GUISaveState.getInstance().getRecentAnalyses())
 		{
 			recentAnalyses.add(f);
-		}
+		}*/
 
 		makeRecentMenu();
 	}
@@ -91,8 +91,8 @@ public class RecentMenu{
 	public void makeRecentMenu()
 	{
 		recentMenu.removeAll();
-		recentMenu.add("Recent Projects:").setEnabled(false);
-		for (File f: recentProjects)
+		//recentMenu.add("Recent Projects:").setEnabled(false);
+		for (File f: recentFiles)
 		{
 			Debug.println(f);
 			if (!f.exists())
@@ -103,9 +103,9 @@ public class RecentMenu{
 
 			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.PROJECT));
 		}
-		recentMenu.addSeparator();
-		recentMenu.add("Recent Analyses:").setEnabled(false);
-		for (File f: recentAnalyses)
+		//recentMenu.addSeparator();
+		//recentMenu.add("Recent Analyses:").setEnabled(false);
+		/*for (File f: recentAnalyses)
 		{
 			Debug.println(f);
 			if (!f.exists())
@@ -115,21 +115,27 @@ public class RecentMenu{
 			}
 
 			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.XML_ANALYSIS));
-		}
+		}*/
 	}
 
 	public void addRecentFile(final File f, final SaveType localSaveType)
 	{
-		if (localSaveType==SaveType.PROJECT)
-			recentProjects.add(f);
-		else if (localSaveType==SaveType.XML_ANALYSIS)
-			recentAnalyses.add(f);
+		//if (localSaveType==SaveType.PROJECT)
+			recentFiles.add(f);
+/*		else if (localSaveType==SaveType.XML_ANALYSIS)
+			recentAnalyses.add(f);*/
 		makeRecentMenu();
 	}
 
+	/**
+	 * Adds a file to the list of recent files used.
+	 * @param f
+	 */
+	public void addRecentFile(final File f)
+	{
+		recentFiles.add(f);
 
-
-
-
+		makeRecentMenu();
+	}
 
 }

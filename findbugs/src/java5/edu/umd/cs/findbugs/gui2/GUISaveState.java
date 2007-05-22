@@ -183,6 +183,7 @@ public class GUISaveState{
 			throw new IllegalStateException("Your file is not of any valid save type--GetRecent");
 		}
 	}
+	
 	public ArrayList<File> getRecentProjects()
 	{
 		return recentProjects;
@@ -215,10 +216,57 @@ public class GUISaveState{
 
 	public void projectReused(File f)
 	{
-		projectReused(f, SaveType.PROJECT);
+		fileReused(f, SaveType.PROJECT);
 	}
 
-	public void projectReused(File f, SaveType s)
+	/**
+	 * This should be the method called to add a reused file for the recent menu.
+	 */
+	public void fileReused(File f){
+		if (!recentProjects.contains(f))
+		{
+			throw new IllegalStateException("Selected a recent project that doesn't exist?");
+		}
+		else
+		{
+			recentProjects.remove(f);
+			recentProjects.add(f);
+		}
+	}
+	
+	/**
+	 * This should be the method used to add a file for the recent menu.
+	 * @param f
+	 */
+	public void addRecentFile(File f){
+		recentProjects.add(f);
+	}
+	
+	/**
+	 * Returns the list of recent files.
+	 * @return
+	 */
+	public ArrayList<File> getRecentFiles()
+	{
+		return recentProjects;
+	}
+	
+	/**
+	 * Call to remove a file from the list.
+	 * @param f
+	 */
+	public void fileNotFound(File f)
+	{
+		if (!recentProjects.contains(f))
+		{
+			throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
+		}
+		else
+			recentProjects.remove(f);
+
+	}
+	
+	public void fileReused(File f, SaveType s)
 	{
 		switch (s) {
 		case PROJECT:
