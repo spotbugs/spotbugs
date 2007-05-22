@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -414,7 +415,7 @@ public class MainFrame extends FBFrame implements LogSync
 							ProjectSettings.newInstance();//Just make up new filters and suppressions, cuz he doesn't have any
 						}
 
-						openAnalysis(f);
+						openAnalysis(f, localSaveType);
 					}
 
 					if(false){
@@ -948,7 +949,7 @@ public class MainFrame extends FBFrame implements LogSync
 					continue tryAgain;
 				}
 
-				if(!openAnalysis(f)){
+				if(!openAnalysis(f, fileType)){
 					//TODO: Deal if something happens when loading analysis
 					JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
 					loading=true;
@@ -982,8 +983,7 @@ public class MainFrame extends FBFrame implements LogSync
      * @return
      */
     private boolean openFBAFile(File f) {
-	    // TODO Auto-generated method stub
-	    return false;
+	   return openAnalysis(f, SaveType.FBA_FILE);
     }
 	/**
 	 * Method called to open FBP file.
@@ -991,8 +991,18 @@ public class MainFrame extends FBFrame implements LogSync
      * @return
      */
     private boolean openFBPFile(File f) {
-	    // TODO Auto-generated method stub
-	    return false;
+    		if (!f.exists() || !f.canRead()) {
+    			
+    			return false;
+    		}
+
+    		prepareForFileLoad(f, SaveType.FBP_FILE);
+  
+    		loadProjectFromFile(f);
+
+    		return true;
+    		
+    	
     }
 	private boolean saveAs(){
 		saveOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
@@ -2212,40 +2222,44 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param f
 	 * @return
 	 */
-	private boolean openAnalysis(File f){
+	private boolean openAnalysis(File f, SaveType saveType){
+		if (!f.exists() || !f.canRead()) {
+			throw new IllegalArgumentException("Can't read " + f);
+		}
+
+		prepareForFileLoad(f, saveType);
 		try {
 			FileInputStream in = new FileInputStream(f);
 			loadAnalysisFromInputStream(in);
-
-			//This creates a new filters and suppressions so don't use the previoues one.
-			ProjectSettings.newInstance();
-
-			clearSourcePane();
-			clearSummaryTab();
-			comments.setUserCommentInputEnable(false);
-			reconfigMenuItem.setEnabled(true);
-			setProjectChanged(false);
-			saveType = SaveType.XML_ANALYSIS;
-			saveFile = f;
-			changeTitle();
-
-			addFileToRecent(f, SaveType.XML_ANALYSIS);
 
 			return true;
 		} catch (IOException e) {
 			return false;
 		}
 	}
+	private void prepareForFileLoad(File f, SaveType saveType) {
+	    setRebuilding(true);
+		//This creates a new filters and suppressions so don't use the previoues one.
+		ProjectSettings.newInstance();
+
+		clearSourcePane();
+		clearSummaryTab();
+		comments.setUserCommentInputEnable(false);
+		reconfigMenuItem.setEnabled(true);
+		setProjectChanged(false);
+		this.saveType = saveType;
+		saveFile = f;
+
+		addFileToRecent(f, saveType);
+    }
 
 	/**
 	 * @param file
 	 * @return
 	 */
-	@SwingThread
 	private void loadAnalysisFromInputStream(final InputStream in) {
-		// showWaitCard();
-		MainFrame.this.setRebuilding(true);
-		new Thread(new Runnable(){
+
+		Runnable runnable = new Runnable(){
 			public void run()
 			{
 
@@ -2256,10 +2270,33 @@ public class MainFrame extends FBFrame implements LogSync
 						setProjectAndBugCollection(project, bc);
 					}});
 			}
-		}).start();
+		};
+		if (EventQueue.isDispatchThread())
+			new Thread(runnable).start();
+		else runnable.run();
 		return;
 	}
+	/**
+	 * @param file
+	 * @return
+	 */
+	private void loadProjectFromFile(final File f) {
 
+		Runnable runnable = new Runnable(){
+			public void run()
+			{
+				final Project  project =BugLoader.loadProject(MainFrame.this, f);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						setProjectAndBugCollection(project, new SortedBugCollection());
+					}});
+			}
+		};
+		if (EventQueue.isDispatchThread())
+			new Thread(runnable).start();
+		else runnable.run();
+		return;
+	}
 	/**
 	 * Redo the analysis
 	 */

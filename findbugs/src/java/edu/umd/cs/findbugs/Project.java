@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.dom4j.DocumentException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -577,7 +578,7 @@ public class Project implements XMLWriteable {
 		isModified = false;
 	}
 
-	public static Project readXML(File f) throws IOException {
+	public static Project readXML(File f) throws IOException, DocumentException, SAXException {
 		Project project = new Project();
 		InputStream in = new BufferedInputStream(new FileInputStream(f));
 		String tag = Util.getXMLType(in);
@@ -605,12 +606,6 @@ public class Project implements XMLWriteable {
 			Reader reader = Util.getReader(in);
 
 			xr.parse(new InputSource(reader));
-		} catch (SAXParseException e) {
-			throw Util.makeIOException("Parse error at line " + e.getLineNumber()
-					+ " : " + e.getColumnNumber(), e);
-		} catch (SAXException e) {
-			// FIXME: throw SAXException from method?
-			throw Util.makeIOException("Sax error ", e);
 		}
 		finally {
 			in.close();

@@ -32,6 +32,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.dom4j.DocumentException;
+import org.xml.sax.SAXException;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugCollectionBugReporter;
@@ -45,7 +46,7 @@ import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.XMLBugReporter;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -148,7 +149,7 @@ public class BugLoader {
 		}	
 		return null;
 	}
-	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, InputStream in)
+	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, InputStream in)
 	{
 			try 
 			{
@@ -160,13 +161,33 @@ public class BugLoader {
 				}
 				return col;
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(mainFrame,"This file contains no bug data");
+				JOptionPane.showMessageDialog(mainFrame,"Could not read file; " + e.getMessage());
 			} catch (DocumentException e) {
-				JOptionPane.showMessageDialog(mainFrame,"This file does not have the correct format; it may be corrupt.");
+				JOptionPane.showMessageDialog(mainFrame,"Could not parse file; " + e.getMessage());
 			}
 			return null;
 	}
 
+	public static @CheckForNull Project loadProject(MainFrame mainFrame,  File f)
+	{
+		try 
+		{
+			Project project = Project.readXML(f); 
+
+			Filter suppressionMatcher = project.getSuppressionFilter();
+			if (suppressionMatcher != null) {
+				suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+			}
+			return project;
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(mainFrame,"Could not read " + f + "; " + e.getMessage());
+		} catch (DocumentException e) {
+			JOptionPane.showMessageDialog(mainFrame, "Could not read project from " + f + "; " + e.getMessage());
+		} catch (SAXException e) {
+			JOptionPane.showMessageDialog(mainFrame, "Could not read  project from " + f + "; " + e.getMessage());
+		}
+		return null;
+	}
 
 	private BugLoader()
 	{

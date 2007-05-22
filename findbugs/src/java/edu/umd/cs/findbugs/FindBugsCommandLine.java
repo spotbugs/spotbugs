@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.dom4j.DocumentException;
+import org.xml.sax.SAXException;
 
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -152,7 +153,18 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	    	}
 
 	    } else if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
+	    	try {
 	    	return project = Project.readXML(projectFile);
+	    	} catch (DocumentException e) {
+	    		IOException ioe = new IOException("Couldn't read saved FindBugs project");
+	    		ioe.initCause(e);
+	    		throw ioe;
+	    	}
+	    	catch (SAXException e) {
+	    		IOException ioe = new IOException("Couldn't read saved FindBugs project");
+	    		ioe.initCause(e);
+	    		throw ioe;
+	    	}
 	    } else {
 	    	// Old-style (original GUI) project file
 
