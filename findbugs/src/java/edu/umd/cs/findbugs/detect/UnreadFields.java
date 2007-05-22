@@ -637,7 +637,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				
 		readOnlyFields.removeAll(assumeReflective);
 		nullOnlyFields.removeAll(assumeReflective);
-				
+		notInitializedInConstructors.removeAll(assumeReflective);
+		
 		for (XField f : notInitializedInConstructors) {
 			String fieldName = f.getName();
 			String className = f.getClassName();
