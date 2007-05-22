@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * @author pugh
  */
@@ -38,7 +40,8 @@ public class VersionMatcher {
 		return version == m.version && relOp.equals(m.relOp);
 	}
 
-	public VersionMatcher(long version, RelationalOp relOp) {
+	public VersionMatcher(long version, @NonNull RelationalOp relOp) {
+		if (relOp == null) throw new NullPointerException("relOp must be nonnull");
 		this.version = version;
 		this.relOp = relOp;
 	}
