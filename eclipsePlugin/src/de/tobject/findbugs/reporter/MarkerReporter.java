@@ -99,7 +99,12 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			else
 				marker.setAttribute(FindBugsMarker.FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
 		}
+        try {
 		marker.setAttribute(IMarker.MESSAGE, bug.getMessageWithPriorityTypeAbbreviation());
+        } catch (RuntimeException e) {
+            FindbugsPlugin.getDefault().logException(e, "Error generating msg for " + bug.getType());
+            marker.setAttribute(IMarker.MESSAGE, "??? " + bug.getType());
+        }
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 		marker.setAttribute(FindBugsMarker.PRIORITY_TYPE, bug.getPriorityTypeString());
 		if (bug.getPriority() == Detector.HIGH_PRIORITY)
