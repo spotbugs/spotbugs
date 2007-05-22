@@ -30,5 +30,7 @@ final public class OriginalGUI2ProjectFile {
 	static File fileContainingXMLData(File projectDir) {
 		return new File(projectDir,  projectDir.getName() + ".xml");		
 	}
-
+	static boolean isValid(File projectDir) {
+		return fileContainingXMLData(projectDir).exists();
+	}
 }

@@ -50,12 +50,18 @@ public String getFileExtension() {
 			throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
 	}
 }
-public static SaveType forFile(File f) {
+private static String getFileExtension(File f) {
 	String name = f.getName();
-	if (name.endsWith(".fbp")) return FBP_FILE;
-	if (name.endsWith(".fba")) return FBA_FILE;
-	if (name.endsWith(".xml")) return XML_ANALYSIS;
-	if (f.isDirectory()) return PROJECT;
+	int lastDot = name.lastIndexOf('.');
+	if (lastDot == -1) return "";
+	return name.substring(lastDot+1).toLowerCase();
+}
+public static SaveType forFile(File f) {
+	String extension = getFileExtension(f);
+	if (OriginalGUI2ProjectFile.isValid(f)) return PROJECT;
+	if (extension.equals(".fbp")) return FBP_FILE;
+	if (extension.equals(".fba")) return FBA_FILE;
+	if (extension.equals(".xml")) return XML_ANALYSIS;
 	return NOT_KNOWN;
 }
 }
