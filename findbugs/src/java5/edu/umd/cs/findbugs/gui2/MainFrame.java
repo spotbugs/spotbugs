@@ -986,23 +986,43 @@ public class MainFrame extends FBFrame implements LogSync
 
 			f = saveOpenFileChooser.getSelectedFile();
 
+			if(fileType.isValid(f)){
+				JOptionPane.showMessageDialog(saveOpenFileChooser,
+						"That file is not compatible with the chosen file type", "Invalid File",
+						JOptionPane.WARNING_MESSAGE);
+				retry = true;
+				continue;
+			}
+			
 			f = convertFile(f, fileType);
 
 			alreadyExists = fileAlreadyExists(f, fileType);
 			if(alreadyExists){
 				int response = -1;
 
-				if(fileType == SaveType.XML_ANALYSIS){
+				switch(fileType){
+				case XML_ANALYSIS:
 					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-				}
-				else if(fileType == SaveType.PROJECT){
+					break;
+				case PROJECT:
 					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_already_exists_lbl", "This project already exists.\nDo you want to replace it?"),
 							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					break;
+				case FBP_FILE:
+					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
+							edu.umd.cs.findbugs.L10N.getLocalString("FB Project File already exists", "This FB project file already exists.\nDo you want to replace it?"),
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					break;
+				case FBA_FILE:
+					response = JOptionPane.showConfirmDialog(saveOpenFileChooser, 
+							edu.umd.cs.findbugs.L10N.getLocalString("FB Analysis File already exists", "This FB analysis file already exists.\nDo you want to replace it?"),
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					break;
 				}
-
+				
 				if(response == JOptionPane.OK_OPTION)
 					retry = false;
 				if(response == JOptionPane.CANCEL_OPTION){
@@ -1013,11 +1033,22 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 
 			SaveReturn successful = SaveReturn.SAVE_ERROR;
-			if(fileType == SaveType.XML_ANALYSIS)
-				successful = saveAnalysis(f);
-			else if(fileType == SaveType.PROJECT)
-				successful = saveProject(f);
 
+			switch(fileType){
+			case PROJECT:
+				successful = saveProject(f);
+				break;
+			case XML_ANALYSIS:
+				successful = saveAnalysis(f);
+				break;
+			case FBA_FILE:
+				successful = saveFBAFile(f);
+				break;
+			case FBP_FILE:
+				successful = saveFBPFile(f);
+				break;
+			}
+			
 			if (successful != SaveReturn.SAVE_SUCCESSFUL)
 			{
 				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
@@ -1052,44 +1083,53 @@ public class MainFrame extends FBFrame implements LogSync
 
 	/*
 	 * Depending on File and SaveType determines if f already exists. Returns false if not
-	 * exist, true otherwise. For a project if either the .xml or .fas file already exists
-	 * will return true.
+	 * exist, true otherwise. For a project calls
+	 * OriginalGUI2ProjectFile.fileContainingXMLData(f).exists
 	 */
 	private boolean fileAlreadyExists(File f, SaveType fileType){
-		if(fileType == SaveType.XML_ANALYSIS && f.exists())
-			return true;
-
 		if(fileType == SaveType.PROJECT){
-			File xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
+			/*File xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
 			File fasFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".fas");
-			return xmlFile.exists() || fasFile.exists();
+			return xmlFile.exists() || fasFile.exists();*/
+			return (OriginalGUI2ProjectFile.fileContainingXMLData(f).exists());
 		}
 
-		return false;
+		return f.exists();
 	}
 
 	/*
 	 * If f is not of type FileType will convert file so it is.
 	 */
 	private File convertFile(File f, SaveType fileType){
-		if(fileType == SaveType.XML_ANALYSIS && !f.getName().endsWith(".xml"))
-			f = new File(f.getAbsolutePath()+".xml");
-
-		//This assumes the filefilter for project is working so f can only be a directory.
+		//WARNING: This assumes the filefilter for project is working so f can only be a directory.
 		if(fileType == SaveType.PROJECT)
 			return f;
+
+		//Checks that it has the correct file extension, makes a new file if it doesn't.
+		if(!f.getName().endsWith(fileType.getFileExtension()))
+			f = new File(f.getAbsolutePath() + fileType.getFileExtension());
 
 		return f;
 	}
 
 	private void save(){
 		SaveReturn result = SaveReturn.SAVE_ERROR;
-		if(saveType == SaveType.PROJECT){
+		
+		switch(saveType){
+		case PROJECT:
 			result = saveProject(saveFile);
-		}
-		else if(saveType == SaveType.XML_ANALYSIS){
+			break;
+		case XML_ANALYSIS:
 			result = saveAnalysis(saveFile);
+			break;
+		case FBA_FILE:
+			result = saveFBAFile(saveFile);
+			break;
+		case FBP_FILE:
+			result = saveFBPFile(saveFile);
+			break;
 		}
+
 
 		if(result != SaveReturn.SAVE_SUCCESSFUL){
 			JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString(
@@ -1097,6 +1137,24 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 	}
 
+	/**
+     * @param saveFile2
+     * @return
+     */
+    private SaveReturn saveFBAFile(File saveFile2) {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+	/**
+     * @param saveFile2
+     * @return
+     */
+    private SaveReturn saveFBPFile(File saveFile2) {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+    
+    
 	static final String TREECARD = "Tree";
 	static final String WAITCARD = "Wait";
 
