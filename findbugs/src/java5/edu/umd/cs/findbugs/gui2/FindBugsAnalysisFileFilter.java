@@ -29,7 +29,6 @@ public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 	@Override
 	public boolean accept(File arg0) {
 		boolean accept = arg0.getName().endsWith(".xml") || (OriginalGUI2ProjectFile.fileContainingXMLData(arg0).exists());
-		System.out.println(arg0.getName() + " FindBugsAnalysisFileFilter " + accept);
 		return accept;
 	}
 
