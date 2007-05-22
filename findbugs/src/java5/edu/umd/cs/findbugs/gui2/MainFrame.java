@@ -1039,6 +1039,9 @@ public class MainFrame extends FBFrame implements LogSync
     	
     }
 	private boolean saveAs(){
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+
+		
 		saveOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
 		if (curProject==null)
@@ -1196,6 +1199,9 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	private void save(){
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+
+		
 		SaveReturn result = SaveReturn.SAVE_ERROR;
 		
 		switch(saveType){
@@ -2171,9 +2177,6 @@ public class MainFrame extends FBFrame implements LogSync
 
 		}
 
-//		Saves current comment to current bug.
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
 		dir.mkdir();
 		//updateDesignationDisplay(); - Don't think we need this anymore - Kristin
 
@@ -2241,8 +2244,6 @@ public class MainFrame extends FBFrame implements LogSync
 	 * saving analysis. And to keep saving naming convention.
 	 */
 	private SaveReturn saveAnalysis(File f){
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
 		BugSaver.saveBugs(f, bugCollection, curProject);
 
 		setProjectChanged(false);
@@ -2302,7 +2303,9 @@ public class MainFrame extends FBFrame implements LogSync
 				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						setProjectAndBugCollection(project, bc);
+						if (bc == null)
+							setProjectAndBugCollection(new Project(), new SortedBugCollection());
+						else setProjectAndBugCollection(project, bc);
 					}});
 			}
 		};
@@ -2320,10 +2323,12 @@ public class MainFrame extends FBFrame implements LogSync
 		Runnable runnable = new Runnable(){
 			public void run()
 			{
-				final Project  project =BugLoader.loadProject(MainFrame.this, f);
+				final Project  project = BugLoader.loadProject(MainFrame.this, f);
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						setProjectAndBugCollection(project, new SortedBugCollection());
+						if (project == null)
+							setProjectAndBugCollection(new Project(), new SortedBugCollection());
+						else setProjectAndBugCollection(project, new SortedBugCollection());
 					}});
 			}
 		};
