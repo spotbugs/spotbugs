@@ -409,6 +409,8 @@ public class MainFrame extends FBFrame implements LogSync
 					case FBA_FILE:
 						result = openFBAFile(f);
 						break;
+					default:
+						error("Wrong file type in recent menu item.");
 					}
 					
 					if(!result){

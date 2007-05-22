@@ -108,7 +108,7 @@ public class GUISaveState{
 	private LinkedList<String> previousComments;
 	private boolean useDefault=false;
 	private SorterTableColumnModel starterTable;
-	private ArrayList<File> recentProjects;
+	private ArrayList<File> recentFiles;
 	//private ArrayList<File> recentAnalyses;
 	private byte[] dockingLayout;
 	private Rectangle frameBounds;
@@ -156,7 +156,7 @@ public class GUISaveState{
 
 	private GUISaveState()
 	{
-		recentProjects=new ArrayList<File>();
+		recentFiles=new ArrayList<File>();
 //		projectsToLocations=new HashMap<String,String>();
 		previousComments=new LinkedList<String>();
 	}
@@ -172,14 +172,14 @@ public class GUISaveState{
 	 * This should be the method called to add a reused file for the recent menu.
 	 */
 	public void fileReused(File f){
-		if (!recentProjects.contains(f))
+		if (!recentFiles.contains(f))
 		{
 			throw new IllegalStateException("Selected a recent project that doesn't exist?");
 		}
 		else
 		{
-			recentProjects.remove(f);
-			recentProjects.add(f);
+			recentFiles.remove(f);
+			recentFiles.add(f);
 		}
 	}
 	
@@ -188,7 +188,7 @@ public class GUISaveState{
 	 * @param f
 	 */
 	public void addRecentFile(File f){
-		recentProjects.add(f);
+		recentFiles.add(f);
 	}
 	
 	/**
@@ -197,7 +197,7 @@ public class GUISaveState{
 	 */
 	public ArrayList<File> getRecentFiles()
 	{
-		return recentProjects;
+		return recentFiles;
 	}
 	
 	/**
@@ -206,12 +206,12 @@ public class GUISaveState{
 	 */
 	public void fileNotFound(File f)
 	{
-		if (!recentProjects.contains(f))
+		if (!recentFiles.contains(f))
 		{
 			throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
 		}
 		else
-			recentProjects.remove(f);
+			recentFiles.remove(f);
 
 	}
 
@@ -234,7 +234,7 @@ public class GUISaveState{
 	public static void loadInstance()
 	{
 		GUISaveState newInstance=new GUISaveState();
-		newInstance.recentProjects=new ArrayList<File>();
+		newInstance.recentFiles=new ArrayList<File>();
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
 
 		newInstance.tabSize = p.getInt(TAB_SIZE, 4);
@@ -254,7 +254,7 @@ public class GUISaveState{
 		int size=Math.min(MAXNUMRECENTPROJECTS,p.getInt(GUISaveState.NUMPROJECTS,0));
 		for (int x=0;x<size;x++)
 		{
-			newInstance.recentProjects.add(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
+			newInstance.recentFiles.add(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
 		}
 
 		int sorterSize=p.getInt(GUISaveState.SORTERTABLELENGTH,-1);
@@ -337,16 +337,16 @@ public class GUISaveState{
 			p.put(GUISaveState.COMMENTKEYS[x], comment);
 		}
 
-		int size=recentProjects.size();
-		while (recentProjects.size()>MAXNUMRECENTPROJECTS)
+		int size=recentFiles.size();
+		while (recentFiles.size()>MAXNUMRECENTPROJECTS)
 		{
-			recentProjects.remove(0);
+			recentFiles.remove(0);
 		}
 
 		p.putInt(GUISaveState.NUMPROJECTS,Math.min(size,MAXNUMRECENTPROJECTS));
 		for (int x=0; x<Math.min(size,MAXNUMRECENTPROJECTS);x++)
 		{
-			File file=recentProjects.get(x);
+			File file=recentFiles.get(x);
 			p.put(GUISaveState.RECENTPROJECTKEYS[x],file.getAbsolutePath());
 		}
 
