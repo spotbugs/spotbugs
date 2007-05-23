@@ -181,8 +181,15 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		}
 
 		try {
+			String className = getClassConstantOperand();
+			
+			if (className.startsWith("[")) {
+				// Ignore array classes
+				return;
+			}
+			
 			// determine type of the object the method is invoked on
-			ObjectType tType = ObjectTypeFactory.getInstance(getClassConstantOperand());
+			ObjectType tType = ObjectTypeFactory.getInstance(className);
 
 			// if it is not compatible with Calendar or DateFormat, we are not
 			// interested anymore
