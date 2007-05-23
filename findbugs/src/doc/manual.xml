@@ -1377,7 +1377,40 @@ and JRE/JDK 1.4.0 or later.
 <title>Installation</title>
 
 <para>
-Download the plugin from the following link:
+  We provide update sites that allow you to automatically install FindBugs into Eclipse and also query and install updates.
+  There are three different update sites</para>
+  
+  <variablelist><title>FindBugs Eclipse update sites</title>
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse/">http://findbugs.cs.umd.edu/eclipse/</ulink></term> 
+      
+    <listitem>
+      <para>
+       Only provides official releases of FindBugs.
+      </para>
+    </listitem>
+    </varlistentry>
+    
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclips-candidate/</ulink></term> 
+      
+      <listitem>
+        <para>
+          Provides official releases and release candidates of FindBugs.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-daily/">http://findbugs.cs.umd.edu/eclipse-daily/</ulink></term> 
+      
+      <listitem>
+        <para>
+         Provides the daily build of FindBugs. No testing other than that it compiles. 
+        </para>
+      </listitem>
+    </varlistentry>
+    </variablelist>
+   
+<para>You can also manually
+download the plugin from the following link:
 <ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download"
 >@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
 Extract it in Eclipse's "plugins" subdirectory.
