@@ -92,7 +92,7 @@ public class RecentMenu{
 				continue;
 			}
 
-			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.PROJECT));
+			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.forFile(f)));
 		}
 		
 	}
