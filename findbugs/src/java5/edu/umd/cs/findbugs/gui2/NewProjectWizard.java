@@ -226,8 +226,10 @@ public class NewProjectWizard extends FBDialog
 					MainFrame.getInstance().setProjectChanged(true);
 
 				String name = p.getProjectName();
-				if(name == null)
+				if(name == null){
 					name = Project.UNNAMED_PROJECT;
+					Debug.println("PROJECT NAME IS NULL!!");
+				}
 				MainFrame.getInstance().setTitle(MainFrame.TITLE_START_TXT + name);
 
 				dispose();
@@ -337,7 +339,14 @@ public class NewProjectWizard extends FBDialog
 			{
 				chooser.setFileSelectionMode(fileSelectionMode);
 				chooser.setMultiSelectionEnabled(true);
+				
+				//Removes all the file filters currently in the chooser.
+				for(FileFilter ff : chooser.getChoosableFileFilters()){
+					chooser.removeChoosableFileFilter(ff);
+				}
+				
 				chooser.setFileFilter(filter);
+				
 				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
 				{
 					File[] selectedFiles = chooser.getSelectedFiles();
