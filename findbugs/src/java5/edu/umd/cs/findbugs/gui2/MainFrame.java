@@ -967,13 +967,13 @@ public class MainFrame extends FBFrame implements LogSync
      */
     private boolean openFBPFile(File f) {
     		if (!f.exists() || !f.canRead()) {
-    			
     			return false;
     		}
 
     		prepareForFileLoad(f, SaveType.FBP_FILE);
   
     		loadProjectFromFile(f);
+    		
 
     		return true;
     		
@@ -2265,11 +2265,13 @@ public class MainFrame extends FBFrame implements LogSync
 			public void run()
 			{
 				final Project  project = BugLoader.loadProject(MainFrame.this, f);
+				final BugCollection  bc = project == null ? null : BugLoader.doAnalysis(project);
+				updateProjectAndBugCollection(project, bc, null);
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						if (project == null)
 							setProjectAndBugCollection(new Project(), new SortedBugCollection());
-						else setProjectAndBugCollection(project, new SortedBugCollection());
+						else setProjectAndBugCollection(project,bc);
 					}});
 			}
 		};

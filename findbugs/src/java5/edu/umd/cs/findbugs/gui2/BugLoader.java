@@ -242,7 +242,28 @@ public class BugLoader {
 	 * @param p
 	 * @return the bugs from the reanalysis, or null if cancelled
 	 */
-	public static BugCollection redoAnalysisKeepComments(@NonNull Project p)
+	public static @CheckForNull BugCollection doAnalysis(@NonNull Project p)
+	{
+		if (p == null) throw new NullPointerException("null project");
+
+
+		RedoAnalysisCallback ac= new RedoAnalysisCallback();
+
+		new AnalyzingDialog(p,ac,true);
+
+		if (ac.finished)
+			return  ac.getBugCollection();
+		else
+			return null;
+
+	}
+
+	/**
+	 * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
+	 * @param p
+	 * @return the bugs from the reanalysis, or null if cancelled
+	 */
+	public static @CheckForNull  BugCollection redoAnalysisKeepComments(@NonNull Project p)
 	{
 		if (p == null) throw new NullPointerException("null project");
 
