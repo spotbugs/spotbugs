@@ -75,6 +75,7 @@ public class BugLoader {
 		IFindBugsEngine fb=createEngine(p, pcb);
 		fb.setUserPreferences(UserPreferences.getUserPreferences());
 		fb.setProgressCallback(progressCallback);
+		fb.setProjectName(p.getProjectName());
 		try {
 			fb.execute();
 			List<String> possibleDirectories=p.getSourceDirList();

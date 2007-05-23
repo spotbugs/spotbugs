@@ -1591,7 +1591,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 			Project project = findBugs.getProject();
 
-			project.setProjectName(findBugs.getProjectName());
+			if (project.getProjectName() == null)
+				project.setProjectName(findBugs.getProjectName());
 			if (project.getTimestamp() != 0) {
 				bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
 				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
