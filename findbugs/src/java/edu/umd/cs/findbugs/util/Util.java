@@ -128,4 +128,11 @@ public class Util {
 		e.initCause(cause);
 		return e;
 	}
+
+	public static String getFileExtension(File f) {
+    	String name = f.getName();
+    	int lastDot = name.lastIndexOf('.');
+    	if (lastDot == -1) return "";
+    	return name.substring(lastDot+1).toLowerCase();
+    }
 }

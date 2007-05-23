@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 
+import edu.umd.cs.findbugs.util.Util;
+
 enum SaveType {NOT_KNOWN, PROJECT, XML_ANALYSIS, FBP_FILE, FBA_FILE;
 public FindBugsFileFilter getFilter() {
 	switch (this) {
@@ -58,14 +60,8 @@ public String getFileExtension() {
 			throw new IllegalArgumentException("No filter for type NOT_UNKNOWN");
 	}
 }
-private static String getFileExtension(File f) {
-	String name = f.getName();
-	int lastDot = name.lastIndexOf('.');
-	if (lastDot == -1) return "";
-	return name.substring(lastDot+1).toLowerCase();
-}
 public static SaveType forFile(File f) {
-	String extension = getFileExtension(f);
+	String extension = Util.getFileExtension(f);
 	if (OriginalGUI2ProjectFile.isValid(f)) return PROJECT;
 	if (extension.equals("fbp")) return FBP_FILE;
 	if (extension.equals("fba")) return FBA_FILE;
