@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,6 @@
  */
 
 package edu.umd.cs.findbugs.classfile;
-
 
 /**
  * The analysis cache performs analyses on classes and methods
@@ -82,6 +81,28 @@ public interface IAnalysisCache {
 	 */
 	public<E> E getMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
+
+	/**
+	 * Eagerly put a method analysis object in the cache.
+	 * This can be necessary if an method analysis engine invokes other
+	 * analysis engines that might recursively require the analysis
+	 * being produced.
+	 * 
+	 * @param <E>              the type of the analysis (e.g., FoobarAnalysis)
+	 * @param analysisClass    the analysis class object (e.g., FoobarAnalysis.class)
+	 * @param methodDescriptor the descriptor of the method to analyze
+     * @param analysisObject
+     */
+    public<E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor, Object analysisObject);
+	
+	/**
+	 * Purge all analysis results for given method.
+	 * This can be called when a CFG is pruned and we want to
+	 * compute more accurate analysis results on the new CFG.
+	 * 
+	 * @param methodDescriptor method whose analysis results should be purged
+	 */
+	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor);
 
 	/**
 	 * Register a database factory.
