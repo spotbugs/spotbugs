@@ -231,7 +231,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private Logger logger = new ConsoleLogger(this);
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 
-	SaveType saveType = SaveType.NOT_KNOWN;
+	private SaveType saveType = SaveType.NOT_KNOWN;
 	FBFileChooser saveOpenFileChooser;
 	@CheckForNull private File saveFile = null;
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
@@ -341,16 +341,8 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	JMenuItem createRecentItem(final File f, final SaveType localSaveType)
 	{
+		if (DEBUG) System.out.println("createRecentItem("+f+", "+localSaveType +")");
 		String name = f.getName();
-		
-		if(false){
-		if(!f.getName().endsWith(".xml"))
-			Debug.println("File does not end with .xml!!");
-
-		if(localSaveType == SaveType.PROJECT && f.getName().endsWith(".xml")){
-			name = f.getName().substring(0, f.getName().length()-4);
-		}
-		}
 
 		final JMenuItem item=new JMenuItem(name);
 		item.addActionListener(new ActionListener(){
@@ -418,62 +410,11 @@ public class MainFrame extends FBFrame implements LogSync
 								"There was an error in opening the file", "Recent Menu Opening Error",
 								JOptionPane.WARNING_MESSAGE);
 					}
-					
-					
-					if(false){
-					if (localSaveType==SaveType.PROJECT)
-					{
-						if(false){ //Old stuff still here in case openProject doesn't work.
-							saveFile=f.getParentFile();
-
-							File fasFile=new File(saveFile.getAbsolutePath() + File.separator + saveFile.getName() + ".fas");
-							try 
-							{
-								ProjectSettings.loadInstance(new FileInputStream(fasFile));
-							} catch (Exception exception) 
-							{
-								Debug.println("We are in the recent menuitem FileNotFoundException.");
-								//Silently make a new instance
-								ProjectSettings.newInstance();
-							}
-
-						}
-
-						openProject(f.getParentFile());
-					}
-					else if (localSaveType==SaveType.XML_ANALYSIS)
-					{
-						if(false){
-							saveFile=f;
-							ProjectSettings.newInstance();//Just make up new filters and suppressions, cuz he doesn't have any
-						}
-
-						openAnalysis(f, localSaveType);
-					}
-					}
-
-					if(false){
-						final File extraFinalReferenceToXmlFile=f;
-						new Thread(new Runnable(){
-							public void run()
-							{
-								updateDesignationDisplay();
-
-								BugTreeModel model=(BugTreeModel)tree.getModel();
-//								Debug.println("please wait called by open menu item");
-								BugTreeModel.pleaseWait();
-								MainFrame.this.setRebuilding(true);
-								Project newProject = new Project();
-								SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, newProject, extraFinalReferenceToXmlFile);
-								setProjectAndBugCollection(newProject, bc);
-							}
-						}).start();
-					}
 				}
 				finally
 				{
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					saveType=localSaveType;
+					setSaveType(localSaveType);
 				}
 			}
 		});
@@ -1144,15 +1085,15 @@ public class MainFrame extends FBFrame implements LogSync
 
 //		saveProjectMenuItem.setEnabled(false);
 		saveMenuItem.setEnabled(false);
-		saveType = fileType;
+		setSaveType(fileType);
 		saveFile = f;
 		File xmlFile;
-		if (saveType==SaveType.PROJECT)
+		if (getSaveType()==SaveType.PROJECT)
 			xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
 		else
 			xmlFile=f;
 
-		addFileToRecent(xmlFile, saveType);
+		addFileToRecent(xmlFile, getSaveType());
 
 		return true;
 	}
@@ -1204,7 +1145,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		SaveReturn result = SaveReturn.SAVE_ERROR;
 		
-		switch(saveType){
+		switch(getSaveType()){
 		case PROJECT:
 			result = saveProject(saveFile);
 			break;
@@ -2138,7 +2079,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	
 	private void setSaveMenu() {
-		saveMenuItem.setEnabled(projectChanged && saveFile != null && saveType != SaveType.FBP_FILE && saveFile.exists());
+		saveMenuItem.setEnabled(projectChanged && saveFile != null && getSaveType() != SaveType.FBP_FILE && saveFile.exists());
 	}
 	/**
 	 * Called when something in the project is changed and the change needs to be saved.
@@ -2283,7 +2224,7 @@ public class MainFrame extends FBFrame implements LogSync
 		comments.setUserCommentInputEnable(false);
 		reconfigMenuItem.setEnabled(true);
 		setProjectChanged(false);
-		this.saveType = saveType;
+		this.setSaveType(saveType);
 		saveFile = f;
 
 		addFileToRecent(f, saveType);
@@ -2416,7 +2357,7 @@ public class MainFrame extends FBFrame implements LogSync
 		comments.setUserCommentInputEnable(false);
 
 		setProjectChanged(false);
-		saveType = SaveType.PROJECT;
+		setSaveType(SaveType.PROJECT);
 		saveFile = dir;
 		changeTitle();
 	}
@@ -2460,4 +2401,18 @@ public class MainFrame extends FBFrame implements LogSync
 				"All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
 				"Warning",JOptionPane.WARNING_MESSAGE);
 	}
+	/**
+     * @param saveType The saveType to set.
+     */
+    void setSaveType(SaveType saveType) {
+    	if (DEBUG && this.saveType != saveType) 
+    		System.out.println("Changing save type from " + this.saveType + " to " + saveType);
+	    this.saveType = saveType;
+    }
+	/**
+     * @return Returns the saveType.
+     */
+    SaveType getSaveType() {
+	    return saveType;
+    }
 }
