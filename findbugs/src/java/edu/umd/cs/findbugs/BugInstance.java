@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -123,6 +124,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	private static boolean adjustExperimental = false;
 
+	private static Set<String> bugTypes = Collections.synchronizedSet(new HashSet<String>());
+	
 	/**
 	 * Constructor.
 	 *
@@ -135,6 +138,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
 
+		if (bugTypes.add(type)) {
+			BugPattern p = I18N.instance().lookupBugPattern(type);
+			if (p == null) {
+				String msg = "Can't find definition of bug type " + type;
+				AnalysisContext.logError(msg, new IllegalArgumentException(msg));
+			}
+		}
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
 		boundPriority();
