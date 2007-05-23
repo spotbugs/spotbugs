@@ -24,6 +24,9 @@ import java.util.Map;
 
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+
 
 /**
  * @author pugh
@@ -33,6 +36,9 @@ public class ObjectTypeFactory {
 	private static Map<String, ObjectType> map = new HashMap<String, ObjectType>();
 
 	public static ObjectType getInstance(String s) {
+		if (FindBugs.DEBUG && s.startsWith("[")) {
+			throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
+		}
 		if (s.indexOf("/") >= 0) {
 			s = s.replace('/','.');
 		}
