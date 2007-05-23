@@ -957,7 +957,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 			if(!fileType.isValid(f)){
 				JOptionPane.showMessageDialog(saveOpenFileChooser,
-						"That file is not compatible with the chosen file type", "Invalid File",
+						"That file is not compatible with the choosen file type", "Invalid File",
 						JOptionPane.WARNING_MESSAGE);
 				loading = true;
 				continue;
@@ -1072,7 +1072,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 			f = saveOpenFileChooser.getSelectedFile();
 
-			if(fileType.isValid(f)){
+			if(!fileType.isValid(f)){
 				JOptionPane.showMessageDialog(saveOpenFileChooser,
 						"That file is not compatible with the chosen file type", "Invalid File",
 						JOptionPane.WARNING_MESSAGE);
