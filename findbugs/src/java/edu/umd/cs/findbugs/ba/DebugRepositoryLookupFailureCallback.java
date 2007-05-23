@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -37,6 +38,9 @@ public class DebugRepositoryLookupFailureCallback implements
 	 */
 	@SuppressWarnings("DM_EXIT")
 	public void reportMissingClass(ClassNotFoundException ex) {
+		String missing = AbstractBugReporter.getMissingClassName(ex);
+		if (missing.charAt(0) == '[') return;
+		
 		System.out.println("Missing class");
 		ex.printStackTrace();
 		System.exit(1);

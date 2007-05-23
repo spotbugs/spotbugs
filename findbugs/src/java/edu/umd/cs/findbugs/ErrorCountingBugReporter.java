@@ -50,6 +50,7 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
 	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		String missing = AbstractBugReporter.getMissingClassName(ex);
+		if (missing.charAt(0) == '[') return;
 		if (missingClassSet.add(missing))
 			++missingClassCount;
 		super.reportMissingClass(ex);

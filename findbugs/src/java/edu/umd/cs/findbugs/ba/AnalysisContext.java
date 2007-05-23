@@ -33,6 +33,7 @@ import net.jcip.annotations.NotThreadSafe;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -174,6 +175,8 @@ public abstract class AnalysisContext {
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
+		String missing = AbstractBugReporter.getMissingClassName(e);
+		if (missing.charAt(0) == '[') return;
 		if (e == null) throw new NullPointerException("argument is null");
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
