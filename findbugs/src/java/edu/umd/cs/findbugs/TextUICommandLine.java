@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Helper class to parse the command line and configure
@@ -231,8 +232,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOptionWithArgument(String option, String argument) throws IOException {
-		if (option.equals("-outputFile")) {
-			String outputFile = argument;
+		if (option.equals("-outputFile") || option.equals("-output")) {
+			File outputFile = new File(argument);
+			String extension = Util.getFileExtension(outputFile);
+			if (bugReporterType == PRINTING_REPORTER && (extension.equals("xml") || extension.equals("fba")))
+					bugReporterType = XML_REPORTER;
 
 			try {
 				outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
