@@ -368,7 +368,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	private void checkNonNullPutField(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
 		NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-		if (database == null {
+		if (database == null) {
 			return;
 		}
 
