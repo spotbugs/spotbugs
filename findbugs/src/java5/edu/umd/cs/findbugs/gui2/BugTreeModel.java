@@ -167,7 +167,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public Object getChild(Object o, int index) {
 			Object result = getChild0(o,index);
-			assert o != null : "child " + index + " of " + o + " is null";
+			assert o != null : "child " + index + " of " + this + " is null";
 			return result;
 		}
 		
