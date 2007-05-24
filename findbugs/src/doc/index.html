@@ -168,31 +168,36 @@
 					<h1>
 						<a name="changes">Change history</a>
 					</h1>
-				<p> The current version of FindBugs is s @VERSION@. Changes since version 1.1.3:</p>
+				<p> The current version of FindBugs is s @VERSION@. Changes since version 1.2.1:</p>
+				
 					<ul>
-					<li>In null pointer analysis, try to be better about always showing two locations: where it is known null and
-					where it is dereferenced.
-					<li>Interprocedural analysis of which methods return nonnull values
-					<li>Use method calls to select order in which classes are analyzed, and order in which methods
-					are analyzed, to improve interprocedural analysis results.
-					<li>Significant improvements in memory footprint, memory allocation and CPU utilization 
-					    (20-30% reduction in all three) 
-					<li>Added a project name, to provide better descriptions in the HTML output.
-					<li>Stopped reporting transient fields
-					of classes not marked as serializable. Transient is used by other persistence frameworks.
-					<li>Improvements to detector for SQL injection (Thanks to Matt Hargett for
-					his contributions).
-					<li>Changed open/save options in GUI2 to not distinguish between FindBugs projects
-					and saved FindBugs analysis results.
-					<li>Improvements to detection of serious non-short-circuit evaluation.
-					 <li>Eclipse plugin changes:
+					<li>Bug fixes:
 					<ul>
-					<li>Created Bug User Annotations and Bug Tree Views
-					<li>Use different icons for different bug priorities
-					<li>Provide more information in Bug Details view
+					<li>Fix bugs in incremental analysis within Eclipse plugin</li>
+					<li>Fix some analysis errors
+					<li>Fix some threading bugs in GUI2
+					<li>Report version as version when it was compiled, not when it was run
+					<li>Copy analysis time stamp when filtering or transforming analysis files.
 					</ul>
+				<li>Enabled StaticCalendarDetector
+					</li>
+					<li>Reworked GUI2 to use standard FindBugs filters
+					</li>
+					<ul>
+					<li>Allow a suppression filter to be stored in a project and persisted to the XML representation of a project.
+					</li>
 					</ul>
-		
+					
+					<li>Move away from old GUI2 save format (a directory containing an xml file and another file containing serialized filters).
+					</li>
+					<li>Supprt/recommend use of two new file extensions/formats:
+					<dl><dt>.fba - FindBugs Analysis File</dt>
+					<dd>Exactly the same as an existing bug collection file stored in XML format, but using a distinct file extension
+					to make it easier to figure out which xml files contain FindBugs results.</dd>
+					<dt>.fbp - FindBugs Project File</dt><dd>Contains just the information needed to run FindBugs and display the results (e.g., the files to be analyzed, the auxilary class path and the location of source files)</dl>
+					</dd></li>
+					</ul>
+			
 					<p>
 						<a href="Changes.html">Older versions...</a>
 					</p>

@@ -15,9 +15,38 @@
 				<td align="left" valign="top">
 
 					<h1>
-						FindBugs Change Log, Version 1.2.0
+						FindBugs Change Log, Version 1.2.1
 					</h1>
 
+					<p> Changes since version 1.2.0</p>
+					<ul>
+					<li>Bug fixes:
+					<ul>
+					<li>Fix bugs in incremental analysis within Eclipse plugin</li>
+					<li>Fix some analysis errors
+					<li>Fix some threading bugs in GUI2
+					<li>Report version as version when it was compiled, not when it was run
+					<li>Copy analysis time stamp when filtering or transforming analysis files.
+					</ul>
+					<li>Enabled StaticCalendarDetector
+					</li>
+					<li>Reworked GUI2 to use standard FindBugs filters
+					</li>
+					<ul>
+					<li>Allow a suppression filter to be stored in a project and persisted to the XML representation of a project.
+					</li>
+					</ul>
+					
+					<li>Move away from old GUI2 save format (a directory containing an xml file and another file containing serialized filters).
+					</li>
+					<li>Supprt/recommend use of two new file extensions/formats:
+					<dl><dt>.fba - FindBugs Analysis File</dt>
+					<dd>Exactly the same as an existing bug collection file stored in XML format, but using a distinct file extension
+					to make it easier to figure out which xml files contain FindBugs results.</dd>
+					<dt>.fbp - FindBugs Project File</dt><dd>Contains just the information needed to run FindBugs and display the results (e.g., the files to be analyzed, the auxilary class path and the location of source files)</dl>
+					</dd></li>
+					</ul>
+					</p>
 					<p> Changes since version 1.1.3</p>
 					<ul>
 					<li>Added -xml:withAbridgedMessages option to generate xml containing shorter messages.
