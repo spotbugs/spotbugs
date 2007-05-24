@@ -504,6 +504,7 @@ public class MainFrame extends FBFrame implements LogSync
 				new NewFilterFromBug(currentSelectedBugLeaf.getBug());
 
 				setProjectChanged(true);
+				MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
 			}
 		});
 
@@ -580,6 +581,8 @@ public class MainFrame extends FBFrame implements LogSync
 //				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 				
 				setProjectChanged(true);
+				
+				MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
 			}
 		});
 
@@ -1012,6 +1015,8 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 
 			f = saveOpenFileChooser.getSelectedFile();
+			
+			f = convertFile(f, fileType);
 
 			if(!fileType.isValid(f)){
 				JOptionPane.showMessageDialog(saveOpenFileChooser,
@@ -1020,8 +1025,6 @@ public class MainFrame extends FBFrame implements LogSync
 				retry = true;
 				continue;
 			}
-			
-			f = convertFile(f, fileType);
 
 			alreadyExists = fileAlreadyExists(f, fileType);
 			if(alreadyExists){
