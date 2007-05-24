@@ -1,0 +1,1254 @@
+? HelloWorld.class
+? java
+? docs/api
+Index: examples/TransitiveHull.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/examples/TransitiveHull.java,v
+retrieving revision 1.2
+diff -u -r1.2 TransitiveHull.java
+--- examples/TransitiveHull.java	10 Nov 2002 18:30:05 -0000	1.2
++++ examples/TransitiveHull.java	30 Apr 2003 17:53:51 -0000
+@@ -24,6 +24,12 @@
+  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+  */
+ public class TransitiveHull extends org.apache.bcel.classfile.EmptyVisitor {
++  private static class LookupFailure extends RuntimeException {
++    public LookupFailure(String msg) {
++      super(msg);
++    }
++  }
++
+   private JavaClass    _class;
+   private ClassQueue   _queue;
+   private ClassSet     _set;
+@@ -86,10 +92,14 @@
+       return;
+     }
+     
+-    JavaClass clazz = Repository.lookupClass(class_name);
++    try {
++      JavaClass clazz = Repository.lookupClass(class_name);
+     
+-    if(clazz != null && _set.add(clazz)) {
+-      _queue.enqueue(clazz);
++      if(_set.add(clazz)) {
++        _queue.enqueue(clazz);
++      }
++    } catch (ClassNotFoundException e) {
++      throw new LookupFailure("Missing class: " + e.toString());
+     }
+   }
+ 
+Index: src/java/org/apache/bcel/Repository.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/Repository.java,v
+retrieving revision 1.11
+diff -u -r1.11 Repository.java
+--- src/java/org/apache/bcel/Repository.java	11 Oct 2002 20:34:47 -0000	1.11
++++ src/java/org/apache/bcel/Repository.java	30 Apr 2003 17:53:51 -0000
+@@ -88,33 +88,32 @@
+   /** Lookup class somewhere found on your CLASSPATH, or whereever the
+    * repository instance looks for it.
+    *
+-   * @return class object for given fully qualified class name, or null
+-   * if the class could not be found or parsed correctly
++   * @return class object for given fully qualified class name
++   * @throws ClassNotFoundException if the class could not be found or
++   * parsed correctly
+    */
+-  public static JavaClass lookupClass(String class_name) {
+-    try {
+-      JavaClass clazz = _repository.findClass(class_name);
++  public static JavaClass lookupClass(String class_name)
++    throws ClassNotFoundException {
+ 
+-      if(clazz == null) {
+-	return _repository.loadClass(class_name);
+-      } else {
+-	return clazz;
+-      }
+-    } catch(ClassNotFoundException ex) { return null; }
++    return _repository.loadClass(class_name);
+   }
+ 
+   /**
+-   * Try to find class source via getResourceAsStream().
++   * Try to find class source using the internal repository instance.
+    * @see Class
+    * @return JavaClass object for given runtime class
++   * @throws ClassNotFoundException if the class could not be found or
++   * parsed correctly
+    */
+-  public static JavaClass lookupClass(Class clazz) {
+-    try {
+-      return _repository.loadClass(clazz);
+-    } catch(ClassNotFoundException ex) { return null; }
++  public static JavaClass lookupClass(Class clazz)
++    throws ClassNotFoundException {
++    return _repository.loadClass(clazz);
+   }
+ 
+-  /** @return class file object for given Java class.
++  /**
++   * @return class file object for given Java class by looking on the
++   *  system class path; returns null if the class file can't be
++   *  found
+    */
+   public static ClassPath.ClassFile lookupClassFile(String class_name) {
+     try {
+@@ -156,92 +155,124 @@
+   /**
+    * @return list of super classes of clazz in ascending order, i.e.,
+    * Object is always the last element
++   * @throws ClassNotFoundException if any of the superclasses can't be found
+    */
+-  public static JavaClass[] getSuperClasses(JavaClass clazz) {
++  public static JavaClass[] getSuperClasses(JavaClass clazz)
++    throws ClassNotFoundException {
+     return clazz.getSuperClasses();
+   }
+ 
+   /**
+    * @return list of super classes of clazz in ascending order, i.e.,
+-   * Object is always the last element. return "null", if class
+-   * cannot be found.
++   * Object is always the last element.
++   * @throws ClassNotFoundException if the named class or any of its
++   *  superclasses can't be found
+    */
+-  public static JavaClass[] getSuperClasses(String class_name) {
++  public static JavaClass[] getSuperClasses(String class_name)
++    throws ClassNotFoundException {
+     JavaClass jc = lookupClass(class_name);
+-    return (jc == null? null : getSuperClasses(jc));
++    return getSuperClasses(jc);
+   }
+ 
+   /**
+    * @return all interfaces implemented by class and its super
+    * classes and the interfaces that those interfaces extend, and so on.
+    * (Some people call this a transitive hull).
++   * @throws ClassNotFoundException if any of the class's
++   *  superclasses or superinterfaces can't be found
+    */
+-  public static JavaClass[] getInterfaces(JavaClass clazz) {
++  public static JavaClass[] getInterfaces(JavaClass clazz)
++    throws ClassNotFoundException {
+     return clazz.getAllInterfaces();
+   }
+ 
+   /**
+    * @return all interfaces implemented by class and its super
+    * classes and the interfaces that extend those interfaces, and so on
++   * @throws ClassNotFoundException if the named class can't be found,
++   *   or if any of its superclasses or superinterfaces can't be found
+    */
+-  public static JavaClass[] getInterfaces(String class_name) {
++  public static JavaClass[] getInterfaces(String class_name)
++    throws ClassNotFoundException {
+     return getInterfaces(lookupClass(class_name));
+   }
+ 
+   /**
+    * Equivalent to runtime "instanceof" operator.
+    * @return true, if clazz is an instance of super_class
++   * @throws ClassNotFoundException if any superclasses or superinterfaces
++   *   of clazz can't be found
+    */
+-  public static boolean instanceOf(JavaClass clazz, JavaClass super_class) {
++  public static boolean instanceOf(JavaClass clazz, JavaClass super_class)
++    throws ClassNotFoundException {
+     return clazz.instanceOf(super_class);
+   }
+ 
+   /**
+    * @return true, if clazz is an instance of super_class
++   * @throws ClassNotFoundException if either clazz or super_class
++   *   can't be found
+    */
+-  public static boolean instanceOf(String clazz, String super_class) {
++  public static boolean instanceOf(String clazz, String super_class)
++    throws ClassNotFoundException {
+     return instanceOf(lookupClass(clazz), lookupClass(super_class));
+   }
+ 
+   /**
+    * @return true, if clazz is an instance of super_class
++   * @throws ClassNotFoundException if super_class can't be found
+    */
+-  public static boolean instanceOf(JavaClass clazz, String super_class) {
++  public static boolean instanceOf(JavaClass clazz, String super_class)
++    throws ClassNotFoundException {
+     return instanceOf(clazz, lookupClass(super_class));
+   }
+ 
+   /**
+    * @return true, if clazz is an instance of super_class
++   * @throws ClassNotFoundException if clazz can't be found
+    */
+-  public static boolean instanceOf(String clazz, JavaClass super_class) {
++  public static boolean instanceOf(String clazz, JavaClass super_class)
++    throws ClassNotFoundException {
+     return instanceOf(lookupClass(clazz), super_class);
+   }
+ 
+   /**
+    * @return true, if clazz is an implementation of interface inter
++   * @throws ClassNotFoundException if any superclasses or superinterfaces
++   *   of clazz can't be found
+    */
+-  public static boolean implementationOf(JavaClass clazz, JavaClass inter) {
++  public static boolean implementationOf(JavaClass clazz, JavaClass inter)
++    throws ClassNotFoundException {
+     return clazz.implementationOf(inter);
+   }
+ 
+   /**
+    * @return true, if clazz is an implementation of interface inter
++   * @throws ClassNotFoundException if clazz, inter, or any superclasses
++   *   or superinterfaces of clazz can't be found
+    */
+-  public static boolean implementationOf(String clazz, String inter) {
++  public static boolean implementationOf(String clazz, String inter)
++    throws ClassNotFoundException {
+     return implementationOf(lookupClass(clazz), lookupClass(inter));
+   }
+ 
+   /**
+    * @return true, if clazz is an implementation of interface inter
++   * @throws ClassNotFoundException if inter or any superclasses
++   *   or superinterfaces of clazz can't be found
+    */
+-  public static boolean implementationOf(JavaClass clazz, String inter) {
++  public static boolean implementationOf(JavaClass clazz, String inter)
++    throws ClassNotFoundException {
+     return implementationOf(clazz, lookupClass(inter));
+   }
+ 
+   /**
+    * @return true, if clazz is an implementation of interface inter
++   * @throws ClassNotFoundException if clazz or any superclasses or
++   *   superinterfaces of clazz can't be found
+    */
+-  public static boolean implementationOf(String clazz, JavaClass inter) {
++  public static boolean implementationOf(String clazz, JavaClass inter)
++    throws ClassNotFoundException {
+     return implementationOf(lookupClass(clazz), inter);
+   }
+ }
+Index: src/java/org/apache/bcel/classfile/JavaClass.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/classfile/JavaClass.java,v
+retrieving revision 1.13
+diff -u -r1.13 JavaClass.java
+--- src/java/org/apache/bcel/classfile/JavaClass.java	11 Jul 2002 19:39:04 -0000	1.13
++++ src/java/org/apache/bcel/classfile/JavaClass.java	30 Apr 2003 17:53:51 -0000
+@@ -685,9 +685,13 @@
+ 
+   /** Equivalent to runtime "instanceof" operator.
+    *
+-   * @return true if this JavaClass is derived from teh super class
++   * @return true if this JavaClass is derived from the super class
++   * @throws ClassNotFoundException if superclasses or superinterfaces
++   *   of this object can't be found
+    */
+-  public final boolean instanceOf(JavaClass super_class) {
++  public final boolean instanceOf(JavaClass super_class)
++    throws ClassNotFoundException {
++
+     if(this.equals(super_class))
+       return true;
+ 
+@@ -707,9 +711,13 @@
+   }
+ 
+   /**
+-   * @return true, if clazz is an implementation of interface inter
++   * @return true, if this class is an implementation of interface inter
++   * @throws ClassNotFoundException if superclasses or superinterfaces
++   *   of this class can't be found
+    */
+-  public boolean implementationOf(JavaClass inter) {
++  public boolean implementationOf(JavaClass inter)
++    throws ClassNotFoundException {
++
+     if(!inter.isInterface()) {
+       throw new IllegalArgumentException(inter.getClassName() + " is no interface");
+     }
+@@ -732,25 +740,22 @@
+   /**
+    * @return the superclass for this JavaClass object, or null if this
+    * is java.lang.Object
++   * @throws ClassNotFoundException if the superclass can't be found
+    */
+-  public JavaClass getSuperClass() {
++  public JavaClass getSuperClass() throws ClassNotFoundException {
+     if("java.lang.Object".equals(getClassName())) {
+       return null;
+     }
+ 
+-    try {
+-      return repository.loadClass(getSuperclassName());
+-    } catch(ClassNotFoundException e) {
+-      System.err.println(e);
+-      return null;
+-    }
++    return repository.loadClass(getSuperclassName());
+   }
+ 
+   /**
+    * @return list of super classes of this class in ascending order, i.e.,
+    * java.lang.Object is always the last element
++   * @throws ClassNotFoundException if any of the superclasses can't be found
+    */
+-  public JavaClass[] getSuperClasses() {
++  public JavaClass[] getSuperClasses() throws ClassNotFoundException {
+     JavaClass   clazz = this;
+     ClassVector vec   = new ClassVector();
+ 
+@@ -766,17 +771,12 @@
+   /**
+    * Get interfaces directly implemented by this JavaClass.
+    */
+-  public JavaClass[] getInterfaces() {
++  public JavaClass[] getInterfaces() throws ClassNotFoundException {
+     String[]    interfaces = getInterfaceNames();
+     JavaClass[] classes    = new JavaClass[interfaces.length];
+ 
+-    try {
+-      for(int i = 0; i < interfaces.length; i++) {
+-	classes[i] = repository.loadClass(interfaces[i]);
+-      }
+-    } catch(ClassNotFoundException e) {
+-      System.err.println(e);
+-      return null;
++    for(int i = 0; i < interfaces.length; i++) {
++      classes[i] = repository.loadClass(interfaces[i]);
+     }
+ 
+     return classes;
+@@ -785,7 +785,7 @@
+   /**
+    * Get all interfaces implemented by this JavaClass (transitively).
+    */
+-  public JavaClass[] getAllInterfaces() {
++  public JavaClass[] getAllInterfaces() throws ClassNotFoundException {
+     ClassQueue  queue = new ClassQueue();
+     ClassVector vec   = new ClassVector();
+     
+Index: src/java/org/apache/bcel/classfile/Signature.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/classfile/Signature.java,v
+retrieving revision 1.3
+diff -u -r1.3 Signature.java
+--- src/java/org/apache/bcel/classfile/Signature.java	11 Mar 2002 16:16:35 -0000	1.3
++++ src/java/org/apache/bcel/classfile/Signature.java	30 Apr 2003 17:53:51 -0000
+@@ -111,7 +111,7 @@
+    * @param v Visitor object
+    */
+    public void accept(Visitor v) {
+-     System.err.println("Visiting non-standard Signature object");
++     //System.err.println("Visiting non-standard Signature object");
+      v.visitSignature(this);
+    }
+    
+Index: src/java/org/apache/bcel/generic/ObjectType.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/generic/ObjectType.java,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 ObjectType.java
+--- src/java/org/apache/bcel/generic/ObjectType.java	29 Oct 2001 20:00:25 -0000	1.1.1.1
++++ src/java/org/apache/bcel/generic/ObjectType.java	30 Apr 2003 17:53:51 -0000
+@@ -93,12 +93,13 @@
+    * If "this" doesn't reference a class, it references an interface
+    * or a non-existant entity.
+    */
+-  public boolean referencesClass(){
+-    JavaClass jc = Repository.lookupClass(class_name);
+-    if (jc == null)
+-      return false;
+-    else
++  public boolean referencesClass() {
++    try {
++      JavaClass jc = Repository.lookupClass(class_name);
+       return jc.isClass();
++    } catch (ClassNotFoundException e) {
++      return false;
++    }
+   }
+   
+   /**
+@@ -106,14 +107,22 @@
+    * or a non-existant entity.
+    */
+   public boolean referencesInterface(){
+-    JavaClass jc = Repository.lookupClass(class_name);
+-    if (jc == null)
+-      return false;
+-    else
++    try {
++      JavaClass jc = Repository.lookupClass(class_name);
+       return !jc.isClass();
++    } catch (ClassNotFoundException e) {
++      return false;
++    }
+   }
+ 
+-  public boolean subclassOf(ObjectType superclass){
++  /**
++   * Return true if this type is a subclass of given ObjectType.
++   * @throws ClassNotFoundException if any of this class's superclasses
++   *  can't be found
++   */
++  public boolean subclassOf(ObjectType superclass)
++    throws ClassNotFoundException {
++
+     if (this.referencesInterface() || superclass.referencesInterface())
+       return false;
+ 
+@@ -122,8 +131,10 @@
+ 
+   /**
+    * Java Virtual Machine Specification edition 2, § 5.4.4 Access Control
++   * @throws ClassNotFoundException if the class referenced by this type
++   *   can't be found
+    */
+-  public boolean accessibleTo(ObjectType accessor) {
++  public boolean accessibleTo(ObjectType accessor) throws ClassNotFoundException {
+     JavaClass jc = Repository.lookupClass(class_name);
+ 
+     if(jc.isPublic()) {
+Index: src/java/org/apache/bcel/generic/ReferenceType.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/generic/ReferenceType.java,v
+retrieving revision 1.5
+diff -u -r1.5 ReferenceType.java
+--- src/java/org/apache/bcel/generic/ReferenceType.java	7 Aug 2002 18:01:32 -0000	1.5
++++ src/java/org/apache/bcel/generic/ReferenceType.java	30 Apr 2003 17:53:51 -0000
+@@ -82,8 +82,11 @@
+    * However, because e.g. CHECKCAST doesn't throw a
+    * ClassCastException when casting a null reference to any Object,
+    * true is returned in this case.
++   *
++   * @throws ClassNotFoundException if any classes or interfaces required
++   *  to determine assignment compatibility can't be found
+    */
+-  public boolean isCastableTo(Type t) {
++  public boolean isCastableTo(Type t) throws ClassNotFoundException {
+     if (this.equals(Type.NULL))
+       return true;		// If this is ever changed in isAssignmentCompatible()
+ 
+@@ -97,8 +100,12 @@
+    * Return true iff this is assignment compatible with another type t
+    * as defined in the JVM specification; see the AASTORE definition
+    * there.
++   * @throws ClassNotFoundException if any classes or interfaces required
++   *  to determine assignment compatibility can't be found
+    */
+-  public boolean isAssignmentCompatibleWith(Type t) {
++  public boolean isAssignmentCompatibleWith(Type t)
++    throws ClassNotFoundException {
++
+     if (!(t instanceof ReferenceType))
+       return false;
+ 
+@@ -210,8 +217,13 @@
+    * If "this" or t is a ReferenceType referencing an interface, then Type.OBJECT is returned.
+    * If not all of the two classes' superclasses cannot be found, "null" is returned.
+    * See the JVM specification edition 2, "§4.9.2 The Bytecode Verifier".
++   *
++   * @throws ClassNotFoundException on failure to find superclasses of this
++   *  type, or the type passed as a parameter
+    */
+-  public ReferenceType getFirstCommonSuperclass(ReferenceType t) {
++  public ReferenceType getFirstCommonSuperclass(ReferenceType t)
++    throws ClassNotFoundException {
++
+     if (this.equals(Type.NULL)) return t;
+     if (t.equals(Type.NULL)) return this;
+     if (this.equals(t)) return this;
+@@ -294,8 +306,12 @@
+    *
+    * @deprecated use getFirstCommonSuperclass(ReferenceType t) which has
+    *             slightly changed semantics.
++   * @throws ClassNotFoundException on failure to find superclasses of this
++   *  type, or the type passed as a parameter
+    */
+-  public ReferenceType firstCommonSuperclass(ReferenceType t) {
++  public ReferenceType firstCommonSuperclass(ReferenceType t)
++    throws ClassNotFoundException {
++
+     if (this.equals(Type.NULL)) return t;
+     if (t.equals(Type.NULL)) return this;
+     if (this.equals(t)) return this;
+Index: src/java/org/apache/bcel/util/SyntheticRepository.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/util/SyntheticRepository.java,v
+retrieving revision 1.6
+diff -u -r1.6 SyntheticRepository.java
+--- src/java/org/apache/bcel/util/SyntheticRepository.java	10 Nov 2002 18:30:05 -0000	1.6
++++ src/java/org/apache/bcel/util/SyntheticRepository.java	30 Apr 2003 17:53:51 -0000
+@@ -138,6 +138,10 @@
+   public JavaClass loadClass(String className) 
+     throws ClassNotFoundException
+   {
++    JavaClass alreadyLoaded = findClass(className);
++    if (alreadyLoaded != null)
++      return alreadyLoaded;
++
+     if(className == null || className.equals("")) {
+       throw new IllegalArgumentException("Invalid class name " + className);
+     }
+@@ -159,6 +163,11 @@
+    */
+   public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+     String className = clazz.getName();
++
++    JavaClass alreadyLoaded = findClass(className);
++    if (alreadyLoaded != null)
++      return alreadyLoaded;
++
+     String name      = className;
+     int    i         = name.lastIndexOf('.');
+ 
+Index: src/java/org/apache/bcel/verifier/TransitiveHull.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/TransitiveHull.java,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 TransitiveHull.java
+--- src/java/org/apache/bcel/verifier/TransitiveHull.java	29 Oct 2001 20:00:31 -0000	1.1.1.1
++++ src/java/org/apache/bcel/verifier/TransitiveHull.java	30 Apr 2003 17:53:51 -0000
+@@ -77,7 +77,7 @@
+ 	}
+ 	
+ 	/* Implementing VerifierFactoryObserver. */
+-	public void update(String classname){
++	public void update(String classname) {
+ 
+ 		System.gc(); // avoid swapping if possible.
+ 
+@@ -99,15 +99,19 @@
+ 			System.out.println("Pass 2:\n"+vr);
+ 
+ 		if (vr == VerificationResult.VR_OK){
+-			JavaClass jc = Repository.lookupClass(v.getClassName());
+-			for (int i=0; i<jc.getMethods().length; i++){
+-				vr = v.doPass3a(i);
+-				if (vr != VerificationResult.VR_OK) //System.exit(1);
+-					System.out.println(v.getClassName()+", Pass 3a, method "+i+" ['"+jc.getMethods()[i]+"']:\n"+vr);
+-
+-				vr = v.doPass3b(i);
+-				if (vr != VerificationResult.VR_OK) //System.exit(1);
+-					System.out.println(v.getClassName()+", Pass 3b, method "+i+" ['"+jc.getMethods()[i]+"']:\n"+vr);
++			try {
++				JavaClass jc = Repository.lookupClass(v.getClassName());
++				for (int i=0; i<jc.getMethods().length; i++){
++					vr = v.doPass3a(i);
++					if (vr != VerificationResult.VR_OK) //System.exit(1);
++						System.out.println(v.getClassName()+", Pass 3a, method "+i+" ['"+jc.getMethods()[i]+"']:\n"+vr);
++	
++					vr = v.doPass3b(i);
++					if (vr != VerificationResult.VR_OK) //System.exit(1);
++						System.out.println(v.getClassName()+", Pass 3b, method "+i+" ['"+jc.getMethods()[i]+"']:\n"+vr);
++				}
++			} catch (ClassNotFoundException e) {
++				System.err.println("Could not find class " + v.getClassName() + " in Repository");
+ 			}
+ 		}
+ 
+Index: src/java/org/apache/bcel/verifier/Verifier.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/Verifier.java,v
+retrieving revision 1.7
+diff -u -r1.7 Verifier.java
+--- src/java/org/apache/bcel/verifier/Verifier.java	13 Oct 2002 21:56:16 -0000	1.7
++++ src/java/org/apache/bcel/verifier/Verifier.java	30 Apr 2003 17:53:51 -0000
+@@ -172,7 +172,7 @@
+ 	 * This returns all the (warning) messages collected during verification.
+ 	 * A prefix shows from which verifying pass a message originates.
+ 	 */
+-	public String[] getMessages(){
++	public String[] getMessages() throws ClassNotFoundException {
+ 		ArrayList messages = new ArrayList();
+ 
+ 		if (p1v != null){
+@@ -237,7 +237,7 @@
+ 	public static void main(String [] args){
+ 		System.out.println("JustIce by Enver Haase, (C) 2001-2002.\n<http://bcel.sourceforge.net>\n<http://jakarta.apache.org/bcel>\n");
+ 	  for(int k=0; k < args.length; k++) {
+-
++		try {
+ 			if (args[k].endsWith(".class")){
+ 				int dotclasspos = args[k].lastIndexOf(".class");
+ 				if (dotclasspos != -1) args[k] = args[k].substring(0,dotclasspos);
+@@ -278,9 +278,12 @@
+ 			System.out.println("\n");
+ 
+ 			// avoid swapping.
+-	  	v.flush();
+-	  	org.apache.bcel.Repository.clearCache();
+-		System.gc();
++	  		v.flush();
++	  		org.apache.bcel.Repository.clearCache();
++			System.gc();
++		} catch (ClassNotFoundException e) {
++			e.printStackTrace();
++		}
+ 	  }
+ 	}
+ }
+Index: src/java/org/apache/bcel/verifier/VerifierAppFrame.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/VerifierAppFrame.java,v
+retrieving revision 1.3
+diff -u -r1.3 VerifierAppFrame.java
+--- src/java/org/apache/bcel/verifier/VerifierAppFrame.java	13 Jun 2002 09:32:50 -0000	1.3
++++ src/java/org/apache/bcel/verifier/VerifierAppFrame.java	30 Apr 2003 17:53:51 -0000
+@@ -242,11 +242,16 @@
+   synchronized void classNamesJList_valueChanged(ListSelectionEvent e) {
+     if (e.getValueIsAdjusting()) return;
+     current_class = classNamesJList.getSelectedValue().toString();
+-    verify();
++    try {
++      verify();
++    } catch (ClassNotFoundException ex) {
++      // FIXME: report the error using the GUI
++      ex.printStackTrace();
++    }
+     classNamesJList.setSelectedValue(current_class, true);
+   }
+ 
+-  private void verify(){
++  private void verify() throws ClassNotFoundException {
+     setTitle("PLEASE WAIT");
+ 
+     Verifier v = VerifierFactory.getVerifier(current_class);
+@@ -345,7 +350,14 @@
+           all3aok = false;
+           rejected = true;
+         }
+-        all3amsg += "Method '"+Repository.lookupClass(v.getClassName()).getMethods()[i]+"': "+vr.getMessage().replace('\n',' ')+"\n\n";
++        JavaClass jc = null;
++	try {
++          jc = Repository.lookupClass(v.getClassName());
++        } catch (ClassNotFoundException ex) {
++          // FIXME: handle the error
++          ex.printStackTrace();
++        }
++        all3amsg += "Method '"+jc.getMethods()[i]+"': "+vr.getMessage().replace('\n',' ')+"\n\n";
+       }
+     }
+     pass3aTextPane.setText(all3amsg);
+@@ -370,7 +382,14 @@
+           all3bok = false;
+           rejected = true;
+         }
+-        all3bmsg += "Method '"+Repository.lookupClass(v.getClassName()).getMethods()[i]+"': "+vr.getMessage().replace('\n',' ')+"\n\n";
++        JavaClass jc = null;
++	try {
++          jc = Repository.lookupClass(v.getClassName());
++        } catch (ClassNotFoundException ex) {
++          // FIXME: handle the error
++          ex.printStackTrace();
++        }
++        all3bmsg += "Method '"+jc.getMethods()[i]+"': "+vr.getMessage().replace('\n',' ')+"\n\n";
+       }
+     }
+     pass3bTextPane.setText(all3bmsg);
+Index: src/java/org/apache/bcel/verifier/VerifyDialog.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/VerifyDialog.java,v
+retrieving revision 1.1.1.1
+diff -u -r1.1.1.1 VerifyDialog.java
+--- src/java/org/apache/bcel/verifier/VerifyDialog.java	29 Oct 2001 20:00:33 -0000	1.1.1.1
++++ src/java/org/apache/bcel/verifier/VerifyDialog.java	30 Apr 2003 17:53:51 -0000
+@@ -539,7 +539,13 @@
+ 	Verifier v = VerifierFactory.getVerifier(class_name);
+ 	VerificationResult vr = v.doPass2();
+ 	if (vr.getStatus() == VerificationResult.VERIFIED_OK){
+-		JavaClass jc = Repository.lookupClass(class_name);
++		JavaClass jc = null;
++		try {
++			jc = Repository.lookupClass(class_name);
++		} catch (ClassNotFoundException ex) {
++			// FIXME: report the error
++			ex.printStackTrace();
++		}
+ 		int nr = jc.getMethods().length;
+ 		for (int i=0; i<nr; i++) {
+ 			vr = v.doPass3b(i);
+Index: src/java/org/apache/bcel/verifier/statics/Pass1Verifier.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/statics/Pass1Verifier.java,v
+retrieving revision 1.2
+diff -u -r1.2 Pass1Verifier.java
+--- src/java/org/apache/bcel/verifier/statics/Pass1Verifier.java	13 Jun 2002 09:32:50 -0000	1.2
++++ src/java/org/apache/bcel/verifier/statics/Pass1Verifier.java	30 Apr 2003 17:53:51 -0000
+@@ -85,7 +85,14 @@
+ 	/** Used to load in and return the myOwner-matching JavaClass object when needed. Avoids loading in a class file when it's not really needed! */
+ 	private JavaClass getJavaClass(){
+ 		if (jc == null){
+-			jc = Repository.lookupClass(myOwner.getClassName());
++			try {
++				jc = Repository.lookupClass(myOwner.getClassName());
++			} catch (ClassNotFoundException e) {
++				// FIXME: currently, Pass1Verifier treats jc == null as a special
++				// case, so we don't need to do anything here.  A better solution
++				// would be to simply throw the ClassNotFoundException
++				// out of this method.
++			}
+ 		}
+ 		return jc;
+ 	}
+Index: src/java/org/apache/bcel/verifier/statics/Pass2Verifier.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/statics/Pass2Verifier.java,v
+retrieving revision 1.2
+diff -u -r1.2 Pass2Verifier.java
+--- src/java/org/apache/bcel/verifier/statics/Pass2Verifier.java	13 Jun 2002 09:32:50 -0000	1.2
++++ src/java/org/apache/bcel/verifier/statics/Pass2Verifier.java	30 Apr 2003 17:53:51 -0000
+@@ -139,6 +139,7 @@
+ 	 * @see org.apache.bcel.verifier.statics.Pass3aVerifier
+ 	 */
+ 	public VerificationResult do_verify(){
++	    try {
+ 		VerificationResult vr1 = myOwner.doPass1();
+ 		if (vr1.equals(VerificationResult.VR_OK)){
+ 			
+@@ -160,6 +161,11 @@
+ 		}
+ 		else
+ 			return VerificationResult.VR_NOTYET;
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: this might not be the best way to handle missing classes.
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -176,6 +182,7 @@
+ 	 * @throws ClassConstraintException otherwise.
+ 	 */
+ 	private void every_class_has_an_accessible_superclass(){
++	    try {
+ 		HashSet hs = new HashSet(); // save class names to detect circular inheritance
+ 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
+ 		int supidx = -1;
+@@ -206,6 +213,11 @@
+ 				}
+ 			}
+ 		}
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: this might not be the best way to handle missing classes.
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -220,6 +232,7 @@
+ 	 * @see #every_class_has_an_accessible_superclass()
+ 	 */
+ 	private void final_methods_are_not_overridden(){
++	    try {
+ 		HashMap hashmap = new HashMap();
+ 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
+ 		
+@@ -251,6 +264,11 @@
+ 			jc = Repository.lookupClass(jc.getSuperclassName());	// Well, for OBJECT this returns OBJECT so it works (could return anything but must not throw an Exception).
+ 		}
+ 
++	    } catch (ClassNotFoundException e) {
++		// FIXME: this might not be the best way to handle missing classes.
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
++
+ 	}
+ 
+ 	/**
+@@ -260,11 +278,17 @@
+ 	 * @throws ClassConstraintException otherwise.
+ 	 */
+ 	private void constant_pool_entries_satisfy_static_constraints(){
++	    try {
+ 		// Most of the consistency is handled internally by BCEL; here
+ 		// we only have to verify if the indices of the constants point
+ 		// to constants of the appropriate type and such.
+ 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
+ 		new CPESSC_Visitor(jc); // constructor implicitely traverses jc
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: this might not be the best way to handle missing classes.
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -799,6 +823,7 @@
+ 		// method_info-structure-ATTRIBUTES (vmspec2 4.6, 4.7) //
+ 		/////////////////////////////////////////////////////////
+ 		public void visitCode(Code obj){//vmspec2 4.7.3
++		    try {
+ 			// No code attribute allowed for native or abstract methods: see visitMethod(Method).
+ 			// Code array constraints are checked in Pass3 (3a and 3b).
+ 
+@@ -945,9 +970,16 @@
+ 					}
+ 				}// if atts[a] instanceof LocalVariableTable END
+ 			}// for all attributes atts[a] END
++
++		    } catch (ClassNotFoundException e) {
++			// FIXME: this might not be the best way to handle missing classes.
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
++
+ 		}// visitCode(Code) END
+ 
+ 		public void visitExceptionTable(ExceptionTable obj){//vmspec2 4.7.4
++		    try {
+ 			// incorrectly named, it's the Exceptions attribute (vmspec2 4.7.4)
+ 			checkIndex(obj, obj.getNameIndex(), CONST_Utf8);
+ 
+@@ -992,6 +1024,11 @@
+ 					if (e != t) throw new ClassConstraintException("Exceptions attribute '"+tostring(obj)+"' references '"+cname+"' as an Exception but it is not a subclass of '"+t.getClassName()+"'.");
+ 				}
+ 			}
++
++		    } catch (ClassNotFoundException e) {
++			// FIXME: this might not be the best way to handle missing classes.
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 		// SYNTHETIC: see above
+ 		// DEPRECATED: see above
+@@ -1073,9 +1110,15 @@
+ 	 * @see #constant_pool_entries_satisfy_static_constraints()
+ 	 */
+ 	private void field_and_method_refs_are_valid(){
++	    try {
+ 		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
+ 		DescendingVisitor v = new DescendingVisitor(jc, new FAMRAV_Visitor(jc));
+ 		v.visit();
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: this might not be the best way to handle missing classes.
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+Index: src/java/org/apache/bcel/verifier/statics/Pass3aVerifier.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/statics/Pass3aVerifier.java,v
+retrieving revision 1.3
+diff -u -r1.3 Pass3aVerifier.java
+--- src/java/org/apache/bcel/verifier/statics/Pass3aVerifier.java	13 Jun 2002 09:32:50 -0000	1.3
++++ src/java/org/apache/bcel/verifier/statics/Pass3aVerifier.java	30 Apr 2003 17:53:51 -0000
+@@ -112,6 +112,7 @@
+ 	 * @throws InvalidMethodException if the method to verify does not exist.
+ 	 */
+ 	public VerificationResult do_verify(){
++	    try {
+ 		if (myOwner.doPass2().equals(VerificationResult.VR_OK)){
+ 			// Okay, class file was loaded correctly by Pass 1
+ 			// and satisfies static constraints of Pass 2.
+@@ -167,6 +168,10 @@
+ 		else{ //did not pass Pass 2.
+ 			return VerificationResult.VR_NOTYET;
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -330,6 +335,7 @@
+ 	 * @throws StaticCodeConstraintException if the verification fails.
+ 	 */
+ 	private void pass3StaticInstructionOperandsChecks(){
++	    try {
+ 		// When building up the InstructionList, BCEL has already done all those checks
+ 		// mentioned in The Java Virtual Machine Specification, Second Edition, as
+ 		// "static constraints on the operands of instructions in the code array".
+@@ -366,6 +372,10 @@
+ 			ih = ih.getNext();
+ 		}
+ 
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 	
+ 	/** A small utility method returning if a given int i is in the given int[] ints. */
+@@ -399,7 +409,12 @@
+ 		 * by the surrounding Pass3aVerifier instance.
+ 		 */
+ 		private int max_locals(){
++		   try {
+ 			return Repository.lookupClass(myOwner.getClassName()).getMethods()[method_no].getCode().getMaxLocals();
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 		/**
+@@ -476,6 +491,7 @@
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+  		//getfield, putfield, getstatic, putstatic
+  		public void visitFieldInstruction(FieldInstruction o){
++		   try {
+ 			indexValid(o, o.getIndex());
+ 			Constant c = cpg.getConstant(o.getIndex());
+ 			if (! (c instanceof ConstantFieldref)){
+@@ -511,6 +527,10 @@
+ 				}
+ 				/* TODO: Check for access modifiers here. */
+ 			}
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}	
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+@@ -869,6 +889,7 @@
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitPUTSTATIC(PUTSTATIC o){
++		    try {
+ 			String field_name = o.getFieldName(cpg);
+ 			JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
+ 			Field[] fields = jc.getFields();
+@@ -899,10 +920,15 @@
+ 			if ((!(jc.isClass())) && (!(meth_name.equals(Constants.STATIC_INITIALIZER_NAME)))){
+ 				constraintViolated(o, "Interface field '"+f+"' must be set in a '"+Constants.STATIC_INITIALIZER_NAME+"' method.");
+ 			}
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitGETSTATIC(GETSTATIC o){
++		    try {
+ 			String field_name = o.getFieldName(cpg);
+ 			JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
+ 			Field[] fields = jc.getFields();
+@@ -920,6 +946,10 @@
+ 			if (! (f.isStatic())){
+ 				constraintViolated(o, "Referenced field '"+f+"' is not static which it should be.");
+ 			}
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 		/* Checks if the constraints of operands of the said instruction(s) are satisfied. */
+@@ -934,6 +964,7 @@
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitINVOKEINTERFACE(INVOKEINTERFACE o){
++		    try {
+ 			// INVOKEINTERFACE is a LoadClass; the Class where the referenced method is declared in,
+ 			// is therefore resolved/verified.
+ 			// INVOKEINTERFACE is an InvokeInstruction, the argument and return types are resolved/verified,
+@@ -956,10 +987,15 @@
+ 			if (jc.isClass()){
+ 				constraintViolated(o, "Referenced class '"+jc.getClassName()+"' is a class, but not an interface as expected.");
+ 			}
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitINVOKESPECIAL(INVOKESPECIAL o){
++		    try {
+ 			// INVOKESPECIAL is a LoadClass; the Class where the referenced method is declared in,
+ 			// is therefore resolved/verified.
+ 			// INVOKESPECIAL is an InvokeInstruction, the argument and return types are resolved/verified,
+@@ -1013,11 +1049,16 @@
+ 				}
+ 			}
+ 			
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 			
+ 		}
+ 		
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitINVOKESTATIC(INVOKESTATIC o){
++		    try {
+ 			// INVOKESTATIC is a LoadClass; the Class where the referenced method is declared in,
+ 			// is therefore resolved/verified.
+ 			// INVOKESTATIC is an InvokeInstruction, the argument and return types are resolved/verified,
+@@ -1042,11 +1083,16 @@
+ 				constraintViolated(o, "Referenced method '"+o.getMethodName(cpg)+"' has ACC_STATIC unset.");
+ 			}
+ 		
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 
+ 		/** Checks if the constraints of operands of the said instruction(s) are satisfied. */
+ 		public void visitINVOKEVIRTUAL(INVOKEVIRTUAL o){
++		    try {
+ 			// INVOKEVIRTUAL is a LoadClass; the Class where the referenced method is declared in,
+ 			// is therefore resolved/verified.
+ 			// INVOKEVIRTUAL is an InvokeInstruction, the argument and return types are resolved/verified,
+@@ -1070,6 +1116,10 @@
+ 				constraintViolated(o, "Referenced class '"+jc.getClassName()+"' is an interface, but not a class as expected.");
+ 			}
+ 					
++		    } catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		    }
+ 		}
+ 
+ 		
+Index: src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java,v
+retrieving revision 1.5
+diff -u -r1.5 InstConstraintVisitor.java
+--- src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java	12 Feb 2003 10:15:29 -0000	1.5
++++ src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java	30 Apr 2003 17:53:51 -0000
+@@ -473,6 +473,7 @@
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitAASTORE(AASTORE o){
++	    try {
+ 		Type arrayref = stack().peek(2);
+ 		Type index    = stack().peek(1);
+ 		Type value    = stack().peek(0);
+@@ -493,6 +494,10 @@
+ 				constraintViolated(o, "The type of 'value' ('"+value+"') is not assignment compatible to the components of the array 'arrayref' refers to. ('"+((ArrayType) arrayref).getElementType()+"')");
+ 			}
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -563,6 +568,7 @@
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitATHROW(ATHROW o){
++	    try {
+ 		// It's stated that 'objectref' must be of a ReferenceType --- but since Throwable is
+ 		// not derived from an ArrayType, it follows that 'objectref' must be of an ObjectType or Type.NULL.
+ 		if (! ((stack().peek() instanceof ObjectType) || (stack().peek().equals(Type.NULL))) ){
+@@ -577,6 +583,10 @@
+ 		if ( (! (exc.subclassOf(throwable)) ) && (! (exc.equals(throwable))) ){
+ 			constraintViolated(o, "The 'objectref' is not of class Throwable or of a subclass of Throwable, but of '"+stack().peek()+"'.");
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -1167,6 +1177,7 @@
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitGETFIELD(GETFIELD o){
++	    try {
+ 		Type objectref = stack().peek();
+ 		if (! ( (objectref instanceof ObjectType) || (objectref == Type.NULL) ) ){
+ 			constraintViolated(o, "Stack top should be an object reference that's not an array reference, but is '"+objectref+"'.");
+@@ -1215,6 +1226,11 @@
+ 		if (f.isStatic()){
+ 			constraintViolated(o, "Referenced field '"+f+"' is static which it shouldn't be.");
+ 		}
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -1716,6 +1732,7 @@
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitINVOKESPECIAL(INVOKESPECIAL o){
++	    try {
+ 		// Don't init an object twice.
+ 		if ( (o.getMethodName(cpg).equals(Constants.CONSTRUCTOR_NAME)) && (!(stack().peek(o.getArgumentTypes(cpg).length) instanceof UninitializedObjectType)) ){
+ 			constraintViolated(o, "Possibly initializing object twice. A valid instruction sequence must not have an uninitialized object on the operand stack or in a local variable during a backwards branch, or in a local variable in code protected by an exception handler. Please see The Java Virtual Machine Specification, Second Edition, 4.9.4 (pages 147 and 148) for details.");
+@@ -1796,12 +1813,17 @@
+ 			constraintViolated(o, "The 'objref' item '"+objref+"' does not implement '"+theClass+"' as expected.");
+ 		}	
+ 		
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitINVOKESTATIC(INVOKESTATIC o){
++	    try {
+ 		// Method is not native, otherwise pass 3 would not happen.
+ 		
+ 		Type t = o.getType(cpg);
+@@ -1841,12 +1863,17 @@
+ 				}
+ 			}
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL o){
++	    try {
+ 		// the o.getClassType(cpg) type has passed pass 2; see visitLoadClass(o).
+ 
+ 		Type t = o.getType(cpg);
+@@ -1912,6 +1939,10 @@
+ 		if ( ! Repository.instanceOf(objref_classname, theClass) ){
+ 			constraintViolated(o, "The 'objref' item '"+objref+"' does not implement '"+theClass+"' as expected.");
+ 		}	
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+@@ -2427,6 +2458,7 @@
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitPUTFIELD(PUTFIELD o){
++	    try {
+ 
+ 		Type objectref = stack().peek(1);
+ 		if (! ( (objectref instanceof ObjectType) || (objectref == Type.NULL) ) ){
+@@ -2504,12 +2536,18 @@
+ 		if (f.isStatic()){
+ 			constraintViolated(o, "Referenced field '"+f+"' is static which it shouldn't be.");
+ 		}
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+ 	 * Ensures the specific preconditions of the said instruction.
+ 	 */
+ 	public void visitPUTSTATIC(PUTSTATIC o){
++	    try {
+ 		String field_name = o.getFieldName(cpg);
+ 		JavaClass jc = Repository.lookupClass(o.getClassType(cpg).getClassName());
+ 		Field[] fields = jc.getFields();
+@@ -2555,6 +2593,11 @@
+ 		}
+ 		// TODO: Interface fields may be assigned to only once. (Hard to implement in
+ 		//       JustIce's execution model). This may only happen in <clinit>, see Pass 3a.
++
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+Index: src/java/org/apache/bcel/verifier/structurals/LocalVariables.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/structurals/LocalVariables.java,v
+retrieving revision 1.2
+diff -u -r1.2 LocalVariables.java
+--- src/java/org/apache/bcel/verifier/structurals/LocalVariables.java	2 Aug 2002 11:57:51 -0000	1.2
++++ src/java/org/apache/bcel/verifier/structurals/LocalVariables.java	30 Apr 2003 17:53:51 -0000
+@@ -162,6 +162,7 @@
+ 	 * @see #merge(LocalVariables)
+ 	 */
+ 	private void merge(LocalVariables lv, int i){
++	    try {
+ 		
+ 		// We won't accept an unitialized object if we know it was initialized;
+ 		// compare vmspec2, 4.9.4, last paragraph.
+@@ -202,6 +203,10 @@
+ 				locals[i] = Type.UNKNOWN;
+ 			}
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+Index: src/java/org/apache/bcel/verifier/structurals/OperandStack.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/structurals/OperandStack.java,v
+retrieving revision 1.2
+diff -u -r1.2 OperandStack.java
+--- src/java/org/apache/bcel/verifier/structurals/OperandStack.java	2 Aug 2002 11:57:51 -0000	1.2
++++ src/java/org/apache/bcel/verifier/structurals/OperandStack.java	30 Apr 2003 17:53:51 -0000
+@@ -228,6 +228,7 @@
+ 	 * for details.
+ 	 */
+ 	public void merge(OperandStack s){
++	    try {
+ 		if ( (slotsUsed() != s.slotsUsed()) || (size() != s.size()) )
+ 			throw new StructuralCodeConstraintException("Cannot merge stacks of different size:\nOperandStack A:\n"+this+"\nOperandStack B:\n"+s);
+ 		
+@@ -258,6 +259,10 @@
+ 				}
+ 			}
+ 		}
++	    } catch (ClassNotFoundException e) {
++		// FIXME: maybe not the best way to handle this
++		throw new AssertionViolatedException("Missing class: " + e.toString());
++	    }
+ 	}
+ 
+ 	/**
+Index: src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java
+===================================================================
+RCS file: /home/cvspublic/jakarta-bcel/src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java,v
+retrieving revision 1.3
+diff -u -r1.3 Pass3bVerifier.java
+--- src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java	4 Jul 2002 21:44:42 -0000	1.3
++++ src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java	30 Apr 2003 17:53:51 -0000
+@@ -292,7 +292,13 @@
+ 
+ 		// Pass 3a ran before, so it's safe to assume the JavaClass object is
+ 		// in the BCEL repository.
+-		JavaClass jc = Repository.lookupClass(myOwner.getClassName());
++		JavaClass jc;
++		try {
++			jc = Repository.lookupClass(myOwner.getClassName());
++		} catch (ClassNotFoundException e) {
++			// FIXME: maybe not the best way to handle this
++			throw new AssertionViolatedException("Missing class: " + e.toString());
++		}
+ 
+ 		ConstantPoolGen constantPoolGen = new ConstantPoolGen(jc.getConstantPool());
+ 		// Init Visitors
