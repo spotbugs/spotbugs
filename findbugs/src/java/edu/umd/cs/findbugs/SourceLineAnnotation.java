@@ -278,13 +278,38 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return fromVisitedInstructionRange(classContext, visitor, pc, pc);
 	}
 
+	/**
+	 * Create from Method and Location in a visited class.
+	 * 
+	 * @param classContext ClassContext of visited class
+	 * @param method       Method in visited class
+	 * @param loc          Location in visited class
+	 * @return SourceLineAnnotation describing visited Location
+	 */
 	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, Location loc) {
 		return fromVisitedInstruction(classContext, method, loc.getHandle());
 	}
 
+	/**
+	 * Create from Method and InstructionHandle in a visited class.
+	 * 
+	 * @param classContext ClassContext of visited class
+	 * @param method       Method in visited class
+	 * @param handle       InstructionHandle in visited class
+	 * @return SourceLineAnnotation describing visited instruction
+	 */
 	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, InstructionHandle handle) {
 		return fromVisitedInstruction(classContext, method, handle.getPosition());
 	}
+
+	/**
+	 * Create from Method and bytecode offset in a visited class.
+	 * 
+	 * @param classContext ClassContext of visited class
+	 * @param method       Method in visited class
+	 * @param pc           bytecode offset in visited method
+	 * @return SourceLineAnnotation describing visited instruction
+	 */
 	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, int pc) {
 		LineNumberTable lineNumberTable = method.getCode().getLineNumberTable();
 		String className = classContext.getJavaClass().getClassName();
