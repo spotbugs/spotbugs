@@ -300,10 +300,17 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 	private void addMatcher(Matcher m) {
 		if (m == null) throw new IllegalArgumentException("matcher must not be null");
+		
 		CompoundMatcher peek = matcherStack.peek();
 		if (peek == null)
 			throw new NullPointerException("Top of stack is null");
 		peek.addChild(m);
+		if (nextMatchedIsDisabled) {
+			if (peek instanceof Filter) 
+				((Filter)peek).disable(m);
+			else assert false;
+			nextMatchedIsDisabled = false;
+		}
 	}
 	private void pushCompoundMatcherAsChild(CompoundMatcher m) {
 		addMatcher(m);
@@ -314,9 +321,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			throw new IllegalArgumentException("matcher must not be null");
 		matcherStack.push(m);
 	}
+	boolean nextMatchedIsDisabled;
 	private void parseMatcher(String qName, Attributes attributes) throws SAXException {
 		if (DEBUG) System.out.println(elementStack + " " + qName + " " + matcherStack);
-		
+		String disabled = attributes.getValue("disabled");
+		nextMatchedIsDisabled = "true".equals(disabled);
 	    if (qName.equals("Bug")) {
 	    	addMatcher(new BugMatcher(attributes.getValue("code"),
 	    			attributes.getValue("pattern"),
@@ -346,7 +355,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	String params = attributes.getValue("params");
 	    	String returns = attributes.getValue("returns");
 	    	addMatcher(new MethodMatcher(name, params, returns));
-
 	    } else if (qName.equals("Field")) {
 	    	String name = attributes.getValue("name");
 			String type = attributes.getValue("type");
@@ -358,6 +366,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	AndMatcher matcher = new AndMatcher();
 	    	pushCompoundMatcherAsChild(matcher);
 	    }
+	    nextMatchedIsDisabled = false;
     }
 
 
