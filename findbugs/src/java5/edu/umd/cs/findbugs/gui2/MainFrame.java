@@ -501,6 +501,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		filterMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				new NewFilterFromBug(currentSelectedBugLeaf.getBug());
 
 				setProjectChanged(true);
