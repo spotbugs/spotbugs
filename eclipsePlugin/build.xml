@@ -81,6 +81,7 @@
 			target="jsr14"
 			debug="on">
 			<classpath refid="tools.classpath"/>
+		        <classpath refid="plugin.classpath"/>
 		</javac>
 		<!-- Copy the .properties files from the source directory. -->
 		<copy todir="${bin.dir}">
@@ -100,6 +101,7 @@
 			failonerror="true"
 			output="${bin.dir}/plugininfo.properties">
 			<classpath refid="tools.classpath"/>
+			<classpath refid="plugin.classpath"/>
 			<arg value="plugin.xml"/>
 			<arg value="${dist.dir}/plugin.xml"/>
 		</java>

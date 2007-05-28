@@ -12,6 +12,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import edu.umd.cs.findbugs.Version;
+
 /**
  * Extract information (plugin id, version, etc.)
  * from the plugin's plugin.xml file,
@@ -29,7 +31,11 @@ public class PluginInfo {
 		
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(new File(args[0]));
-		String date = eclipseDateFormat.format(new Date());
+		String date = Version.DATE;
+        String version = getValue(document, "/plugin/@version");
+        String expectedVersion = Version.RELEASE_BASE+".qualifier";
+        if (!version.equals(expectedVersion))
+            throw new IllegalStateException("plugin gives Eclipse version as " + version + ", FindBugs gives version as " + expectedVersion);
 		emitProperty(document, "plugin.id", "/plugin/@id");
 		String modifiedVersion = getValue(document, "/plugin/@version").replaceFirst("qualifier", date);
 		setValue(document, "/plugin/@version", modifiedVersion );
