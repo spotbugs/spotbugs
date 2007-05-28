@@ -239,8 +239,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Get the BugPattern.
 	 */
-	public BugPattern getBugPattern() {
-		return I18N.instance().lookupBugPattern(getType());
+	public @NonNull BugPattern getBugPattern() {
+		BugPattern result =  I18N.instance().lookupBugPattern(getType());
+		if (result != null) return result;
+		result = I18N.instance().lookupBugPattern("UNKNOWN");
+		assert result != null;
+		return result;
 	}
 
 	/**
@@ -258,8 +262,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getPriorityTypeString()
 	{
 		String priorityString = getPriorityString();
+		BugPattern bugPattern = this.getBugPattern();
 		//then get the category and put everything together
-		String categoryString = I18N.instance().getBugCategoryDescription(this.getBugPattern().getCategory());
+		String categoryString;
+		if (bugPattern == null) categoryString = "Unknown category for " + getType();
+		else categoryString = I18N.instance().getBugCategoryDescription(bugPattern.getCategory());
 		return priorityString + " Priority " + categoryString;
 		//TODO: internationalize the word "Priority"
 	}

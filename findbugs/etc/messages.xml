@@ -1454,6 +1454,18 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UNKNOWN">
+    <ShortDescription>Unknown bug pattern</ShortDescription>
+    <LongDescription>Unknown bug pattern in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>A warning was recorded, but findbugs can't find the description of this bug pattern
+and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration,
+or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded.
+.</p>
+]]>
+    </Details>
+  </BugPattern>
 
 
   <BugPattern type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY">
