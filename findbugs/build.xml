@@ -152,6 +152,11 @@
 				<include name="*.xsl"/>
 			</fileset>
 		</copy>
+        <native2ascii   encoding="Cp1252"
+                dest = "${classes.dir}"
+                src= "${src.dir}"
+                includes = "${pkg.base}/**/*_de.properties"
+			/>
 		<!-- Compile JUnit test cases. -->
 		<javac srcdir="${junitsrc.dir}"
 				destdir="${classes.dir}"
