@@ -116,7 +116,10 @@ public class I18N {
 	 * This is a format pattern for describing an entire bug instance in a single line.
 	 *
 	 * @param key which message to retrieve
+	 * 
+	 * 
 	 */
+	@Deprecated
 	public @NonNull String getMessage(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)

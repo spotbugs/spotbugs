@@ -30,14 +30,14 @@ package edu.umd.cs.findbugs;
  * @see BugInstance
  */
 public class BugPattern implements Comparable<BugPattern> {
-	private String type;
-	private String abbrev;
-	private String category;
-	private boolean experimental;
-	private String shortDescription;
-	private String longDescription;
-	private String detailText;
-	private String detailHTML;
+	final private String type;
+	final private String abbrev;
+	final private String category;
+	final private boolean experimental;
+	final private String shortDescription;
+	final private String longDescription;
+	final private String detailText;
+	 private String detailHTML;
 
 	/**
 	 * Constructor.
@@ -62,6 +62,12 @@ public class BugPattern implements Comparable<BugPattern> {
 		this.detailText = detailText;
 	}
 
+	 static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN",
+			"TEST","CORRECTNESS",false,"Unknown warning; core bug patterns not found",
+			"Unknown warning BUG_PATTERN in {1}; core bug patterns not found","<p>A warning was recorded, but findbugs can't find the description of this bug pattern "
++"and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration, "
++ "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
++ "</p>");
 	/**
 	 * Get the type (species).
 	 */

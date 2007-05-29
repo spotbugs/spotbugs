@@ -1456,7 +1456,7 @@ bug detectors.</p>
   </BugPattern>
   <BugPattern type="UNKNOWN">
     <ShortDescription>Unknown bug pattern</ShortDescription>
-    <LongDescription>Unknown bug pattern in {1}</LongDescription>
+    <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>A warning was recorded, but findbugs can't find the description of this bug pattern

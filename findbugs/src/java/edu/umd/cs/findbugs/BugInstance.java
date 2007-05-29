@@ -242,9 +242,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public @NonNull BugPattern getBugPattern() {
 		BugPattern result =  I18N.instance().lookupBugPattern(getType());
 		if (result != null) return result;
+		AnalysisContext.logError("Unable to find description of bug pattern " + getType());
 		result = I18N.instance().lookupBugPattern("UNKNOWN");
-		assert result != null;
-		return result;
+		if (result != null) return result;
+		return BugPattern.REALLY_UNKNOWN;
 	}
 
 	/**
@@ -329,7 +330,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Is this bug instance the result of an experimental detector?
 	 */
 	public boolean isExperimental() {
-		BugPattern pattern = I18N.instance().lookupBugPattern(type);
+		BugPattern pattern = getBugPattern();
 		return (pattern != null) && pattern.isExperimental();
 	}
 
@@ -451,7 +452,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * the BugPattern is a particular species of.
 	 */
 	public String getAbbrev() {
-		BugPattern pattern = I18N.instance().lookupBugPattern(getType());
+		BugPattern pattern = getBugPattern();
 		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
 	}
 
@@ -1466,14 +1467,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the description
 	 */
 	public String getMessageWithoutPrefix() {
-		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+		BugPattern bugPattern = getBugPattern();
 		String pattern, shortPattern;
-		if (bugPattern == null) 
-			shortPattern = pattern = "Error: missing bug pattern for key " + type;
-		else {
-			pattern = bugPattern.getLongDescription();
+		
+			pattern = getLongDescription();
 			shortPattern = bugPattern.getShortDescription();
-		}
 		try {
 			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
@@ -1482,13 +1480,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return shortPattern + " [Error generating customized description]";
 		}
 	}
+	String getLongDescription() {
+		return getBugPattern().getLongDescription().replaceAll("BUG_PATTERN", type);
+	}
 	public String getAbridgedMessage() {
-		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+		BugPattern bugPattern = getBugPattern();
 		String pattern, shortPattern;
 		if (bugPattern == null) 
-			shortPattern = pattern = "Error: missing bug pattern for key " + type;
+			shortPattern = pattern = "Error2: missing bug pattern for key " + type;
 		else {
-			pattern = bugPattern.getLongDescription().replaceAll(" in \\{1\\}", "");
+			pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
 			shortPattern = bugPattern.getShortDescription();
 		}
 		try {
@@ -1496,7 +1497,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			return shortPattern + " [Error generating customized description]";
+			return shortPattern + " [Error3 generating customized description]";
 		}
 	}
 	/**
@@ -1505,15 +1506,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the description
 	 */
 	public String getMessage() {
-		String pattern = I18N.instance().getMessage(type);
+		BugPattern bugPattern = getBugPattern();
+		String pattern = bugPattern.getAbbrev() + ": " + getLongDescription();
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		try {
 			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
 			if (bugPattern == null)
-				return "Error: missing bug pattern for key " + type;
+				return "Error4: missing bug pattern for key " + type;
 			return bugPattern.getShortDescription() + " [Error generating customized description]";
 		}
 	}
