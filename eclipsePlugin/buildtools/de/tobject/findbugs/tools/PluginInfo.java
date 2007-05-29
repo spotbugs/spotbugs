@@ -31,7 +31,7 @@ public class PluginInfo {
 		
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(new File(args[0]));
-		String date = Version.DATE;
+		String date = Version.ECLIPSE_DATE;
         String version = getValue(document, "/plugin/@version");
         String expectedVersion = Version.RELEASE_BASE+".qualifier";
         if (!version.equals(expectedVersion))
