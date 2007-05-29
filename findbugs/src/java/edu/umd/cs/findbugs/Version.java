@@ -64,6 +64,7 @@ public class Version {
 	public static final String DATE;
 
 	public static final String COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+	public static final String ECLIPSE_DATE;
 
 
 
@@ -100,7 +101,7 @@ public class Version {
 	
 	static {
 		InputStream in = null;
-		String release, eclipse_ui_version, date;
+		String release, eclipse_ui_version, date, eclipseDate;
 		try {
 			Properties versionProperties = new Properties();
 			 in = Version.class.getResourceAsStream("/version.properties");
@@ -108,14 +109,17 @@ public class Version {
 			 release = (String) versionProperties.get("release.number");
 			 eclipse_ui_version = (String) versionProperties.get("eclipse.ui.version");
 			 date = (String) versionProperties.get("release.date");
+			 eclipseDate = (String) versionProperties.get("eclipse.date");
 		} catch (RuntimeException e) {
 			release = COMPUTED_RELEASE;
 			eclipse_ui_version = COMPUTED_ECLIPSE_UI_VERSION;
 			date = COMPUTED_DATE;
+			eclipseDate = COMPUTED_ECLIPSE_DATE;
 		} catch (IOException e) {
 			release = COMPUTED_RELEASE;
 			eclipse_ui_version = COMPUTED_ECLIPSE_UI_VERSION;
 			date = COMPUTED_DATE;
+			eclipseDate = COMPUTED_ECLIPSE_DATE;
 		} finally {
 			try {
 			if (in != null) in.close();
@@ -126,6 +130,7 @@ public class Version {
 		RELEASE = release;
 		ECLIPSE_UI_VERSION = eclipse_ui_version;
 		DATE = date;
+		ECLIPSE_DATE = eclipseDate;
 	}
 
 	
@@ -159,6 +164,7 @@ public class Version {
 		else if (arg.equals("-props")) {
 			System.out.println("release.number=" + COMPUTED_RELEASE);
 			System.out.println("release.date=" + COMPUTED_DATE);
+			System.out.println("eclipse.date=" + COMPUTED_ECLIPSE_DATE);
 			System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website=" + WEBSITE);
 			System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
