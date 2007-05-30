@@ -107,6 +107,7 @@ public class DetectorFactory {
 	private final String requireJRE;
 	private String detailHTML;
 	private int priorityAdjustment;
+    private boolean enabledButNonReporting;
 	private boolean hidden;
 
 	/**
@@ -284,6 +285,9 @@ public class DetectorFactory {
 	public void setPriorityAdjustment(int priorityAdjustment) {
 		this.priorityAdjustment = priorityAdjustment;
 	}
+    public void setEnabledButNonReporting(boolean notReporting) {
+    	this.enabledButNonReporting = notReporting;
+    }
 
 	/**
 	 * Get the priority adjustment for the detector produced by this factory.
@@ -291,6 +295,7 @@ public class DetectorFactory {
 	 * @return the priority adjustment
 	 */
 	public int getPriorityAdjustment() {
+        if (enabledButNonReporting) return 100;
 		return priorityAdjustment;
 	}
 

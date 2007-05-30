@@ -118,6 +118,9 @@ public class ExecutionPlan {
 	 */
 	public void build() throws OrderingConstraintException {
 
+		for(DetectorFactory detectorFactory : factoryMap.values()) {
+			detectorFactory.setEnabledButNonReporting(false);
+		}
 
 		ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<DetectorOrderingConstraint>(interPassConstraintList.size() + intraPassConstraintList.size());
 		allConstraints.addAll(interPassConstraintList);

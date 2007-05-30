@@ -941,7 +941,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			}
 			public void enable(DetectorFactory factory) {
 				forcedEnabled.add(factory);
-				factory.setPriorityAdjustment(100);        
+				factory.setEnabledButNonReporting(true);        
 			}
 		});
 
