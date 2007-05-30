@@ -8,12 +8,8 @@ public class Bug1723940 {
 	}
 	static public void doX(Bug1723940 o) {
 	    o.hashCode();
-
 	    while(o != null) {
 	        o = o.getChild();
 	    }
-
 	}
-
-
 }

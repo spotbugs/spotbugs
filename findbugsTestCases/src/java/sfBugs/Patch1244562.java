@@ -26,5 +26,17 @@ public class Patch1244562 {
 		String x3 = x.concat(x2);
 		String x5 = x3.substring(130);
 		String x6 = x3.substring(-3);
+		
+		String a = "hello";
+
+		// Test for a false positive report
+		// The following line is correct.
+		a = a.replaceAll("[aeio]", "[x");
+		// Test for a false negative report.
+		// The following line is wrong.
+		a = a.replaceAll("[aeio", "[x]");
+		System.out.println(a);
+
+
 	}
 }
