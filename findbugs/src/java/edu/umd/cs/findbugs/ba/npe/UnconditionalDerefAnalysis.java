@@ -102,10 +102,6 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		result.clear();
 	}
 
-	public void initResultFact(UnconditionalDerefSet result) {
-		makeFactTop(result);
-	}
-
 	public void makeFactTop(UnconditionalDerefSet fact) {
 		fact.setTop();
 	}

@@ -27,6 +27,9 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Front-end for LockDataflow that can avoid doing unnecessary work
@@ -44,7 +47,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
  * @author David Hovemeyer
  */
 public class LockChecker {
-	private ClassContext classContext;
+	private MethodDescriptor methodDescriptor;
 	private Method method;
 	private LockDataflow lockDataflow;
 	private ValueNumberDataflow vnaDataflow;
@@ -52,23 +55,20 @@ public class LockChecker {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param classContext ClassContext for the class
-	 * @param method       Method we want LockSets for
 	 */
-	public LockChecker(ClassContext classContext, Method method) {
-		this.classContext = classContext;
-		this.method = method;
+	public LockChecker(MethodDescriptor methodDescriptor) {
 		this.cache = new HashMap<Location, LockSet>();
+		this.methodDescriptor = methodDescriptor;
 	}
 
 	/**
 	 * Execute dataflow analyses (only if required).
-	 * 
-	 * @throws DataflowAnalysisException
-	 * @throws CFGBuilderException
+	 * @throws CheckedAnalysisException 
 	 */
-	public void execute() throws DataflowAnalysisException, CFGBuilderException {
+	public void execute() throws CheckedAnalysisException {
+		method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+		ClassContext classContext = Global.getAnalysisCache().getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+		
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return;
 		if (bytecodeSet.get(Constants.MONITORENTER) || bytecodeSet.get(Constants.MONITOREXIT)) {

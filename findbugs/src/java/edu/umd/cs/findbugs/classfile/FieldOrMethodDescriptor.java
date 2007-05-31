@@ -25,12 +25,17 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor {
-	private String className;
-	private String name;
-	private String signature;
-	private boolean isStatic;
+	private final String className;
+	private final String name;
+	private final String signature;
+	private final boolean isStatic;
+	private ClassDescriptor cachedClassDescriptor;
+	private int cachedHashCode;
 
 	public FieldOrMethodDescriptor(String className, String name, String signature, boolean isStatic) {
+		if (className.indexOf('.') >= 0) {
+			throw new IllegalArgumentException("class name not in VM format: " + className);
+		}
 		this.className = className;
 		this.name = name;
 		this.signature = signature;
@@ -43,6 +48,17 @@ public abstract class FieldOrMethodDescriptor {
 	public String getClassName() {
 		return className;
 	}
+	
+	/**
+	 * @return a ClassDescriptor for the method's class
+	 */
+	public ClassDescriptor getClassDescriptor() {
+		if (cachedClassDescriptor == null) {
+			cachedClassDescriptor =  new ClassDescriptor(className);
+		}
+		return cachedClassDescriptor;
+	}
+
 
 	/**
 	 * @return Returns the method name
@@ -87,6 +103,9 @@ public abstract class FieldOrMethodDescriptor {
 	 */
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
 		if (obj == null || obj.getClass() != this.getClass()) {
 			return false;
 		}
@@ -102,10 +121,13 @@ public abstract class FieldOrMethodDescriptor {
 	 */
 	@Override
 	public int hashCode() {
-		return className.hashCode() * 7919
-			+ name.hashCode() * 3119  
-			+ signature.hashCode() * 131
-			+ (isStatic ? 1 : 0);
+		if (cachedHashCode == 0) {
+			cachedHashCode = className.hashCode() * 7919
+				+ name.hashCode() * 3119  
+				+ signature.hashCode() * 131
+				+ (isStatic ? 1 : 0);
+		}
+		return cachedHashCode;
 	}
 
 	/* (non-Javadoc)

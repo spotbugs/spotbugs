@@ -1338,6 +1338,15 @@ It is a fast detector.</p>
 </Details>
 </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis">
+    <Details>
+      <![CDATA[
+      	<p>This is an internal detector used only for testing dataflow analyses.
+      	It is not enabled by default.</p>
+      ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns

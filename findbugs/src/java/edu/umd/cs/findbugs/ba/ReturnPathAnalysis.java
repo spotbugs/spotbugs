@@ -39,10 +39,6 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 		fact.setKind(ReturnPath.RETURNS);
 	}
 
-	public void initResultFact(ReturnPath result) {
-		result.setKind(ReturnPath.TOP);
-	}
-
 	public void makeFactTop(ReturnPath fact) {
 		fact.setKind(ReturnPath.TOP);
 	}

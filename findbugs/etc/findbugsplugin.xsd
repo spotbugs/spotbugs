@@ -37,6 +37,10 @@
 		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	
+	<xsd:complexType name="EngineRegistrarType">
+		<xsd:attribute name="class" type="ClassType"/>
+	</xsd:complexType>
+	
 	<xsd:complexType name="BugPatternType">
 		<xsd:attribute name="abbrev" type="IdentifierType"/>
 		<xsd:attribute name="type" type="xsd:ID"/>
@@ -91,6 +95,7 @@
 				minOccurs="0"
 				maxOccurs="1"/>
 			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="pluginid" type="xsd:string"/>

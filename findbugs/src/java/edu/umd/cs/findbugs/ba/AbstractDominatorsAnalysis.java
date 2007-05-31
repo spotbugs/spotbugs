@@ -93,10 +93,6 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
 		result.clear();
 	}
 
-	public void initResultFact(BitSet result) {
-		makeFactTop(result);
-	}
-
 	public boolean isTop(BitSet fact) {
 		// We represent TOP as a bitset with an illegal bit set
 		return fact.get(cfg.getNumBasicBlocks());

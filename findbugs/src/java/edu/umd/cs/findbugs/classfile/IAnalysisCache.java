@@ -122,6 +122,16 @@ public interface IAnalysisCache {
 	 * @throws CheckedAnalysisException 
 	 */
 	public<E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
+	
+	/**
+	 * Eagerly install a database.
+	 * This avoids the need to register a database factory.
+	 * 
+	 * @param <E>           type of database
+	 * @param databaseClass Class of database
+	 * @param database      database object
+	 */
+	public<E> void eagerlyPutDatabase(Class<E> databaseClass, E database);
 
 	/**
 	 * Get the classpath from which classes are loaded. 

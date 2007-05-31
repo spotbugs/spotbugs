@@ -76,17 +76,14 @@ public class AnalysisRun {
 		this.logger = frame.getLogger();
 		this.reporter = new SwingGUIBugReporter(this);
 		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
-		if (true) {
-			// Eat our own dogfood
-			FindBugs2 engine = new FindBugs2();
-			engine.setBugReporter(reporter);
-			engine.setProject(project);
-			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
-			this.findBugs = engine;
-		} else {
-			this.findBugs = new FindBugs(reporter, project);
-		}
+		// Create IFindBugsEngine
+		FindBugs2 engine = new FindBugs2();
+		engine.setBugReporter(reporter);
+		engine.setProject(project);
+		engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+
+		this.findBugs = engine;
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
 	}
 

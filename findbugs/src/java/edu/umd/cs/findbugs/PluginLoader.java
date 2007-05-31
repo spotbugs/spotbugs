@@ -33,6 +33,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
@@ -57,10 +58,13 @@ import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
  * @see Plugin
  * @see PluginException
  */
-public class PluginLoader extends URLClassLoader {
+public class PluginLoader {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
+	// ClassLoader used to load classes and resources
+	private ClassLoader classLoader;
+	
 	// Keep a count of how many plugins we've seen without a
 	// "pluginid" attribute, so we can assign them all unique ids.
 	private static int nextUnknownId;
@@ -75,7 +79,7 @@ public class PluginLoader extends URLClassLoader {
 	 * @throws PluginException if the plugin cannot be fully loaded
 	 */
 	public PluginLoader(URL url) throws PluginException {
-		super(new URL[]{url});
+		this.classLoader = new URLClassLoader(new URL[]{url});
 		init();
 	}
 
@@ -86,9 +90,16 @@ public class PluginLoader extends URLClassLoader {
 	 * @param parent the parent classloader
 	 */
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
-		super(new URL[]{url}, parent);
+		this.classLoader = new URLClassLoader(new URL[]{url}, parent);
 		init();
 	}
+	
+	/**
+     * @return Returns the classLoader.
+     */
+    public ClassLoader getClassLoader() {
+	    return classLoader;
+    }
 
 	/**
 	 * Get the Plugin.
@@ -113,7 +124,7 @@ public class PluginLoader extends URLClassLoader {
 
 		// Read the plugin descriptor
 		try {
-			URL descriptorURL = findResource("findbugs.xml");
+			URL descriptorURL = classLoader.getResource("findbugs.xml");
 			if (descriptorURL == null)
 				throw new PluginException("Couldn't find \"findbugs.xml\" in plugin");
 
@@ -155,7 +166,7 @@ public class PluginLoader extends URLClassLoader {
 
 		// Create the Plugin object (but don't assign to the plugin field yet,
 		// since we're still not sure if everything will load correctly)
-		Plugin plugin = new Plugin(pluginId);
+		Plugin plugin = new Plugin(pluginId, this);
 		plugin.setEnabled(pluginEnabled);
 
 		// Set provider and website, if specified
@@ -195,7 +206,7 @@ public class PluginLoader extends URLClassLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 
 				// Create DetectorFactory for the detector
-				Class<?> detectorClass = loadClass(className);
+				Class<?> detectorClass = classLoader.loadClass(className);
 				if (!Detector.class.isAssignableFrom(detectorClass)
 						&& !Detector2.class.isAssignableFrom(detectorClass))
 					throw new PluginException("Class " + className + " does not implement Detector or Detector2");
@@ -344,6 +355,27 @@ public class PluginLoader extends URLClassLoader {
 			}
 
 		}
+		
+		// If an engine registrar is specified, make a note of its classname
+		Node node = pluginDescriptor.selectSingleNode("/FindbugsPlugin/EngineRegistrar");
+		if (node != null) {
+			String engineClassName = node.valueOf("@class");
+			if (engineClassName == null) {
+				throw new PluginException("EngineRegistrar element with missing class attribute");
+			}
+
+			try {
+	            Class<?> engineRegistrarClass = classLoader.loadClass(engineClassName);
+	            if (!IAnalysisEngineRegistrar.class.isAssignableFrom(engineRegistrarClass)) {
+	            	throw new PluginException(engineRegistrarClass + " does not implement IAnalysisEngineRegistrar");
+	            }
+	            
+	            plugin.setEngineRegistrarClass((Class<? extends IAnalysisEngineRegistrar>) engineRegistrarClass);
+            } catch (ClassNotFoundException e) {
+    			throw new PluginException("Could not instantiate analysis engine registrar class: " + e, e);
+            }
+			
+		}
 
 		// Success!
 		// Assign to the plugin field, so getPlugin() can return the
@@ -397,7 +429,7 @@ public class PluginLoader extends URLClassLoader {
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
 			throws DocumentException {
-		URL messageURL = findResource(filename);
+		URL messageURL = classLoader.getResource(filename);
 		if (messageURL != null) {
 			SAXReader reader = new SAXReader();
 			Document messageCollection = reader.read(messageURL);

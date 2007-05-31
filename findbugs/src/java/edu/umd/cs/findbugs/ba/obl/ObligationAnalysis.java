@@ -214,12 +214,12 @@ public class ObligationAnalysis
 		fact.initEntryFact(factory);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(edu.umd.cs.findbugs.ba.obl.StateSet)
-	 */
-	public void initResultFact(StateSet fact) {
-		fact.setTop();
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(edu.umd.cs.findbugs.ba.obl.StateSet)
+//	 */
+//	public void initResultFact(StateSet fact) {
+//		fact.setTop();
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs.ba.obl.StateSet)

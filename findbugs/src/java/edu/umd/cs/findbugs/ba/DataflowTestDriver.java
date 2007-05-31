@@ -25,7 +25,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -38,13 +37,8 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @see Dataflow
  * @see DataflowAnalysis
  */
-public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> {
-	private boolean overrideIsForwards;
-
-	public void overrideIsForwards() {
-		this.overrideIsForwards = true;
-	}
-
+public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
+		extends AbstractDataflowTestDriver {
 	/**
 	 * Execute the analysis on a single class.
 	 *
@@ -77,37 +71,6 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 			System.out.println("-----------------------------------------------------------------");
 
 			execute(classContext, method);
-		}
-	}
-
-	static class Knob {
-		String systemPropertyName;
-		int analysisProperty;
-
-		Knob(String systemPropertyName, int analysisProperty) {
-			this.systemPropertyName = systemPropertyName;
-			this.analysisProperty = analysisProperty;
-		}
-	}
-
-	private static final Knob[] KNOB_LIST = {
-		new Knob("ta.instanceof", AnalysisFeatures.MODEL_INSTANCEOF),
-		new Knob("inva.trackvalues", AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS),
-		new Knob("fnd.derefs", AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS),
-	};
-
-	/**
-	 * Configure the analysis context.
-	 * 
-	 * @param analysisContext
-	 */
-	private void configureAnalysisContext(AnalysisContext analysisContext) {
-		boolean max = SystemProperties.getBoolean("dataflow.max");
-
-		for (Knob knob : KNOB_LIST) {
-			boolean enable = max || SystemProperties.getBoolean(knob.systemPropertyName); 
-			System.out.println("Setting " + knob.systemPropertyName + "=" + enable);
-			analysisContext.setBoolProperty(knob.analysisProperty, enable);
 		}
 	}
 

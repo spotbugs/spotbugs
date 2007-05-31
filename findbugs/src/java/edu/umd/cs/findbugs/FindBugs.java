@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2006 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -75,14 +75,15 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * analyses on some collection of Java classes.  It also implements the
  * command line interface.
  * 
- * Much of the active work has migrated to the FindBugs2 engine, and that should be used
- * instead of FindBugs if possible.
+ * <p>It is no longer possible to create instances of this class.
+ * Use {@link FindBugs2} instead.  Some useful static methods remain
+ * in this class, but may eventually be moved elsewhere.
  *
  * @author Bill Pugh
  * @author David Hovemeyer
  * 
  */
-public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
+public abstract class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -1422,7 +1423,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/* ----------------------------------------------------------------------
 	 * main() method
 	 * ---------------------------------------------------------------------- */
-
+/*
 	public static void main(String[] argv) {
 		try {
 			TextUICommandLine commandLine = new TextUICommandLine();
@@ -1464,7 +1465,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		processCommandLine(commandLine, argv, findBugs);
 		return findBugs;
 	}
-
+*/
+	
 	/**
 	 * Process the command line.
 	 * 

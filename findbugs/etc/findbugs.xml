@@ -642,6 +642,10 @@
             reports="GC_UNRELATED_TYPES" />
 
        <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"  reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis"
+	speed="slow" reports="" disabled="true" hidden="true"/>
+
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />

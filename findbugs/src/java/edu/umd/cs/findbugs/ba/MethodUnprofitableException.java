@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 /**
  * Used to signal a method not analyzed because it seemed unprofitable to do so
  * @author pugh
@@ -49,6 +51,20 @@ public class MethodUnprofitableException extends CFGBuilderException {
 	public MethodUnprofitableException(JavaClass jClass, Method method) {
 		super("Appears unprofitable to analyze " + method);
 		this.method = XFactory.createXMethod(jClass, method);
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param methodDescriptor the MethodDescriptor indicating the method it is unprofitable to analyze
+	 */
+	public MethodUnprofitableException(MethodDescriptor methodDescriptor) {
+		super("Appears unprofitable to analyze " + methodDescriptor.toString());
+		this.method = XFactory.createXMethod(
+				methodDescriptor.getClassDescriptor().toDottedClassName(),
+				methodDescriptor.getName(),
+				methodDescriptor.getSignature(),
+				methodDescriptor.isStatic());
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,19 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
-import edu.umd.cs.findbugs.annotations.*;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
+ * 
+ * <p>
+ * In order to avoid duplicating
+ * functionality (such as caching of start and result facts),
+ * most analyses should extend the {@link BasicAbstractDataflowAnalysis}
+ * or {@link AbstractDataflowAnalysis} classes rather than
+ * directly implementing this interface.
+ * </p>
  *
  * @author David Hovemeyer
  * @see Dataflow
@@ -34,7 +43,6 @@ public interface DataflowAnalysis <Fact> {
 	 * A valid value will be copied into it before it is used.
 	 */
 	public Fact createFact();
-
 
 	/**
 	 * Get the start fact for given basic block.
@@ -49,6 +57,37 @@ public interface DataflowAnalysis <Fact> {
 	 * @param block the basic block
 	 */
 	public Fact getResultFact(BasicBlock block);
+	
+	/**
+	 * Get dataflow fact at (just before) given Location.
+	 * Note "before" is meant in the logical sense, so for backward analyses,
+	 * before means after the location in the control flow sense.
+	 * 
+	 * @param location the Location
+	 * @return the dataflow value at given Location
+	 * @throws DataflowAnalysisException
+	 */
+	public Fact getFactAtLocation(Location location) throws DataflowAnalysisException;
+	
+	/**
+	 * Get the dataflow fact representing the point just after given Location.
+	 * Note "after" is meant in the logical sense, so for backward analyses,
+	 * after means before the location in the control flow sense.
+	 * 
+	 * @param location the Location
+	 * @return the dataflow value after given Location
+	 * @throws DataflowAnalysisException
+	 */
+	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException;
+	
+	/**
+	 * Get the fact that is true on the given control edge.
+	 * 
+	 * @param edge the edge
+	 * @return the fact that is true on the edge
+	 * @throws DataflowAnalysisException 
+	 */
+	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException;
 
 	/**
 	 * Copy dataflow facts.
@@ -59,14 +98,6 @@ public interface DataflowAnalysis <Fact> {
 	 * Initialize the "entry" fact for the graph.
 	 */
 	public void initEntryFact(Fact result) throws DataflowAnalysisException;
-
-	/**
-	 * Initialize result fact for block.
-	 * The start facts for a block are initialized as the meet of the
-	 * "logical" predecessor's result facts.  Note that a "logical predecessor"
-	 * is actually a CFG successor if the analysis is backwards.
-	 */
-	public void initResultFact(Fact result);
 
 	/**
 	 * Make given fact the top value.
@@ -151,6 +182,15 @@ public interface DataflowAnalysis <Fact> {
 	public int getLastUpdateTimestamp(Fact fact);
 
 	public void setLastUpdateTimestamp(Fact fact, int timestamp);
+	
+	/**
+	 * Return a String representation of given Fact.
+	 * For debugging purposes.
+	 * 
+	 * @param fact a dataflow fact
+	 * @return String representation of the fact
+	 */
+	public String factToString(Fact fact);
 }
 
 // vim:ts=4

@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,10 @@ import java.util.HashMap;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.DataflowAnalysis;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -34,14 +34,16 @@ import edu.umd.cs.findbugs.ba.ReverseDFSOrder;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 
 /**
+ * A dataflow analysis to determine, at each location in a method's
+ * CFG, whether or not it is possible to return normally
+ * at that location.
+ * 
  * @author David Hovemeyer
  */
-public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> {
+public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<ReturnPathType> {
 	private CFG cfg;
 	private DepthFirstSearch dfs;
 	private ReverseDepthFirstSearch rdfs;
-	private HashMap<BasicBlock, ReturnPathType> startFactMap;
-	private HashMap<BasicBlock, ReturnPathType> resultFactMap;
 
 	/**
 	 * Constructor.
@@ -54,8 +56,6 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 		this.cfg = cfg;
 		this.dfs = dfs;
 		this.rdfs = rdfs;
-		this.startFactMap = new HashMap<BasicBlock, ReturnPathType>();
-		this.resultFactMap = new HashMap<BasicBlock, ReturnPathType>();
 	}
 
 	/* (non-Javadoc)
@@ -109,20 +109,6 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#getResultFact(edu.umd.cs.findbugs.ba.BasicBlock)
-	 */
-	public ReturnPathType getResultFact(BasicBlock block) {
-		return getOrCreateFact(resultFactMap, block);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#getStartFact(edu.umd.cs.findbugs.ba.BasicBlock)
-	 */
-	public ReturnPathType getStartFact(BasicBlock block) {
-		return getOrCreateFact(startFactMap, block);
-	}
-
 	/**
 	 * Look up a dataflow value in given map,
 	 * creating a new (top) fact if no fact currently exists.
@@ -151,13 +137,6 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 		// normally" (see edgeTransfer() method).
 
 		result.setCanReturnNormally(true);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(java.lang.Object)
-	 */
-	public void initResultFact(ReturnPathType result) {
-		makeFactTop(result);
 	}
 
 	/* (non-Javadoc)

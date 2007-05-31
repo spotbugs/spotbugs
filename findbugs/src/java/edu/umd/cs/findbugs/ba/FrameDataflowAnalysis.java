@@ -38,10 +38,6 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 		dest.copyFrom(source);
 	}
 
-	public void initResultFact(FrameType result) {
-		result.setTop();
-	}
-
 	public void makeFactTop(FrameType fact) {
 		fact.setTop();
 	}

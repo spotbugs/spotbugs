@@ -48,7 +48,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 * Maximum number of class or method analysis results
 	 * to cache for a particular ClassDescriptor/MethodDescriptor.
 	 */
-	private static final int CACHE_SIZE = 5;
+	private static final int CACHE_SIZE = 100;
 
 	// Fields
 	private IClassPath classPath;
@@ -345,6 +345,13 @@ public class AnalysisCache implements IAnalysisCache {
 
 		// Again, we really should be using Class.cast()
 		return (E) database;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutDatabase(java.lang.Class, java.lang.Object)
+	 */
+	public <E> void eagerlyPutDatabase(Class<E> databaseClass, E database) {
+		databaseMap.put(databaseClass, database);
 	}
 
 	/* (non-Javadoc)

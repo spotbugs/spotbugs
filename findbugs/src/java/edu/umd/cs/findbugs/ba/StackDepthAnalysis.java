@@ -75,10 +75,6 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		entryFact.setDepth(0); // stack depth == 0 at entry to CFG
 	}
 
-	public void initResultFact(StackDepth result) {
-		makeFactTop(result);
-	}
-
 	public boolean same(StackDepth fact1, StackDepth fact2) {
 		return fact1.getDepth() == fact2.getDepth();
 	}

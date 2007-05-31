@@ -65,9 +65,9 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		result.clear();
 	}
 
-	public void initResultFact(FieldSet result) {
-		makeFactTop(result);
-	}
+//	public void initResultFact(FieldSet result) {
+//		makeFactTop(result);
+//	}
 
 	public void meetInto(FieldSet fact, Edge edge, FieldSet result) throws DataflowAnalysisException {
 		result.mergeWith(fact);

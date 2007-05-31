@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
+/**
+ * Dataflow class for LockAnalysis.
+ * 
+ * @author David Hovemeyer
+ */
 public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
 	public LockDataflow(CFG cfg, LockAnalysis lockAnalysis) {
 		super(cfg, lockAnalysis);
-	}
-
-	public LockSet getFactAtLocation(Location location) throws DataflowAnalysisException {
-		return getAnalysis().getFactAtLocation(location);
 	}
 }
 

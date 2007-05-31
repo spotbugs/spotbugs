@@ -68,10 +68,6 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 		result.clear();
 	}
 
-	public void initResultFact(BitSet result) {
-		makeFactTop(result);
-	}
-
 	public void makeFactTop(BitSet fact) {
 		fact.clear();
 		fact.set(topBit);

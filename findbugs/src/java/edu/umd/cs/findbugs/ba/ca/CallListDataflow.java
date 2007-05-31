@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2005-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,19 +20,14 @@ package edu.umd.cs.findbugs.ba.ca;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
 
+/**
+ * Dataflow class for CallListAnalysis. 
+ * 
+ * @author David Hovemeyer
+ */
 public class CallListDataflow extends Dataflow<CallList, CallListAnalysis> {
 	public CallListDataflow(CFG cfg, CallListAnalysis analysis) {
 		super(cfg, analysis);
-	}
-
-	public CallList getFactAtLocation(Location location) throws DataflowAnalysisException {
-		return getAnalysis().getFactAtLocation(location);
-	}
-
-	public CallList getFactAfterLocation(Location location) throws DataflowAnalysisException {
-		return getAnalysis().getFactAfterLocation(location);
 	}
 }

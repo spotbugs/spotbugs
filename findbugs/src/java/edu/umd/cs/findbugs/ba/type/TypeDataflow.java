@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,14 +40,6 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 
 	public TypeDataflow(CFG cfg, TypeAnalysis analysis) {
 		super(cfg, analysis);
-	}
-
-	public TypeFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
-		return getAnalysis().getFactAtLocation(loc);
-	}
-
-	public TypeFrame getFactAfterLocation(Location loc) throws DataflowAnalysisException {
-		return getAnalysis().getFactAfterLocation(loc);
 	}
 
 	public ExceptionSet getEdgeExceptionSet(Edge edge) {

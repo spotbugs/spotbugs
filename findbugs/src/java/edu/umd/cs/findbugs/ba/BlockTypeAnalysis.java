@@ -63,10 +63,6 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 		result.setNormal();
 	}
 
-	public void initResultFact(BlockType result) {
-		makeFactTop(result);
-	}
-
 	public void makeFactTop(BlockType fact) {
 		fact.setTop();
 	}

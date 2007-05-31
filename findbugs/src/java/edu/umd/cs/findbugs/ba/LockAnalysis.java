@@ -80,11 +80,6 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		}
 	}
 
-	public void initResultFact(LockSet result) {
-		result.clear();
-		result.setDefaultLockCount(LockSet.TOP);
-	}
-
 	public void makeFactTop(LockSet fact) {
 		fact.clear();
 		fact.setDefaultLockCount(LockSet.TOP);

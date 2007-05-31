@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2006, University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,20 +56,18 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 		return resultFactMap.values().iterator();
 	}
 
-	/**
-	 * Call this to get a dataflow value as a String.
-	 * By default, we just call toString().
-	 * Subclasses may override to get different behavior.
+	/*
+	 * Default implementation - subclasses may override.
 	 */
 	public String factToString(Fact fact) {
 		return fact.toString();
 	}
 
-	public Fact getStartFact(BasicBlock block) {
+	public /*final*/ Fact getStartFact(BasicBlock block) {
 		return lookupOrCreateFact(startFactMap, block);
 	}
 
-	public Fact getResultFact(BasicBlock block) {
+	public /*final*/ Fact getResultFact(BasicBlock block) {
 		return lookupOrCreateFact(resultFactMap, block);
 	}
 
@@ -128,7 +126,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	 * @return the fact that is true at the target of the edge
 	 * @throws DataflowAnalysisException 
 	 */
-	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+	public /*final*/ Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
 		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
 
 		Fact predFact = createFact();

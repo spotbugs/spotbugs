@@ -25,6 +25,8 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 /**
  * Convert part or all of a Java type signature into something
  * closer to what types look like in the source code.
@@ -184,6 +186,20 @@ public class SignatureConverter {
 	public static String convertMethodSignature(XMethod xmethod) {
 		return convertMethodSignature(xmethod.getClassName(), xmethod.getName(), xmethod.getSignature());
 	}
+
+	/**
+	 * Convenience method for generating a method signature in
+	 * human readable form.
+	 * 
+     * @param methodDescriptor a MethodDescriptor
+     * @return the formatted version of that signature
+     */
+    public static String convertMethodSignature(MethodDescriptor methodDescriptor) {
+    	return convertMethodSignature(
+    			methodDescriptor.getClassDescriptor().toDottedClassName(),
+    			methodDescriptor.getName(),
+    			methodDescriptor.getSignature());
+    }
 
 	/**
 	 * Convenience method for generating a method signature in

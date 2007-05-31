@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,13 +39,4 @@ public class ReturnPathTypeDataflow extends Dataflow<ReturnPathType, ReturnPathT
 	public ReturnPathTypeDataflow(CFG cfg, ReturnPathTypeAnalysis analysis) {
 		super(cfg, analysis);
 	}
-
-	public ReturnPathType getFactAtLocation(Location location) {
-		return getStartFact(location.getBasicBlock());
-	}
-
-	public ReturnPathType getFactAfterLocation(Location location) {
-		return getResultFact(location.getBasicBlock());
-	}
-
 }

@@ -41,10 +41,10 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	 *
 	 * @param cfg         the CFG to compute dominator relationships for
 	 * @param rdfs        the ReverseDepthFirstSearch on the CFG
-	 * @param dfs TODO
+	 * @param dfs         the DepthFirstSearch on the CFG
 	 * @param edgeChooser EdgeChooser to choose which Edges to consider significant
 	 */
-	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs, EdgeChooser edgeChooser) {
+	protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs, EdgeChooser edgeChooser) {
 		super(cfg, edgeChooser);
 		this.rdfs = rdfs;
 		this.dfs = dfs;
@@ -55,10 +55,10 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	 *
 	 * @param cfg                  the CFG to compute dominator relationships for
 	 * @param rdfs                 the ReverseDepthFirstSearch on the CFG
-	 * @param dfs TODO
+	 * @param dfs                  the DepthFirstSearch on the CFG
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
-	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
+	protected PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
 								  DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
 		super(cfg, ignoreExceptionEdges);
 		this.rdfs = rdfs;

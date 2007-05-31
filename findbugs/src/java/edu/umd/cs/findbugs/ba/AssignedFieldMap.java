@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,30 +35,32 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 
-public class AssignedFieldMap implements Constants {
-	private final ClassContext classContext;
-	private final Map<Method, Set<XField>> assignedFieldSetForMethodMap;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 
-	public AssignedFieldMap(ClassContext classContext) {
-		this.classContext = classContext;
+public class AssignedFieldMap implements Constants {
+	private final Map<Method, Set<XField>> assignedFieldSetForMethodMap;
+	private final JavaClass myClass;
+
+	public AssignedFieldMap(JavaClass jclass) {
 		this.assignedFieldSetForMethodMap = new IdentityHashMap<Method, Set<XField>>();
+		this.myClass = jclass;
 	}
 
 	public void build() throws ClassNotFoundException {
-		JavaClass jclass = classContext.getJavaClass();
-
 		// Build a set of all fields that could be assigned
 		// by methods in this class
 		Set<XField> assignableFieldSet = new HashSet<XField>();
-		scanFields(jclass, assignableFieldSet);
-		JavaClass[] superClassList = jclass.getSuperClasses();
+		scanFields(myClass, assignableFieldSet);
+		JavaClass[] superClassList = myClass.getSuperClasses();
 		if (superClassList != null) {
 			for (JavaClass aSuperClassList : superClassList) {
 				scanFields(aSuperClassList, assignableFieldSet);
 			}
 		}
 
-		Method[] methodList = jclass.getMethods();
+		Method[] methodList = myClass.getMethods();
 		for (Method method : methodList) {
 
 			scanMethod(method, assignableFieldSet);
@@ -75,7 +77,7 @@ public class AssignedFieldMap implements Constants {
 	}
 
 	private void scanFields(JavaClass jclass, Set<XField> assignableFieldSet) {
-		JavaClass myClass = classContext.getJavaClass();
+//		JavaClass myClass = classContext.getJavaClass();
 		String myClassName = myClass.getClassName();
 		String myPackageName = myClass.getPackageName();
 
@@ -102,7 +104,16 @@ public class AssignedFieldMap implements Constants {
 	}
 
 	private void scanMethod(Method method, Set<XField> assignableFieldSet) throws ClassNotFoundException {
-		MethodGen methodGen = classContext.getMethodGen(method);
+		//MethodGen methodGen = classContext.getMethodGen(method);
+		
+		MethodGen methodGen;
+		try {
+			methodGen= Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, BCELUtil.getMethodDescriptor(myClass, method));
+		} catch (CheckedAnalysisException e) {
+			// Should not happen
+			throw new AnalysisException("Could not get MethodGen for Method", e);
+		}
+		
 		if (methodGen == null) return;
 		InstructionList il = methodGen.getInstructionList();
 		InstructionHandle handle = il.getStart();

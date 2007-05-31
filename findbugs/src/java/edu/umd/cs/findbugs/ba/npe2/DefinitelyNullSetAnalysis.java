@@ -260,13 +260,6 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(java.lang.Object)
-	 */
-	public void initResultFact(DefinitelyNullSet result) {
-		result.setTop();
-	}
-
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
 	 */
 	public void makeFactTop(DefinitelyNullSet fact) {

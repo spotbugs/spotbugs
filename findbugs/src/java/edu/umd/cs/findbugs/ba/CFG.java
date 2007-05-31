@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003-2005 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,26 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
  * @see Edge
  */
 public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
+	/* ----------------------------------------------------------------------
+	 * CFG flags
+	 * ---------------------------------------------------------------------- */
+	
+	/** Flag set if infeasible exception edges have been pruned from the CFG. */
+	public static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
+	
+	/** Flag set if normal return edges from calls to methods which unconditionally
+	 *  throw an exception have been removed. */
+	public static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
+	
+	/** Flag set if CFG has been "refined"; i.e., to the extent possible,
+	 *  all infeasible edges have been removed. */
+	public static final int REFINED = 4;
+	
+	/** Flag set if CFG edges corresponding to failed assertions have been removed. */
+	public static final int PRUNED_FAILED_ASSERTION_EDGES = 8;
+	
+	/** Flag set if CFG is busy (in the process of being refined. */
+	public static final int BUSY = 16;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -104,6 +124,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	private int flags;
 	private String methodName; // for informational purposes
 	private MethodGen methodGen;
+
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
@@ -135,15 +156,15 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		return methodName;
 	}
 
-	void setFlags(int flags) {
+	public void setFlags(int flags) {
 		this.flags = flags;
 	}
 
-	int getFlags() {
+	public int getFlags() {
 		return flags;
 	}
 
-	boolean isFlagSet(int flag) {
+	public boolean isFlagSet(int flag) {
 		return (flags & flag) != 0;
 	}
 

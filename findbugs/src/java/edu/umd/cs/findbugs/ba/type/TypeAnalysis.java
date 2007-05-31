@@ -356,15 +356,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 
 	@Override
-	public void initResultFact(TypeFrame result) {
-		// This is important.  Sometimes we need to use a result value
-		// before having a chance to initialize it.  We don't want such
-		// values to corrupt other TypeFrame values that we merge them with.
-		// So, all result values must be TOP.
-		result.setTop();
-	}
-
-	@Override
 	public void makeFactTop(TypeFrame fact) {
 		fact.setTop();
 	}

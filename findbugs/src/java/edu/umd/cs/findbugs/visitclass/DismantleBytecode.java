@@ -191,6 +191,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		return sigConstantOperand;
 	}
 
+	/**
+	 * If the current opcode has a class constant operand, get the classname, slash-formatted.
+	 */
 	public String getClassConstantOperand() {
 		if (classConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getClassConstantOperand called but value not available");

@@ -58,4 +58,19 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
 	public String getResourceName() {
 		return resourceName;
 	}
+
+	/**
+     * Convert this exception to a ClassNotFoundException.
+     * This method should only be called if the
+     * ResourceNotFoundException occurs while looking for a class.
+     * The message format is parseable by ClassNotFoundExceptionParser. 
+     */
+    public ClassNotFoundException toClassNotFoundException() {
+    	ClassDescriptor classDescriptor = ClassDescriptor.fromResourceName(resourceName);
+    	return new ClassNotFoundException(
+    			"ResourceNotFoundException while looking for class " +
+    			classDescriptor.toDottedClassName() +
+    			": " +
+    			getMessage());
+    }
 }

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 
 /**
@@ -46,6 +47,12 @@ public class Plugin {
 	// Ordering constraints
 	private ArrayList<DetectorOrderingConstraint> interPassConstraintList;
 	private ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
+	
+	// Optional: engine registrar class
+	private Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass;
+	
+	// PluginLoader that loaded this plugin
+	private final PluginLoader pluginLoader;
 
 	/**
 	 * Constructor.
@@ -53,13 +60,14 @@ public class Plugin {
 	 *
 	 * @param pluginId the plugin's unique identifier
 	 */
-	public Plugin(String pluginId) {
+	public Plugin(String pluginId, PluginLoader pluginLoader) {
 		this.pluginId = pluginId;
 		this.detectorFactoryList = new ArrayList<DetectorFactory>();
 		this.bugPatternList = new ArrayList<BugPattern>();
 		this.bugCodeList = new ArrayList<BugCode>();
 		this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
 		this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
+		this.pluginLoader = pluginLoader;
 	}
 
 	/**
@@ -255,6 +263,35 @@ public class Plugin {
 	public String getPluginId() {
 		return pluginId;
 	}
+	
+	/**
+	 * Set the analysis engine registrar class that,
+	 * when instantiated, can be used to register the plugin's
+	 * analysis engines with the analysis cache.
+	 * 
+     * @param engineRegistrarClass The engine registrar class to set.
+     */
+    public void setEngineRegistrarClass(Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass) {
+	    this.engineRegistrarClass = engineRegistrarClass;
+    }
+    
+    /**
+	 * Get the analysis engine registrar class that,
+	 * when instantiated, can be used to register the plugin's
+	 * analysis engines with the analysis cache.
+	 * 
+     * @return Returns the engine registrar class.
+     */
+    public Class<? extends IAnalysisEngineRegistrar> getEngineRegistrarClass() {
+	    return engineRegistrarClass;
+    }
+    
+    /**
+     * @return Returns the pluginLoader.
+     */
+    public PluginLoader getPluginLoader() {
+	    return pluginLoader;
+    }
 
 	private interface FactoryChooser {
 		public boolean choose(DetectorFactory factory);

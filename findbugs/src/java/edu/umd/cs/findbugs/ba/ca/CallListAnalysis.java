@@ -76,9 +76,9 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		fact.clear();
 	}
 
-	public void initResultFact(CallList fact) {
-		fact.setTop();
-	}
+//	public void initResultFact(CallList fact) {
+//		fact.setTop();
+//	}
 
 	public boolean isForwards() {
 		return true;

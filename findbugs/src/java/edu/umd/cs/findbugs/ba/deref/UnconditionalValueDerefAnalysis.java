@@ -538,12 +538,12 @@ public class UnconditionalValueDerefAnalysis extends
 		result.clear();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(java.lang.Object)
-	 */
-	public void initResultFact(UnconditionalValueDerefSet result) {
-		result.setIsTop();
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(java.lang.Object)
+//	 */
+//	public void initResultFact(UnconditionalValueDerefSet result) {
+//		result.setIsTop();
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)

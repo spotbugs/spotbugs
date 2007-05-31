@@ -107,18 +107,13 @@ public class BugLoader {
 	 */
 	private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb)
 	{
-		if (false) {
-			// Old driver - don't use
-			return new FindBugs(pcb, p);
-		} else {
-			FindBugs2 engine = new FindBugs2();
-			engine.setBugReporter(pcb);
-			engine.setProject(p);
+		FindBugs2 engine = new FindBugs2();
+		engine.setBugReporter(pcb);
+		engine.setProject(p);
 
-			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+		engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
-			return engine;
-		}
+		return engine;
 	}
 
 	public static BugSet loadBugsHelper(BugCollection collection)
