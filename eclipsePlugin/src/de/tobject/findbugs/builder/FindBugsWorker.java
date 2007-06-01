@@ -60,7 +60,6 @@ import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Priorities;
@@ -231,16 +230,13 @@ public class FindBugsWorker {
 		}
 
 		IFindBugsEngine findBugs;
-		if (true) {
-			FindBugs2 engine = new FindBugs2();
-			engine.setBugReporter(bugReporter);
-			engine.setProject(findBugsProject);
-			engine.setProgressCallback(bugReporter);
-			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-			findBugs = engine;
-		} else {
-			findBugs = new FindBugs(bugReporter, findBugsProject);
-		}
+
+		FindBugs2 engine = new FindBugs2();
+		engine.setBugReporter(bugReporter);
+		engine.setProject(findBugsProject);
+		engine.setProgressCallback(bugReporter);
+		engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+		findBugs = engine;
 
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
