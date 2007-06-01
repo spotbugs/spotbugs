@@ -75,7 +75,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * analyses on some collection of Java classes.  It also implements the
  * command line interface.
  * 
- * <p>It is no longer possible to create instances of this class.
+ * <p>It is no longer recommended to create instances of this class.
  * Use {@link FindBugs2} instead.  Some useful static methods remain
  * in this class, but may eventually be moved elsewhere.
  *
