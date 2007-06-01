@@ -83,7 +83,8 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * @author David Hovemeyer
  * 
  */
-public abstract class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
+public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
+	
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -510,8 +511,10 @@ public abstract class FindBugs implements Constants2, ExitCodes, IFindBugsEngine
 	 * Constructor.
 	 * The setBugReporter() and setProject() methods must be called
 	 * before this object is used.
+	 * 
+	 * @deprecated You use should FindBugs2 instead.
 	 */
-	public FindBugs() {
+	public @Deprecated FindBugs() {
 
 		this.relaxedReportingMode = false;
 
@@ -532,10 +535,11 @@ public abstract class FindBugs implements Constants2, ExitCodes, IFindBugsEngine
 	 * @param project     the Project indicating which files to analyze and
 	 *                    the auxiliary classpath to use; note that the FindBugs
 	 *                    object will create a private copy of the Project object
+	 *                    
+	 * @deprecated You use should FindBugs2 instead.
 	 */
-	public FindBugs(BugReporter bugReporter, Project project) {
+	public @Deprecated FindBugs(BugReporter bugReporter, Project project) {
 		this();
-
 		if (bugReporter == null)
 			throw new IllegalArgumentException("null bugReporter");
 		if (project == null)
