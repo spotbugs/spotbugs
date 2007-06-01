@@ -80,7 +80,7 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
      */
     @Override
     public boolean retainAnalysisResults() {
-    	// FIXME: for now, retain
-    	return true;
+		// FIXME: for now, retain
+		return true;
     }
 }
