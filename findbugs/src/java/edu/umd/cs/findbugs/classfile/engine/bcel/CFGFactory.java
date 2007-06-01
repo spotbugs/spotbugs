@@ -233,7 +233,7 @@ public class CFGFactory implements IMethodAnalysisEngine {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
 	 */
 	public boolean retainAnalysisResults() {
-		// CFGs can be recomputed
-		return false;
+		// FIXME: can't discard CFGs because dataflow analyses use IdentityHashMaps
+		return true;
 	}
 }
