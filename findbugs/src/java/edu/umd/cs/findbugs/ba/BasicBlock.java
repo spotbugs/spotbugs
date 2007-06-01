@@ -108,12 +108,19 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		this.inJSRSubroutine = inJSRSubroutine;
 	}
 
-//	public int getId() {
-//		return getLabel();
-//	}
+	
+	/**
+	 * Get the basic block's integer label.
+	 * 
+	 * @deprecated call getLabel() instead
+	 * @return the BasicBlock's integer label
+	 */
+	@Deprecated public int getId() {
+		return getLabel();
+	}
 
 	@Override
-		 public String toString() {
+	public String toString() {
 		return "block " + String.valueOf(getLabel());
 	}
 
