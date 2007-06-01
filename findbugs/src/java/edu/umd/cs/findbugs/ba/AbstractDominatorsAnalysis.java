@@ -113,7 +113,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
 
 		if (!isTop(result)) {
 			// Every block dominates itself
-			result.set(basicBlock.getId());
+			result.set(basicBlock.getLabel());
 		}
 	}
 
@@ -156,8 +156,8 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			BasicBlock block = i.next();
 			BitSet dominators = getResultFact(block);
-			if (dominators.get(dominator.getId()))
-				allDominated.set(block.getId());
+			if (dominators.get(dominator.getLabel()))
+				allDominated.set(block.getLabel());
 		}
 		return allDominated;
 	}

@@ -108,9 +108,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		this.inJSRSubroutine = inJSRSubroutine;
 	}
 
-	public int getId() {
-		return getLabel();
-	}
+//	public int getId() {
+//		return getLabel();
+//	}
 
 	@Override
 		 public String toString() {
@@ -274,7 +274,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 				 public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("[basicBlock=");
-			buf.append(getBasicBlock().getId());
+			buf.append(getBasicBlock().getLabel());
 			buf.append(", index=");
 			buf.append(next == null ? "end" : String.valueOf(next.getPosition()));
 			buf.append(']');

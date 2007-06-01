@@ -293,14 +293,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * @param block the returning block
 		 */
 		public void setReturnBlock(BasicBlock block) {
-			returnBlockSet.set(block.getId());
+			returnBlockSet.set(block.getLabel());
 		}
 
 		/**
 		 * Does the method return at the end of this block?
 		 */
 		public boolean isReturnBlock(BasicBlock block) {
-			return returnBlockSet.get(block.getId());
+			return returnBlockSet.get(block.getLabel());
 		}
 
 		/**
@@ -309,14 +309,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * @param block the exiting block
 		 */
 		public void setExitBlock(BasicBlock block) {
-			exitBlockSet.set(block.getId());
+			exitBlockSet.set(block.getLabel());
 		}
 
 		/**
 		 * Is System.exit() called at the end of this block?
 		 */
 		public boolean isExitBlock(BasicBlock block) {
-			return exitBlockSet.get(block.getId());
+			return exitBlockSet.get(block.getLabel());
 		}
 
 		/**
@@ -326,14 +326,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * @param block the block throwing an unhandled exception
 		 */
 		public void setUnhandledExceptionBlock(BasicBlock block) {
-			unhandledExceptionBlockSet.set(block.getId());
+			unhandledExceptionBlockSet.set(block.getLabel());
 		}
 
 		/**
 		 * Does this block throw an unhandled exception?
 		 */
 		public boolean isUnhandledExceptionBlock(BasicBlock block) {
-			return unhandledExceptionBlockSet.get(block.getId());
+			return unhandledExceptionBlockSet.get(block.getLabel());
 		}
 
 		/**
@@ -591,14 +591,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 			// Add exception handler block (ETB) for exception-throwing instructions
 			if (isPEI(handle)) {
-				if (DEBUG) System.out.println("ETB block " + basicBlock.getId() + " for " + handle);
+				if (DEBUG) System.out.println("ETB block " + basicBlock.getLabel() + " for " + handle);
 				handleExceptions(subroutine, handle, basicBlock);
 				BasicBlock body = subroutine.allocateBasicBlock();
 				subroutine.addEdge(basicBlock, body, FALL_THROUGH_EDGE);
 				basicBlock = body;
 			}
 
-			if (DEBUG) System.out.println("BODY block " + basicBlock.getId() + " for " + handle);
+			if (DEBUG) System.out.println("BODY block " + basicBlock.getLabel() + " for " + handle);
 
 			if (!basicBlock.isEmpty())
 				throw new IllegalStateException("Block isn't empty!");
@@ -609,7 +609,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 				Instruction ins = handle.getInstruction();
 
 				// Add the instruction to the block
-				if (DEBUG) System.out.println("BB " + basicBlock.getId() + ": adding" + handle);
+				if (DEBUG) System.out.println("BB " + basicBlock.getLabel() + ": adding" + handle);
 				basicBlock.addInstruction(handle);
 				subroutine.addInstruction(handle);
 

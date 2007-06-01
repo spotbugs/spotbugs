@@ -64,7 +64,7 @@ public class CFGPrinter {
 		while (i.hasNext()) {
 			BasicBlock bb = i.next();
 			out.println();
-			out.println("BASIC BLOCK: " + bb.getId() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "") + blockStartAnnotate(bb));
+			out.println("BASIC BLOCK: " + bb.getLabel() + (bb.isExceptionThrower() ? " [EXCEPTION THROWER]" : "") + blockStartAnnotate(bb));
 			if (bb.isExceptionThrower()) {
 				out.println("  Exception thrower: " + bb.getExceptionThrower());
 			}

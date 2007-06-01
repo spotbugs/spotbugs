@@ -1,6 +1,6 @@
 /*
  * Generic graph library
- * Copyright (C) 2000,2003,2004 University of Maryland
+ * Copyright (C) 2000,2003,2004,2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -117,7 +117,7 @@ public abstract class AbstractGraph
 	private ArrayList<VertexType> vertexList;
 	private ArrayList<EdgeType> edgeList;
 	private int maxVertexLabel;
-	private int nextVertexId;
+//	private int nextVertexId;
 	private int maxEdgeLabel;
 
 	/* ----------------------------------------------------------------------
@@ -128,7 +128,6 @@ public abstract class AbstractGraph
 		this.vertexList = new ArrayList<VertexType>();
 		this.edgeList = new ArrayList<EdgeType>();
 		this.maxVertexLabel = 0;
-		this.nextVertexId = 0;
 		this.maxEdgeLabel = 0;
 	}
 
@@ -150,7 +149,6 @@ public abstract class AbstractGraph
 
 	public void addVertex(VertexType v) {
 		vertexList.add(v);
-		v.setId(nextVertexId++);
 		v.setLabel(maxVertexLabel++);
 	}
 

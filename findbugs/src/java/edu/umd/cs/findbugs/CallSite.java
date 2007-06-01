@@ -75,7 +75,7 @@ public class CallSite {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(method)
-				^ getBasicBlock().getId()
+				^ getBasicBlock().getLabel()
 				^ System.identityHashCode(location.getHandle());
 	}
 

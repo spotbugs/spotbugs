@@ -177,7 +177,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 
 		// Check to see if this block postdominates the method entry,
 		// and the called method is known exactly.
-		report = entryPostDominators.get(basicBlock.getId())
+		report = entryPostDominators.get(basicBlock.getLabel())
 				&& targetMethodKnownExactly(classContext, method, basicBlock, ins);
 
 		if (!report) {

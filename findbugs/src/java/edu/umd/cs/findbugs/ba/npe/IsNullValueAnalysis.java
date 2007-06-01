@@ -114,7 +114,7 @@ public class IsNullValueAnalysis
 			Edge edge = i.next();
 			if (edge.isExceptionEdge())
 				continue;
-			int srcBlockId = edge.getSource().getId();
+			int srcBlockId = edge.getSource().getLabel();
 			numNonExceptionSuccessorMap[srcBlockId]++;
 		}
 		if (DEBUG) {
@@ -297,7 +297,7 @@ public class IsNullValueAnalysis
 			if (!NO_SPLIT_DOWNGRADE_NSP) {
 				// Downgrade NSP to DNR on non-exception control splits
 				if (!edge.isExceptionEdge()
-						&& numNonExceptionSuccessorMap[edge.getSource().getId()] > 1) {
+						&& numNonExceptionSuccessorMap[edge.getSource().getLabel()] > 1) {
 					tmpFact = modifyFrame(fact, tmpFact);
 					tmpFact.downgradeOnControlSplit();
 				}

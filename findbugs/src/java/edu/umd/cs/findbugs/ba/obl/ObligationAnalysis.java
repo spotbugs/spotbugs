@@ -134,7 +134,7 @@ public class ObligationAnalysis
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
 			State state = i.next();
-			state.getPath().append(basicBlock.getId());
+			state.getPath().append(basicBlock.getLabel());
 		}
 	}
 

@@ -256,7 +256,7 @@ public class FindNullDeref implements Detector,
 			BasicBlock block = i.next();
 			ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(block);
 			if (vnaFrame.isTop()) {
-				deadBlocks.set(block.getId());
+				deadBlocks.set(block.getLabel());
 			}
 		}
 
@@ -910,7 +910,7 @@ public class FindNullDeref implements Detector,
 					infeasibleEdgeSimplyThrowsException = true;
 
 			}
-			if (!empty && !previouslyDeadBlocks.get(target.getId())) {
+			if (!empty && !previouslyDeadBlocks.get(target.getLabel())) {
 				if (DEBUG)
 					System.out.println("target was alive previously");
 				// Block was not dead before the null pointer analysis.

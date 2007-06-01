@@ -373,7 +373,7 @@ public class UnconditionalValueDerefSet {
 				}
 				buf.append(
 						"(" +
-								location.getBasicBlock().getId() +
+								location.getBasicBlock().getLabel() +
 								":" +
 								location.getHandle().getPosition() +
 								")");

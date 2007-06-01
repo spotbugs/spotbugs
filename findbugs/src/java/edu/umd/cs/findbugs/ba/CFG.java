@@ -240,14 +240,14 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * Get Collection of basic blocks whose IDs are specified by
 	 * given BitSet.
 	 *
-	 * @param idSet BitSet of block IDs
+	 * @param labelSet BitSet of block labels
 	 * @return a Collection containing the blocks whose IDs are given
 	 */
-	public Collection<BasicBlock> getBlocks(BitSet idSet) {
+	public Collection<BasicBlock> getBlocks(BitSet labelSet) {
 		LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
 		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
 			BasicBlock block = i.next();
-			if (idSet.get(block.getId()))
+			if (labelSet.get(block.getLabel()))
 				result.add(block);
 		}
 		return result;
@@ -407,7 +407,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 			for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
 				InstructionHandle handle = j.next();
 				if (prev != null && prev.getNext() != handle)
-					throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getId() +
+					throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getLabel() +
 							": prev=" + prev + ", handle=" + handle);
 				prev = handle;
 			}

@@ -347,7 +347,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 						continue;
 
 					BitSet dominators = domAnalysis.getResultFact(block);
-					if (dominators.get(domBlock.getId())) {
+					if (dominators.get(domBlock.getLabel())) {
 						// This block is dominated by the dominator block.
 						// Each instruction in the block which matches the current pattern
 						// element is a new state continuing the match.
@@ -460,7 +460,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 					continue;
 
 				BasicBlock destBlock = edge.getTarget();
-				int destId = destBlock.getId();
+				int destId = destBlock.getLabel();
 
 				// CFGs can have duplicate edges
 				if (visitedSuccessorSet.get(destId))

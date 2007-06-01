@@ -170,9 +170,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		buf.append(") type ");
 		buf.append(edgeTypeToString(type));
 		buf.append(" from block ");
-		buf.append(reverse ? target.getId() : source.getId());
+		buf.append(reverse ? target.getLabel() : source.getLabel());
 		buf.append(" to block ");
-		buf.append(reverse ? source.getId() : target.getId());
+		buf.append(reverse ? source.getLabel() : target.getLabel());
 		InstructionHandle sourceInstruction = source.getLastInstruction();
 		InstructionHandle targetInstruction = target.getFirstInstruction();
 		String exInfo = " -> ";

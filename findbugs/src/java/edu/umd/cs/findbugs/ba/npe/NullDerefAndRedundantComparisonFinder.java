@@ -394,14 +394,14 @@ public class NullDerefAndRedundantComparisonFinder {
 		BitSet strictlyDominated = new BitSet();
 		for(Location loc : locations) {
 			BitSet allDominatedBy = postDomAnalysis.getAllDominatedBy(loc.getBasicBlock());
-			allDominatedBy.clear(loc.getBasicBlock().getId());
+			allDominatedBy.clear(loc.getBasicBlock().getLabel());
 			strictlyDominated.or(allDominatedBy);
 		}
 		LinkedList<Location> locations2 = new LinkedList<Location>(locations);
 
 		for(Iterator<Location> i = locations.iterator(); i.hasNext(); ) {
 			Location loc = i.next();
-			if (strictlyDominated.get(loc.getBasicBlock().getId())) { 
+			if (strictlyDominated.get(loc.getBasicBlock().getLabel())) { 
 				i.remove();
 				continue;
 			}

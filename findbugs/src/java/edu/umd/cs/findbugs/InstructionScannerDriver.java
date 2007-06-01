@@ -60,7 +60,7 @@ public class InstructionScannerDriver {
 		while (edgeIter.hasNext()) {
 			Edge edge = edgeIter.next();
 			BasicBlock source = edge.getSource();
-			if (DEBUG) System.out.println("ISD: scanning instructions in block " + source.getId());
+			if (DEBUG) System.out.println("ISD: scanning instructions in block " + source.getLabel());
 
 			// Traverse all instructions in the source block
 			Iterator<InstructionHandle> i = source.instructionIterator();

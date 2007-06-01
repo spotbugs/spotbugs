@@ -1,6 +1,6 @@
 /*
  * Generic graph library
- * Copyright (C) 2000,2003,2004 University of Maryland
+ * Copyright (C) 2000,2003,2004,2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,18 +32,9 @@ public class AbstractVertex <
 		ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>
 		> implements GraphVertex<ActualVertexType> {
 
-	private int id;
 	private int label;
 	EdgeType firstIncomingEdge, lastIncomingEdge;
 	EdgeType firstOutgoingEdge, lastOutgoingEdge;
-
-	void setId(int id) {
-		this.id = id;
-	}
-
-	int getId() {
-		return id;
-	}
 
 	public int getLabel() {
 		return label;
@@ -55,16 +46,26 @@ public class AbstractVertex <
 
 	@Override
 	public int hashCode() {
-		return id;
+		return label;
 	}
+	
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof AbstractVertex) 
-			return id == ((AbstractVertex)o).id;
-		return false;
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		ActualVertexType other = (ActualVertexType) o;
+		return other.getLabel() == this.getLabel();
 	}
+	
 	public int compareTo(ActualVertexType other) {
-		return id - other.id;
+		if (this.getLabel() < other.getLabel()) {
+			return -1;
+		} else if (this.getLabel() > other.getLabel()) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
 	void addOutgoingEdge(EdgeType edge) {

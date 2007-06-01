@@ -316,8 +316,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 	private static String blockId(BasicBlock bb) {
 		InstructionHandle handle = bb.getFirstInstruction();
-		if (handle == null) return ""+ bb.getId();
-		return bb.getId()+":"+ handle.getPosition() + " " + handle.getInstruction();
+		if (handle == null) return ""+ bb.getLabel();
+		return bb.getLabel()+":"+ handle.getPosition() + " " + handle.getInstruction();
 	}
 	private static void debug(BasicBlock bb, String msg) {
 

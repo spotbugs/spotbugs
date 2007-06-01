@@ -104,7 +104,7 @@ public class Location implements Comparable<Location> {
 	}
 
 	public int compareTo(Location other) {
-		int cmp = basicBlock.getId() - other.basicBlock.getId();
+		int cmp = basicBlock.getLabel() - other.basicBlock.getLabel();
 		if (false && cmp != 0)
 			return cmp;
 
@@ -128,7 +128,7 @@ public class Location implements Comparable<Location> {
 
 	@Override
 		 public String toString() {
-		return handle.toString() + " in basic block " + basicBlock.getId();
+		return handle.toString() + " in basic block " + basicBlock.getLabel();
 	}
 }
 
