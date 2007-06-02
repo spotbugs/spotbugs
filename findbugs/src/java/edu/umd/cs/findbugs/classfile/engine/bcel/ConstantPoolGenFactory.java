@@ -58,4 +58,10 @@ public class ConstantPoolGenFactory implements IClassAnalysisEngine {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+		return false;
+	}
 }

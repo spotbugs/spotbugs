@@ -61,4 +61,11 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 		// Can be recomputed easily
 		return false;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+		return false;
+	}
 }

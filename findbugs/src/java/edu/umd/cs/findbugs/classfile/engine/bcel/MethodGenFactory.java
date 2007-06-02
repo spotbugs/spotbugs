@@ -74,13 +74,4 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
     		return null;
     	}
     }
-    
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory#retainAnalysisResults()
-     */
-    @Override
-    public boolean retainAnalysisResults() {
-		// FIXME: for now, retain
-		return true;
-    }
 }

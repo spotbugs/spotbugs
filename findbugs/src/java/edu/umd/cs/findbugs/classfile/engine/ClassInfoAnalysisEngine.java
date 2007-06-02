@@ -84,4 +84,11 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 		// TODO: perhaps we should retain it - it's relatively small
 		return false;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+		return false;
+	}
 }

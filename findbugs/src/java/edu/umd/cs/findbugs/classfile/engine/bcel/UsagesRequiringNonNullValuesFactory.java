@@ -43,16 +43,4 @@ public class UsagesRequiringNonNullValuesFactory extends AnalysisFactory<UsagesR
 		Method method = getMethod(analysisCache, descriptor);
 		return DerefFinder.getAnalysis(classContext, method);
 	}
-
-//	@Override
-//	protected UsagesRequiringNonNullValues analyze(JavaClass jclass, Method method) throws CFGBuilderException,
-//			DataflowAnalysisException {
-//		ClassContext classContext = getClassContext(jclass);
-//		return DerefFinder.getAnalysis(classContext, method);
-//	}
-
-//	@Override
-//	public boolean isDataflow() {
-//		return false;
-//	}
 }

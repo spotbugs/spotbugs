@@ -24,7 +24,6 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -32,7 +31,11 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * 
  * @author David Hovemeyer
  */
-public class MethodFactory implements IMethodAnalysisEngine {
+public class MethodFactory extends AnalysisFactory<Method> {
+
+    public MethodFactory() {
+	    super("Method factory", Method.class);
+    }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -64,13 +67,6 @@ public class MethodFactory implements IMethodAnalysisEngine {
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerMethodAnalysisEngine(Method.class, this);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		return false;
 	}
 
 }

@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import java.util.BitSet;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -28,13 +26,20 @@ import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * @author David Hovemeyer
  */
-public class MethodBytecodeSetFactory implements IMethodAnalysisEngine {
+public class MethodBytecodeSetFactory extends AnalysisFactory<MethodBytecodeSet> {
+
+	/**
+     * @param analysisName
+     * @param analysisClass
+     */
+    public MethodBytecodeSetFactory(String analysisName, Class<MethodBytecodeSet> analysisClass) {
+	    super(analysisName, analysisClass);
+    }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -69,14 +74,6 @@ public class MethodBytecodeSetFactory implements IMethodAnalysisEngine {
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerMethodAnalysisEngine(MethodBytecodeSet.class, this);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-//		return false;
-		return true;//XXX
 	}
 
 }

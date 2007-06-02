@@ -95,5 +95,12 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 		// them by object identity.
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+		return false;
+	}
 
 }

@@ -54,4 +54,13 @@ public interface IAnalysisEngine<DescriptorType> {
 	 *          false if they may be recomputed as needed 
 	 */
 	public boolean retainAnalysisResults();
+	
+	/**
+	 * Return true if the analysis cache should NOT
+	 * cache results produced by this analysis engine.
+	 * 
+	 * @return true if the analysis cache should NOT
+	 *         cache results produced by this analysis engine
+	 */
+	public boolean noCache();
 }

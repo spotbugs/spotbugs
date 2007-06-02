@@ -72,4 +72,11 @@ public class ClassNodeAnalysisEngine implements IClassAnalysisEngine {
 		// Perhaps we should retain these, like we do with JavaClass objects?
 		return false;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+	    return false;
+	}
 }

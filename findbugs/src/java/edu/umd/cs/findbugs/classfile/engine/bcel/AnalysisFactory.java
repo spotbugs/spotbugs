@@ -23,9 +23,12 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
+import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
@@ -41,7 +44,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Abstract factory class for creating analysis objects.
- * Handles caching of analysis results for a method.
  */
 public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngine {
 	private String analysisName;
@@ -64,8 +66,8 @@ public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngin
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
 	 */
-	public boolean retainAnalysisResults() {
-		return false;
+	public final boolean retainAnalysisResults() {
+		throw new IllegalStateException();
 	}
 
 	/* (non-Javadoc)
@@ -74,7 +76,60 @@ public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngin
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerMethodAnalysisEngine(analysisClass, this);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public final boolean noCache() {
+		// The caching will be done in the ClassContext.
+		return true;
+	}
+	
+	private static final Object NULL_ANALYSIS_RESULT = new Object();
+	
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
+//	 */
+//	public final Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+//		ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
+//		Object object = classContext.getMethodAnalysis(analysisClass, descriptor);
+//
+//		if (object == null) {
+//			try {
+//				object = create(analysisCache, descriptor);
+//				if (object == null) {
+//					object = NULL_ANALYSIS_RESULT;
+//				}
+//			} catch (RuntimeException e) {
+//				object = e;
+//			} catch (CheckedAnalysisException e) {
+//				object = e;
+//			}
+//		}
+//		if (Debug.VERIFY_INTEGRITY && object == null) {
+//			throw new IllegalStateException("AnalysisFactory failed to produce a result object");
+//		}
+//
+//		if (object == NULL_ANALYSIS_RESULT) {
+//			return null;
+//		}
+//		if (object instanceof Exception) {
+//			if (object instanceof RuntimeException) {
+//				throw (RuntimeException) object;
+//			} else {
+//				throw (CheckedAnalysisException) object;
+//			}
+//		}
+//		
+//		return object;
+//	}
 
+//	/* ----------------------------------------------------------------------
+//	 * Downcall method to create the analysis object
+//	 * ---------------------------------------------------------------------- */
+//	protected abstract Analysis create(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor)
+//			throws CheckedAnalysisException;
+	
 	/* ----------------------------------------------------------------------
 	 * Helper methods to get required analysis objects.
 	 * ---------------------------------------------------------------------- */

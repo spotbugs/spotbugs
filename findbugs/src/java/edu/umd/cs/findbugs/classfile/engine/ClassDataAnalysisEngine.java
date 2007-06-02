@@ -99,4 +99,11 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		// ClassData can be recomputed (reloaded) easily
 		return false;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+		return false;
+	}
 }

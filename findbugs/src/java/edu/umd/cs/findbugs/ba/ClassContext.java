@@ -78,11 +78,6 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  * the methods of a class.  That way, these objects don't need to
  * be created over and over again.
  *
- * @deprecated This class is for backwards compatibility with old detectors.
- *              The actual caching functionality is now provided by the
- *              IAnalysisCache, and this object is a front-end.
- *              New detectors should fetch analysis objects directly from
- *              the IAnalysisCache.
  * @author David Hovemeyer
  */
 public class ClassContext {
@@ -100,6 +95,7 @@ public class ClassContext {
 
 	private final JavaClass jclass;
 	private final AnalysisContext analysisContext;
+	private final Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisObjectMap;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -113,7 +109,53 @@ public class ClassContext {
 	public ClassContext(JavaClass jclass, AnalysisContext analysisContext) {
 		this.jclass = jclass;
 		this.analysisContext = analysisContext;
+		this.methodAnalysisObjectMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
 	}
+	
+	private Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
+		Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
+		if (objectMap == null) {
+			objectMap = new HashMap<MethodDescriptor, Object>();
+			methodAnalysisObjectMap.put(analysisClass, objectMap);
+		}
+		return objectMap;
+	}
+	
+	public void putMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor, Object object) {
+		if (object == null) {
+			throw new IllegalArgumentException();
+		}
+		Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);
+		objectMap.put(methodDescriptor, object);
+	}
+	
+	public Object getMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor)
+			throws CheckedAnalysisException {
+		Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);
+		return objectMap.get(methodDescriptor);
+	}
+
+    public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
+    	Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet =
+    		methodAnalysisObjectMap.entrySet();
+    	for (Iterator<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> i = entrySet.iterator(); i.hasNext();) {
+    		Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry = i.next();
+    		
+    		Class<?> cls = entry.getKey();
+    		
+    		// FIXME: hack
+    		if (!DataflowAnalysis.class.isAssignableFrom(cls)
+    			&& !Dataflow.class.isAssignableFrom(cls)) {
+    			// There is really no need to purge analysis results
+    			// that aren't CFG-based.
+    			// Currently, only dataflow analyses need
+    			// to be purged.
+    			continue;
+    		}
+    		
+    		entry.getValue().remove(methodDescriptor);
+    	}
+    }
 
 	/**
 	 * Get the JavaClass.

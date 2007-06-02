@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -57,7 +59,7 @@ public class AnalysisCache implements IAnalysisCache {
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
 	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
 	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
-	private Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisMap;
+//	private Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
 
 	static class AbnormalAnalysisResult {
@@ -94,7 +96,7 @@ public class AnalysisCache implements IAnalysisCache {
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
 
 		this.classAnalysisMap = new HashMap<Class<?>, Map<ClassDescriptor,Object>>();
-		this.methodAnalysisMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
+//		this.methodAnalysisMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
 
 		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
@@ -135,42 +137,112 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getMethodAnalysis(Class<E> analysisClass,
 			MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-		return analyzeClassOrMethod(
-				this,
-				methodAnalysisMap,
-				methodAnalysisEngineMap,
-				methodDescriptor,
-				analysisClass);
+//		return analyzeClassOrMethod(
+//				this,
+//				methodAnalysisMap,
+//				methodAnalysisEngineMap,
+//				methodDescriptor,
+//				analysisClass);
+		
+		ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+		Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
+
+		if (object == null) {
+			try {
+				object = analyzeMethod(classContext, analysisClass, methodDescriptor);
+				if (object == null) {
+					object = NULL_ANALYSIS_RESULT;
+				}
+			} catch (RuntimeException e) {
+				object = e;
+			} catch (CheckedAnalysisException e) {
+				object = e;
+			}
+			
+			classContext.putMethodAnalysis(analysisClass, methodDescriptor, object);
+		}
+		if (Debug.VERIFY_INTEGRITY && object == null) {
+			throw new IllegalStateException("AnalysisFactory failed to produce a result object");
+		}
+
+		if (object == NULL_ANALYSIS_RESULT) {
+			return null;
+		}
+		if (object instanceof Exception) {
+			if (object instanceof RuntimeException) {
+				throw (RuntimeException) object;
+			} else {
+				throw (CheckedAnalysisException) object;
+			}
+		}
+		
+		return (E) object;
 	}
 	
+	/**
+     * @param cache
+     * @param classContext
+     * @param methodDescriptor
+     * @return
+	 * @throws CheckedAnalysisException 
+     */
+    private Object analyzeMethod(
+    		ClassContext classContext,
+    		Class<?> analysisClass,
+    		MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    	IMethodAnalysisEngine engine = methodAnalysisEngineMap.get(analysisClass);
+    	if (engine == null) {
+    		throw new IllegalArgumentException(
+					"No analysis engine registered to produce " + analysisClass.getName());
+    	}
+    	return engine.analyze(this, methodDescriptor);
+    }
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor, java.lang.Object)
 	 */
 	public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor, Object analysisObject) {
-		Map<MethodDescriptor, Object> descriptorMap =
-			findOrCreateDescriptorMap(methodAnalysisMap, methodAnalysisEngineMap, analysisClass);
-		descriptorMap.put(methodDescriptor, analysisObject);
+//		Map<MethodDescriptor, Object> descriptorMap =
+//			findOrCreateDescriptorMap(methodAnalysisMap, methodAnalysisEngineMap, analysisClass);
+//		descriptorMap.put(methodDescriptor, analysisObject);
+		try {
+	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+	        classContext.putMethodAnalysis(analysisClass, methodDescriptor, analysisObject);
+        } catch (CheckedAnalysisException e) {
+        	IllegalStateException ise = new IllegalStateException("Unexpected exception adding method analysis to cache");
+        	ise.initCause(e);
+        	throw ise;
+        }
+		
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#purgeMethodAnalyses(edu.umd.cs.findbugs.classfile.MethodDescriptor)
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
-		// FIXME: would be nice to be smarter about retaining results
-		// that are still valid.  Instead, we get rid of all results for this method.
-
-		Iterator<Map.Entry<Class<?>, Map<MethodDescriptor,Object>>> i = methodAnalysisMap.entrySet().iterator();
-		while (i.hasNext()) {
-			Map.Entry<Class<?>, Map<MethodDescriptor,Object>> entry = i.next();
-			
-			IMethodAnalysisEngine engine = methodAnalysisEngineMap.get(entry.getKey());
-			
-			if (engine.retainAnalysisResults()) {
-				continue;
-			}
-			
-			entry.getValue().remove(methodDescriptor);
-		}
+//		// FIXME: would be nice to be smarter about retaining results
+//		// that are still valid.  Instead, we get rid of all results for this method.
+//
+//		Iterator<Map.Entry<Class<?>, Map<MethodDescriptor,Object>>> i = methodAnalysisMap.entrySet().iterator();
+//		while (i.hasNext()) {
+//			Map.Entry<Class<?>, Map<MethodDescriptor,Object>> entry = i.next();
+//			
+//			IMethodAnalysisEngine engine = methodAnalysisEngineMap.get(entry.getKey());
+//			
+//			if (engine.retainAnalysisResults()) {
+//				continue;
+//			}
+//			
+//			entry.getValue().remove(methodDescriptor);
+//		}
+		try {
+	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+	        classContext.purgeMethodAnalyses(methodDescriptor);
+        } catch (CheckedAnalysisException e) {
+        	IllegalStateException ise = new IllegalStateException("Unexpected exception purging method analyses from cache");
+        	ise.initCause(e);
+        	throw ise;
+        }
 	}
 
 	/**

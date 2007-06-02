@@ -34,9 +34,6 @@ import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
  */
 public class AssertionMethodsFactory implements IClassAnalysisEngine {
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
-	 */
 	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
 		return new AssertionMethods(jclass);
@@ -57,4 +54,10 @@ public class AssertionMethodsFactory implements IClassAnalysisEngine {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
+	 */
+	public boolean noCache() {
+	    return false;
+	}
 }

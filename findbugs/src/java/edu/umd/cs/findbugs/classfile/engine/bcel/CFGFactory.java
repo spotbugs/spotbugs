@@ -59,13 +59,14 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * 
  * @author David Hovemeyer
  */
-public class CFGFactory implements IMethodAnalysisEngine {
+public class CFGFactory extends AnalysisFactory<CFG> {
 	private static final boolean DEBUG_CFG = SystemProperties.getBoolean("classContext.debugCFG");
 
 	/**
 	 * Constructor.
 	 */
 	public CFGFactory() {
+		super("control flow graph factory", CFG.class);
 	}
 
 	/* (non-Javadoc)
@@ -227,13 +228,5 @@ public class CFGFactory implements IMethodAnalysisEngine {
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerMethodAnalysisEngine(CFG.class, this);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// FIXME: can't discard CFGs because dataflow analyses use IdentityHashMaps
-		return true;
 	}
 }
