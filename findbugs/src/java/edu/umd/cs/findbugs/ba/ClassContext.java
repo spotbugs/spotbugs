@@ -121,6 +121,15 @@ public class ClassContext {
 		return objectMap;
 	}
 	
+	/**
+	 * Store a method analysis object.
+	 * Note that the cached analysis object could be a special value
+	 * (indicating null or an exception).
+	 * 
+	 * @param analysisClass    class the method analysis object belongs to
+	 * @param methodDescriptor method descriptor identifying the analyzed method
+	 * @param object           the analysis object to cache
+	 */
 	public void putMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor, Object object) {
 		if (object == null) {
 			throw new IllegalArgumentException();
@@ -128,13 +137,26 @@ public class ClassContext {
 		Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);
 		objectMap.put(methodDescriptor, object);
 	}
-	
+
+	/**
+	 * Retrieve a method analysis object.
+	 * 
+	 * @param analysisClass    class the method analysis object should belong to
+	 * @param methodDescriptor method descriptor identifying the analyzed method
+	 * @return the analysis object
+	 * @throws CheckedAnalysisException
+	 */
 	public Object getMethodAnalysis(Class<?> analysisClass, MethodDescriptor methodDescriptor)
 			throws CheckedAnalysisException {
 		Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);
 		return objectMap.get(methodDescriptor);
 	}
 
+	/**
+	 * Purge all CFG-based method analyses for given method.
+	 * 
+	 * @param methodDescriptor method descriptor identifying method to purge
+	 */
     public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
     	Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet =
     		methodAnalysisObjectMap.entrySet();

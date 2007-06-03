@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -97,13 +97,6 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public boolean retainAnalysisResults() {
 		// ClassData can be recomputed (reloaded) easily
-		return false;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#noCache()
-	 */
-	public boolean noCache() {
 		return false;
 	}
 }

@@ -47,10 +47,9 @@ import edu.umd.cs.findbugs.util.MapCache;
  */
 public class AnalysisCache implements IAnalysisCache {
 	/**
-	 * Maximum number of class or method analysis results
-	 * to cache for a particular ClassDescriptor/MethodDescriptor.
+	 * Maximum number of class analysis results to cache.
 	 */
-	private static final int CACHE_SIZE = 100;
+	private static final int MAX_CLASS_RESULTS_TO_CACHE = 20;
 
 	// Fields
 	private IClassPath classPath;
@@ -59,7 +58,6 @@ public class AnalysisCache implements IAnalysisCache {
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
 	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
 	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
-//	private Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
 
 	static class AbnormalAnalysisResult {
@@ -78,6 +76,16 @@ public class AnalysisCache implements IAnalysisCache {
 		AbnormalAnalysisResult(boolean isNull) {
 			this.isNull = isNull;
 		}
+
+        public Object returnOrThrow() throws CheckedAnalysisException {
+        	if (isNull) {
+        		return null;
+        	} else if (runtimeException != null) {
+        		throw runtimeException;
+        	} else {
+        		throw checkedAnalysisException;
+        	}
+        }
 	}
 	
 	static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult(true);
@@ -94,10 +102,7 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
-
 		this.classAnalysisMap = new HashMap<Class<?>, Map<ClassDescriptor,Object>>();
-//		this.methodAnalysisMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
-
 		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
 
@@ -113,12 +118,52 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getClassAnalysis(Class<E> analysisClass,
 			ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-		return analyzeClassOrMethod(
-				this,
-				classAnalysisMap,
-				classAnalysisEngineMap,
-				classDescriptor,
-				analysisClass);
+		// Get the descriptor->result map for this analysis class,
+		// creating if necessary
+		Map<ClassDescriptor, Object> descriptorMap =
+			findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap, analysisClass);
+
+		// See if there is a cached result in the descriptor map
+		Object analysisResult = descriptorMap.get(classDescriptor);
+		if (analysisResult == null) {
+			// No cached result - compute (or recompute)
+			IAnalysisEngine<ClassDescriptor> engine = classAnalysisEngineMap.get(analysisClass);
+			if (engine == null) {
+				throw new IllegalArgumentException(
+						"No analysis engine registered to produce " + analysisClass.getName());
+			}
+
+			// Perform the analysis
+			try {
+				analysisResult = engine.analyze(this, classDescriptor);
+
+				// If engine returned null, we need to construct
+				// an AbnormalAnalysisResult object to record that fact.
+				// Otherwise we will try to recompute the value in
+				// the future.
+				if (analysisResult == null) {
+					analysisResult = NULL_ANALYSIS_RESULT;
+				}
+			} catch (CheckedAnalysisException e) {
+				// Exception - make note
+				analysisResult = new AbnormalAnalysisResult(e);
+			} catch (RuntimeException e) {
+				// Exception - make note
+				analysisResult = new AbnormalAnalysisResult(e);
+			}
+
+			// Save the result
+			descriptorMap.put(classDescriptor, analysisResult);
+		}
+
+		// Abnormal analysis result?
+		if (analysisResult instanceof AbnormalAnalysisResult) {
+			return (E) ((AbnormalAnalysisResult) analysisResult).returnOrThrow();
+		}
+
+		// If we could assume a 1.5 or later JVM, the Class.cast()
+		// method could do this cast without a warning.
+		return (E) analysisResult;
 	}
 
 	/* (non-Javadoc)
@@ -137,13 +182,6 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getMethodAnalysis(Class<E> analysisClass,
 			MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-//		return analyzeClassOrMethod(
-//				this,
-//				methodAnalysisMap,
-//				methodAnalysisEngineMap,
-//				methodDescriptor,
-//				analysisClass);
-		
 		ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 		Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
 
@@ -154,9 +192,9 @@ public class AnalysisCache implements IAnalysisCache {
 					object = NULL_ANALYSIS_RESULT;
 				}
 			} catch (RuntimeException e) {
-				object = e;
+				object = new AbnormalAnalysisResult(e);
 			} catch (CheckedAnalysisException e) {
-				object = e;
+				object = new AbnormalAnalysisResult(e);
 			}
 			
 			classContext.putMethodAnalysis(analysisClass, methodDescriptor, object);
@@ -165,25 +203,20 @@ public class AnalysisCache implements IAnalysisCache {
 			throw new IllegalStateException("AnalysisFactory failed to produce a result object");
 		}
 
-		if (object == NULL_ANALYSIS_RESULT) {
-			return null;
-		}
-		if (object instanceof Exception) {
-			if (object instanceof RuntimeException) {
-				throw (RuntimeException) object;
-			} else {
-				throw (CheckedAnalysisException) object;
-			}
+		if (object instanceof AbnormalAnalysisResult) {
+			return (E) ((AbnormalAnalysisResult) object).returnOrThrow();
 		}
 		
 		return (E) object;
 	}
 	
 	/**
-     * @param cache
-     * @param classContext
-     * @param methodDescriptor
-     * @return
+	 * Analyze a method.
+	 * 
+     * @param classContext     ClassContext storing method analysis objects for method's class
+     * @param analysisClass    class the method analysis object should belong to
+     * @param methodDescriptor method descriptor identifying the method to analyze
+     * @return the computed analysis object for the method
 	 * @throws CheckedAnalysisException 
      */
     private Object analyzeMethod(
@@ -202,9 +235,6 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#eagerlyPutMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor, java.lang.Object)
 	 */
 	public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor, Object analysisObject) {
-//		Map<MethodDescriptor, Object> descriptorMap =
-//			findOrCreateDescriptorMap(methodAnalysisMap, methodAnalysisEngineMap, analysisClass);
-//		descriptorMap.put(methodDescriptor, analysisObject);
 		try {
 	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 	        classContext.putMethodAnalysis(analysisClass, methodDescriptor, analysisObject);
@@ -220,21 +250,6 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#purgeMethodAnalyses(edu.umd.cs.findbugs.classfile.MethodDescriptor)
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
-//		// FIXME: would be nice to be smarter about retaining results
-//		// that are still valid.  Instead, we get rid of all results for this method.
-//
-//		Iterator<Map.Entry<Class<?>, Map<MethodDescriptor,Object>>> i = methodAnalysisMap.entrySet().iterator();
-//		while (i.hasNext()) {
-//			Map.Entry<Class<?>, Map<MethodDescriptor,Object>> entry = i.next();
-//			
-//			IMethodAnalysisEngine engine = methodAnalysisEngineMap.get(entry.getKey());
-//			
-//			if (engine.retainAnalysisResults()) {
-//				continue;
-//			}
-//			
-//			entry.getValue().remove(methodDescriptor);
-//		}
 		try {
 	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 	        classContext.purgeMethodAnalyses(methodDescriptor);
@@ -243,87 +258,6 @@ public class AnalysisCache implements IAnalysisCache {
         	ise.initCause(e);
         	throw ise;
         }
-	}
-
-	/**
-	 * Analyze a class or method,
-	 * or get the cached analysis result.
-	 * 
-	 * @param <DescriptorType> type of descriptor (class or method)
-	 * @param <E> type of analysis result
-	 * @param analysisCache                   the IAnalysisCache object
-	 * @param analysisClassToDescriptorMapMap the map of analysis classes to descriptor->result maps
-	 * @param engineMap                       engine map for this kind of descriptor
-	 * @param descriptor                      the class or method descriptor
-	 * @param analysisClass                   the analysis result type Class object
-	 * @return the analysis result object
-	 * @throws CheckedAnalysisException if an analysis error occurs
-	 */
-	static<DescriptorType, E> E analyzeClassOrMethod(
-			final AnalysisCache analysisCache,
-			final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap,
-			final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType>> engineMap,
-			final DescriptorType descriptor,
-			final Class<E> analysisClass
-	) throws CheckedAnalysisException {
-
-		// Get the descriptor->result map for this analysis class,
-		// creating if necessary
-		Map<DescriptorType, Object> descriptorMap =
-			findOrCreateDescriptorMap(analysisClassToDescriptorMapMap, engineMap, analysisClass);
-
-		// See if there is a cached result in the descriptor map
-		Object analysisResult = descriptorMap.get(descriptor);
-		if (analysisResult == null) {
-			// No cached result - compute (or recompute)
-			IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
-			if (engine == null) {
-				throw new IllegalArgumentException(
-						"No analysis engine registered to produce " + analysisClass.getName());
-			}
-
-			// Perform the analysis
-			try {
-				analysisResult = engine.analyze(analysisCache, descriptor);
-				
-				// If engine returned null, we need to construct
-				// an AbnormalAnalysisResult object to record that fact.
-				// Otherwise we will try to recompute the value in
-				// the future.
-				if (analysisResult == null) {
-					analysisResult = NULL_ANALYSIS_RESULT;
-				}
-			} catch (CheckedAnalysisException e) {
-				// Exception - make note
-				analysisResult = new AbnormalAnalysisResult(e);
-			} catch (RuntimeException e) {
-				// Exception - make note
-				analysisResult = new AbnormalAnalysisResult(e);
-			}
-
-			// Save the result
-			descriptorMap.put(descriptor, analysisResult);
-		}
-
-		// Abnormal analysis result?
-		if (analysisResult instanceof AbnormalAnalysisResult) {
-			if (analysisResult == NULL_ANALYSIS_RESULT) {
-				return null;
-			}
-
-			AbnormalAnalysisResult abnormalAnalysisResult = (AbnormalAnalysisResult) analysisResult;
-			if (abnormalAnalysisResult.checkedAnalysisException != null) {
-				throw abnormalAnalysisResult.checkedAnalysisException;
-			}
-			if (abnormalAnalysisResult.runtimeException != null) {
-				throw abnormalAnalysisResult.runtimeException;
-			}
-			throw new IllegalStateException("can't happen");
-		}
-
-		// If we could assume a 1.5 or later JVM, the Class.cast()
-		// method could do this cast without a warning.
-		return (E) analysisResult;
 	}
 
 	/**
@@ -342,7 +276,7 @@ public class AnalysisCache implements IAnalysisCache {
 		if (descriptorMap == null) {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
-			descriptorMap = new MapCache<DescriptorType, Object>(CACHE_SIZE) {
+			descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE) {
 				IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
 
 				/* (non-Javadoc)
