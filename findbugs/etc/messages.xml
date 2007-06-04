@@ -90,6 +90,14 @@ This plugin contains all of the standard FindBugs detectors.
   **********************************************************************
    -->
 
+	<Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
+     <Details>
+<![CDATA[
+<p> This detector looks for synchronization on a shared builtin constant (such as a String).</p>
+]]>
+     </Details>
+   </Detector>
+
 	<Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField">
      <Details>
 <![CDATA[
@@ -2777,6 +2785,27 @@ public class CircularClassInitialization {
   <code>java.util.NoSuchElementException</code>.&nbsp; The <code>next()</code>
   method should be changed so it throws <code>NoSuchElementException</code>
   if is called when there are no more elements to return.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
+    <ShortDescription>Synchronization on shared constant could lead to deadlock</ShortDescription>
+    <LongDescription>Synchronization on shared constant could deadlock in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The code synchronizes on a shared primative constant, such as an interned String.
+<pre>
+private static String LOCK = "LOCK";
+...
+  synchronized(LOCK) { ...}
+...
+</pre>
+</p>
+<p>Such constants an interned and shared across all other classes loaded by the JVM. Thus, this could
+is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
+blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6100,6 +6129,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
   <BugCode abbrev="RE">Regular expressions</BugCode>
   <BugCode abbrev="SQL">SQL Problem</BugCode>
+  <BugCode abbrev="DL">Potential deadlock or unexpected blocking</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
   <BugCode abbrev="VA">Var arg problems</BugCode>
