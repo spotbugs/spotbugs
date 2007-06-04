@@ -39,8 +39,9 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 	public void sawOpcode(int seen) {
 		if (seen == MONITORENTER && stack.getStackDepth() > 0) {
 			OpcodeStack.Item top = stack.getStackItem(0);
+			String signature = top.getSignature();
 			Object constant = top.getConstant();
-			if (constant instanceof String) 
+			if (signature.equals("Ljava/lang/String;") && constant instanceof String) 
 				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
 				.addClassAndMethod(this).addString((String)constant).addSourceLine(this));
 		}
