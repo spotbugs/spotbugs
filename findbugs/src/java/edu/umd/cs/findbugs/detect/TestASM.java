@@ -55,13 +55,17 @@ public class TestASM extends ClassNodeDetector {
 					access).addString("method should start with lower case character");
 			bugReporter.reportBug(bug0);
 		}
-		return new AbstractFBMethodVisitor() {
+		return null;
+		/*
+		 * 
+		 new AbstractFBMethodVisitor() {
 			int prevOpcode;
 			int prevPC;
 			public void visitInsn(int opcode) {
 				prevOpcode = opcode;
 				prevPC = getPC();
 			}
+		
 			 public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
 				 if (prevPC+1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math") && invokedName.equals("ceil") && invokedDesc.equals("(D)D"))
 					 System.out.println(owner + "." + invokedName + ":" + invokedDesc);
@@ -72,6 +76,7 @@ public class TestASM extends ClassNodeDetector {
 				 }
 
 		};
+		*/
 	}
 
 	@Override
