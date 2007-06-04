@@ -318,7 +318,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			return createUnknown(className, sourceFile, pc, pc);
 
 		int startLine = lineNumberTable.getSourceLine(pc);
-		return new SourceLineAnnotation(className, sourceFile, startLine, startLine, pc, pc).addInstructionContext(classContext, method);
+		return new SourceLineAnnotation(className, sourceFile, startLine, startLine, pc, pc);
 	}
 
 
@@ -344,8 +344,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		int startLine = lineNumberTable.getSourceLine(startPC);
 		int endLine = lineNumberTable.getSourceLine(endPC);
-		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC)
-				.addInstructionContext(visitor.getClassContext(), visitor.getMethod());
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC);
 	}
 
 	/**
@@ -371,16 +370,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		int startLine = lineNumberTable.getSourceLine(startPC);
 		int endLine = lineNumberTable.getSourceLine(endPC);
-		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC)
-				.addInstructionContext(classContext, visitor.getMethod());
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC);
 	}
 
 	public static SourceLineAnnotation fromRawData(String className, String sourceFile, int startLine, int endLine, int startPC, int endPC) {
 		if (startLine == -1)
 			return createUnknown(className, sourceFile, startPC, endPC);
 
-		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC)
-				.addInstructionContext(null, null); // throw exception if we ever start using this
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC);
 	}
 	/**
 	 * Factory method for creating a source line annotation describing the
@@ -415,8 +412,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		int lineNumber = table.getSourceLine(handle.getPosition());
 		return new SourceLineAnnotation(
-				className, sourceFile, lineNumber, lineNumber, bytecodeOffset, bytecodeOffset)
-				.addInstructionContext(classContext, classContext.getMethod(methodGen));
+				className, sourceFile, lineNumber, lineNumber, bytecodeOffset, bytecodeOffset);
 	}
 
 	/**
@@ -439,8 +435,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		int startLine = lineNumberTable.getSourceLine(start.getPosition());
 		int endLine = lineNumberTable.getSourceLine(end.getPosition());
 		return new SourceLineAnnotation(
-				className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition())
-				.addInstructionContext(classContext, classContext.getMethod(methodGen));
+				className, sourceFile, startLine, endLine, start.getPosition(), end.getPosition());
 	}
 
 	private static LineNumberTable getLineNumberTable(PreorderVisitor visitor) {
@@ -448,19 +443,6 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (code == null)
 			return null;
 		return code.getLineNumberTable();
-	}
-
-	private static final int NUM_CONTEXT_OPCODES = 5;
-
-	/**
-	 * Fill in context information about surrounding opcodes.
-	 * 
-	 * @param classContext the ClassContext
-	 * @param method       the method
-	 */
-	private SourceLineAnnotation addInstructionContext(ClassContext classContext, Method method) {
-		// For now, do nothing.
-		return this;
 	}
 
 	/**
