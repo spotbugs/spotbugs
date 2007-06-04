@@ -2195,7 +2195,7 @@ Don't do it.
   </BugPattern>
   <BugPattern type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">
     <ShortDescription>equals method overrides equals in superclass and may not be symmetric</ShortDescription>
-    <LongDescription>{1.class} overrides equals in {2.class} and may not be symmetric</LongDescription>
+    <LongDescription>{1.class} overrides equals in {2.class.givenClass} and may not be symmetric</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines an equals method that overrides an equals method in a superclass. Both equals methods
