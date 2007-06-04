@@ -19,13 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import static org.apache.bcel.Constants.INVOKESTATIC;
+import static org.apache.bcel.Constants.I2D;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.asm.AbstractFBMethodVisitor;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 
 /**
