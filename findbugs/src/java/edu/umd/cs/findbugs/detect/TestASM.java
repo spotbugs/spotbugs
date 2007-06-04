@@ -47,9 +47,7 @@ public class TestASM extends ClassNodeDetector {
 					access).addString("method should start with lower case character");
 			bugReporter.reportBug(bug0);
 		}
-		return null;
-		/*
-		 * 
+		return
 		 new AbstractFBMethodVisitor() {
 			int prevOpcode;
 			int prevPC;
@@ -68,7 +66,7 @@ public class TestASM extends ClassNodeDetector {
 				 }
 
 		};
-		*/
+
 	}
 
 	@Override
