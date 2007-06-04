@@ -397,6 +397,10 @@ public class OpcodeStack implements Constants2
 			 return signature;
 		 }
 
+		 /**
+		  * Returns a constant value for this Item, if known.
+		  * NOTE: if the value is a constant Class object, the constant value returned is the name of the class.
+		  */
 		 public Object getConstant() {
 			 return constValue;
 		 }
