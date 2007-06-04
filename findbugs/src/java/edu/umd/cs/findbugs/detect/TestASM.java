@@ -19,13 +19,21 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import static org.apache.bcel.Constants.I2D;
+import static org.apache.bcel.Constants.INVOKESTATIC;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import edu.umd.cs.findbugs.asm.AbstractFBMethodVisitor;
+import edu.umd.cs.findbugs.asm.FBMethodVisitor;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 
 /**
@@ -47,7 +55,23 @@ public class TestASM extends ClassNodeDetector {
 					access).addString("method should start with lower case character");
 			bugReporter.reportBug(bug0);
 		}
-		return null;
+		return new AbstractFBMethodVisitor() {
+			int prevOpcode;
+			int prevPC;
+			public void visitInsn(int opcode) {
+				prevOpcode = opcode;
+				prevPC = getPC();
+			}
+			 public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
+				 if (prevPC+1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math") && invokedName.equals("ceil") && invokedDesc.equals("(D)D"))
+					 System.out.println(owner + "." + invokedName + ":" + invokedDesc);
+				 BugInstance bug0 = new BugInstance("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
+				 MethodAnnotation methodAnnotation = MethodAnnotation.fromForeignMethod(TestASM.this.name, name, desc, access);
+				 bug0.addClass(TestASM.this).addMethod(methodAnnotation);
+				 bugReporter.reportBug(bug0);
+				 }
+
+		};
 	}
 
 	@Override
