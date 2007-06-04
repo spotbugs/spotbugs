@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.classfile.engine.asm;
 
 import org.objectweb.asm.ClassReader;
 
+import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -42,7 +43,7 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 
-		ClassReader classReader = new ClassReader(classData.getData());
+		FBClassReader classReader = new FBClassReader(classData.getData());
 
 		return classReader;
 	}
@@ -51,7 +52,7 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
-		analysisCache.registerClassAnalysisEngine(ClassReader.class, this);
+		analysisCache.registerClassAnalysisEngine(FBClassReader.class, this);
 	}
 
 	/* (non-Javadoc)

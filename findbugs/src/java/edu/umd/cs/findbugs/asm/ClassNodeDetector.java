@@ -54,7 +54,7 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
-		ClassReader cr = Global.getAnalysisCache().getClassAnalysis(ClassReader.class, classDescriptor);
+		FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
 		cr.accept(this, 0);
 	}
 
