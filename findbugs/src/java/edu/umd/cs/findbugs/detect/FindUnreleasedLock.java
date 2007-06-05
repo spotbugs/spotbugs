@@ -264,7 +264,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 					System.out.println("FOUND Exception thrower at: " + location);
 				}
 			} catch (DataflowAnalysisException e) {
-				// Report...
+				AnalysisContext.logError("Error while looking for exception edge" , e);
 			}
 
 			return false;

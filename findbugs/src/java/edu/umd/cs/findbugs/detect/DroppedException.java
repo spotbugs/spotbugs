@@ -460,7 +460,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 			} while (!done);
 		} catch (IOException e) {
 			// Ignored; we'll just assume there is no comment
-			if (DEBUG) e.printStackTrace();
+	
 		}
 		return false;
 	}

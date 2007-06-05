@@ -45,6 +45,7 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Frame;
@@ -394,8 +395,7 @@ public class ValueNumberFrameModelingVisitor
 				getFrame().killAllLoadsOf(v);
 
 		} catch (DataflowAnalysisException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AnalysisContext.logError("Error in killLoadsOfObjectsPassed", e);
 		}
 	}
 	@Override

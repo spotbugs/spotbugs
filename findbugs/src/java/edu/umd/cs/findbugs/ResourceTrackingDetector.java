@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -154,9 +155,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			inspectResult(classContext, methodGen, cfg, dataflow, resource);
 		}
 		} catch (RuntimeException e) {
-			System.out.println("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
-			e.printStackTrace();
-			throw e;
+			AnalysisContext.logError("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature(), e);
 		}
 	}
 
