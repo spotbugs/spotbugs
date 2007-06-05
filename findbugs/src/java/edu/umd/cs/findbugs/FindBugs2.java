@@ -158,7 +158,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			buildReferencedClassSet();
 
 			// Create BCEL compatibility layer
-			createAnalysisContext(appClassList, sourceInfoFileName);
+			createAnalysisContext(project, appClassList, sourceInfoFileName);
 
 			// Configure the BugCollection (if we are generating one)
 			FindBugs.configureBugCollection(this);
@@ -570,13 +570,13 @@ public class FindBugs2 implements IFindBugsEngine {
 	/**
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
 	 * layer over the AnalysisCache.
-	 * 
+	 * @param project 			The project
 	 * @param appClassList       list of ClassDescriptors identifying application classes
 	 * @param sourceInfoFileName name of source info file (null if none)
 	 */
 	public static void createAnalysisContext(
-			List<ClassDescriptor> appClassList,
-			String sourceInfoFileName)
+			Project project,
+			List<ClassDescriptor> appClassList, String sourceInfoFileName)
 			throws CheckedAnalysisException, IOException {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
@@ -593,7 +593,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
 			sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
 		}
-
+		analysisContext.setSourcePath(project.getSourceDirList());
 		// Make this the current analysis context
 		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
