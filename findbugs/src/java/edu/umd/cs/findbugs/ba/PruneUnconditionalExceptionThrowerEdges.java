@@ -259,7 +259,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					}
 				}
 			} catch (Exception e) {
-				if (DEBUG) e.printStackTrace();
+				AnalysisContext.logError("error in determining if " + xMethod + " is unconditional thrower", e);
 			}
 
 			cachedResults.get().put(xMethod, isUnconditionalThrower);

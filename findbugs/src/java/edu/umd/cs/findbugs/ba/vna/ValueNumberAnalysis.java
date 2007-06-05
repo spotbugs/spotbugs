@@ -357,8 +357,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	/**
 	 * Test driver.
 	 */
-	public static void main(String[] argv) {
-		try {
+	public static void main(String[] argv) throws Exception {
+
 			if (argv.length != 1) {
 				System.out.println("Usage: edu.umd.cs.findbugs.ba.ValueNumberAnalysis <filename>");
 				System.exit(1);
@@ -374,10 +374,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 					};
 
 			driver.execute(argv[0]);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private ValueNumber getExceptionValueNumber(BasicBlock handlerBlock) {

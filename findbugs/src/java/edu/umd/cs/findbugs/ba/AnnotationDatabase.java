@@ -295,8 +295,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		n = getResolvedAnnotation(probe, getMinimal);
 		return n;
 		} catch (RuntimeException e) {
-			e.printStackTrace();
-			throw e;
+			AnalysisContext.logError("Exception while looking for annotation of " + originalMethod + "in " + classToLookIn,e);
+			return null;
 		}
 	}
 

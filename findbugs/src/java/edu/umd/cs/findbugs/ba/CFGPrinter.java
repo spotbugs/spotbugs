@@ -112,8 +112,8 @@ public class CFGPrinter {
 			return bb.instructionReverseIterator();
 	}
 
-	public static void main(String[] argv) {
-		try {
+	public static void main(String[] argv) throws Exception {
+
 			if (argv.length == 0 || argv.length > 2) {
 				System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file> [outputFile]");
 				System.exit(1);
@@ -149,9 +149,6 @@ public class CFGPrinter {
 				CFGPrinter printer = new CFGPrinter(cfg);
 				printer.print(out);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
 
