@@ -130,7 +130,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * of synchronized accesses.
 	 */
 	private static final double UNSYNC_FACTOR =
-			Double.parseDouble(SystemProperties.getProperty("findbugs.fis.unsyncFactor", "2.0"));
+			Double.parseDouble(SystemProperties.getProperty("findbugs.fis.unsyncFactor", "1.6"));
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -297,7 +297,7 @@ public class FindInconsistentSync2 implements Detector {
 			
 
 			int locked = numReadLocked + numWriteLocked + numNullCheckLocked;
-			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + numNullCheckLocked) );
+			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + 2*numNullCheckLocked) );
 			int unlocked = numReadUnlocked + numWriteUnlocked;
 			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * (numWriteUnlocked));
 			int writes = numWriteLocked + numWriteUnlocked;
@@ -333,7 +333,7 @@ public class FindInconsistentSync2 implements Detector {
 				System.out.println("  WU: " + numWriteUnlocked);
 				System.out.println("  NU: " + numNullCheckUnlocked);
 			}
-			if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked) {
+			if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * (biasedUnlocked-1))) > biasedLocked) {
 //				continue;
 				propertySet.addProperty(InconsistentSyncWarningProperty.MANY_BIASED_UNLOCKED);
 			}
