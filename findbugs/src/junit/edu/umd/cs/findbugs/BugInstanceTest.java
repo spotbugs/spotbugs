@@ -55,9 +55,9 @@ public class BugInstanceTest extends TestCase {
 		iter.remove();
 		try {
 			iter.remove();
-			Assert.assertTrue(false);
+			fail();
 		} catch (IllegalStateException e) {
-			// Good.
+			assert true;
 		}
 	}
 
@@ -65,9 +65,9 @@ public class BugInstanceTest extends TestCase {
 		Iterator<BugProperty> iter = b.propertyIterator();
 		try {
 			iter.remove();
-			Assert.assertTrue(false);
+			Assert.fail();
 		} catch (IllegalStateException e) {
-			// Good
+			assert true;
 		}
 	}
 
@@ -100,9 +100,9 @@ public class BugInstanceTest extends TestCase {
 	private void noMore(Iterator<BugProperty> iter) {
 		try {
 			iter.next();
-			Assert.assertTrue(false);
+			Assert.fail();
 		} catch (NoSuchElementException e) {
-			// Good
+			assert true;
 		}
 	}
 
