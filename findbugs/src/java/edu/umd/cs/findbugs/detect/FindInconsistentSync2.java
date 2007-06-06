@@ -20,15 +20,63 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.ba.type.*;
-import edu.umd.cs.findbugs.ba.vna.*;
-import edu.umd.cs.findbugs.props.WarningPropertySet;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.CallGraph;
+import edu.umd.cs.findbugs.CallGraphEdge;
+import edu.umd.cs.findbugs.CallGraphNode;
+import edu.umd.cs.findbugs.CallSite;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.IntAnnotation;
+import edu.umd.cs.findbugs.SelfCalls;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.InnerClassAccess;
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.ba.InstanceField;
+import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockChecker;
+import edu.umd.cs.findbugs.ba.LockSet;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.type.TopType;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
 
 /**
  * Find instance fields which are sometimes accessed (read or written)
@@ -92,11 +140,15 @@ public class FindInconsistentSync2 implements Detector {
 	private static final int LOCKED = 1;
 	private static final int READ = 0;
 	private static final int WRITE = 2;
-
+	private static final int NULLCHECK = 4;
+	
 	private static final int READ_UNLOCKED = READ | UNLOCKED;
 	private static final int WRITE_UNLOCKED = WRITE | UNLOCKED;
+	private static final int NULLCHECK_UNLOCKED = NULLCHECK | UNLOCKED;
 	private static final int READ_LOCKED = READ | LOCKED;
 	private static final int WRITE_LOCKED = WRITE | LOCKED;
+	private static final int NULLCHECK_LOCKED = NULLCHECK | LOCKED;
+
 
 	/**
 	 * The access statistics for a field.
@@ -104,7 +156,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * as well as the number of accesses made with a lock held.
 	 */
 	private static class FieldStats {
-		private int[] countList = new int[4];
+		private int[] countList = new int[6];
 		private int numLocalLocks = 0;
 		private int numGetterMethodAccesses = 0;
 		private LinkedList<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
@@ -237,13 +289,17 @@ public class FindInconsistentSync2 implements Detector {
 
 			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
 			int numWriteUnlocked = stats.getNumAccesses(WRITE_UNLOCKED);
+			int numNullCheckUnlocked = stats.getNumAccesses(NULLCHECK_UNLOCKED);
+			
 			int numReadLocked = stats.getNumAccesses(READ_LOCKED);
 			int numWriteLocked = stats.getNumAccesses(WRITE_LOCKED);
+			int numNullCheckLocked = stats.getNumAccesses(NULLCHECK_LOCKED);
+			
 
-			int locked = numReadLocked + numWriteLocked;
-			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * numWriteLocked);
+			int locked = numReadLocked + numWriteLocked + numNullCheckLocked;
+			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + numNullCheckLocked) );
 			int unlocked = numReadUnlocked + numWriteUnlocked;
-			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * numWriteUnlocked);
+			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * (numWriteUnlocked));
 			int writes = numWriteLocked + numWriteUnlocked;
 
 			if (unlocked == 0) {
@@ -271,8 +327,11 @@ public class FindInconsistentSync2 implements Detector {
 				if (guardedByThis) System.out.println("Guarded by this");
 				System.out.println("  RL: " + numReadLocked);
 				System.out.println("  WL: " + numWriteLocked);
+				System.out.println("  NL: " + numNullCheckLocked);
+				
 				System.out.println("  RU: " + numReadUnlocked);
 				System.out.println("  WU: " + numWriteUnlocked);
+				System.out.println("  NU: " + numNullCheckUnlocked);
 			}
 			if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * biasedUnlocked)) > biasedLocked) {
 //				continue;
@@ -301,12 +360,16 @@ public class FindInconsistentSync2 implements Detector {
 				propertySet.addProperty(InconsistentSyncWarningProperty.NO_LOCAL_LOCKS);
 			}
 
-			int freq;
+			int freq, printFreq;
 			if (locked + unlocked > 0) {
 				freq = (100 * locked) / (locked + unlocked);
+				printFreq = (100 * locked) / (locked + unlocked + numNullCheckUnlocked);
 			} else {
-				freq = 0;
+				printFreq = freq = 0;
 			}
+			
+			
+			
 			if (freq < MIN_SYNC_PERCENT) {
 //				continue;
 				propertySet.addProperty(InconsistentSyncWarningProperty.BELOW_MIN_SYNC_PERCENT);
@@ -324,7 +387,7 @@ public class FindInconsistentSync2 implements Detector {
 				BugInstance bugInstance = new BugInstance(this, guardedByThis? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC", priority)
 						.addClass(xfield.getClassName())
 						.addField(xfield)
-						.addInt(freq).describe(IntAnnotation.INT_SYNC_PERCENT);
+						.addInt(printFreq).describe(IntAnnotation.INT_SYNC_PERCENT);
 
 				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 					propertySet.decorateBugInstance(bugInstance);
@@ -397,15 +460,19 @@ public class FindInconsistentSync2 implements Detector {
 				XField xfield = null;
 				boolean isWrite = false;
 				boolean isLocal = false;
+				boolean isNullCheck = false;
 
 				if (ins instanceof FieldInstruction) {
+					InstructionHandle n = location.getHandle().getNext();
+					isNullCheck = n.getInstruction() instanceof IFNONNULL || n.getInstruction() instanceof IFNULL;
+					if (DEBUG && isNullCheck) System.out.println("is null check");
 					FieldInstruction fins = (FieldInstruction) ins;
 					xfield = Hierarchy.findXField(fins, cpg);
 					isWrite = ins.getOpcode() == Constants.PUTFIELD;
 					isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
 					if (DEBUG)
 						System.out.println("Handling field access: " + location.getHandle() +
-								" (frame=" + vnaDataflow.getFactAtLocation(location) + ")");
+								" (frame=" + vnaDataflow.getFactAtLocation(location) + ") :" + n);
 				} else if (ins instanceof INVOKESTATIC) {
 					INVOKESTATIC inv = (INVOKESTATIC) ins;
 					InnerClassAccess access = icam.getInnerClassAccess(inv, cpg);
@@ -496,7 +563,7 @@ public class FindInconsistentSync2 implements Detector {
 
 				int kind = 0;
 				kind |= isLocked ? LOCKED : UNLOCKED;
-				kind |= isWrite ? WRITE : READ;
+				kind |= isWrite ? WRITE : isNullCheck ? NULLCHECK : READ;
 
 				if (isLocked || !isConstructor(method.getName())) {
 					if (DEBUG)
