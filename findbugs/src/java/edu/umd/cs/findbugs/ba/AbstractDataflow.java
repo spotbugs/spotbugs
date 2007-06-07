@@ -52,4 +52,17 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
 		return getAnalysis().getFactOnEdge(edge);
 	}
+
+	public void dumpDataflow() {
+    	try {
+    	for(Location loc : getCFG().orderedLocations()) {
+    		System.out.println("\nBefore: " + getFactAtLocation(loc));
+    		System.out.println("Location: " + loc);
+    		System.out.println("After: " + getFactAfterLocation(loc));	
+    	}
+    	} catch (DataflowAnalysisException e) {
+    		AnalysisContext.logError("error dumping dataflow analysis", e);
+    		System.out.println(e);
+    	}
+    }
 }
