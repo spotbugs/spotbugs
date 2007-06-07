@@ -155,35 +155,10 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 					if (DEBUG) System.out.println("\tFound " + xMethod);
 
-					if (false) {
-						if (!(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass))) {
-
-							if (!Repository.instanceOf(methodGen.getClassName(), javaClass)) continue;
-						}
-					}
-
 					// Ignore abstract and native methods
 					if (method.getCode() == null) continue;
-					Boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod, javaClass, method);
-					if (false && isUnconditionalThrower.booleanValue()) {
-						ClassContext classContext = analysisContext.getClassContext(javaClass);
-						MethodGen calledMethodGen = classContext.getMethodGen(method);
-						// Ignore abstract and native methods
-
-						if (calledMethodGen == null)
-							continue;
-
-						// Analyze exception paths of called method
-						// to see if it always throws an unhandled exception.
-						CFG calledCFG = classContext.getCFG(method);
-						ReturnPathDataflow pathDataflow = classContext
-						.getReturnPathDataflow(method);
-						ReturnPath pathValue = pathDataflow.getStartFact(calledCFG
-								.getExit());
-
-						isUnconditionalThrower = pathValue.getKind() != ReturnPath.RETURNS;
-						if (true) cachedResults.get().put(xMethod, isUnconditionalThrower);
-					}
+					Boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod, classAndMethod.getJavaClass(), method);
+					
 					if (isUnconditionalThrower) {
 						foundThrower = true;
 						if (DEBUG) System.out.println("Found thrower");
