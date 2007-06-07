@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.TreeSet;
 
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
@@ -234,6 +235,21 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 */
 	public Iterator<Location> locationIterator() {
 		return new LocationIterator();
+	}
+	
+	/**
+	 * Returns a collection of locations, ordered according to the compareTo ordering over locations.
+	 * If you want to list all the locations in a CFG for debugging purposes, this is a good order to do so in.
+	 * 
+	 * @return collection of locations
+	 */
+	public Collection<Location> orderedLocations() {
+		TreeSet<Location> tree = new TreeSet<Location>();
+		for(Iterator<Location> locs = locationIterator(); locs.hasNext(); ) {
+			Location loc = locs.next();
+			tree.add(loc);
+		}
+		return tree;
 	}
 
 	/**
