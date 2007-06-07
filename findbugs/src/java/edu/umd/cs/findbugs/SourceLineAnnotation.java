@@ -38,6 +38,10 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -303,6 +307,24 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	/**
+	 * Create from MethodDescriptor and Location of visited instruction.
+	 * 
+	 * @param methodDescriptor MethodDescriptor identifying analyzed method
+	 * @param location         Location of instruction within analyed method
+	 * @return SourceLineAnnotation describing visited instruction
+	 */
+	public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {
+		try {
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, methodDescriptor.getClassDescriptor());
+			Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
+			return fromVisitedInstruction(jclass, method, location.getHandle().getPosition());
+		} catch (CheckedAnalysisException e) {
+			return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+		}
+	}
+
+	/**
 	 * Create from Method and bytecode offset in a visited class.
 	 * 
 	 * @param classContext ClassContext of visited class
@@ -311,16 +333,27 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return SourceLineAnnotation describing visited instruction
 	 */
 	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, int pc) {
+		return fromVisitedInstruction(classContext.getJavaClass(), method, pc);
+	}
+	
+	/**
+	 * Create from Method and bytecode offset in a visited class.
+	 * 
+	 * @param jclass       JavaClass of visited class
+	 * @param method       Method in visited class
+	 * @param pc           bytecode offset in visited method
+	 * @return SourceLineAnnotation describing visited instruction
+	 */
+	public static SourceLineAnnotation fromVisitedInstruction(JavaClass jclass, Method method, int pc) {
 		LineNumberTable lineNumberTable = method.getCode().getLineNumberTable();
-		String className = classContext.getJavaClass().getClassName();
-		String sourceFile = classContext.getJavaClass().getSourceFileName();
+		String className = jclass.getClassName();
+		String sourceFile = jclass.getSourceFileName();
 		if (lineNumberTable == null)
 			return createUnknown(className, sourceFile, pc, pc);
 
 		int startLine = lineNumberTable.getSourceLine(pc);
 		return new SourceLineAnnotation(className, sourceFile, startLine, startLine, pc, pc);
 	}
-
 
 	/**
 	 * Factory method for creating a source line annotation describing the
