@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.bcel;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -38,18 +41,35 @@ public abstract class BCELUtil {
 	 * @param method a Method belonging to the JavaClass
 	 * @return a MethodDescriptor identifying the method
 	 */
-	public static final MethodDescriptor getMethodDescriptor(JavaClass jclass, Method method) {
+	public static MethodDescriptor getMethodDescriptor(JavaClass jclass, Method method) {
 		return new MethodDescriptor(
 				jclass.getClassName().replace('.', '/'), method.getName(), method.getSignature(), method.isStatic());
 	}
 
 	/**
+	 * Get a MethodDescriptor describing the method called by
+	 * given InvokeInstruction.
+	 * 
+	 * @param inv the InvokeInstruction
+	 * @param cpg ConstantPoolGen of class containing instruction
+	 * @return MethodDescriptor describing the called method
+	 */
+	public static MethodDescriptor getCalledMethodDescriptor(InvokeInstruction inv, ConstantPoolGen cpg) {
+		String calledClassName = inv.getClassName(cpg).replace('.', '/');
+		String calledMethodName = inv.getMethodName(cpg);
+		String calledMethodSig = inv.getSignature(cpg);
+		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+		
+		return new MethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
+	}
+
+	/**
 	 * Construct a ClassDescriptor from a JavaClass.
 	 * 
-     * @param jclass a JavaClass
-     * @return a ClassDescriptor identifying that JavaClass
-     */
-    public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
-    	return new ClassDescriptor(jclass.getClassName().replace('.', '/'));
-    }
+	 * @param jclass a JavaClass
+	 * @return a ClassDescriptor identifying that JavaClass
+	 */
+	public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
+		return new ClassDescriptor(jclass.getClassName().replace('.', '/'));
+	}
 }
