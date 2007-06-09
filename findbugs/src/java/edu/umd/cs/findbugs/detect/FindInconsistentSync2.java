@@ -296,9 +296,11 @@ public class FindInconsistentSync2 implements Detector {
 			int numNullCheckLocked = stats.getNumAccesses(NULLCHECK_LOCKED);
 			
 
+			int extra = 0;
+			if (numWriteUnlocked > 0) extra = numNullCheckLocked;
 			int locked = numReadLocked + numWriteLocked + numNullCheckLocked;
-			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + 2*numNullCheckLocked) );
-			int unlocked = numReadUnlocked + numWriteUnlocked;
+			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + numNullCheckLocked + extra) );
+			int unlocked = numReadUnlocked + numWriteUnlocked + numNullCheckUnlocked;
 			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * (numWriteUnlocked));
 			int writes = numWriteLocked + numWriteUnlocked;
 
