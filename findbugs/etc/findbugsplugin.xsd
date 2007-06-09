@@ -32,7 +32,7 @@
 		<xsd:attribute name="class" type="ClassType"/>
 		<xsd:attribute name="speed" type="SpeedType" use="optional"/>
 		<xsd:attribute name="reports" type="BugPatternListType"/>
-		<xsd:attribute name="requirejre" type="xsd:string"/>
+		<xsd:attribute name="requirejre" type="xsd:string" use="optional"/>
 		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
 		<xsd:attribute name="hidden" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
