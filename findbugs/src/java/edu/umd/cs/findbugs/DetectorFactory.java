@@ -135,34 +135,6 @@ public class DetectorFactory {
 		this.priorityAdjustment = 0;
 		this.hidden = false;
 	}
-//
-//	/**
-//	 * Constructor.
-//	 * 
-//	 * @param plugin          the Plugin the detector is part of
-//	 * @param detectorCreator the IDetectorCreator that will create instances of this detector
-//	 * @param enabled         true if the detector is enabled by default, false otherwise
-//	 * @param speed           speed: "fast", "moderate", or "slow"
-//	 * @param reports         comma separated list of bug pattern codes reported
-//	 *                         by the detector; empty if unknown
-//	 * @param requireJRE      string describing JRE version required to run the
-//	 *                         the detector: e.g., "1.5"
-//	 */
-//	public DetectorFactory(Plugin plugin,
-//			IDetectorCreator detectorCreator,
-//			boolean enabled ,
-//			String speed,
-//			String reports,
-//			String requireJRE) {
-//		this.plugin = plugin;
-//		this.detectorCreator = detectorCreator;
-//		this.defEnabled = enabled;
-//		this.speed = speed;
-//		this.reports = reports;
-//		this.requireJRE = requireJRE;
-//		this.priorityAdjustment = 0;
-//		this.hidden = false;
-//	}
 
 	/**
 	 * Set the overall position in which this detector was specified
