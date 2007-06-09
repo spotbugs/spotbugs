@@ -30,7 +30,7 @@
 	
 	<xsd:complexType name="DetectorType">
 		<xsd:attribute name="class" type="ClassType"/>
-		<xsd:attribute name="speed" type="SpeedType"/>
+		<xsd:attribute name="speed" type="SpeedType" use="optional"/>
 		<xsd:attribute name="reports" type="BugPatternListType"/>
 		<xsd:attribute name="requirejre" type="xsd:string"/>
 		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
