@@ -253,14 +253,14 @@
 
 	  <objectContribution
 			objectClass="org.eclipse.core.resources.IMarker"
-			id="de.tobject.findbugs.showDescription">
+			id="de.tobject.findbugs.showDescriptionHigh">
 		 <action
 			   label="Show Bug Details"
 			   icon="icons/detailsView.png"
 			   class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
 			   menubarPath="additions"
 			   enablesFor="1"
-			   id="de.tobject.findbugs.showDescription">
+			   id="de.tobject.findbugs.showDescriptionHigh">
 		 </action>
 		 <filter
 			   name="type"
@@ -270,14 +270,14 @@
 
 	  <objectContribution
 			objectClass="org.eclipse.core.resources.IMarker"
-			id="de.tobject.findbugs.showDescription">
+			id="de.tobject.findbugs.showDescriptionNormal">
 		 <action
 			   label="Show Bug Details"
 			   icon="icons/detailsView.png"
 			   class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
 			   menubarPath="additions"
 			   enablesFor="1"
-			   id="de.tobject.findbugs.showDescription">
+			   id="de.tobject.findbugs.showDescriptionNormal">
 		 </action>
 		 <filter
 			   name="type"
@@ -287,14 +287,14 @@
 
 	  <objectContribution
 			objectClass="org.eclipse.core.resources.IMarker"
-			id="de.tobject.findbugs.showDescription">
+			id="de.tobject.findbugs.showDescriptionLow">
 		 <action
 			   label="Show Bug Details"
 			   icon="icons/detailsView.png"
 			   class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
 			   menubarPath="additions"
 			   enablesFor="1"
-			   id="de.tobject.findbugs.showDescription">
+			   id="de.tobject.findbugs.showDescriptionLow">
 		 </action>
 		 <filter
 			   name="type"
@@ -304,14 +304,14 @@
 
 	  <objectContribution
 			objectClass="org.eclipse.core.resources.IMarker"
-			id="de.tobject.findbugs.showDescription">
+			id="de.tobject.findbugs.showDescriptionExperimental">
 		 <action
 			   label="Show Bug Details"
 			   icon="icons/detailsView.png"
 			   class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
 			   menubarPath="additions"
 			   enablesFor="1"
-			   id="de.tobject.findbugs.showDescription">
+			   id="de.tobject.findbugs.showDescriptionExperimental">
 		 </action>
 		 <filter
 			   name="type"
