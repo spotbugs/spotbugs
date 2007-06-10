@@ -21,18 +21,12 @@ package edu.umd.cs.findbugs.classfile.engine;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.IClassConstants;
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
@@ -43,7 +37,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
+public class ClassInfoAnalysisEngine extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -76,12 +70,5 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassInfo.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// ClassInfo can be recomputed easily.
-		// TODO: perhaps we should retain it - it's relatively small
-		return false;
-	}
+	
 }

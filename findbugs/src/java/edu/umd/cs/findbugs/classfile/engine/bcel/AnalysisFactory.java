@@ -66,7 +66,7 @@ public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngin
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
 	 */
-	public final boolean retainAnalysisResults() {
+	public final boolean canRecompute() {
 		throw new IllegalStateException();
 	}
 

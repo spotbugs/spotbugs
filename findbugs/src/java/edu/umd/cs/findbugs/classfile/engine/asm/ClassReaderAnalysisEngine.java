@@ -19,13 +19,11 @@
 
 package edu.umd.cs.findbugs.classfile.engine.asm;
 
-import org.objectweb.asm.ClassReader;
-
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
 /**
@@ -33,7 +31,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * 
  * @author David Hovemeyer
  */
-public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
+public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -55,11 +53,5 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(FBClassReader.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// Can be recomputed easily
-		return false;
-	}
+	
 }

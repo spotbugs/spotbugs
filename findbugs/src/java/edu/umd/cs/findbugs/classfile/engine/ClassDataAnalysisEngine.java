@@ -26,10 +26,9 @@ import java.io.InputStream;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.io.IO;
@@ -39,7 +38,7 @@ import edu.umd.cs.findbugs.io.IO;
  * 
  * @author David Hovemeyer
  */
-public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
+public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -92,11 +91,5 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassData.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// ClassData can be recomputed (reloaded) easily
-		return false;
-	}
+	
 }

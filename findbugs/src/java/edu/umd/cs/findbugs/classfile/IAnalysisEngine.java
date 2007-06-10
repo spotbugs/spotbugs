@@ -53,5 +53,5 @@ public interface IAnalysisEngine<DescriptorType> {
 	 *          be retained indefinitely,
 	 *          false if they may be recomputed as needed 
 	 */
-	public boolean retainAnalysisResults();
+	public boolean canRecompute();
 }

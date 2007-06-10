@@ -19,15 +19,15 @@
 
 package edu.umd.cs.findbugs.classfile.engine.asm;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
+
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine to produce the ClassNode (ASM tree format)
@@ -35,7 +35,7 @@ import org.objectweb.asm.tree.ClassNode;
  * 
  * @author David Hovemeyer
  */
-public class ClassNodeAnalysisEngine implements IClassAnalysisEngine {
+public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -65,11 +65,5 @@ public class ClassNodeAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassNode.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// Perhaps we should retain these, like we do with JavaClass objects?
-		return false;
-	}
+	
 }

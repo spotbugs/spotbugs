@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
@@ -44,7 +45,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * 
  * @author David Hovemeyer
  */
-public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
+public class JavaClassAnalysisEngine extends RecomputableClassAnalysisEngine {
 	private static final boolean DEBUG_MISSING_CLASSES =
 		SystemProperties.getBoolean("findbugs.debug.missingclasses");
 	private static final String JVM_VERSION = SystemProperties.getProperty("java.runtime.version");
@@ -87,13 +88,5 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(JavaClass.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// JavaClass objects must NOT be discarded - Subtypes compares
-		// them by object identity.
-		return true;
-	}
 
 }

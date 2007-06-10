@@ -26,14 +26,14 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine to produce ConstantPoolGen objects for an analyzed class.
  * 
  * @author David Hovemeyer
  */
-public class ConstantPoolGenFactory implements IClassAnalysisEngine {
+public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -50,11 +50,5 @@ public class ConstantPoolGenFactory implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ConstantPoolGen.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// can be recomputed
-		return false;
-	}
+	
 }

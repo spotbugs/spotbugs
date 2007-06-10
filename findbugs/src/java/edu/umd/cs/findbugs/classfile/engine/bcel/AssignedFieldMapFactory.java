@@ -25,14 +25,14 @@ import edu.umd.cs.findbugs.ba.AssignedFieldMap;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Analysis engine for producing an AssignedFieldMap for a class.
  * 
  * @author David Hovemeyer
  */
-public class AssignedFieldMapFactory implements IClassAnalysisEngine {
+public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -49,11 +49,5 @@ public class AssignedFieldMapFactory implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(AssignedFieldMap.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// Can be recomputed
-		return false;
-	}
+	
 }

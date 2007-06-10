@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -27,8 +26,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 
 /**
  * Adapter to produce the ClassContext for a given class.
@@ -37,7 +35,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * 
  * @author David Hovemeyer
  */
-public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
+public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -57,11 +55,5 @@ public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassContext.class, this);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public boolean retainAnalysisResults() {
-		// ClassContexts can be recomputed
-		return false;
-	}
+	
 }
