@@ -1,8 +1,8 @@
-de.tobject.findbugs/debug=true
-de.tobject.findbugs/debug/builder=false
-de.tobject.findbugs/debug/marker=false
-de.tobject.findbugs/debug/nature=false
-de.tobject.findbugs/debug/properties=false
-de.tobject.findbugs/debug/reporter=false
-de.tobject.findbugs/debug/util=false
-de.tobject.findbugs/debug/visitor=false
+edu.umd.cs.findbugs.plugin.eclipse/debug=true
+edu.umd.cs.findbugs.plugin.eclipse/debug/builder=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/marker=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/nature=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/properties=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/reporter=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/util=false
+edu.umd.cs.findbugs.plugin.eclipse/debug/visitor=false

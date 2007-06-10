@@ -1,22 +1,22 @@
 /*
- * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003 - 2004, Peter Friese
- * Copyright (C) 2004-2005, University of Maryland
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+	* FindBugs Eclipse Plug-in.
+	* Copyright (C) 2003 - 2004, Peter Friese
+	* Copyright (C) 2004-2005, University of Maryland
+	*
+	* This library is free software; you can redistribute it and/or
+	* modify it under the terms of the GNU Lesser General Public
+	* License as published by the Free Software Foundation; either
+	* version 2.1 of the License, or (at your option) any later version.
+	*
+	* This library is distributed in the hope that it will be useful,
+	* but WITHOUT ANY WARRANTY; without even the implied warranty of
+	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	* Lesser General Public License for more details.
+	*
+	* You should have received a copy of the GNU Lesser General Public
+	* License along with this library; if not, write to the Free Software
+	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+	*/
 
 package de.tobject.findbugs;
 
@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -46,12 +48,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -64,7 +64,6 @@ import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
-import de.tobject.findbugs.view.UserAnnotationsView;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -77,9 +76,18 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 
 /**
- * The main plugin class to be used in the desktop.
- */
+	* The main plugin class to be used in the desktop.
+	*/
 public class FindbugsPlugin extends AbstractUIPlugin {
+	public static final String ICON_PATH = "icons/";
+
+	public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.detailsview";
+	public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
+	public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
+
+	/** Map containing preloaded ImageDescriptors */
+	private Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
+
 	/** Controls debugging of the plugin */
 	public static boolean DEBUG;
 
@@ -149,6 +157,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	public FindbugsPlugin() {
 		plugin = this;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+	 */
+	@Override
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 
 		// configure debugging
 		configurePluginDebugOptions();
@@ -160,14 +176,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
 
 		// TODO hardcore workaround for findbugs home property
 		// - see de.tobject.findbugs.builder.FindBugsWorker.work() too
@@ -196,20 +204,21 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return ResourcesPlugin.getWorkspace();
 	}
 
-	public static IWorkbench getActiveWorkbench() {
-		FindbugsPlugin plugin = getDefault();
-		if (plugin == null) {
-			return null;
-		}
-		return plugin.getWorkbench();
-	}
-
+	/**
+	 * @return active window instance, never null
+	 */
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
-		IWorkbench workbench = getActiveWorkbench();
-		if (workbench == null) {
-			return null;
+		if(Display.getCurrent() != null) {
+			return getDefault().getWorkbench().getActiveWorkbenchWindow();
 		}
-		return workbench.getActiveWorkbenchWindow();
+		// need to call from UI thread
+		final IWorkbenchWindow [] window = new IWorkbenchWindow[1];
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				window[0] = getDefault().getWorkbench().getActiveWorkbenchWindow();
+			}
+		});
+		return window [0];
 	}
 
 	/**
@@ -298,7 +307,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			return pluginPath;
 		} catch(RuntimeException e) {
 			throw e;
-			//e.printStackTrace();
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
 		}
@@ -355,13 +363,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	public void logMessage(int severity, String message, Exception e) {
-		if (true) {
+		if (DEBUG) {
 			String what = (severity == IStatus.ERROR)
 				? (e != null ? "Exception" : "Error")
 				: "Warning";
 			System.out.println(what + " in FindBugs plugin: " + message);
-			if (e != null)
+			if (e != null) {
 				e.printStackTrace();
+			}
 		}
 		IStatus status = new Status(severity, FindbugsPlugin.PLUGIN_ID, 0, message, e);
 		getLog().log(status);
@@ -407,10 +416,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static boolean isBugCollectionDirty(IProject project) throws CoreException {
 		Object dirty = project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY);
 
-		if (dirty == null)
+		if (dirty == null) {
 			return false;
-		else
-			return ((Boolean) dirty).booleanValue();
+		}
+		return ((Boolean) dirty).booleanValue();
 	}
 
 	public static void markBugCollectionDirty(IProject project, boolean isDirty) throws CoreException {
@@ -687,15 +696,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static void ensureReadWrite(IFile file) throws CoreException {
 		/*
 		 * fix for bug 1683264: we should checkout file before writing to it
-         */
+		 */
 		if(file.isReadOnly()){
 			IStatus checkOutStatus =
 				ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
-            if(! checkOutStatus.isOK()){
+			if(! checkOutStatus.isOK()){
 				throw new CoreException(checkOutStatus);
 			}
 		}
-    }
+	}
 
 	/**
 	 * Save current UserPreferences for given project.
@@ -733,8 +742,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
 		IFile userPrefsFile = getUserPreferencesFile(project);
-		if (!userPrefsFile.exists())
+		if (!userPrefsFile.exists()) {
 			return null;
+		}
 
 		try {
 			InputStream in = userPrefsFile.getContents();
@@ -750,8 +760,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	private static ExtendedPreferences readExtendedPreferences(IProject project) {
 		IFile userPrefsFile = getUserPreferencesFile(project);
-		if (!userPrefsFile.exists())
+		if (!userPrefsFile.exists()) {
 			return null;
+		}
 
 		try {
 			ExtendedPreferences prefs = new ExtendedPreferences();
@@ -793,72 +804,36 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	public BugResolutionAssociations getBugResolutions() {
-		if (bugResolutions == null)
+		if (bugResolutions == null) {
 			bugResolutions = loadBugResolutions();
-        return bugResolutions;
+		}
+		return bugResolutions;
 	}
 
 	private BugResolutionAssociations loadBugResolutions() {
 		BugResolutionLoader loader = new BugResolutionLoader();
 		File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
-        return loader.loadBugResolutions(xmlFile);
+		return loader.loadBugResolutions(xmlFile);
 	}
 
-	public static boolean isJavaProject(IProject project) {
-		try {
-			return project.hasNature(JavaCore.NATURE_ID);
-
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
-			return false;
-        }
-
-
+	public static void showMarker(IMarker marker) {
+		DetailsView.showMarker(marker);
 	}
 
-	public static void showDetailsAndUserAnnotationView() {
-
-		boolean showUserLast = UserAnnotationsView.isVisible();
-
-		if (!showUserLast)
-			showUserAnnotationView();
-		showDetailsView();
-        if (showUserLast)
-			showUserAnnotationView();
-	}
-
-	public static void showMarker(IMarker marker, boolean preferAnnotationView, boolean focus) {
-		if (preferAnnotationView) {
-			showDetailsView();
-            DetailsView.showMarker(marker, false);
-			showUserAnnotationView();
-			UserAnnotationsView.showMarker(marker, focus);
-		} else {
-            showUserAnnotationView();
-			UserAnnotationsView.showMarker(marker, false);
-			showDetailsView();
-			DetailsView.showMarker(marker, focus);
-        }
-	}
-
-	public static void showDetailsView() {
-		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-		if (pages.length > 0)
-            try {
-				pages[0].showView("de.tobject.findbugs.view.detailsview");
-			} catch (PartInitException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
-            }
-	}
-
-	public static void showUserAnnotationView() {
-		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-		if (pages.length > 0)
-            try {
-				pages[0].showView("de.tobject.findbugs.view.userannotationsview");
-			} catch (PartInitException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
-            }
+	/**
+	 * Call this method to retrieve the (cache) ImageDescriptor for the given id.
+	 * @param id the id of the image descriptor or relative icon path if icon is inside
+	 * of default icons folder
+	 * @return the ImageDescriptor instance.
+	 */
+	public ImageDescriptor getImageDescriptor(String id) {
+		ImageDescriptor imageDescriptor = imageDescriptors.get(id);
+		if (imageDescriptor == null) {
+			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(getDefault()
+					.getBundle().getSymbolicName(), ICON_PATH + id);
+			imageDescriptors.put(id, imageDescriptor);
+		}
+		return imageDescriptor;
 	}
 }
 

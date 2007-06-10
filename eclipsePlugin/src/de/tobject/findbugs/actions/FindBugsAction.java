@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -44,7 +45,6 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsWorker;
-import de.tobject.findbugs.util.Util;
 
 
 
@@ -53,6 +53,7 @@ import de.tobject.findbugs.util.Util;
  *
  * @author Peter Friese
  * @author Phil Crosby
+ * @author Andrei Loskutov
  * @version 1.1
  * @since 25.09.2003
  */
@@ -66,7 +67,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 	protected static final ILock findbugsExecuteLock = Platform.getJobManager().newLock();
 
 	/** The current selection. */
-	private ISelection selection;
+	protected ISelection selection;
 
 	/*
 	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
@@ -74,6 +75,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 */
 	public final void setActivePart(final IAction action,
 			final IWorkbenchPart targetPart) {
+		// noop
 	}
 
 	/*
@@ -81,14 +83,14 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
 	public final void selectionChanged(final IAction action,
-			final ISelection selection) {
-		this.selection = selection;
+			final ISelection newSelection) {
+		this.selection = newSelection;
 	}
 
 	/*
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
-	public final void run(final IAction action) {
+	public void run(final IAction action) {
 		if (!selection.isEmpty()) {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
@@ -97,8 +99,9 @@ public class FindBugsAction implements IObjectActionDelegate {
 					Object element = iter.next();
 					IResource resource = (IResource) ((IAdaptable) element)
 							.getAdapter(IResource.class);
-					if (resource == null)
+					if (resource == null) {
 						continue;
+					}
 
 					work(resource);
 				}
@@ -116,7 +119,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 * @return the files contained within the given resource
 	 * @throws CoreException
 	 */
-	private Collection filesInResource(IResource resource) throws CoreException {
+	private Collection<IFile> filesInResource(IResource resource) throws CoreException {
 		/*
 		 * Note: the default package is an IContainer that has all other
 		 * packages as subfolders. Eclipse treats the "default package" as the
@@ -127,21 +130,10 @@ public class FindBugsAction implements IObjectActionDelegate {
 			AbstractFilesCollector collector = FilesCollectorFactory
 					.getFilesCollector((IContainer) resource);
 			return collector.getFiles();
-		} else {
-			Collection<IResource> result = new ArrayList<IResource>();
-			result.add(resource);
-			// For a single file resource, if we have a java file, attempt to
-			// add its corresponding class file,
-			// and vice versa, so that the analysis can proceed.
-			if (resource.getFileExtension().equalsIgnoreCase("java")) {
-				result.add(resource.getParent().findMember(
-						Util.changeExtension(resource.getName(), "class")));
-			} else if (resource.getFileExtension().equalsIgnoreCase("class")) {
-				result.add(resource.getParent().findMember(
-						Util.changeExtension(resource.getName(), "java")));
-			}
-			return result;
 		}
+		Collection<IFile> result = new ArrayList<IFile>(1);
+		result.add((IFile) resource);
+		return result;
 	}
 
 	/**
@@ -150,35 +142,35 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 *
 	 * @param resource The resource to run the analysis on.
 	 */
-	private void work(final IResource resource) {
+	protected final void work(final IResource resource) {
+		final Collection<IFile> files;
 		try {
-			final Collection files = filesInResource(resource);
-			Job runFindBugs = new Job("Finding bugs in "+resource.getName()+"...") {
-
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					FindBugsWorker worker =
-						new FindBugsWorker(resource.getProject(), monitor);
-					try {
-						findbugsExecuteLock.acquire();
-						worker.work(files, !(resource instanceof IProject));
-					} catch (CoreException e) {
-						FindbugsPlugin.getDefault().logException(e, "Analysis exception");
-						return Status.CANCEL_STATUS;
-					}
-					finally {
-						findbugsExecuteLock.release();
-					}
-					return Status.OK_STATUS;
-				}
-			};
-
-			runFindBugs.setUser(true);
-			runFindBugs.schedule();
+			files = filesInResource(resource);
 		} catch (CoreException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e1, "No files found in: " + resource);
+			return;
 		}
+		Job runFindBugs = new Job("Finding bugs in " + resource.getName() + "...") {
 
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				FindBugsWorker worker =
+					new FindBugsWorker(resource.getProject(), monitor);
+				try {
+					findbugsExecuteLock.acquire();
+					worker.work(files, !(resource instanceof IProject));
+				} catch (CoreException e) {
+					FindbugsPlugin.getDefault().logException(e, "Analysis exception");
+					return Status.CANCEL_STATUS;
+				}
+				finally {
+					findbugsExecuteLock.release();
+				}
+				return Status.OK_STATUS;
+			}
+		};
+
+		runFindBugs.setUser(true);
+		runFindBugs.schedule();
 	}
 }

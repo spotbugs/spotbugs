@@ -19,17 +19,17 @@
 
 package de.tobject.findbugs.view;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter;
+import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -39,20 +39,25 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -68,202 +73,203 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 /**
  * View which shows bug details.
  *
- * TODO (PeterF) This info should be displayed in the help system or maybe a
- * marker popup. (philc) Custom marker popup info is notoriously hard as of
- * Eclipse 3.0.
  *
  * @author Phil Crosby
- * @version 1.0
+ * @author Andrei Loskutov
+ * @version 2.0
  * @since 19.04.2004
  */
-public class DetailsView extends ViewPart {
+public class DetailsView extends AbstractFindbugsView {
 
-	private static DetailsView detailsView;
+	private String description;
 
-	private String description = "";
-
-	private String title = "";
+	private String title;
 
 	private List annotationList;
-
-	private Text priorityTypeArea;
-
-	private String priorityTypeString = "";
 
 	private BugInstance theBug;
 
 	private ISelectionListener selectionListener;
 
-	private SashForm sash;
-
 	// HTML presentation classes that don't depend upon Browser
 	@CheckForNull
-	private StyledText control;
+	private StyledText htmlControl;
 
-	private DefaultInformationControl.IInformationPresenter presenter;
+	private DefaultInformationControl.IInformationPresenterExtension presenter;
 
-	private TextPresentation presentation = new TextPresentation();
+	private TextPresentation presentation;
 
 	@CheckForNull
 	private Browser browser;
 
+	private IFile file;
+
+	private IMarker marker;
+
+	public DetailsView() {
+		super();
+		description = "";
+		title = "";
+		presentation = new TextPresentation();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
-     * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
-	public void createPartControl(Composite parent) {
-        sash = new SashForm(parent, SWT.VERTICAL);
-		priorityTypeArea = new Text(sash, SWT.VERTICAL);
-		priorityTypeArea.setEditable(false);
-		annotationList = new List(sash, SWT.V_SCROLL);
-        annotationList.setToolTipText("Additional information about the selected bug");
+	public Composite createRootControl(Composite parent) {
+		SashForm sash = new SashForm(parent, SWT.VERTICAL | SWT.SMOOTH);
+
+		annotationList = new List(sash, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.BORDER);
+		annotationList.setFont(JFaceResources.getDialogFont());
+		annotationList
+				.setToolTipText("Additional information about the selected bug");
 		annotationList.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-                if (theBug == null)
-					return;
-				int index = annotationList.getSelectionIndex();
-				Iterator<BugAnnotation> theIterator = theBug.annotationIterator();
-                BugAnnotation theAnnotation = theIterator.next();
-				for (int i = 0; i < index; i++)
-					theAnnotation = theIterator.next();
-				if (theAnnotation instanceof SourceLineAnnotation) {
-                    SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
-					IFile file = null;
-					try {
-						IProject project = MarkerUtil.findProjectForWarning(theBug);
-                        if (project == null) return;
-						file = (IFile) MarkerUtil.getUnderlyingResource(theBug, project, sla);
-					} catch (JavaModelException ex) {
-						FindbugsPlugin.getDefault().logException(
-                                ex, "Could not find file for " + theBug.getMessage());
-						return;
-					}
-					if (file == null){
-                        FindbugsPlugin.getDefault().logError("Could not find file for " + theBug.getMessage());
-						return;
-					}
-					HashMap<Object, Object> map = new HashMap<Object, Object>();
-                    map.put(IMarker.LINE_NUMBER, sla.getStartLine());
-				   //  map.put(IDE.EDITOR_ID_ATTR,  org.eclipse.jdt.core.JavaCore;
-					try {
-						IMarker marker = file.createMarker(IMarker.TEXT);
-                        marker.setAttributes(map);
-						IDE.openEditor(getSite().getPage(), marker); // 3.0 API
-						marker.delete();
-					} catch (PartInitException x) {
-                        FindbugsPlugin.getDefault().logException(
-								x, "Could not create marker for " + theBug.getMessage());
-					} catch (CoreException y) {
-						FindbugsPlugin.getDefault().logException(
-                                y, "Could not create marker for " + theBug.getMessage());
-					}
-				}
+			public void widgetSelected(SelectionEvent evnt) {
+				selectInEditor(false);
 			}
-        });
+		});
+		annotationList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				selectInEditor(true);
+			}
+		});
 		try {
-			browser = new Browser(sash, SWT.NONE);
+			browser = new Browser(sash, SWT.NONE | SWT.BORDER);
 			browser.setToolTipText("Description of the selected bug");
-        } catch (SWTError e) {
-			control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-			control.setEditable(false);
-			// Handle control resizing. The HTMLPresenter cares about window
-            // size
+		} catch (SWTError e) {
+			htmlControl = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
+					| SWT.V_SCROLL | SWT.BORDER);
+			htmlControl.setEditable(false);
+			// Handle control resizing. The HTMLPresenter cares about window size
 			// when presenting HTML, so we should redraw the control.
-			control.addControlListener(new ControlAdapter() {
+			htmlControl.addControlListener(new ControlAdapter() {
 				@Override
-                public void controlResized(ControlEvent e) {
+				public void controlResized(ControlEvent evt) {
 					updateDisplay();
 				}
 			});
 
 			try {
 				Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
-				presenter = (IInformationPresenter) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
-
-
+				presenter = (IInformationPresenterExtension) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
 			} catch (Exception e2) {
-				FindbugsPlugin.getDefault().logException(
-						new RuntimeException(e.getMessage(), e), 
-                        "Could not create a org.eclipse.swt.widgets.Composite.Browser");
-            }
+				FindbugsPlugin
+						.getDefault()
+						.logException(new RuntimeException(e.getMessage(), e),
+								"Could not create a org.eclipse.swt.widgets.Composite.Browser");
+			}
 
 		}
-		sash.setWeights(new int[] { 1, 4, 8 });
+		sash.setWeights(new int[] {1, 2 });
 		// Add selection listener to detect click in problems view or in tree
-        // view
-		ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
+		// view
+		ISelectionService theService = getSite().getWorkbenchWindow()
+				.getSelectionService();
 		selectionListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
-                if (theSelection instanceof IStructuredSelection) {
-					Object elt = ((IStructuredSelection) theSelection).getFirstElement();
-					if (elt instanceof IMarker)
-						DetailsView.showMarker((IMarker) elt, false);
-                    if (elt instanceof TreeItem) {
-						IMarker theMarker = BugTreeView.getMarkerForTreeItem((TreeItem) elt);
-						if (theMarker != null)
-							DetailsView.showMarker(theMarker, false);
-                    }
+			public void selectionChanged(IWorkbenchPart thePart,
+					ISelection theSelection) {
+				if (!(theSelection instanceof IStructuredSelection)) {
+					return;
+				}
+				if (!isVisible()) {
+					return;
+				}
+				IMarker theMarker = null;
+				Object elt = ((IStructuredSelection) theSelection)
+						.getFirstElement();
+				if (elt instanceof IMarker) {
+					theMarker = (IMarker) elt;
+				} else if (elt instanceof TreeItem) {
+					theMarker = BugTreeView
+							.getMarkerForTreeItem((TreeItem) elt);
+				}
+				if (theMarker != null) {
+					selectMarker(theMarker);
 				}
 			}
 		};
-        theService.addSelectionListener(selectionListener);
-		DetailsView.detailsView = this;
+		theService.addSelectionListener(selectionListener);
+		return sash;
+	}
 
+	private static void goToLine(IEditorPart editorPart, int lineNumber) {
+		if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+			return;
+		}
+		ITextEditor editor = (ITextEditor) editorPart;
+		IDocument document = editor.getDocumentProvider().getDocument(
+				editor.getEditorInput());
+		if (document != null) {
+			IRegion lineInfo = null;
+			try {
+				// line count internaly starts with 0, and not with 1 like in
+				// GUI
+				lineInfo = document.getLineInformation(lineNumber - 1);
+			} catch (BadLocationException e) {
+				// ignored because line number may not really exist in document,
+				// we guess this...
+			}
+			if (lineInfo != null) {
+				editor.selectAndReveal(lineInfo.getOffset(), lineInfo
+						.getLength());
+			}
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 *
-     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
+	 * @see org.eclipse.ui.IWorkbenchPart#setFocus()
 	 */
 	@Override
 	public void setFocus() {
-        annotationList.setFocus();
+		annotationList.setFocus();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 *
-     * @see org.eclipse.ui.IWorkbenchPart#dispose()
+	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
 	 */
 	@Override
 	public void dispose() {
-        if(selectionListener != null){
-			getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
-					selectionListener);
+		if (selectionListener != null) {
+			getSite().getWorkbenchWindow().getSelectionService()
+					.removeSelectionListener(selectionListener);
 			selectionListener = null;
-        }
-		sash.dispose();
-		detailsView = null;
+		}
+		theBug = null;
+		file = null;
 		super.dispose();
-    }
+	}
 
 	/**
 	 * Updates the control using the current window size and the contents of the
 	 * title and description fields.
-     */
+	 */
 	private void updateDisplay() {
-		String html = ("<b>" + title + "</b><br/>" + description);
+		String html = "<b>" + title + "</b><br/>" + description;
 		setHTMLText(html);
-        priorityTypeArea.setText(this.priorityTypeString);
 	}
 
 	@SuppressWarnings("deprecation")
 	private void setHTMLText(String html) {
-		if (browser != null && !browser.isDisposed())
-            browser.setText(html);
-
-		else {
-			StyledText control = this.control;
-			if (control != null && !control.isDisposed() && presenter != null) {
-                Rectangle size = this.control.getClientArea();
-				html = presenter.updatePresentation(getSite().getShell().getDisplay(), html, presentation, size.width,
+		if (browser != null && !browser.isDisposed()) {
+			browser.setText(html);
+		} else {
+			if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
+				Rectangle size = htmlControl.getClientArea();
+				html = presenter.updatePresentation(getSite().getShell()
+						.getDisplay(), html, presentation, size.width,
 						size.height);
-				control.setText(html);
-                TextPresentation.applyTextPresentation(presentation, control);
+				htmlControl.setText(html);
+				TextPresentation.applyTextPresentation(presentation, htmlControl);
 			}
 		}
 	}
@@ -271,95 +277,168 @@ public class DetailsView extends ViewPart {
 	/**
 	 * Set the content to be displayed.
 	 *
-     * @param title
+	 * @param title
 	 *            the title of the bug
 	 * @param description
 	 *            the description of the bug
-     * @param theBug
-	 * 			  the BugInstance
+	 * @param theBug
+	 *            the BugInstance
 	 * @param priorityTypeString
-	 * 			  A string describing the priority and ategory (e.g. "High Priority Correctness"
-     */
-	public void setContent(String title, String description, BugInstance theBug, String priorityTypeString) {
-		this.title = (title == null) ? "" : title.trim();
-		this.description = (description == null) ? "" : description.trim();
-        this.theBug = theBug;
-		this.priorityTypeString = priorityTypeString;
+	 *            A string describing the priority and ategory (e.g. "High
+	 *            Priority Correctness"
+	 * @param marker
+	 */
+	private void setContent(BugPattern pattern, BugInstance theBug,
+			String priorityTypeString, IMarker marker) {
+		this.marker = marker;
+		if (pattern != null) {
+			String shortDescription = pattern.getShortDescription();
+			String detailText = pattern.getDetailText();
+			title = (shortDescription == null) ? "" : shortDescription.trim();
+			description = (detailText == null) ? "" : detailText.trim();
+		} else {
+			title = "";
+			description = "";
+		}
+		this.theBug = theBug;
+		this.file = (IFile) (marker.getResource() instanceof IFile ? marker
+				.getResource() : null);
+		if (file == null) {
+			FindbugsPlugin.getDefault().logError(
+					"Could not find file for " + theBug.getMessage());
+		}
+		setContentDescription(priorityTypeString);
+		showAnnotations(theBug);
 		updateDisplay();
+		IViewPart viewPart = getSite().getPage()
+			.findView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
+		if (viewPart instanceof UserAnnotationsView) {
+			UserAnnotationsView.showMarker(marker);
+		}
 	}
-
 
 	/**
 	 * Show the details of a FindBugs marker in the details view. Brings the
 	 * view to the foreground.
-     *
+	 *
 	 * @param marker
 	 *            the FindBugs marker containing the bug pattern to show details
 	 *            for
-     * @param focus
-	 *            True if you want to set the focus to this view - but it won't if the user
-	 *            annotations view is already selected
 	 */
-    public static void showMarker(IMarker marker, boolean focus) {
+	public static void showMarker(IMarker marker) {
+		IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow()
+				.getActivePage();
+		// first find view, if it is already open - this does not steal focus
+		// from editor
+		IViewPart viewPart = page.findView(FindbugsPlugin.DETAILS_VIEW_ID);
+		if (!(viewPart instanceof DetailsView)) {
+			// view is not shown => open it in the page
+			viewPart = AbstractFindbugsView.showDetailsView();
+		}
+		if (viewPart instanceof DetailsView) {
+			showInView(marker, (DetailsView) viewPart);
+		}
+	}
 
-		// Obtain the current workbench page, and show the details view
-		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-		if (pages.length > 0) {
-            try {
-				if (focus && !(UserAnnotationsView.isVisible()))
-					pages[0].showView("de.tobject.findbugs.view.detailsview");
-				if(detailsView == null)
-                    return;
-				String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-				String priorityTypeString = marker.getAttribute(FindBugsMarker.PRIORITY_TYPE, "");
-				DetectorFactoryCollection.instance().ensureLoaded(); // fix
-                // bug#1530195
-				BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
-				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-				if (pattern != null) {
-                    String shortDescription = pattern.getShortDescription();
-					String detailText = pattern.getDetailText();
-					if(DetailsView.getDetailsView() != null)
-						DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
-                }
+	/**
+	 * @param marker
+	 * @param detailsView
+	 */
+	private static void showInView(IMarker marker, DetailsView detailsView) {
+		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
+		String priorityTypeString = marker.getAttribute(
+				FindBugsMarker.PRIORITY_TYPE, "");
+		DetectorFactoryCollection.instance().ensureLoaded(); // fix
+																// bug#1530195
+		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
+		BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+		detailsView.setContent(pattern, bug, priorityTypeString, marker);
+		detailsView.activate();
+	}
 
-				List anList = DetailsView.getDetailsView().annotationList;
-				anList.removeAll();
+	private void selectMarker(IMarker newMarker) {
+		if (!isVisible()) {
+			showMarker(newMarker);
+		} else {
+			showInView(newMarker, this);
+		}
+	}
 
-				// bug may be null, but if so then the error has already been
-				// logged.
-				if (bug != null) {
-                    Iterator<BugAnnotation> it = bug.annotationIterator();
-					while (it.hasNext()) {
-						BugAnnotation ba = it.next();
-						anList.add(ba.toString());
-                    }
-				}
+	/**
+	 * @param bug
+	 */
+	private void showAnnotations(BugInstance bug) {
+		annotationList.removeAll();
 
-			} catch (PartInitException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not update bug details view");
+		// bug may be null, but if so then the error has already been
+		// logged.
+		if (bug != null) {
+			Iterator<BugAnnotation> it = bug.annotationIterator();
+			while (it.hasNext()) {
+				BugAnnotation ba = it.next();
+				annotationList.add(ba.toString());
 			}
-        }
+		}
 	}
 
 	/**
-	 * Accessor for the details view associated with this plugin.
 	 *
-     * @return the details view, or null if it has not been initialized yet
 	 */
-	public static DetailsView getDetailsView() {
-		return detailsView;
-    }
+	private void selectInEditor(boolean openEditor) {
+		if (theBug == null || file == null) {
+			return;
+		}
+		IEditorPart activeEditor = getSite().getPage().getActiveEditor();
+		IEditorInput input = activeEditor != null? activeEditor.getEditorInput() : null;
 
-	/**
-	 * Set the details view for the rest of the plugin. Details view should call
-	 * this when it has been initialized.
-     *
-	 * @param view
-	 *            the details view
-	 */
-    public static void setDetailsView(DetailsView view) {
-		detailsView = view;
+		if (openEditor && !matchInput(input)) {
+			try {
+				activeEditor = IDE
+						.openEditor(getSite().getPage(), file);
+				input = activeEditor.getEditorInput();
+			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not open editor for " + theBug.getMessage());
+			}
+		}
+		if(matchInput(input)) {
+			int startLine = getLineToSelect();
+			goToLine(activeEditor, startLine);
+		}
 	}
 
+	/**
+	 * @param input
+	 * @return
+	 */
+	private boolean matchInput(IEditorInput input) {
+		return (input instanceof IFileEditorInput)
+				&& file.equals(((IFileEditorInput) input).getFile());
+	}
+
+	/**
+	 * @return
+	 */
+	private int getLineToSelect() {
+		int index = annotationList.getSelectionIndex();
+		Iterator<BugAnnotation> theIterator = theBug.annotationIterator();
+		BugAnnotation theAnnotation = theIterator.next();
+		for (int i = 0; i < index; i++) {
+			theAnnotation = theIterator.next();
+		}
+		if (!(theAnnotation instanceof SourceLineAnnotation)) {
+			// return the line from our initial marker
+			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
+		}
+		SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
+		int startLine = sla.getStartLine();
+		return startLine;
+	}
+
+	/**
+	 * @return the marker
+	 */
+	public IMarker getMarker() {
+		return marker;
+	}
 }

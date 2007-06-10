@@ -71,14 +71,13 @@ import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
-	* Execute FindBugs on a collection of Java resources in a project.
-	*
-	* @author Peter Friese
-	* @version 1.0
-	* @since 26.09.2003
-	*/
+ * Execute FindBugs on a collection of Java resources in a project.
+ *
+ * @author Peter Friese
+ * @version 1.0
+ * @since 26.09.2003
+ */
 public class FindBugsWorker {
-	private static final boolean INCREMENTAL_UPDATE = false;
 
 	/** Controls debugging. */
 	public static boolean DEBUG;
@@ -115,7 +114,7 @@ public class FindBugsWorker {
 	 * @param incremental TODO
 	 * @throws CoreException
 	 */
-	public void work(Collection files, boolean incremental) throws CoreException {
+	public void work(Collection<IFile> files, boolean incremental) throws CoreException {
 		if (files == null) {
 			FindbugsPlugin.getDefault().logError("No files to build");
 			return;
@@ -132,11 +131,11 @@ public class FindBugsWorker {
 		Set<IPath> outLocations = createOutputLocations();
 
 		Project findBugsProject = new Project();
-		Iterator iter = files.iterator();
+		Iterator<IFile> iter = files.iterator();
 		Map<File, String> outputFiles = new HashMap<File, String>();
 		while (iter.hasNext()) {
 			// get the resource
-			IResource res = (IResource) iter.next();
+			IFile res = iter.next();
 			if (res == null) {
 				continue;
 			}
@@ -163,7 +162,7 @@ public class FindBugsWorker {
 			else if (Util.isJavaFile(res)) {
 				// this is a .java file, so get the corresponding .class file(s)
 				// get the compilation unit for this file
-				ICompilationUnit cu = JavaCore.createCompilationUnitFrom((IFile)res);
+				ICompilationUnit cu = JavaCore.createCompilationUnitFrom(res);
 				if (cu == null) {
 					if (DEBUG) {
 						FindbugsPlugin.getDefault().logError("NULL Compilation Unit for "+res.getName());
@@ -250,9 +249,9 @@ public class FindBugsWorker {
 			updateBugCollection(findBugsProject, bugReporter, incremental);
 
 			// Redisplay markers (this makes sure version information can get in)
-			Iterator it = files.iterator();
+			Iterator<IFile> it = files.iterator();
 			if(it.hasNext()){
-				IResource res = (IResource) it.next();
+				IResource res = it.next();
 				MarkerUtil.redisplayMarkersWithoutProgressDialog(res.getProject());
 			}
 		}

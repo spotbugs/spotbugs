@@ -46,13 +46,14 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Pulldown toolbar action for classifying a FindBugs warning
- * as "bug" or "not a bug". 
- * 
+ * as "bug" or "not a bug".
+ *
  * @author David Hovemeyer
  */
 public class AccuracyClassificationPulldownAction
 		implements IWorkbenchWindowPulldownDelegate2 {
 
+	protected static boolean DEBUG;
 	private Menu menu;
 	private MenuItem isBugItem;
 	private MenuItem notBugItem;
@@ -115,7 +116,9 @@ public class AccuracyClassificationPulldownAction
 			public void menuShown(MenuEvent e) {
 				// Before showing the menu, sync its contents
 				// with the current BugInstance (if any)
-				System.out.println("Synchronizing menu!");
+				if(DEBUG) {
+					System.out.println("Synchronizing menu!");
+				}
 				syncMenu();
 			}
 		});
@@ -151,7 +154,9 @@ public class AccuracyClassificationPulldownAction
 			try {
 				UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
 				if (!MarkerUtil.displayWarning(warning, userPrefs.getFilterSettings())) {
-					System.out.println("Deleting marker for false warning!");
+					if(DEBUG) {
+						System.out.println("Deleting marker for false warning!");
+					}
 					marker.delete();
 				}
 			} catch (CoreException e) {
@@ -189,21 +194,26 @@ public class AccuracyClassificationPulldownAction
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		System.out.println("Selection is " + selection.getClass().getName());
+		if(DEBUG) {
+			System.out.println("Selection is " + selection.getClass().getName());
+		}
 
 		bugInstance = null;
 		marker = MarkerUtil.getMarkerFromSelection(selection);
 
 		if (marker == null) {
-			// No marker selected. 
+			// No marker selected.
 			return;
 		}
-
-		System.out.println("Found a marker!");
+		if(DEBUG) {
+			System.out.println("Found a marker!");
+		}
 
 		bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
 		if (bugInstance != null) {
-			System.out.println("Found BugInstance for FindBugs warning marker!");
+			if(DEBUG) {
+				System.out.println("Found BugInstance for FindBugs warning marker!");
+			}
 		}
 	}
 
@@ -225,9 +235,11 @@ public class AccuracyClassificationPulldownAction
 				isBugItem.setSelection(isBug);
 				notBugItem.setSelection(!isBug);
 			}
-		} else { 
+		} else {
 			// No bug instance, so uncheck and disable the menu items
-			//System.out.println("No bug instance found, disabling menu items");
+			if(DEBUG) {
+				System.out.println("No bug instance found, disabling menu items");
+			}
 			isBugItem.setEnabled(false);
 			notBugItem.setEnabled(false);
 			isBugItem.setSelection(false);

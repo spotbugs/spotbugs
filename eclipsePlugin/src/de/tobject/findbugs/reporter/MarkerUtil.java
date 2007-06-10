@@ -1,22 +1,22 @@
 /*
- * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003 - 2004, Peter Friese
- * Copyright (C) 2004-2005, University of Maryland
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+	* FindBugs Eclipse Plug-in.
+	* Copyright (C) 2003 - 2004, Peter Friese
+	* Copyright (C) 2004-2005, University of Maryland
+	*
+	* This library is free software; you can redistribute it and/or
+	* modify it under the terms of the GNU Lesser General Public
+	* License as published by the Free Software Foundation; either
+	* version 2.1 of the License, or (at your option) any later version.
+	*
+	* This library is distributed in the hope that it will be useful,
+	* but WITHOUT ANY WARRANTY; without even the implied warranty of
+	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	* Lesser General Public License for more details.
+	*
+	* You should have received a copy of the GNU Lesser General Public
+	* License along with this library; if not, write to the Free Software
+	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+	*/
 
 package de.tobject.findbugs.reporter;
 
@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IField;
@@ -45,7 +44,6 @@ import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
-import org.eclipse.jdt.internal.core.NamedMember;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -55,7 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.view.BugTreeView;
+import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -68,13 +66,22 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
- * Utility methods for converting FindBugs BugInstance objects
- * into Eclipse markers.
- *
- * @author Peter Friese
- * @author David Hovemeyer
- */
-public abstract class MarkerUtil {
+	* Utility methods for converting FindBugs BugInstance objects
+	* into Eclipse markers.
+	*
+	* @author Peter Friese
+	* @author David Hovemeyer
+	*/
+public final class MarkerUtil {
+
+	final static Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
+
+	/**
+	 * don't instantiate an utility class
+	 */
+	private MarkerUtil() {
+		super();
+	}
 
 	/**
 	 * Create an Eclipse marker for given BugInstance.
@@ -85,19 +92,20 @@ public abstract class MarkerUtil {
 	public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
 		if (bug == null) {
 			FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
-            return;
+			return;
 		}
 		if (project == null) {
 			FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
-            return;
+			return;
 		}
 		try {
 			if (!project.hasNature(JavaCore.NATURE_ID)) {
-                FindbugsPlugin.getDefault().logException(new IllegalArgumentException(), "project isn't Java");
+				FindbugsPlugin.getDefault().logException(
+						new IllegalArgumentException(), "project isn't Java");
 				return;
 			}
 		} catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
+			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
 		}
 		String className = null;
 		String packageName = null;
@@ -157,7 +165,8 @@ public abstract class MarkerUtil {
 		}
 	}
 
-	private static void addMarker(BugInstance bug, IProject project, IResource resource, int startLine, BugCollection theCollection) {
+	private static void addMarker(BugInstance bug, IProject project,
+			IResource resource, int startLine, BugCollection theCollection) {
 		if (Reporter.DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
@@ -170,33 +179,39 @@ public abstract class MarkerUtil {
 					null,  // scheduling rule (null if there are no scheduling restrictions)
 					0,     // flags (could specify IWorkspace.AVOID_UPDATE)
 					null); // progress monitor (null if progress reporting is not desired)
-			}
-			catch (CoreException e) {
+			} catch (CoreException e) {
 				FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
 			}
 		}
 
-	final static 	Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
 	 *
-	 * @param bug     the BugInstance
-	 * @param project the project
-	 * @param sla     the SourceLineAnnotation to get the resource for. If null, use the primary source line annotation.
+	 * @param bug
+	 *            the BugInstance
+	 * @param project
+	 *            the project
+	 * @param sla
+	 *            the SourceLineAnnotation to get the resource for. If null, use
+	 *            the primary source line annotation.
 	 * @return the IResource representing the Java class
 	 * @throws JavaModelException
 	 */
-	public static @CheckForNull IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla) throws JavaModelException
-		 {
+	private static @CheckForNull
+	IResource getUnderlyingResource(BugInstance bug, IProject project,
+			SourceLineAnnotation sla) throws JavaModelException {
 
-		if (!FindbugsPlugin.isJavaProject(project)) return null;
+		if (!Util.isJavaProject(project)) {
+			return null;
+		}
 
 		SourceLineAnnotation primarySourceLineAnnotation;
-		if(sla == null)
+		if(sla == null) {
 			primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
-		else
+		} else {
 			primarySourceLineAnnotation = sla;
+		}
 		PackageMemberAnnotation packageAnnotation = null;
 		String packageName = null;
 		String qualifiedClassName = null;
@@ -206,8 +221,7 @@ public abstract class MarkerUtil {
 				packageName = packageAnnotation.getPackageName();
 				qualifiedClassName = packageAnnotation.getClassName();
 			}
-		}
-		else {
+		} else {
 			packageName = primarySourceLineAnnotation.getPackageName();
 			qualifiedClassName = primarySourceLineAnnotation.getClassName();
 		}
@@ -220,7 +234,6 @@ public abstract class MarkerUtil {
 			+ packageName + ", " //$NON-NLS-1$
 			+ qualifiedClassName);
 		}
-
 
 		Matcher m = fullName.matcher(qualifiedClassName);
 		IType type;
@@ -354,18 +367,18 @@ public abstract class MarkerUtil {
 				while (scanner.getNextToken() != ITerminalSymbols.TokenNameEOF) {
 					// do nothing, just wait for the end of stream
 				}
-			}
-			catch (InvalidInputException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not init scanner for type: " + source);
+			} catch (InvalidInputException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not init scanner for type: " + source);
 			}
 			return scanner;
 		}
 		return null;
 	}
 
-	public static int findChildSourceLine(IJavaElement javaElement, String name) throws JavaModelException {
+	public static int findChildSourceLine(IJavaElement javaElement, String name)
+			throws JavaModelException {
 		if (javaElement == null) {
-			//new Exception("trace: javaElement is null").printStackTrace();
 			return -1;
 		}
 		char firstChar = name.charAt(0);
@@ -381,8 +394,7 @@ public abstract class MarkerUtil {
 		try {
 			int innerNumber = Integer.parseInt(name);
 			return findInnerAnonymousClassSourceLine(javaElement, innerNumber);
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			FindbugsPlugin.getDefault().logException(
 					e, "Could not find source line information for class member");
 		}
@@ -439,22 +451,6 @@ public abstract class MarkerUtil {
 		return -1;
 	}
 
-	private static void dump(IJavaElement javaElement, int indentation) {
-		try {
-		for(int i = 0; i < indentation; i++) System.out.print(" ");
-		System.out.println(javaElement.getElementName() + " " + javaElement.getClass().getName());
-		if (javaElement instanceof NamedMember) {
-			for(int i = 0; i < indentation; i++) System.out.print(" ");
-			System.out.println("--> " + ((NamedMember)javaElement).getFullyQualifiedName('.', false));
-
-		}
-		if (javaElement instanceof IParent) 	for(IJavaElement child : ((IParent) javaElement).getChildren())
-				dump(child, indentation+1);
-		} catch (Exception e) {
-			FindbugsPlugin.getDefault().logException(e, "Dump exception");
-		}
-
-	}
 	/**
 	 * @param javaElement
 	 * @param name
@@ -462,7 +458,8 @@ public abstract class MarkerUtil {
 	 * @return
 	 * @throws JavaModelException
 	 */
-	public static int findInnerClassSourceLine(IJavaElement javaElement, String name) throws JavaModelException {
+	public static int findInnerClassSourceLine(IJavaElement javaElement,
+			String name) throws JavaModelException {
 		String elemName = javaElement.getElementName();
 		if (name.equals(elemName)) {
 			if (javaElement instanceof SourceType) {
@@ -486,18 +483,22 @@ public abstract class MarkerUtil {
 	/**
 	 * Remove all FindBugs problem markers for given resource.
 	 *
-     * @param res the resource
+	 * @param res the resource
 	 * @throws CoreException
 	 */
 	public static void removeMarkers(IResource res) throws CoreException {
-        // remove any markers added by our builder
-		res.deleteMarkers(
-			FindBugsMarker.NAME,
-			true,
-            IResource.DEPTH_INFINITE);
-		BugTreeView bugTreeView = BugTreeView.getBugTreeView();
-		if (bugTreeView != null && res instanceof IProject)
-			bugTreeView.clearTree((IProject) res);
+		// remove any markers added by our builder
+		// This triggers resource update on IResourceChangeListener's (BugTreeView)
+		res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+// if(!(res instanceof IProject)) {
+//			return;
+//		}
+//		IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
+//		IViewPart viewPart = page.findView(FindbugsPlugin.TREE_VIEW_ID);
+//		if(viewPart instanceof BugTreeView) {
+//			BugTreeView treeView = (BugTreeView) viewPart;
+//			treeView.clearTree((IProject) res);
+//		}
 	}
 
 	/**
@@ -524,7 +525,9 @@ public abstract class MarkerUtil {
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
-		if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+		if (!Util.isJavaProject(project)) {
+			throw new IllegalArgumentException("Not a Java project");
+		}
 
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
 
@@ -575,7 +578,9 @@ public abstract class MarkerUtil {
 
 	public static void redisplayMarkersWithoutProgressDialog(final IProject project) {
 		try {
-			if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+			if (!Util.isJavaProject(project)) {
+				throw new IllegalArgumentException("Not a Java project");
+			}
 
 			// Get user preferences for project,
 			// so we know what to diplay
@@ -587,8 +592,8 @@ public abstract class MarkerUtil {
 				// Remove old markers
 				MarkerUtil.removeMarkers(project);
 				// Display warnings
-				for (Iterator i = bugCollection.iterator(); i.hasNext();) {
-					BugInstance bugInstance = (BugInstance) i.next();
+				for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
+					BugInstance bugInstance = i.next();
 					if (displayWarning(bugInstance, userPrefs.getFilterSettings())) {
 						MarkerUtil.createMarker(bugInstance, project, bugCollection);
 					}
@@ -644,21 +649,12 @@ public abstract class MarkerUtil {
 				FindbugsPlugin.getDefault().logError("Could not get BugCollection for FindBugs marker");
 				return null;
 			}
-			/*
-			System.out.println(marker.getAttribute(IMarker.LINE_NUMBER));
-			try{
-				System.out.println(marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER));
-			}
-			catch(Exception e){
-				System.out.println(e.getMessage());
-			}
-			 */
 
 			String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
 			String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-			Integer lineNumber = (Integer)marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER);
+			Integer lineNumber = (Integer)marker.getAttribute(IMarker.LINE_NUMBER);
 			if (bugId == null || bugType == null || lineNumber == null) {
-                FindbugsPlugin.getDefault().logError("Could not get find attributes for marker " + marker + ": (" + bugId + ", " + bugType +", " + lineNumber+")");
+				FindbugsPlugin.getDefault().logError("Could not get find attributes for marker " + marker + ": (" + bugId + ", " + bugType +", " + lineNumber+")");
 				return null;
 			}
 			 BugInstance bug = bugCollection.findBug(
@@ -675,17 +671,6 @@ public abstract class MarkerUtil {
 			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
 			return null;
 		}
-	}
-
-	public static @CheckForNull IProject findProjectForWarning(BugInstance warning)
-	{
-		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for(IProject proj : projectList)
-		{
-			if(proj.isAccessible() && FindbugsPlugin.isJavaProject(proj) && findMarkerForWarning(proj, warning) != null)
-				return proj;
-		}
-		return null;
 	}
 
 	/**
@@ -707,15 +692,16 @@ public abstract class MarkerUtil {
 			if (resource == null) {
 				FindbugsPlugin.getDefault().logError("Could not find resource for " + warning);
 				return null;
-            }
+			}
 			IMarker[] markerList =
 				resource.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 			for (int i = 0; i < markerList.length; ++i) {
 				IMarker marker = markerList[i];
 				String markerUID = marker.getAttribute(FindBugsMarker.UNIQUE_ID, "");
 
-				if (warningUID.equals(markerUID))
+				if (warningUID.equals(markerUID)) {
 					return marker;
+				}
 			}
 			return null;
 		} catch (JavaModelException e) {
@@ -740,9 +726,13 @@ public abstract class MarkerUtil {
 
 			for (Iterator i = structuredSelection.iterator(); i.hasNext(); ) {
 				Object selectedObj = i.next();
-				//System.out.println("\tSelection element: " + selectedObj.getClass().getName());
+				if(Reporter.DEBUG) {
+					System.out.println("\tSelection element: " + selectedObj.getClass().getName());
+				}
 				if (selectedObj instanceof IMarker) {
-					System.out.println("Selection element is an IMarker!");
+					if(Reporter.DEBUG) {
+						System.out.println("Selection element is an IMarker!");
+					}
 					return (IMarker) selectedObj;
 				}
 			}

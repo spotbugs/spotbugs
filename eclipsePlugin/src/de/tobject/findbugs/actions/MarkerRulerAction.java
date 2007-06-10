@@ -1,21 +1,21 @@
-/* 
- * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003 - 2004, Peter Friese
- *  
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+/*
+	* FindBugs Eclipse Plug-in.
+	* Copyright (C) 2003 - 2004, Peter Friese
+	*
+	* This library is free software; you can redistribute it and/or
+	* modify it under the terms of the GNU Lesser General Public
+	* License as published by the Free Software Foundation; either
+	* version 2.1 of the License, or (at your option) any later version.
+	*
+	* This library is distributed in the hope that it will be useful,
+	* but WITHOUT ANY WARRANTY; without even the implied warranty of
+	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	* Lesser General Public License for more details.
+	*
+	* You should have received a copy of the GNU Lesser General Public
+	* License along with this library; if not, write to the Free Software
+	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+	*/
 
 package de.tobject.findbugs.actions;
 
@@ -50,27 +50,32 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
- * An action that can display a bug marker's details in the FindBugs details view.
- * TODO (PeterF) We should replace this action with a marker resolution or a marker help contribution.
- * 
- * @author Phil Crosby
- * @author Peter Friese
- * @version 1.0
- * @since 20.4.2004
- */
+	* An action that can display a bug marker's details in the FindBugs details view.
+	* TODO (PeterF) We should replace this action with a marker resolution or a marker help contribution.
+	*
+	* @author Phil Crosby
+	* @author Peter Friese
+	* @version 1.0
+	* @since 20.4.2004
+	*/
 public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseListener, IMenuListener {
 
 	IVerticalRulerInfo ruler;
 	ITextEditor editor;
 
 	/** Contains the markers of the currently selected line in the ruler margin. */
-	ArrayList<IMarker> markers = new ArrayList<IMarker>();
+	ArrayList<IMarker> markers;
 
 	/**
-	 * The action sent to this delegate. Enable and disable it based upon whether 
+	 * The action sent to this delegate. Enable and disable it based upon whether
 	 * there are FindBugs markers on the current line
 	 */
 	IAction action;
+
+	public MarkerRulerAction() {
+		super();
+		markers = new ArrayList<IMarker>();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction, org.eclipse.ui.IEditorPart)
@@ -89,7 +94,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 			}
 			if (editor instanceof ITextEditorExtension) {
 				((ITextEditorExtension) editor).removeRulerContextMenuListener(this);
-			}				
+			}
 		}
 
 		// Start listening to the current editor
@@ -134,6 +139,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		this.action = action;
 	}
 
 	/**
@@ -186,9 +192,11 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 			IMarker marker = markers.get(0);
 
 			try{
-			  FindbugsPlugin.showMarker(marker, false, true);
-            } catch(Exception e){
-				FindbugsPlugin.getDefault().logException(e, "Exception on marker user annotations view");}
+			  FindbugsPlugin.showMarker(marker);
+			} catch (Exception e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Exception on marker user annotations view");
+			}
 		}
 	}
 
@@ -249,13 +257,13 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	}
 
 	/*
-	 * @see MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)	
+	 * @see MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseDoubleClick(MouseEvent e) {
 	}
 
 	/*
-	 * @see MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)	
+	 * @see MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
 	 */
 	public void mouseDown(MouseEvent e) {
 		// Only capture left clicks.

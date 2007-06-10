@@ -22,31 +22,30 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+
+import de.tobject.findbugs.util.Util;
 
 /**
  * Callback object responsible for saving the uncomitted state
  * of any FindBugs-enabled projects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindbugsSaveParticipant implements ISaveParticipant {
 
 	public void doneSaving(ISaveContext context) {
-//		System.out.println("done saving!");
+		// noop
 	}
 
-	public void prepareToSave(ISaveContext context) throws CoreException {
-//		System.out.println("preparing!");
+	public void prepareToSave(ISaveContext context) {
+		// noop
 	}
 
 	public void rollback(ISaveContext context) {
-//		System.out.println("rollback!");
+		// noop
 	}
 
-	public void saving(ISaveContext context) throws CoreException {
-//		System.out.println("saving, kind == " + context.getKind());
-
+	public void saving(ISaveContext context) {
 		switch (context.getKind()) {
 		case ISaveContext.FULL_SAVE:
 			fullSave();
@@ -61,22 +60,23 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
 
 	private void fullSave() {
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for(IProject project : projectList) 
-			if(project.isAccessible() && FindbugsPlugin.isJavaProject(project)) {
+		for(IProject project : projectList) {
+			if(project.isAccessible() && Util.isJavaProject(project)) {
 			saveBugCollection(project);
+		}
 		}
 	}
 
 	private void saveBugCollection(IProject project) {
-		if (project.isAccessible())
-		try {
-//			System.out.println("Saving project " + project.getName());
-			FindbugsPlugin.saveCurrentBugCollection(project, null);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not save bug collection for project " + project.getName());
+		if (project.isAccessible()) {
+			try {
+				FindbugsPlugin.saveCurrentBugCollection(project, null);
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				FindbugsPlugin.getDefault().logException(
+						e, "Could not save bug collection for project " + project.getName());
+			}
 		}
 	}
 

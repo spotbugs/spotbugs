@@ -1,9 +1,20 @@
+Release 1.2.2 - major code cleanup and refactoring by Andrei Loskutov
+- fixed non-Eclipse-like behavoir of view selection/activation/opening (work in progress)
+- bud tree view monitors resource changes now
+- refactoring of all FindBugs views
+- created new icons for findbugs action and views
+- created new FindBugs perspective
+- fixed popup contribution for the problems view (was never functional)
+- no system.out.println callls without if(DEBUG) flag
+- no printStackTrace() callls without if(DEBUG) flag
+- other code cleanup
+
 Release 0.1.0 - some enhancements by Peter Friese
 Notes:
-- The resource navigator will now display the FindBugs context menu and the 
+- The resource navigator will now display the FindBugs context menu and the
   FindBugs properties page. However, both will only be active on Java projects.
 - FindBugs problem markers will be displayed as a little bug icon in the icon
-  bar of the editor. Please note that it is NOT possible to use custom icons in 
+  bar of the editor. Please note that it is NOT possible to use custom icons in
   the task list - Find Bugs problem markers will be displayed with WARNING severity.
   TODO: make this configurable on the property page (and maybe also on a a preference
   page)
@@ -41,14 +52,14 @@ Version: 24-09-2003
 Notes:
 - Project will be fully scanned when the plug-in is activated.
 - Our markers will be removed if the plug-in is disabled.
-- The problem marker has a more friendly name ("FindBugs Problem") and is no 
+- The problem marker has a more friendly name ("FindBugs Problem") and is no
   longer a subordinate of the Java problem marker.
 
 Version: 26-08-2003
 Notes:
  - As of today, the core findbugs files are located in the plug-in "edu.umd.cs.findbugs",
    from where they are referenced by our plug-in de.tobject.findbugs.
- 
+
 Version: 25-08-2003
 Notes:
  - The markers will now also show up in the overview ruler.

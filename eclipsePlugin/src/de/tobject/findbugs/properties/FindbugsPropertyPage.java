@@ -129,6 +129,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private ExtendedPreferences origExtendedPreferences;
 	private ExtendedPreferences currentExtendedPreferences;
 	private EffortPlaceHolder[] effortLevels;
+	protected static boolean DEBUG;
 
 	/**
 	 * Constructor for FindbugsPropertyPage.
@@ -182,7 +183,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				String data = minPriorityCombo.getText();
-				System.out.println("Minimum priority changed to " + data + "!");
+				if(DEBUG) {
+					System.out.println("Minimum priority changed to " + data + "!");
+				}
 				currentUserPreferences.getFilterSettings().setMinPriority(data);
 			}
 		});
@@ -407,8 +410,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
 		Set<String>result = new LinkedHashSet<String>();
-		for (FilePlaceHolder holder : filters) 
+		for (FilePlaceHolder holder : filters) {
 			result.add(holder.getFile().getProjectRelativePath().toString());
+		}
 
 		return result;
 	}
@@ -509,7 +513,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 			checkBox.addListener(SWT.Selection,
 				new Listener(){
 					public void handleEvent(Event e){
-						System.out.println("Category preferences changed!");
+						if(DEBUG) {
+							System.out.println("Category preferences changed!");
+						}
 						syncSelectedCategories();
 						populateAvailableRulesTable(project);
 					}
@@ -559,7 +565,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
 
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				System.out.println("Detector selection changed!");
+				if(DEBUG) {
+					System.out.println("Detector selection changed!");
+				}
 				syncUserPreferencesWithTable();
 			}
 		});
@@ -635,8 +643,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private boolean reportsInEnabledCategory(DetectorFactory factory) {
 		for (Iterator i = factory.getReportedBugPatterns().iterator(); i.hasNext();) {
 			BugPattern pattern = (BugPattern) i.next();
-			if (currentUserPreferences.getFilterSettings().containsCategory(pattern.getCategory()))
+			if (currentUserPreferences.getFilterSettings().containsCategory(pattern.getCategory())) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -654,13 +663,16 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 			// Only configure non-hidden factories
 			if (factory.isHidden()) {
-				//System.out.println("Factory " + factory.getFullName() + " is hidden");
+				if(DEBUG) {
+					System.out.println("Factory " + factory.getFullName() + " is hidden");
+				}
 				continue;
 			}
 
 			// Only add items for detectors which report in currently-enabled categories
-			if (!reportsInEnabledCategory(factory))
+			if (!reportsInEnabledCategory(factory)) {
 				continue;
+			}
 
 			allAvailableList.add(factory);
 			addBugsAbbreviation(factory);
@@ -741,7 +753,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file.
 		if (!currentUserPreferences.equals(origUserPreferences)) {
-			//System.out.println("User preferences for project changed!");
+			if(DEBUG) {
+				System.out.println("User preferences for project changed!");
+			}
 			try {
 				FindbugsPlugin.saveUserPreferences(project, currentUserPreferences);
 			} catch (CoreException e) {
@@ -754,10 +768,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 			// If so, we need to redisplay warnings.
 			if (!currentUserPreferences.getFilterSettings().equals(
 					origUserPreferences.getFilterSettings())) {
-				//System.out.println("Filter setting for project changed!");
+				if(DEBUG) {
+					System.out.println("Filter setting for project changed!");
+				}
 				filterOptionsChanged = true;
 			}
-		} 
+		}
 		if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
 			try {
 				// If user prefs do not exist save them to be sure a base prefs
@@ -791,7 +807,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 
 		if (result && filterOptionsChanged) {
-			//System.out.println("Redisplaying markers!");
+			if(DEBUG) {
+				System.out.println("Redisplaying markers!");
+			}
 			MarkerUtil.redisplayMarkers(project, getShell());
 		}
 
@@ -809,8 +827,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		boolean result = false;
 
 		try {
-			if (this.project.hasNature(FindbugsPlugin.NATURE_ID))
+			if (this.project.hasNature(FindbugsPlugin.NATURE_ID)) {
 				result = true;
+			}
 		}
 		catch (CoreException e) {
 			System.err.println("Exception: " + e); //$NON-NLS-1$
@@ -827,10 +846,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 		try {
 			monitor.run(true, true, new IRunnableWithProgress() {
 
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {					
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					try {
 						getProject().build(IncrementalProjectBuilder.CLEAN_BUILD, FindbugsPlugin.BUILDER_ID, null, monitor);
-					} catch (OperationCanceledException e) { 
+					} catch (OperationCanceledException e) {
 						// Do nothing when operation cancelled.
 					}catch (CoreException e) {
 						FindbugsPlugin.getDefault().logException(e,
@@ -844,7 +863,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			"Error while runnning FindBugs builder for project");
 		} catch (InterruptedException e) {
 			FindbugsPlugin.getDefault().logException(e,
-			"Findbugs builder was interrupted");	
+			"Findbugs builder was interrupted");
 		}
 	}
 
@@ -1148,7 +1167,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	/**
 	 * Helper class to hold an effort level and internationalizable label value.
-	 * 
+	 *
 	 * @author Peter Hendriks
 	 */
 	private static final class EffortPlaceHolder extends WorkbenchAdapter
