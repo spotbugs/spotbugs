@@ -37,7 +37,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen == MONITORENTER && stack.getStackDepth() > 0) {
+		if (seen == MONITORENTER) {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			String signature = top.getSignature();
 			Object constant = top.getConstant();
