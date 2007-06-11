@@ -1513,10 +1513,10 @@ public class OpcodeStack implements Constants2
 				 } else if ("()V".equals(signature)) {
 					 appenderValue = "";
 				 }
-			 } else if ("toString".equals(methodName)) {
+			 } else if ("toString".equals(methodName) && getStackDepth() >= 1) {
 				 Item i = getStackItem(0);
 				 appenderValue = (String)i.getConstant();
-			 } else if ("append".equals(methodName) && signature.indexOf("II)") == -1) {
+			 } else if ("append".equals(methodName) && signature.indexOf("II)")  == -1 && getStackDepth() >= 2) {
 				 sbItem = getStackItem(1);
 				 Item i = getStackItem(0);
 				 Object sbVal = sbItem.getConstant();
