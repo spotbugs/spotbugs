@@ -89,7 +89,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 	 * @param kind TODO
 	 * @throws CoreException
 	 */
-	private void doBuild(final Map args, final IProgressMonitor monitor, int kind) throws CoreException {
+	private void doBuild(final Map<?,?> args, final IProgressMonitor monitor, int kind) throws CoreException {
 		AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(this);
 		Collection<IFile> files = collector.getFiles();
 		FindBugsWorker worker = new FindBugsWorker(this.getProject(), monitor);

@@ -97,8 +97,8 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 			IRunnableWithProgress r = new IRunnableWithProgress() {
 				public void run(IProgressMonitor pm) throws InvocationTargetException {
 					try {
-						for (Iterator it = selection.iterator(); it.hasNext();) {
-                            Object resource = ((IAdaptable) it.next()).getAdapter(IResource.class);
+						for (Iterator<IAdaptable> it = selection.iterator(); it.hasNext();) {
+                            Object resource = it.next().getAdapter(IResource.class);
 							IResource res = (resource instanceof IResource ? (IResource) resource : null);
 							if (res != null) {
 								pm.subTask("Clearing FindBugs markers from " + res.getName());

@@ -397,7 +397,7 @@ public class FindBugsWorker {
 		List<BugInstance> toRemove = new ArrayList<BugInstance>();
 
 		if (oldBugCollection != null) {
-			Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
+			Set<String> analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
 			for (Iterator<BugInstance> i = oldBugCollection.iterator(); i.hasNext(); ) {
 				BugInstance oldWarning = i.next();
 				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
@@ -412,8 +412,8 @@ public class FindBugsWorker {
 		} else {
 			oldBugCollection = new SortedBugCollection();
 		}
-		for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
-			BugInstance newWarning = (BugInstance) i.next();
+		for (Iterator<BugInstance> i = newBugCollection.iterator(); i.hasNext(); ) {
+			BugInstance newWarning = i.next();
 			oldBugCollection.add(newWarning);
 		}
 	}

@@ -548,8 +548,8 @@ public final class MarkerUtil {
 							// Remove old markers
 							MarkerUtil.removeMarkers(project);
 							// Display warnings
-							for (Iterator i = bugCollection.iterator(); i.hasNext();) {
-								BugInstance bugInstance = (BugInstance) i.next();
+							for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
+								BugInstance bugInstance = i.next();
 								if (displayWarning(bugInstance, userPrefs.getFilterSettings())) {
 									MarkerUtil.createMarker(bugInstance, project, bugCollection);
 								}

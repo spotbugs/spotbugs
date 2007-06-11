@@ -156,8 +156,9 @@ public class DetailsView extends AbstractFindbugsView {
 			});
 
 			try {
-				Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
-				presenter = (IInformationPresenterExtension) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
+				Class<IInformationPresenterExtension> presenterClass 
+				= (Class<IInformationPresenterExtension>) Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
+				presenter = presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
 			} catch (Exception e2) {
 				FindbugsPlugin
 						.getDefault()

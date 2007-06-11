@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -641,8 +642,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 *         currently-enabled bug categories, false if not
 	 */
 	private boolean reportsInEnabledCategory(DetectorFactory factory) {
-		for (Iterator i = factory.getReportedBugPatterns().iterator(); i.hasNext();) {
-			BugPattern pattern = (BugPattern) i.next();
+		for (Iterator<BugPattern> i = factory.getReportedBugPatterns().iterator(); i.hasNext();) {
+			BugPattern pattern =  i.next();
 			if (currentUserPreferences.getFilterSettings().containsCategory(pattern.getCategory())) {
 				return true;
 			}
@@ -656,10 +657,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private void populateAvailableRulesTable(IProject project) {
 		List<DetectorFactory> allAvailableList = new ArrayList<DetectorFactory>();
 		factoriesToBugAbbrev = new HashMap<DetectorFactory, String>();
-		Iterator iterator =
+		Iterator<DetectorFactory> iterator =
 			DetectorFactoryCollection.instance().factoryIterator();
 		while (iterator.hasNext()) {
-			DetectorFactory factory = (DetectorFactory) iterator.next();
+			DetectorFactory factory = iterator.next();
 
 			// Only configure non-hidden factories
 			if (factory.isHidden()) {
@@ -717,8 +718,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 			String abbr = pattern.getAbbrev();
 			abbrs.add(abbr);
 		}
-		for (Iterator iter = abbrs.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (Iterator<String> iter = abbrs.iterator(); iter.hasNext();) {
+			String element = iter.next();
 			sb.append(element);
 			if (iter.hasNext()) {
 				sb.append("|"); //$NON-NLS-1$
@@ -971,7 +972,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	private static final class BugPatternTableSorter
 		extends ViewerSorter
-		implements Comparator {
+		implements Comparator<DetectorFactory> {
 		private int sortColumnIndex;
 		private int lastSortColumnIdx;
 		boolean revertOrder;
@@ -983,7 +984,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			return compare(e1, e2);
+			return compare((DetectorFactory)e1, (DetectorFactory)e2);
 		}
 
 		/**
@@ -991,10 +992,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		 * @param e2
 		 * @return
 		 */
-		public int compare(Object e1, Object e2) {
+		public int compare(DetectorFactory factory1, DetectorFactory factory2) {
 			int result = 0;
-			DetectorFactory factory1 = (DetectorFactory) e1;
-			DetectorFactory factory2 = (DetectorFactory) e2;
 			String s1, s2;
 			switch (getSortColumnIndex()) {
 				case 0 :
@@ -1118,9 +1117,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 					return factory.getShortName();
 				case 2 :
 					StringBuffer sb = new StringBuffer();
-					Collection patterns = factory.getReportedBugPatterns();
-					for (Iterator iter = patterns.iterator(); iter.hasNext();) {
-						BugPattern pattern = (BugPattern) iter.next();
+					Collection<BugPattern> patterns = factory.getReportedBugPatterns();
+					for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
+						BugPattern pattern = iter.next();
 						sb.append(pattern.getShortDescription());
 						if (iter.hasNext()) {
 							sb.append(" | "); //$NON-NLS-1$
