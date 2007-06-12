@@ -151,7 +151,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			for(Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
 				String parameter = i.next();
 				if (parameter.equals("Ljava/lang/Runnable;")) {
-					OpcodeStack.Item item = stack.getStackItem(parser.getSlotsFromTopOfStackForParameter(count));
+					OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
 					if ("Ljava/lang/Thread;".equals(item.getSignature()))
 					bugReporter.reportBug(new BugInstance(this,
 							"DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED", NORMAL_PRIORITY)
