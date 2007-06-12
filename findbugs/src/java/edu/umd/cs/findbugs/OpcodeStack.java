@@ -128,6 +128,10 @@ public class OpcodeStack implements Constants2
 			return 1;
 		}
 
+		public boolean isWide() {
+			return getSize() == 2;
+		}
+
 		private static boolean equals(Object o1, Object o2) {
 			if (o1 == o2) return true;
 			if (o1 == null || o2 == null) return false;
@@ -848,6 +852,9 @@ public class OpcodeStack implements Constants2
 						 handleDup2X1();
 				 break;
 
+				 case DUP2_X2:
+					 handleDup2X2();
+					 break;
 
 				 case IINC:
 					 register = dbc.getRegisterOperand();
@@ -1221,7 +1228,7 @@ public class OpcodeStack implements Constants2
 				// can refer to normal class/interface types (encoded in
 				// "internal form"), or array classes (encoded as signatures
 				// beginning with "[").
-
+				  
 				 case ANEWARRAY:
 					 pop();
 					signature = dbc.getClassConstantOperand();
@@ -1482,6 +1489,43 @@ public class OpcodeStack implements Constants2
 		push(it3);
 		push(it2);
 		push(it);
+	}
+	}
+	private void handleDup2X2() {
+		String signature;
+		Item it  = pop();
+		Item it2 = pop();
+
+
+	if (it.isWide()) {
+		if (it2.isWide()) {
+			push(it);
+			push(it2);
+			push(it);
+		} else {
+			Item it3 = pop();
+			push(it);
+			push(it3);
+			push(it2);
+			push(it);
+		}
+	} else {
+		Item it3 = pop();
+		if (it3.isWide()) {
+			push(it2);
+			push(it);
+			push(it3);
+			push(it2);
+			push(it);
+		} else {
+			Item it4 = pop();
+			push(it2);
+			push(it);
+			push(it4);
+			push(it3);
+			push(it2);
+			push(it);
+		}
 	}
 	}
 
