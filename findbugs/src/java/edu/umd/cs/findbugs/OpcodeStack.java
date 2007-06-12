@@ -1159,7 +1159,8 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case I2L:
-				 case D2L:{
+				 case D2L:
+				 case F2L:{
 					 it = pop();
 					 Item newValue;
 					 if (it.getConstant() != null) {
