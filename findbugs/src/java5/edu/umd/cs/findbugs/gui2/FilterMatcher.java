@@ -122,8 +122,9 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	@Override
 	public boolean equals(Object o)
 	{
-		if (!(o instanceof FilterMatcher))
-			return false;
+		if (o == null) return false;
+		if (getClass() != o.getClass()) return false;
+		
 		if (filterBy.equals(((FilterMatcher)o).filterBy) && value.equals(((FilterMatcher)o).value))
 			return true;
 		return false;
