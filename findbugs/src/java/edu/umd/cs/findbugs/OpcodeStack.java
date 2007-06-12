@@ -76,6 +76,7 @@ public class OpcodeStack implements Constants2
 {
 	private static final boolean DEBUG 
 		= SystemProperties.getBoolean("ocstack.debug");
+	private static final boolean DEBUG2 = DEBUG;
 	private List<Item> stack;
 	private List<Item> lvValues;
 	private List<Integer> lastUpdate;
@@ -559,12 +560,16 @@ public class OpcodeStack implements Constants2
 		 if (jumpEntryLocations.get(dbc.getPC())) 
 			 jumpEntry = jumpEntries.get(dbc.getPC());
 		if (jumpEntry != null) {
-			if (DEBUG) {
+			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
+			
+			if (DEBUG2) {
 				System.out.println("XXXXXXX " + reachOnlyByBranch);
 				System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
 				System.out.println(" current lvValues " + lvValues);
+				System.out.println(" merging stack entry " + jumpStackEntry);
+				System.out.println(" current stack values " + stack);
+				
 			}
-			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 			if (reachOnlyByBranch) {
 				lvValues = new ArrayList<Item>(jumpEntry);
 				if (!stackUpdated) {
@@ -1043,7 +1048,7 @@ public class OpcodeStack implements Constants2
 
 				 case INEG:
 					 it = pop();
-					 if (it.getConstant() != null) {
+					 if (it.getConstant() instanceof Integer) {
 						 push(new Item("I", ( Integer)(-(Integer) it.getConstant())));
 					 } else {
 						 push(new Item("I"));
@@ -1052,16 +1057,23 @@ public class OpcodeStack implements Constants2
 
 				 case LNEG:
 					 it = pop();
-					 if (it.getConstant() != null) {
+					 if (it.getConstant() instanceof Long) {
 						 push(new Item("J", ( Long)(-(Long) it.getConstant())));
 					 } else {
 						 push(new Item("J"));
 					 }
 				 break;
-
+				 case FNEG:
+					 it = pop();
+					 if (it.getConstant() instanceof Float) {
+						 push(new Item("F", ( Float)(-(Float) it.getConstant())));
+					 } else {
+						 push(new Item("F"));
+					 }
+				 break;
 				 case DNEG:
 					 it = pop();
-					 if (it.getConstant() != null) {
+					 if (it.getConstant() instanceof Double) {
 						 push(new Item("D", ( Double)(-(Double) it.getConstant())));
 					 } else {
 						 push(new Item("D"));
@@ -1261,7 +1273,8 @@ public class OpcodeStack implements Constants2
 			 //If an error occurs, we clear the stack and locals. one of two things will occur. 
 			 //Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 			 //or the stack will resync with the code. But hopefully not false positives
-			 // TODO: log this
+			 
+			 AnalysisContext.logError("Error procssing opcode " + OPCODE_NAMES[seen], e);
 			 if (DEBUG) 
 				 e.printStackTrace();
 			 clear();
@@ -1577,13 +1590,13 @@ public class OpcodeStack implements Constants2
 		int intoSize = mergeInto.size();
 		int fromSize = mergeFrom.size();
 		if (errorIfSizesDoNotMatch && intoSize != fromSize) {
-			if (DEBUG) {
+			if (DEBUG2) {
 				System.out.println("Bad merging items");
 				System.out.println("current items: " + mergeInto);
 				System.out.println("jump items: " + mergeFrom);
 			}
 		} else {
-			if (DEBUG) {
+			if (DEBUG2) {
 				System.out.println("Merging items");
 				System.out.println("current items: " + mergeInto);
 				System.out.println("jump items: " + mergeFrom);
@@ -1591,7 +1604,7 @@ public class OpcodeStack implements Constants2
 
 			for (int i = 0; i < Math.min(intoSize, fromSize); i++)
 				mergeInto.set(i, Item.merge(mergeInto.get(i), mergeFrom.get(i)));
-			if (DEBUG) {
+			if (DEBUG2) {
 				System.out.println("merged items: " + mergeInto);
 			}
 		}
@@ -1727,7 +1740,7 @@ public class OpcodeStack implements Constants2
 
 	 public Item getStackItem(int stackOffset) {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
-			// assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString();
+		    assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString();
 			return new Item("Lfindbugs/OpcodeStackError;");
 
 		}
