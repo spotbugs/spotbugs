@@ -284,7 +284,7 @@ public class AnalysisCache implements IAnalysisCache {
 				 */
 				@Override
 				protected boolean removeEldestEntry(Entry<DescriptorType, Object> eldest) {
-					if (engine.canRecompute()) {
+					if (!engine.canRecompute()) {
 						return false;
 					} else {
 						return super.removeEldestEntry(eldest);
