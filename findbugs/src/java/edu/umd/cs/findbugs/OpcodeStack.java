@@ -1121,6 +1121,7 @@ public class OpcodeStack implements Constants2
 				 case FSUB:
 				 case FMUL:
 				 case FDIV:
+				 case FREM:
 					 it = pop();
 					 it2 = pop();
 					 pushByFloatMath(seen, it, it2);
@@ -1689,7 +1690,9 @@ public class OpcodeStack implements Constants2
 				  System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
 	 }
 	 private String methodName;
+	 DismantleBytecode v;
 	 public int resetForMethodEntry(final DismantleBytecode v) {
+		 this.v = v;
 		 methodName = v.getMethodName();
 		jumpEntries.clear();
 		jumpStackEntries.clear();
@@ -1785,7 +1788,7 @@ public class OpcodeStack implements Constants2
 
 	 public Item getStackItem(int stackOffset) {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
-		    assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString();
+		    assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString() + " at " + v.getPC() + " in " + v.getFullyQualifiedMethodName();
 			return new Item("Lfindbugs/OpcodeStackError;");
 
 		}
@@ -1974,7 +1977,7 @@ public class OpcodeStack implements Constants2
 	private void pushByFloatMath(int seen, Item it, Item it2) {
 		Item result;
 		int specialKind = Item.FLOAT_MATH;
-		if ((it.getConstant() != null) && it2.getConstant() != null) {
+		if ((it.getConstant() instanceof Float) && it2.getConstant() instanceof Float) {
 			if (seen == FADD)
 				result =new Item("F", ((Float) it2.getConstant()) + ((Float) it.getConstant()));
 			else if (seen == FSUB)
@@ -1983,7 +1986,9 @@ public class OpcodeStack implements Constants2
 				result =new Item("F", ((Float) it2.getConstant()) * ((Float) it.getConstant()));
 			else if (seen == FDIV)
 				result =new Item("F", ((Float) it2.getConstant()) / ((Float) it.getConstant()));
-				else result =new Item("F");
+			else if (seen == FREM)
+				result =new Item("F", ((Float) it2.getConstant()) % ((Float) it.getConstant()));
+			else result =new Item("F");
 		} else {
 			result =new Item("F");
 			if (seen == DDIV)
@@ -1996,7 +2001,7 @@ public class OpcodeStack implements Constants2
 	private void pushByDoubleMath(int seen, Item it, Item it2) {
 		Item result;
 		int specialKind = Item.FLOAT_MATH;
-		if ((it.getConstant() != null) && it2.getConstant() != null) {
+		if ((it.getConstant() instanceof Double) && it2.getConstant() instanceof Double) {
 			if (seen == DADD)
 				result = new Item("D", ((Double) it2.getConstant()) + ((Double) it.getConstant()));
 			else if (seen == DSUB)
@@ -2005,6 +2010,8 @@ public class OpcodeStack implements Constants2
 				result = new Item("D", ((Double) it2.getConstant()) * ((Double) it.getConstant()));
 			else if (seen == DDIV)
 				result = new Item("D", ((Double) it2.getConstant()) / ((Double) it.getConstant()));
+			else if (seen == DREM)
+				result = new Item("D", ((Double) it2.getConstant()) % ((Double) it.getConstant()));
 			else 
 				result = new Item("D");	//?	
 			} else {
