@@ -1592,7 +1592,7 @@ public class OpcodeStack implements Constants2
 
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
-		 if (appenderValue != null) {
+		 if (appenderValue != null && getStackDepth() > 0) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
 			 if (sbItem != null) {
