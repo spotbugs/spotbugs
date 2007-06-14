@@ -1788,7 +1788,9 @@ public class OpcodeStack implements Constants2
 
 	 public Item getStackItem(int stackOffset) {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
-		    assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString() + " at " + v.getPC() + " in " + v.getFullyQualifiedMethodName();
+		    AnalysisContext.logError("Can't get stack offset " + stackOffset 
+		    		+ " from " + stack.toString() +" in " 
+		    		+ v.getFullyQualifiedMethodName(), new IllegalArgumentException());
 			return new Item("Lfindbugs/OpcodeStackError;");
 
 		}
