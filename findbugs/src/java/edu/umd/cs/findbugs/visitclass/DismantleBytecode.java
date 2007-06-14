@@ -504,7 +504,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 							}
-							if (constantRefOperand instanceof ConstantInteger)
+							else if (constantRefOperand instanceof ConstantInteger)
 								intConstant = ((ConstantInteger) constantRefOperand).getBytes();
 							else if (constantRefOperand instanceof ConstantLong)
 								longConstant = ((ConstantLong) constantRefOperand).getBytes();
