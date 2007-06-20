@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 /**
  * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
@@ -42,7 +43,7 @@ public class NoteNonNullAnnotations
 	public void visitClassContext(ClassContext classContext) {
 
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 	public void report() {

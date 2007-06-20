@@ -72,4 +72,16 @@ public abstract class BCELUtil {
 	public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
 		return new ClassDescriptor(jclass.getClassName().replace('.', '/'));
 	}
+
+	private static final int JDK15_MAJOR = 48;
+	private static final int JDK15_MINOR = 0;
+
+	/**
+     * Checks if classfile was compiled for pre 1.5 target
+     */
+    public static boolean preTiger(JavaClass jclass) {
+    	return jclass.getMajor() < JDK15_MAJOR ||
+    			(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
+    
+    }
 }

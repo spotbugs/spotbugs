@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 /**
  * Scan classes for @CheckReturnValue annotations
@@ -39,7 +40,7 @@ public class NoteCheckReturnValueAnnotations
 	public void visitClassContext(ClassContext classContext) {
 
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 	public void report() {

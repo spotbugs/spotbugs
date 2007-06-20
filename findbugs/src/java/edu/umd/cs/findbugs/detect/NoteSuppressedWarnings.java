@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import java.util.*;
 import org.apache.bcel.Repository;
@@ -55,7 +56,7 @@ public class NoteSuppressedWarnings
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 	@Override

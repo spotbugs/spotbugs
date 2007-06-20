@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.npe.*;
 import edu.umd.cs.findbugs.ba.vna.*;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 import java.util.BitSet;
 import org.apache.bcel.Constants;
@@ -46,13 +47,6 @@ class Lock extends ResourceCreationPoint {
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ful.debug");
 	private  int numAcquires = 0;
-
-	private static final int JDK15_MAJOR = 48;
-	private static final int JDK15_MINOR = 0;
-
-	/* ----------------------------------------------------------------------
-	 * Helper classes
-	 * ---------------------------------------------------------------------- */
 
 	private static class LockFrameModelingVisitor extends ResourceValueFrameModelingVisitor {
 		private LockResourceTracker resourceTracker;
@@ -292,14 +286,6 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		super(bugReporter);
 	}
 
-	/**
-	 * Checks if classfile was compiled for pre 1.5 target
-	 */
-	public static boolean preTiger(JavaClass jclass) {
-		return jclass.getMajor() < JDK15_MAJOR ||
-				(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
-
-	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
 	 */
@@ -310,7 +296,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		// We can ignore classes that were compiled for anything
 		// less than JDK 1.5.  This should avoid lots of unnecessary work
 		// when analyzing code for older VM targets.
-		if (preTiger(jclass)) return;
+		if (BCELUtil.preTiger(jclass)) return;
 
 		boolean  sawUtilConcurrentLocks = false;
 		for(Constant c :  jclass.getConstantPool().getConstantPool()) 

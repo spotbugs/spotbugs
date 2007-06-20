@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteAnnotationRetention extends AnnotationVisitor implements
@@ -70,7 +71,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 
 	}
 

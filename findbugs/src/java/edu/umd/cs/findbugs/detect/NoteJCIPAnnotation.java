@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteJCIPAnnotation extends AnnotationVisitor implements
@@ -71,7 +72,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 
 	}
 

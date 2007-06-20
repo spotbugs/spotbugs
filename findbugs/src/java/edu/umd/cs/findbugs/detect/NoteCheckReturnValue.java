@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import java.io.*;
@@ -59,7 +60,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 			checkLoad = true;
 		}
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 		@Override
