@@ -27,12 +27,19 @@ package edu.umd.cs.findbugs.ba.jsr305;
  * @author David Hovemeyer
  */
 public class When {
-	public static final When ASSUME_ALWAYS = new When();
-	public static final When ALWAYS = new When();
-	public static final When UNKNOWN = new When();
-	public static final When MAYBE_NOT = new When();
-	public static final When NEVER = new When();
+	public static final When ASSUME_ALWAYS = new When(0);
+	public static final When ALWAYS = new When(1);
+	public static final When UNKNOWN = new When(2);
+	public static final When MAYBE_NOT = new When(3);
+	public static final When NEVER = new When(4);
 	
-	private When() {
+	private final int index;
+	
+	private When(int index) {
+		this.index = index;
+	}
+	
+	public int getIndex() {
+		return index;
 	}
 }

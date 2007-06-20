@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.ba.AnnotationDatabase;
+
 /**
  * An instance of this class serves as a database of
  * type qualifier annotations, and keeps track of 
@@ -32,7 +34,7 @@ import java.util.Map;
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifierDatabase {
+public class TypeQualifierDatabase extends AnnotationDatabase<TypeQualifier> {
 	private Map<TypeQualifier,TypeQualifier> typeQualifierMap;
 	
 	public TypeQualifierDatabase() {

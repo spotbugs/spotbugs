@@ -19,18 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.ba.AnnotationEnumeration;
+
 /**
  * Representation of a type qualifier annotation
  * (an annotation that is annotated with the javax.annotation.meta.Qualifier annotation).
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifier {
-	/**
-	 * Class name of the annotation class.
-	 */
-	private final String className;
-
+public class TypeQualifier extends AnnotationEnumeration<TypeQualifier> {
 	/**
 	 * When value of this instance of the qualifier.
 	 */
@@ -38,7 +35,7 @@ public class TypeQualifier {
 	// Do we need to represent applicableTo?
 
 	TypeQualifier(String className, When when) {
-		this.className = className;
+		super(className, when.getIndex());
 		this.when = when;
 	}
 
@@ -46,7 +43,7 @@ public class TypeQualifier {
 	 * @return Returns the className.
 	 */
 	public String getClassName() {
-		return className;
+		return super.toString();
 	}
 
 	/**
@@ -54,29 +51,5 @@ public class TypeQualifier {
 	 */
 	public When getWhen() {
 		return when;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		TypeQualifier other = (TypeQualifier) obj;
-		return other.className.equals(this.className)
-			&& other.when.equals(this.when);
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return 109 * when.hashCode() + className.hashCode();
 	}
 }
