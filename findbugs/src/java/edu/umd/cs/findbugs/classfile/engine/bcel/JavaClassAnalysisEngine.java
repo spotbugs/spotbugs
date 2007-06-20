@@ -20,10 +20,6 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.rmi.CORBA.ClassDesc;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
@@ -35,7 +31,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 
@@ -45,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * 
  * @author David Hovemeyer
  */
-public class JavaClassAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 	private static final boolean DEBUG_MISSING_CLASSES =
 		SystemProperties.getBoolean("findbugs.debug.missingclasses");
 	private static final String JVM_VERSION = SystemProperties.getProperty("java.runtime.version");
@@ -88,5 +83,13 @@ public class JavaClassAnalysisEngine extends RecomputableClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(JavaClass.class, this);
 	}
 
-
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
+	 */
+	public boolean canRecompute() {
+		// Currently, JavaClass objects are compared by reference equality in some places,
+		// so we can't recompute them.  (Plus, most detectors/analyses need
+		// the JavaClass object, so keeping them in memory helps performance.)
+	    return false;
+	}
 }
