@@ -44,14 +44,14 @@ public interface IAnalysisEngine<DescriptorType> {
 
 	/**
 	 * Return true if analysis results produced by this
-	 * analysis engine should be retained indefinitely.
+	 * analysis engine can be recomputed.
 	 * Unless some correctness criterion prevents analysis results
-	 * from being recomputing, analysis engines should
-	 * return false (allowing the cache to be kept to a manageable size).
+	 * from being recomputed, analysis engines should
+	 * return true (allowing the cache to be kept to a manageable size).
 	 * 
-	 * @return true if analysis results produced by this engine should
-	 *          be retained indefinitely,
-	 *          false if they may be recomputed as needed 
+	 * @return true if analysis results produced by this engine
+	 *         can be recomputed, false if for some reason the
+	 *         analysis results must be retained indefinitely  
 	 */
 	public boolean canRecompute();
 }
