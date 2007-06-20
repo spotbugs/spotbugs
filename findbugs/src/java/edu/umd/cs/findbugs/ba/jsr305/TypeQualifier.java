@@ -52,4 +52,30 @@ public class TypeQualifier extends AnnotationEnumeration<TypeQualifier> {
 	public When getWhen() {
 		return when;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationEnumeration#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		// We can't use the default equals() from AnnotationEnumeration because
+		// it doesn't check that the class name is the same.
+		if (o == this) {
+			return true;
+		}
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		TypeQualifier other = (TypeQualifier) o;
+		return this.getClassName().equals(other.getClassName())
+			&& this.when.equals(other.when);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationEnumeration#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return 109 * when.hashCode() + getClassName().hashCode();
+	}
 }
