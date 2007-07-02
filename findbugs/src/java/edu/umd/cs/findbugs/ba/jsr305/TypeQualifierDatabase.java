@@ -34,11 +34,13 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase;
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifierDatabase extends AnnotationDatabase<TypeQualifier> {
+public class TypeQualifierDatabase /*extends AnnotationDatabase<TypeQualifier>*/ {
 	private Map<TypeQualifier,TypeQualifier> typeQualifierMap;
+	private Map<String, AnnotationDatabase<TypeQualifier>> dbMap; // map type qualifier class names to AnnotationDatabases
 	
 	public TypeQualifierDatabase() {
 		this.typeQualifierMap = new HashMap<TypeQualifier, TypeQualifier>();
+		this.dbMap = new HashMap<String, AnnotationDatabase<TypeQualifier>>();
 	}
 	
 	/**
@@ -58,4 +60,64 @@ public class TypeQualifierDatabase extends AnnotationDatabase<TypeQualifier> {
 		}
 		return existing;
 	}
+
+	/**
+	 * Get the AnnotationDatabase storing annotations for given
+	 * type qualifier annotation class.
+	 * 
+	 * @param typeQualifierClass the type qualifier annotation class
+	 * @return the AnnotationDatabase storing that kind of type qualifier annotation
+	 */
+	public AnnotationDatabase<TypeQualifier> getAnnotationDatabase(String typeQualifierClass) {
+		AnnotationDatabase<TypeQualifier> db = dbMap.get(typeQualifierClass);
+		if (db == null) {
+			db = new AnnotationDatabase<TypeQualifier>();
+			
+			// FIXME: need to
+			// - check for default When value
+			// - check to see if this annotation is a nickname
+			// This will entail inspecting the annotation class itself (?)
+			
+			dbMap.put(typeQualifierClass, db);
+		}
+		return db;
+	}
+
+
+	/**
+	 * Based on the map of string to value pairs associated with
+	 * an instance of a type qualifier annotation, figure out the When value
+	 * of the instance.
+	 * 
+	 * @param typeQualifierClass the type qualifier annotation class
+	 * @param map map of string to value pairs associated with
+	 *        an instance of a type qualifier annotation
+	 * @return the When value of the instance
+	 */
+    public When getWhen(String typeQualifierClass, Map<String, Object> map) {
+    	// TODO: should check to see if the particular type qualifier has specified a default When value
+    	
+    	Object value = map.get("when");
+    	// Object returned should be a string, which is what AnnotationVisitor
+    	// adds to the map for enumeration members
+    	
+    	if (value == null || !(value instanceof String)) {
+    		return When.UNKNOWN;
+    	}
+    	
+    	String when = (String) value;
+    	if (when.equals("javax.annotation.meta.When.ASSUME_ALWAYS")) {
+    		return When.ASSUME_ALWAYS;
+    	} else if (when.equals("javax.annotation.meta.When.ALWAYS")) {
+    		return When.ALWAYS;
+    	} else if (when.equals("javax.annotation.meta.When.UNKNOWN")) {
+    		return When.UNKNOWN;
+    	} else if (when.equals("javax.annotation.meta.When.MAYBE_NOT")) {
+    		return When.MAYBE_NOT;
+    	} else if (when.equals("javax.annotation.meta.When.NEVER")) {
+    		return When.NEVER;
+    	} else {
+    		return When.UNKNOWN;
+    	}
+    }
 }
