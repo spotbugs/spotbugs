@@ -321,7 +321,7 @@ public class BugTreeView extends AbstractFindbugsView {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			TreeItem theItem = theTree.getSelection()[0];
+			TreeItem theItem = getFirstSelectedElement(theTree);
 			IMarker myMarker = getMarkerForTreeItem(theItem);
 			IStatusLineManager manager = getViewSite().getActionBars()
 					.getStatusLineManager();
@@ -526,7 +526,7 @@ public class BugTreeView extends AbstractFindbugsView {
 		newProjectTree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				TreeItem theItem = newProjectTree.getSelection()[0];
+				TreeItem theItem = getFirstSelectedElement(newProjectTree);
 				IMarker myMarker = getMarkerForTreeItem(theItem);
 				if (myMarker == null) {
 					return;
@@ -591,6 +591,18 @@ public class BugTreeView extends AbstractFindbugsView {
 	@Override
 	protected void fillLocalToolBar(IToolBarManager manager) {
 		// noop
+	}
+
+	/**
+	 * @param tree
+	 * @return null if nothing is selected
+	 */
+	private TreeItem getFirstSelectedElement(final Tree tree) {
+		TreeItem[] selection = tree.getSelection();
+		if(selection.length > 0) {
+			return selection[0];
+		}
+		return null;
 	}
 
 
