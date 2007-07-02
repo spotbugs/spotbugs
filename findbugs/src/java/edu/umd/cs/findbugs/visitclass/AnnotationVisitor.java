@@ -32,6 +32,12 @@ import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Unknown;
 
+/**
+ * Subclass of PreorderVisitor that visits annotations
+ * on classes, fields, methods, and method parameters.
+ * 
+ * @author William Pugh
+ */
 public class AnnotationVisitor extends PreorderVisitor {
 
 	/**
