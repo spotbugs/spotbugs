@@ -350,7 +350,8 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 			? exceptionEdge.getSource()
 			: getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
 		if (basicBlock == null) {
-			 throw new IllegalStateException("No basic block for thrower " + handle);
+			 throw new IllegalStateException("No basic block for thrower " + handle + " in " + this.methodGen.getClassName() + "." + 
+					 this.methodName + " : " + this.methodGen.getSignature());
 		}
 
 		return new Location(handle, basicBlock);
