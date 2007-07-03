@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.bcel;
 
 
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -32,7 +33,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  *
  * @see AnnotationVisitor
  */
-abstract public class AnnotationDetector extends AnnotationVisitor implements Detector {
+abstract public class AnnotationDetector extends AnnotationVisitor implements Detector, UseAnnotationDatabase {
 	private ClassContext classContext;
 
 	public void visitClassContext(ClassContext classContext) {

@@ -287,6 +287,12 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return returnValueNullnessDatabase;
 	}
 
-
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSyntheticElements()
+	 */
+	@Override
+	public SyntheticElements getSyntheticElements() {
+		throw new UnsupportedOperationException();
+	}
 
 }

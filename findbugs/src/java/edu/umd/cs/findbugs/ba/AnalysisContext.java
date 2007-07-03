@@ -605,6 +605,11 @@ public abstract class AnalysisContext {
 	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
 		currentAnalysisContext.set(analysisContext);
 	}
+	
+	/**
+	 * Get the database which keeps track of synthetic fields/methods/classes.
+	 */
+	public abstract SyntheticElements getSyntheticElements();
 
 }
 

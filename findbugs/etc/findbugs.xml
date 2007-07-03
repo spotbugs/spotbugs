@@ -22,6 +22,15 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
+	
+	<!--
+		NoteSyntheticElements must be run before any plugin that uses
+		AnnotationDatabases.
+	-->
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteSyntheticElements"/>
+		<LaterSubtypes super="edu.umd.cs.findbugs.UseAnnotationDatabase" spanplugins="true"/>
+	</SplitPass>
 
 	<!-- NoteCheckReturnValue should happen in an earlier pass than BCPMethodReturnCheck. -->
 	<SplitPass>

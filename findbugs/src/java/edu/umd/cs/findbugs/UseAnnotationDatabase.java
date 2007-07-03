@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2005,2007 University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,29 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.plan;
-
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.Plugin;
+package edu.umd.cs.findbugs;
 
 /**
- * DetectorFactorySelector implementation that chooses detectors
- * based on an implemented interface or extended superclass. 
+ * A marker interface for detectors which use an AnnotationDatabase.
  * 
  * @author David Hovemeyer
  */
-public class ByInterfaceDetectorFactorySelector implements DetectorFactorySelector {
-	private Plugin plugin;
-	private Class detectorInterface;
-
-	public ByInterfaceDetectorFactorySelector(Plugin plugin, Class detectorInterface) {
-		this.plugin = plugin;
-		this.detectorInterface = detectorInterface;
-	}
-
-	public boolean selectFactory(DetectorFactory factory) {
-		if (plugin != null && factory.getPlugin() != plugin)
-			return false;
-		return factory.isDetectorClassSubtypeOf(detectorInterface);
-	}
+public interface UseAnnotationDatabase {
 }

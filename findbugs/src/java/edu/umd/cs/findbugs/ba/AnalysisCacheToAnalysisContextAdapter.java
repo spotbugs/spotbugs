@@ -334,6 +334,12 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
 	}
 
-
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSyntheticElements()
+	 */
+	@Override
+	public SyntheticElements getSyntheticElements() {
+		return getDatabase(SyntheticElements.class);
+	}
 
 }

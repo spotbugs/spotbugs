@@ -249,10 +249,8 @@ public class PluginLoader {
 			{
 				// Create the selectors which determine which detectors are
 				// involved in the constraint
-				DetectorFactorySelector earlierSelector = getConstraintSelector(
-						constraintElement, plugin, "Earlier", "EarlierCategory");
-				DetectorFactorySelector laterSelector = getConstraintSelector(
-						constraintElement, plugin, "Later", "LaterCategory");
+				DetectorFactorySelector earlierSelector = getConstraintSelector(constraintElement, plugin, "Earlier");
+				DetectorFactorySelector laterSelector = getConstraintSelector(constraintElement, plugin, "Later");
 
 				// Create the constraint
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
@@ -389,29 +387,46 @@ public class PluginLoader {
 	private static DetectorFactorySelector getConstraintSelector(
 			Element constraintElement,
 			Plugin plugin,
-			String singleDetectorElementName,
-			String detectorCategoryElementName) throws PluginException {
+			String singleDetectorElementName/*,
+			String detectorCategoryElementName*/) throws PluginException {
 		Node node = constraintElement.selectSingleNode("./" + singleDetectorElementName);
 		if (node != null) {
 			String detectorClass = node.valueOf("@class");
 			return new SingleDetectorFactorySelector(plugin, detectorClass);
 		}
 
-		node = constraintElement.selectSingleNode("./" + detectorCategoryElementName);
+		node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Category");
 		if (node != null) {
-			String categoryName = node.valueOf("@name");
 			boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
-			if (categoryName.equals("reporting")) {
-				return new ReportingDetectorFactorySelector(spanPlugins ? null : plugin);
-			} else if (categoryName.equals("training")) {
-				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, TrainingDetector.class);
-			} else if (categoryName.equals("interprocedural")) {
-				return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, InterproceduralFirstPassDetector.class);
-			} else {
-				throw new PluginException("Invalid constraint selector node");
+			
+			String categoryName = node.valueOf("@name");
+			if (!categoryName.equals("")) {
+				if (categoryName.equals("reporting")) {
+					return new ReportingDetectorFactorySelector(spanPlugins ? null : plugin);
+				} else if (categoryName.equals("training")) {
+					return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, TrainingDetector.class);
+				} else if (categoryName.equals("interprocedural")) {
+					return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, InterproceduralFirstPassDetector.class);
+				} else {
+					throw new PluginException("Invalid category name " + categoryName + " in constraint selector node");
+				}
 			}
 		}
+		
+		node = constraintElement.selectSingleNode("./" + singleDetectorElementName + "Subtypes");
+		if (node != null) {
+			boolean spanPlugins = Boolean.valueOf(node.valueOf("@spanplugins")).booleanValue();
 
+			String superName = node.valueOf("@super");
+			if (!superName.equals("")) {
+				try {
+					Class<?> superClass = Class.forName(superName);
+					return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, superClass);
+				} catch (ClassNotFoundException e) {
+					throw new PluginException("Unknown class " + superName + " in constraint selector node"); 
+				}
+			}
+		}
 		throw new PluginException("Invalid constraint selector node");
 	}
 

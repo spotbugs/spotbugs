@@ -64,16 +64,23 @@
 		<xsd:attribute name="name" type="DetectorCategoryType" use="required"/>
 		<xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
 	</xsd:complexType>
+	
+	<xsd:complexType name="DetectorSubtypesSelectorType">
+		<xsd:attribute name="super" type="ClassType" use="required"/>
+		<xsd:attribute name="spanplugins" type="xsd:boolean" use="optional" default="false"/>
+	</xsd:complexType>
 
 	<xsd:complexType name="OrderingConstraintType">
 		<xsd:sequence>
 			<xsd:choice>
 				<xsd:element name="Earlier" type="SingleDetectorSelectorType"></xsd:element>
 				<xsd:element name="EarlierCategory" type="DetectorCategorySelectorType"></xsd:element>
+				<xsd:element name="EarlierSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
 			</xsd:choice>
 			<xsd:choice>
 				<xsd:element name="Later" type="SingleDetectorSelectorType"></xsd:element>
 				<xsd:element name="LaterCategory" type="DetectorCategorySelectorType"></xsd:element>
+				<xsd:element name="LaterSubtypes" type="DetectorSubtypesSelectorType"></xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
