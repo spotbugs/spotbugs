@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -42,6 +45,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 /**
  * Note JSR-305 type qualifier annotations in referenced
  * and application classes.
+ * Builds AnnotationDatabases recording how each kind
+ * of type qualifier was used on observed classes/fields/methods/parameters/etc.
  * 
  * @author David Hovemeyer
  */
@@ -50,11 +55,15 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 	private Set<String> typeQualifierSet;
 	private Set<String> knownAnnotationSet;
 	private TypeQualifierDatabase typeQualifierDatabase;
+	private Map<String, Map<String,Object>> classAnnotationMap; // class annotations for the most-recently visited class
+	private Map<String, Map<String, Map<String,Object>>> typeQualifierNicknameMap; // map of type qualifier nickname classes to their annotations
 	
 	public NoteTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.typeQualifierSet = new HashSet<String>();
 		this.knownAnnotationSet = new HashSet<String>();
+		this.classAnnotationMap = new HashMap<String, Map<String,Object>>();
+		this.typeQualifierNicknameMap = new HashMap<String, Map<String,Map<String,Object>>>();
 	}
 	
 	private boolean isTypeQualifer(String annotationClass) {
@@ -93,6 +102,40 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 		super.visitClassContext(classContext);
 	}
 
+	private boolean isAnnotation(JavaClass obj) {
+		boolean isAnnotation = false;
+		if (obj.isInterface()) {
+			String[] interfaceNames = obj.getInterfaceNames();
+			for (String name : interfaceNames) {
+				if (name.equals("java.lang.annotation.Annotation")) {
+					isAnnotation = true;
+					break;
+				}
+			}
+		}
+		return isAnnotation;
+    }
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.visitclass.BetterVisitor#visit(org.apache.bcel.classfile.JavaClass)
+	 */
+	@Override
+	public void visit(JavaClass obj) {
+		classAnnotationMap.clear();
+		
+		super.visit(obj);
+
+		if (isAnnotation(obj) && classAnnotationMap.keySet().contains("javax.annotation.meta.QualifierNickname")) {
+			// This type qualifier annotation is a nickname for another
+			// (more fully specified) type qualifier annotation.
+			// Make a note so we can register it with the TypeQualifierDatabase
+			// once we have seen all annotations and can make complete sense of them.
+			Map<String, Map<String,Object>> classAnnotationMapCopy = new HashMap<String, Map<String,Object>>();
+			classAnnotationMapCopy.putAll(classAnnotationMap);
+			typeQualifierNicknameMap.put(obj.getClassName(), classAnnotationMapCopy);
+		}
+	}
+
 	private TypeQualifier getTypeQualifier(String annotationClass, Map<String, Object> map) {
 	    When when = typeQualifierDatabase.getWhen(annotationClass, map);
 	    TypeQualifier tq = typeQualifierDatabase.getTypeQualifier(annotationClass, when);
@@ -104,6 +147,11 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 	 */
 	@Override
 	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+		if (!(visitingField() || visitingMethod())) {
+			// Keep track of class-level annotations
+			classAnnotationMap.put(annotationClass, map);
+		}
+		
 		if (!isTypeQualifer(annotationClass)) {
 			return;
 		}
