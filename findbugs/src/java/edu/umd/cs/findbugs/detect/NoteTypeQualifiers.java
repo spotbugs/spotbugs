@@ -28,6 +28,10 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifier;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDatabase;
 import edu.umd.cs.findbugs.ba.jsr305.When;
@@ -103,15 +107,55 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 		if (!isTypeQualifer(annotationClass)) {
 			return;
 		}
+
+		// FIXME: is this code doing the Right Thing here?
+		// Probably need to add default annotations somewhere.
+		
+		AnnotationDatabase<TypeQualifier> db = typeQualifierDatabase.getAnnotationDatabase(annotationClass);
 		
 		if (visitingMethod()) {
 			TypeQualifier tq = getTypeQualifier(annotationClass, map);
 
-			AnnotationDatabase<TypeQualifier> db = typeQualifierDatabase.getAnnotationDatabase(annotationClass);
 
-			// TODO: register the annotation in the database
+			XMethod method = XFactory.createXMethod(this);
+			db.addDirectAnnotation(method, tq);
 		} else if (visitingField()) {
+			TypeQualifier tq = getTypeQualifier(annotationClass, map);
+
+			XField field = XFactory.createXField(this);
+			db.addDirectAnnotation(field, tq);
+		} else {
+			// Assume annotation applies to entire class
+			TypeQualifier tq = getTypeQualifier(annotationClass, map);
 			
+			String className = getDottedClassName();
+			db.addDirectAnnotation(className, tq);
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.visitclass.AnnotationVisitor#visitSyntheticParameterAnnotation(int, boolean)
+	 */
+	@Override
+	public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
+		// FIXME: what are we supposed to do here?
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.visitclass.AnnotationVisitor#visitParameterAnnotation(int, java.lang.String, java.util.Map, boolean)
+	 */
+	@Override
+	public void visitParameterAnnotation(int p, String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+		if (!isTypeQualifer(annotationClass)) {
+			return;
+		}
+
+		AnnotationDatabase<TypeQualifier> db = typeQualifierDatabase.getAnnotationDatabase(annotationClass);
+
+		TypeQualifier tq = getTypeQualifier(annotationClass, map);
+		XMethod method = XFactory.createXMethod(this);
+		XMethodParameter param = new XMethodParameter(method, p);
+		
+		db.addDirectAnnotation(param, tq);
 	}
 }
