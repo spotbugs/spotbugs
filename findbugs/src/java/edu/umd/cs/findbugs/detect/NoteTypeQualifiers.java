@@ -59,7 +59,6 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 				// See if annotation class is a descendent of javax.annotation.meta.Qualifier
 				if (Hierarchy.isSubtype(annotationClass, "javax.annotation.meta.Qualifier")) {
 					typeQualifierSet.add(annotationClass);
-				} else {
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
