@@ -112,7 +112,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 			System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodDescriptor));
 			System.out.println("-----------------------------------------------------------------");
 			
-			// Create and excute the dataflow analysis
+			// Create and execute the dataflow analysis
 			Dataflow dataflow = analysisCache.getMethodAnalysis(dataflowClass, methodDescriptor);
 			
 			System.out.println("Dataflow finished after " + dataflow.getNumIterations());
