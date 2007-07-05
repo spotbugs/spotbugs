@@ -206,4 +206,23 @@ public class NoteTypeQualifiers extends AnnotationDetector implements NonReporti
 		
 		db.addDirectAnnotation(param, tq);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.bcel.AnnotationDetector#report()
+	 */
+	@Override
+	public void report() {
+		// This is called after the analysis pass is over.
+		// We should now have seen all type qualifiers, so we can resolve
+		// any type qualifier nicknames now.
+		
+		for (String typeQualifierNicknameClass : typeQualifierNicknameMap.keySet()) {
+			Map<String, Map<String,Object>> annotationMap = typeQualifierNicknameMap.get(typeQualifierNicknameClass);
+			
+			// TODO:
+			// - see if any of the annotations are type qualifiers
+			// - turn the type qualifier annotation into a TypeQualifier,
+			//   register the nickname as resolving to it
+		}
+	}
 }
