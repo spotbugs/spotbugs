@@ -1513,8 +1513,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			if (bugPattern == null)
-				return "Error4: missing bug pattern for key " + type;
 			return bugPattern.getShortDescription() + " [Error generating customized description]";
 		}
 	}
