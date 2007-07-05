@@ -35,6 +35,9 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
+ * Database to keep track of annotated fields/methods/classes/etc.
+ * for a particular kind of annotation.
+ * 
  * @author William Pugh
  */
 public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<AnnotationEnum>> {
@@ -88,6 +91,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	}
 	private final Set<AnnotationEnum> seen = new HashSet<AnnotationEnum>();
 	public void addSyntheticElement(Object o) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			throw new IllegalStateException();
+		}
 		syntheticElements.add(o);
 		if (DEBUG)
 			System.out.println("Synthetic element: " + o);
@@ -151,13 +157,13 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 				XMethod m;
 				if (o instanceof XMethod) {
 					m = (XMethod) o;
-					isSyntheticMethod = syntheticElements.contains(m);
+					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
 					kind = METHOD;
 					className = m.getClassName();
 				} else if (o instanceof XMethodParameter) {
 					m = ((XMethodParameter) o).getMethod();
 					// Don't 
-					isSyntheticMethod = syntheticElements.contains(m);
+					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
 					className = m.getClassName();
 					kind = PARAMETER;
 					if (m.getName().equals("<init>")) {
@@ -221,8 +227,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 			if (isSyntheticMethod) return null;
 
 			// synthetic elements should not inherit default annotations
-			if (syntheticElements.contains(o)) return null;
-			if (syntheticElements.contains(className)) return null;
+			if (isSyntheticElement(o)/*syntheticElements.contains(o)*/) return null;
+			if (isSyntheticElement(className)/*syntheticElements.contains(className)*/) return null;
 
 
 			// look for default annotation
@@ -262,6 +268,21 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		}
 
 	}
+
+	/**
+	 * Determine if given XMethod/XField/class name (String) has
+	 * been marked as a synthetic element.
+	 * 
+     * @param o object to be tested to see if it represents a synthetic element
+     * @return true if the object represents a synthetic element, false otherwise
+     */
+    private boolean isSyntheticElement(Object o) {
+    	if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+    		return AnalysisContext.currentAnalysisContext().getSyntheticElements().isSynthetic(o);
+    	} else {
+    		return syntheticElements.contains(o);
+    	}
+    }
 
 	private boolean classDefinesMethod(JavaClass c, XMethod m) {
 		for(Method definedMethod : c.getMethods()) 

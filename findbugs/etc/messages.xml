@@ -142,6 +142,13 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSyntheticElements">
+    <Details>
+      <![CDATA[
+        <p>Records synthetic classes, methods, fields, etc.</p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.Methods">
     <Details>
 <![CDATA[

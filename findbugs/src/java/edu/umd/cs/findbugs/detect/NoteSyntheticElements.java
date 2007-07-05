@@ -62,6 +62,10 @@ public class NoteSyntheticElements extends PreorderVisitor implements Detector, 
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
 	 */
 	public void visitClassContext(ClassContext classContext) {
+		if (!SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
+		
 		if (database == null) {
 			database = new SyntheticElements();
 			Global.getAnalysisCache().eagerlyPutDatabase(SyntheticElements.class, database);

@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Synthetic;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
+import edu.umd.cs.findbugs.ba.SyntheticElements;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
@@ -66,18 +67,27 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	}
 
 	@Override public void visit(JavaClass obj) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (obj.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getCheckReturnAnnotationDatabase().addSyntheticElement(
 					getDottedClassName());
 	}
 	@Override public void visit(Field f) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (f.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getCheckReturnAnnotationDatabase().addSyntheticElement(
 					XFactory.createXField(this));
 	}
 	@Override public void visit(Method m) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (m.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getCheckReturnAnnotationDatabase().addSyntheticElement(
@@ -85,6 +95,9 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	}
 
 	@Override public void visit(Synthetic a) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (visitingMethod()) {
 			AnalysisContext.currentAnalysisContext()
 			.getCheckReturnAnnotationDatabase().addSyntheticElement(

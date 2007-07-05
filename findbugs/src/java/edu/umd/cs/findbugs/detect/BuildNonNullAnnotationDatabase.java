@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.SyntheticElements;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
@@ -69,6 +70,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	}
 
 	@Override public void visit(Synthetic a) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (visitingMethod()) {
 			AnalysisContext.currentAnalysisContext()
 			.getNullnessAnnotationDatabase().addSyntheticElement(
@@ -84,12 +88,18 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		}
 	}
 	@Override public void visit(JavaClass obj) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (obj.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getNullnessAnnotationDatabase().addSyntheticElement(
 					getDottedClassName());
 	}
 	@Override public void visit(Field f) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (f.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getNullnessAnnotationDatabase().addSyntheticElement(
@@ -97,6 +107,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	}
 
 	@Override public void visit(Method m) {
+		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
+			return;
+		}
 		if (m.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
 			.getNullnessAnnotationDatabase().addSyntheticElement(

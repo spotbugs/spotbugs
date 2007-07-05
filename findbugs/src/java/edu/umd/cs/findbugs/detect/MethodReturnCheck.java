@@ -31,7 +31,7 @@ import org.apache.bcel.classfile.*;
  * 
  * @author David Hovemeyer
  */
-public class MethodReturnCheck extends BytecodeScanningDetector {
+public class MethodReturnCheck extends BytecodeScanningDetector implements UseAnnotationDatabase {
 	private static final boolean DEBUG = SystemProperties.getBoolean("mrc.debug");
 
 	private static final int SCAN = 0;

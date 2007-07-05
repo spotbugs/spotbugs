@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.visitclass.BetterVisitor;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -33,6 +34,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * @author David Hovemeyer
  */
 public class SyntheticElements {
+	public static final boolean USE_SYNTHETIC_ELEMENTS_DB = SystemProperties.getBoolean("findbugs.useSEdb");
+	
 	private HashSet<Object> syntheticElements;
 	
 	public SyntheticElements() {

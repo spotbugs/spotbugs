@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -107,7 +108,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
  * @author William Pugh
  * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
  */
-public class FindNullDeref implements Detector,
+public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		NullDerefAndRedundantComparisonCollector {
 
 

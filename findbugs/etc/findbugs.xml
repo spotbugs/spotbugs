@@ -110,6 +110,10 @@
 	        speed="fast"
 	        reports=""
 			hidden="true" /> 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteSyntheticElements"
+            speed="fast"
+            reports=""
+            hidden="true"/>
 	      
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField"
 			speed="moderate"
