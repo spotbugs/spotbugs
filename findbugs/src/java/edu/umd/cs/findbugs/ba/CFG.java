@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
@@ -125,6 +126,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	private int flags;
 	private String methodName; // for informational purposes
 	private MethodGen methodGen;
+	private List<Edge> removedEdgeList;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -349,8 +351,23 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW)
 			? exceptionEdge.getSource()
 			: getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
+
 		if (basicBlock == null) {
-			 throw new IllegalStateException("No basic block for thrower " + handle + " in " + this.methodGen.getClassName() + "." + 
+			if (removedEdgeList != null) {
+				// The fall-through edge might have been removed during
+				// CFG pruning.  Look for it in the removed edge list.
+				for (Edge removedEdge : removedEdgeList) {
+					if (removedEdge.getType() == EdgeTypes.FALL_THROUGH_EDGE
+							&& removedEdge.getSource() == exceptionEdge.getSource()) {
+						basicBlock = removedEdge.getTarget();
+						break;
+					}
+				}
+			}
+		}
+			
+		if (basicBlock == null) {
+			throw new IllegalStateException("No basic block for thrower " + handle + " in " + this.methodGen.getClassName() + "." + 
 					 this.methodName + " : " + this.methodGen.getSignature());
 		}
 
@@ -432,8 +449,22 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	}
 
 	@Override
-		 protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
+	protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
 		return new Edge(source, target);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.graph.AbstractGraph#removeEdge(edu.umd.cs.findbugs.graph.AbstractEdge)
+	 */
+	@Override
+	public void removeEdge(Edge edge) {
+		super.removeEdge(edge);
+		
+		// Keep track of removed edges.
+		if (removedEdgeList == null) {
+			removedEdgeList = new LinkedList<Edge>();
+		}
+		removedEdgeList.add(edge);
 	}
 }
 
