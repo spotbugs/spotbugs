@@ -763,7 +763,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * ---------------------------------------------------------------------- */
 
 	public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
-		addClass(methodDescriptor.getClassName());
+		addClass(methodDescriptor.getSlashedClassName());
 		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
 		return this;
 	}

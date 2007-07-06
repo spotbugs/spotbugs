@@ -132,7 +132,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 */
 	public static FieldAnnotation fromFieldDescriptor(FieldDescriptor fieldDescriptor) {
 		return new FieldAnnotation(
-				fieldDescriptor.getClassName(),
+				fieldDescriptor.getSlashedClassName(),
 				fieldDescriptor.getName(),
 				fieldDescriptor.getSignature(),
 				fieldDescriptor.isStatic());

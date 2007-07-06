@@ -25,18 +25,18 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor {
-	private final String className;
+	private final String slashedClassName;
 	private final String name;
 	private final String signature;
 	private final boolean isStatic;
 	private ClassDescriptor cachedClassDescriptor;
 	private int cachedHashCode;
 
-	public FieldOrMethodDescriptor(String className, String name, String signature, boolean isStatic) {
-		if (className.indexOf('.') >= 0) {
-			throw new IllegalArgumentException("class name not in VM format: " + className);
+	public FieldOrMethodDescriptor(String slashedClassName, String name, String signature, boolean isStatic) {
+		if (slashedClassName.indexOf('.') >= 0) {
+			throw new IllegalArgumentException("class name not in VM format: " + slashedClassName);
 		}
-		this.className = className;
+		this.slashedClassName = slashedClassName;
 		this.name = name;
 		this.signature = signature;
 		this.isStatic = isStatic;
@@ -45,8 +45,8 @@ public abstract class FieldOrMethodDescriptor {
 	/**
 	 * @return Returns the class name
 	 */
-	public String getClassName() {
-		return className;
+	public String getSlashedClassName() {
+		return slashedClassName;
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public abstract class FieldOrMethodDescriptor {
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		if (cachedClassDescriptor == null) {
-			cachedClassDescriptor =  new ClassDescriptor(className);
+			cachedClassDescriptor =  new ClassDescriptor(slashedClassName);
 		}
 		return cachedClassDescriptor;
 	}
@@ -83,7 +83,7 @@ public abstract class FieldOrMethodDescriptor {
 
 	protected int compareTo(FieldOrMethodDescriptor o) {
 		int cmp;
-		cmp = this.className.compareTo(o.className);
+		cmp = this.slashedClassName.compareTo(o.slashedClassName);
 		if (cmp != 0) {
 			return cmp;
 		}
@@ -110,7 +110,7 @@ public abstract class FieldOrMethodDescriptor {
 			return false;
 		}
 		FieldOrMethodDescriptor other = (FieldOrMethodDescriptor) obj;
-		return this.className.equals(other.className)
+		return this.slashedClassName.equals(other.slashedClassName)
 			&& this.name.equals(other.name)
 			&& this.signature.equals(other.signature)
 			&& this.isStatic == other.isStatic;
@@ -122,7 +122,7 @@ public abstract class FieldOrMethodDescriptor {
 	@Override
 	public int hashCode() {
 		if (cachedHashCode == 0) {
-			cachedHashCode = className.hashCode() * 7919
+			cachedHashCode = slashedClassName.hashCode() * 7919
 				+ name.hashCode() * 3119  
 				+ signature.hashCode() * 131
 				+ (isStatic ? 1 : 0);
@@ -136,6 +136,6 @@ public abstract class FieldOrMethodDescriptor {
 	@Override
 	public String toString() {
 		// FIXME: format more nicely
-		return (isStatic ? "static " : "") + className + "." + name + ":" + signature;
+		return (isStatic ? "static " : "") + slashedClassName + "." + name + ":" + signature;
 	}
 }
