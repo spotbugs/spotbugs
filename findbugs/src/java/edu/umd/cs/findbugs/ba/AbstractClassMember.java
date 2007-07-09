@@ -20,6 +20,9 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+
 public abstract class AbstractClassMember implements ClassMember {
 	private final String className;
 	private final String name;
@@ -55,6 +58,13 @@ public abstract class AbstractClassMember implements ClassMember {
 
 	public String getClassName() {
 		return className;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassDescriptor()
+	 */
+	public ClassDescriptor getClassDescriptor() {
+		return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
 	}
 
 	public String getName() {

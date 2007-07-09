@@ -17,29 +17,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 /**
- * Interface for object representing information about a class.
+ * Graph of inheritance relationships.
  * 
  * @author David Hovemeyer
  */
-public interface XClass extends Comparable<XClass>, AccessibleEntity {
+public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex> {
 
-	/**
-	 * Get ClassDescriptor of this class's immediate superclass.
-	 * 
-     * @return ClassDescriptor of this class's immediate superclass, or
-     *         null if this class has no immediate superclass
-     */
-    public ClassDescriptor getSuperclassDescriptor();
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.graph.AbstractGraph#allocateEdge(edu.umd.cs.findbugs.graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
+	 */
+	@Override
+	protected InheritanceEdge allocateEdge(ClassVertex source, ClassVertex target) {
+		return new InheritanceEdge(source, target);
+	}
 
-	/**
-	 * Get ClassDescriptors of interfaces directly implemented by this class.
-	 * 
-     * @return ClassDescriptors of interfaces directly implemented by this class 
-     */
-    public ClassDescriptor[] getInterfaceDescriptorList();
 }

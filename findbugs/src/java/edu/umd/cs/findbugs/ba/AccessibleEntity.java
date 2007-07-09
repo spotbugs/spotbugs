@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+
 /**
  * Common superinterface for code entities having access flags:
  * classes, fields, and methods.
@@ -64,9 +66,15 @@ public interface AccessibleEntity {
 
 	/**
 	 * Get the full (dotted) name of the class (if the object represents a class)
-	 * or the class the entity is defined in (if a field, method, or inner/nested class).
+	 * or the class the entity is defined in (if a field or method).
 	 */
 	public String getClassName();
+
+	/**
+	 * Get the ClassDescriptor representing the class (if entity is a class)
+	 * or the class containing the entity (if a field or method).
+	 */
+	public ClassDescriptor getClassDescriptor();
 
 	/**
 	 * Get the (dotted) name of the package in which the entity is defined.

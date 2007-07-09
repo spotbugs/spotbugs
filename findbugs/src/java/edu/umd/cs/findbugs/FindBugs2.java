@@ -581,6 +581,9 @@ public class FindBugs2 implements IFindBugsEngine {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
 
+		// Make this the current analysis context
+		AnalysisContext.setCurrentAnalysisContext(analysisContext);
+
 		// Make the AnalysisCache the backing store for
 		// the BCEL Repository
 		analysisContext.clearRepository();
@@ -594,8 +597,6 @@ public class FindBugs2 implements IFindBugsEngine {
 			sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
 		}
 		analysisContext.setSourcePath(project.getSourceDirList());
-		// Make this the current analysis context
-		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
 
 	/**

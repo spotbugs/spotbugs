@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
@@ -118,6 +119,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {
 		new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
+		new ReflectionDatabaseFactory<Subtypes2>(Subtypes2.class),
 		new ReflectionDatabaseFactory<InnerClassAccessMap>(InnerClassAccessMap.class),
 		new ReflectionDatabaseFactory<CheckReturnAnnotationDatabase>(CheckReturnAnnotationDatabase.class),
 		new ReflectionDatabaseFactory<AnnotationRetentionDatabase>(AnnotationRetentionDatabase.class),

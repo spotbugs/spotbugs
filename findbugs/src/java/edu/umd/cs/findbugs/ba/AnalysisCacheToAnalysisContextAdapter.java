@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -300,6 +301,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		// FIXME: we really should drive the progress callback here
 
 		Subtypes subtypes = getSubtypes();
+		Subtypes2 subtypes2 = null;
+		if (Subtypes2.ENABLE_SUBTYPES2) {
+			System.out.println("Subtypes2 enabled");
+			subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+		}
 
 		for (ClassDescriptor appClass : appClassCollection) {
 			try {
@@ -310,8 +316,15 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				Global.getAnalysisCache().getErrorLogger().logError(
 						"Error parsing application class " + appClass, e);
 			}
+			
+			if (Subtypes2.ENABLE_SUBTYPES2) {
+				// New Subtypes2 database - does not require JavaClass objects to be
+				// cached indefinitely
+				XClass xclass = currentXFactory().getXClass(appClass);
+				assert xclass != null;
+				subtypes2.addClass(xclass);
+			}
 		}
-
 	}
 
 	/* (non-Javadoc)

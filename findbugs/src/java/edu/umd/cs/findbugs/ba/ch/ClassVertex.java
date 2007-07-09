@@ -17,29 +17,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
- * Interface for object representing information about a class.
+ * Vertex class - represents a class or interface in the InheritanceGraph.
+ * Edges connect subtypes to supertypes.
  * 
  * @author David Hovemeyer
  */
-public interface XClass extends Comparable<XClass>, AccessibleEntity {
+public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
+	private XClass xclass;
+	private boolean finished;
+
+	public ClassVertex(XClass xclass) {
+		this.xclass = xclass;
+		this.finished = false;
+	}
 
 	/**
-	 * Get ClassDescriptor of this class's immediate superclass.
-	 * 
-     * @return ClassDescriptor of this class's immediate superclass, or
-     *         null if this class has no immediate superclass
-     */
-    public ClassDescriptor getSuperclassDescriptor();
+	 * @return Returns the xclass.
+	 */
+	public XClass getXClass() {
+		return xclass;
+	}
 
 	/**
-	 * Get ClassDescriptors of interfaces directly implemented by this class.
-	 * 
-     * @return ClassDescriptors of interfaces directly implemented by this class 
-     */
-    public ClassDescriptor[] getInterfaceDescriptorList();
+	 * @param finished The finished to set.
+	 */
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+
+	/**
+	 * @return Returns the finished.
+	 */
+	public boolean isFinished() {
+		return finished;
+	}
 }

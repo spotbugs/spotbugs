@@ -17,29 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
- * Interface for object representing information about a class.
+ * An edge in the InheritanceGraph.
+ * Source vertex is the subtype, target vertex is a
+ * direct supertype.
  * 
  * @author David Hovemeyer
  */
-public interface XClass extends Comparable<XClass>, AccessibleEntity {
+public class InheritanceEdge extends AbstractEdge<InheritanceEdge, ClassVertex> {
 
-	/**
-	 * Get ClassDescriptor of this class's immediate superclass.
-	 * 
-     * @return ClassDescriptor of this class's immediate superclass, or
-     *         null if this class has no immediate superclass
-     */
-    public ClassDescriptor getSuperclassDescriptor();
+    public InheritanceEdge(ClassVertex source, ClassVertex target) {
+	    super(source, target);
+    }
 
-	/**
-	 * Get ClassDescriptors of interfaces directly implemented by this class.
-	 * 
-     * @return ClassDescriptors of interfaces directly implemented by this class 
-     */
-    public ClassDescriptor[] getInterfaceDescriptorList();
 }
