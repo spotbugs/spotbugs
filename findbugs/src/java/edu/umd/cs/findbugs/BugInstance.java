@@ -338,20 +338,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Get the primary class annotation, which indicates where the bug occurs.
 	 */
 	public ClassAnnotation getPrimaryClass() {
-		return (ClassAnnotation) findAnnotationOfType(ClassAnnotation.class);
+		return  findAnnotationOfType(ClassAnnotation.class);
 	}
 
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public MethodAnnotation getPrimaryMethod() {
-		return (MethodAnnotation) findAnnotationOfType(MethodAnnotation.class);
+		return  findAnnotationOfType(MethodAnnotation.class);
 	}
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public FieldAnnotation getPrimaryField() {
-		return (FieldAnnotation) findAnnotationOfType(FieldAnnotation.class);
+		return findAnnotationOfType(FieldAnnotation.class);
 	}
 
 
@@ -372,11 +372,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the first matching BugAnnotation of the given type,
 	 *         or null if there is no such BugAnnotation
 	 */
-	private BugAnnotation findAnnotationOfType(Class<? extends BugAnnotation> cls) {
+	private <T extends BugAnnotation> T findAnnotationOfType(Class<T>  cls) {
 		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
 			if (cls.isAssignableFrom(annotation.getClass()))
-				return annotation;
+				return (T)annotation;
 		}
 		return null;
 	}
