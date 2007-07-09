@@ -235,7 +235,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 						System.out.println("Inspecting GETFIELD of " + fieldName + " at " + location);
 					}
 					// Ignore exceptions from getfield instructions where the
-					// object referece is known not to be null
+					// object reference is known not to be null
 					if (fieldName.equals("lock")) return true;
 					IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
 					if (!frame.isValid())
