@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -49,7 +50,7 @@ public class MethodFactory extends AnalysisFactory<Method> {
 		// As a side-effect, cache all of the Methods for this JavaClass
 		for (Method method : methodList) {
 			MethodDescriptor methodDescriptor =
-				new MethodDescriptor(descriptor.getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
+				DescriptorFactory.instance().getMethodDescriptor(descriptor.getSlashedClassName(), method.getName(), method.getSignature(), method.isStatic());
 			
 			// Put in cache eagerly
 			analysisCache.eagerlyPutMethodAnalysis(Method.class, methodDescriptor, method);

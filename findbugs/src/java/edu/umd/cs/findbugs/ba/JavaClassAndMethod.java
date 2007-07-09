@@ -24,6 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -95,7 +96,7 @@ public class JavaClassAndMethod {
 	 * @return the MethodDescriptor uniquely naming this method
 	 */
 	public MethodDescriptor toMethodDescriptor() {
-		return new MethodDescriptor(
+		return DescriptorFactory.instance().getMethodDescriptor(
 				getSlashedClassName(),
 				method.getName(),
 				method.getSignature(),

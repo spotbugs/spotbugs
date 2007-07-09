@@ -392,7 +392,7 @@ public class ClassParser {
 			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
 			 */
 			public FieldDescriptor create(String className, String name, String signature, int accessFlags) {
-				return new FieldDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
+				return DescriptorFactory.instance().getFieldDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
 			}
 		});
 	}
@@ -412,7 +412,7 @@ public class ClassParser {
 			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
 			 */
 			public MethodDescriptor create(String className, String name, String signature, int accessFlags) {
-				return new MethodDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
+				return DescriptorFactory.instance().getMethodDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
 			}
 		});
 	}

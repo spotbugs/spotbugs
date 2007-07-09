@@ -43,7 +43,7 @@ public abstract class BCELUtil {
 	 * @return a MethodDescriptor identifying the method
 	 */
 	public static MethodDescriptor getMethodDescriptor(JavaClass jclass, Method method) {
-		return new MethodDescriptor(
+		return DescriptorFactory.instance().getMethodDescriptor(
 				jclass.getClassName().replace('.', '/'), method.getName(), method.getSignature(), method.isStatic());
 	}
 
@@ -61,7 +61,7 @@ public abstract class BCELUtil {
 		String calledMethodSig = inv.getSignature(cpg);
 		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
 		
-		return new MethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
+		return DescriptorFactory.instance().getMethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
 	}
 
 	/**

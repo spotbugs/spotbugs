@@ -32,9 +32,13 @@ public class DescriptorFactory {
 		new InheritableThreadLocal<DescriptorFactory>();
 	
 	private Map<String, ClassDescriptor> classDescriptorMap;
+	private Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
+	private Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
 	
 	private DescriptorFactory() {
 		this.classDescriptorMap = new HashMap<String, ClassDescriptor>();
+		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
+		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
 
 	/**
@@ -74,5 +78,43 @@ public class DescriptorFactory {
 	 */
 	public ClassDescriptor getClassDescriptorForDottedClassName(String dottedClassName) {
 		return getClassDescriptor(dottedClassName.replace('.', '/'));
+	}
+
+	/**
+	 * Get a MethodDescriptor.
+	 * 
+	 * @param className       name of the class containing the method, in VM format (e.g., "java/lang/String")
+	 * @param methodName      name of the method
+	 * @param methodSignature signature of the method
+	 * @param isStatic        true if method is static, false otherwise
+	 * @return MethodDescriptor
+	 */
+	public MethodDescriptor getMethodDescriptor(String className, String name, String signature, boolean isStatic) {
+		MethodDescriptor methodDescriptor = new MethodDescriptor(className, name, signature, isStatic);
+		MethodDescriptor existing = methodDescriptorMap.get(methodDescriptor);
+		if (existing == null) {
+			methodDescriptorMap.put(methodDescriptor, methodDescriptor);
+			existing = methodDescriptor;
+		}
+		return existing;
+	}
+
+	/**
+	 * Get a FieldDescriptor.
+	 * 
+	 * @param className      the name of the class the field belongs to
+	 * @param fieldName      the name of the field
+	 * @param fieldSignature the field signature (type)
+	 * @param isStatic       true if field is static, false if not
+	 * @return FieldDescriptor
+	 */
+	public FieldDescriptor getFieldDescriptor(String className, String name, String signature, boolean isStatic) {
+		FieldDescriptor fieldDescriptor = new FieldDescriptor(className, name, signature, isStatic);
+		FieldDescriptor existing = fieldDescriptorMap.get(fieldDescriptor);
+		if (existing == null) {
+			fieldDescriptorMap.put(fieldDescriptor, fieldDescriptor);
+			existing = fieldDescriptor;
+		}
+		return existing;
 	}
 }
