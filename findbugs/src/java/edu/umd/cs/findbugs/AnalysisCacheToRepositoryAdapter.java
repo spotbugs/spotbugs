@@ -30,6 +30,7 @@ import org.apache.bcel.util.Repository;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -60,7 +61,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	 */
 	public JavaClass findClass(String className) {
 		className = ClassName.toSlashedClassName(className);
-		ClassDescriptor classDescriptor = new ClassDescriptor(className);
+		ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
 		return Global.getAnalysisCache().probeClassAnalysis(JavaClass.class, classDescriptor);
 	}
 
@@ -76,7 +77,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	 */
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
 		className = ClassName.toSlashedClassName(className);
-		ClassDescriptor classDescriptor = new ClassDescriptor(className);
+		ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(JavaClass.class, classDescriptor);
 		} catch (CheckedAnalysisException e) {

@@ -26,6 +26,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -70,7 +71,7 @@ public abstract class BCELUtil {
 	 * @return a ClassDescriptor identifying that JavaClass
 	 */
 	public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
-		return new ClassDescriptor(jclass.getClassName().replace('.', '/'));
+		return DescriptorFactory.instance().getClassDescriptor(jclass.getClassName().replace('.', '/'));
 	}
 
 	private static final int JDK15_MAJOR = 48;

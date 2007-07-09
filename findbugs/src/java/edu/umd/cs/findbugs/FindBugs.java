@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.ba.URLClassPathRepository;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -1214,7 +1215,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			// Notify ClassObservers
 			for (IClassObserver aClassObserver : classObserverList) {
 				ClassDescriptor classDescriptor =
-					new ClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
+					DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
 				aClassObserver.observeClass(classDescriptor);
 			}
 

@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfoAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -70,5 +71,12 @@ public class ClassInfoAnalysisEngine extends RecomputableClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassInfo.class, this);
 	}
 
-	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#canRecompute()
+	 */
+	public boolean canRecompute() {
+		// ClassInfo objects serve as XClass objects,
+		// which we want interned.  So, they are never purged from the cache.
+	    return false;
+	}
 }

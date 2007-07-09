@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -156,7 +157,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		// However, we can be assured that it will succeed.
 
 		ClassDescriptor classDescriptor =
-			new ClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName())); 
+			DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName())); 
 
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
@@ -258,7 +259,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				throw new ClassNotFoundException("Invalid class name: " + className);
 			}
 			return Global.getAnalysisCache().getClassAnalysis(
-					JavaClass.class, new ClassDescriptor(ClassName.toSlashedClassName(className)));
+					JavaClass.class, DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(className)));
 		} catch (CheckedAnalysisException e) {
 			throw new ClassNotFoundException("Class not found: " + className, e);
 		}

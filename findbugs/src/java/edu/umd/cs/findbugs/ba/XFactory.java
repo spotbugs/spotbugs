@@ -43,6 +43,11 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -472,6 +477,23 @@ public  class XFactory {
 
 	public static XMethod createXMethod(JavaClassAndMethod classAndMethod) {
 		return createXMethod(classAndMethod.getJavaClass(), classAndMethod.getMethod());
+	}
+
+	/**
+	 * Get the XClass object providing information about the
+	 * class named by the given ClassDescriptor.
+	 * 
+	 * @param classDescriptor a ClassDescriptor
+	 * @return an XClass object providing information about the class,
+	 *         or null if the class cannot be found 
+	 */
+	public XClass getXClass(ClassDescriptor classDescriptor) {
+		try {
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			return analysisCache.getClassAnalysis(ClassInfo.class, classDescriptor);
+		} catch (CheckedAnalysisException e) {
+			return null;
+		}
 	}
 
 }

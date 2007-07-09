@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -188,7 +189,7 @@ public class ClassParser {
 				if (className.indexOf('[') >= 0) {
 					extractReferencedClassesFromSignature(referencedClassSet, className);
 				} else if (ClassName.isValidClassName(className)) {
-					referencedClassSet.add(new ClassDescriptor(className));
+					referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
 				}
 			} else if (constant.tag == IClassConstants.CONSTANT_Methodref
 					|| constant.tag == IClassConstants.CONSTANT_Fieldref
@@ -224,7 +225,7 @@ public class ClassParser {
 			}
 			String className = signature.substring(1, end);
 			if (ClassName.isValidClassName(className)) {
-				referencedClassSet.add(new ClassDescriptor(className));
+				referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
 			}
 			signature = signature.substring(end + 1);
 		}
@@ -322,12 +323,12 @@ public class ClassParser {
 	 * Get the ClassDescriptor of a class referenced in the constant pool.
 	 * 
 	 * @param index        index of the referenced class in the constant pool
-	 * @return the ClassDescriptor of the referenced calss
+	 * @return the ClassDescriptor of the referenced class
 	 * @throws InvalidClassFileFormatException 
 	 */
 	private ClassDescriptor getClassDescriptor(int index) throws InvalidClassFileFormatException {
 		String className = getClassName(index);
-		return className != null ? new ClassDescriptor(className) : null;
+		return className != null ? DescriptorFactory.instance().getClassDescriptor(className) : null;
 	}
 
 	/**
