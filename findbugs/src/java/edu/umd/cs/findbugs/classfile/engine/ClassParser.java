@@ -57,6 +57,7 @@ public class ClassParser {
 	private ClassDescriptor expectedClassDescriptor;
 	private ICodeBaseEntry codeBaseEntry;
 	private Constant[] constantPool;
+	private ClassDescriptor immediateEnclosingClass;
 
 	/**
 	 * Constructor.
@@ -166,6 +167,7 @@ public class ClassParser {
 			classInfo.setFieldDescriptorList(fieldDescriptorList);
 			classInfo.setMethodDescriptorList(methodDescriptorList);
 			classInfo.setReferencedClassDescriptorList(referencedClassDescriptorList);
+			classInfo.setImmediateEnclosingClass(immediateEnclosingClass);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
@@ -261,7 +263,7 @@ public class ClassParser {
 	 * @throws IOException 
 	 */
 	private Constant readConstant()
-			throws InvalidClassFileFormatException, IOException {
+	throws InvalidClassFileFormatException, IOException {
 		int tag = in.readUnsignedByte();
 		if (tag < 0 || tag >= CONSTANT_FORMAT_MAP.length || CONSTANT_FORMAT_MAP[tag] == null) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
@@ -367,7 +369,7 @@ public class ClassParser {
 	 * @throws InvalidClassFileFormatException if the constant's tag does not match the expected tag
 	 */
 	private void checkConstantTag(Constant constant, int expectedTag)
-			throws InvalidClassFileFormatException {
+	throws InvalidClassFileFormatException {
 		if (constant.tag != expectedTag) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 		}
@@ -386,7 +388,7 @@ public class ClassParser {
 	 * @throws InvalidClassFileFormatException 
 	 */
 	private FieldDescriptor readField(ClassDescriptor thisClassDescriptor)
-			throws IOException, InvalidClassFileFormatException {
+	throws IOException, InvalidClassFileFormatException {
 		return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<FieldDescriptor>() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
@@ -406,7 +408,7 @@ public class ClassParser {
 	 * @throws InvalidClassFileFormatException 
 	 */
 	private MethodDescriptor readMethod(ClassDescriptor thisClassDescriptor)
-			throws InvalidClassFileFormatException, IOException {
+	throws InvalidClassFileFormatException, IOException {
 		return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>(){
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
@@ -430,7 +432,7 @@ public class ClassParser {
 	 */
 	private<E> E readFieldOrMethod(
 			ClassDescriptor thisClassDescriptor, FieldOrMethodDescriptorCreator<E> creator)
-			throws IOException, InvalidClassFileFormatException {
+	throws IOException, InvalidClassFileFormatException {
 		int access_flags = in.readUnsignedShort();
 		int name_index = in.readUnsignedShort();
 		int descriptor_index = in.readUnsignedShort();
@@ -457,12 +459,45 @@ public class ClassParser {
 	 */
 	private void readAttribute() throws IOException, InvalidClassFileFormatException {
 		int attribute_name_index = in.readUnsignedShort();
+		String attrName = getUtf8String(attribute_name_index);
+
 		int attribute_length = in.readInt();
 		if (attribute_length < 0) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 		}
-		byte[] buf = new byte[attribute_length];
-		in.readFully(buf);
+
+		if (attrName.equals("InnerClasses")) {
+			readInnerClassesAttribute(attribute_length);
+		} else {
+			byte[] buf = new byte[attribute_length];
+			in.readFully(buf);
+		}
+	}
+
+	/**
+	 * Read an InnerClasses attribute.
+	 * 
+	 * @param attribute_length length of attribute (excluding first 6 bytes)
+	 * @throws InvalidClassFileFormatException
+	 * @throws IOException
+	 */
+	private void readInnerClassesAttribute(int attribute_length) throws InvalidClassFileFormatException, IOException {
+		int number_of_classes = in.readUnsignedShort();
+		if (attribute_length != number_of_classes * 8) {
+			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
+		}
+		
+		for (int i = 0; i < number_of_classes; i++) {
+			int inner_class_info_index = in.readUnsignedShort();
+			int outer_class_info_index = in.readUnsignedShort();
+			int inner_name_index = in.readUnsignedShort();
+			int inner_class_access_flags = in.readUnsignedShort();
+			
+			if (outer_class_info_index != 0) {
+				// Record which class this class is a member of.
+				this.immediateEnclosingClass = getClassDescriptor(outer_class_info_index);
+			}
+		}
 	}
 
 	/**

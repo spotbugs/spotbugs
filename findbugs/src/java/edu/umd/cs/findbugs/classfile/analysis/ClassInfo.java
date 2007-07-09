@@ -37,6 +37,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	private FieldDescriptor[] fieldDescriptorList;
 	private MethodDescriptor[] methodDescriptorList;
 	private ClassDescriptor[] referencedClassDescriptorList;
+	private ClassDescriptor immediateEnclosingClass;
 
 	/**
 	 * Constructor.
@@ -94,6 +95,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	}
 
 	/**
+	 * @return Returns the immediateEnclosingClass.
+	 */
+	public ClassDescriptor getImmediateEnclosingClass() {
+		return immediateEnclosingClass;
+	}
+
+	/**
 	 * @param fieldDescriptorList The fieldDescriptorList to set.
 	 */
 	public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
@@ -115,81 +123,88 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
 	}
 
-	/* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(XClass o) {
-    	// All we compare is the class name,
-    	// since that is what uniquely identifies
-    	// a class.
-    	return getClassName().compareTo(o.getClassName());
-    }
+	/**
+	 * @param immediateEnclosingClass The immediateEnclosingClass to set.
+	 */
+	public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
+		this.immediateEnclosingClass = immediateEnclosingClass;
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassName()
-     */
-    public String getClassName() {
-    	return getClassDescriptor().toDottedClassName();
-    }
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(XClass o) {
+		// All we compare is the class name,
+		// since that is what uniquely identifies
+		// a class.
+		return getClassName().compareTo(o.getClassName());
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
-     */
-    public String getPackageName() {
-    	String dottedClassName = getClassDescriptor().toDottedClassName();
-    	int lastDot = dottedClassName.lastIndexOf('.');
-    	if (lastDot < 0) {
-    		return "";
-    	} else {
-    		return dottedClassName.substring(0, lastDot);
-    	}
-    }
-
-    private boolean isFlagSet(int flag) {
-    	return (getAccessFlags() & flag) != 0;
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassName()
+	 */
+	public String getClassName() {
+		return getClassDescriptor().toDottedClassName();
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
-     */
-    public boolean isFinal() {
-    	return isFlagSet(IClassConstants.ACC_FINAL);
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
+	 */
+	public String getPackageName() {
+		String dottedClassName = getClassDescriptor().toDottedClassName();
+		int lastDot = dottedClassName.lastIndexOf('.');
+		if (lastDot < 0) {
+			return "";
+		} else {
+			return dottedClassName.substring(0, lastDot);
+		}
+	}
+
+	private boolean isFlagSet(int flag) {
+		return (getAccessFlags() & flag) != 0;
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
-     */
-    public boolean isPrivate() {
-    	return isFlagSet(IClassConstants.ACC_PRIVATE);
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
+	 */
+	public boolean isFinal() {
+		return isFlagSet(IClassConstants.ACC_FINAL);
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
-     */
-    public boolean isProtected() {
-    	return isFlagSet(IClassConstants.ACC_PROTECTED);
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
+	 */
+	public boolean isPrivate() {
+		return isFlagSet(IClassConstants.ACC_PRIVATE);
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
-     */
-    public boolean isPublic() {
-    	return isFlagSet(IClassConstants.ACC_PUBLIC);
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
+	 */
+	public boolean isProtected() {
+		return isFlagSet(IClassConstants.ACC_PROTECTED);
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
-     */
-    public boolean isResolved() {
-    	// A ClassInfo object only comes into existence by being loaded
-    	// from the classpath.
-    	return true;
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
+	 */
+	public boolean isPublic() {
+		return isFlagSet(IClassConstants.ACC_PUBLIC);
+	}
 
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isStatic()
-     */
-    public boolean isStatic() {
-    	return isFlagSet(IClassConstants.ACC_STATIC);
-    }
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
+	 */
+	public boolean isResolved() {
+		// A ClassInfo object only comes into existence by being loaded
+		// from the classpath.
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isStatic()
+	 */
+	public boolean isStatic() {
+		return isFlagSet(IClassConstants.ACC_STATIC);
+	}
 }
