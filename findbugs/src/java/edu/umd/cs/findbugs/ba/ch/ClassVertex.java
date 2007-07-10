@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
@@ -38,9 +39,10 @@ public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	 * Constructor.
 	 * 
 	 * @param classDescriptor ClassDescriptor naming the class or interface
-	 * @param xclass          object containing information about a class or interface
+	 * @param xclass          object containing information about a class or interface,
+	 *                        null if this ClassVertex represents a missing class
 	 */
-	public ClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
+	public ClassVertex(ClassDescriptor classDescriptor, @Nullable XClass xclass) {
 		this.classDescriptor = classDescriptor;
 		this.xclass = xclass;
 		this.finished = false;
