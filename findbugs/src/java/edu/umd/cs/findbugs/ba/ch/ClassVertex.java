@@ -58,7 +58,7 @@ public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
     }
 
 	/**
-	 * @return Returns the xclass.
+	 * @return Returns the xClass.
 	 */
 	public XClass getXClass() {
 		return xclass;
