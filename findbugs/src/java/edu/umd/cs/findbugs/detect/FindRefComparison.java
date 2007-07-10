@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005, University of Maryland
+ * Copyright (C) 2003-2007, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,17 +49,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	/**
 	 * Classes that are suspicious if compared by reference.
 	 */
-	private static final HashSet<String> suspiciousSet = new HashSet<String>();
+	private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<String>();
 
 	static {
-		suspiciousSet.add("java.lang.Boolean");
-		suspiciousSet.add("java.lang.Byte");
-		suspiciousSet.add("java.lang.Character");
-		suspiciousSet.add("java.lang.Double");
-		suspiciousSet.add("java.lang.Float");
-		suspiciousSet.add("java.lang.Integer");
-		suspiciousSet.add("java.lang.Long");
-		suspiciousSet.add("java.lang.Short");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Boolean");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Byte");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Character");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Double");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Float");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Integer");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Long");
+		DEFAULT_SUSPICIOUS_SET.add("java.lang.Short");
 	}
 
 	/**
@@ -374,6 +374,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	private BugReporter bugReporter;
 	private ClassContext classContext;
+	private Set<String> suspiciousSet;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -381,6 +382,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	public FindRefComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.suspiciousSet = new HashSet<String>(DEFAULT_SUSPICIOUS_SET);
+		
+		// Check frc.suspicious system property for additional suspicious types to check
+		String extraSuspiciousTypes = SystemProperties.getProperty("frc.suspicious");
+		if (extraSuspiciousTypes != null) {
+			StringTokenizer tok = new StringTokenizer(extraSuspiciousTypes, ",");
+			while (tok.hasMoreTokens()) {
+				suspiciousSet.add(tok.nextToken());
+			}
+		}
 	}
 
 	public void visitClassContext(ClassContext classContext) {
