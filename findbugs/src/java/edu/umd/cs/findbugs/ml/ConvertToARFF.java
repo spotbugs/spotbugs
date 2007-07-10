@@ -108,7 +108,7 @@ public class ConvertToARFF {
 				throw new MissingNodeException("Could not get value from element (path=" +
 					xpath + ")");
 			if (value instanceof List) {
-				List list = (List) value;
+				List<?> list = (List<?>) value;
 				if (list.size() == 0)
 					throw new MissingNodeException("Could not get value from element (path=" +
 							xpath + ")");
