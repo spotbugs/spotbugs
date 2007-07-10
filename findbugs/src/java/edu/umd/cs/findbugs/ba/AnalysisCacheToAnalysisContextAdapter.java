@@ -356,4 +356,23 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		return getDatabase(SyntheticElements.class);
 	}
 
+	private Subtypes2 subtypes2;
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
+	 */
+	@Override
+	public Subtypes2 getSubtypes2() {
+		if (subtypes2 == null) {
+			try {
+				subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+			} catch (CheckedAnalysisException e) {
+				IllegalStateException ise = new IllegalStateException("Should not happen");
+				ise.initCause(e);
+				throw ise;
+			}
+		}
+		return subtypes2;
+	}
+
 }

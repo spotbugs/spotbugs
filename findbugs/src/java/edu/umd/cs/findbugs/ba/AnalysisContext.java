@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
@@ -610,6 +611,11 @@ public abstract class AnalysisContext {
 	 * Get the database which keeps track of synthetic fields/methods/classes.
 	 */
 	public abstract SyntheticElements getSyntheticElements();
+
+	/**
+	 * Get the Subtypes2 inheritance hierarchy database.
+	 */
+	public abstract Subtypes2 getSubtypes2();
 
 }
 

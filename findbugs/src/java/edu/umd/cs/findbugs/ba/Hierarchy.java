@@ -109,17 +109,17 @@ public class Hierarchy {
 				throw ise;
 			}
 		} else {
-		Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
-		if (subtypes == null) {
-			subtypes = new HashMap<ReferenceType, Boolean>();
-			subtypeCache.put(possibleSupertype, subtypes);
-		}
-		Boolean result = subtypes.get(t);
-		if (result == null) {
-			result = Boolean.valueOf(t.isAssignmentCompatibleWith(possibleSupertype));
-			subtypes.put(t, result);
-		}
-		return result;
+			Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
+			if (subtypes == null) {
+				subtypes = new HashMap<ReferenceType, Boolean>();
+				subtypeCache.put(possibleSupertype, subtypes);
+			}
+			Boolean result = subtypes.get(t);
+			if (result == null) {
+				result = Boolean.valueOf(t.isAssignmentCompatibleWith(possibleSupertype));
+				subtypes.put(t, result);
+			}
+			return result;
 		}
 	}
 

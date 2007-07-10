@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -388,7 +389,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (obj.getName(getCPG()).equals("toArray")) {
 			ReferenceType target = obj.getReferenceType(getCPG());
 			String signature = obj.getSignature(getCPG());
-			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && target.isAssignmentCompatibleWith(COLLECTION_TYPE)) {
+			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollectionType(target)) {
 
 				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
 				Type resultType = frame.popValue();
@@ -411,6 +412,16 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			return false;
 		}
 	}
+
+    private boolean isCollectionType(ReferenceType target) throws ClassNotFoundException {
+    	if (Subtypes2.ENABLE_SUBTYPES2) {
+    		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+    		return subtypes2.isSubtype(target, COLLECTION_TYPE);
+    	} else {
+    		return target.isAssignmentCompatibleWith(COLLECTION_TYPE);
+    	}
+    }
+    
 	@Override
 	public void visitCHECKCAST(CHECKCAST obj) {
 		consumeStack(obj);

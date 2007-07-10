@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2007, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,13 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * A TypeMerger which applies standard Java semantics
@@ -49,7 +52,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	 * @param exceptionSetFactory   factory for creating ExceptionSet objects
 	 */
 	public StandardTypeMerger(RepositoryLookupFailureCallback lookupFailureCallback,
-							  ExceptionSetFactory exceptionSetFactory) {
+			ExceptionSetFactory exceptionSetFactory) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.exceptionSetFactory = exceptionSetFactory;
 	}
@@ -143,8 +146,8 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions
 			if (isObjectType(aType) && isObjectType(bType) &&
-					(aType == T_EXCEPTION || bType == T_EXCEPTION || aRef.isAssignmentCompatibleWith(ObjectType.THROWABLE) && bRef.isAssignmentCompatibleWith(ObjectType.THROWABLE) )
-					) {
+					(aType == T_EXCEPTION || bType == T_EXCEPTION || isThrowable(aRef) && isThrowable(bRef) )
+			) {
 				ExceptionSet union = exceptionSetFactory.createExceptionSet();
 				if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;")) return aRef;
 				if (bType == T_OBJECT && bRef.getSignature().equals("Ljava/lang/Throwable;")) return bRef;
@@ -162,6 +165,15 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		}
 	}
 
+	private boolean isThrowable(ReferenceType ref) throws ClassNotFoundException {
+		if (Subtypes2.ENABLE_SUBTYPES2) {
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			return subtypes2.isSubtype(ref, ObjectType.THROWABLE);
+		} else {
+			return ref.isAssignmentCompatibleWith(ObjectType.THROWABLE);
+		}
+	}
+
 }
 
-// vim:ts=4
+//vim:ts=4

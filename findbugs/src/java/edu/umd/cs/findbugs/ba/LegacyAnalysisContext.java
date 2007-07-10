@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -292,6 +293,14 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	 */
 	@Override
 	public SyntheticElements getSyntheticElements() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
+	 */
+	@Override
+	public Subtypes2 getSubtypes2() {
 		throw new UnsupportedOperationException();
 	}
 
