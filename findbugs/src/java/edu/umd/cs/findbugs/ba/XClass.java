@@ -51,4 +51,11 @@ public interface XClass extends Comparable<XClass>, AccessibleEntity {
      *          or null if this XClass is not a nested or inner class
      */
     public ClassDescriptor getImmediateEnclosingClass();
+    
+    /**
+     * Get ClassDescriptors of all classes referenced by the this class.
+     * 
+     * @return ClassDescriptors of all classes referenced by the this class
+     */
+    public ClassDescriptor[] getReferencedClassDescriptorList();
 }

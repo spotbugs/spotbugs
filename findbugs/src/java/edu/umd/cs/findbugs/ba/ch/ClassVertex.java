@@ -34,6 +34,7 @@ public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private ClassDescriptor classDescriptor;
 	private XClass xclass;
 	private boolean finished;
+	private boolean applicationClass;
 
 	/**
 	 * Constructor.
@@ -46,6 +47,7 @@ public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 		this.classDescriptor = classDescriptor;
 		this.xclass = xclass;
 		this.finished = false;
+		this.applicationClass = false;
 	}
 	
 	/**
@@ -83,4 +85,19 @@ public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	public boolean isFinished() {
 		return finished;
 	}
+
+	/**
+     * Mark this ClassVertex as representing an application class.
+     */
+    public void markAsApplicationClass() {
+    	this.applicationClass = true;
+    }
+    
+    /**
+     * @return true if this ClassVertex represents an application class,
+     *         false otherwise
+     */
+    public boolean isApplicationClass() {
+	    return applicationClass;
+    }
 }

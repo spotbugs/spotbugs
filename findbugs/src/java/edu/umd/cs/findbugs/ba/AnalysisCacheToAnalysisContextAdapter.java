@@ -322,7 +322,19 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				// cached indefinitely
 				XClass xclass = currentXFactory().getXClass(appClass);
 				assert xclass != null;
-				subtypes2.addClass(xclass);
+				
+				// Add the application class to the database
+				subtypes2.addApplicationClass(xclass);
+				
+				// Add all referenced clases to the database
+				for (ClassDescriptor refClassDesc : xclass.getReferencedClassDescriptorList()) {
+					XClass refXClass = currentXFactory().getXClass(refClassDesc);
+					if (refXClass != null) {
+						subtypes2.addClass(refXClass);
+					} else {
+						getLookupFailureCallback().reportMissingClass(refClassDesc);
+					}
+				}
 			}
 		}
 	}

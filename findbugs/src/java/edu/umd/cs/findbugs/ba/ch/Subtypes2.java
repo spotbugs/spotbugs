@@ -92,6 +92,17 @@ public class Subtypes2 {
 		this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
 		this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");
 	}
+	
+	/**
+	 * Add an application class, and its transitive supertypes, to the inheritance graph.
+	 * 
+	 * @param appXClass application XClass to add to the inheritance graph
+	 */
+	public void addApplicationClass(XClass appXClass) {
+		ClassVertex vertex = addClassAndGetClassVertex(appXClass);
+		vertex.markAsApplicationClass();
+		
+	}
 
 	/**
 	 * Add a class or interface, and its transitive supertypes, to the inheritance graph.
