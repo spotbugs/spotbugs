@@ -32,6 +32,8 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -45,6 +47,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * 
  * @author David Hovemeyer
  */
+@DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
 	public static final boolean ENABLE_SUBTYPES2 = SystemProperties.getBoolean("findbugs.subtypes2");
 	private final InheritanceGraph graph;
@@ -217,20 +220,27 @@ public class Subtypes2 {
 			ArrayType possibleSupertypeAsArrayType = (ArrayType) possibleSupertype;
 
 			// Must have same number of dimensions
-			if (typeAsArrayType.getDimensions() != possibleSupertypeAsArrayType.getDimensions()) {
-				return false;
-			}
-			
-			// type's base type must be a subtype of possibleSupertype's base type.
-			// Note that neither base type can be a non-ObjectType if we are to answer yes.
-			Type typeBasicType = typeAsArrayType.getBasicType();
-			if (!(typeBasicType instanceof ObjectType)) {
+			if (typeAsArrayType.getDimensions() < possibleSupertypeAsArrayType.getDimensions()) {
 				return false;
 			}
 			Type possibleSupertypeBasicType = possibleSupertypeAsArrayType.getBasicType();
 			if (!(possibleSupertypeBasicType instanceof ObjectType)) {
 				return false;
 			}
+			Type typeBasicType = typeAsArrayType.getBasicType();
+
+
+			if (typeAsArrayType.getDimensions() > possibleSupertypeAsArrayType.getDimensions()) {
+				return isSubtype(new ArrayType(typeBasicType,typeAsArrayType.getDimensions() - possibleSupertypeAsArrayType.getDimensions() ),
+						(ObjectType) possibleSupertypeBasicType);
+			}
+			// type's base type must be a subtype of possibleSupertype's base type.
+			// Note that neither base type can be a non-ObjectType if we are to answer yes.
+			
+			if (!(typeBasicType instanceof ObjectType)) {
+				return false;
+			}
+
 			return isSubtype((ObjectType) typeBasicType, (ObjectType) possibleSupertypeBasicType);
 		}
 		
@@ -249,8 +259,11 @@ public class Subtypes2 {
 	 * @throws ClassNotFoundException if a missing class prevents a definitive answer
      */
     public boolean isSubtype(ObjectType type, ObjectType possibleSupertype) throws ClassNotFoundException {
+    	if (type.equals(possibleSupertype)) return true;
 	    ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
 	    ClassDescriptor possibleSuperclassClassDescriptor = BCELUtil.getClassDescriptor(possibleSupertype);
+	    ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
+	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) return false;
 	    
 	    // Get the supertype query results
 	    SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
