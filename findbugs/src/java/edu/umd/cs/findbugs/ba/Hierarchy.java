@@ -459,6 +459,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
+	@Deprecated
 	public static  @CheckForNull  JavaClassAndMethod findConcreteMethod(
 			JavaClass javaClass,
 			String methodName,
@@ -481,6 +482,7 @@ public class Hierarchy {
 		}
 		return null;
 	}
+	
 	/**
 	 * Find a method in given class.
 	 *
@@ -490,6 +492,7 @@ public class Hierarchy {
 	 * @param chooser    the JavaClassAndMethodChooser to use to screen possible candidates
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
+	@Deprecated
 	public static  @CheckForNull XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
 			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
@@ -550,6 +553,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
+	@Deprecated
 	public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig) {
 		return findMethod(classList, methodName, methodSig, ANY_METHOD);
 	}
@@ -586,6 +590,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
+	@Deprecated
 	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig) {
 		return findXMethod(classList, methodName, methodSig, ANY_METHOD);
 	}
@@ -601,6 +606,7 @@ public class Hierarchy {
 	 *                   it must return true for a method to be returned
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
+	@Deprecated
 	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig,
 			JavaClassAndMethodChooser chooser) {
 		for (JavaClass cls : classList) {
@@ -766,18 +772,19 @@ public class Hierarchy {
 
 		return result;
 	}
-//	
-//	/**
-//	 * Return whether or not the given method is concrete.
-//	 * 
-//	 * @param xmethod the method
-//	 * @return true if the method is concrete, false otherwise
-//	 */
-//	public static boolean isConcrete(XMethod xmethod) {
-//		int accessFlags = xmethod.getAccessFlags();
-//		return (accessFlags & Constants.ACC_ABSTRACT) == 0
-//			&& (accessFlags & Constants.ACC_NATIVE) == 0;
-//	}
+	
+	/**
+	 * Return whether or not the given method is concrete.
+	 * 
+	 * @param xmethod the method
+	 * @return true if the method is concrete, false otherwise
+	 */
+	@Deprecated
+	public static boolean isConcrete(XMethod xmethod) {
+		int accessFlags = xmethod.getAccessFlags();
+		return (accessFlags & Constants.ACC_ABSTRACT) == 0
+			&& (accessFlags & Constants.ACC_NATIVE) == 0;
+	}
 
 	/**
 	 * Find a field with given name defined in given class.
