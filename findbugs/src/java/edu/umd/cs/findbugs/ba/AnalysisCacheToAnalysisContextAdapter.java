@@ -337,6 +337,10 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				}
 			}
 		}
+		
+		if (Subtypes2.ENABLE_SUBTYPES2) {
+			System.out.println(subtypes2.getGraph().getNumVertices() + " vertices in inheritance graph");
+		}
 	}
 
 	/* (non-Javadoc)

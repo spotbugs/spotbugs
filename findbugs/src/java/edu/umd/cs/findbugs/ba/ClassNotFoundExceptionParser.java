@@ -75,6 +75,10 @@ public class ClassNotFoundExceptionParser {
 				return classDesc.toDottedClassName();
 			}
 		}
+		
+		if (ex.getMessage() == null) {
+			return null;
+		}
 
 		// Try the regular expression patterns to parse the class name
 		// from the exception message.

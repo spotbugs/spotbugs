@@ -70,7 +70,9 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		String missing = AbstractBugReporter.getMissingClassName(ex);
-		if (missing.charAt(0) == '[') return;
+		if (missing == null || missing.startsWith("[")) {
+			return;
+		}
 		bugCollection.addMissingClass(missing);
 		super.reportMissingClass(ex);
 	}

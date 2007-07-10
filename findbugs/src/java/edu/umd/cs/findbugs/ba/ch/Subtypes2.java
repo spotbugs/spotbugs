@@ -50,6 +50,7 @@ public class Subtypes2 {
 	private final InheritanceGraph graph;
 	private final Map<ClassDescriptor, ClassVertex> classDescriptorToVertexMap;
 	private final Map<ClassDescriptor, SupertypeQueryResults> supertypeSetMap;
+	private final Map<ClassDescriptor, Set<ClassDescriptor>> subtypeSetMap;
 	
 	private final ObjectType SERIALIZABLE;
 	private final ObjectType CLONEABLE;
@@ -89,9 +90,17 @@ public class Subtypes2 {
 		this.graph = new InheritanceGraph();
 		this.classDescriptorToVertexMap = new HashMap<ClassDescriptor, ClassVertex>();
 		this.supertypeSetMap = new HashMap<ClassDescriptor, SupertypeQueryResults>();// XXX: use MapCache?
+		this.subtypeSetMap = new HashMap<ClassDescriptor, Set<ClassDescriptor>>();// XXX: use MapCache?
 		this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
 		this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");
 	}
+	
+	/**
+     * @return Returns the graph.
+     */
+    public InheritanceGraph getGraph() {
+	    return graph;
+    }
 	
 	/**
 	 * Add an application class, and its transitive supertypes, to the inheritance graph.
@@ -139,7 +148,7 @@ public class Subtypes2 {
 
 			if (vertex == null) {
 				vertex = new ClassVertex(work.getClassDescriptor(), work);
-				classDescriptorToVertexMap.put(work.getClassDescriptor(), vertex);
+				addVertexToGraph(work.getClassDescriptor(), vertex);
 			}
 
 			addSupertypeEdges(vertex, workList);
@@ -148,6 +157,14 @@ public class Subtypes2 {
 		}
 		
 		return classDescriptorToVertexMap.get(xclass.getClassDescriptor());
+    }
+    
+    private void addVertexToGraph(ClassDescriptor classDescriptor, ClassVertex vertex) {
+    	if (classDescriptorToVertexMap.get(classDescriptor) != null) {
+    		throw new IllegalStateException();
+    	}
+		graph.addVertex(vertex);
+		classDescriptorToVertexMap.put(classDescriptor, vertex);
     }
 	
 	/**
@@ -240,8 +257,60 @@ public class Subtypes2 {
 	    
 	    return supertypeQueryResults.containsType(possibleSuperclassClassDescriptor);
     }
+    
+    /**
+     * Get known subtypes of given class.
+     * 
+     * @param classDescriptor ClassDescriptor naming a class
+     * @return Set of ClassDescriptors which are the known subtypes of the class
+     * @throws ClassNotFoundException 
+     */
+    public Set<ClassDescriptor> getSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    	Set<ClassDescriptor> result = subtypeSetMap.get(classDescriptor);
+    	if (result == null) {
+    		result = computeKnownSubtypes(classDescriptor);
+    		subtypeSetMap.put(classDescriptor, result);
+    	}
+    	return result;
+    }
 
     /**
+     * Compute set of known subtypes of class named by given ClassDescriptor.
+     * 
+     * @param classDescriptor a ClassDescriptor
+     * @throws ClassNotFoundException 
+     */
+    private Set<ClassDescriptor> computeKnownSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    	LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+
+    	ClassVertex startVertex = resolveClassVertex(classDescriptor);
+    	workList.addLast(startVertex);
+    	
+    	Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+    	
+    	while (!workList.isEmpty()) {
+    		ClassVertex current = workList.removeFirst();
+    		
+    		if (result.contains(current.getClassDescriptor())) {
+    			// Already added this class
+    			continue;
+    		}
+    		
+    		// Add class to the result
+    		result.add(current.getClassDescriptor());
+    		
+    		// Add all known subtype vertices to the work list
+    		Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(current);
+    		while (i.hasNext()) {
+    			InheritanceEdge edge = i.next();
+    			workList.addLast(edge.getSource());
+    		}
+    	}
+    	
+    	return result;
+    }
+
+	/**
      * Look up or compute the SupertypeQueryResults for class
      * named by given ClassDescriptor.
      * 
@@ -361,24 +430,27 @@ public class Subtypes2 {
 			return;
 		}
 
-		XClass superClass = AnalysisContext.currentXFactory().getXClass(superclassDescriptor);
-		if (superClass == null) {
-			// Inheritance graph will be incomplete.
-			// Add a dummy node to inheritance graph and report missing class.
-			addClassVertexForMissingClass(superclassDescriptor);
-			return;
+		ClassVertex superclassVertex = classDescriptorToVertexMap.get(superclassDescriptor);
+		if (superclassVertex == null) {
+			// Haven't encountered this class previously.
+			
+			XClass superclassXClass = AnalysisContext.currentXFactory().getXClass(superclassDescriptor);
+			if (superclassXClass == null) {
+				// Inheritance graph will be incomplete.
+				// Add a dummy node to inheritance graph and report missing class.
+				superclassVertex = addClassVertexForMissingClass(superclassDescriptor);
+			} else {
+				// Haven't seen this class before.
+				superclassVertex = new ClassVertex(superclassDescriptor, superclassXClass);
+				addVertexToGraph(superclassDescriptor, superclassVertex);
+				
+				// We'll want to recursively process the superclass.
+				workList.addLast(superclassXClass);
+			}
 		}
-
-		ClassVertex superVertex = classDescriptorToVertexMap.get(superclassDescriptor);
-		if (superVertex == null) {
-			// Seeing this class for the first time
-
-			superVertex = new ClassVertex(superclassDescriptor, superClass);
-			classDescriptorToVertexMap.put(superclassDescriptor, superVertex);
-			workList.addLast(superClass); // recursively process supertype
-		}
-
-		InheritanceEdge edge = graph.createEdge(vertex, superVertex);
+		assert superclassVertex != null;
+		
+		graph.createEdge(vertex, superclassVertex);
 	}
 
 	/**
@@ -390,7 +462,7 @@ public class Subtypes2 {
     private ClassVertex addClassVertexForMissingClass(ClassDescriptor missingClassDescriptor) {
     	ClassVertex missingClassVertex = new ClassVertex(missingClassDescriptor, null);
     	missingClassVertex.setFinished(true);
-	    graph.addVertex(missingClassVertex);
+    	addVertexToGraph(missingClassDescriptor, missingClassVertex);
 	    
 	    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(missingClassDescriptor);
 	    
