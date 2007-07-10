@@ -43,7 +43,10 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Facade for class hierarchy queries.
@@ -95,6 +98,17 @@ public class Hierarchy {
 	 *         false if not
 	 */
 	public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
+		if (Subtypes2.ENABLE_SUBTYPES2) {
+			try {
+				Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+				return subtypes2.isSubtype(t, possibleSupertype);
+			} catch (CheckedAnalysisException e) {
+				// Should not happen
+				IllegalStateException ise = new IllegalStateException("Should not happen");
+				ise.initCause(e);
+				throw ise;
+			}
+		} else {
 		Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
 		if (subtypes == null) {
 			subtypes = new HashMap<ReferenceType, Boolean>();
@@ -106,6 +120,7 @@ public class Hierarchy {
 			subtypes.put(t, result);
 		}
 		return result;
+		}
 	}
 
 	static Map<ReferenceType, Map<ReferenceType, Boolean>> subtypeCache = new HashMap<ReferenceType, Map<ReferenceType, Boolean>> ();

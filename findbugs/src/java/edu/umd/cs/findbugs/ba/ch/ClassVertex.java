@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.ch;
 
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
@@ -29,19 +30,42 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
  * @author David Hovemeyer
  */
 public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
+	private ClassDescriptor classDescriptor;
 	private XClass xclass;
 	private boolean finished;
 
-	public ClassVertex(XClass xclass) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param classDescriptor ClassDescriptor naming the class or interface
+	 * @param xclass          object containing information about a class or interface
+	 */
+	public ClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
+		this.classDescriptor = classDescriptor;
 		this.xclass = xclass;
 		this.finished = false;
 	}
+	
+	/**
+     * @return Returns the classDescriptor.
+     */
+    public ClassDescriptor getClassDescriptor() {
+	    return classDescriptor;
+    }
 
 	/**
 	 * @return Returns the xclass.
 	 */
 	public XClass getXClass() {
 		return xclass;
+	}
+
+	/**
+	 * Return true if this ClassVertex corresponds to a resolved
+	 * class, or false if the class could not be found.
+	 */
+	public boolean isResolved() {
+		return xclass != null;
 	}
 
 	/**

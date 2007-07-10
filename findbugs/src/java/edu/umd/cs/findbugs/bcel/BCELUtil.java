@@ -24,7 +24,9 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -84,5 +86,29 @@ public abstract class BCELUtil {
     	return jclass.getMajor() < JDK15_MAJOR ||
     			(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
     
+    }
+
+	/**
+	 * Get a ClassDescriptor for the class described by given ObjectType object.
+	 * 
+     * @param type an ObjectType
+     * @return a ClassDescriptor for the class described by the ObjectType
+     */
+    public static ClassDescriptor getClassDescriptor(ObjectType type) {
+    	return DescriptorFactory.instance().getClassDescriptorForDottedClassName(type.getClassName());
+    }
+    
+    /**
+     * Throw a ClassNotFoundException to indicate that class named
+     * by given ClassDescriptor cannot be found.
+     * The exception message is formatted in a way that can
+     * be decoded by ClassNotFoundExceptionParser.
+     * 
+     * @param classDescriptor ClassDescriptor naming a class that cannot be found
+     * @throws ClassNotFoundException
+     * @see ClassNotFoundExceptionParser
+     */
+    public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    	throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
     }
 }

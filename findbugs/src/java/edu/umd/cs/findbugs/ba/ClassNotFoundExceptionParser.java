@@ -42,7 +42,8 @@ public class ClassNotFoundExceptionParser {
 	private static final Pattern BCEL_MISSING_CLASS_PATTERN =
 			Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
-	// edu.umd.cs.findbugs.ba.type.TypeRepository uses this format
+	// edu.umd.cs.findbugs.ba.type.TypeRepository
+	// and edu.umd.cs.findbugs.ba.ch.Subtypes2 uses this format
 	private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN =
 			Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
 
