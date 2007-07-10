@@ -389,7 +389,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (obj.getName(getCPG()).equals("toArray")) {
 			ReferenceType target = obj.getReferenceType(getCPG());
 			String signature = obj.getSignature(getCPG());
-			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollectionType(target)) {
+			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollection(target)) {
 
 				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
 				Type resultType = frame.popValue();
@@ -413,7 +413,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 	}
 
-    private boolean isCollectionType(ReferenceType target) throws ClassNotFoundException {
+    private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
     	if (Subtypes2.ENABLE_SUBTYPES2) {
     		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
     		return subtypes2.isSubtype(target, COLLECTION_TYPE);
