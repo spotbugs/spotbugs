@@ -166,7 +166,7 @@ public class DetectorFactoryCollection {
 	/**
 	 * Register a DetectorFactory.
 	 */
-	private void registerDetector(DetectorFactory factory) {
+	void registerDetector(DetectorFactory factory) {
 		if (FindBugs.DEBUG) System.out.println("Registering detector: " + factory.getFullName());
 		String detectorName = factory.getShortName();
 		factoryList.add(factory);
@@ -213,6 +213,23 @@ public class DetectorFactoryCollection {
 		if (loaded) return;
 		loadPlugins();
 	}
+	
+	/**
+	 * Directly set the collection of Plugins from which to load DetectorFactories.
+	 * May be called instead of loadPlugins().
+	 * 
+	 * @param plugins array of Plugins to register
+	 */
+	void setPlugins(Plugin[] plugins) {
+		if (loaded) {
+			throw new IllegalStateException();
+		}
+		for (Plugin plugin : plugins) {
+			pluginByIdMap.put(plugin.getPluginId(), plugin);
+		}
+		loaded = true;
+	}
+	
 	/**
 	 * Load all plugins. If a setPluginList() has been called, then those
 	 * plugins are loaded. Otherwise, the "findbugs.home" property is checked to

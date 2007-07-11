@@ -19,30 +19,45 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
+import java.io.IOException;
+
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.FindBugsTestCase;
+import edu.umd.cs.findbugs.RunnableWithExceptions;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
  * @author pwilliam
  */
-public class Subtypes2Test extends TestCase {
-	
-	public void testArrays() throws ClassNotFoundException {
-		ObjectType typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
-		ObjectType typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-		ObjectType typeObject = ObjectTypeFactory.getInstance("java.io.Serializable");
-		ArrayType typeArraySerializable = new ArrayType(typeSerializable,1);
-		ArrayType typeArrayClonable = new ArrayType(typeClonable,1);
-		ArrayType typeArrayObject = new ArrayType(typeObject,1);
-		ArrayType typeArrayArraySerializable = new ArrayType(typeSerializable,1);
-		ArrayType typeArrayArrayClonable = new ArrayType(typeClonable,1);
-		ArrayType typeArrayArrayObject = new ArrayType(typeObject,1);
-		Subtypes2 test = new Subtypes2();
-		// assertTrue(test.isSubtype(typeObject, typeObject));
-		// assertTrue(test.isSubtype(typeClonable, typeObject));
+public class Subtypes2Test extends FindBugsTestCase {
+
+
+
+	public void testArrays() throws Throwable {
+
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() throws ClassNotFoundException {
+				ObjectType typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
+				ObjectType typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
+				ObjectType typeObject = ObjectTypeFactory.getInstance("java.io.Serializable");
+				ArrayType typeArraySerializable = new ArrayType(typeSerializable,1);
+				ArrayType typeArrayClonable = new ArrayType(typeClonable,1);
+				ArrayType typeArrayObject = new ArrayType(typeObject,1);
+				ArrayType typeArrayArraySerializable = new ArrayType(typeSerializable,1);
+				ArrayType typeArrayArrayClonable = new ArrayType(typeClonable,1);
+				ArrayType typeArrayArrayObject = new ArrayType(typeObject,1);
+				Subtypes2 test = new Subtypes2();
+				assertTrue(test.isSubtype(typeObject, typeObject));
+				assertTrue(test.isSubtype(typeClonable, typeObject));
+			}
+		});
 	}
 
 }

@@ -94,6 +94,10 @@ public class ExecutionPlan {
 	 * Add a Plugin whose Detectors should be added to the execution plan.
 	 */
 	public void addPlugin(Plugin plugin) throws OrderingConstraintException {
+		if (DEBUG) {
+			System.out.println("Adding plugin " + plugin.getPluginId() + " to execution plan");
+		}
+		
 		pluginList.add(plugin);
 
 		// Add ordering constraints
@@ -103,6 +107,9 @@ public class ExecutionPlan {
 		// Add detector factories
 		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
+			if (DEBUG) {
+				System.out.println("  Detector factory " + factory.getShortName());
+			}
 			if (factoryMap.put(factory.getFullName(), factory) != null) {
 				throw new OrderingConstraintException("Detector " + factory.getFullName() +
 						" is defined by more than one plugin");
