@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.graph.AbstractVertex;
  * 
  * @author David Hovemeyer
  */
-public class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
+class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private ClassDescriptor classDescriptor;
 	private XClass xclass;
 	private boolean finished;
