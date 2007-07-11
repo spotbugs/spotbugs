@@ -30,6 +30,16 @@ import java.io.Serializable;
 public interface ClassMember extends Comparable<ClassMember>, Serializable, AccessibleEntity  {
 
 	/**
+	 * Get the full (dotted) name of the class (if the object represents a class)
+	 * or the class the entity is defined in (if a field or method).
+	 */
+	public String getClassName();
+	/**
+	 * Get the (dotted) name of the package in which the entity is defined.
+	 */
+	public String getPackageName();
+	
+	/**
 	 * Get the name of the field/method.
 	 */
 	public String getName();

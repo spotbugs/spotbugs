@@ -23,37 +23,93 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
- * Represents the class name, superclass name, and interface list
- * of a class. 
+ * Represents the class name, superclass name, and interface list of a class.
  * 
  * @author David Hovemeyer
  */
-public class ClassNameAndSuperclassInfo {
-	private ClassDescriptor classDescriptor;
-	private ClassDescriptor superclassDescriptor;
-	private ClassDescriptor[] interfaceDescriptorList;
-	private ICodeBaseEntry codeBaseEntry;
-	private int accessFlags;
+public class ClassNameAndSuperclassInfo extends ClassDescriptor {
+	private final ClassDescriptor superclassDescriptor;
 
-	/**
-	 * Constructor.
-	 * Does not initialize any fields; setters should be called
-	 * before the object is used.
-	 */
-	public ClassNameAndSuperclassInfo() {
+	private final ClassDescriptor[] interfaceDescriptorList;
+
+	private final ICodeBaseEntry codeBaseEntry;
+
+	private final int accessFlags;
+
+	public static class Builder {
+		ClassDescriptor classDescriptor;
+
+		ClassDescriptor superclassDescriptor;
+
+		ClassDescriptor[] interfaceDescriptorList;
+
+		ICodeBaseEntry codeBaseEntry;
+
+		int accessFlags;
+
+		public ClassNameAndSuperclassInfo build() {
+			return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
+			        accessFlags);
+		}
+
+		/**
+		 * @param accessFlags
+		 *            The accessFlags to set.
+		 */
+		public void setAccessFlags(int accessFlags) {
+			this.accessFlags = accessFlags;
+		}
+
+		/**
+		 * @param classDescriptor
+		 *            The classDescriptor to set.
+		 */
+		public void setClassDescriptor(ClassDescriptor classDescriptor) {
+			this.classDescriptor = classDescriptor;
+		}
+
+		/**
+		 * @param codeBaseEntry
+		 *            The codeBaseEntry to set.
+		 */
+		public void setCodeBaseEntry(ICodeBaseEntry codeBaseEntry) {
+			this.codeBaseEntry = codeBaseEntry;
+		}
+
+		/**
+		 * @param interfaceDescriptorList
+		 *            The interfaceDescriptorList to set.
+		 */
+		public void setInterfaceDescriptorList(ClassDescriptor[] interfaceDescriptorList) {
+			this.interfaceDescriptorList = interfaceDescriptorList;
+		}
+
+		/**
+		 * @param superclassDescriptor
+		 *            The superclassDescriptor to set.
+		 */
+		public void setSuperclassDescriptor(ClassDescriptor superclassDescriptor) {
+			this.superclassDescriptor = superclassDescriptor;
+		}
 	}
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param classDescriptor         ClassDescriptor representing the class name
-	 * @param superclassDescriptor    ClassDescriptor representing the superclass name
-	 * @param interfaceDescriptorList ClassDescriptors representing implemented interface names
-	 * @param codeBaseEntry           codebase entry class was loaded from
-	 * @param accessFlags             class's access flags
+	 * @param classDescriptor
+	 *            ClassDescriptor representing the class name
+	 * @param superclassDescriptor
+	 *            ClassDescriptor representing the superclass name
+	 * @param interfaceDescriptorList
+	 *            ClassDescriptors representing implemented interface names
+	 * @param codeBaseEntry
+	 *            codebase entry class was loaded from
+	 * @param accessFlags
+	 *            class's access flags
 	 */
-	public ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor, ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags) {
-		this.classDescriptor = classDescriptor;
+	public ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
+	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags) {
+		super(classDescriptor.getClassName());
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
@@ -68,24 +124,10 @@ public class ClassNameAndSuperclassInfo {
 	}
 
 	/**
-	 * @param accessFlags The accessFlags to set.
-	 */
-	public void setAccessFlags(int accessFlags) {
-		this.accessFlags = accessFlags;
-	}
-
-	/**
 	 * @return Returns the classDescriptor.
 	 */
 	public ClassDescriptor getClassDescriptor() {
-		return classDescriptor;
-	}
-
-	/**
-	 * @param classDescriptor The classDescriptor to set.
-	 */
-	public void setClassDescriptor(ClassDescriptor classDescriptor) {
-		this.classDescriptor = classDescriptor;
+		return this;
 	}
 
 	/**
@@ -96,13 +138,6 @@ public class ClassNameAndSuperclassInfo {
 	}
 
 	/**
-	 * @param codeBaseEntry The codeBaseEntry to set.
-	 */
-	public void setCodeBaseEntry(ICodeBaseEntry codeBaseEntry) {
-		this.codeBaseEntry = codeBaseEntry;
-	}
-
-	/**
 	 * @return Returns the interfaceDescriptorList.
 	 */
 	public ClassDescriptor[] getInterfaceDescriptorList() {
@@ -110,24 +145,10 @@ public class ClassNameAndSuperclassInfo {
 	}
 
 	/**
-	 * @param interfaceDescriptorList The interfaceDescriptorList to set.
-	 */
-	public void setInterfaceDescriptorList(ClassDescriptor[] interfaceDescriptorList) {
-		this.interfaceDescriptorList = interfaceDescriptorList;
-	}
-
-	/**
 	 * @return Returns the superclassDescriptor.
 	 */
 	public ClassDescriptor getSuperclassDescriptor() {
 		return superclassDescriptor;
-	}
-
-	/**
-	 * @param superclassDescriptor The superclassDescriptor to set.
-	 */
-	public void setSuperclassDescriptor(ClassDescriptor superclassDescriptor) {
-		this.superclassDescriptor = superclassDescriptor;
 	}
 
 }

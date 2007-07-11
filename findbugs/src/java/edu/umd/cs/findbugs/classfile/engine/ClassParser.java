@@ -83,7 +83,7 @@ public class ClassParser {
 	 *                   the class's symbolic information
 	 * @throws InvalidClassFileFormatException
 	 */
-	public void parse(ClassNameAndSuperclassInfo classInfo) throws InvalidClassFileFormatException {
+	public void parse(ClassNameAndSuperclassInfo.Builder classInfo) throws InvalidClassFileFormatException {
 		try {
 			int magic = in.readInt();
 			int major_version = in.readUnsignedShort();
@@ -137,8 +137,8 @@ public class ClassParser {
 	 *                   the class's symbolic information
 	 * @throws InvalidClassFileFormatException
 	 */
-	public void parse(ClassInfo classInfo) throws InvalidClassFileFormatException {
-		parse((ClassNameAndSuperclassInfo) classInfo);
+	public void parse(ClassInfo.Builder classInfo) throws InvalidClassFileFormatException {
+		parse((ClassNameAndSuperclassInfo.Builder) classInfo);
 
 		try {
 			int fields_count = in.readUnsignedShort();

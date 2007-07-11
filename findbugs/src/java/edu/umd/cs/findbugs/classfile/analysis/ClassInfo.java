@@ -27,50 +27,104 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * ClassInfo represents important metadata about a
- * loaded class, such as its superclass, access flags, codebase entry,
- * etc.
+ * ClassInfo represents important metadata about a loaded class, such as its
+ * superclass, access flags, codebase entry, etc.
  * 
  * @author David Hovemeyer
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
-	private FieldDescriptor[] fieldDescriptorList;
-	private MethodDescriptor[] methodDescriptorList;
-	private ClassDescriptor[] referencedClassDescriptorList;
-	private ClassDescriptor immediateEnclosingClass;
+	private final FieldDescriptor[] fieldDescriptorList;
 
-	/**
-	 * Constructor.
-	 * Does not initialize any fields; setters should be called
-	 * before the object is used.
-	 */
-	public ClassInfo() {
+	private final MethodDescriptor[] methodDescriptorList;
+
+	private final ClassDescriptor[] referencedClassDescriptorList;
+
+	private final ClassDescriptor immediateEnclosingClass;
+
+	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
+		private FieldDescriptor[] fieldDescriptorList;
+
+		private MethodDescriptor[] methodDescriptorList;
+
+		private ClassDescriptor[] referencedClassDescriptorList;
+
+		private ClassDescriptor immediateEnclosingClass;
+
+		public ClassInfo build() {
+			return new ClassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
+			        fieldDescriptorList, methodDescriptorList, referencedClassDescriptorList, immediateEnclosingClass);
+		}
+
+		/**
+		 * @return Returns the classDescriptor.
+		 */
+		public ClassDescriptor getClassDescriptor() {
+			return classDescriptor;
+		}
+
+		/**
+		 * @param fieldDescriptorList
+		 *            The fieldDescriptorList to set.
+		 */
+		public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
+			this.fieldDescriptorList = fieldDescriptorList;
+		}
+
+		/**
+		 * @param methodDescriptorList
+		 *            The methodDescriptorList to set.
+		 */
+		public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
+			this.methodDescriptorList = methodDescriptorList;
+		}
+
+		/**
+		 * @param referencedClassDescriptorList
+		 *            The referencedClassDescriptorList to set.
+		 */
+		public void setReferencedClassDescriptorList(ClassDescriptor[] referencedClassDescriptorList) {
+			this.referencedClassDescriptorList = referencedClassDescriptorList;
+		}
+
+		/**
+		 * @param immediateEnclosingClass
+		 *            The immediateEnclosingClass to set.
+		 */
+		public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
+			this.immediateEnclosingClass = immediateEnclosingClass;
+		}
+
 	}
 
 	/**
 	 * 
-	 * @param classDescriptor         ClassDescriptor representing the class name
-	 * @param superclassDescriptor    ClassDescriptor representing the superclass name
-	 * @param interfaceDescriptorList ClassDescriptors representing implemented interface names
-	 * @param codeBaseEntry           codebase entry class was loaded from
-	 * @param accessFlags             class's access flags
-	 * @param fieldDescriptorList     FieldDescriptors of fields defined in the class
-	 * @param methodDescriptorList    MethodDescriptors of methods defined in the class
-	 * @param referencedClassDescriptorList ClassDescriptors of all classes/interfaces referenced by the class
+	 * @param classDescriptor
+	 *            ClassDescriptor representing the class name
+	 * @param superclassDescriptor
+	 *            ClassDescriptor representing the superclass name
+	 * @param interfaceDescriptorList
+	 *            ClassDescriptors representing implemented interface names
+	 * @param codeBaseEntry
+	 *            codebase entry class was loaded from
+	 * @param accessFlags
+	 *            class's access flags
+	 * @param fieldDescriptorList
+	 *            FieldDescriptors of fields defined in the class
+	 * @param methodDescriptorList
+	 *            MethodDescriptors of methods defined in the class
+	 * @param referencedClassDescriptorList
+	 *            ClassDescriptors of all classes/interfaces referenced by the
+	 *            class
 	 */
-	public ClassInfo(
-			ClassDescriptor classDescriptor,
-			ClassDescriptor superclassDescriptor,
-			ClassDescriptor[] interfaceDescriptorList,
-			ICodeBaseEntry codeBaseEntry,
-			int accessFlags,
-			FieldDescriptor[] fieldDescriptorList,
-			MethodDescriptor[] methodDescriptorList,
-			ClassDescriptor[] referencedClassDescriptorList) {
+	public ClassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
+	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
+	        FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
+	        ClassDescriptor[] referencedClassDescriptorList, ClassDescriptor immediateEnclosingClass) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags);
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
+		this.immediateEnclosingClass = immediateEnclosingClass;
 	}
 
 	/**
@@ -101,53 +155,18 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		return immediateEnclosingClass;
 	}
 
-	/**
-	 * @param fieldDescriptorList The fieldDescriptorList to set.
-	 */
-	public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
-		this.fieldDescriptorList = fieldDescriptorList;
-	}
-
-	/**
-	 * @param methodDescriptorList The methodDescriptorList to set.
-	 */
-	public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
-		this.methodDescriptorList = methodDescriptorList;
-	}
-
-	/**
-	 * @param referencedClassDescriptorList The referencedClassDescriptorList to set.
-	 */
-	public void setReferencedClassDescriptorList(
-			ClassDescriptor[] referencedClassDescriptorList) {
-		this.referencedClassDescriptorList = referencedClassDescriptorList;
-	}
-
-	/**
-	 * @param immediateEnclosingClass The immediateEnclosingClass to set.
-	 */
-	public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
-		this.immediateEnclosingClass = immediateEnclosingClass;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(XClass o) {
-		// All we compare is the class name,
-		// since that is what uniquely identifies
-		// a class.
-		return getClassName().compareTo(o.getClassName());
-	}
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassName()
 	 */
 	public String getClassName() {
 		return getClassDescriptor().toDottedClassName();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
 	 */
 	public String getPackageName() {
@@ -164,35 +183,45 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		return (getAccessFlags() & flag) != 0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
 	 */
 	public boolean isFinal() {
 		return isFlagSet(IClassConstants.ACC_FINAL);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
 	 */
 	public boolean isPrivate() {
 		return isFlagSet(IClassConstants.ACC_PRIVATE);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
 	 */
 	public boolean isProtected() {
 		return isFlagSet(IClassConstants.ACC_PROTECTED);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
 	 */
 	public boolean isPublic() {
 		return isFlagSet(IClassConstants.ACC_PUBLIC);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
 	 */
 	public boolean isResolved() {
@@ -201,7 +230,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isStatic()
 	 */
 	public boolean isStatic() {

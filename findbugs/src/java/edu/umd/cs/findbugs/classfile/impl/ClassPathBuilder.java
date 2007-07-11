@@ -477,10 +477,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		try {
 			in = new DataInputStream(entry.openResource());
 			ClassParser parser = new ClassParser(in, null, entry);
-
-			ClassNameAndSuperclassInfo classInfo = new ClassNameAndSuperclassInfo();
-			parser.parse(classInfo);
-			entry.overrideResourceName(classInfo.getClassDescriptor().toResourceName());
+			ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
+			parser.parse(builder);
+			entry.overrideResourceName(builder.build().getClassDescriptor().toResourceName());
 		} catch (IOException e) {
 			errorLogger.logError("Invalid class resource " + entry.getResourceName() +
 					" in " + entry, e);

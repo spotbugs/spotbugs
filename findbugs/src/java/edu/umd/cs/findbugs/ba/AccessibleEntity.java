@@ -64,11 +64,6 @@ public interface AccessibleEntity {
 	 */
 	public boolean isResolved();
 
-	/**
-	 * Get the full (dotted) name of the class (if the object represents a class)
-	 * or the class the entity is defined in (if a field or method).
-	 */
-	public String getClassName();
 
 	/**
 	 * Get the ClassDescriptor representing the class (if entity is a class)
@@ -76,9 +71,6 @@ public interface AccessibleEntity {
 	 */
 	public ClassDescriptor getClassDescriptor();
 
-	/**
-	 * Get the (dotted) name of the package in which the entity is defined.
-	 */
-	public String getPackageName();
+
 
 }

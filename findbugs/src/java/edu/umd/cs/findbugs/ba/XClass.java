@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * 
  * @author David Hovemeyer
  */
-public interface XClass extends Comparable<XClass>, AccessibleEntity {
+public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
 
 	/**
 	 * Get ClassDescriptor of this class's immediate superclass.
