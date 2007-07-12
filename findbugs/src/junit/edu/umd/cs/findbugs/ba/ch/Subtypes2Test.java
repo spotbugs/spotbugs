@@ -222,6 +222,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeDynamicString, typeString));
+				assertTrue(test.isSubtype(typeStaticString, typeString));
+				assertTrue(test.isSubtype(typeParameterString, typeString));
 	    	}
 	    });
     }
