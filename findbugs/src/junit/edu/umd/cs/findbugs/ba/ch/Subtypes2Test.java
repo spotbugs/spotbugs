@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.RunnableWithExceptions;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindRefComparison;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -56,6 +57,9 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayArrayString;
 	ArrayType typeArrayInt;
 	ArrayType typeArrayArrayInt;
+	ObjectType typeDynamicString;
+	ObjectType typeStaticString;
+	ObjectType typeParameterString;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -77,6 +81,9 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayArrayString = new ArrayType(typeString, 2);
 		typeArrayInt = new ArrayType(Type.INT, 1);
 		typeArrayArrayInt = new ArrayType(Type.INT, 2);
+		typeDynamicString = new FindRefComparison.DynamicStringType();
+		typeStaticString = new FindRefComparison.StaticStringType();
+		typeParameterString = new FindRefComparison.ParameterStringType();
 	}
 	
 	private static Subtypes2 getSubtypes2() {
@@ -202,6 +209,19 @@ public class Subtypes2Test extends FindBugsTestCase {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeArrayInt, typeObject));
+	    	}
+	    });
+    }
+	
+	public void testSpecialStringSubclasses() throws Throwable {
+	    executeFindBugsTest(new RunnableWithExceptions() {
+	    	/* (non-Javadoc)
+	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+	    	 */
+	    	public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeDynamicString, typeString));
 	    	}
 	    });
     }
