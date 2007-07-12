@@ -87,6 +87,12 @@ public class DetectorFactoryCollection {
 			theInstance = instance;
 		}
 	}
+	
+	static void resetInstance(DetectorFactoryCollection instance) {
+		synchronized (lock) {
+			theInstance = instance;
+		}
+	}
 
 	/**
 	 * Get the single instance of DetectorFactoryCollection.

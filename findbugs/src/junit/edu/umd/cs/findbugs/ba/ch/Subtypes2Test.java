@@ -27,37 +27,74 @@ import org.apache.bcel.generic.ObjectType;
 import edu.umd.cs.findbugs.FindBugsTestCase;
 import edu.umd.cs.findbugs.RunnableWithExceptions;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
- * @author pwilliam
+ * Tests for Subtypes2.
+ * 
+ * @author Bill Pugh
+ * @author David Hovemeyer
  */
 public class Subtypes2Test extends FindBugsTestCase {
 
+	ObjectType typeSerializable;
+	ObjectType typeClonable;
+	ObjectType typeObject;
+	ArrayType typeArraySerializable;
+	ArrayType typeArrayClonable;
+	ArrayType typeArrayObject;
+	ArrayType typeArrayArraySerializable;
+	ArrayType typeArrayArrayClonable;
+	ArrayType typeArrayArrayObject;
 
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
+		typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
+		typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
+		typeArraySerializable = new ArrayType(typeSerializable,1);
+		typeArrayClonable = new ArrayType(typeClonable,1);
+		typeArrayObject = new ArrayType(typeObject,1);
+		typeArrayArraySerializable = new ArrayType(typeSerializable,1);
+		typeArrayArrayClonable = new ArrayType(typeClonable,1);
+		typeArrayArrayObject = new ArrayType(typeObject,1);
+	}
+	
+	private static Subtypes2 getSubtypes2() {
+		try {
+			return Global.getAnalysisCache().getDatabase(Subtypes2.class);
+		} catch (CheckedAnalysisException e) {
+			throw new IllegalStateException();
+		}
+	}
 
-	public void testArrays() throws Throwable {
-
+	public void testSelfSubtype() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions() {
 			/* (non-Javadoc)
-			 * @see java.lang.Runnable#run()
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
 			 */
-			public void run() throws ClassNotFoundException {
-				ObjectType typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
-				ObjectType typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-				ObjectType typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
-				ArrayType typeArraySerializable = new ArrayType(typeSerializable,1);
-				ArrayType typeArrayClonable = new ArrayType(typeClonable,1);
-				ArrayType typeArrayObject = new ArrayType(typeObject,1);
-				ArrayType typeArrayArraySerializable = new ArrayType(typeSerializable,1);
-				ArrayType typeArrayArrayClonable = new ArrayType(typeClonable,1);
-				ArrayType typeArrayArrayObject = new ArrayType(typeObject,1);
-				Subtypes2 test = new Subtypes2();
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
 				assertTrue(test.isSubtype(typeObject, typeObject));
+			}
+		});
+	}
+	
+	public void testInterfaceIsSubtypeOfObject() throws Throwable {
+
+		executeFindBugsTest(new RunnableWithExceptions() {
+			public void run() throws ClassNotFoundException {
+				Subtypes2 test = getSubtypes2();
+
 				assertTrue(test.isSubtype(typeClonable, typeObject));
 			}
 		});
 	}
-
 }

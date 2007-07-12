@@ -86,7 +86,7 @@ public class JUnitDetectorAdapter implements Detector2 {
 		try {
 			runnableInstance.get().run();
 		} catch (Throwable e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			throwable = e;
 		}
 	}
