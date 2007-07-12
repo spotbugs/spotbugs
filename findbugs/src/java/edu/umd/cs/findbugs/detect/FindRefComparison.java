@@ -99,7 +99,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * This sort of String should never be compared using reference
 	 * equality.
 	 */
-	private static class DynamicStringType extends ObjectType {
+	public static class DynamicStringType extends ObjectType {
 		private static final long serialVersionUID = 1L;
 
 		public DynamicStringType() {
@@ -135,7 +135,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * It is generally OK to compare this sort of String
 	 * using reference equality.
 	 */
-	private static class StaticStringType extends ObjectType {
+	public static class StaticStringType extends ObjectType {
 		private static final long serialVersionUID = 1L;
 
 		public StaticStringType() {
@@ -168,7 +168,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	/**
 	 * Type representing a String passed as a parameter.
 	 */
-	private static class ParameterStringType extends ObjectType {
+	public static class ParameterStringType extends ObjectType {
 		private static final long serialVersionUID = 1L;
 
 		public ParameterStringType() {
