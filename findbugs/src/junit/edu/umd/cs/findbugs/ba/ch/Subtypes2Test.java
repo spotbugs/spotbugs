@@ -50,6 +50,9 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayObject;
 	ArrayType typeArrayInteger;
 	ArrayType typeArrayString;
+	ArrayType typeArrayArrayObject;
+	ArrayType typeArrayArraySerializable;
+	ArrayType typeArrayArrayString;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -66,6 +69,9 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayObject = new ArrayType(typeObject,1);
 		typeArrayInteger = new ArrayType(typeInteger,1);
 		typeArrayString = new ArrayType(typeString, 1);
+		typeArrayArrayObject = new ArrayType(typeObject, 2);
+		typeArrayArraySerializable = new ArrayType(typeSerializable, 2);
+		typeArrayArrayString = new ArrayType(typeString, 2);
 	}
 	
 	private static Subtypes2 getSubtypes2() {
@@ -74,6 +80,32 @@ public class Subtypes2Test extends FindBugsTestCase {
 		} catch (CheckedAnalysisException e) {
 			throw new IllegalStateException();
 		}
+	}
+	
+	public void testStringSubtypeOfObject() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeString, typeObject));
+			}
+		});
+	}
+	
+	public void testStringSubtypeOfSerializable() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeString, typeSerializable));
+			}
+		});
 	}
 
 	public void testIdentitySubtype() throws Throwable {
