@@ -24,8 +24,10 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * A special Detector2 class designed to run some JUnit test code.
+ * Only used by FindBugsTestCase.
  * 
  * @author David Hovemeyer
+ * @see FindBugsTestCase
  */
 public class JUnitDetectorAdapter implements Detector2 {
 	
