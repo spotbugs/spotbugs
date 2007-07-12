@@ -46,7 +46,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			public void run() throws ClassNotFoundException {
 				ObjectType typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
 				ObjectType typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-				ObjectType typeObject = ObjectTypeFactory.getInstance("java.io.Serializable");
+				ObjectType typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
 				ArrayType typeArraySerializable = new ArrayType(typeSerializable,1);
 				ArrayType typeArrayClonable = new ArrayType(typeClonable,1);
 				ArrayType typeArrayObject = new ArrayType(typeObject,1);
