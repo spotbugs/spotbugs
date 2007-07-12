@@ -152,7 +152,6 @@ public abstract class FindBugsTestCase extends TestCase {
 
 				DetectorFactoryCollection dfc = new DetectorFactoryCollection();
 				DetectorFactoryCollection.resetInstance(dfc);
-				System.out.println("dfc hashcode = " + System.identityHashCode(dfc));
 
 				Plugin fakePlugin = new Plugin("edu.umd.cs.findbugs.fakeplugin", null);
 				fakePlugin.setEnabled(true);
