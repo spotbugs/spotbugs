@@ -229,4 +229,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	public boolean isStatic() {
 		return isFlagSet(IClassConstants.ACC_STATIC);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XClass#isInterface()
+	 */
+	public boolean isInterface() {
+		return isFlagSet(IClassConstants.ACC_INTERFACE);
+	}
 }

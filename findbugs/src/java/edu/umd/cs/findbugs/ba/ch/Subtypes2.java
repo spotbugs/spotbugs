@@ -32,13 +32,16 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Class for performing class hierarchy queries.
@@ -50,6 +53,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 @DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
 	public static final boolean ENABLE_SUBTYPES2 = SystemProperties.getBoolean("findbugs.subtypes2");
+	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");
+	
 	private final InheritanceGraph graph;
 	private final Map<ClassDescriptor, ClassVertex> classDescriptorToVertexMap;
 	private final Map<ClassDescriptor, SupertypeQueryResults> supertypeSetMap;
@@ -150,7 +155,7 @@ public class Subtypes2 {
 			}
 
 			if (vertex == null) {
-				vertex = new ClassVertex(work.getClassDescriptor(), work);
+				vertex = ClassVertex.createResolvedClassVertex(work.getClassDescriptor(), work);
 				addVertexToGraph(work.getClassDescriptor(), vertex);
 			}
 
@@ -166,8 +171,18 @@ public class Subtypes2 {
     	if (classDescriptorToVertexMap.get(classDescriptor) != null) {
     		throw new IllegalStateException();
     	}
+    	
+    	if (DEBUG) {
+    		System.out.println("Adding " + classDescriptor.toDottedClassName() + " to inheritance graph");
+    	}
+    	
 		graph.addVertex(vertex);
 		classDescriptorToVertexMap.put(classDescriptor, vertex);
+		
+		if (vertex.isInterface()) {
+			// There is no need to add additional worklist nodes because java/lang/Object has no supertypes.
+			addInheritanceEdge(vertex, DescriptorFactory.instance().getClassDescriptor("java/lang/Object"), false, null);
+		}
     }
 	
 	/**
@@ -259,16 +274,41 @@ public class Subtypes2 {
 	 * @throws ClassNotFoundException if a missing class prevents a definitive answer
      */
     public boolean isSubtype(ObjectType type, ObjectType possibleSupertype) throws ClassNotFoundException {
-    	if (type.equals(possibleSupertype)) return true;
+    	if (DEBUG) {
+    		System.out.println("isSubtype: check " + type + " subtype of " + possibleSupertype);
+    	}
+    	
+    	if (type.equals(possibleSupertype)) {
+    		if (DEBUG) {
+    			System.out.println("  ==> yes, types are same");
+    		}
+    		return true;
+    	}
 	    ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
 	    ClassDescriptor possibleSuperclassClassDescriptor = BCELUtil.getClassDescriptor(possibleSupertype);
 	    ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
-	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) return false;
+	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
+	    	if (DEBUG) {
+	    		System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
+	    	}
+	    	return false;
+	    }
 	    
 	    // Get the supertype query results
 	    SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
+	    if (DEBUG) {
+	    	System.out.println("  Superclass set: " + supertypeQueryResults.supertypeSet);
+	    }
 	    
-	    return supertypeQueryResults.containsType(possibleSuperclassClassDescriptor);
+	    boolean isSubtype = supertypeQueryResults.containsType(possibleSuperclassClassDescriptor);
+	    if (DEBUG) {
+	    	if (isSubtype) {
+	    		System.out.println("  ==> yes, " + possibleSuperclassClassDescriptor + " is in superclass set");
+	    	} else {
+	    		System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is not in superclass set");
+	    	}
+	    }
+	    return isSubtype;
     }
     
     /**
@@ -348,6 +388,10 @@ public class Subtypes2 {
      * @throws ClassNotFoundException if the class can't be found
      */
 	private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+		if (DEBUG) {
+			System.out.println("Computing supertypes for " + classDescriptor.toDottedClassName());
+		}
+		
 		// Try to fully resolve the class and its superclasses/superinterfaces.
 		ClassVertex typeVertex = resolveClassVertex(classDescriptor);
 
@@ -362,8 +406,17 @@ public class Subtypes2 {
 		while (!workList.isEmpty()) {
 			ClassVertex vertex = workList.removeFirst();
 			if (vertex.isResolved()) {
+				if (DEBUG) {
+					System.out.println("  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
+				}
 				supertypeSet.addSupertype(vertex.getClassDescriptor());
 			} else {
+				if (DEBUG) {
+					System.out.println(
+							"  Encountered unresolved class " +
+							vertex.getClassDescriptor().toDottedClassName() +
+							" in supertype query");
+				}
 				supertypeSet.setEncounteredMissingClasses(true);
 			}
 			
@@ -393,7 +446,8 @@ public class Subtypes2 {
 	    	XClass xclass = AnalysisContext.currentXFactory().getXClass(classDescriptor);
 	    	if (xclass == null) {
 	    		// Class we're trying to resolve doesn't exist.
-	    		typeVertex = addClassVertexForMissingClass(classDescriptor);
+	    		// XXX: unfortunately, we don't know if the missing class is a class or interface
+	    		typeVertex = addClassVertexForMissingClass(classDescriptor, false);
 	    	} else {
 	    		// Add the class and all its superclasses/superinterfaces to the inheritance graph.
 	    		// This will result in a resolved ClassVertex.
@@ -422,11 +476,11 @@ public class Subtypes2 {
 		XClass xclass = vertex.getXClass();
 
 		// Direct superclass
-		addInheritanceEdge(vertex, xclass.getSuperclassDescriptor(), workList);
+		addInheritanceEdge(vertex, xclass.getSuperclassDescriptor(), false, workList);
 		
 		// Directly implemented interfaces
 		for (ClassDescriptor ifaceDesc : xclass.getInterfaceDescriptorList()) {
-			addInheritanceEdge(vertex, ifaceDesc, workList);
+			addInheritanceEdge(vertex, ifaceDesc, true, workList);
 		}
 	}
 
@@ -435,10 +489,15 @@ public class Subtypes2 {
 	 * 
 	 * @param vertex               source ClassVertex (subtype)
 	 * @param superclassDescriptor ClassDescriptor of a direct supertype
+	 * @param isInterfaceEdge      true if supertype is (as far as we know) an interface
 	 * @param workList work list of ClassVertexes that need to have
-	 *                 their supertype edges added
+	 *                 their supertype edges added (null if no further work will be generated) 
 	 */
-	private void addInheritanceEdge(ClassVertex vertex, ClassDescriptor superclassDescriptor, LinkedList<XClass> workList) {
+	private void addInheritanceEdge(
+			ClassVertex vertex,
+			ClassDescriptor superclassDescriptor,
+			boolean isInterfaceEdge,
+			@CheckForNull LinkedList<XClass> workList) {
 		if (superclassDescriptor == null) {
 			return;
 		}
@@ -451,29 +510,37 @@ public class Subtypes2 {
 			if (superclassXClass == null) {
 				// Inheritance graph will be incomplete.
 				// Add a dummy node to inheritance graph and report missing class.
-				superclassVertex = addClassVertexForMissingClass(superclassDescriptor);
+				superclassVertex = addClassVertexForMissingClass(superclassDescriptor, isInterfaceEdge);
 			} else {
 				// Haven't seen this class before.
-				superclassVertex = new ClassVertex(superclassDescriptor, superclassXClass);
+				superclassVertex = ClassVertex.createResolvedClassVertex(superclassDescriptor, superclassXClass);
 				addVertexToGraph(superclassDescriptor, superclassVertex);
-				
-				// We'll want to recursively process the superclass.
-				workList.addLast(superclassXClass);
+
+				if (workList != null) {
+					// We'll want to recursively process the superclass.
+					workList.addLast(superclassXClass);
+				}
 			}
 		}
 		assert superclassVertex != null;
 		
-		graph.createEdge(vertex, superclassVertex);
+		if (graph.lookupEdge(vertex, superclassVertex) == null) {
+			if (DEBUG) {
+				System.out.println("  Add edge " + vertex.getClassDescriptor().toDottedClassName() + " -> " + superclassDescriptor.toDottedClassName());
+			}
+			graph.createEdge(vertex, superclassVertex);
+		}
 	}
 
 	/**
 	 * Add a ClassVertex representing a missing class.
 	 * 
 	 * @param missingClassDescriptor ClassDescriptor naming a missing class
+	 * @param isInterfaceEdge 
 	 * @return the ClassVertex representing the missing class
 	 */
-    private ClassVertex addClassVertexForMissingClass(ClassDescriptor missingClassDescriptor) {
-    	ClassVertex missingClassVertex = new ClassVertex(missingClassDescriptor, null);
+    private ClassVertex addClassVertexForMissingClass(ClassDescriptor missingClassDescriptor, boolean isInterfaceEdge) {
+    	ClassVertex missingClassVertex = ClassVertex.createMissingClassVertex(missingClassDescriptor, isInterfaceEdge);
     	missingClassVertex.setFinished(true);
     	addVertexToGraph(missingClassDescriptor, missingClassVertex);
 	    
