@@ -43,12 +43,13 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ObjectType typeSerializable;
 	ObjectType typeClonable;
 	ObjectType typeObject;
+	ObjectType typeInteger;
+	ObjectType typeString;
 	ArrayType typeArraySerializable;
 	ArrayType typeArrayClonable;
 	ArrayType typeArrayObject;
-	ArrayType typeArrayArraySerializable;
-	ArrayType typeArrayArrayClonable;
-	ArrayType typeArrayArrayObject;
+	ArrayType typeArrayInteger;
+	ArrayType typeArrayString;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -58,12 +59,13 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
 		typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
 		typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
+		typeInteger = ObjectTypeFactory.getInstance("java.lang.Integer");
+		typeString = ObjectTypeFactory.getInstance("java.lang.String");
 		typeArraySerializable = new ArrayType(typeSerializable,1);
 		typeArrayClonable = new ArrayType(typeClonable,1);
 		typeArrayObject = new ArrayType(typeObject,1);
-		typeArrayArraySerializable = new ArrayType(typeSerializable,1);
-		typeArrayArrayClonable = new ArrayType(typeClonable,1);
-		typeArrayArrayObject = new ArrayType(typeObject,1);
+		typeArrayInteger = new ArrayType(typeInteger,1);
+		typeArrayString = new ArrayType(typeString, 1);
 	}
 	
 	private static Subtypes2 getSubtypes2() {
@@ -74,7 +76,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 		}
 	}
 
-	public void testSelfSubtype() throws Throwable {
+	public void testIdentitySubtype() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
@@ -83,17 +85,45 @@ public class Subtypes2Test extends FindBugsTestCase {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeObject, typeObject));
+				assertTrue(test.isSubtype(typeSerializable, typeSerializable));
+				assertTrue(test.isSubtype(typeArrayClonable, typeArrayClonable));
 			}
 		});
 	}
 	
 	public void testInterfaceIsSubtypeOfObject() throws Throwable {
-
 		executeFindBugsTest(new RunnableWithExceptions() {
 			public void run() throws ClassNotFoundException {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeClonable, typeObject));
+			}
+		});
+	}
+	
+	public void testArrays() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeArrayClonable, typeObject));
+				assertTrue(test.isSubtype(typeArrayClonable, typeArrayObject));
+			}
+		});
+	}
+	
+	public void testUnrelatedTypes() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+				
+				assertFalse(test.isSubtype(typeInteger, typeString));
 			}
 		});
 	}
