@@ -244,11 +244,12 @@ public class Subtypes2 {
 			}
 			Type typeBasicType = typeAsArrayType.getBasicType();
 
-
+			// If dimensions differ, see if element types are compatible.
 			if (typeAsArrayType.getDimensions() > possibleSupertypeAsArrayType.getDimensions()) {
 				return isSubtype(new ArrayType(typeBasicType,typeAsArrayType.getDimensions() - possibleSupertypeAsArrayType.getDimensions() ),
 						(ObjectType) possibleSupertypeBasicType);
 			}
+
 			// type's base type must be a subtype of possibleSupertype's base type.
 			// Note that neither base type can be a non-ObjectType if we are to answer yes.
 			
