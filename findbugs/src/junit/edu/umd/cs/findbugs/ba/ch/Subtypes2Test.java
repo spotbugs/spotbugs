@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.FindBugsTestCase;
 import edu.umd.cs.findbugs.RunnableWithExceptions;
@@ -53,6 +54,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayArrayObject;
 	ArrayType typeArrayArraySerializable;
 	ArrayType typeArrayArrayString;
+	ArrayType typeArrayInt;
+	ArrayType typeArrayArrayInt;
 
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -72,6 +75,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayArrayObject = new ArrayType(typeObject, 2);
 		typeArrayArraySerializable = new ArrayType(typeSerializable, 2);
 		typeArrayArrayString = new ArrayType(typeString, 2);
+		typeArrayInt = new ArrayType(Type.INT, 1);
+		typeArrayArrayInt = new ArrayType(Type.INT, 2);
 	}
 	
 	private static Subtypes2 getSubtypes2() {
@@ -159,4 +164,45 @@ public class Subtypes2Test extends FindBugsTestCase {
 			}
 		});
 	}
+	
+	public void testArraysWrongDimension() throws Throwable {
+	    executeFindBugsTest(new RunnableWithExceptions(){
+	    	/* (non-Javadoc)
+	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+	    	 */
+	    	public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+				
+	    		assertFalse(test.isSubtype(typeArrayArrayString, typeArrayString));
+	    	}
+	    });
+    }
+	
+	public void testMultidimensionalArrayIsSubtypeOfObjectArray() throws Throwable {
+	    executeFindBugsTest(new RunnableWithExceptions() {
+	    	/* (non-Javadoc)
+	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+	    	 */
+	    	public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeArrayArrayString, typeArrayObject));
+				assertTrue(test.isSubtype(typeArrayArraySerializable, typeArrayObject));
+				assertTrue(test.isSubtype(typeArrayArrayInt, typeArrayObject));
+	    	}
+	    });
+    }
+	
+	public void testArrayOfPrimitiveIsSubtypeOfObject() throws Throwable {
+	    executeFindBugsTest(new RunnableWithExceptions(){
+	    	/* (non-Javadoc)
+	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+	    	 */
+	    	public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertTrue(test.isSubtype(typeArrayInt, typeObject));
+	    	}
+	    });
+    }
 }
