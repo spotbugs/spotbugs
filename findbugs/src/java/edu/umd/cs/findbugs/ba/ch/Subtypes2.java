@@ -287,12 +287,21 @@ public class Subtypes2 {
 	    ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
 	    ClassDescriptor possibleSuperclassClassDescriptor = BCELUtil.getClassDescriptor(possibleSupertype);
 	    ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
+	    
+	    // In principle, we should be able to answer no if the ObjectType objects
+	    // are not equal and possibleSupertype is final.
+	    // However, internally FindBugs creates special "subtypes" of java.lang.String
+	    // (DynamicStringType, StaticStringType, etc.)---see FindRefComparison detector.
+	    // These will end up resolving to the same ClassVertex as java.lang.String,
+	    // which will Do The Right Thing.
+	    /*
 	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
 	    	if (DEBUG) {
 	    		System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
 	    	}
 	    	return false;
 	    }
+	    */
 	    
 	    // Get the supertype query results
 	    SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
