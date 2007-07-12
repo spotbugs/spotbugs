@@ -202,6 +202,15 @@ public abstract class FindBugsTestCase extends TestCase {
 	    }
     }
 
+    /**
+     * Execute some JUnit test code inside a Detector2 class
+     * running inside a FindBugs2 analysis run.
+     * In theory, any code legal in a FindBugs detector should
+     * work.
+     * 
+     * @param runnable   a RunnableWithExceptions object whose run() method has some JUnit test code
+     * @throws Throwable
+     */
 	protected void executeFindBugsTest(final RunnableWithExceptions runnable) throws Throwable {
 		TestRunnerThread thread = new TestRunnerThread(runnable);
 		
