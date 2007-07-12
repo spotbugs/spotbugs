@@ -158,15 +158,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getClassName()
-	 */
-	public String getClassName() {
-		return getClassDescriptor().toDottedClassName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
 	 */
 	public String getPackageName() {

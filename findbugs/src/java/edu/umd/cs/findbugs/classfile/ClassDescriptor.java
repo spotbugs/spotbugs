@@ -50,7 +50,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	/**
 	 * @return Returns the class name in VM format, e.g. "java/lang/String"
 	 */
-	public String getClassName() {
+	public final String getClassName() {
 		return className;
 	}
 
@@ -116,12 +116,15 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass()) {
+	public final boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof ClassDescriptor)) {
 			return false;
 		}
-		ClassDescriptor other = (ClassDescriptor) obj;
-		return this.className.equals(other.className);
+		
+		// All instances of ClassDescriptor should be considered
+		// equal if they represent the same class,
+		// even if compared to an object of a different runtime class.
+		return getClassName().equals(((ClassDescriptor)obj).getClassName());
 	}
 
 	/* (non-Javadoc)
