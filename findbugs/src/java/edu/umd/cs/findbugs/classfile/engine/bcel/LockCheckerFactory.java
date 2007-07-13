@@ -39,7 +39,7 @@ public class LockCheckerFactory extends AnalysisFactory<LockChecker> {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public LockChecker analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		LockChecker lockChecker = new LockChecker(descriptor);
 
 		lockChecker.execute();

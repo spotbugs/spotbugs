@@ -21,7 +21,7 @@ public class ConstantDataflowFactory extends AnalysisFactory<ConstantDataflow> {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public ConstantDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		MethodGen methodGen = getMethodGen(analysisCache, descriptor);
 		if (methodGen == null) return null;
 		ConstantAnalysis analysis = new ConstantAnalysis(

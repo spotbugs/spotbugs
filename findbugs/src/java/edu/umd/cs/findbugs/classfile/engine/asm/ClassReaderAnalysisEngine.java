@@ -31,12 +31,12 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * 
  * @author David Hovemeyer
  */
-public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<FBClassReader> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache,
+	public FBClassReader analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);

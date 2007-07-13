@@ -40,7 +40,7 @@ public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<N
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public NonExceptionPostdominatorsAnalysis analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		CFG cfg = getCFG(analysisCache, descriptor);
 		ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
 		NonExceptionPostdominatorsAnalysis analysis = new NonExceptionPostdominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(analysisCache, descriptor));

@@ -35,12 +35,12 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  * 
  * @author David Hovemeyer
  */
-public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class ClassNodeAnalysisEngine extends RecomputableClassAnalysisEngine<ClassNode> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+	public ClassNode analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
 
 		ICodeBaseEntry entry = analysisCache.getClassPath().lookupResource(descriptor.toResourceName());

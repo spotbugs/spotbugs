@@ -41,7 +41,7 @@ public class DepthFirstSearchFactory extends AnalysisFactory<DepthFirstSearch> {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public DepthFirstSearch analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		CFG cfg = getCFG(analysisCache, descriptor);
 		DepthFirstSearch dfs = new DepthFirstSearch(cfg);
 		dfs.search();

@@ -32,9 +32,9 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  * 
  * @author David Hovemeyer
  */
-public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine {
+public class AssertionMethodsFactory extends RecomputableClassAnalysisEngine<AssertionMethods> {
 
-	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+	public AssertionMethods analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
 		return new AssertionMethods(jclass);
 	}

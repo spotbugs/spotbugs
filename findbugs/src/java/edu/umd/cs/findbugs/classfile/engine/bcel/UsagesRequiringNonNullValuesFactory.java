@@ -37,7 +37,7 @@ public class UsagesRequiringNonNullValuesFactory extends AnalysisFactory<UsagesR
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public UsagesRequiringNonNullValues analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		//ClassContext classContext = getClassContext(jclass);
 		ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
 		Method method = getMethod(analysisCache, descriptor);

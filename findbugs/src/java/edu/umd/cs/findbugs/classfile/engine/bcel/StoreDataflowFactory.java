@@ -48,7 +48,7 @@ public class StoreDataflowFactory extends AnalysisFactory<StoreDataflow> {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public StoreDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		MethodGen methodGen = getMethodGen(analysisCache, descriptor);
 		if (methodGen == null)
 			return null;

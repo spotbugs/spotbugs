@@ -32,12 +32,12 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  * 
  * @author David Hovemeyer
  */
-public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine {
+public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<AssignedFieldMap> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+	public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
 		return new AssignedFieldMap(jclass);
 	}

@@ -43,7 +43,7 @@ public class ReturnPathDataflowFactory extends AnalysisFactory<ReturnPathDataflo
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public ReturnPathDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		CFG cfg = getCFG(analysisCache, descriptor);
 		DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
 		ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);

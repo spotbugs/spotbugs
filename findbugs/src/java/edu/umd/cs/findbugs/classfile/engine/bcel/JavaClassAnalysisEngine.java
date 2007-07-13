@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * 
  * @author David Hovemeyer
  */
-public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
+public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> {
 	private static final boolean DEBUG_MISSING_CLASSES =
 		SystemProperties.getBoolean("findbugs.debug.missingclasses");
 	private static final String JVM_VERSION = SystemProperties.getProperty("java.runtime.version");
@@ -48,7 +48,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache,
+	public JavaClass analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 		try {
 			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);

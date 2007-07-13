@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.Collection;
+import java.util.List;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -37,8 +40,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
 	private final MethodDescriptor[] methodDescriptorList;
 
-	private final ClassDescriptor[] referencedClassDescriptorList;
-
 	private final ClassDescriptor immediateEnclosingClass;
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
@@ -46,13 +47,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
 		private MethodDescriptor[] methodDescriptorList;
 
-		private ClassDescriptor[] referencedClassDescriptorList;
 
 		private ClassDescriptor immediateEnclosingClass;
 
 		public ClassInfo build() {
-			return new ClassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
-			        fieldDescriptorList, methodDescriptorList, referencedClassDescriptorList, immediateEnclosingClass);
+			return new ClassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
+					referencedClassDescriptorList,
+			        fieldDescriptorList, methodDescriptorList, immediateEnclosingClass);
 		}
 
 		/**
@@ -76,14 +77,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		 */
 		public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
 			this.methodDescriptorList = methodDescriptorList;
-		}
-
-		/**
-		 * @param referencedClassDescriptorList
-		 *            The referencedClassDescriptorList to set.
-		 */
-		public void setReferencedClassDescriptorList(ClassDescriptor[] referencedClassDescriptorList) {
-			this.referencedClassDescriptorList = referencedClassDescriptorList;
 		}
 
 		/**
@@ -118,12 +111,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	 */
 	public ClassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
 	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
+	        Collection<ClassDescriptor> referencedClassDescriptorList,
 	        FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
-	        ClassDescriptor[] referencedClassDescriptorList, ClassDescriptor immediateEnclosingClass) {
-		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags);
+	         ClassDescriptor immediateEnclosingClass) {
+		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList);
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
-		this.referencedClassDescriptorList = referencedClassDescriptorList;
 		this.immediateEnclosingClass = immediateEnclosingClass;
 	}
 
@@ -139,13 +132,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	 */
 	public MethodDescriptor[] getMethodDescriptorList() {
 		return methodDescriptorList;
-	}
-
-	/**
-	 * @return Returns the referencedClassDescriptorList.
-	 */
-	public ClassDescriptor[] getReferencedClassDescriptorList() {
-		return referencedClassDescriptorList;
 	}
 
 	/**

@@ -35,12 +35,12 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  * 
  * @author David Hovemeyer
  */
-public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEngine<ClassContext> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache,
+	public ClassContext analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
 		JavaClass javaClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);

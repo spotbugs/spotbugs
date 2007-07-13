@@ -33,12 +33,12 @@ import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
  * 
  * @author David Hovemeyer
  */
-public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine {
+public class ConstantPoolGenFactory extends RecomputableClassAnalysisEngine<ConstantPoolGen> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+	public ConstantPoolGen analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		ClassGen classGen = new ClassGen(analysisCache.getClassAnalysis(JavaClass.class, descriptor));
 		return classGen.getConstantPool();
 	}

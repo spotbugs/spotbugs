@@ -40,7 +40,7 @@ public class ExceptionSetFactoryFactory extends AnalysisFactory<ExceptionSetFact
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+	public ExceptionSetFactory analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
 		return new ExceptionSetFactory();
 	}
 }
