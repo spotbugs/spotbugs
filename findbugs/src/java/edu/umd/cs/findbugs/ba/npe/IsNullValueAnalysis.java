@@ -81,7 +81,7 @@ public class IsNullValueAnalysis
 	private MethodGen methodGen;
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
-	private int[] numNonExceptionSuccessorMap;
+	private CFG cfg;
 	private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
 	private final boolean trackValueNumbers;
 
@@ -105,24 +105,13 @@ public class IsNullValueAnalysis
 				vnaDataflow,
 				trackValueNumbers);
 		this.vnaDataflow = vnaDataflow;
-		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
+		this.cfg = cfg;
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
 
-	   // For each basic block, calculate the number of non-exception successors.
-		Iterator<Edge> i = cfg.edgeIterator();
-		while (i.hasNext()) {
-			Edge edge = i.next();
-			if (edge.isExceptionEdge())
-				continue;
-			int srcBlockId = edge.getSource().getLabel();
-			numNonExceptionSuccessorMap[srcBlockId]++;
-		}
 		if (DEBUG) {
 			System.out.println("IsNullValueAnalysis for " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 		}
 	}
-
-
 
 	public void setClassAndMethod(JavaClassAndMethod classAndMethod) {
 		this.classAndMethod = classAndMethod;
@@ -297,7 +286,7 @@ public class IsNullValueAnalysis
 			if (!NO_SPLIT_DOWNGRADE_NSP) {
 				// Downgrade NSP to DNR on non-exception control splits
 				if (!edge.isExceptionEdge()
-						&& numNonExceptionSuccessorMap[edge.getSource().getLabel()] > 1) {
+						&& cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
 					tmpFact = modifyFrame(fact, tmpFact);
 					tmpFact.downgradeOnControlSplit();
 				}
