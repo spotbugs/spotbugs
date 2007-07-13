@@ -524,7 +524,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Add superclasses and superinterfaces to worklist.
 			try {
 				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
-				referencedClassSet.addAll(Arrays.asList(classInfo.getReferencedClassDescriptorList()));
+				referencedClassSet.addAll(classInfo.getReferencedClassDescriptorList());
 
 				if (classInfo.getSuperclassDescriptor() != null) {
 					workList.addLast(classInfo.getSuperclassDescriptor());
@@ -557,7 +557,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 				try {
 				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, e);
-				return Arrays.asList( classInfo.getReferencedClassDescriptorList());
+				return classInfo.getReferencedClassDescriptorList();
 				} catch  (CheckedAnalysisException e2) {
 					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
 					return TigerSubstitutes.emptyList();

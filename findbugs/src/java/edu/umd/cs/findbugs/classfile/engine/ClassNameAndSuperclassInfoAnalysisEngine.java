@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 
 /**
  * Analysis engine to produce the ClassInfo for a loaded class.
@@ -38,12 +39,12 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> {
+public class ClassNameAndSuperclassInfoAnalysisEngine implements IClassAnalysisEngine<ClassNameAndSuperclassInfo> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public ClassInfo analyze(IAnalysisCache analysisCache,
+	public ClassNameAndSuperclassInfo analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 		// Get InputStream reading from class data
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
@@ -52,9 +53,9 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> 
 
 		// Read the class info
 		ClassParserInterface parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
-		ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
+		ClassNameAndSuperclassInfo.Builder classInfoBuilder = new ClassNameAndSuperclassInfo.Builder();
 		parser.parse(classInfoBuilder);
-		ClassInfo classInfo = classInfoBuilder.build();
+		ClassNameAndSuperclassInfo classInfo = classInfoBuilder.build();
 
 		if (!classInfo.getClassDescriptor().equals(descriptor)) {
 			throw new ClassNameMismatchException(
@@ -69,7 +70,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> 
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
-		analysisCache.registerClassAnalysisEngine(ClassInfo.class, this);
+		analysisCache.registerClassAnalysisEngine(ClassNameAndSuperclassInfo.class, this);
 	}
 
 	/* (non-Javadoc)

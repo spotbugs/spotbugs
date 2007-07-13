@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.classfile.engine;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -115,12 +116,17 @@ public class ClassParser implements ClassParserInterface {
 			for (int i = 0; i < interfaceDescriptorList.length; i++) {
 				interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
 			}
-
+			// Extract all references to other classes,
+			// both CONSTANT_Class entries and also referenced method
+			// signatures.
+			Collection<ClassDescriptor> referencedClassDescriptorList = extractReferencedClasses();
+			
 			builder.setClassDescriptor(thisClassDescriptor);
 			builder.setSuperclassDescriptor(superClassDescriptor);
 			builder.setInterfaceDescriptorList(interfaceDescriptorList);
 			builder.setCodeBaseEntry(codeBaseEntry);
 			builder.setAccessFlags(access_flags);
+			builder.setReferencedClassDescriptorList(referencedClassDescriptorList);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
@@ -151,14 +157,11 @@ public class ClassParser implements ClassParserInterface {
 				methodDescriptorList[i] = readMethod(builder.getClassDescriptor());
 			}
 
-			// Extract all references to other classes,
-			// both CONSTANT_Class entries and also referenced method
-			// signatures.
-			ClassDescriptor[] referencedClassDescriptorList = extractReferencedClasses();
+
 
 			builder.setFieldDescriptorList(fieldDescriptorList);
 			builder.setMethodDescriptorList(methodDescriptorList);
-			builder.setReferencedClassDescriptorList(referencedClassDescriptorList);
+
 			builder.setImmediateEnclosingClass(immediateEnclosingClass);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
@@ -172,7 +175,7 @@ public class ClassParser implements ClassParserInterface {
 	 * @return array of ClassDescriptors of referenced classes
 	 * @throws InvalidClassFileFormatException
 	 */
-	private ClassDescriptor[] extractReferencedClasses() throws InvalidClassFileFormatException {
+	private Collection<ClassDescriptor> extractReferencedClasses() throws InvalidClassFileFormatException {
 		TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
 		for (Constant constant : constantPool) {
 			if (constant == null) {
@@ -197,9 +200,7 @@ public class ClassParser implements ClassParserInterface {
 				extractReferencedClassesFromSignature(referencedClassSet, signature);
 			}
 		}
-		ClassDescriptor[] referencedClassDescriptorList = 
-			referencedClassSet.toArray(new ClassDescriptor[referencedClassSet.size()]);
-		return referencedClassDescriptorList;
+		return referencedClassSet;
 	}
 
 	/**

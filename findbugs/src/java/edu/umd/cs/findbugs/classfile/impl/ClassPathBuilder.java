@@ -198,6 +198,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			try {
 			ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource("java/lang/Object.class");
 			foundJavaLangObject = true;
+			break;
 			} catch (ResourceNotFoundException e) {
 				assert true;
 			}

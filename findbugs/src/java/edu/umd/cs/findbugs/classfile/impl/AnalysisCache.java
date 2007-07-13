@@ -121,13 +121,13 @@ public class AnalysisCache implements IAnalysisCache {
 		// Get the descriptor->result map for this analysis class,
 		// creating if necessary
 		Map<ClassDescriptor, Object> descriptorMap =
-			findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap, analysisClass);
+			findOrCreateDescriptorMap((Map)classAnalysisMap, (Map)classAnalysisEngineMap, analysisClass);
 
 		// See if there is a cached result in the descriptor map
 		Object analysisResult = descriptorMap.get(classDescriptor);
 		if (analysisResult == null) {
 			// No cached result - compute (or recompute)
-			IAnalysisEngine<ClassDescriptor> engine = classAnalysisEngineMap.get(analysisClass);
+			IAnalysisEngine<ClassDescriptor, E> engine = classAnalysisEngineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
 						"No analysis engine registered to produce " + analysisClass.getName());
@@ -270,14 +270,17 @@ public class AnalysisCache implements IAnalysisCache {
      * @param analysisClass                   the analysis map
      * @return the descriptor to analysis object map
      */
-    private static <DescriptorType, E> Map<DescriptorType, Object> findOrCreateDescriptorMap(final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap, final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType>> engineMap, final Class<E> analysisClass) {
+    private static <DescriptorType, E> Map<DescriptorType, Object> 
+    findOrCreateDescriptorMap(final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap, 
+    		                  final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType,E>> engineMap, 
+    		                  final Class<E> analysisClass) {
 	    Map<DescriptorType, Object> descriptorMap;
 	    descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
 		if (descriptorMap == null) {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
 			descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE) {
-				IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
+				IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
 
 				/* (non-Javadoc)
 				 * @see edu.umd.cs.findbugs.util.MapCache#removeEldestEntry(java.util.Map.Entry)
@@ -300,7 +303,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#registerClassAnalysisEngine(java.lang.Class, edu.umd.cs.findbugs.classfile.IClassAnalysisEngine)
 	 */
 	public <E> void registerClassAnalysisEngine(Class<E> analysisResultType,
-			IClassAnalysisEngine classAnalysisEngine) {
+			IClassAnalysisEngine<E> classAnalysisEngine) {
 		classAnalysisEngineMap.put(analysisResultType, classAnalysisEngine);
 	}
 

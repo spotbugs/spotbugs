@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 /**
  * @author pugh
  */
-public abstract class RecomputableClassAnalysisEngine implements IClassAnalysisEngine {
+public abstract class RecomputableClassAnalysisEngine<ResultType> implements IClassAnalysisEngine<ResultType> {
 
 	
 

@@ -38,12 +38,12 @@ import edu.umd.cs.findbugs.io.IO;
  * 
  * @author David Hovemeyer
  */
-public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine {
+public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<ClassData> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
-	public Object analyze(IAnalysisCache analysisCache,
+	public ClassData analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
 		// Compute the resource name

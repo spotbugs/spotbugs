@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collection;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
@@ -57,7 +59,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
      * 
      * @return ClassDescriptors of all classes referenced by the this class
      */
-    public ClassDescriptor[] getReferencedClassDescriptorList();
+    public Collection<ClassDescriptor> getReferencedClassDescriptorList();
 
 	/**
      * @return true if the class is an interface, false otherwise

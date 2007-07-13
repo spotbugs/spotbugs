@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.classfile;
  * 
  * @author David Hovemeyer
  */
-public interface IAnalysisEngine<DescriptorType> {
+public interface IAnalysisEngine<DescriptorType, ResultType> {
 	/**
 	 * Perform an analysis on class or method named by given descriptor.
 	 * 
@@ -32,7 +32,7 @@ public interface IAnalysisEngine<DescriptorType> {
 	 * @param descriptor    the descriptor of the class or method to be analyzed
 	 * @return the result of the analysis of the class or method
 	 */
-	public Object analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
+	public ResultType analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
 		throws CheckedAnalysisException;
 
 	/**
