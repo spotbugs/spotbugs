@@ -73,7 +73,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			}
 
 			public void analysisInterrupted() {}
-		}, /*false*/true); // XXX - DHH, 7/13/2007 - why was this set to false?
+		}, false);
 	}
 
 
