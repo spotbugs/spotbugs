@@ -23,6 +23,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -32,6 +33,7 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -41,7 +43,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * 
  * @author David Hovemeyer
  */
-public class ClassParser {
+public class ClassParser implements ClassParserInterface {
 
 	static class Constant {
 		int tag;
@@ -68,22 +70,17 @@ public class ClassParser {
 	 */
 	public ClassParser(
 			DataInputStream in,
-			ClassDescriptor expectedClassDescriptor,
+			@CheckForNull ClassDescriptor expectedClassDescriptor,
 			ICodeBaseEntry codeBaseEntry) {
 		this.in = in;
 		this.expectedClassDescriptor = expectedClassDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
 
-	/**
-	 * Parse the class data into a ClassNameAndSuperclassInfo object containing
-	 * (some of) the class's symbolic information.
-	 * 
-	 * @param classInfo a ClassNameAndSuperclassInfo object to be filled in with (some of)
-	 *                   the class's symbolic information
-	 * @throws InvalidClassFileFormatException
-	 */
-	public void parse(ClassNameAndSuperclassInfo.Builder classInfo) throws InvalidClassFileFormatException {
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
+     */
+	public void parse(ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
 		try {
 			int magic = in.readInt();
 			int major_version = in.readUnsignedShort();
@@ -119,26 +116,21 @@ public class ClassParser {
 				interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
 			}
 
-			classInfo.setClassDescriptor(thisClassDescriptor);
-			classInfo.setSuperclassDescriptor(superClassDescriptor);
-			classInfo.setInterfaceDescriptorList(interfaceDescriptorList);
-			classInfo.setCodeBaseEntry(codeBaseEntry);
-			classInfo.setAccessFlags(access_flags);
+			builder.setClassDescriptor(thisClassDescriptor);
+			builder.setSuperclassDescriptor(superClassDescriptor);
+			builder.setInterfaceDescriptorList(interfaceDescriptorList);
+			builder.setCodeBaseEntry(codeBaseEntry);
+			builder.setAccessFlags(access_flags);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
 	}
 
-	/**
-	 * Parse the class data into a ClassInfo object containing
-	 * (some of) the class's symbolic information.
-	 * 
-	 * @param classInfo a ClassInfo object to be filled in with (some of)
-	 *                   the class's symbolic information
-	 * @throws InvalidClassFileFormatException
-	 */
-	public void parse(ClassInfo.Builder classInfo) throws InvalidClassFileFormatException {
-		parse((ClassNameAndSuperclassInfo.Builder) classInfo);
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassInfo.Builder)
+     */
+	public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
+		parse((ClassNameAndSuperclassInfo.Builder) builder);
 
 		try {
 			int fields_count = in.readUnsignedShort();
@@ -147,7 +139,7 @@ public class ClassParser {
 			}
 			FieldDescriptor[] fieldDescriptorList = new FieldDescriptor[fields_count];
 			for (int i = 0; i < fields_count; i++) {
-				fieldDescriptorList[i] = readField(classInfo.getClassDescriptor());
+				fieldDescriptorList[i] = readField(builder.getClassDescriptor());
 			}
 
 			int methods_count = in.readUnsignedShort();
@@ -156,7 +148,7 @@ public class ClassParser {
 			}
 			MethodDescriptor[] methodDescriptorList = new MethodDescriptor[methods_count];
 			for (int i = 0; i < methods_count; i++) {
-				methodDescriptorList[i] = readMethod(classInfo.getClassDescriptor());
+				methodDescriptorList[i] = readMethod(builder.getClassDescriptor());
 			}
 
 			// Extract all references to other classes,
@@ -164,10 +156,10 @@ public class ClassParser {
 			// signatures.
 			ClassDescriptor[] referencedClassDescriptorList = extractReferencedClasses();
 
-			classInfo.setFieldDescriptorList(fieldDescriptorList);
-			classInfo.setMethodDescriptorList(methodDescriptorList);
-			classInfo.setReferencedClassDescriptorList(referencedClassDescriptorList);
-			classInfo.setImmediateEnclosingClass(immediateEnclosingClass);
+			builder.setFieldDescriptorList(fieldDescriptorList);
+			builder.setMethodDescriptorList(methodDescriptorList);
+			builder.setReferencedClassDescriptorList(referencedClassDescriptorList);
+			builder.setImmediateEnclosingClass(immediateEnclosingClass);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
@@ -214,7 +206,7 @@ public class ClassParser {
 	 * @param referencedClassSet
 	 * @param signature
 	 */
-	private void extractReferencedClassesFromSignature(TreeSet<ClassDescriptor> referencedClassSet, String signature) {
+	public static void extractReferencedClassesFromSignature(TreeSet<ClassDescriptor> referencedClassSet, String signature) {
 		while (signature.length() > 0) {
 			int start = signature.indexOf('L');
 			if (start < 0) {
@@ -469,8 +461,7 @@ public class ClassParser {
 		if (attrName.equals("InnerClasses")) {
 			readInnerClassesAttribute(attribute_length);
 		} else {
-			byte[] buf = new byte[attribute_length];
-			in.readFully(buf);
+			IO.skipFully(in, attribute_length);
 		}
 	}
 

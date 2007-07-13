@@ -35,6 +35,7 @@
 package edu.umd.cs.findbugs.io;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -155,5 +156,23 @@ public class IO {
 		} catch (IOException e) {
 			// Ignore
 		}
+	}
+
+	/**
+	 * Provide a skip fully method. Either skips the requested number of bytes or throws an IOException;
+	 * @param in The input stream on which to perform the skip
+	 * @param bytes Number of bytes to skip
+	 * @throws EOFException if we reach EOF and still need to skip more bytes
+	 * @throws IOException if in.skip throws an IOException
+	 */
+	public static void skipFully(InputStream in, long bytes) throws IOException {
+		if (bytes < 0) throw new IllegalArgumentException("Can't skip " + bytes + " bytes");
+		long remaining = bytes;
+		while (remaining > 0) {
+			long skipped = in.skip(remaining);
+			if (skipped <= 0) throw new EOFException("Reached EOF while trying to skip a total of " + bytes);
+			remaining -= skipped;
+		}
+
 	}
 }

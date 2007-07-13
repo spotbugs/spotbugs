@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParser;
+import edu.umd.cs.findbugs.classfile.engine.ClassParserInterface;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Archive;
 
@@ -476,7 +477,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		DataInputStream in = null;
 		try {
 			in = new DataInputStream(entry.openResource());
-			ClassParser parser = new ClassParser(in, null, entry);
+			ClassParserInterface parser = new ClassParser(in, null, entry);
 			ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 			parser.parse(builder);
 			entry.overrideResourceName(builder.build().getClassDescriptor().toResourceName());

@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.engine.ClassParser;
+import edu.umd.cs.findbugs.classfile.engine.ClassParserInterface;
 import edu.umd.cs.findbugs.io.IO;
 
 /**
@@ -208,7 +209,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		try {
 			try {
 				in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-				ClassParser classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
+				ClassParserInterface classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
 				ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 
 				classParser.parse(builder);

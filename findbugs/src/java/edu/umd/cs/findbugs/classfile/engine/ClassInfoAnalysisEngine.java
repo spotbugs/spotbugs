@@ -51,7 +51,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 			new DataInputStream(new ByteArrayInputStream(classData.getData()));
 
 		// Read the class info
-		ClassParser parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
+		ClassParserInterface parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
 		ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
 		parser.parse(classInfoBuilder);
 		ClassInfo classInfo = classInfoBuilder.build();

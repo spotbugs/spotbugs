@@ -64,7 +64,7 @@ public class DescriptorFactory {
 	public ClassDescriptor getClassDescriptor(String className) {
 		ClassDescriptor classDescriptor = classDescriptorMap.get(className);
 		if (classDescriptor == null) {
-			classDescriptor = new ClassDescriptor(className);
+			classDescriptor = ClassDescriptor.createClassDescriptor(className);
 			classDescriptorMap.put(className, classDescriptor);
 		}
 		return classDescriptor;

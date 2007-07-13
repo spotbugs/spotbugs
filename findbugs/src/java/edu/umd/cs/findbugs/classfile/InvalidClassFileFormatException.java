@@ -39,7 +39,7 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 		this.codeBaseEntry = codeBaseEntry;
 	}
 
-	InvalidClassFileFormatException(String msg, ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
+	public InvalidClassFileFormatException(String msg, ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
 		super(msg);
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;

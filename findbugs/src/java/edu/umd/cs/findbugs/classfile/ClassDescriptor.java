@@ -90,7 +90,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		if (!isClassResource(resourceName)) {
 			throw new IllegalArgumentException("Resource " + resourceName + " is not a class");
 		}
-		return new ClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
+		return createClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
 	}
 
 	/**
@@ -103,6 +103,13 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		// This could be more sophisticated.
 		return resourceName.endsWith(".class");
 	}
+
+	public static ClassDescriptor createClassDescriptor(String className) {
+	    return new ClassDescriptor(className);
+    }
+	public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
+	    return createClassDescriptor(dottedClassName.replace('.','/'));
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
