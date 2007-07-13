@@ -23,14 +23,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
+
+import sun.swing.SwingUtilities2;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugsProgress;
@@ -61,15 +65,15 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		this(project, new AnalysisCallback()
 		{
 			public void analysisFinished(BugCollection results)
-				{
-					if (changeSettings)
-						ProjectSettings.newInstance();
-					MainFrame instance = MainFrame.getInstance();
-					instance.setProjectAndBugCollection(project, results);
-				}
+			{
+				if (changeSettings)
+					ProjectSettings.newInstance();
+				MainFrame instance = MainFrame.getInstance();
+				instance.setProjectAndBugCollection(project, results);
+			}
 
 			public void analysisInterrupted() {}
-		}, false);
+		}, /*false*/true); // XXX - DHH, 7/13/2007 - why was this set to false?
 	}
 
 
@@ -217,16 +221,52 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		{
 			if (project == null) throw new NullPointerException("null project");
 
-			BugCollection data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
-			if (data == null) // We were interrupted
-			{
+			BugCollection data;
+			try {
+				data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
+			} catch (InterruptedException e) {
 				callback.analysisInterrupted();
+				// We don't have to clean up the dialog because the
+				// cancel button handler does this already.
+				return;
+			} catch (IOException e) {
+				callback.analysisInterrupted();
+				scheduleDialogCleanup();
+				scheduleErrorDialog("Analysis failed", e.getMessage());
 				return;
 			}
+
+			// Analysis succeeded
 			analysisFinished = true;
-			AnalyzingDialog.this.dispose();
+			scheduleDialogCleanup();
 			callback.analysisFinished(data);
 			MainFrame.getInstance().newProject();
+		}
+
+		private void scheduleDialogCleanup() {
+			SwingUtilities.invokeLater(new Runnable() {
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+					AnalyzingDialog.this.setVisible(false);
+				}
+			});
+		}
+
+		private void scheduleErrorDialog(final String title, final String message) {
+			SwingUtilities.invokeLater(new Runnable() {
+				/* (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+					JOptionPane.showMessageDialog(
+							MainFrame.getInstance(),
+							message,
+							title,
+							JOptionPane.ERROR_MESSAGE);
+				}
+			});
 		}
 	}
 

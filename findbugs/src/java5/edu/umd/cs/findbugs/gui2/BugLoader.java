@@ -67,8 +67,10 @@ public class BugLoader {
 	 * @param p The Project to run the analysis on
 	 * @param progressCallback the progressCallBack is supposed to be supplied by analyzing dialog, FindBugs supplies progress information while it runs the analysis
 	 * @return the bugs found 
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback)
+	public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException, InterruptedException
 	{
 		BugCollectionBugReporter  pcb=new BugCollectionBugReporter(p);
 		pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
@@ -76,25 +78,16 @@ public class BugLoader {
 		fb.setUserPreferences(UserPreferences.getUserPreferences());
 		fb.setProgressCallback(progressCallback);
 		fb.setProjectName(p.getProjectName());
-		try {
-			fb.execute();
-			List<String> possibleDirectories=p.getSourceDirList();
-			MainFrame instance = MainFrame.getInstance();
 
-			//			System.out.println("List of directories: "+p.getSourceDirList());
-			instance.setSourceFinder(new SourceFinder());
-			instance.getSourceFinder().setSourceBaseList(possibleDirectories);
+		fb.execute();
+		List<String> possibleDirectories=p.getSourceDirList();
+		MainFrame instance = MainFrame.getInstance();
 
-			return pcb.getBugCollection();
-		} catch (IOException e) {
-			Debug.println(e);
-		} catch (InterruptedException e) {
-			// Do nothing
-		}
+		//			System.out.println("List of directories: "+p.getSourceDirList());
+		instance.setSourceFinder(new SourceFinder());
+		instance.getSourceFinder().setSourceBaseList(possibleDirectories);
 
-
-		return null;
-
+		return pcb.getBugCollection();
 	}
 
 	/**
