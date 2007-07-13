@@ -466,6 +466,27 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 		removedEdgeList.add(edge);
 	}
+
+	/**
+	 * Get number of non-exception control successors of given basic block.
+	 * 
+	 * @param block a BasicBlock
+	 * @return number of non-exception control successors of the basic block
+	 */
+	public int getNumNonExceptionSucessors(BasicBlock block) {
+		int numNonExceptionSuccessors = block.getNumNonExceptionSuccessors();
+		if (numNonExceptionSuccessors < 0) {
+			numNonExceptionSuccessors = 0;
+			for (Iterator<Edge> i = outgoingEdgeIterator(block); i.hasNext();) {
+				Edge edge = i.next();
+				if (!edge.isExceptionEdge()) {
+					numNonExceptionSuccessors++;
+				}
+			}
+			block.setNumNonExceptionSuccessors(numNonExceptionSuccessors);
+		}
+		return numNonExceptionSuccessors;
+	}
 }
 
 // vim:ts=4

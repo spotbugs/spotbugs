@@ -32,6 +32,27 @@ public class When {
 	public static final When UNKNOWN = new When(2);
 	public static final When MAYBE_NOT = new When(3);
 	public static final When NEVER = new When(4);
+
+	// Dataflow lattice:
+	//
+	// Always    Never
+	//   |        |
+	// Assume     |
+	// always   Unknown
+	//     \    /
+	//      \  /
+	//      Maybe
+	//       not
+	private static final When[][] mergeMatrix = {
+                           // ASSUME_                                    MAYBE_
+                           // ALWAYS          ALWAYS          UNKNOWN    NOT         NEVER
+                           // ----------------------------------------------------------------
+		/* ASSUME_ALWAYS */ { ASSUME_ALWAYS,  ASSUME_ALWAYS,  MAYBE_NOT, MAYBE_NOT,  MAYBE_NOT  },
+		/* ALWAYS */        { ASSUME_ALWAYS,  ALWAYS,         MAYBE_NOT, MAYBE_NOT },
+		/* UNKNOWN */       { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN },
+		/* MAYBE_NOT */     { MAYBE_NOT,      MAYBE_NOT, },
+		/* NEVER */         { MAYBE_NOT },
+	};
 	
 	private final int index;
 	
@@ -41,5 +62,18 @@ public class When {
 	
 	public int getIndex() {
 		return index;
+	}
+	
+	public static When meet(When a, When b) {
+		int aIndex = a.getIndex();
+		int bIndex = b.getIndex();
+		
+		if (aIndex > bIndex) {
+			int tmp = aIndex;
+			aIndex = bIndex;
+			bIndex = tmp;
+		}
+		
+		return mergeMatrix[aIndex][bIndex];
 	}
 }

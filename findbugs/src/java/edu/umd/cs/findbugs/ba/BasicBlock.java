@@ -84,6 +84,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 	private InstructionHandle exceptionThrower; // instruction for which this block is the ETB
 	private CodeExceptionGen exceptionGen; // set if this block is the entry point of an exception handler
 	private boolean inJSRSubroutine;
+	private int numNonExceptionSuccessors;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -98,6 +99,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		this.exceptionThrower = null;
 		this.exceptionGen = null;
 		this.inJSRSubroutine = false;
+		this.numNonExceptionSuccessors = -1;
 	}
 
 	public boolean isInJSRSubroutine() {
@@ -108,7 +110,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		this.inJSRSubroutine = inJSRSubroutine;
 	}
 
-	
+
 	/**
 	 * Get the basic block's integer label.
 	 * 
@@ -188,8 +190,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 				throw new IllegalStateException();
 		}
 		return handle == lastInstruction
-			? null
-			: handle.getNext();
+		? null
+				: handle.getNext();
 	}
 
 	/**
@@ -204,8 +206,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 				throw new IllegalStateException();
 		}
 		return handle == firstInstruction
-			? null
-			: handle.getPrev();
+		? null
+				: handle.getPrev();
 	}
 
 	/**
@@ -258,7 +260,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		}
 
 		@Override
-				 public boolean equals(Object o) {
+		public boolean equals(Object o) {
 			if (!(o instanceof InstructionIterator))
 				return false;
 			InstructionIterator other = (InstructionIterator) o;
@@ -266,7 +268,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		}
 
 		@Override
-				 public int hashCode() {
+		public int hashCode() {
 			int code = getBasicBlock().hashCode() * 227;
 			if (next != null)
 				code += next.getPosition() + 1;
@@ -278,7 +280,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		}
 
 		@Override
-				 public String toString() {
+		public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("[basicBlock=");
 			buf.append(getBasicBlock().getLabel());
@@ -397,6 +399,20 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		}
 		return false;
 	}
+
+	/**
+	 * @return Returns the numNonExceptionSuccessors.
+	 */
+	int getNumNonExceptionSuccessors() {
+		return numNonExceptionSuccessors;
+	}
+
+	/**
+	 * @param numNonExceptionSuccessors The numNonExceptionSuccessors to set.
+	 */
+	void setNumNonExceptionSuccessors(int numNonExceptionSuccessors) {
+		this.numNonExceptionSuccessors = numNonExceptionSuccessors;
+	}
 }
 
-// vim:ts=4
+//vim:ts=4
