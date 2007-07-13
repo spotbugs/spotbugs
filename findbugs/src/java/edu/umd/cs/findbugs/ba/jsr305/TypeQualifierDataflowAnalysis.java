@@ -111,7 +111,7 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 			return;
 		}
 		
-		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 0) {
+		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
 			fact.downgradeMaybeNotToUnknown();
 		}
 	}
