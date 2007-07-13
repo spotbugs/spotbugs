@@ -38,22 +38,57 @@ public class SyntheticElements {
 	
 	private HashSet<Object> syntheticElements;
 	
+	/**
+	 * Constructor.
+	 */
 	public SyntheticElements() {
 		this.syntheticElements = new HashSet<Object>();
 	}
 	
+	/**
+	 * Mark the method being visited by given PreorderVisitor
+	 * as synthetic.
+	 * 
+	 * @param visitor a PreorderVisitor visiting a method
+	 */
 	public void addVisitedMethod(PreorderVisitor visitor) {
 		syntheticElements.add(XFactory.createXMethod(visitor));
 	}
-	
+
+	/**
+	 * Mark the field being visited by given PreorderVisitor
+	 * as synthetic.
+	 * 
+	 * @param visitor a PreorderVisitor visiting a field
+	 */
 	public void addVisitedField(PreorderVisitor visitor) {
 		syntheticElements.add(XFactory.createXField(visitor));
 	}
 	
+	/**
+	 * Mark the class being visited by given PreorderVisitor
+	 * as synthetic.
+	 * 
+	 * @param visitor a PreorderVisitor visiting a class
+	 */
 	public void addVisitedClass(PreorderVisitor visitor) {
 		syntheticElements.add(visitor.getDottedClassName());
 	}
 	
+	/**
+	 * Return whether or not the given object
+	 * has been marked as synthetic.  The object must be
+	 * one of the following:
+	 * 
+	 *  <ul>
+	 *  <li>an XMethod (to find out if a method is synthetic)</li>
+	 *  <li>an XField (to find out if a field is synthetic)</li>
+	 *  <li>a String containing a dotted class name (to find out if a class is synthetic)</li>
+	 *  </ul>
+	 * 
+	 * @param o an object (XMethod, XField, or String with dotted classname)
+	 * @return true if element is synthetic, false otherwise
+	 */
 	public boolean isSynthetic(Object o) {
 		return syntheticElements.contains(o);
 	}
