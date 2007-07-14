@@ -205,7 +205,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	    	/* (non-Javadoc)
 	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
 	    	 */
-	    	public void run() throws Throwable {
+	    	public void run() throws Exception {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeArrayInt, typeObject));
@@ -213,12 +213,12 @@ public class Subtypes2Test extends FindBugsTestCase {
 	    });
     }
 	
-	public void testSpecialStringSubclasses() throws Throwable {
+	public void testSpecialStringSubclasses() throws Exception {
 	    executeFindBugsTest(new RunnableWithExceptions() {
 	    	/* (non-Javadoc)
 	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
 	    	 */
-	    	public void run() throws Throwable {
+	    	public void run() throws Exception {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeDynamicString, typeString));

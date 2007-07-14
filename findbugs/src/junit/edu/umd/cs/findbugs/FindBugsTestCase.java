@@ -211,7 +211,7 @@ public abstract class FindBugsTestCase extends TestCase {
      * @param runnable   a RunnableWithExceptions object whose run() method has some JUnit test code
      * @throws Throwable
      */
-	protected void executeFindBugsTest(final RunnableWithExceptions runnable) throws Throwable {
+	protected void executeFindBugsTest(final RunnableWithExceptions runnable) throws Exception {
 		TestRunnerThread thread = new TestRunnerThread(runnable);
 		
 		thread.start();

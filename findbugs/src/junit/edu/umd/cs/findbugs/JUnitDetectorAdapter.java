@@ -56,10 +56,13 @@ public class JUnitDetectorAdapter implements Detector2 {
 	    runnableInstance.set(runnable);
     }
 
-    public void finishTest() throws Throwable {
-    	if (throwable != null) {
-    		throw throwable;
-    	}
+    public void finishTest() throws Exception {
+    	if (throwable instanceof Exception) 
+    		throw (Exception) throwable;
+    	if (throwable instanceof Error) 
+        		throw (Error) throwable;
+    	if (throwable != null) throw new Error(throwable);
+    	
     }
     
 	/* (non-Javadoc)
