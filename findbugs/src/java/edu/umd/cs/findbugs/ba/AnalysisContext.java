@@ -88,13 +88,18 @@ public abstract class AnalysisContext {
 	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
-		= new InheritableThreadLocal<AnalysisContext>();
+		= new InheritableThreadLocal<AnalysisContext>() {
+		@Override
+		public AnalysisContext initialValue() {
+			throw new IllegalStateException("currentAnalysisContext should be set by AnalysisContext.setCurrentAnalysisContext");
+		}
+	};
 
 	private static InheritableThreadLocal<XFactory> currentXFactory
 	= new InheritableThreadLocal<XFactory>() {
 		@Override
 		public XFactory initialValue() {
-			return new XFactory();
+			throw new IllegalStateException("currentXFactory should be set by AnalysisContext.setCurrentAnalysisContext");
 		}
 	};
 
@@ -605,6 +610,7 @@ public abstract class AnalysisContext {
 	 */
 	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
 		currentAnalysisContext.set(analysisContext);
+		currentXFactory.set(new XFactory());
 	}
 	
 	/**
