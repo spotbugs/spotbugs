@@ -91,7 +91,8 @@ public abstract class AnalysisContext {
 		= new InheritableThreadLocal<AnalysisContext>() {
 		@Override
 		public AnalysisContext initialValue() {
-			throw new IllegalStateException("currentAnalysisContext should be set by AnalysisContext.setCurrentAnalysisContext");
+			// throw new IllegalStateException("currentAnalysisContext should be set by AnalysisContext.setCurrentAnalysisContext");
+			return null;
 		}
 	};
 
