@@ -22,10 +22,6 @@ package edu.umd.cs.findbugs.ba.interproc;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.bcel.Constants;
-
-import edu.umd.cs.findbugs.ba.InstanceField;
-import edu.umd.cs.findbugs.ba.StaticField;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 

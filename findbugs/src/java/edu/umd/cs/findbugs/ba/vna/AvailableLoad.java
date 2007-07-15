@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import edu.umd.cs.findbugs.ba.InstanceField;
-import edu.umd.cs.findbugs.ba.StaticField;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
@@ -47,7 +45,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 	 *
 	 * @param staticField the StaticField
 	 */
-	public AvailableLoad(StaticField staticField) {
+	public AvailableLoad(XField staticField) {
 		this.reference = null;
 		this.field = staticField;
 	}
@@ -58,7 +56,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 	 * @param reference the ValueNumber of the object reference
 	 * @param field     the InstanceField
 	 */
-	public AvailableLoad(ValueNumber reference, InstanceField field) {
+	public AvailableLoad(ValueNumber reference, XField field) {
 		if (reference == null) throw new IllegalArgumentException();
 		this.reference = reference;
 		this.field = field;

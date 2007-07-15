@@ -20,11 +20,9 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.generic.AALOAD;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -48,12 +46,9 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
-import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
-import edu.umd.cs.findbugs.ba.StaticField;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
@@ -239,7 +234,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
-					loadInstanceField((InstanceField) xfield, obj);
+					loadInstanceField(xfield, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -255,7 +250,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
-					storeInstanceField((InstanceField) xfield, obj, false);
+					storeInstanceField(xfield, obj, false);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -290,7 +285,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
-					loadStaticField((StaticField) xfield, obj);
+					loadStaticField(xfield, obj);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -307,7 +302,7 @@ public class ValueNumberFrameModelingVisitor
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
-					storeStaticField((StaticField) xfield, obj, false);
+					storeStaticField(xfield, obj, false);
 					return;
 				}
 			} catch (ClassNotFoundException e) {
@@ -348,9 +343,9 @@ public class ValueNumberFrameModelingVisitor
 						// Load via inner-class accessor
 						if (doRedundantLoadElimination()) {
 							if (xfield.isStatic())
-								loadStaticField((StaticField) xfield, obj);
+								loadStaticField(xfield, obj);
 							else
-								loadInstanceField((InstanceField) xfield, obj);
+								loadInstanceField( xfield, obj);
 							return;
 						}
 					} else {
@@ -361,9 +356,9 @@ public class ValueNumberFrameModelingVisitor
 							boolean pushValue = !methodSig.endsWith(")V");
 
 							if (xfield.isStatic())
-								storeStaticField((StaticField) xfield, obj, pushValue);
+								storeStaticField( xfield, obj, pushValue);
 							else
-								storeInstanceField((InstanceField) xfield, obj, pushValue);
+								storeInstanceField( xfield, obj, pushValue);
 
 							return;
 						}
@@ -566,7 +561,7 @@ public class ValueNumberFrameModelingVisitor
 	 * @param instanceField the field
 	 * @param obj           the Instruction loading the field
 	 */
-	private void loadInstanceField(InstanceField instanceField, Instruction obj) {
+	private void loadInstanceField(XField instanceField, Instruction obj) {
 		if (RLE_DEBUG) {
 			System.out.println("[loadInstanceField for field " + instanceField + " in instruction " + handle);
 		}
@@ -616,7 +611,7 @@ public class ValueNumberFrameModelingVisitor
 	 * @param staticField the field
 	 * @param obj         the Instruction loading the field
 	 */
-	private void loadStaticField(StaticField staticField, Instruction obj) {
+	private void loadStaticField(XField staticField, Instruction obj) {
 		if (RLE_DEBUG) {
 			System.out.println("[loadStaticField for field " + staticField + " in instruction " + handle);
 		}
@@ -653,7 +648,7 @@ public class ValueNumberFrameModelingVisitor
 	 * @param pushStoredValue push the stored value onto the stack
 	 *                        (because we are modeling an inner-class field access method)
 	 */
-	private void storeInstanceField(InstanceField instanceField, Instruction obj, boolean pushStoredValue) {
+	private void storeInstanceField(XField instanceField, Instruction obj, boolean pushStoredValue) {
 		if (RLE_DEBUG) {
 			System.out.println("[storeInstanceField for field " + instanceField + " in instruction " + handle);
 		}
@@ -699,7 +694,7 @@ public class ValueNumberFrameModelingVisitor
 	 * @param pushStoredValue push the stored value onto the stack
 	 *                        (because we are modeling an inner-class field access method)
 	 */
-	private void storeStaticField(StaticField staticField, Instruction obj, boolean pushStoredValue) {
+	private void storeStaticField(XField staticField, Instruction obj, boolean pushStoredValue) {
 		if (RLE_DEBUG) {
 			System.out.println("[storeStaticField for field " + staticField + " in instruction " + handle);
 		}

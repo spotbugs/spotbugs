@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Map;
+
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.CHECKCAST;
@@ -46,8 +47,6 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Frame;
-import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -241,7 +240,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			AnalysisContext.logError("Oops", e1);
 		}
 		super.visitPUTFIELD(obj);
-		InstanceField field = (InstanceField) XFactory.createXField(obj, cpg);
+		XField field = (XField) XFactory.createXField(obj, cpg);
 		if (nullValueStored != null && ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION)
 			try {
 			ValueNumberFrame vnaFrameBefore = vnaDataflow.getFactAtLocation(getLocation());

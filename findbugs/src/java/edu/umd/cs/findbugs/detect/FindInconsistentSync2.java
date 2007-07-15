@@ -63,12 +63,12 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InnerClassAccess;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
-import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockChecker;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -555,10 +555,7 @@ public class FindInconsistentSync2 implements Detector {
 						// make it so
 						String instanceClassName = objType.getClassName();
 						if (!instanceClassName.equals(xfield.getClassName())) {
-							xfield = new InstanceField(instanceClassName,
-									xfield.getName(),
-									xfield.getSignature(),
-									xfield.getAccessFlags());
+							xfield = XFactory.createXField(instanceClassName, xfield.getName(), xfield.getSignature(), xfield.getAccessFlags());
 						}
 					}
 				}

@@ -21,11 +21,13 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-public class InstanceField extends AbstractField {
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
+class InstanceField extends AbstractField {
 
 	private static final long serialVersionUID = 0L;
 
-	public InstanceField(String className, String fieldName, String fieldSig, int accessFlags) {
+	public InstanceField(@DottedClassName  String className, String fieldName, String fieldSig, int accessFlags) {
 		super(className, fieldName, fieldSig, 
 				fieldName.startsWith("this$") ? (Constants.ACC_FINAL | accessFlags) : accessFlags);
 	}
