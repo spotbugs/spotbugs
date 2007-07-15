@@ -33,6 +33,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	private static IClassAnalysisEngine[] classAnalysisEngineList = {
 			new ClassDataAnalysisEngine(),
 			new ClassInfoAnalysisEngine(),
+			new ClassNameAndSuperclassInfoAnalysisEngine()
 	};
 
 	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {
