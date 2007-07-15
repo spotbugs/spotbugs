@@ -37,12 +37,12 @@ public class Version {
 	/**
 	 * Minor version number.
 	 */
-	public static final int MINOR = 2;
+	public static final int MINOR = 3;
 
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 2;
+	public static final int PATCHLEVEL = 0;
 
 	/**
 	 * Development version or release candidate?
