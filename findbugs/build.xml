@@ -112,7 +112,7 @@
 				</javac>
 		<echo level="info" message="compiling annotations"/>
 		<javac srcdir="${src5.dir}"
-						includes="${pkg.base}/annotations/** net/jcip/annotations/**"
+						includes="${pkg.base}/annotations/** ${pkg.base}/internalAnnotations/** net/jcip/annotations/**"
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
@@ -474,8 +474,11 @@
 	<target name="smoketest" depends="runjunit,validatesampleoutput"/>
 
 
-	<!-- Get version properties. -->
-	<target name="version" depends="classes">
+	<!-- Get version properties.  -->
+	<target name="version" depends="version0" >
+		<loadproperties srcfile="${version.props.file}"/>
+		</target>
+	<target name="version0" depends="classes">
 		<java classpathref="tools.classpath"
 			output="${version.props.file}"
 			classname="edu.umd.cs.findbugs.Version"
@@ -509,8 +512,9 @@
 		<!-- FIXME: check whether web docs are up to date -->
 	</target>
 
+	<target name="web" depends="classes,version,web0,bugdesc,checkweb,apiJavadoc"/>
 	<!-- Generate website. -->
-	<target name="web" depends="classes,version,bugdesc,checkweb,apiJavadoc">
+	<target name="web0" depends="apiJavadoc">
 		<loadproperties srcFile="${doc.props.file}"/>
 
 		<antcall target="generatedocs">
