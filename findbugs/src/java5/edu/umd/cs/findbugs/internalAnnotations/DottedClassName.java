@@ -1,6 +1,6 @@
 /*
- * Bytecode Analysis Framework
- * Copyright (C) 2003-2005, University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba;
+package edu.umd.cs.findbugs.internalAnnotations;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 
 /**
- * Abstract representation of a field.
- * Note that this is called "XField" to distinguish it from
- * BCEL's Field class.  Also, you can think of the "X" as expanding
- * to "Instance" or "Static".
- * <p/>
- * <p> This interface and its implementations exist because Field
- * objects in BCEL are awkward to deal with.  They are not Comparable,
- * it is difficult to find out what class they belong to, etc.
+ * Denotes a class name or package name where the . character is used to separate package/class name components. 
+ * @author pugh
  */
-public interface XField extends ClassMember{
-	/**
-	 * Is the type of the field a reference type?
-	 */
-	public boolean isReferenceType();
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DottedClassName {
 
-	/**
-	 * Is this a volatile field?
-	 */
-	public boolean isVolatile();
 }
-
-// vim:ts=4

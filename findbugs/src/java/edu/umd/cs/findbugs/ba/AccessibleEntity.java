@@ -64,7 +64,6 @@ public interface AccessibleEntity {
 	 */
 	public boolean isResolved();
 
-
 	/**
 	 * Get the ClassDescriptor representing the class (if entity is a class)
 	 * or the class containing the entity (if a field or method).

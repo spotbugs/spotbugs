@@ -20,8 +20,10 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
-	protected AbstractMethod(String className, String methodName, String methodSig, int accessFlags) {
+	protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 	}
 

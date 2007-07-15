@@ -22,9 +22,11 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public abstract class AbstractClassMember implements ClassMember {
-	private final String className;
+	private final @DottedClassName String className;
 	private final String name;
 	private final String signature;
 	private final int accessFlags;
@@ -36,7 +38,7 @@ public abstract class AbstractClassMember implements ClassMember {
 	static  int dottedCountSignature = 0;
 
 
-	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {
+	protected AbstractClassMember(@DottedClassName String className, String name, String signature, int accessFlags) {
 		if (className.indexOf('.') >= 0) {
 			// className = className.replace('.','/');
 			dottedCountClass++;
@@ -56,7 +58,7 @@ public abstract class AbstractClassMember implements ClassMember {
 		this.accessFlags = accessFlags;
 	}
 
-	public String getClassName() {
+	public @DottedClassName String getClassName() {
 		return className;
 	}
 	
@@ -71,7 +73,7 @@ public abstract class AbstractClassMember implements ClassMember {
 		return name;
 	}
 
-	public String getPackageName() {
+	public @DottedClassName String getPackageName() {
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot == -1) return className;
 		return className.substring(0,lastDot);
@@ -88,6 +90,9 @@ public abstract class AbstractClassMember implements ClassMember {
 		return accessFlags;
 	}
 
+	public boolean isStatic() {
+		return (accessFlags & Constants.ACC_STATIC) != 0;
+	}
 	public boolean isFinal() {
 		return (accessFlags & Constants.ACC_FINAL) != 0;
 	}
@@ -121,6 +126,22 @@ public abstract class AbstractClassMember implements ClassMember {
 		return signature.compareTo(other.getSignature());
 	}
 
+	public int compareTo(FieldOrMethodName other) {
+
+		int cmp = getClassDescriptor().compareTo(other.getClassDescriptor());
+		if (cmp != 0)
+			return cmp;
+		cmp = name.compareTo(other.getName());
+		if (cmp != 0)
+			return cmp;
+		cmp = signature.compareTo(other.getSignature());
+		if (cmp != 0)
+			return cmp;
+		return (this.isStatic() ? 1 : 0) - (other.isStatic() ? 1 : 0);
+	}
+	public int compareTo(Object other) {
+		return compareTo((FieldOrMethodName) other);
+	}
 	public boolean isResolved() {
 		return resolved;
 	}

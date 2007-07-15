@@ -19,20 +19,22 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.
  * 
  * @author David Hovemeyer
  */
-public abstract class FieldOrMethodDescriptor {
-	private final String slashedClassName;
+public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
+	private final @SlashedClassName String slashedClassName;
 	private final String name;
 	private final String signature;
 	private final boolean isStatic;
 	private ClassDescriptor cachedClassDescriptor;
 	private int cachedHashCode;
 
-	public FieldOrMethodDescriptor(String slashedClassName, String name, String signature, boolean isStatic) {
+	public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
 		if (slashedClassName.indexOf('.') >= 0) {
 			throw new IllegalArgumentException("class name not in VM format: " + slashedClassName);
 		}
@@ -45,7 +47,7 @@ public abstract class FieldOrMethodDescriptor {
 	/**
 	 * @return Returns the class name
 	 */
-	public String getSlashedClassName() {
+	public @SlashedClassName String getSlashedClassName() {
 		return slashedClassName;
 	}
 	
@@ -81,21 +83,22 @@ public abstract class FieldOrMethodDescriptor {
 		return isStatic;
 	}
 
-	protected int compareTo(FieldOrMethodDescriptor o) {
+	
+	protected int compareTo(FieldOrMethodName o) {
 		int cmp;
-		cmp = this.slashedClassName.compareTo(o.slashedClassName);
+		cmp = this.getClassDescriptor().compareTo(o.getClassDescriptor());
 		if (cmp != 0) {
 			return cmp;
 		}
-		cmp = this.name.compareTo(o.name);
+		cmp = this.name.compareTo(o.getName());
 		if (cmp != 0) {
 			return cmp;
 		}
-		cmp = this.signature.compareTo(o.signature);
+		cmp = this.signature.compareTo(o.getSignature());
 		if (cmp != 0) {
 			return cmp;
 		}
-		return (this.isStatic ? 1 : 0) - (o.isStatic ? 1 : 0);
+		return (this.isStatic ? 1 : 0) - (o.isStatic() ? 1 : 0);
 	}
 
 	/* (non-Javadoc)

@@ -121,7 +121,7 @@ public class AnalysisCache implements IAnalysisCache {
 		// Get the descriptor->result map for this analysis class,
 		// creating if necessary
 		Map<ClassDescriptor, Object> descriptorMap =
-			findOrCreateDescriptorMap((Map)classAnalysisMap, (Map)classAnalysisEngineMap, analysisClass);
+			findOrCreateDescriptorMap(classAnalysisMap, (Map)classAnalysisEngineMap, analysisClass);
 
 		// See if there is a cached result in the descriptor map
 		Object analysisResult = descriptorMap.get(classDescriptor);

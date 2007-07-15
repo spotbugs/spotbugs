@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;

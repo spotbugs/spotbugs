@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.io.Serializable;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -37,7 +39,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	 * 
 	 * @param className class name in VM format, e.g. "java/lang/String"
 	 */
-	public ClassDescriptor(String className) {
+	public ClassDescriptor(@SlashedClassName String className) {
 		if (className.indexOf('.') >= 0) {
 			throw new IllegalArgumentException("Class name " + className + " not in VM format");
 		}
@@ -50,7 +52,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	/**
 	 * @return Returns the class name in VM format, e.g. "java/lang/String"
 	 */
-	public final String getClassName() {
+	public final @SlashedClassName String getClassName() {
 		return className;
 	}
 
@@ -76,8 +78,25 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	 * 
 	 * @return the name of the class in dotted format
 	 */
-	public String toDottedClassName() {
+	public @DottedClassName String toDottedClassName() {
 		return ClassName.toDottedClassName(className);
+	}
+	/**
+	 * Get the name of the class in dotted format.
+	 * 
+	 * @return the name of the class in dotted format
+	 */
+	public  @DottedClassName  String getDottedClassName() {
+		return ClassName.toDottedClassName(className);
+	}
+
+	/**
+	 * Get the name of the package in dotted format.
+	 * 
+	 * @return the name of the class in dotted format
+	 */
+	public  @DottedClassName  String getPackageName() {
+		return ClassName.extractPackageName(ClassName.toDottedClassName(className));
 	}
 
 	/**

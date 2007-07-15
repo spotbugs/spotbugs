@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -523,14 +524,14 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Get list of referenced classes and add them to set.
 			// Add superclasses and superinterfaces to worklist.
 			try {
-				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
-				referencedClassSet.addAll(classInfo.getReferencedClassDescriptorList());
+				ClassNameAndSuperclassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassNameAndSuperclassInfo.class, classDesc);
+				referencedClassSet.addAll(classNameAndInfo.getReferencedClassDescriptorList());
 
-				if (classInfo.getSuperclassDescriptor() != null) {
-					workList.addLast(classInfo.getSuperclassDescriptor());
+				if (classNameAndInfo.getSuperclassDescriptor() != null) {
+					workList.addLast(classNameAndInfo.getSuperclassDescriptor());
 				}
 
-				for (ClassDescriptor ifaceDesc : classInfo.getInterfaceDescriptorList()) {
+				for (ClassDescriptor ifaceDesc : classNameAndInfo.getInterfaceDescriptorList()) {
 					workList.addLast(ifaceDesc);
 				}
 			} catch (MissingClassException e) {
@@ -556,8 +557,8 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 				try {
-				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, e);
-				return classInfo.getReferencedClassDescriptorList();
+				ClassNameAndSuperclassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassNameAndSuperclassInfo.class, e);
+				return classNameAndInfo.getReferencedClassDescriptorList();
 				} catch  (CheckedAnalysisException e2) {
 					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
 					return TigerSubstitutes.emptyList();

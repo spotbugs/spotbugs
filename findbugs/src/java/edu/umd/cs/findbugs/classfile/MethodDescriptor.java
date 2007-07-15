@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Descriptor uniquely identifying a method in a class.
@@ -27,8 +28,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
  * @author David Hovemeyer
  */
 public class MethodDescriptor
-		extends FieldOrMethodDescriptor
-		implements Comparable<MethodDescriptor> {
+		extends FieldOrMethodDescriptor {
 	/**
 	 * Constructor.
 	 * 
@@ -37,7 +37,7 @@ public class MethodDescriptor
 	 * @param methodSignature signature of the method
 	 * @param isStatic        true if method is static, false otherwise
 	 */
-	public MethodDescriptor(String className, String methodName, String methodSignature, boolean isStatic) {
+	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
 		super(className, methodName, methodSignature, isStatic);
 	}
 

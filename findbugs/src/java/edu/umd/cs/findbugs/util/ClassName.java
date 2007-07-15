@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 /**
  * Utility methods for working with class names.
  * 
@@ -53,6 +55,19 @@ public abstract class ClassName {
 			className = className.replace('/', '.');
 		}
 		return className;
+	}
+
+	/**
+	 * extract the package name from a dotted class name.
+	 * Package names are always in dotted format.
+	 * 
+	 * @param className a dotted class name
+	 * @return the name of the package containing the class
+	 */
+	public static @DottedClassName String extractPackageName(@DottedClassName String className) {
+		int i = className.lastIndexOf('.');
+		if (i < 0) return "";
+		return className.substring(0, i);
 	}
 
 	/**

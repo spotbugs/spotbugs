@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2003-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,30 +20,27 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * Descriptor uniquely identifying a field in a class.
- * 
- * @author David Hovemeyer
+ * @author pugh
  */
-public class FieldDescriptor
-		extends FieldOrMethodDescriptor {
+public interface FieldOrMethodName {
+	/**
+	 * @return a ClassDescriptor for the field/method's class
+	 */
+	public ClassDescriptor getClassDescriptor();
 
 	/**
-	 * Constructor.
-	 * 
-	 * @param className      the name of the class the field belongs to
-	 * @param fieldName      the name of the field
-	 * @param fieldSignature the field signature (type)
-	 * @param isStatic       true if field is static, false if not
+	 * @return Returns the field/method name
 	 */
-	public FieldDescriptor(String className, String fieldName, String fieldSignature, boolean isStatic) {
-		super(className, fieldName, fieldSignature, isStatic);
-	}
+	public String getName();
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	/**
+	 * @return Returns the field/method signature
 	 */
-	public int compareTo(FieldDescriptor o) {
-		return super.compareTo(o);
-	}
+	public String getSignature();
+
+	/**
+	 * @return Returns true if field/method is static, false if not
+	 */
+	public boolean isStatic();
 
 }

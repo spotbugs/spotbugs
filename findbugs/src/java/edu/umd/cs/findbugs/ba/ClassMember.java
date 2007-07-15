@@ -20,6 +20,9 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.Serializable;
 
+import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 /**
  * Common super-interface for class members (fields and methods).
  * 
@@ -27,17 +30,17 @@ import java.io.Serializable;
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
-public interface ClassMember extends Comparable<ClassMember>, Serializable, AccessibleEntity  {
+public interface ClassMember extends  Serializable, AccessibleEntity, Comparable, FieldOrMethodName  {
 
 	/**
 	 * Get the full (dotted) name of the class (if the object represents a class)
 	 * or the class the entity is defined in (if a field or method).
 	 */
-	public String getClassName();
+	public @DottedClassName String getClassName();
 	/**
 	 * Get the (dotted) name of the package in which the entity is defined.
 	 */
-	public String getPackageName();
+	public  @DottedClassName String getPackageName();
 	
 	/**
 	 * Get the name of the field/method.
