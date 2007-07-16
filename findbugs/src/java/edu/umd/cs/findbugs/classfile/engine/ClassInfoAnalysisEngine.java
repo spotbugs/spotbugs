@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import org.objectweb.asm.ClassReader;
+
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
@@ -39,19 +42,38 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * @author David Hovemeyer
  */
 public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> {
+	/*
+	private static final boolean USE_ASM_CLASS_PARSER = SystemProperties.getBoolean("findbugs.classparser.asm");
+	static {
+		if (USE_ASM_CLASS_PARSER) {
+			System.out.println("Using ClassParserUsingASM");
+		}
+	}
+	*/
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
 	public ClassInfo analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
-		// Get InputStream reading from class data
+
+		// Get class data
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-		DataInputStream classDataIn =
-			new DataInputStream(new ByteArrayInputStream(classData.getData()));
 
 		// Read the class info
-		ClassParserInterface parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
+		ClassParserInterface parser;
+		
+		if (/*USE_ASM_CLASS_PARSER*/true) {
+			ClassReader reader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
+			parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
+		} else {
+			// Get InputStream reading from class data
+			DataInputStream classDataIn =
+				new DataInputStream(new ByteArrayInputStream(classData.getData()));
+
+			parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
+		}
+		
 		ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
 		parser.parse(classInfoBuilder);
 		ClassInfo classInfo = classInfoBuilder.build();
