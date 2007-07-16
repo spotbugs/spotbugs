@@ -24,7 +24,13 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 
 /**
- * @author pwilliam
+ * Interface implemented by ClassParsers - objects that
+ * take the raw bytes of a classfile and parse
+ * the important symbolic information to produce
+ * ClassNameAndSuperclassInfo and ClassInfo objects.
+ * 
+ * @author Bill Pugh
+ * @author David Hovemeyer
  */
 public interface ClassParserInterface {
 
