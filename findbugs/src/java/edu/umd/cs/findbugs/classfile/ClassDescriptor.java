@@ -126,6 +126,12 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	public static ClassDescriptor createClassDescriptor(String className) {
 	    return new ClassDescriptor(className);
     }
+	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
+		ClassDescriptor[] result = new ClassDescriptor[classNames.length];
+		for(int i = 0; i < classNames.length; i++) 
+			result[i] = createClassDescriptor(classNames[i]);
+	    return result;
+    }
 	public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
 	    return createClassDescriptor(dottedClassName.replace('.','/'));
     }

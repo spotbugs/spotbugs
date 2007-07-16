@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
@@ -45,9 +45,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	private final ClassDescriptor immediateEnclosingClass;
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
-		private FieldDescriptor[] fieldDescriptorList;
+		private List<FieldDescriptor>fieldDescriptorList = new LinkedList<FieldDescriptor>();
 
-		private MethodDescriptor[] methodDescriptorList;
+		private List<MethodDescriptor> methodDescriptorList  = new LinkedList<MethodDescriptor>();
 
 
 		private ClassDescriptor immediateEnclosingClass;
@@ -55,7 +55,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		public ClassInfo build() {
 			return new ClassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
 					referencedClassDescriptorList,
-			        fieldDescriptorList, methodDescriptorList, immediateEnclosingClass);
+			        fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), immediateEnclosingClass);
 		}
 
 		/**
@@ -70,7 +70,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		 *            The fieldDescriptorList to set.
 		 */
 		public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
-			this.fieldDescriptorList = fieldDescriptorList;
+			this.fieldDescriptorList = Arrays.asList(fieldDescriptorList);
+		}
+		public void addFieldDescriptor(FieldDescriptor field) {
+			fieldDescriptorList.add(field);
 		}
 
 		/**
@@ -78,7 +81,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		 *            The methodDescriptorList to set.
 		 */
 		public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
-			this.methodDescriptorList = methodDescriptorList;
+			this.methodDescriptorList = Arrays.asList(methodDescriptorList);
+		}
+		public void addMethodDescriptor(MethodDescriptor method) {
+			methodDescriptorList.add(method);
 		}
 
 		/**
