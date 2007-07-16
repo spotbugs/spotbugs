@@ -19,117 +19,190 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pugh
  */
 public class MethodInfo extends MethodDescriptor implements XMethod {
 
+	static public class Builder {
+		final int accessFlags;
+
+		final String className, methodName, methodSignature;
+
+		String methodSourceSignature;
+
+		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+
+		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>();
+
+		public Builder(@DottedClassName String className, String methodName, String methodSignature, int accessFlags) {
+			this.className = className;
+			this.methodName = methodName;
+			this.methodSignature = methodSignature;
+			this.accessFlags = accessFlags;
+		}
+
+		public void setSourceSignature(String methodSourceSignature) {
+			this.methodSourceSignature = methodSourceSignature;
+		}
+
+		public void addAnnotation(String name, AnnotationValue value) {
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			methodAnnotations.put(annotationClass, value);
+		}
+
+		public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(parameter);
+			if (map == null) {
+				map = new HashMap<ClassDescriptor, AnnotationValue>();
+				methodParameterAnnotations.put(parameter, map);
+			}
+			map.put(annotationClass, value);
+		}
+
+		public MethodInfo build() {
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, methodAnnotations, 
+				 methodParameterAnnotations);
+		}
+	}
+
 	final int accessFlags;
-	
+
+	final String methodSourceSignature;
+
+	final Map<ClassDescriptor, AnnotationValue> methodAnnotations;
+
+	final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
+
 	/**
-     * @param className
-     * @param methodName
-     * @param methodSignature
-     * @param isStatic
-     */
-    public MethodInfo(String className, String methodName, String methodSignature, int accessFlags) {
-	    super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
-	    this.accessFlags = accessFlags;
-    }
+	 * @param className
+	 * @param methodName
+	 * @param methodSignature
+	 * @param methodSourceSignature
+	 * @param isStatic
+	 */
+	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
+	        int accessFlags, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
+		this.accessFlags = accessFlags;
+		this.methodSourceSignature = methodSourceSignature;
+		this.methodAnnotations = Util.immutableMap(methodAnnotations);
+		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
+	}
 
+	public int getNumParams() {
+		return new SignatureParser(getSignature()).getNumParameters();
+	}
 
-    public int getNumParams() {
-    	return new SignatureParser(getSignature()).getNumParameters();
-    }
+	private boolean checkFlag(int flag) {
+		return (accessFlags & flag) != 0;
+	}
 
-    private boolean checkFlag(int flag) {
-    	return (accessFlags & flag) != 0;
-    }
+	public boolean isNative() {
+		return checkFlag(Constants.ACC_NATIVE);
+	}
 
-    public boolean isNative() {
-	    return checkFlag(Constants.ACC_NATIVE);
-    }
+	public boolean isSynchronized() {
+		return checkFlag(Constants.ACC_SYNCHRONIZED);
+	}
 
+	public @DottedClassName
+	String getClassName() {
+		return getClassDescriptor().toDottedClassName();
+	}
 
-    public boolean isSynchronized() {
-	    // TODO Auto-generated method stub
-    	return checkFlag(Constants.ACC_SYNCHRONIZED);
-    }
+	public @DottedClassName
+	String getPackageName() {
+		return getClassDescriptor().getPackageName();
+	}
+	
+	public String getSourceSignature() {
+		return methodSourceSignature;
+	}
 
-    public @DottedClassName String getClassName() {
-	    return getClassDescriptor().toDottedClassName();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(Object arg0) {
+		if (arg0 instanceof MethodDescriptor)
+			return compareTo((MethodDescriptor) arg0);
+		else if (arg0 instanceof XMethod)
+			return compareTo((XMethod) arg0);
+		else
+			throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + arg0.getClass().getName());
+	}
 
-    public @DottedClassName String getPackageName() {
-	    return  getClassDescriptor().getPackageName();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
+	 */
+	public int getAccessFlags() {
+		return accessFlags;
+	}
 
-	/* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(Object arg0) {
-    	if (arg0 instanceof MethodDescriptor)
-    		return compareTo((MethodDescriptor)arg0);
-    	else if (arg0 instanceof XMethod)
-    		return compareTo((XMethod)arg0);
-    	else throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + arg0.getClass().getName());
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
+	 */
+	public boolean isFinal() {
+		return checkFlag(Constants.ACC_FINAL);
+	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getAccessFlags()
-     */
-    public int getAccessFlags() {
-	    // TODO Auto-generated method stub
-	    return accessFlags;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
+	 */
+	public boolean isPrivate() {
+		return checkFlag(Constants.ACC_PRIVATE);
+	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
-     */
-    public boolean isFinal() {
-	    // TODO Auto-generated method stub
-	    return checkFlag(Constants.ACC_FINAL);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
+	 */
+	public boolean isProtected() {
+		return checkFlag(Constants.ACC_PROTECTED);
+	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
-     */
-    public boolean isPrivate() {
-	    // TODO Auto-generated method stub
-    	return checkFlag(Constants.ACC_PRIVATE);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
+	 */
+	public boolean isPublic() {
+		return checkFlag(Constants.ACC_PUBLIC);
+	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
-     */
-    public boolean isProtected() {
-	    // TODO Auto-generated method stub
-    	return checkFlag(Constants.ACC_PROTECTED);
-    }
-
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
-     */
-    public boolean isPublic() {
-	    // TODO Auto-generated method stub
-    	return checkFlag(Constants.ACC_PUBLIC);
-    }
-
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
-     */
-    public boolean isResolved() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
+	 */
+	public boolean isResolved() {
+		return true;
+	}
 
 }

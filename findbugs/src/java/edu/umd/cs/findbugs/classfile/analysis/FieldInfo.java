@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
 
@@ -30,23 +33,74 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pugh
  */
 public class FieldInfo extends FieldDescriptor implements XField {
 
+	static public class Builder {
+		final int accessFlags;
+
+		final String className, fieldName, fieldSignature;
+
+		String fieldSourceSignature;
+
+		final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+
+		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>();
+
+		public Builder(@DottedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
+			this.className = className;
+			this.fieldName = fieldName;
+			this.fieldSignature = fieldSignature;
+			this.accessFlags = accessFlags;
+		}
+
+		public void setSourceSignature(String fieldSourceSignature) {
+			this.fieldSourceSignature = fieldSourceSignature;
+		}
+
+		public void addAnnotation(String name, AnnotationValue value) {
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			fieldAnnotations.put(annotationClass, value);
+		}
+
+		public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			Map<ClassDescriptor, AnnotationValue> map = fieldParameterAnnotations.get(parameter);
+			if (map == null) {
+				map = new HashMap<ClassDescriptor, AnnotationValue>();
+				fieldParameterAnnotations.put(parameter, map);
+			}
+			map.put(annotationClass, value);
+		}
+
+		public FieldInfo build() {
+			return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, 
+				 fieldParameterAnnotations);
+		}
+	}
+
 	final int accessFlags;
-	
+
+	final String fieldSourceSignature;
+	final Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
+
+	final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations;
 	/**
      * @param className
      * @param fieldName
      * @param fieldSignature
      * @param isStatic
      */
-    public FieldInfo(String className, String fieldName, String fieldSignature, int accessFlags) {
+    private FieldInfo(String className, String fieldName, String fieldSignature, String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations) {
 	    super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 	    this.accessFlags = accessFlags;
+		this.fieldSourceSignature = fieldSourceSignature;
+		this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
+		this.fieldParameterAnnotations = Util.immutableMap(fieldParameterAnnotations);
     }
 
 
@@ -74,7 +128,9 @@ public class FieldInfo extends FieldDescriptor implements XField {
     public @DottedClassName String getPackageName() {
 	    return  getClassDescriptor().getPackageName();
     }
-
+	public String getSourceSignature() {
+		return fieldSourceSignature;
+	}
 	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

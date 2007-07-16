@@ -39,6 +39,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -49,8 +50,11 @@ import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
@@ -78,9 +82,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
      */
-    public void parse(final ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
+    public void parse(final ClassNameAndSuperclassInfo.Builder cBuilder) throws InvalidClassFileFormatException {
 
-    	builder.setCodeBaseEntry(codeBaseEntry);
+    	cBuilder.setCodeBaseEntry(codeBaseEntry);
     	TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
 		
     	// collect class references
@@ -128,16 +132,16 @@ public class ClassParserUsingASM implements ClassParserInterface {
             offset += size;
     	}
     	
-    	builder.setReferencedClassDescriptorList(referencedClassSet);
+    	cBuilder.setReferencedClassDescriptorList(referencedClassSet);
     	
     	classReader.accept(new ClassVisitor(){
 
 			public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)  {
 				ClassParserUsingASM.this.slashedClassName = name;
-				builder.setAccessFlags(access);
-				builder.setClassDescriptor(ClassDescriptor.createClassDescriptor(name));
-				builder.setInterfaceDescriptorList(ClassDescriptor.createClassDescriptor(interfaces));
-				builder.setSuperclassDescriptor(ClassDescriptor.createClassDescriptor(superName));
+				cBuilder.setAccessFlags(access);
+				cBuilder.setClassDescriptor(ClassDescriptor.createClassDescriptor(name));
+				cBuilder.setInterfaceDescriptorList(ClassDescriptor.createClassDescriptor(interfaces));
+				cBuilder.setSuperclassDescriptor(ClassDescriptor.createClassDescriptor(superName));
             }
 
 			public org.objectweb.asm.AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
@@ -156,13 +160,27 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
 			public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-				if (builder instanceof ClassInfo.Builder) {
-					((ClassInfo.Builder)builder).addFieldDescriptor(
-							DescriptorFactory.instance().getFieldDescriptor(slashedClassName, 
-									name, desc, (access & IClassConstants.ACC_STATIC) != 0));
+				if (cBuilder instanceof ClassInfo.Builder) {
+					final FieldInfo.Builder fBuilder = new FieldInfo.Builder(slashedClassName, name, desc, access);
+					fBuilder.setSourceSignature(signature);
+					return new AbstractFieldAnnotationVisitor() {
+
+						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+							AnnotationValue value = new AnnotationValue();
+							fBuilder.addAnnotation(desc, value);
+							return value;
+						}
+
+						public void visitEnd() {
+							((ClassInfo.Builder) cBuilder).addFieldDescriptor(fBuilder.build());
+
+						}
+
+					};
+
 				}
-	            return null;
-            }
+				return null;
+			}
 
 			public void visitInnerClass(String arg0, String arg1, String arg2, int arg3) {
 	            // TODO Auto-generated method stub
@@ -170,23 +188,44 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
 			public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-				if (builder instanceof ClassInfo.Builder) {
-					((ClassInfo.Builder)builder).addMethodDescriptor(
-							DescriptorFactory.instance().getMethodDescriptor(slashedClassName, 
-									name, desc, (access & IClassConstants.ACC_STATIC) != 0));
+				if (cBuilder instanceof ClassInfo.Builder) {
+					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, name, desc, access);
+					mBuilder.setSourceSignature(signature);
+					return new AbstractMethodAnnotationVisitor(){
+
+						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+							AnnotationValue value = new AnnotationValue();
+							mBuilder.addAnnotation(desc, value);
+							return value;
+						}
+
+						public void visitEnd() {
+							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
+									mBuilder.build());
+	                        
+                        }
+
+						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
+                                boolean visible) {
+							AnnotationValue value = new AnnotationValue();
+							mBuilder.addParameterAnnotation(parameter, desc, value);
+							return value;
+                        }};
+					
 				}
 				return null;
             }
 
-			public void visitOuterClass(String arg0, String arg1, String arg2) {
-	            // TODO Auto-generated method stub
+			public void visitOuterClass(String owner, String name, String desc) {
+				if (cBuilder instanceof ClassInfo.Builder) 
+				  ((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(ClassDescriptor.createClassDescriptor(owner));
 	            
             }
 
 			public void visitSource(String arg0, String arg1) {
 	            // TODO Auto-generated method stub
 	            
-            }}, 0);
+            }}, ClassReader.SKIP_CODE);
     	
     }
 

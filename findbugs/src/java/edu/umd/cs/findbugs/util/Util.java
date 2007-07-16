@@ -32,6 +32,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,9 +48,13 @@ public class Util {
 
 	public static void runLogAtShutdown(Runnable r) {
 		if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
-
 	}
 
+	public static <K,V> Map<K,V> immutableMap(Map<K,V> map) {
+		if (map.size() == 0)
+			return Collections.emptyMap();
+		return Collections.unmodifiableMap(map);
+	}
 	public static int  nullSafeHashcode(@CheckForNull Object o) {
 		if (o == null) return 0;
 		return o.hashCode();		
