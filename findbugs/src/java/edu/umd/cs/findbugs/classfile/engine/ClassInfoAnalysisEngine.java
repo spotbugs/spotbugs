@@ -25,6 +25,7 @@ import java.io.DataInputStream;
 import org.objectweb.asm.ClassReader;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
@@ -64,7 +65,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> 
 		ClassParserInterface parser;
 		
 		if (/*USE_ASM_CLASS_PARSER*/true) {
-			ClassReader reader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
+			FBClassReader reader = analysisCache.getClassAnalysis(FBClassReader.class, descriptor);
 			parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
 		} else {
 			// Get InputStream reading from class data

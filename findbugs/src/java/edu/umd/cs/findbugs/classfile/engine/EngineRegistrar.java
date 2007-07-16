@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine;
 
 /**
  * Register analysis engines with an analysis cache.
@@ -33,7 +34,8 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	private static IClassAnalysisEngine[] classAnalysisEngineList = {
 			new ClassDataAnalysisEngine(),
 			new ClassInfoAnalysisEngine(),
-			new ClassNameAndSuperclassInfoAnalysisEngine()
+			new ClassNameAndSuperclassInfoAnalysisEngine(),
+			new ClassReaderAnalysisEngine()
 	};
 
 	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {

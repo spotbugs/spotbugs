@@ -524,7 +524,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Get list of referenced classes and add them to set.
 			// Add superclasses and superinterfaces to worklist.
 			try {
-				ClassNameAndSuperclassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassNameAndSuperclassInfo.class, classDesc);
+				ClassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
 				referencedClassSet.addAll(classNameAndInfo.getReferencedClassDescriptorList());
 
 				if (classNameAndInfo.getSuperclassDescriptor() != null) {
@@ -557,7 +557,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 				try {
-				ClassNameAndSuperclassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassNameAndSuperclassInfo.class, e);
+				ClassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, e);
 				return classNameAndInfo.getReferencedClassDescriptorList();
 				} catch  (CheckedAnalysisException e2) {
 					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
