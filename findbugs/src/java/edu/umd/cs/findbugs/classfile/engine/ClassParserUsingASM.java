@@ -21,10 +21,12 @@ package edu.umd.cs.findbugs.classfile.engine;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
+import java.lang.instrument.IllegalClassFormatException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -33,7 +35,9 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -77,6 +81,54 @@ public class ClassParserUsingASM implements ClassParserInterface {
     public void parse(final ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
 
     	builder.setCodeBaseEntry(codeBaseEntry);
+    	TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
+		
+    	// collect class references
+    	
+    	int constantPoolCount = classReader.readUnsignedShort(8);
+    	int offset = 10;
+    	char [] buf = new char[1024];
+    	for(int count = 0; count < constantPoolCount; count++) {
+    		int tag = classReader.readByte(offset);
+    		int size;
+            switch (tag) {
+                case Constants.CONSTANT_Fieldref:
+                case Constants.CONSTANT_Methodref:
+                case Constants.CONSTANT_InterfaceMethodref:   
+                case Constants.CONSTANT_Integer:
+                case Constants.CONSTANT_Float:
+                case Constants.CONSTANT_NameAndType:
+                    size = 5;
+                    break;
+                case Constants.CONSTANT_Long:
+                case Constants.CONSTANT_Double:
+                    size = 9;
+                    count++;
+                    break;
+                case Constants.CONSTANT_Utf8:
+                    size = 3 + classReader.readUnsignedShort(offset);
+                    break;
+                case Constants.CONSTANT_Class:
+                	String className = classReader.readUTF8(offset+1, buf);
+                	if (className.indexOf('[') >= 0) {
+    					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
+    				} else if (ClassName.isValidClassName(className)) {
+    					referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
+    				}
+                    size = 3;
+                    break;
+                // case ClassWriter.CLASS:
+                // case ClassWriter.STR:
+                case Constants.CONSTANT_String:
+                    size = 3;
+                    break;
+                default:
+                   throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset);
+            }
+            offset += size;
+    	}
+    	
+    	builder.setReferencedClassDescriptorList(referencedClassSet);
     	
     	classReader.accept(new ClassVisitor(){
 
