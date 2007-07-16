@@ -19,37 +19,20 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.lang.instrument.IllegalClassFormatException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.ConstantCP;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
@@ -57,8 +40,6 @@ import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * @author William Pugh
@@ -142,10 +123,17 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				cBuilder.setClassDescriptor(ClassDescriptor.createClassDescriptor(name));
 				cBuilder.setInterfaceDescriptorList(ClassDescriptor.createClassDescriptor(interfaces));
 				cBuilder.setSuperclassDescriptor(ClassDescriptor.createClassDescriptor(superName));
+				if (cBuilder instanceof ClassInfo.Builder) {
+					((ClassInfo.Builder)cBuilder).setSourceSignature(signature);
+				}
             }
 
-			public org.objectweb.asm.AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
-	            // TODO Auto-generated method stub
+			public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
+				if (cBuilder instanceof ClassInfo.Builder) {
+					AnnotationValue value = new AnnotationValue();
+					((ClassInfo.Builder)cBuilder).addAnnotation(desc, value);
+					return value;	
+				}
 	            return null;
             }
 

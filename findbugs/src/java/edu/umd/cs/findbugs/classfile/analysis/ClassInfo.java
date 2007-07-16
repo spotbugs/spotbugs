@@ -21,8 +21,10 @@ package edu.umd.cs.findbugs.classfile.analysis;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -30,6 +32,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
@@ -43,6 +46,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	private final MethodDescriptor[] methodDescriptorList;
 
 	private final ClassDescriptor immediateEnclosingClass;
+	
+	final Map<ClassDescriptor, AnnotationValue> classAnnotations;
+	final private String classSourceSignature;
+
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
 		private List<FieldDescriptor>fieldDescriptorList = new LinkedList<FieldDescriptor>();
@@ -51,11 +58,15 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
 
 		private ClassDescriptor immediateEnclosingClass;
+		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+		private String classSourceSignature;
+
 
 		public ClassInfo build() {
-			return new ClassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
-					referencedClassDescriptorList,
-			        fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), immediateEnclosingClass);
+			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
+					referencedClassDescriptorList,classAnnotations,
+			        fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), 
+			        immediateEnclosingClass );
 		}
 
 		/**
@@ -65,6 +76,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 			return classDescriptor;
 		}
 
+		public void setSourceSignature(String classSourceSignature) {
+			this.classSourceSignature = classSourceSignature;
+		}
+		public void addAnnotation(String name, AnnotationValue value) {
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			classAnnotations.put(annotationClass, value);
+		}
 		/**
 		 * @param fieldDescriptorList
 		 *            The fieldDescriptorList to set.
@@ -117,15 +135,18 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	 *            ClassDescriptors of all classes/interfaces referenced by the
 	 *            class
 	 */
-	public ClassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
+	private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
 	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
 	        Collection<ClassDescriptor> referencedClassDescriptorList,
+	        Map<ClassDescriptor, AnnotationValue> classAnnotations,
 	        FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
 	         ClassDescriptor immediateEnclosingClass) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList);
+		this.classSourceSignature = classSourceSignature;
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
 		this.immediateEnclosingClass = immediateEnclosingClass;
+		this.classAnnotations = Util.immutableMap(classAnnotations);
 	}
 
 	/**
