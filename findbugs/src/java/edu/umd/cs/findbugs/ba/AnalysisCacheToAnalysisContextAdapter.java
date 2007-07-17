@@ -301,11 +301,6 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		// FIXME: we really should drive the progress callback here
 
 		Subtypes subtypes = getSubtypes();
-		Subtypes2 subtypes2 = null;
-		if (Subtypes2.ENABLE_SUBTYPES2) {
-			System.out.println("Subtypes2 enabled");
-			subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
-		}
 
 		for (ClassDescriptor appClass : appClassCollection) {
 			try {
@@ -324,13 +319,13 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				assert xclass != null;
 				
 				// Add the application class to the database
-				subtypes2.addApplicationClass(xclass);
+				getSubtypes2().addApplicationClass(xclass);
 				
 				// Add all referenced clases to the database
 				for (ClassDescriptor refClassDesc : xclass.getReferencedClassDescriptorList()) {
 					XClass refXClass = currentXFactory().getXClass(refClassDesc);
 					if (refXClass != null) {
-						subtypes2.addClass(refXClass);
+						getSubtypes2().addClass(refXClass);
 					} else {
 						getLookupFailureCallback().reportMissingClass(refClassDesc);
 					}
@@ -338,7 +333,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 			}
 		}
 		
-		if (Subtypes2.ENABLE_SUBTYPES2) {
+		if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
 			System.out.println(subtypes2.getGraph().getNumVertices() + " vertices in inheritance graph");
 		}
 	}

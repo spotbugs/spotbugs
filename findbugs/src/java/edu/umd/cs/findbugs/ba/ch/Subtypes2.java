@@ -52,8 +52,9 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
  */
 @DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
-	public static final boolean ENABLE_SUBTYPES2 = SystemProperties.getBoolean("findbugs.subtypes2");
+	public static final boolean ENABLE_SUBTYPES2 = true; //SystemProperties.getBoolean("findbugs.subtypes2");
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");
+	public static final boolean DEBUG_QUERIES = SystemProperties.getBoolean("findbugs.subtypes2.debugqueries");
 	
 	private final InheritanceGraph graph;
 	private final Map<ClassDescriptor, ClassVertex> classDescriptorToVertexMap;
@@ -275,12 +276,12 @@ public class Subtypes2 {
 	 * @throws ClassNotFoundException if a missing class prevents a definitive answer
      */
     public boolean isSubtype(ObjectType type, ObjectType possibleSupertype) throws ClassNotFoundException {
-    	if (DEBUG) {
+    	if (DEBUG_QUERIES) {
     		System.out.println("isSubtype: check " + type + " subtype of " + possibleSupertype);
     	}
     	
     	if (type.equals(possibleSupertype)) {
-    		if (DEBUG) {
+    		if (DEBUG_QUERIES) {
     			System.out.println("  ==> yes, types are same");
     		}
     		return true;
@@ -297,7 +298,7 @@ public class Subtypes2 {
 	    // which will Do The Right Thing.
 	    /*
 	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
-	    	if (DEBUG) {
+	    	if (DEBUG_QUERIES) {
 	    		System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
 	    	}
 	    	return false;
@@ -306,12 +307,12 @@ public class Subtypes2 {
 	    
 	    // Get the supertype query results
 	    SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
-	    if (DEBUG) {
+	    if (DEBUG_QUERIES) {
 	    	System.out.println("  Superclass set: " + supertypeQueryResults.supertypeSet);
 	    }
 	    
 	    boolean isSubtype = supertypeQueryResults.containsType(possibleSuperclassClassDescriptor);
-	    if (DEBUG) {
+	    if (DEBUG_QUERIES) {
 	    	if (isSubtype) {
 	    		System.out.println("  ==> yes, " + possibleSuperclassClassDescriptor + " is in superclass set");
 	    	} else {
@@ -398,7 +399,7 @@ public class Subtypes2 {
      * @throws ClassNotFoundException if the class can't be found
      */
 	private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-		if (DEBUG) {
+		if (DEBUG_QUERIES) {
 			System.out.println("Computing supertypes for " + classDescriptor.toDottedClassName());
 		}
 		
@@ -416,12 +417,12 @@ public class Subtypes2 {
 		while (!workList.isEmpty()) {
 			ClassVertex vertex = workList.removeFirst();
 			if (vertex.isResolved()) {
-				if (DEBUG) {
+				if (DEBUG_QUERIES) {
 					System.out.println("  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
 				}
 				supertypeSet.addSupertype(vertex.getClassDescriptor());
 			} else {
-				if (DEBUG) {
+				if (DEBUG_QUERIES) {
 					System.out.println(
 							"  Encountered unresolved class " +
 							vertex.getClassDescriptor().toDottedClassName() +
