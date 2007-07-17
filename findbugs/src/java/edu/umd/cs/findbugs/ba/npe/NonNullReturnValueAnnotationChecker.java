@@ -38,7 +38,7 @@ public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodCh
 		if (DEBUG) {
 			System.out.print("Checking " + xmethod + " for @NonNull or @CheckForNull...");
 		}
-		Boolean prop = database.getProperty(xmethod);
+		Boolean prop = database.getProperty(xmethod.getMethodDescriptor());
 		if (prop != null) {
 			this.property = prop;
 			this.annotatedMethod = javaClassAndMethod;

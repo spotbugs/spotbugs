@@ -47,4 +47,18 @@ public class MethodDescriptor
 	public int compareTo(MethodDescriptor o) {
 		return super.compareTo(o);
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor#equals(java.lang.Object)
+	 */
+	@Override
+	public final boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj == null || !(obj instanceof MethodDescriptor)) {
+			return false;
+		}
+		return super.equals(obj);
+	}
 }

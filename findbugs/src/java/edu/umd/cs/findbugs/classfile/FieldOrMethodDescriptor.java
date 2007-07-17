@@ -106,10 +106,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj == null || obj.getClass() != this.getClass()) {
+		if (obj == null || !(obj instanceof FieldOrMethodDescriptor)) {
 			return false;
 		}
 		FieldOrMethodDescriptor other = (FieldOrMethodDescriptor) obj;
@@ -123,7 +120,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		if (cachedHashCode == 0) {
 			cachedHashCode = slashedClassName.hashCode() * 7919
 				+ name.hashCode() * 3119  

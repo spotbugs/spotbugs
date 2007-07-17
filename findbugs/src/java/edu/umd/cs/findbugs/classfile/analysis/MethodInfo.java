@@ -221,5 +221,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return methodAnnotations.get(desc);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
+	 */
+	public MethodDescriptor getMethodDescriptor() {
+		return this;
+	}
 
 }

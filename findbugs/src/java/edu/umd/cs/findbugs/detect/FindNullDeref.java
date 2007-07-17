@@ -520,7 +520,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			}
 
 			ParameterNullnessProperty property = unconditionalDerefParamDatabase
-					.getProperty(targetMethod.toXMethod());
+					.getProperty(targetMethod.toMethodDescriptor());
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {

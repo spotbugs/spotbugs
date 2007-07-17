@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -160,6 +161,23 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	 */
 	public MethodDescriptor[] getMethodDescriptorList() {
 		return methodDescriptorList;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String, java.lang.String, boolean)
+	 */
+	public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
+		for (MethodDescriptor mDesc : methodDescriptorList) {
+			if (mDesc instanceof MethodInfo) {
+				MethodInfo mInfo = (MethodInfo) mDesc;
+				if (mInfo.getName().equals(methodName)
+						&& mInfo.getSignature().equals(methodSig)
+						&& mInfo.isStatic() == isStatic) {
+					return mInfo;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

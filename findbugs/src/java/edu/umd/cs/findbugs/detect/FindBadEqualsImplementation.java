@@ -67,7 +67,7 @@ public class FindBadEqualsImplementation implements Detector {
 				continue;
 
 			XMethod xmethod = XFactory.createXMethod(javaClass, method);
-			ParameterNullnessProperty property = database.getProperty(xmethod);
+			ParameterNullnessProperty property = database.getProperty(xmethod.getMethodDescriptor());
 			if (property == null)
 				continue;
 

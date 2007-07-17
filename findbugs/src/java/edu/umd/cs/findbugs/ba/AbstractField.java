@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public abstract class AbstractField extends AbstractClassMember implements XField {
@@ -31,6 +33,17 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
 
 	public boolean isVolatile() {
 		return (getAccessFlags() & Constants.ACC_VOLATILE) != 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
+	 */
+	public FieldDescriptor getFieldDescriptor() {
+		return DescriptorFactory.instance().getFieldDescriptor(
+				getClassDescriptor().getClassName(),
+				getName(),
+				getSignature(),
+				isStatic());
 	}
 }
 

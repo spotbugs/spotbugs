@@ -134,7 +134,7 @@ public class BuildUnconditionalParamDerefDatabase {
 			property.setNonNullParamSet(unconditionalDerefSet);
 
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod, property);
+			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod.getMethodDescriptor(), property);
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}

@@ -172,7 +172,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
     public boolean isResolved() {
-	    return false;
+	    return true;
     }
 
 
@@ -198,7 +198,10 @@ public class FieldInfo extends FieldDescriptor implements XField {
 		return fieldAnnotations.get(desc);
 	}
 
-
-	
-
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XField#getFieldDescriptor()
+	 */
+	public FieldDescriptor getFieldDescriptor() {
+		return this;
+	}
 }

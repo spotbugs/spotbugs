@@ -45,9 +45,12 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -58,22 +61,33 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public  class XFactory {
 
-	public XFactory() {};
+	private static class UnresolvedXMethod extends AbstractMethod implements XMethod {
+		protected UnresolvedXMethod(String className, String methodName, String methodSig, int accessFlags) {
+			super(className, methodName, methodSig, accessFlags);
+		}
+	}
 
-	private  Map<XMethod,XMethod> methods = new HashMap<XMethod,XMethod>();
+//	private  Map<XMethod,XMethod> methods = new HashMap<XMethod,XMethod>();
+	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
 
 	private Set<ClassMember> deprecated = new HashSet<ClassMember>();
 	private Set<? extends ClassMember> deprecatedView = Collections.unmodifiableSet(deprecated);
 	private  Map<XField,XField> fields = new HashMap<XField,XField>();
 
-	private  Set<XMethod> methodsView = Collections
-			.unmodifiableSet(methods.keySet());
+//	private  Set<XMethod> methodsView = Collections
+//	.unmodifiableSet(methods.keySet());
 
 	private  Set<XField> fieldsView = Collections
-			.unmodifiableSet(fields.keySet());
+	.unmodifiableSet(fields.keySet());
 
 	private  Set<XMethod> calledMethods = new HashSet<XMethod>();
 	private boolean calledMethodsIsInterned = false;
+
+	/**
+	 * Constructor.
+	 */
+	public XFactory() {
+	}
 
 	public void addCalledMethod(XMethod m) {
 		if (calledMethods.add(m) && !m.isResolved())
@@ -94,11 +108,11 @@ public  class XFactory {
 		return methods.containsKey(m);
 	}
 
-	public @CheckReturnValue @NonNull XMethod intern(XMethod m) {
+	private @CheckReturnValue @NonNull XMethod intern(XMethod m) {
 		XMethod m2 = methods.get(m);
 		if (m2 != null) return m2;
 
-		methods.put(m,m);
+		methods.put(m.getMethodDescriptor(), m);
 		return m;
 	}
 
@@ -109,9 +123,9 @@ public  class XFactory {
 		fields.put(f,f);
 		return f;
 	}
-	public  Set<XMethod> getMethods() {
-		return methodsView;
-	}
+//	public  Set<XMethod> getMethods() {
+//	return methodsView;
+//	}
 
 	public  Set<XField> getFields() {
 		return fieldsView;
@@ -120,6 +134,7 @@ public  class XFactory {
 	public static String canonicalizeString(String s) {
 		return ConstantUtf8.getCachedInstance(s).getBytes();
 	}
+
 	/**
 	 * Create an XMethod object from a BCEL Method.
 	 * 
@@ -132,11 +147,14 @@ public  class XFactory {
 		String methodSig = method.getSignature();
 		int accessFlags = method.getAccessFlags();
 
-
 		return createXMethod(className, methodName, methodSig, accessFlags);
 	}
 
-	public static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
+	/*
+	 * Create a new, never-before-seen, XMethod object and intern it.
+	 */
+	private static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
+		/*
 		boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
 		XMethod m;
 		XFactory xFactory = AnalysisContext.currentXFactory();
@@ -151,6 +169,37 @@ public  class XFactory {
 		// assert m2.getAccessFlags() == m.getAccessFlags();
 		((AbstractMethod) m2).markAsResolved();
 		return m2;
+		 */
+
+		XFactory xFactory = AnalysisContext.currentXFactory();
+
+		boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
+		MethodDescriptor methodDescriptor =
+			DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className), methodName, methodSig, isStatic);
+
+		XMethod xmethod = xFactory.methods.get(methodDescriptor);
+		if (xmethod == null) {
+			// Find the class
+			ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
+			XClass xclass = xFactory.getXClass(classDescriptor);
+			if (xclass != null) {
+				// Find the method within the class
+				xmethod = xclass.findMethod(methodName, methodSig, isStatic);
+			}
+
+			if (xmethod == null) {
+				xmethod = new UnresolvedXMethod(
+						className,
+						methodName,
+						methodSig,
+						accessFlags);
+			}
+
+			// Intern the method
+			xmethod = xFactory.intern(xmethod);
+		}
+
+		return xmethod;
 	}
 
 	/**
@@ -161,8 +210,11 @@ public  class XFactory {
 	 * @return an XMethod representing the Method
 	 */
 	public static XMethod createXMethod(JavaClass javaClass , Method method) {
-		return createXMethod(javaClass.getClassName(), method);
+		XMethod xmethod = createXMethod(javaClass.getClassName(), method);
+		assert xmethod.isResolved();
+		return xmethod;
 	}
+
 	/**
 	 * @param className
 	 * @param methodName
@@ -172,12 +224,13 @@ public  class XFactory {
 	 */
 	public  static XMethod createXMethod(String className, String methodName, String methodSig, boolean isStatic) {
 		XMethod m;
-		if (isStatic)
-			m = new StaticMethod(className, methodName, methodSig, Constants.ACC_STATIC);
-		else
-			m = new InstanceMethod(className, methodName, methodSig, 0);
+//		if (isStatic)
+//			m = new StaticMethod(className, methodName, methodSig, Constants.ACC_STATIC);
+//		else
+//			m = new InstanceMethod(className, methodName, methodSig, 0);
 		XFactory xFactory = AnalysisContext.currentXFactory();
-		m = xFactory.intern(m);
+//		m = xFactory.intern(m);
+		m = createXMethod(className, methodName, methodSig, isStatic ? Constants.ACC_STATIC : 0);
 		m = xFactory.resolve(m);
 		return m;
 	}
@@ -187,30 +240,30 @@ public  class XFactory {
 	}
 
 	static class RecursionDepth {
-	   private static final int MAX_DEPTH = 50;
-	 private int depth = 0;
-	 ArrayList<Object> list = new ArrayList<Object>();
-	 @Override
-	public String toString() {
-		 return list.toString();
-	 }
-	 public void dump() {
-		 System.out.println("Recursive calls" );
-		 for(Object o : list) 
-			 System.out.println("  resolve " + o);
-	 }
-	 public boolean enter(Object value) {
-		 if (depth > MAX_DEPTH) 
-			 return false;
-		 if (DEBUG_CIRCULARITY) list.add(value);
-		 depth++;
-		 return true;
-	 }
-	 public void exit() {
-		depth--;
-		if (DEBUG_CIRCULARITY) list.remove(list.size()-1);
-		assert depth >= 0;
-	 }
+		private static final int MAX_DEPTH = 50;
+		private int depth = 0;
+		ArrayList<Object> list = new ArrayList<Object>();
+		@Override
+		public String toString() {
+			return list.toString();
+		}
+		public void dump() {
+			System.out.println("Recursive calls" );
+			for(Object o : list) 
+				System.out.println("  resolve " + o);
+		}
+		public boolean enter(Object value) {
+			if (depth > MAX_DEPTH) 
+				return false;
+			if (DEBUG_CIRCULARITY) list.add(value);
+			depth++;
+			return true;
+		}
+		public void exit() {
+			depth--;
+			if (DEBUG_CIRCULARITY) list.remove(list.size()-1);
+			assert depth >= 0;
+		}
 	}
 	static ThreadLocal<RecursionDepth> recursionDepth = new  ThreadLocal<RecursionDepth>() {
 		@Override
@@ -287,7 +340,7 @@ public  class XFactory {
 	}
 
 	private static void fail(String s, @CheckForNull JavaClass jClass, @CheckForNull JavaClass superClass) {
-		 AnalysisContext.logError(s);
+		AnalysisContext.logError(s);
 		if (DEBUG_CIRCULARITY) {
 			System.out.println(s);
 			recursionDepth.get().dump();
@@ -340,7 +393,7 @@ public  class XFactory {
 				}
 				XMethod m2 = createXMethod(superClassName, methodName, m.getSignature(), m.isStatic());
 				if (m2.isResolved()) {
-					methods.put(m, m2);
+					methods.put(m.getMethodDescriptor(), m2);
 					return m2;
 				}
 			} catch (ClassNotFoundException e) {
@@ -367,13 +420,13 @@ public  class XFactory {
 		return createXField(visitor.getDottedClassConstantOperand(),
 				visitor.getNameConstantOperand(),
 				visitor.getSigConstantOperand(),
-				 visitor.getRefFieldIsStatic());			
+				visitor.getRefFieldIsStatic());			
 	}
 	public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
 		return createXMethod(visitor.getDottedClassConstantOperand(),
 				visitor.getNameConstantOperand(),
 				visitor.getSigConstantOperand(),
-				 visitor.getOpcode() == Constants.INVOKESTATIC);			
+				visitor.getOpcode() == Constants.INVOKESTATIC);			
 	}
 
 	public static XField createXField(FieldAnnotation f) {

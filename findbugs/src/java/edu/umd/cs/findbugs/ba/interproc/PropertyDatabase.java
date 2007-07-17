@@ -39,16 +39,17 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Property database for interprocedural analysis.
  * 
- * @param <KeyType>   key type: either XMethod or XField
+ * @param <KeyType>   key type: either MethodDescriptor or FieldDescriptor
  * @param <ValueType> value type: a value that summarizes some property of the associated key
  * @author David Hovemeyer
  */
-public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
+public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, ValueType> {
 	private Map<KeyType, ValueType> propertyMap;
 
 	/**
@@ -126,7 +127,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 
 		try {
 			reader = new BufferedReader(
-				Util.getReader(in));
+					Util.getReader(in));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -135,7 +136,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 				int bar = line.indexOf('|');
 				if (bar < 0) {
 					throw new PropertyDatabaseFormatException(
-							"Invalid property database: missing separator");
+					"Invalid property database: missing separator");
 				}
 				KeyType key = parseKey(line.substring(0, bar));
 				ValueType property = decodeProperty(line.substring(bar+1));
@@ -162,19 +163,20 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 		write(new FileOutputStream(fileName));
 	}
 
-	@SuppressWarnings("unchecked")
-	private KeyType intern(XFactory xFactory, KeyType key) {
-		KeyType result = key;
-		try {
-			if (key instanceof XField)
-				return (KeyType)  xFactory.intern((XField)key);
-			else if (key instanceof XMethod) 
-				return (KeyType)  xFactory.intern((XMethod)key);
-		} catch (Exception e) {
-			return key;
-		}
-		return result;
-	}
+//	@SuppressWarnings("unchecked")
+//	private KeyType intern(XFactory xFactory, KeyType key) {
+//		KeyType result = key;
+//		try {
+//			if (key instanceof XField)
+//				return (KeyType)  xFactory.intern((XField)key);
+//			else if (key instanceof XMethod) 
+//				return (KeyType)  xFactory.intern((XMethod)key);
+//		} catch (Exception e) {
+//			return key;
+//		}
+//		return result;
+//	}
+	
 	/**
 	 * Write property database to an OutputStream.
 	 * The OutputStream is guaranteed to be closed, even if an
@@ -195,13 +197,13 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 			XFactory xFactory = AnalysisContext.currentXFactory();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
-				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassName())) {
+				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor().toDottedClassName())) {
 
-				ValueType property = propertyMap.get(key);
-				writeKey(writer, intern(xFactory, key));
-				writer.write("|");
-				writer.write(encodeProperty(property));
-				writer.write("\n");
+					ValueType property = propertyMap.get(key);
+					writeKey(writer, key/*intern(xFactory, key)*/);
+					writer.write("|");
+					writer.write(encodeProperty(property));
+					writer.write("\n");
 				}
 			}
 		} finally {
@@ -242,7 +244,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	 * @throws MethodPropertyDatabaseFormatException
 	 */
 	protected abstract ValueType decodeProperty(String propStr)
-		throws PropertyDatabaseFormatException;
+	throws PropertyDatabaseFormatException;
 
 	/**
 	 * Subclasses must define this to encode a property

@@ -45,9 +45,11 @@ import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
 import edu.umd.cs.findbugs.detect.UnreadFields;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 
@@ -286,7 +288,7 @@ public abstract class AnalysisContext {
 	 * @return true if the class is an application class, false if not
 	 *         an application class or if the class cannot be located
 	 */
-	public boolean isApplicationClass(String className) {
+	public boolean isApplicationClass(@DottedClassName String className) {
 		try {
 			JavaClass javaClass = lookupClass(className);
 			return isApplicationClass(javaClass);
@@ -511,7 +513,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType extends ClassMember,
+		KeyType extends FieldOrMethodDescriptor,
 		Property
 		> DatabaseType loadPropertyDatabase(
 			DatabaseType database,
@@ -545,7 +547,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType extends ClassMember,
+		KeyType extends FieldOrMethodDescriptor,
 		Property
 		> DatabaseType loadPropertyDatabaseFromResource(
 			DatabaseType database,
@@ -581,7 +583,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType extends ClassMember,
+		KeyType extends FieldOrMethodDescriptor,
 		Property
 		> void storePropertyDatabase(DatabaseType database, String fileName, String description) {
 

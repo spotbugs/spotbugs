@@ -70,4 +70,14 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
 	public Collection<ClassDescriptor> getAnnotationDescriptors();
 	
 	public AnnotationValue getAnnotation(ClassDescriptor desc);
+
+	/**
+	 * Find an XMethod matching given parameters.
+	 * 
+     * @param methodName name of the method
+     * @param methodSig  signature of the method
+     * @param isStatic   true if the method is static, false if not          
+     * @return matching XMethod, or null if there is no matching XMethod
+     */
+    public XMethod findMethod(String methodName, String methodSig, boolean isStatic);
 }

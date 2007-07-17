@@ -111,7 +111,8 @@ public class BuildNonnullReturnDatabase {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			if (guaranteedNonNull) {
 				returnsNonNull++;
-				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().setProperty(xmethod, guaranteedNonNull);
+				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
+					.setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
 				if (DEBUG) 
 					System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
 

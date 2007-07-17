@@ -92,7 +92,7 @@ public class DescriptorFactory {
 	 * @param isStatic        true if method is static, false otherwise
 	 * @return MethodDescriptor
 	 */
-	public MethodDescriptor getMethodDescriptor(String className, String name, String signature, boolean isStatic) {
+	public MethodDescriptor getMethodDescriptor(@SlashedClassName String className, String name, String signature, boolean isStatic) {
 		MethodDescriptor methodDescriptor = new MethodDescriptor(className, name, signature, isStatic);
 		MethodDescriptor existing = methodDescriptorMap.get(methodDescriptor);
 		if (existing == null) {
@@ -105,13 +105,13 @@ public class DescriptorFactory {
 	/**
 	 * Get a FieldDescriptor.
 	 * 
-	 * @param className      the name of the class the field belongs to
+	 * @param className      the name of the class the field belongs to, in VM format (e.g., "java/lang/String")
 	 * @param fieldName      the name of the field
 	 * @param fieldSignature the field signature (type)
 	 * @param isStatic       true if field is static, false if not
 	 * @return FieldDescriptor
 	 */
-	public FieldDescriptor getFieldDescriptor(String className, String name, String signature, boolean isStatic) {
+	public FieldDescriptor getFieldDescriptor(@SlashedClassName String className, String name, String signature, boolean isStatic) {
 		FieldDescriptor fieldDescriptor = new FieldDescriptor(className, name, signature, isStatic);
 		FieldDescriptor existing = fieldDescriptorMap.get(fieldDescriptor);
 		if (existing == null) {

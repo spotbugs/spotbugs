@@ -311,7 +311,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			// get a more precise type for this load.
 			XField xfield = Hierarchy.findXField(obj, getCPG());
 			if (database != null && (loadType instanceof ReferenceType) && xfield != null) {
-				FieldStoreType property = database.getProperty(xfield);
+				FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
 				if (property != null) {
 					loadType = property.getLoadType((ReferenceType) loadType);
 				}

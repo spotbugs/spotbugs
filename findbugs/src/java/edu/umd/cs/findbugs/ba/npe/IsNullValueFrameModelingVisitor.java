@@ -156,7 +156,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
 				NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(calledMethod, false);
-				Boolean alwaysNonNull =  AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().getProperty(calledMethod);
+				Boolean alwaysNonNull =  AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().getProperty(calledMethod.getMethodDescriptor());
 					if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("Null value returned from " + calledMethod);

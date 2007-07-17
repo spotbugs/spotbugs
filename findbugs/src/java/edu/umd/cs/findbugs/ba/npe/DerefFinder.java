@@ -135,7 +135,7 @@ public class DerefFinder {
 						 for (JavaClassAndMethod targetMethod : targetMethodSet) {
 
 							ParameterNullnessProperty property = unconditionalDerefParamDatabase
-									.getProperty(targetMethod.toXMethod());
+									.getProperty(targetMethod.toMethodDescriptor());
 							if (property == null) {
 								unconditionallyDereferencedNullArgSet = null;
 								break;

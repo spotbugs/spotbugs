@@ -18,12 +18,16 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 public interface XMethod extends ClassMember {
 	public boolean isNative();
 	public boolean isSynchronized();
 	public int getNumParams();
+
 	/**
-	 * 
-	 */
+     * @return the MethodDescriptor identifying this object
+     */
+    public MethodDescriptor getMethodDescriptor();
 
 }

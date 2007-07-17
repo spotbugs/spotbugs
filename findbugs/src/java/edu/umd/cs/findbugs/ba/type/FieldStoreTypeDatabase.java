@@ -30,6 +30,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /**
  * @author David Hovemeyer
@@ -40,8 +41,8 @@ public class FieldStoreTypeDatabase
 	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
 	public void purgeBoringEntries() {
-		Collection<XField> keys = new ArrayList<XField>(getKeys());
-		for(XField f : keys) {
+		Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
+		for(FieldDescriptor f : keys) {
 			String s = f.getSignature();
 			FieldStoreType type = getProperty(f);
 			Type fieldType = Type.getType(f.getSignature());
@@ -56,7 +57,7 @@ public class FieldStoreTypeDatabase
 	}
 
 	@Override
-		 protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+	protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
 		FieldStoreType property = new FieldStoreType();
 		StringTokenizer t = new StringTokenizer(propStr, ",");
 		while (t.hasMoreTokens()) {
@@ -68,7 +69,7 @@ public class FieldStoreTypeDatabase
 
 
 	@Override
-		 protected String encodeProperty(FieldStoreType property) {
+	protected String encodeProperty(FieldStoreType property) {
 		StringBuffer buf = new StringBuffer();
 		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
 			if (buf.length() > 0) {

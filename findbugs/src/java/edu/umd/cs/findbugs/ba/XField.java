@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+
 /**
  * Abstract representation of a field.
  * Note that this is called "XField" to distinguish it from
@@ -39,6 +41,11 @@ public interface XField extends ClassMember{
 	 * Is this a volatile field?
 	 */
 	public boolean isVolatile();
+
+	/**
+	 * @return FieldDescriptor referring to this field
+	 */
+	public FieldDescriptor getFieldDescriptor();
 }
 
 // vim:ts=4

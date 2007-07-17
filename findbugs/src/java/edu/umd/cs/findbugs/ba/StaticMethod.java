@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
-public class StaticMethod extends AbstractMethod {
+public abstract class StaticMethod extends AbstractMethod {
 	private static final long serialVersionUID = 0L;
 	public StaticMethod(@DottedClassName  String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);

@@ -26,7 +26,9 @@ import org.apache.bcel.Constants;
 import edu.umd.cs.findbugs.ba.InstanceMethod;
 import edu.umd.cs.findbugs.ba.StaticMethod;
 import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * A MethodPropertyDatabase keeps track of properties of
@@ -35,18 +37,26 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * @author David Hovemeyer
  */
 public abstract class MethodPropertyDatabase<Property>
-		extends PropertyDatabase<XMethod, Property> {
+	extends PropertyDatabase<MethodDescriptor, Property> {
 
 	@Override
-		 protected XMethod parseKey(String methodStr) throws PropertyDatabaseFormatException {
+	protected MethodDescriptor parseKey(String methodStr) throws PropertyDatabaseFormatException {
 		String[] tuple = methodStr.split(",");
 		if (tuple.length != 4)
 			throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
 
 		try {
 			int accessFlags = Integer.parseInt(tuple[3]);
-			return XFactory.createXMethod(XFactory.canonicalizeString(tuple[0]),
-					XFactory.canonicalizeString( tuple[1]), XFactory.canonicalizeString(tuple[2]), accessFlags);
+//			return XFactory.createMethodDescriptor(XFactory.canonicalizeString(tuple[0]),
+//					XFactory.canonicalizeString( tuple[1]), XFactory.canonicalizeString(tuple[2]), accessFlags);
+			String className = XFactory.canonicalizeString(tuple[0]);
+			String methodName = XFactory.canonicalizeString(tuple[1]);
+			String methodSig = XFactory.canonicalizeString(tuple[2]);
+			return DescriptorFactory.instance().getMethodDescriptor(
+					ClassName.toSlashedClassName(className),
+					methodName,
+					methodSig,
+					(accessFlags & Constants.ACC_STATIC) != 0);
 
 		} catch (NumberFormatException e) {
 			return null;
@@ -54,13 +64,13 @@ public abstract class MethodPropertyDatabase<Property>
 	}
 
 	@Override
-		 protected void writeKey(Writer writer, XMethod method) throws IOException {
-		writer.write(method.getClassName());
+	protected void writeKey(Writer writer, MethodDescriptor method) throws IOException {
+		writer.write(method.getClassDescriptor().toDottedClassName());
 		writer.write(",");
 		writer.write(method.getName());
 		writer.write(",");
 		writer.write(method.getSignature());
 		writer.write(",");
-		writer.write(String.valueOf(method.getAccessFlags()));
+		writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
 	}
 }

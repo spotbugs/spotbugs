@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
-public class InstanceMethod extends AbstractMethod {
+public abstract class InstanceMethod extends AbstractMethod {
 	private static final long serialVersionUID = 0L;
 	public InstanceMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);

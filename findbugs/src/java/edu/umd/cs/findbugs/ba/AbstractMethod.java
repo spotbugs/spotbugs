@@ -20,7 +20,10 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public abstract class AbstractMethod extends AbstractClassMember implements XMethod {
 	protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
@@ -41,7 +44,18 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 	}
 
 	@Override
-		 public String toString() {
+	public String toString() {
 		return SignatureConverter.convertMethodSignature(this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XMethod#getMethodDescriptor()
+	 */
+	public MethodDescriptor getMethodDescriptor() {
+		return DescriptorFactory.instance().getMethodDescriptor(
+				ClassName.toSlashedClassName(getClassName()),
+				getName(),
+				getSignature(),
+				isStatic());
 	}
 }

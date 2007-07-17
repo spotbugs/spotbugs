@@ -22,8 +22,12 @@ package edu.umd.cs.findbugs.ba.interproc;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.bcel.Constants;
+
 import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Interprocedural field property database.
@@ -31,14 +35,13 @@ import edu.umd.cs.findbugs.ba.XField;
  * @author David Hovemeyer
  */
 public abstract class FieldPropertyDatabase<Property>
-		extends PropertyDatabase<XField, Property> {
+extends PropertyDatabase<FieldDescriptor, Property> {
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.String)
 	 */
-
 	@Override
-		 protected XField parseKey(String s) throws PropertyDatabaseFormatException {
+	protected FieldDescriptor parseKey(String s) throws PropertyDatabaseFormatException {
 		String[] tuple = s.split(",");
 		if (tuple.length != 4) {
 			throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
@@ -53,8 +56,12 @@ public abstract class FieldPropertyDatabase<Property>
 		} catch (NumberFormatException e) {
 			throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
 		}
-		return XFactory.createXField(className, fieldName, signature, accessFlags);
 
+		return DescriptorFactory.instance().getFieldDescriptor(
+				ClassName.toSlashedClassName(className),
+				fieldName,
+				signature,
+				(accessFlags & Constants.ACC_STATIC) != 0);
 	}
 
 	/* (non-Javadoc)
@@ -62,14 +69,14 @@ public abstract class FieldPropertyDatabase<Property>
 	 */
 
 	@Override
-		 protected void writeKey(Writer writer, XField key) throws IOException {
-		writer.write(key.getClassName());
+	protected void writeKey(Writer writer, FieldDescriptor key) throws IOException {
+		writer.write(key.getClassDescriptor().getDottedClassName());
 		writer.write(",");
 		writer.write(key.getName());
 		writer.write(",");
 		writer.write(key.getSignature());
 		writer.write(",");
-		writer.write(String.valueOf(key.getAccessFlags()));
+		writer.write(String.valueOf(key.isStatic() ? Constants.ACC_STATIC : 0));
 	}
 
 }

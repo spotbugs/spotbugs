@@ -277,7 +277,7 @@ public class UnconditionalValueDerefAnalysis extends
 				if (DEBUG_CHECK_CALLS) 
 					System.out.print("Checking: " + target + ": ");
 
-				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
+				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toMethodDescriptor());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
 					// assume it doesn't dereference anything

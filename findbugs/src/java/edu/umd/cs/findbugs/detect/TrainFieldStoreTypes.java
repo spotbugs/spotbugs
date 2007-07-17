@@ -120,10 +120,10 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 				continue;
 
 			// Get or create the field store type set
-			FieldStoreType property = database.getProperty(xfield);
+			FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
 			if (property == null) {
 				property = new FieldStoreType();
-				database.setProperty(xfield, property);
+				database.setProperty(xfield.getFieldDescriptor(), property);
 			}
 
 			// Add the store type to the set

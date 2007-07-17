@@ -62,8 +62,8 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 
 		NonNullSpecification specification = new NonNullSpecification(
 				classAndMethod,
-				wrapProperty(nonNullParamDatabase.getProperty(xmethod)),
-				wrapProperty(possiblyNullParamDatabase.getProperty(xmethod)));
+				wrapProperty(nonNullParamDatabase.getProperty(xmethod.getMethodDescriptor())),
+				wrapProperty(possiblyNullParamDatabase.getProperty(xmethod.getMethodDescriptor())));
 		if (DEBUG_NULLARG) {
 			System.out.println("Found specification: " + specification);
 		}
