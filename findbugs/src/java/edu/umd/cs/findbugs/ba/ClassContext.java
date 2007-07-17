@@ -616,17 +616,17 @@ public class ClassContext {
 		return getMethodAnalysis(BlockTypeDataflow.class, method);
 	}
 
-	/**
-	 * Get the assigned field map for the class.
-	 *
-	 * @return the AssignedFieldMap
-	 * @throws ClassNotFoundException if a class lookup prevents
-	 *                                the class's superclasses from being searched for
-	 *                                assignable fields
-	 */
-	public AssignedFieldMap getAssignedFieldMap() throws ClassNotFoundException {
-		return getClassAnalysisPossibleClassNotFoundException(AssignedFieldMap.class);
-	}
+//	/**
+//	 * Get the assigned field map for the class.
+//	 *
+//	 * @return the AssignedFieldMap
+//	 * @throws ClassNotFoundException if a class lookup prevents
+//	 *                                the class's superclasses from being searched for
+//	 *                                assignable fields
+//	 */
+//	public AssignedFieldMap getAssignedFieldMap() throws ClassNotFoundException {
+//		return getClassAnalysisPossibleClassNotFoundException(AssignedFieldMap.class);
+//	}
 
 	/**
 	 * Get AssertionMethods for class.

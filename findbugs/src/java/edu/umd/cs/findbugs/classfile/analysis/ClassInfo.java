@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -46,7 +47,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	private final MethodDescriptor[] methodDescriptorList;
 
 	private final ClassDescriptor immediateEnclosingClass;
-	
+
 	final Map<ClassDescriptor, AnnotationValue> classAnnotations;
 	final private String classSourceSignature;
 
@@ -65,8 +66,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 		public ClassInfo build() {
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
 					referencedClassDescriptorList,classAnnotations,
-			        fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), 
-			        immediateEnclosingClass );
+					fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), 
+					immediateEnclosingClass );
 		}
 
 		/**
@@ -136,11 +137,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	 *            class
 	 */
 	private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
-	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
-	        Collection<ClassDescriptor> referencedClassDescriptorList,
-	        Map<ClassDescriptor, AnnotationValue> classAnnotations,
-	        FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
-	         ClassDescriptor immediateEnclosingClass) {
+			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
+			Collection<ClassDescriptor> referencedClassDescriptorList,
+			Map<ClassDescriptor, AnnotationValue> classAnnotations,
+			FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
+			ClassDescriptor immediateEnclosingClass) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList);
 		this.classSourceSignature = classSourceSignature;
 		this.fieldDescriptorList = fieldDescriptorList;
@@ -162,7 +163,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	public MethodDescriptor[] getMethodDescriptorList() {
 		return methodDescriptorList;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String, java.lang.String, boolean)
 	 */
@@ -174,6 +175,23 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 						&& mInfo.getSignature().equals(methodSig)
 						&& mInfo.isStatic() == isStatic) {
 					return mInfo;
+				}
+			}
+		}
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String, java.lang.String, boolean)
+	 */
+	public XField findField(String name, String signature, boolean isStatic) {
+		for (FieldDescriptor fDesc : fieldDescriptorList) {
+			if (fDesc instanceof FieldInfo) {
+				FieldInfo fInfo = (FieldInfo) fDesc;
+				if (fInfo.getName().equals(name)
+						&& fInfo.getSignature().equals(signature)
+						&& fInfo.isStatic() == isStatic) {
+					return fInfo;
 				}
 			}
 		}
@@ -207,6 +225,6 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return classAnnotations.get(desc);
 	}
-	
+
 
 }

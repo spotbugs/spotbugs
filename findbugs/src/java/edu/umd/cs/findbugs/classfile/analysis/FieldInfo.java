@@ -28,10 +28,12 @@ import org.apache.bcel.classfile.Constant;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Util;
@@ -70,7 +72,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
 		public FieldInfo build() {
 			return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, 
-				 fieldParameterAnnotations);
+				 fieldParameterAnnotations, true);
 		}
 	}
 
@@ -80,18 +82,34 @@ public class FieldInfo extends FieldDescriptor implements XField {
 	final Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
 	final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations;
+	final boolean isResolved;
+	
 	/**
      * @param className
      * @param fieldName
      * @param fieldSignature
      * @param isStatic
+     * @param accessFlags
+     * @param fieldAnnotations
+     * @param fieldParameterAnnotations
+     * @param isResolved
      */
-    private FieldInfo(String className, String fieldName, String fieldSignature, String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations) {
+    private FieldInfo(
+    		String className,
+    		String fieldName,
+    		String fieldSignature,
+    		String fieldSourceSignature,
+    		int accessFlags,
+    		Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
+    		Map<Integer,
+    		Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations,
+    		boolean isResolved) {
 	    super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
-	    this.accessFlags = accessFlags;
+	    this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Constants.ACC_FINAL : 0);
 		this.fieldSourceSignature = fieldSourceSignature;
 		this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
 		this.fieldParameterAnnotations = Util.immutableMap(fieldParameterAnnotations);
+		this.isResolved = isResolved;
     }
 
 
@@ -122,15 +140,20 @@ public class FieldInfo extends FieldDescriptor implements XField {
 	public String getSourceSignature() {
 		return fieldSourceSignature;
 	}
+
 	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object arg0) {
-    	if (arg0 instanceof MethodDescriptor)
-    		return compareTo((MethodDescriptor)arg0);
-    	else if (arg0 instanceof XMethod)
-    		return compareTo((XMethod)arg0);
-    	else throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + arg0.getClass().getName());
+    public int compareTo(Object rhs) {
+    	if (rhs instanceof FieldDescriptor) {
+    		return super.compareTo((FieldDescriptor) rhs);
+    	}
+    	
+    	if (rhs instanceof XField) {
+    		return XFactory.compare((XField) this, (XField) rhs); 
+    	}
+    	
+    	throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
     }
 
 	/* (non-Javadoc)
@@ -172,7 +195,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
      */
     public boolean isResolved() {
-	    return true;
+	    return this.isResolved;
     }
 
 
@@ -203,5 +226,17 @@ public class FieldInfo extends FieldDescriptor implements XField {
 	 */
 	public FieldDescriptor getFieldDescriptor() {
 		return this;
+	}
+	
+	public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
+		return new FieldInfo(
+				className,
+				name,
+				signature,
+				"", // XXX
+				isStatic ? Constants.ACC_STATIC : 0,
+				new HashMap<ClassDescriptor, AnnotationValue>(),
+				new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(),
+				false);
 	}
 }

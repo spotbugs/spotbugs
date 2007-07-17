@@ -110,7 +110,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			// If it is volatile, then the instance is not a bug.
 			FieldVariable field = (FieldVariable) binding.getVariable();
 			XField xfield =
-					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
+					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
 			if (xfield == null || (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
 				return;
 

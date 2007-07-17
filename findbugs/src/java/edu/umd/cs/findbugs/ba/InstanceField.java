@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
-class InstanceField extends AbstractField {
+abstract class InstanceField extends AbstractField {
 
 	private static final long serialVersionUID = 0L;
 

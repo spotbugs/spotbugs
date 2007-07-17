@@ -80,4 +80,14 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
      * @return matching XMethod, or null if there is no matching XMethod
      */
     public XMethod findMethod(String methodName, String methodSig, boolean isStatic);
+
+	/**
+	 * Find an XField matching given parameters.
+	 * 
+     * @param name      name of the field
+     * @param signature signature of the field
+     * @param isStatic  true if field is static, false if not
+     * @return XField, or null if there is no matching XField
+     */
+    public XField findField(String name, String signature, boolean isStatic);
 }

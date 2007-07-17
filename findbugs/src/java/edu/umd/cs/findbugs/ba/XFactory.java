@@ -46,10 +46,12 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -60,25 +62,48 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * @author David Hovemeyer
  */
 public  class XFactory {
+	public static final boolean DEBUG_UNRESOLVED = SystemProperties.getBoolean("findbugs.xfactory.debugunresolved"); 
 
+	/**
+	 * XMethod implementation for unresolvable methods.
+	 * Returns some kind of reasonable default answer to questions
+	 * that can't be answered (e.g., what are the access flags).
+	 */
 	private static class UnresolvedXMethod extends AbstractMethod implements XMethod {
 		protected UnresolvedXMethod(String className, String methodName, String methodSig, int accessFlags) {
 			super(className, methodName, methodSig, accessFlags);
+			if (DEBUG_UNRESOLVED) {
+				System.out.println("Unresolved xmethod: " + this);
+			}
 		}
 	}
+	
+//	/**
+//	 * XField implementation for unresolvable methods.
+//	 * Returns some kind of reasonable default answer to questions
+//	 * that can't be answered (e.g., what are the access flags).
+//	 */
+//	private static class UnresolvedXField extends AbstractField implements XField {
+//        protected UnresolvedXField(String className, String fieldName, String fieldSig, int accessFlags) {
+//	        super(className, fieldName, fieldSig, accessFlags);
+//			if (DEBUG_UNRESOLVED) {
+//				System.out.println("Unresolved xfield: " + this);
+//			}
+//        }
+//	}
 
 //	private  Map<XMethod,XMethod> methods = new HashMap<XMethod,XMethod>();
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
 
 	private Set<ClassMember> deprecated = new HashSet<ClassMember>();
 	private Set<? extends ClassMember> deprecatedView = Collections.unmodifiableSet(deprecated);
-	private  Map<XField,XField> fields = new HashMap<XField,XField>();
+	private  Map<FieldDescriptor,XField> fields = new HashMap<FieldDescriptor, XField>();
 
 //	private  Set<XMethod> methodsView = Collections
 //	.unmodifiableSet(methods.keySet());
 
-	private  Set<XField> fieldsView = Collections
-	.unmodifiableSet(fields.keySet());
+//	private  Set<XField> fieldsView = Collections
+//	.unmodifiableSet(fields.keySet());
 
 	private  Set<XMethod> calledMethods = new HashSet<XMethod>();
 	private boolean calledMethodsIsInterned = false;
@@ -116,20 +141,20 @@ public  class XFactory {
 		return m;
 	}
 
-	public @CheckReturnValue @NonNull XField intern(XField f) {
+	private @CheckReturnValue @NonNull XField intern(XField f) {
 		XField f2 = fields.get(f);
 		if (f2 != null) return f2;
 
-		fields.put(f,f);
+		fields.put(f.getFieldDescriptor(), f);
 		return f;
 	}
 //	public  Set<XMethod> getMethods() {
 //	return methodsView;
 //	}
 
-	public  Set<XField> getFields() {
-		return fieldsView;
-	}
+//	public  Set<XField> getFields() {
+//		return fieldsView;
+//	}
 
 	public static String canonicalizeString(String s) {
 		return ConstantUtf8.getCachedInstance(s).getBytes();
@@ -271,6 +296,7 @@ public  class XFactory {
 			return new RecursionDepth();
 		}
 	};
+
 	/**
 	 * Create an XField object
 	 * 
@@ -281,21 +307,24 @@ public  class XFactory {
 	 * @return the created XField
 	 */
 	public static XField createXField(String className, String fieldName, String fieldSignature, boolean isStatic) {
-		XFactory xFactory =AnalysisContext.currentXFactory();
-		XField f;
-
-		if (isStatic) {
-			int accessFlags = 0;
-			if (fieldName.toUpperCase().equals(fieldName))
-				accessFlags = Constants.ACC_FINAL;
-			f = new StaticField(className, fieldName, fieldSignature, accessFlags);
-		}
-		else {
-			int accessFlags = 0;
-			if (fieldName.startsWith("this$")) accessFlags = Constants.ACC_FINAL;
-			f = new InstanceField(className, fieldName, fieldSignature, accessFlags);
-		}
-		f = xFactory.intern(f);
+//		XFactory xFactory =AnalysisContext.currentXFactory();
+//		XField f;
+//
+//		if (isStatic) {
+//			int accessFlags = 0;
+//			if (fieldName.toUpperCase().equals(fieldName))
+//				accessFlags = Constants.ACC_FINAL;
+//			f = new StaticField(className, fieldName, fieldSignature, accessFlags);
+//		}
+//		else {
+//			int accessFlags = 0;
+//			if (fieldName.startsWith("this$")) accessFlags = Constants.ACC_FINAL;
+//			f = new InstanceField(className, fieldName, fieldSignature, accessFlags);
+//		}
+//		f = xFactory.intern(f);
+		
+		XFactory xFactory = AnalysisContext.currentXFactory();
+		XField f = getExactXField(className, fieldName, fieldSignature, isStatic);
 		f = xFactory.resolve(f);
 		return f;
 	}
@@ -325,7 +354,7 @@ public  class XFactory {
 				f2 = createXField(superClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
 				f2 = intern(f2);
 				if (f2.isResolved()) {
-					fields.put(f, f2);
+					fields.put(f.getFieldDescriptor(), f2);
 					return f2;	
 				}
 
@@ -446,23 +475,64 @@ public  class XFactory {
 	public static XField createXField(String className, Field field) {
 		String fieldName = field.getName();
 		String fieldSig = field.getSignature();
-		int accessFlags = field.getAccessFlags();
-		return createXField(className, fieldName, fieldSig, accessFlags);
+//		int accessFlags = field.getAccessFlags();
+		
+		XField xfield = getExactXField(className, fieldName, fieldSig, field.isStatic());
+		assert xfield.isResolved();
+		return xfield;
 	}
 
-	public static XField createXField(String className, String fieldName, String fieldSig, int accessFlags) {
+	/**
+	 * Get an XField object exactly matching given class, name,
+	 * and signature.  May return an unresolved object
+	 * (if the class can't be found, or does not directly
+	 * declare named field). 
+	 * 
+     * @param className   name of class containing the field
+     * @param name        name of field
+     * @param signature   field signature
+     * @param isStatic field access flags
+     * @return XField exactly matching class name, field name, and field signature
+     */
+    public static XField getExactXField(String className, String name, String signature, boolean isStatic) {
 		XFactory xFactory = AnalysisContext.currentXFactory();
-		XField f;
-		if ((accessFlags & Constants.ACC_STATIC) != 0)
-			f = new StaticField(className, fieldName, fieldSig, accessFlags);
-		else
-			f = new InstanceField(className, fieldName, fieldSig, accessFlags);
-		XField f2 = xFactory.intern(f);
-		// MUSTFIX: investigate
-		// assert f.getAccessFlags() == f2.getAccessFlags();
-		((AbstractField) f2).markAsResolved();
-		return f2;
-	}
+
+		FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(
+    			ClassName.toSlashedClassName(className),
+    			name,
+    			signature,
+    			isStatic);
+    	
+    	XField xfield = xFactory.fields.get(fieldDesc);
+    	if (xfield == null) {
+    		XClass xclass = xFactory.getXClass(fieldDesc.getClassDescriptor());
+    		if (xclass != null) {
+    			xfield = xclass.findField(name, signature, isStatic);
+    		}
+    	}
+    	
+    	if (xfield == null) {
+//    		xfield = new UnresolvedXField(className, name, signature, isStatic ? Constants.ACC_STATIC : 0);
+    		xfield = FieldInfo.createUnresolvedFieldInfo(className, name, signature, isStatic);
+    	}
+    	
+    	return xfield;
+    }
+
+//	private static XField createXField(String className, String fieldName, String fieldSig, int accessFlags) {
+//		XFactory xFactory = AnalysisContext.currentXFactory();
+//		XField f;
+//		if ((accessFlags & Constants.ACC_STATIC) != 0)
+//			f = new StaticField(className, fieldName, fieldSig, accessFlags);
+//		else
+//			f = new InstanceField(className, fieldName, fieldSig, accessFlags);
+//		XField f2 = xFactory.intern(f);
+//		// MUSTFIX: investigate
+//		// assert f.getAccessFlags() == f2.getAccessFlags();
+//		((AbstractField) f2).markAsResolved();
+//		return f2;
+//	}
+    
 	/**
 	 * Create an XMethod object from an InvokeInstruction.
 	 * 
@@ -548,5 +618,33 @@ public  class XFactory {
 			return null;
 		}
 	}
+
+	/**
+	 * Compare XMethod or XField object objects.
+	 * 
+     * @param lhs an XMethod or XField
+     * @param rhs an XMethod or XField
+     * @return comparison of lhs and rhs 
+     */
+    public static<E extends ClassMember> int compare(E lhs, E rhs) {
+    	int cmp;
+    	
+    	cmp = lhs.getClassName().compareTo(rhs.getClassName());
+    	if (cmp != 0) {
+    		return cmp;
+    	}
+    	
+    	cmp = lhs.getName().compareTo(rhs.getName());
+    	if (cmp != 0) {
+    		return cmp;
+    	}
+    	
+    	cmp = lhs.getSignature().compareTo(rhs.getSignature());
+    	if (cmp != 0) {
+    		return cmp;
+    	}
+    	
+    	return (lhs.isStatic() ? 1 : 0) - (rhs.isStatic() ? 1 : 0);
+    }
 
 }

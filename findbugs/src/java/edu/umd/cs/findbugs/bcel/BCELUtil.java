@@ -23,12 +23,14 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -66,6 +68,21 @@ public abstract class BCELUtil {
 		
 		return DescriptorFactory.instance().getMethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
 	}
+
+	/**
+	 * Get FieldDescriptor describing the field accessed by given FieldInstruction.
+	 * 
+     * @param fins a FieldInstruction
+     * @param cpg  ConstantPoolGen for the method containing the FieldInstruction 
+     * @return FieldDescriptor describing the field accessed by given FieldInstruction
+     */
+    public static FieldDescriptor getAccessedFieldDescriptor(FieldInstruction fins, ConstantPoolGen cpg) {
+    	String className = fins.getClassName(cpg);
+    	String fieldName = fins.getName(cpg);
+    	String fieldSig = fins.getSignature(cpg);
+    	boolean isStatic = (fins.getOpcode() == Constants.GETSTATIC || fins.getOpcode() == Constants.PUTSTATIC);
+    	return DescriptorFactory.instance().getFieldDescriptor(className, fieldName, fieldSig, isStatic);
+    }
 
 	/**
 	 * Construct a ClassDescriptor from a JavaClass.

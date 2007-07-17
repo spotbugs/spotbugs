@@ -81,7 +81,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ClassContextClassAnalysisEngine(),
 		new JavaClassAnalysisEngine(),
 		new ConstantPoolGenFactory(),
-		new AssignedFieldMapFactory(),
+//		new AssignedFieldMapFactory(),
 		new AssertionMethodsFactory(),
 	};
 

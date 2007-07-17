@@ -842,36 +842,38 @@ public class Hierarchy {
 	 *                  is referenced
 	 * @param fieldName name of the field
 	 * @param fieldSig  signature of the field
+	 * @param isStatic  true if field is static, false otherwise
 	 * @return an XField object representing the field, or null if no such field could be found
 	 */
-	public static XField findXField(String className, String fieldName, String fieldSig)
+	public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic)
 			throws ClassNotFoundException {
 
-		JavaClass classDefiningField = Repository.lookupClass(className);
-
-		Field field = null;
-		loop:
-			while (classDefiningField != null) {
-				Field[] fieldList = classDefiningField.getFields();
-				for (Field aFieldList : fieldList) {
-					field = aFieldList;
-					if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
-						break loop;
-					}
-				}
-
-				classDefiningField = classDefiningField.getSuperClass();
-			}
-
-		if (classDefiningField == null || field == null)
-			return null;
-		else {
-			String realClassName = classDefiningField.getClassName();
-			int accessFlags = field.getAccessFlags();
-			return field.isStatic()
-					? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
-					: (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
-		}
+//		JavaClass classDefiningField = Repository.lookupClass(className);
+//
+//		Field field = null;
+//		loop:
+//			while (classDefiningField != null) {
+//				Field[] fieldList = classDefiningField.getFields();
+//				for (Field aFieldList : fieldList) {
+//					field = aFieldList;
+//					if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
+//						break loop;
+//					}
+//				}
+//
+//				classDefiningField = classDefiningField.getSuperClass();
+//			}
+//
+//		if (classDefiningField == null || field == null)
+//			return null;
+//		else {
+//			String realClassName = classDefiningField.getClassName();
+//			int accessFlags = field.getAccessFlags();
+//			return field.isStatic()
+//					? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
+//					: (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
+//		}
+		return XFactory.createXField(className, fieldName, fieldSig, isStatic);
 	}
 
 	/**
@@ -889,8 +891,10 @@ public class Hierarchy {
 		String className = fins.getClassName(cpg);
 		String fieldName = fins.getFieldName(cpg);
 		String fieldSig = fins.getSignature(cpg);
+		
+		boolean isStatic = (fins.getOpcode() == Constants.GETSTATIC || fins.getOpcode() == Constants.PUTSTATIC);
 
-		XField xfield = findXField(className, fieldName, fieldSig);
+		XField xfield = findXField(className, fieldName, fieldSig, isStatic);
 		short opcode = fins.getOpcode();
 		if (xfield != null &&
 				xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))

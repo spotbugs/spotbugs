@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Constant;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -143,13 +144,16 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object arg0) {
-		if (arg0 instanceof MethodDescriptor)
-			return compareTo((MethodDescriptor) arg0);
-		else if (arg0 instanceof XMethod)
-			return compareTo((XMethod) arg0);
-		else
-			throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + arg0.getClass().getName());
+	public int compareTo(Object rhs) {
+		if (rhs instanceof MethodDescriptor) {
+			return super.compareTo((MethodDescriptor) rhs);
+		}
+		
+		if (rhs instanceof XMethod) {
+			return XFactory.compare((XMethod) this, (XMethod) rhs);
+		}
+		
+		throw new ClassCastException("Can't compare a " + this.getClass().getName() + " to a " + rhs.getClass().getName());
 	}
 
 	/*

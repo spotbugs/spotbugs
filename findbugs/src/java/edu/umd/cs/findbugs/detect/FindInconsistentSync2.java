@@ -555,7 +555,11 @@ public class FindInconsistentSync2 implements Detector {
 						// make it so
 						String instanceClassName = objType.getClassName();
 						if (!instanceClassName.equals(xfield.getClassName())) {
-							xfield = XFactory.createXField(instanceClassName, xfield.getName(), xfield.getSignature(), xfield.getAccessFlags());
+							xfield = XFactory.getExactXField(
+									instanceClassName,
+									xfield.getName(), 
+									xfield.getSignature(),
+									xfield.isStatic());
 						}
 					}
 				}

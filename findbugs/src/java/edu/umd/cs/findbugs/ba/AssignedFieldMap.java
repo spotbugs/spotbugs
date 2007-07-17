@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class AssignedFieldMap implements Constants {
+	/*
 	private final Map<Method, Set<XField>> assignedFieldSetForMethodMap;
 	private final JavaClass myClass;
 
@@ -136,6 +137,7 @@ public class AssignedFieldMap implements Constants {
 			handle = handle.getNext();
 		}
 	}
+	*/
 }
 
 // vim:ts=4

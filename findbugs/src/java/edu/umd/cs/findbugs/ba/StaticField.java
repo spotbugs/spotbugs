@@ -23,7 +23,7 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
-class StaticField extends AbstractField {
+abstract class StaticField extends AbstractField {
 	private static final long serialVersionUID = 0L;
 	public StaticField(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
 		super(className, fieldName, fieldSig, accessFlags | Constants.ACC_STATIC);

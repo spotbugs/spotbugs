@@ -38,15 +38,21 @@ public class AssignedFieldMapFactory extends RecomputableClassAnalysisEngine<Ass
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
 	public AssignedFieldMap analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
+		/*
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
 		return new AssignedFieldMap(jclass);
+		*/
+		throw new UnsupportedOperationException("AssignedFieldMap is going away");
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
+		/*
 		analysisCache.registerClassAnalysisEngine(AssignedFieldMap.class, this);
+		*/
+		throw new UnsupportedOperationException("AssignedFieldMap is going away");
 	}
 
 	

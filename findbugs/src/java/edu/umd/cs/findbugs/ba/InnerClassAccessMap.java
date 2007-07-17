@@ -237,7 +237,7 @@ public class InnerClassAccessMap {
 			String fieldSig = nameAndType.getSignature(cp);
 
 			try {
-				XField xfield = Hierarchy.findXField(className, fieldName, fieldSig);
+				XField xfield = Hierarchy.findXField(className, fieldName, fieldSig, isStatic);
 				if (xfield != null && xfield.isStatic() == isStatic && isValidAccessMethod(methodSig, xfield, isLoad)) {
 					access = new InnerClassAccess(methodName, methodSig, xfield, isLoad);
 				}
