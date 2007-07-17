@@ -60,7 +60,7 @@ public class CombineJarsForAnalysis {
 				}
 				copied.add(name);
 				ZipOutputStream out = name.replace('/', '.').startsWith(classPrefix) ? analyzeOut : auxilaryOut;
-				analyzeOut.putNextEntry(new ZipEntry(name));
+				out.putNextEntry(new ZipEntry(name));
 
 				InputStream zipIn = zipInputFile.getInputStream(ze);
 
@@ -68,9 +68,9 @@ public class CombineJarsForAnalysis {
 					int bytesRead = zipIn.read(buffer);
 					if (bytesRead < 0)
 						break;
-					analyzeOut.write(buffer, 0, bytesRead);
+					out.write(buffer, 0, bytesRead);
 				}
-				analyzeOut.closeEntry();
+				out.closeEntry();
 			}
 			zipInputFile.close();
 		}
