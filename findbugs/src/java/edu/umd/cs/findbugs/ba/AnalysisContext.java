@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -626,6 +627,14 @@ public abstract class AnalysisContext {
 	 */
 	public abstract Subtypes2 getSubtypes2();
 
+	/**
+	 * Get Collection of all XClass objects seen so far.
+	 * 
+	 * @return Collection of all XClass objects seen so far
+	 */
+	public Collection<XClass> getXClassCollection() {
+		return getSubtypes2().getXClassCollection();
+	}
 }
 
 // vim:ts=4

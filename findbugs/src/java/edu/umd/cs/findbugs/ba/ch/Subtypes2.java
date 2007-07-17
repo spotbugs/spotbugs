@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,7 +37,6 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -60,6 +61,7 @@ public class Subtypes2 {
 	private final Map<ClassDescriptor, ClassVertex> classDescriptorToVertexMap;
 	private final Map<ClassDescriptor, SupertypeQueryResults> supertypeSetMap;
 	private final Map<ClassDescriptor, Set<ClassDescriptor>> subtypeSetMap;
+	private final Set<XClass> xclassSet;
 	
 	private final ObjectType SERIALIZABLE;
 	private final ObjectType CLONEABLE;
@@ -100,6 +102,7 @@ public class Subtypes2 {
 		this.classDescriptorToVertexMap = new HashMap<ClassDescriptor, ClassVertex>();
 		this.supertypeSetMap = new HashMap<ClassDescriptor, SupertypeQueryResults>();// XXX: use MapCache?
 		this.subtypeSetMap = new HashMap<ClassDescriptor, Set<ClassDescriptor>>();// XXX: use MapCache?
+		this.xclassSet = new HashSet<XClass>();
 		this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
 		this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");
 	}
@@ -179,6 +182,10 @@ public class Subtypes2 {
     	
 		graph.addVertex(vertex);
 		classDescriptorToVertexMap.put(classDescriptor, vertex);
+		
+		if (vertex.isResolved()) {
+			xclassSet.add(vertex.getXClass());
+		}
 		
 		if (vertex.isInterface()) {
 			// There is no need to add additional worklist nodes because java/lang/Object has no supertypes.
@@ -336,6 +343,16 @@ public class Subtypes2 {
     		subtypeSetMap.put(classDescriptor, result);
     	}
     	return result;
+    }
+    
+    /**
+     * Get Collection of all XClass objects (resolved classes)
+     * seen so far.
+     * 
+     * @return Collection of all XClass objects 
+     */
+    public Collection<XClass> getXClassCollection() {
+    	return Collections.unmodifiableCollection(xclassSet);
     }
 
     /**
