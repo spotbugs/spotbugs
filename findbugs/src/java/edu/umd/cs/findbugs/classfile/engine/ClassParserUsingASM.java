@@ -83,9 +83,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 			public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
 				if (cBuilder instanceof ClassInfo.Builder) {
-					AnnotationValue value = new AnnotationValue();
+					AnnotationValue value = new AnnotationValue(desc);
 					((ClassInfo.Builder)cBuilder).addAnnotation(desc, value);
-					return value;	
+					return value.getAnnotationVisitor();	
 				}
 	            return null;
             }
@@ -107,9 +107,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					return new AbstractFieldAnnotationVisitor() {
 
 						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
-							AnnotationValue value = new AnnotationValue();
+							AnnotationValue value = new AnnotationValue(desc);
 							fBuilder.addAnnotation(desc, value);
-							return value;
+							return value.getAnnotationVisitor();
 						}
 
 						public void visitEnd() {
@@ -135,9 +135,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					return new AbstractMethodAnnotationVisitor(){
 
 						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
-							AnnotationValue value = new AnnotationValue();
+							AnnotationValue value = new AnnotationValue(desc);
 							mBuilder.addAnnotation(desc, value);
-							return value;
+							return value.getAnnotationVisitor();
 						}
 
 						public void visitEnd() {
@@ -148,9 +148,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                                 boolean visible) {
-							AnnotationValue value = new AnnotationValue();
+							AnnotationValue value = new AnnotationValue(desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
-							return value;
+							return value.getAnnotationVisitor();
                         }};
 					
 				}

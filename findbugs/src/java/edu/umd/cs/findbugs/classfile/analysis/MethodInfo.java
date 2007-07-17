@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class MethodInfo extends MethodDescriptor implements XMethod {
+public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedObject {
 
 	static public class Builder {
 		final int accessFlags;
@@ -219,11 +219,19 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 		if (map == null) return null;
 		return map.get(desc);
 	}
+	public Collection<AnnotationValue> getParameterAnnotations(int param) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return Collections.emptySet();
+		return map.values();
+	}
 	public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return methodAnnotations.keySet();
 	}
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return methodAnnotations.get(desc);
+	}
+	public Collection<AnnotationValue> getAnnotations() {
+		return methodAnnotations.values();
 	}
 	
 	/* (non-Javadoc)

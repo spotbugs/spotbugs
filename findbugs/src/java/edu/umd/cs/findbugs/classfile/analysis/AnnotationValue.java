@@ -26,15 +26,87 @@ import java.util.Map;
 
 import org.objectweb.asm.AnnotationVisitor;
 
-
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * @author pwilliam
  */
-public class AnnotationValue implements AnnotationVisitor {
-	/**
-	 * @author pwilliam
-	 */
+public class AnnotationValue {
+	private final ClassDescriptor annotationClass;
+	
+	public AnnotationValue(ClassDescriptor annotationClass) {
+		this.annotationClass  = annotationClass;
+	}
+	public AnnotationValue(String annotationClass) {
+		this.annotationClass  = ClassDescriptor.createClassDescriptorFromSignature(annotationClass);
+	}
+	Map<String, Object> valueMap = new HashMap<String, Object>();
+
+	Map<String, Object> typeMap = new HashMap<String, Object>();
+
+	public ClassDescriptor getAnnotationClass() {
+		return annotationClass;
+	}
+	public Object getValue(String name) {
+		return valueMap.get(name);
+	}
+	public Object getDesc(String name) {
+		return typeMap.get(name);
+	}
+	public String toString() {
+		return annotationClass + ":" + valueMap.toString();
+	}
+
+	public AnnotationVisitor getAnnotationVisitor() {
+		return new AnnotationVisitor() {
+			public void visit(String name, Object value) {
+				valueMap.put(name, value);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String,
+			 *      java.lang.String)
+			 */
+			public AnnotationVisitor visitAnnotation(String name, String desc) {
+				AnnotationValue newValue = new AnnotationValue(desc);
+				valueMap.put(name, newValue);
+				typeMap.put(name, desc);
+				return newValue.getAnnotationVisitor();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+			 */
+			public AnnotationVisitor visitArray(final String name) {
+				return new AnnotationArrayVisitor(name);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
+			 */
+			public void visitEnd() {
+
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String,
+			 *      java.lang.String, java.lang.String)
+			 */
+			public void visitEnum(String name, String desc, String value) {
+				valueMap.put(name, new EnumValue(desc, value));
+				typeMap.put(name, desc);
+
+			}
+		};
+	}
 	private final class AnnotationArrayVisitor implements AnnotationVisitor {
 		/**
 		 * 
@@ -67,9 +139,9 @@ public class AnnotationValue implements AnnotationVisitor {
 		}
 
 		public AnnotationVisitor visitAnnotation(String name, String desc) {
-			AnnotationValue newValue = new AnnotationValue();
+			AnnotationValue newValue = new AnnotationValue(desc);
 			result.add(newValue);
-			return newValue;
+			return newValue.getAnnotationVisitor();
 		}
 
 		public AnnotationVisitor visitArray(String name) {
@@ -89,58 +161,5 @@ public class AnnotationValue implements AnnotationVisitor {
 		}
 	}
 
-	Map<String, Object> valueMap = new HashMap<String, Object>();
-
-	Map<String, Object> typeMap = new HashMap<String, Object>();
-
-	public String toString() {
-		return valueMap.toString();
-	}
-	public void visit(String name, Object value) {
-		valueMap.put(name, value);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String,
-	 *      java.lang.String)
-	 */
-	public AnnotationVisitor visitAnnotation(String name, String desc) {
-		AnnotationValue newValue = new AnnotationValue();
-		valueMap.put(name, newValue);
-		typeMap.put(name, desc);
-		return newValue;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-	 */
-	public AnnotationVisitor visitArray(final String name) {
-		return new AnnotationArrayVisitor(name);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-	 */
-	public void visitEnd() {
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	public void visitEnum(String name, String desc, String value) {
-		valueMap.put(name, new EnumValue(desc, value));
-		typeMap.put(name, desc);
-
-	}
 
 }

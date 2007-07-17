@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class FieldInfo extends FieldDescriptor implements XField {
+public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObject {
 
 	static public class Builder {
 		final int accessFlags;
@@ -219,6 +219,9 @@ public class FieldInfo extends FieldDescriptor implements XField {
 	}
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return fieldAnnotations.get(desc);
+	}
+	public Collection<AnnotationValue> getAnnotations() {
+		return fieldAnnotations.values();
 	}
 
 	/* (non-Javadoc)

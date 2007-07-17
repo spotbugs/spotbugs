@@ -59,6 +59,8 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 	public ClassInfo analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
+		if (descriptor instanceof ClassInfo) return (ClassInfo) descriptor;
+		
 		// Get class data
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 

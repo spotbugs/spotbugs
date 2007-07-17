@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.util.Util;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
+public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, AnnotatedObject {
 	private final FieldDescriptor[] fieldDescriptorList;
 
 	private final MethodDescriptor[] methodDescriptorList;
@@ -221,6 +221,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 	}
 	public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return classAnnotations.keySet();
+	}
+	public Collection<AnnotationValue> getAnnotations() {
+		return classAnnotations.values();
 	}
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return classAnnotations.get(desc);
