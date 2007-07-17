@@ -22,7 +22,9 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.util.Collection;
 import java.util.List;
 
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
@@ -30,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
  * 
  * @author David Hovemeyer
  */
-public class ClassNameAndSuperclassInfo extends ClassDescriptor {
+public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	private final ClassDescriptor superclassDescriptor;
 
 	private final ClassDescriptor[] interfaceDescriptorList;
@@ -171,5 +173,33 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 	public ClassDescriptor getSuperclassDescriptor() {
 		return superclassDescriptor;
 	}
+
+	private boolean isFlagSet(int flag) {
+    	return (getAccessFlags() & flag) != 0;
+    }
+
+	public boolean isFinal() {
+    	return isFlagSet(IClassConstants.ACC_FINAL);
+    }
+
+	public boolean isPrivate() {
+    	return isFlagSet(IClassConstants.ACC_PRIVATE);
+    }
+
+	public boolean isProtected() {
+    	return isFlagSet(IClassConstants.ACC_PROTECTED);
+    }
+
+	public boolean isPublic() {
+    	return isFlagSet(IClassConstants.ACC_PUBLIC);
+    }
+
+	public boolean isStatic() {
+    	return isFlagSet(IClassConstants.ACC_STATIC);
+    }
+
+	public boolean isInterface() {
+    	return isFlagSet(IClassConstants.ACC_INTERFACE);
+    }
 
 }

@@ -59,10 +59,6 @@ public interface AccessibleEntity {
 	 */
 	public boolean isPrivate();
 
-	/**
-	 * Did we find a declaration of this entity?
-	 */
-	public boolean isResolved();
 
 	/**
 	 * Get the ClassDescriptor representing the class (if entity is a class)

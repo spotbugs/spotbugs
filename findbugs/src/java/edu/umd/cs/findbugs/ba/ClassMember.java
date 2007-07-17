@@ -51,5 +51,11 @@ public interface ClassMember extends  Serializable, AccessibleEntity, Comparable
 	 * Get the signature representing the field/method's type.
 	 */
 	public String getSignature();
+	
+	/**
+	 * Did we find a declaration of this entity?
+	 */
+	public boolean isResolved();
+
 
 }

@@ -490,7 +490,7 @@ public  class XFactory {
 	public XClass getXClass(ClassDescriptor classDescriptor) {
 		try {
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
-			return analysisCache.getClassAnalysis(ClassInfo.class, classDescriptor);
+			return analysisCache.getClassAnalysis(XClass.class, classDescriptor);
 		} catch (CheckedAnalysisException e) {
 			return null;
 		}

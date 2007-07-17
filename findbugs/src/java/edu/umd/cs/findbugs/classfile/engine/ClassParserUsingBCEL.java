@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -102,7 +103,7 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 					fieldDescriptorList.add(parseField(obj));
 				}
 				public void visit(ConstantClass obj) {
-					String className = obj.getBytes(javaClass.getConstantPool());
+					@SlashedClassName String className = obj.getBytes(javaClass.getConstantPool());
 					if (className.indexOf('[') >= 0) {
 						ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
 					} else if (ClassName.isValidClassName(className)) {

@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.classfile;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 /**
  * Factory for creating ClassDescriptors, MethodDescriptors, and FieldDescriptors.
  * 
@@ -61,10 +64,10 @@ public class DescriptorFactory {
 	 * @param className a class name in VM (slashed) format
 	 * @return ClassDescriptor for that class
 	 */
-	public ClassDescriptor getClassDescriptor(String className) {
+	public ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
 		ClassDescriptor classDescriptor = classDescriptorMap.get(className);
 		if (classDescriptor == null) {
-			classDescriptor = ClassDescriptor.createClassDescriptor(className);
+			classDescriptor = new ClassDescriptor(className);
 			classDescriptorMap.put(className, classDescriptor);
 		}
 		return classDescriptor;
@@ -76,7 +79,7 @@ public class DescriptorFactory {
 	 * @param className a class name in dotted format
 	 * @return ClassDescriptor for that class
 	 */
-	public ClassDescriptor getClassDescriptorForDottedClassName(String dottedClassName) {
+	public ClassDescriptor getClassDescriptorForDottedClassName(@DottedClassName String dottedClassName) {
 		return getClassDescriptor(dottedClassName.replace('.', '/'));
 	}
 

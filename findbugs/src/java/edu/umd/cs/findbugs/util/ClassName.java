@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Utility methods for working with class names.
@@ -35,7 +36,7 @@ public abstract class ClassName {
 	 * @param className a class name
 	 * @return the same class name in slashed format
 	 */
-	public static String toSlashedClassName(String className) {
+	public static @SlashedClassName String toSlashedClassName(@DottedClassName String className) {
 		if (className.indexOf('.') >= 0) {
 			className = className.replace('.', '/');
 		}

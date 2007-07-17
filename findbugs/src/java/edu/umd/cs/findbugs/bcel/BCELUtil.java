@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Utility methods for detectors and analyses using BCEL.
@@ -73,7 +74,8 @@ public abstract class BCELUtil {
 	 * @return a ClassDescriptor identifying that JavaClass
 	 */
 	public static ClassDescriptor getClassDescriptor(JavaClass jclass) {
-		return DescriptorFactory.instance().getClassDescriptor(jclass.getClassName().replace('.', '/'));
+		return DescriptorFactory.instance().getClassDescriptor(
+				ClassName.toSlashedClassName(jclass.getClassName()));
 	}
 
 	private static final int JDK15_MAJOR = 48;

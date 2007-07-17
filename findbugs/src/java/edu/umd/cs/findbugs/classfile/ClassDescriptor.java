@@ -123,8 +123,16 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		return resourceName.endsWith(".class");
 	}
 
-	public static ClassDescriptor createClassDescriptor(String className) {
-	    return new ClassDescriptor(className);
+	public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
+		int first = 0;
+		while (signature.charAt(first) == '[') first++;
+		signature = signature.substring(first);
+		if (signature.endsWith(";"))
+			signature = signature.substring(1, signature.length()-1);
+		return createClassDescriptor(signature);
+    }
+	public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+		return DescriptorFactory.instance().getClassDescriptor(className);
     }
 	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
 		ClassDescriptor[] result = new ClassDescriptor[classNames.length];

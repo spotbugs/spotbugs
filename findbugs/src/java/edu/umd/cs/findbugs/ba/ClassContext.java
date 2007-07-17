@@ -63,12 +63,15 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonExceptionPostdominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonImplicitExceptionPostDominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedBytecodeCallback;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedCode;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
@@ -186,6 +189,13 @@ public class ClassContext {
 		return jclass;
 	}
 
+	public ClassDescriptor getClassDescriptor() {
+		return ClassDescriptor.createClassDescriptor(ClassName.toSlashedClassName(jclass.getClassName()));
+	}
+	public XClass getXClass() throws CheckedAnalysisException {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		return  analysisCache.getClassAnalysis(XClass.class, getClassDescriptor());
+	}
 	/**
 	 * Look up the Method represented by given MethodGen.
 	 * 

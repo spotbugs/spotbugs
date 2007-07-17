@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Collection;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Interface for object representing information about a class.
@@ -65,4 +66,8 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
      * @return true if the class is an interface, false otherwise
      */
     public boolean isInterface();
+    
+	public Collection<ClassDescriptor> getAnnotationsDescriptors();
+	
+	public AnnotationValue getAnnotation(ClassDescriptor desc);
 }

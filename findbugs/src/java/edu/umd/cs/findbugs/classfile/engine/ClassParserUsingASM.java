@@ -197,7 +197,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     size = 3 + classReader.readUnsignedShort(offset+1);
                     break;
                 case Constants.CONSTANT_Class:
-                	String className = classReader.readUTF8(offset+1, buf);
+                	@SlashedClassName String className = classReader.readUTF8(offset+1, buf);
                 	if (className.indexOf('[') >= 0) {
     					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
     				} else if (ClassName.isValidClassName(className)) {

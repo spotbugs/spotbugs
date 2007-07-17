@@ -63,18 +63,8 @@ public class FieldInfo extends FieldDescriptor implements XField {
 		}
 
 		public void addAnnotation(String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
 			fieldAnnotations.put(annotationClass, value);
-		}
-
-		public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
-			Map<ClassDescriptor, AnnotationValue> map = fieldParameterAnnotations.get(parameter);
-			if (map == null) {
-				map = new HashMap<ClassDescriptor, AnnotationValue>();
-				fieldParameterAnnotations.put(parameter, map);
-			}
-			map.put(annotationClass, value);
 		}
 
 		public FieldInfo build() {

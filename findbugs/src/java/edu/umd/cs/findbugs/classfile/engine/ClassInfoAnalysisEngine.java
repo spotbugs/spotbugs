@@ -26,6 +26,7 @@ import org.objectweb.asm.ClassReader;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.asm.FBClassReader;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
@@ -42,7 +43,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> {
+public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 	/*
 	private static final boolean USE_ASM_CLASS_PARSER = SystemProperties.getBoolean("findbugs.classparser.asm");
 	static {
@@ -92,7 +93,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<ClassInfo> 
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
-		analysisCache.registerClassAnalysisEngine(ClassInfo.class, this);
+		analysisCache.registerClassAnalysisEngine(XClass.class, this);
 	}
 
 	/* (non-Javadoc)

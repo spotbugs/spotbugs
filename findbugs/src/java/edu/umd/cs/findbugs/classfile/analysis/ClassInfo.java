@@ -29,7 +29,6 @@ import java.util.Map;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
@@ -80,7 +79,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 			this.classSourceSignature = classSourceSignature;
 		}
 		public void addAnnotation(String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptor(name);
+			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
 			classAnnotations.put(annotationClass, value);
 		}
 		/**
@@ -184,71 +183,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 			return dottedClassName.substring(0, lastDot);
 		}
 	}
-
-	private boolean isFlagSet(int flag) {
-		return (getAccessFlags() & flag) != 0;
+	public Collection<ClassDescriptor> getAnnotationsDescriptors() {
+		return classAnnotations.keySet();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isFinal()
-	 */
-	public boolean isFinal() {
-		return isFlagSet(IClassConstants.ACC_FINAL);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPrivate()
-	 */
-	public boolean isPrivate() {
-		return isFlagSet(IClassConstants.ACC_PRIVATE);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isProtected()
-	 */
-	public boolean isProtected() {
-		return isFlagSet(IClassConstants.ACC_PROTECTED);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isPublic()
-	 */
-	public boolean isPublic() {
-		return isFlagSet(IClassConstants.ACC_PUBLIC);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isResolved()
-	 */
-	public boolean isResolved() {
-		// A ClassInfo object only comes into existence by being loaded
-		// from the classpath.
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isStatic()
-	 */
-	public boolean isStatic() {
-		return isFlagSet(IClassConstants.ACC_STATIC);
+	public AnnotationValue getAnnotation(ClassDescriptor desc) {
+		return classAnnotations.get(desc);
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XClass#isInterface()
-	 */
-	public boolean isInterface() {
-		return isFlagSet(IClassConstants.ACC_INTERFACE);
-	}
+
 }

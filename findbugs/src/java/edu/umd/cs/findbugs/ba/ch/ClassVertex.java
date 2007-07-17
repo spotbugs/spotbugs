@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -35,11 +36,11 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private static final int APPLICATION_CLASS = 2;
 	private static final int INTERFACE = 4;
 	
-	private ClassDescriptor classDescriptor;
-	private XClass xclass;
+	private final ClassDescriptor classDescriptor;
+	private final @CheckForNull XClass xclass;
 	private int flags;
 
-	private ClassVertex(ClassDescriptor classDescriptor, @Nullable XClass xclass) {
+	private ClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
 		this.classDescriptor = classDescriptor;
 		this.xclass = xclass;
 		this.flags = 0;
@@ -51,6 +52,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private ClassVertex(ClassDescriptor classDescriptor, boolean isInterfaceEdge) {
 		this.classDescriptor = classDescriptor;
 		this.xclass = null;
+		this.flags = 0;
 		if (isInterfaceEdge) {
 			setInterface();
 		}
@@ -88,7 +90,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	/**
 	 * @return Returns the xClass.
 	 */
-	public XClass getXClass() {
+	public @Nullable XClass getXClass() {
 		return xclass;
 	}
 

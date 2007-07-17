@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -524,7 +525,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Get list of referenced classes and add them to set.
 			// Add superclasses and superinterfaces to worklist.
 			try {
-				ClassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
+				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
 				referencedClassSet.addAll(classNameAndInfo.getReferencedClassDescriptorList());
 
 				if (classNameAndInfo.getSuperclassDescriptor() != null) {
@@ -557,7 +558,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 				try {
-				ClassInfo classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, e);
+				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
 				return classNameAndInfo.getReferencedClassDescriptorList();
 				} catch  (CheckedAnalysisException e2) {
 					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);

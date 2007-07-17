@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -182,7 +183,7 @@ public class ClassParser implements ClassParserInterface {
 				continue;
 			}
 			if (constant.tag == IClassConstants.CONSTANT_Class) {
-				String className = getUtf8String((Integer)constant.data[0]);
+				@SlashedClassName String className = getUtf8String((Integer)constant.data[0]);
 				if (className.indexOf('[') >= 0) {
 					extractReferencedClassesFromSignature(referencedClassSet, className);
 				} else if (ClassName.isValidClassName(className)) {
@@ -218,7 +219,7 @@ public class ClassParser implements ClassParserInterface {
 			if (end < 0) {
 				break;
 			}
-			String className = signature.substring(1, end);
+			@SlashedClassName String className = signature.substring(1, end);
 			if (ClassName.isValidClassName(className)) {
 				referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
 			}
@@ -299,7 +300,7 @@ public class ClassParser implements ClassParserInterface {
 	 * @return the class name
 	 * @throws InvalidClassFileFormatException
 	 */
-	private String getClassName(int index) throws InvalidClassFileFormatException {
+	private @SlashedClassName String getClassName(int index) throws InvalidClassFileFormatException {
 		if (index == 0) {
 			return null;
 		}
@@ -322,7 +323,7 @@ public class ClassParser implements ClassParserInterface {
 	 * @throws InvalidClassFileFormatException 
 	 */
 	private ClassDescriptor getClassDescriptor(int index) throws InvalidClassFileFormatException {
-		String className = getClassName(index);
+		@SlashedClassName String className = getClassName(index);
 		return className != null ? DescriptorFactory.instance().getClassDescriptor(className) : null;
 	}
 
