@@ -67,7 +67,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
      */
     public boolean isInterface();
     
-	public Collection<ClassDescriptor> getAnnotationsDescriptors();
+	public Collection<ClassDescriptor> getAnnotationDescriptors();
 	
 	public AnnotationValue getAnnotation(ClassDescriptor desc);
 }

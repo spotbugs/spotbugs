@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,6 +191,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
 	    return checkFlag(Constants.ACC_VOLATILE);
     }
 
+    public Collection<ClassDescriptor> getAnnotationDescriptors() {
+		return fieldAnnotations.keySet();
+	}
+	public AnnotationValue getAnnotation(ClassDescriptor desc) {
+		return fieldAnnotations.get(desc);
+	}
 
 
 	

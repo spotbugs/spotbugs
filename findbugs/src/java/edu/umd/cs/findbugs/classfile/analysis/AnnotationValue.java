@@ -93,6 +93,9 @@ public class AnnotationValue implements AnnotationVisitor {
 
 	Map<String, Object> typeMap = new HashMap<String, Object>();
 
+	public String toString() {
+		return valueMap.toString();
+	}
 	public void visit(String name, Object value) {
 		valueMap.put(name, value);
 	}

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -203,6 +204,22 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 	 */
 	public boolean isResolved() {
 		return true;
+	}
+	public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return Collections.emptySet();
+		return map.keySet();
+	}
+	public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return null;
+		return map.get(desc);
+	}
+	public Collection<ClassDescriptor> getAnnotationDescriptors() {
+		return methodAnnotations.keySet();
+	}
+	public AnnotationValue getAnnotation(ClassDescriptor desc) {
+		return methodAnnotations.get(desc);
 	}
 
 }

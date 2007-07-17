@@ -183,7 +183,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 			return dottedClassName.substring(0, lastDot);
 		}
 	}
-	public Collection<ClassDescriptor> getAnnotationsDescriptors() {
+	public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return classAnnotations.keySet();
 	}
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {

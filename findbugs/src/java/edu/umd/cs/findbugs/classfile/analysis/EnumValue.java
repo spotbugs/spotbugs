@@ -19,15 +19,20 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+
 /**
  * @author pwilliam
  */
 public class EnumValue {
-	public final String desc;
+	public final ClassDescriptor desc;
 	public final String value;
 	public EnumValue(String desc, String value) {
-		this.desc = desc;
+		this.desc = ClassDescriptor.createClassDescriptorFromSignature(desc);
 		this.value = value;
+	}
+	public String toString() {
+		return desc.getDottedClassName() + "." + value;
 	}
 	
 
