@@ -526,7 +526,7 @@ public  class XFactory {
     	
     	if (xfield == null) {
 //    		xfield = new UnresolvedXField(className, name, signature, isStatic ? Constants.ACC_STATIC : 0);
-    		xfield = FieldInfo.createUnresolvedFieldInfo(className, name, signature, isStatic);
+    		xfield = FieldInfo.createUnresolvedFieldInfo(ClassName.toSlashedClassName(className), name, signature, isStatic);
         	xfield = xFactory.intern(xfield);
     	}
 
