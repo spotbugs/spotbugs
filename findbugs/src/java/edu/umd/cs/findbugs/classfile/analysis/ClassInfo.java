@@ -38,7 +38,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.visitclass.GetNumberArgumentsTest;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
