@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * @author pugh
@@ -44,6 +45,10 @@ public class Analysis {
 	
 	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(ClassContext context, Method method) throws CFGBuilderException {
 		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
+		XMethod xMethod = XFactory.createXMethod(context.getJavaClass(), method);
+		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xMethod);
+		addKnownTypeQualifiers(result, applicableApplicationsForMethod);
+		addKnownTypeQualifiersForParameters(result, xMethod);
 		CFG cfg = context.getCFG(method);
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -57,9 +62,7 @@ public class Analysis {
 				XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
 				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
 				addKnownTypeQualifiers(result, applicableApplications);
-				int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
-				for(int p = 0; p < numParameters; p++)
-					addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m,p));
+				addKnownTypeQualifiersForParameters(result, m);
 				
 			}
 		}
@@ -68,6 +71,16 @@ public class Analysis {
 		return result;
 		
 	}
+
+	/**
+     * @param result
+     * @param m
+     */
+    private static void addKnownTypeQualifiersForParameters(HashSet<TypeQualifierValue> result, XMethod m) {
+	    int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
+	    for(int p = 0; p < numParameters; p++)
+	    	addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m,p));
+    }
 
 	/**
      * @param result

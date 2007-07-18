@@ -21,22 +21,22 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collection;
 
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
-import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierResolver;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
 
 public class TestingGround  implements Detector  {
 
@@ -74,6 +74,12 @@ public class TestingGround  implements Detector  {
 	        	}
 	        	
 	        	}
+	        }
+	        JavaClass jClass = classContext.getJavaClass();
+	        for(Method m : jClass.getMethods()) {
+	        	Collection<TypeQualifierValue> result = Analysis.getRelevantTypeQualifiers(classContext, m);
+	        	if (!result.isEmpty())
+	        		System.out.println(m.getName() + " " + m.getSignature() + " : " + result);
 	        }
 	   
 	        
