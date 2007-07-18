@@ -518,13 +518,20 @@ public  class XFactory {
     		XClass xclass = xFactory.getXClass(fieldDesc.getClassDescriptor());
     		if (xclass != null) {
     			xfield = xclass.findField(name, signature, isStatic);
+    			if (xfield != null) {
+    				xfield = xFactory.intern(xfield);
+    			}
     		}
     	}
     	
     	if (xfield == null) {
 //    		xfield = new UnresolvedXField(className, name, signature, isStatic ? Constants.ACC_STATIC : 0);
     		xfield = FieldInfo.createUnresolvedFieldInfo(className, name, signature, isStatic);
+        	xfield = xFactory.intern(xfield);
     	}
+
+    	assert xfield != null;
+    	assert xFactory.fields.containsKey(xfield.getFieldDescriptor());
     	
     	return xfield;
     }
