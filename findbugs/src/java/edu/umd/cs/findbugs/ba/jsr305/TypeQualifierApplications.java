@@ -41,7 +41,7 @@ public class TypeQualifierApplications {
 	static DualKeyHashMap<MethodInfo, Integer, Collection<AnnotationValue>> parameterAnnotations 
 	= new DualKeyHashMap<MethodInfo, Integer, Collection<AnnotationValue>>();
 	
-	public static Collection<AnnotationValue> getAnnotation(AnnotatedObject m) {
+	 static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
 		Collection<AnnotationValue> result = objectAnnotations.get(m);
 		if (result != null) return result;
 		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
@@ -50,7 +50,7 @@ public class TypeQualifierApplications {
 		objectAnnotations.put(m, result);
 		return result;
 	}
-	public static Collection<AnnotationValue> getAnnotation(MethodInfo m, int parameter) {
+	 static Collection<AnnotationValue> getDirectAnnotation(MethodInfo m, int parameter) {
 		Collection<AnnotationValue> result = parameterAnnotations.get(m, parameter);
 		if (result != null) return result;
 		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
@@ -60,8 +60,8 @@ public class TypeQualifierApplications {
 		return result;
 	}
 	
-	public static void getApplicableApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
-		 Collection<AnnotationValue> values = getAnnotation(o, parameter);
+	 static void getApplicableApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
+		 Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		 ElementType e = ElementType.PARAMETER;
 		 for(AnnotationValue v : values) {
 			 Object a = v.getValue("applyTo");
@@ -77,7 +77,7 @@ public class TypeQualifierApplications {
 		 }
 	}
 	public static void getApplicableApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
-		 Collection<AnnotationValue> values = getAnnotation(o);
+		 Collection<AnnotationValue> values = getDirectAnnotation(o);
 		 for(AnnotationValue v : values) {
 			 Object a = v.getValue("applyTo");
 			 if (a instanceof Object[]) {
@@ -100,29 +100,38 @@ public class TypeQualifierApplications {
 	    map.put(TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value")), When.valueOf(value.value));
     }
 
-	public static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
+	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
 		AnnotatedObject outer = o.getContainingScope();
 		if (outer != null) 
 			getApplicableScopedApplications(result, outer, e);
 		getApplicableApplications(result, o, e);
 	}
-	public static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(AnnotatedObject o, ElementType e) {
+	 static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(AnnotatedObject o, ElementType e) {
 		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
 		getApplicableScopedApplications(result, o, e);
 		return  TypeQualifierAnnotation.getValues(result);
 	}
 		
-	public static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
+	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
 		 ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
 		getApplicableApplications(result, o, parameter);
 	}
-	public static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(MethodInfo o, int parameter) {
+	 static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(MethodInfo o, int parameter) {
 		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
-		 ElementType e = ElementType.PARAMETER;
+		ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
 		getApplicableApplications(result, o, parameter);
 		return TypeQualifierAnnotation.getValues(result);
 	}
+	
+	public static Collection<TypeQualifierAnnotation> getApplicableApplications(AnnotatedObject o) {
+		return getApplicableScopedApplications(o, o.getElementType());
+	}
+	public static Collection<TypeQualifierAnnotation> getApplicableApplications(MethodInfo o, int parameter) {
+		return getApplicableScopedApplications(o, parameter);
+	}
+		
+		
 		
 }
