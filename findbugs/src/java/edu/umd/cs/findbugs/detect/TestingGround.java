@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierResolver;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -55,7 +56,7 @@ public class TestingGround  implements Detector  {
 	        for(MethodDescriptor m : xclass.getMethodDescriptorList()) {
 	        	System.out.println(m);
 	        	if (m instanceof MethodInfo) {
-	        		System.out.println("Method info: " + TypeQualifierApplications.getAnnotation((MethodInfo)m));
+	        		System.out.println("Method info: ");
 	        		
 	        		Collection<ClassDescriptor> mAnnotations = ((MethodInfo)m).getAnnotationDescriptors();
 			        for(ClassDescriptor c : mAnnotations) {
@@ -64,8 +65,8 @@ public class TestingGround  implements Detector  {
 	        	for(int i = 0; i < 5; i++) {
 	        		Collection<ClassDescriptor> pAnnotations = ((MethodInfo)m).getParameterAnnotationDescriptors(i);
 			        if (pAnnotations != null) {
-			        	Collection<AnnotationValue> annotation = TypeQualifierApplications.getAnnotation((MethodInfo)m, i);
-						System.out.println("#" + i + " : " + annotation);
+			        	Collection<TypeQualifierAnnotation> annotation2 = TypeQualifierApplications.getApplicableApplications((MethodInfo)m, i);
+						System.out.println("#" + i + " : " + annotation2);
 			        	for(ClassDescriptor c : pAnnotations) {
 			        
 			        	System.out.println(m.getName()  + "(" + i + ")  : " + c + " -> " + ((MethodInfo)m).getParameterAnnotation(i, c));
