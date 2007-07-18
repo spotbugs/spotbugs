@@ -19,36 +19,46 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
- * @author pwilliam
+ * @author pugh
  */
 public class TypeQualifierValue {
+	public final ClassDescriptor typeQualifier;
+	public final @CheckForNull Object value;
 	
-	public final XClass typeQualifier;
-	public final When when;
-	
-	private TypeQualifierValue(XClass typeQualifier, When when) {
+	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
 		
 		this.typeQualifier =  typeQualifier;
-		this.when = when;
+		this.value = value;
 	}
 	
-	private static DualKeyHashMap <XClass, When, TypeQualifierValue> map = new DualKeyHashMap <XClass, When, TypeQualifierValue> ();
+	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
 	
-	public static synchronized  @NonNull TypeQualifierValue getValue(XClass desc, When when) {
-		TypeQualifierValue result = map.get(desc, when);
+	public static synchronized  @NonNull TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
+		TypeQualifierValue result = map.get(desc, value);
 		if (result != null) return result;
-		result = new TypeQualifierValue(desc, when);
-		map.put(desc, when, result);
+		result = new TypeQualifierValue(desc, value);
+		map.put(desc, value, result);
 		return result;
 	}
 	
+	public int hashCode() {
+		int result = typeQualifier.hashCode();
+		if (value != null) result += 37*value.hashCode();
+		return result;
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof TypeQualifierValue)) return false;
+		TypeQualifierValue other = (TypeQualifierValue) o;
+		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
+	}
 	
 
 }
