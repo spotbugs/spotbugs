@@ -28,6 +28,15 @@ import java.io.*;
  */
 public class CombineJarsForAnalysis {
 
+	public static String [] readFromStandardInput() throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		List<String> lst = new LinkedList<String>();
+		while(true) {
+			String s = in.readLine();
+			if (s == null) return lst.toArray(new String[lst.size()]);
+			lst.add(s);
+		}
+	}
 	public static void main(String args[]) throws Exception {
 		ZipOutputStream analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream("analyze.jar")));
 		String classPrefix = System.getProperty("prefix","");
@@ -36,16 +45,15 @@ public class CombineJarsForAnalysis {
 			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream("auxilary.jar")));
 		
 		Set copied = new HashSet();
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		while (true) {
-			String fInName = in.readLine();
-			if (fInName == null) break;
+		String [] fileList = args;
+		if (fileList.length == 0) fileList = readFromStandardInput();
+		for(String fInName : fileList) {
 			System.err.println("Opening " + fInName);
 			ZipFile zipInputFile = new ZipFile(fInName);
 
 			byte buffer[] = new byte[8192];
-			for (Enumeration e = zipInputFile.entries(); e.hasMoreElements();) {
-				ZipEntry ze = (ZipEntry) e.nextElement();
+			for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
+				ZipEntry ze = e.nextElement();
 
 				if (ze == null)
 					break;
