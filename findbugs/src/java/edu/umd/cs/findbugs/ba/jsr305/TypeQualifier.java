@@ -35,7 +35,7 @@ public class TypeQualifier extends AnnotationEnumeration<TypeQualifier> {
 	// Do we need to represent applicableTo?
 
 	TypeQualifier(String className, When when) {
-		super(className, when.getIndex());
+		super(className, when.ordinal());
 		this.when = when;
 	}
 

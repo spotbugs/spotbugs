@@ -19,60 +19,71 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collection;
+
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierResolver;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public class TestingGround extends BytecodeScanningDetector {
+public class TestingGround  implements Detector  {
 
 	BugReporter bugReporter;
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-
-
-	@Override
-	public void visit(Method obj) {
-		if (Character.isUpperCase(obj.getName().charAt(0))) {
-				BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
-				.addClass(this).addMethod(this).addString("method should start with lower case character");
-				bugReporter.reportBug(bug);
-			}
-		prevOpcode = -1;
+	
+	public void visitClassContext(ClassContext classContext) {
+		try {
+	        ClassInfo xclass = (ClassInfo) classContext.getXClass();
+	        Collection<ClassDescriptor> annotations = xclass.getAnnotationDescriptors();
+	        for(ClassDescriptor c : annotations) {
+	        	System.out.println(xclass.getDottedClassName()  + " : " + c + " -> " + xclass.getAnnotation(c));
+	        }
+	        for(MethodDescriptor m : xclass.getMethodDescriptorList()) {
+	        	System.out.println(m);
+	        	if (m instanceof MethodInfo) {
+	        		System.out.println("Method info: " + TypeQualifierApplications.getAnnotation((MethodInfo)m));
+	        		
+	        		Collection<ClassDescriptor> mAnnotations = ((MethodInfo)m).getAnnotationDescriptors();
+			        for(ClassDescriptor c : mAnnotations) {
+			        	System.out.println(m.getName()  + " : " + c + " -> " + ((MethodInfo)m).getAnnotation(c));
+			        }
+	        	for(int i = 0; i < 5; i++) {
+	        		Collection<ClassDescriptor> pAnnotations = ((MethodInfo)m).getParameterAnnotationDescriptors(i);
+			        if (pAnnotations != null) {
+			        	Collection<AnnotationValue> annotation = TypeQualifierApplications.getAnnotation((MethodInfo)m, i);
+						System.out.println("#" + i + " : " + annotation);
+			        	for(ClassDescriptor c : pAnnotations) {
+			        
+			        	System.out.println(m.getName()  + "(" + i + ")  : " + c + " -> " + ((MethodInfo)m).getParameterAnnotation(i, c));
+			        }}
+	        	}
+	        	
+	        	}
+	        }
+	   
+	        
+        } catch (CheckedAnalysisException e) {
+	        AnalysisContext.logError("Error getting xclass for " + classContext.getClass(), e);
+        }
 	}
-	@Override
-	public void visit(Field obj) {
-		if (obj.isFinal() && obj.isStatic() && obj.isPublic()
-			&& !obj.getName().equals(obj.getName().toUpperCase()) 
-			&& !obj.getName().equals("serialVersionUID")) {
-			BugInstance bug = new BugInstance(this, "TESTING", 
-					obj.getSignature().equals("I") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 
-			.addClass(this).addField(this).addString("Should be upper case");
-			bugReporter.reportBug(bug);
-		}
-	}
+    public void report() {
+	    // TODO Auto-generated method stub
+	    
+    }
 
-	@Override
-	public void visit(Code obj) {
-		if (true) // do we want to dismantle the bytecode?
-			super.visit(obj);
-	}
-
-	int prevOpcode;
-	@Override
-	public void sawOpcode(int seen) {
-
-		if (prevOpcode == I2D && seen == INVOKESTATIC
-				&& getNameConstantOperand().equals("ceil")
-				&& getClassConstantOperand().equals("java.lang.Math"))
-			bugReporter.reportBug(new BugInstance(this, "TESTING", HIGH_PRIORITY)
-			.addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
-
-
-		prevOpcode = seen;
-	}
 }

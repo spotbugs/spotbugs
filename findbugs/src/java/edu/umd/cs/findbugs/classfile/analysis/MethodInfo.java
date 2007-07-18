@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +28,15 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -239,6 +244,19 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 */
 	public MethodDescriptor getMethodDescriptor() {
 		return this;
+	}
+	
+	public ElementType getElementType() {
+		if (getName().equals("<init>")) return ElementType.CONSTRUCTOR;
+		return ElementType.METHOD;
+	}
+	
+	public @CheckForNull AnnotatedObject getContainingScope() {
+		try {
+	        return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
+        } catch (CheckedAnalysisException e) {
+	         return null;
+        }
 	}
 
 }

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,14 +27,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.visitclass.GetNumberArgumentsTest;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
@@ -229,5 +234,22 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		return classAnnotations.get(desc);
 	}
 
+	public ElementType getElementType() {
+		if (getClassName().endsWith("package-info")) return ElementType.PACKAGE;
+		else if (isAnnotation()) return ElementType.ANNOTATION_TYPE;
+		return ElementType.TYPE;
+		
+	}
+	
+	public @CheckForNull AnnotatedObject getContainingScope() {
+		try {
+			if (immediateEnclosingClass != null)
+	          return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());
+			ClassDescriptor p = ClassDescriptor.createClassDescriptorFromDottedClassName(getPackageName() +"."+"package-info");
+			return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
+        } catch (CheckedAnalysisException e) {
+	         return null;
+        }
+	}
 
 }

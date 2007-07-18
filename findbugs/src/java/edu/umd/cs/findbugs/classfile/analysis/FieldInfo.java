@@ -19,22 +19,22 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Constant;
 
-import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.classfile.IClassConstants;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -251,5 +251,16 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 				new HashMap<ClassDescriptor, AnnotationValue>(),
 				new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(),
 				false);
+	}
+	
+	public ElementType getElementType() {
+		return ElementType.FIELD;
+	}
+	public @CheckForNull AnnotatedObject getContainingScope() {
+		try {
+	        return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
+        } catch (CheckedAnalysisException e) {
+	         return null;
+        }
 	}
 }

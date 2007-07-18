@@ -17,23 +17,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.classfile.analysis;
+package edu.umd.cs.findbugs.util;
 
-import java.lang.annotation.ElementType;
-import java.util.Collection;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author pwilliam
+ * @author pugh
  */
-public interface AnnotatedObject {
-	public Collection<ClassDescriptor> getAnnotationDescriptors();
+public class TripleKeyHashMap<K1, K2, K3, V>  {
+	Map<K1, DualKeyHashMap<K2, K3, V>> map = new HashMap<K1, DualKeyHashMap<K2, K3, V>>();
 	
-	public AnnotationValue getAnnotation(ClassDescriptor desc);
-	public Collection<AnnotationValue> getAnnotations();
 	
-	public ElementType getElementType();
-	public @CheckForNull AnnotatedObject getContainingScope();
+	public V get(K1 k1, K2 k2, K3 k3) {
+		DualKeyHashMap<K2, K3, V> m = map.get(k1);
+		if (m == null) return null;
+		return m.get(k2, k3);
+	}
+	
+	public V put(K1 k1, K2 k2, K3 k3, V v) {
+		DualKeyHashMap<K2, K3, V> m = map.get(k1);
+		if (m == null) {
+			m = new DualKeyHashMap<K2, K3, V>();
+			map.put(k1, m);
+		}
+		return m.put(k2,k3, v);
+	}
+
 }

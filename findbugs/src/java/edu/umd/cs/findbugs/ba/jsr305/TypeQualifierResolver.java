@@ -67,9 +67,9 @@ public class TypeQualifierResolver {
 				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
 				return;
 			}
-			ClassDescriptor typeQualifier = ClassDescriptor.createClassDescriptor("javax/lang/annotations/meta/TypeQualifier");
+			ClassDescriptor typeQualifier = ClassDescriptor.createClassDescriptor("javax/annotation/meta/TypeQualifier");
 			ClassDescriptor typeQualifierNickname = ClassDescriptor
-			        .createClassDescriptor("javax/lang/annotations/meta/TypeQualifierNickname");
+			        .createClassDescriptor("javax/annotation/meta/TypeQualifierNickname");
 			if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
 				for (ClassDescriptor d : c.getAnnotationDescriptors())
 					if (!c.equals(typeQualifierNickname))

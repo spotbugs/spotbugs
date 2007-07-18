@@ -201,5 +201,8 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	public boolean isInterface() {
     	return isFlagSet(IClassConstants.ACC_INTERFACE);
     }
+	public boolean isAnnotation() {
+		return isFlagSet(IClassConstants.ACC_ANNOTATION);
+	}
 
 }
