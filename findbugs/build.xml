@@ -105,7 +105,7 @@
 						includes="${pkg.base}/Priorities.java"
 						destdir="${classes.dir}"
 						source="1.5"
-						target="jsr14"
+						target="1.5"
 						deprecation="off"
 						debug="on">
 					<classpath refid="findbugs.classpath"/>
@@ -124,7 +124,7 @@
 		<javac srcdir="${src.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
-				target="jsr14"
+				target="1.5"
 				deprecation="off"
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
@@ -170,7 +170,7 @@
 		<javac srcdir="${toolsrc.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
-				target="jsr14"
+				target="1.5"
 				debug="on"
 				deprecation="off"
 				excludes="${pkg.base}/tools/patcomp/**">
@@ -180,7 +180,7 @@
 		<javac srcdir="${anttasksrc.dir}"
 			destdir="${classes.dir}"
 			source="1.5"
-			target="jsr14"
+			target="1.5"
 			deprecation="off"
 			debug="on">
 			<classpath refid="tools.classpath"/>
