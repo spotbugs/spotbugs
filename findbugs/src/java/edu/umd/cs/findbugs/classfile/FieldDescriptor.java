@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 /**
  * Descriptor uniquely identifying a field in a class.
  * 
@@ -35,7 +37,7 @@ public class FieldDescriptor
 	 * @param fieldSignature the field signature (type)
 	 * @param isStatic       true if field is static, false if not
 	 */
-	public FieldDescriptor(String className, String fieldName, String fieldSignature, boolean isStatic) {
+	public FieldDescriptor(@SlashedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
 		super(className, fieldName, fieldSignature, isStatic);
 	}
 
