@@ -36,6 +36,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -54,7 +56,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 
 		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>();
 
-		public Builder(@DottedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
+		public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
 			this.className = className;
 			this.fieldName = fieldName;
 			this.fieldSignature = fieldSignature;
@@ -95,7 +97,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
      * @param isResolved
      */
     private FieldInfo(
-    		String className,
+    		@SlashedClassName String className,
     		String fieldName,
     		String fieldSignature,
     		String fieldSourceSignature,
@@ -242,6 +244,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	 * @return FieldInfo object representing the unresolved field
 	 */
 	public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
+		className = ClassName.toSlashedClassName(className);
 		return new FieldInfo(
 				className,
 				name,
