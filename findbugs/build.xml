@@ -212,38 +212,6 @@
 	</target>
 
 	<target name="validatesampleoutput" depends="validatesamplexmloutput,validatesamplehtmloutput"/>
-	<!-- Build jar files. -->
-	<target name="PrepareOneFourCompatibilityTest" depends="anttask,classes,jars">
-		<!-- Main engine and command line jar file. -->
-		<jar destfile="${oneFourCompatibility.jar}" >
-			<!-- Compiled classes, properties files. -->
-			<fileset dir="${classes.dir}">
-				<exclude name="${pkg.base}/tools/**"/>
-				<exclude name="${pkg.base}/gui2/**"/>
-				<exclude name="${pkg.base}/sourceViewer/**"/>
-				<exclude name="${pkg.base}/annotations/**"/>
-				<exclude name="net/jcip/annotations/**"/>
-				<exclude name="${pkg.base}/Footprint?*.class"/>
-				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-   </target>
-	<target name="CheckOneFourCompatibility">
-   <property name="findbugs.home" value="." />
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
-    <findbugs home="."
-              output="text"
-		quietErrors="true"
-		      failOnError="true"
-		      warningsProperty="warningsFound"
-			  visitors="ResolveAllReferences"
-			  jvmargs="-Xmx600m" >
-		<class location="${oneFourCompatibility.jar}" />
-		<auxClasspath path="${jdk14.jar}"/>
-		</findbugs>
-	<fail if="warningsFound" message="Not compatible with Java 1.4"/>
-	</target>
 		
 	<!-- Build jar files. -->
 	<target name="allClassFilesJar" depends="classes,validate,version">
