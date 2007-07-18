@@ -67,9 +67,12 @@ public class TypeQualifierApplications {
 			 Object a = v.getValue("applyTo");
 			 if (a instanceof Object[]) {
 				 for(Object o2 : (Object[]) a) 
-					 if (o2 == e) 
-						 constructTypeQualifierAnnotation(result, v);
-			 } else if (o.getElementType().equals(e))
+					 if (o2 instanceof EnumValue) { 
+						 EnumValue ev = (EnumValue)o2;
+						 if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
+						    constructTypeQualifierAnnotation(result, v);
+					 }
+			 } else 
 				 constructTypeQualifierAnnotation(result, v);
 		 }
 	}
@@ -79,8 +82,11 @@ public class TypeQualifierApplications {
 			 Object a = v.getValue("applyTo");
 			 if (a instanceof Object[]) {
 				 for(Object o2 : (Object[]) a) 
-					 if (o2 == e) 
-						 constructTypeQualifierAnnotation(result, v);
+					 if (o2 instanceof EnumValue) { 
+						 EnumValue ev = (EnumValue)o2;
+						 if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
+						    constructTypeQualifierAnnotation(result, v);
+					 }
 			 } else if (o.getElementType().equals(e))
 				 constructTypeQualifierAnnotation(result, v);
 		 }

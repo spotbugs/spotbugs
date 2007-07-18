@@ -69,7 +69,9 @@ public class TypeQualifierAnnotation {
 		if (!(o instanceof TypeQualifierAnnotation)) return false;
 		TypeQualifierAnnotation other = (TypeQualifierAnnotation) o;
 		return typeQualifier.equals(other.typeQualifier) && when.equals(other.when);
-		
+	}
+	public String toString() {
+		return typeQualifier + ":" + when;
 	}
 	
 
