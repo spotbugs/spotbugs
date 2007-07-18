@@ -18,7 +18,11 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collection;
+
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 public interface XMethod extends ClassMember {
 	public boolean isNative();
@@ -30,4 +34,58 @@ public interface XMethod extends ClassMember {
      */
     public MethodDescriptor getMethodDescriptor();
 
+	/**
+	 * Get ClassDescriptors (annotation classes) of annotations applied
+	 * directly to this method's parameters. 
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @return ClassDescriptors of annotations applied directly to this method's parameters
+	 */
+    public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param);
+
+    /**
+	 * Get the AnnotationValue of annotation applied directly to given parameter.
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @param desc  ClassDescriptor of the annotation class
+	 * @return AnnotationValue annotating the parameter,
+	 *         or null if parameter is not annotated with this kind of annotation
+	 */
+    public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
+
+    /**
+	 * Get collection of all AnnotationValues applied directly
+	 * to given parameter.
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @return Collection of all AnnotationValues applied directly
+	 *         to given parameter
+	 */
+    public Collection<AnnotationValue> getParameterAnnotations(int param);
+
+    /**
+	 * Get ClassDescriptors (annotation classes) of annotations applied
+	 * directly to this method. 
+	 * 
+	 * @return ClassDescriptors of annotations applied directly to this method
+	 */
+    public Collection<ClassDescriptor> getAnnotationDescriptors();
+
+    /**
+	 * Get the AnnotationValue of annotation applied directly to the method.
+	 * 
+	 * @param desc  ClassDescriptor of the annotation class
+	 * @return AnnotationValue annotating the method,
+	 *         or null if method is not annotated with this kind of annotation
+	 */
+    public AnnotationValue getAnnotation(ClassDescriptor desc);
+
+    /**
+	 * Get collection of all AnnotationValues applied directly
+	 * to the method.
+	 * 
+	 * @return Collection of all AnnotationValues applied directly
+	 *         to the method
+	 */
+    public Collection<AnnotationValue> getAnnotations();
 }

@@ -29,7 +29,12 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Type qualifier dataflow analysis.
@@ -38,16 +43,32 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  */
 public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQualifierValueSet> {
 
-	private CFG cfg;
+	private final XMethod xmethod;
+	private final CFG cfg;
+	private final ValueNumberDataflow vnaDataflow;
+	private final TypeQualifierValue typeQualifierValue;
+	private TypeQualifierValueSet entryFact;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param dfs DepthFirstSearch on the control-flow graph of the method being analyzed
+	 * @param dfs                DepthFirstSearch on the control-flow graph of the method being analyzed
+	 * @param xmethod            XMethod object containing information about the method being analyzed
+	 * @param cfg                the control-flow graph (CFG) of the method being analyzed
+	 * @param vnaDataflow        ValueNumberDataflow for the method
+	 * @param typeQualifierValue the TypeQualifierValue we want the dataflow analysis to check
 	 */
-	public TypeQualifierDataflowAnalysis(DepthFirstSearch dfs, CFG cfg) {
+	public TypeQualifierDataflowAnalysis(
+			DepthFirstSearch dfs,
+			XMethod xmethod,
+			CFG cfg,
+			ValueNumberDataflow vnaDataflow,
+			TypeQualifierValue typeQualifierValue) {
 		super(dfs);
+		this.xmethod = xmethod;
 		this.cfg = cfg;
+		this.vnaDataflow = vnaDataflow;
+		this.typeQualifierValue = typeQualifierValue;
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +106,22 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
 	 */
 	public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
-		// TODO: check type qualifier annotations on method parameters 
+		if (entryFact == null) {
+			entryFact = createFact();
+			entryFact.makeValid();
+			
+			// FIXME: right now, we just work with directly-applied annotations
+			ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
+
+			int firstParamSlot = xmethod.isStatic() ? 0 : 1;
+			for (int i = 0; i < xmethod.getNumParams(); i++) {
+				AnnotationValue annotationValue =
+					xmethod.getParameterAnnotation(i, typeQualifierValue.getTypeQualifierClassDescriptor());
+				// XXX: what to do with AnnotationValue?
+			}
+		}
+		
+		result.makeSameAs(entryFact);
 	}
 
 	/* (non-Javadoc)

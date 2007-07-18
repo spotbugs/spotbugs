@@ -31,15 +31,15 @@ import edu.umd.cs.findbugs.util.Util;
 public class TypeQualifierValue {
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
-	
+
 	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
-		
+
 		this.typeQualifier =  typeQualifier;
 		this.value = value;
 	}
-	
+
 	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
-	
+
 	public static synchronized  @NonNull TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
 		TypeQualifierValue result = map.get(desc, value);
 		if (result != null) return result;
@@ -47,18 +47,22 @@ public class TypeQualifierValue {
 		map.put(desc, value, result);
 		return result;
 	}
-	
+
+	public ClassDescriptor getTypeQualifierClassDescriptor() {
+		return typeQualifier;
+	}
+
+
 	public int hashCode() {
 		int result = typeQualifier.hashCode();
 		if (value != null) result += 37*value.hashCode();
 		return result;
 	}
-	
+
 	public boolean equals(Object o) {
 		if (!(o instanceof TypeQualifierValue)) return false;
 		TypeQualifierValue other = (TypeQualifierValue) o;
 		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
 	}
-	
 
 }

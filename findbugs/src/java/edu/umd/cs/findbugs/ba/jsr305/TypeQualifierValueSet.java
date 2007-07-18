@@ -64,6 +64,11 @@ public class TypeQualifierValueSet {
 		return state == VALID;
 	}
 
+	public void makeValid() {
+		this.state = VALID;
+		this.valueMap.clear();
+	}
+
 	public void makeSameAs(TypeQualifierValueSet source) {
 		this.state = source.state;
 		this.valueMap.clear();
@@ -79,14 +84,14 @@ public class TypeQualifierValueSet {
 		this.state = TOP;
 	}
 
-    public boolean isBottom() {
-    	return state == BOTTOM;
-    }
-    
-    public void setBottom() {
-    	this.valueMap.clear();
-    	this.state = BOTTOM;
-    }
+	public boolean isBottom() {
+		return state == BOTTOM;
+	}
+
+	public void setBottom() {
+		this.valueMap.clear();
+		this.state = BOTTOM;
+	}
 
 	public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {
 		if (!isValid() || !fact.isValid()) {
@@ -105,7 +110,7 @@ public class TypeQualifierValueSet {
 	public void downgradeMaybeNotToUnknown() throws DataflowAnalysisException {
 		for (Iterator<Map.Entry<ValueNumber, When>> i = valueMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry<ValueNumber, When> entry = i.next();
-			
+
 			if (entry.getValue().equals(When.MAYBE_NOT)) {
 				// Unknown is the default, so it's not stored explicitly
 				i.remove();
