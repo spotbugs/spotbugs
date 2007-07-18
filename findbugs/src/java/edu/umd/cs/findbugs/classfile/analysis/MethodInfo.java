@@ -214,27 +214,76 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	public boolean isResolved() {
 		return true;
 	}
+	
+	/**
+	 * Get ClassDescriptors (annotation classes) of annotations applied
+	 * directly to this method's parameters. 
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @return ClassDescriptors of annotations applied directly to this method's parameters
+	 */
 	public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
 		if (map == null) return Collections.emptySet();
 		return map.keySet();
 	}
+	
+	/**
+	 * Get the AnnotationValue of annotation applied directly to given parameter.
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @param desc  ClassDescriptor of the annotation class
+	 * @return AnnotationValue annotating the parameter,
+	 *         or null if parameter is not annotated with this kind of annotation
+	 */
 	public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
 		if (map == null) return null;
 		return map.get(desc);
 	}
+	
+	/**
+	 * Get collection of all AnnotationValues applied directly
+	 * to given parameter.
+	 * 
+	 * @param param parameter number (0 for first parameter)
+	 * @return Collection of all AnnotationValues applied directly
+	 *         to given parameter
+	 */
 	public Collection<AnnotationValue> getParameterAnnotations(int param) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
 		if (map == null) return Collections.emptySet();
 		return map.values();
 	}
+	
+	/**
+	 * Get ClassDescriptors (annotation classes) of annotations applied
+	 * directly to this method. 
+	 * 
+	 * @return ClassDescriptors of annotations applied directly to this method
+	 */
 	public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return methodAnnotations.keySet();
 	}
+	
+	/**
+	 * Get the AnnotationValue of annotation applied directly to the method.
+	 * 
+	 * @param desc  ClassDescriptor of the annotation class
+	 * @return AnnotationValue annotating the method,
+	 *         or null if method is not annotated with this kind of annotation
+	 */
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return methodAnnotations.get(desc);
 	}
+	
+	/**
+	 * Get collection of all AnnotationValues applied directly
+	 * to the method.
+	 * 
+	 * @return Collection of all AnnotationValues applied directly
+	 *         to the method
+	 */
 	public Collection<AnnotationValue> getAnnotations() {
 		return methodAnnotations.values();
 	}
