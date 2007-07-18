@@ -23,13 +23,12 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
-import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
@@ -38,8 +37,8 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 public class TypeQualifierApplications {
 	
 	static Map<AnnotatedObject, Collection<AnnotationValue>> objectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
-	static DualKeyHashMap<MethodInfo, Integer, Collection<AnnotationValue>> parameterAnnotations 
-	= new DualKeyHashMap<MethodInfo, Integer, Collection<AnnotationValue>>();
+	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> parameterAnnotations 
+	= new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
 	
 	 static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
 		Collection<AnnotationValue> result = objectAnnotations.get(m);
@@ -50,7 +49,7 @@ public class TypeQualifierApplications {
 		objectAnnotations.put(m, result);
 		return result;
 	}
-	 static Collection<AnnotationValue> getDirectAnnotation(MethodInfo m, int parameter) {
+	 static Collection<AnnotationValue> getDirectAnnotation(XMethod m, int parameter) {
 		Collection<AnnotationValue> result = parameterAnnotations.get(m, parameter);
 		if (result != null) return result;
 		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
@@ -60,7 +59,7 @@ public class TypeQualifierApplications {
 		return result;
 	}
 	
-	 static void getApplicableApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
+	 static void getApplicableApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
 		 Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		 ElementType e = ElementType.PARAMETER;
 		 for(AnnotationValue v : values) {
@@ -112,12 +111,12 @@ public class TypeQualifierApplications {
 		return  TypeQualifierAnnotation.getValues(result);
 	}
 		
-	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, MethodInfo o, int parameter) {
+	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
 		 ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
 		getApplicableApplications(result, o, parameter);
 	}
-	 static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(MethodInfo o, int parameter) {
+	 static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(XMethod o, int parameter) {
 		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
 		ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
@@ -128,7 +127,7 @@ public class TypeQualifierApplications {
 	public static Collection<TypeQualifierAnnotation> getApplicableApplications(AnnotatedObject o) {
 		return getApplicableScopedApplications(o, o.getElementType());
 	}
-	public static Collection<TypeQualifierAnnotation> getApplicableApplications(MethodInfo o, int parameter) {
+	public static Collection<TypeQualifierAnnotation> getApplicableApplications(XMethod o, int parameter) {
 		return getApplicableScopedApplications(o, parameter);
 	}
 		

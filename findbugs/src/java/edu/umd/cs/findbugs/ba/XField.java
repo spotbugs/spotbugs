@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 
 /**
  * Abstract representation of a field.
@@ -31,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
  * objects in BCEL are awkward to deal with.  They are not Comparable,
  * it is difficult to find out what class they belong to, etc.
  */
-public interface XField extends ClassMember{
+public interface XField extends ClassMember, AnnotatedObject{
 	/**
 	 * Is the type of the field a reference type?
 	 */

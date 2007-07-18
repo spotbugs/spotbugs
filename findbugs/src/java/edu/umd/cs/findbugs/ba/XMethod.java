@@ -22,9 +22,10 @@ import java.util.Collection;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
-public interface XMethod extends ClassMember {
+public interface XMethod extends ClassMember, AnnotatedObject {
 	public boolean isNative();
 	public boolean isSynchronized();
 	public int getNumParams();

@@ -23,6 +23,7 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
@@ -31,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public interface AnnotatedObject {
 	public Collection<ClassDescriptor> getAnnotationDescriptors();
 	
-	public AnnotationValue getAnnotation(ClassDescriptor desc);
+	public  @Nullable AnnotationValue getAnnotation(ClassDescriptor desc);
 	public Collection<AnnotationValue> getAnnotations();
 	
 	public ElementType getElementType();

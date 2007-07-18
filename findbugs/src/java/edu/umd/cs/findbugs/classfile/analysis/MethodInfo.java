@@ -26,10 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Constant;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -39,7 +38,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -221,7 +219,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		return map.keySet();
 	}
 	
-	public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
+	public @Nullable AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
 		if (map == null) return null;
 		return map.get(desc);

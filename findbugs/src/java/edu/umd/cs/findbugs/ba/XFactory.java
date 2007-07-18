@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
@@ -131,6 +133,20 @@ public  class XFactory {
 		public Collection<AnnotationValue> getParameterAnnotations(int param) {
 			return TigerSubstitutes.emptyList();
 		}
+
+		public ElementType getElementType() {
+			if (getName().equals("<init>")) return ElementType.CONSTRUCTOR;
+			return ElementType.METHOD;
+		}
+		
+		public @CheckForNull AnnotatedObject getContainingScope() {
+			try {
+		        return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
+	        } catch (CheckedAnalysisException e) {
+		         return null;
+	        }
+		}
+
 	}
 
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Collection;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
@@ -29,7 +30,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
  * 
  * @author David Hovemeyer
  */
-public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity {
+public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, AnnotatedObject {
 
 	/**
 	 * Get ClassDescriptor of this class's immediate superclass.

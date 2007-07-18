@@ -1,0 +1,83 @@
+/*
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2003-2007 University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package edu.umd.cs.findbugs.ba.jsr305;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
+
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+
+/**
+ * @author pugh
+ */
+public class Analysis {
+	
+	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(ClassContext context, Method method) throws CFGBuilderException {
+		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
+		CFG cfg = context.getCFG(method);
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			Instruction ins = location.getHandle().getInstruction();
+			if (ins instanceof FieldInstruction) {
+				XField f = XFactory.createXField((FieldInstruction)ins, context.getConstantPoolGen());
+				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(f);
+				addKnownTypeQualifiers(result, applicableApplications);
+			}
+			else if (ins instanceof InvokeInstruction) {
+				XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
+				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
+				addKnownTypeQualifiers(result, applicableApplications);
+				int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
+				for(int p = 0; p < numParameters; p++)
+					addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m,p));
+				
+			}
+		}
+		
+		
+		return result;
+		
+	}
+
+	/**
+     * @param result
+     * @param applicableApplications
+     */
+    private static void addKnownTypeQualifiers(HashSet<TypeQualifierValue> result,
+            Collection<TypeQualifierAnnotation> applicableApplications) {
+	    for(TypeQualifierAnnotation t : applicableApplications)
+	    	if (t.when != When.UNKNOWN)
+	    		result.add(t.typeQualifier);
+    }
+
+}
