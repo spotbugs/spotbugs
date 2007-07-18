@@ -231,12 +231,22 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 		return this;
 	}
 	
+	/**
+	 * Create a FieldInfo object to represent an unresolved field.
+	 * <em>Don't call this directly - use XFactory instead.</em>
+	 * 
+	 * @param className  name of class containing the field
+	 * @param name       name of field
+	 * @param signature  field signature
+	 * @param isStatic   true if field is static, false otherwise
+	 * @return FieldInfo object representing the unresolved field
+	 */
 	public static FieldInfo createUnresolvedFieldInfo(String className, String name, String signature, boolean isStatic) {
 		return new FieldInfo(
 				className,
 				name,
 				signature,
-				"", // XXX
+				null, // without seeing the definition we don't know if it has a generic type
 				isStatic ? Constants.ACC_STATIC : 0,
 				new HashMap<ClassDescriptor, AnnotationValue>(),
 				new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(),

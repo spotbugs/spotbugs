@@ -76,6 +76,16 @@ public  class XFactory {
 				System.out.println("Unresolved xmethod: " + this);
 			}
 		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Comparable#compareTo(java.lang.Object)
+		 */
+		public int compareTo(Object o) {
+			if (o instanceof XMethod) {
+				return XFactory.compare((XMethod)this, (XMethod)o);
+			}
+			throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
+		}
 	}
 	
 //	/**
@@ -621,6 +631,9 @@ public  class XFactory {
 
 	/**
 	 * Compare XMethod or XField object objects.
+	 * <em>All methods that implement XMethod or XField should
+	 * delegate to this method when implementing compareTo(Object)
+	 * if the right-hand object implements XField or XMethod.</em>
 	 * 
      * @param lhs an XMethod or XField
      * @param rhs an XMethod or XField

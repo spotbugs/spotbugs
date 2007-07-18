@@ -189,11 +189,13 @@
 
 	<!-- Validate findbugs.xml and messagesXXX.xml files. -->
 	<target name="validate">
+		<!--
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
 			<fileset dir="${etc.dir}" includes="*.xml"/>
 		</xmlvalidate>
+		-->
 	</target>
 	
 	<target name="validatesamplexmloutput" depends="runanttask">

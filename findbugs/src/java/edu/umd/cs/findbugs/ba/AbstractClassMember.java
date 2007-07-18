@@ -109,39 +109,39 @@ public abstract class AbstractClassMember implements ClassMember {
 		return (accessFlags & Constants.ACC_PRIVATE) != 0;
 	}
 
-	public int compareTo(ClassMember other) {
-		// This may be compared to any kind of PackageMember object.
-		// If the other object is a different kind of field,
-		// just compare class names.
-		if (this.getClass() != other.getClass())
-			return this.getClass().getName().compareTo(other.getClass().getName());
+//	public int compareTo(ClassMember other) {
+//		// This may be compared to any kind of PackageMember object.
+//		// If the other object is a different kind of field,
+//		// just compare class names.
+//		if (this.getClass() != other.getClass())
+//			return this.getClass().getName().compareTo(other.getClass().getName());
+//
+//		int cmp;
+//		cmp = className.compareTo(other.getClassName());
+//		if (cmp != 0)
+//			return cmp;
+//		cmp = name.compareTo(other.getName());
+//		if (cmp != 0)
+//			return cmp;
+//		return signature.compareTo(other.getSignature());
+//	}
 
-		int cmp;
-		cmp = className.compareTo(other.getClassName());
-		if (cmp != 0)
-			return cmp;
-		cmp = name.compareTo(other.getName());
-		if (cmp != 0)
-			return cmp;
-		return signature.compareTo(other.getSignature());
-	}
-
-	public int compareTo(FieldOrMethodName other) {
-
-		int cmp = getClassDescriptor().compareTo(other.getClassDescriptor());
-		if (cmp != 0)
-			return cmp;
-		cmp = name.compareTo(other.getName());
-		if (cmp != 0)
-			return cmp;
-		cmp = signature.compareTo(other.getSignature());
-		if (cmp != 0)
-			return cmp;
-		return (this.isStatic() ? 1 : 0) - (other.isStatic() ? 1 : 0);
-	}
-	public int compareTo(Object other) {
-		return compareTo((FieldOrMethodName) other);
-	}
+//	public int compareTo(FieldOrMethodName other) {
+//
+//		int cmp = getClassDescriptor().compareTo(other.getClassDescriptor());
+//		if (cmp != 0)
+//			return cmp;
+//		cmp = name.compareTo(other.getName());
+//		if (cmp != 0)
+//			return cmp;
+//		cmp = signature.compareTo(other.getSignature());
+//		if (cmp != 0)
+//			return cmp;
+//		return (this.isStatic() ? 1 : 0) - (other.isStatic() ? 1 : 0);
+//	}
+//	public int compareTo(Object other) {
+//		return compareTo((FieldOrMethodName) other);
+//	}
 	public boolean isResolved() {
 		return resolved;
 	}
