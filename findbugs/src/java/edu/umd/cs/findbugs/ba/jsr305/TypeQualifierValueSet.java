@@ -39,15 +39,15 @@ public class TypeQualifierValueSet {
 	private static final int TOP = 1;
 	private static final int BOTTOM = 2;
 
-	private Map<ValueNumber, When> valueMap;
+	private Map<ValueNumber, FlowValue> valueMap;
 	private int state;
 
 	public TypeQualifierValueSet() {
-		this.valueMap = new HashMap<ValueNumber, When>();
+		this.valueMap = new HashMap<ValueNumber, FlowValue>();
 	}
 
-	public void setValue(ValueNumber vn, When when) {
-		if (when != When.UNKNOWN) {
+	public void setValue(ValueNumber vn, FlowValue when) {
+		if (when != FlowValue.UNKNOWN) {
 			// Unknown is the default, so it's not stored explicitly
 			valueMap.remove(vn);
 			return;
@@ -55,9 +55,9 @@ public class TypeQualifierValueSet {
 		valueMap.put(vn, when);
 	}
 
-	public When getValue(ValueNumber vn) {
-		When result = valueMap.get(vn);
-		return result != null ? result : When.UNKNOWN;
+	public FlowValue getValue(ValueNumber vn) {
+		FlowValue result = valueMap.get(vn);
+		return result != null ? result : FlowValue.UNKNOWN;
 	}
 
 	public boolean isValid() {
@@ -103,15 +103,16 @@ public class TypeQualifierValueSet {
 		allValueNumbers.addAll(fact.valueMap.keySet());
 
 		for (ValueNumber vn : allValueNumbers) {
-			setValue(vn, When.meet(this.getValue(vn), fact.getValue(vn)));
+			setValue(vn, FlowValue.meet(this.getValue(vn), fact.getValue(vn)));
 		}
 	}
 
-	public void downgradeMaybeNotToUnknown() throws DataflowAnalysisException {
-		for (Iterator<Map.Entry<ValueNumber, When>> i = valueMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry<ValueNumber, When> entry = i.next();
+	public void onBranch() throws DataflowAnalysisException {
+		// On a branch we change all uncertain values to UNKNOWN.
+		for (Iterator<Map.Entry<ValueNumber, FlowValue>> i = valueMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<ValueNumber, FlowValue> entry = i.next();
 
-			if (entry.getValue().equals(When.MAYBE_NOT)) {
+			if (entry.getValue().isUncertain()) {
 				// Unknown is the default, so it's not stored explicitly
 				i.remove();
 			}

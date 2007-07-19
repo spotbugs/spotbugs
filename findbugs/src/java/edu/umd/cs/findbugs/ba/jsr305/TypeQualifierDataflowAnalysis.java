@@ -118,10 +118,14 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 			ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
 			if (vnaFrameAfterInstruction.isValid()) {
 				ValueNumber topValue = vnaFrameAfterInstruction.getTopValue();
-				fact.setValue(topValue, topOfStack.when);
+				fact.setValue(topValue, flowValueFromWhen(topOfStack.when));
 			}
 		}
 		
+	}
+	
+	protected FlowValue flowValueFromWhen(When when) {
+		throw new UnsupportedOperationException();// XXX
 	}
 
 	/* (non-Javadoc)
@@ -153,7 +157,7 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 				// Get the TypeQualifierAnnotation for this parameter
 				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, i, typeQualifierValue);
 				if (tqa != null) {
-					entryFact.setValue(vnaFrameAtEntry.getValue(i + firstParamSlot), tqa.when);
+					entryFact.setValue(vnaFrameAtEntry.getValue(i + firstParamSlot), flowValueFromWhen(tqa.when));
 				}
 			}
 		}
@@ -185,7 +189,7 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 		}
 		
 		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
-			fact.downgradeMaybeNotToUnknown();
+			fact.onBranch();
 		}
 	}
 
