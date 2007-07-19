@@ -49,7 +49,13 @@ public class CombineJarsForAnalysis {
 		if (fileList.length == 0) fileList = readFromStandardInput();
 		for(String fInName : fileList) {
 			System.err.println("Opening " + fInName);
-			ZipFile zipInputFile = new ZipFile(fInName);
+			ZipFile zipInputFile;
+			try {
+				zipInputFile = new ZipFile(fInName);
+			} catch(IOException e) {
+				e.printStackTrace();
+				continue;
+			}
 
 			byte buffer[] = new byte[8192];
 			for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
