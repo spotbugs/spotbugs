@@ -24,6 +24,7 @@ import java.util.HashMap;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -39,13 +40,18 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifierDataflowFactory {
-	private static class DataflowResult {
-		TypeQualifierDataflow dataflow;
+public abstract class TypeQualifierDataflowFactory
+	<
+		AnalysisType extends TypeQualifierDataflowAnalysis,
+		DataflowType extends TypeQualifierDataflow<AnalysisType>
+	> {
+	
+	private static class DataflowResult<DataflowType> {
+		DataflowType dataflow;
 		CheckedAnalysisException checkedException;
 		RuntimeException runtimeException;
 
-		TypeQualifierDataflow get() throws CheckedAnalysisException {
+		DataflowType get() throws CheckedAnalysisException {
 			if (dataflow != null) {
 				return dataflow;
 			}
@@ -56,16 +62,16 @@ public class TypeQualifierDataflowFactory {
 		}
 	}
 
-	private HashMap<TypeQualifierValue, DataflowResult> dataflowMap;
+	private HashMap<TypeQualifierValue, DataflowResult<DataflowType>> dataflowMap;
 	private MethodDescriptor methodDescriptor;
 
 	public TypeQualifierDataflowFactory(MethodDescriptor methodDescriptor) {
 		this.methodDescriptor = methodDescriptor;
-		this.dataflowMap = new HashMap<TypeQualifierValue, DataflowResult>();
+		this.dataflowMap = new HashMap<TypeQualifierValue, DataflowResult<DataflowType>>();
 	}
 
-	public TypeQualifierDataflow getDataflow(TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException {
-		DataflowResult result = dataflowMap.get(typeQualifierValue);
+	public DataflowType getDataflow(TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException {
+		DataflowResult<DataflowType> result = dataflowMap.get(typeQualifierValue);
 		if (result == null) {
 			result = compute(typeQualifierValue);
 			dataflowMap.put(typeQualifierValue, result);
@@ -73,10 +79,11 @@ public class TypeQualifierDataflowFactory {
 		return result.get();
 	}
 
-	private DataflowResult compute(TypeQualifierValue typeQualifierValue) {
-		DataflowResult result = new DataflowResult();
+	private DataflowResult<DataflowType> compute(TypeQualifierValue typeQualifierValue) {
+		DataflowResult<DataflowType> result = new DataflowResult<DataflowType>();
 		
 		try {
+			/*
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
 
 			DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
@@ -91,6 +98,9 @@ public class TypeQualifierDataflowFactory {
 			TypeQualifierDataflow dataflow = new TypeQualifierDataflow(cfg, analysis);
 
 			dataflow.execute();
+			*/
+			
+			DataflowType dataflow = getDataflow(typeQualifierValue, methodDescriptor);
 			
 			result.dataflow = dataflow;
 		} catch (CheckedAnalysisException e) {
@@ -101,4 +111,7 @@ public class TypeQualifierDataflowFactory {
 		
 		return result;
 	}
+	
+	protected abstract DataflowType getDataflow(
+			TypeQualifierValue typeQualifierValue, MethodDescriptor methodDescriptor) throws CheckedAnalysisException;
 }

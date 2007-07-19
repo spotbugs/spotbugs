@@ -19,21 +19,17 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import java.util.Set;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -41,15 +37,13 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Type qualifier dataflow analysis.
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQualifierValueSet> {
+public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnalysis<TypeQualifierValueSet> {
 
 	private final XMethod xmethod;
 	private final CFG cfg;
@@ -68,13 +62,11 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 	 * @param typeQualifierValue the TypeQualifierValue we want the dataflow analysis to check
 	 */
 	public TypeQualifierDataflowAnalysis(
-			DepthFirstSearch dfs,
 			XMethod xmethod,
 			CFG cfg,
 			ValueNumberDataflow vnaDataflow,
 			ConstantPoolGen cpg, 
 			TypeQualifierValue typeQualifierValue) {
-		super(dfs);
 		this.xmethod = xmethod;
 		this.cfg = cfg;
 		this.vnaDataflow = vnaDataflow;

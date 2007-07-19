@@ -27,7 +27,11 @@ import edu.umd.cs.findbugs.ba.Dataflow;
  * 
  * @author David Hovemeyer
  */
-public class TypeQualifierDataflow extends Dataflow<TypeQualifierValueSet, TypeQualifierDataflowAnalysis> {
+public class TypeQualifierDataflow
+	<
+	AnalysisType extends TypeQualifierDataflowAnalysis
+	>
+	extends Dataflow<TypeQualifierValueSet, AnalysisType> {
 
 	/**
 	 * Constructor.
@@ -35,7 +39,7 @@ public class TypeQualifierDataflow extends Dataflow<TypeQualifierValueSet, TypeQ
 	 * @param cfg      control flow graph (CFG) of analyzed method
 	 * @param analysis the TypeQualifierDataflowAnalysis
 	 */
-	public TypeQualifierDataflow(CFG cfg, TypeQualifierDataflowAnalysis analysis) {
+	public TypeQualifierDataflow(CFG cfg, AnalysisType analysis) {
 		super(cfg, analysis);
 	}
 
