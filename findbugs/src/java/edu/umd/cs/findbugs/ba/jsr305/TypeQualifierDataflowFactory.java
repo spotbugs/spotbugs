@@ -83,23 +83,6 @@ public abstract class TypeQualifierDataflowFactory
 		DataflowResult<DataflowType> result = new DataflowResult<DataflowType>();
 		
 		try {
-			/*
-			IAnalysisCache analysisCache = Global.getAnalysisCache();
-
-			DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-			XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
-			CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
-			ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
-			ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
-
-			TypeQualifierDataflowAnalysis analysis = new TypeQualifierDataflowAnalysis(
-					dfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue
-			);
-			TypeQualifierDataflow dataflow = new TypeQualifierDataflow(cfg, analysis);
-
-			dataflow.execute();
-			*/
-			
 			DataflowType dataflow = getDataflow(typeQualifierValue, methodDescriptor);
 			
 			result.dataflow = dataflow;
