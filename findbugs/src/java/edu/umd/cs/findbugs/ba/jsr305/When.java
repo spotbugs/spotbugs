@@ -25,10 +25,10 @@ package edu.umd.cs.findbugs.ba.jsr305;
  * javax.annotation.meta.When enumeration.)
  * 
  * @author David Hovemeyer
+ * @author Bill Pugh
  */
 public enum When {
 	ASSUME_ALWAYS, ALWAYS, UNKNOWN, MAYBE_NOT, NEVER;
-
 
 	// Dataflow lattice:
 	//
@@ -44,21 +44,18 @@ public enum When {
                            // ASSUME_                                    MAYBE_
                            // ALWAYS          ALWAYS          UNKNOWN    NOT         NEVER
                            // ----------------------------------------------------------------
-		/* ASSUME_ALWAYS */ { ASSUME_ALWAYS,  ASSUME_ALWAYS,  MAYBE_NOT, MAYBE_NOT,  MAYBE_NOT  },
-		/* ALWAYS */        { ASSUME_ALWAYS,  ALWAYS,         MAYBE_NOT, MAYBE_NOT },
-		/* UNKNOWN */       { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN },
-		/* MAYBE_NOT */     { MAYBE_NOT,      MAYBE_NOT, },
-		/* NEVER */         { MAYBE_NOT },
+		/* ASSUME_ALWAYS */ { ASSUME_ALWAYS, },
+		/* ALWAYS */        { ASSUME_ALWAYS,  ASSUME_ALWAYS, },
+		/* UNKNOWN */       { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN, },
+		/* MAYBE_NOT */     { MAYBE_NOT,      MAYBE_NOT,      MAYBE_NOT, MAYBE_NOT, },
+		/* NEVER */         { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN,   MAYBE_NOT,  NEVER, },
 	};
-	
-
-
 	
 	public static When meet(When a, When b) {
 		int aIndex = a.ordinal();
 		int bIndex = b.ordinal();
 		
-		if (aIndex > bIndex) {
+		if (aIndex < bIndex) {
 			int tmp = aIndex;
 			aIndex = bIndex;
 			bIndex = tmp;
