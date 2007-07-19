@@ -19,21 +19,36 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
+ * Forward type qualifier dataflow analysis.
+ * 
  * @author David Hovemeyer
  */
 public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
 
-	private DepthFirstSearch dfs;
+	private final DepthFirstSearch dfs;
+	private TypeQualifierValueSet entryFact;
 	
 	/**
 	 * @param dfs
@@ -48,6 +63,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			XMethod xmethod, CFG cfg, ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg,
 			TypeQualifierValue typeQualifierValue) {
 		super(xmethod, cfg, vnaDataflow, cpg, typeQualifierValue);
+		this.dfs = dfs;
 	}
 
 	/* (non-Javadoc)
@@ -62,6 +78,81 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	 */
 	public boolean isForwards() {
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
+	 */
+	public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
+		if (entryFact == null) {
+			entryFact = createFact();
+			entryFact.makeValid();
+			
+			ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
+
+			int firstParamSlot = xmethod.isStatic() ? 0 : 1;
+			for (int i = 0; i < xmethod.getNumParams(); i++) {
+				// Get the TypeQualifierAnnotation for this parameter
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, i, typeQualifierValue);
+				if (tqa != null) {
+					entryFact.setValue(vnaFrameAtEntry.getValue(i + firstParamSlot), flowValueFromWhen(tqa.when));
+				}
+			}
+		}
+		
+		result.makeSameAs(entryFact);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+	 */
+	@Override
+	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
+		if (!fact.isValid()) {
+			return;
+		}
+		
+		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
+			fact.onBranch();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
+	 */
+	@Override
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
+			throws DataflowAnalysisException {
+		
+		short opcode = handle.getInstruction().getOpcode();
+		TypeQualifierAnnotation topOfStack = null;
+		
+		if (handle.getInstruction() instanceof InvokeInstruction) {
+			// Model return value
+			XMethod calledMethod = XFactory.createXMethod((InvokeInstruction) handle.getInstruction(), cpg);
+			if (calledMethod.isResolved()) {
+				topOfStack = TypeQualifierApplications.getApplicableApplication(calledMethod, typeQualifierValue);
+			}
+		} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
+			// Model field loads
+			XField loadedField = XFactory.createXField((FieldInstruction) handle.getInstruction(), cpg);
+			if (loadedField.isResolved()) {
+				topOfStack = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
+			}
+		}
+		
+		if (topOfStack != null) {
+			ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
+			if (vnaFrameAfterInstruction.isValid()) {
+				ValueNumber topValue = vnaFrameAfterInstruction.getTopValue();
+				fact.setValue(topValue, flowValueFromWhen(topOfStack.when));
+			}
+		}
+		
+	}
+	
+	protected FlowValue flowValueFromWhen(When when) {
+		throw new UnsupportedOperationException();// XXX
 	}
 
 }
