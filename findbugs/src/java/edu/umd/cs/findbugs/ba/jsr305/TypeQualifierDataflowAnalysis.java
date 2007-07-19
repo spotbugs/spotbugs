@@ -21,14 +21,22 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.util.Set;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -47,6 +55,7 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 	private final CFG cfg;
 	private final ValueNumberDataflow vnaDataflow;
 	private final TypeQualifierValue typeQualifierValue;
+	private final ConstantPoolGen cpg;
 	private TypeQualifierValueSet entryFact;
 
 	/**
@@ -63,11 +72,13 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 			XMethod xmethod,
 			CFG cfg,
 			ValueNumberDataflow vnaDataflow,
+			ConstantPoolGen cpg, 
 			TypeQualifierValue typeQualifierValue) {
 		super(dfs);
 		this.xmethod = xmethod;
 		this.cfg = cfg;
 		this.vnaDataflow = vnaDataflow;
+		this.cpg = cpg;
 		this.typeQualifierValue = typeQualifierValue;
 	}
 
@@ -85,7 +96,32 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
 			throws DataflowAnalysisException {
-		// TODO: implement
+		
+		short opcode = handle.getInstruction().getOpcode();
+		TypeQualifierAnnotation topOfStack = null;
+		
+		if (handle.getInstruction() instanceof InvokeInstruction) {
+			// Model return value
+			XMethod calledMethod = XFactory.createXMethod((InvokeInstruction) handle.getInstruction(), cpg);
+			if (calledMethod.isResolved()) {
+				topOfStack = TypeQualifierApplications.getApplicableApplication(calledMethod, typeQualifierValue);
+			}
+		} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
+			// Model field loads
+			XField loadedField = XFactory.createXField((FieldInstruction) handle.getInstruction(), cpg);
+			if (loadedField.isResolved()) {
+				topOfStack = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
+			}
+		}
+		
+		if (topOfStack != null) {
+			ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
+			if (vnaFrameAfterInstruction.isValid()) {
+				ValueNumber topValue = vnaFrameAfterInstruction.getTopValue();
+				fact.setValue(topValue, topOfStack.when);
+			}
+		}
+		
 	}
 
 	/* (non-Javadoc)
