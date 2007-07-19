@@ -107,7 +107,7 @@ public class TypeQualifierValueSet {
 		}
 	}
 
-	public void onBranch() throws DataflowAnalysisException {
+	public void onBranchDowngradeUncertainValues() throws DataflowAnalysisException {
 		// On a branch we change all uncertain values to UNKNOWN.
 		for (Iterator<Map.Entry<ValueNumber, FlowValue>> i = valueMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry<ValueNumber, FlowValue> entry = i.next();

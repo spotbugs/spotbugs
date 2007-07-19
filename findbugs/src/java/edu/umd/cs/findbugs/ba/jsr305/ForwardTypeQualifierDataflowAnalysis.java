@@ -51,12 +51,14 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	private TypeQualifierValueSet entryFact;
 	
 	/**
-	 * @param dfs
-	 * @param xmethod
-	 * @param cfg
-	 * @param vnaDataflow
-	 * @param cpg
-	 * @param typeQualifierValue
+	 * Constructor.
+	 * 
+	 * @param dfs                DepthFirstSearch on the analyzed method
+	 * @param xmethod            XMethod for the analyzed method
+	 * @param cfg                CFG of the analyzed method
+	 * @param vnaDataflow        ValueNumberDataflow on the analyzed method
+	 * @param cpg                ConstantPoolGen of the analyzed method
+	 * @param typeQualifierValue TypeQualifierValue representing type qualifier the analysis should check
 	 */
 	public ForwardTypeQualifierDataflowAnalysis(
 			DepthFirstSearch dfs,
@@ -113,7 +115,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		}
 		
 		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
-			fact.onBranch();
+			fact.onBranchDowngradeUncertainValues();
 		}
 	}
 
