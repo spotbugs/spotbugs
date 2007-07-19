@@ -130,7 +130,49 @@ public class TypeQualifierApplications {
 	public static Collection<TypeQualifierAnnotation> getApplicableApplications(XMethod o, int parameter) {
 		return getApplicableScopedApplications(o, parameter);
 	}
-		
-		
-		
+	
+	/*
+	 * XXX: is there a more efficient way to do this?
+	 */
+	private static TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
+			Collection<TypeQualifierAnnotation> typeQualifierAnnotations,
+			TypeQualifierValue typeQualifierValue) {
+		for (TypeQualifierAnnotation typeQualifierAnnotation : typeQualifierAnnotations) {
+			if (typeQualifierAnnotation.typeQualifier.equals(typeQualifierValue)) {
+				return typeQualifierAnnotation;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the applicable TypeQualifierAnnotation matching given
+	 * TypeQualifierValue for given AnnotatedObject.
+	 * Returns null if there is no applicable annotation of the
+	 * given TypeQualifierValue for this object.
+	 * 
+	 * @param o                  an AnnotatedObject
+	 * @param typeQualifierValue a TypeQualifierValue 
+	 * @return the TypeQualifierAnnotation matching the AnnotatedObject/TypeQualifierValue,
+	 *         or null if there is no matching TypeQualifierAnnotation
+	 */
+	public static TypeQualifierAnnotation getApplicableApplication(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
+	}
+	
+	/**
+	 * Get the applicable TypeQualifierAnnotation matching given
+	 * TypeQualifierValue for given method parameter.
+	 * Returns null if there is no applicable annotation of the
+	 * given TypeQualifierValue for this parameter.
+	 * 
+	 * @param o                  an XMethod
+	 * @param parameter          parameter number (0 for first declared parameter)
+	 * @param typeQualifierValue a TypeQualifierValue 
+	 * @return the TypeQualifierAnnotation matching the parameter,
+	 *         or null if there is no matching TypeQualifierAnnotation
+	 */
+	public static TypeQualifierAnnotation getApplicableApplication(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
+	}
 }
