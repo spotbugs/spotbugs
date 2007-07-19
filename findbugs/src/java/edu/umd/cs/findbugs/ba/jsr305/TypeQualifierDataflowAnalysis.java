@@ -110,14 +110,15 @@ public class TypeQualifierDataflowAnalysis extends ForwardDataflowAnalysis<TypeQ
 			entryFact = createFact();
 			entryFact.makeValid();
 			
-			// FIXME: right now, we just work with directly-applied annotations
 			ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
 
 			int firstParamSlot = xmethod.isStatic() ? 0 : 1;
 			for (int i = 0; i < xmethod.getNumParams(); i++) {
-				AnnotationValue annotationValue =
-					xmethod.getParameterAnnotation(i, typeQualifierValue.getTypeQualifierClassDescriptor());
-				// XXX: what to do with AnnotationValue?
+				// Get the TypeQualifierAnnotation for this parameter
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, i, typeQualifierValue);
+				if (tqa != null) {
+					entryFact.setValue(vnaFrameAtEntry.getValue(i + firstParamSlot), tqa.when);
+				}
 			}
 		}
 		
