@@ -25,6 +25,20 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
+/**
+ * An XMethod represents symbolic information about a particular method.
+ * 
+ * <p>
+ * If the resolved() method returns true, then any information queried
+ * from this object can be assumed to be accurate.
+ * If the resolved() method returns false, then FindBugs can't
+ * find the method and any information other than name/signature/etc.
+ * cannot be trusted.
+ * </p>
+ * 
+ * @author David Hovemeyer
+ * @author Bill Pugh
+ */
 public interface XMethod extends ClassMember, AnnotatedObject {
 	public boolean isNative();
 	public boolean isSynchronized();

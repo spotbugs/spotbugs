@@ -27,10 +27,18 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
  * Note that this is called "XField" to distinguish it from
  * BCEL's Field class.  Also, you can think of the "X" as expanding
  * to "Instance" or "Static".
- * <p/>
+ * 
  * <p> This interface and its implementations exist because Field
  * objects in BCEL are awkward to deal with.  They are not Comparable,
- * it is difficult to find out what class they belong to, etc.
+ * it is difficult to find out what class they belong to, etc.</p>
+ * 
+ * <p>
+ * If the resolved() method returns true, then any information queried
+ * from this object can be assumed to be accurate.
+ * If the resolved() method returns false, then FindBugs can't
+ * find the field and any information other than name/signature/etc.
+ * cannot be trusted.
+ * </p>
  */
 public interface XField extends ClassMember, AnnotatedObject{
 	/**
