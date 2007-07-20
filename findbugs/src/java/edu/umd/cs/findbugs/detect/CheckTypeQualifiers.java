@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
-import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
@@ -59,11 +58,18 @@ public class CheckTypeQualifiers extends CFGDetector {
 	 */
 	@Override
 	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
+		if (DEBUG) {
+			System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
+		}
+		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		
 		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor);
 		ForwardTypeQualifierDataflowFactory forwardDataflowFactory =
 			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
+		if (DEBUG) {
+			System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
+		}
 		
 		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
 			try {
