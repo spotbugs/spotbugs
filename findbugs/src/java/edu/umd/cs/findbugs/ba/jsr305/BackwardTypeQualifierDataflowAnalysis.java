@@ -131,9 +131,11 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
     private void checkParameterAnnotations(InstructionHandle handle, TypeQualifierValueSet fact, Location location)
             throws DataflowAnalysisException {
 	    InvokeInstruction inv = (InvokeInstruction) handle.getInstruction();
-	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAfterLocation(location);
+	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 	    
 	    XMethod calledMethod = XFactory.createXMethod(inv, cpg);
+	    SignatureParser sigParser = new SignatureParser(calledMethod.getSignature()); 
+	    
 	    for (int i = 0; i < calledMethod.getNumParams(); i++) {
 	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
 	    			calledMethod,
@@ -144,7 +146,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    				inv,
 	    				cpg,
 	    				i,
-	    				new SignatureParser(calledMethod.getSignature()));
+	    				sigParser);
 	    		FlowValue flowValue = flowValueFromWhen(tqa.when); 
 	    		fact.setValue(vn, flowValue);
 	    	}
@@ -196,25 +198,26 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			return fact;
 		}
 
-		// The ValueNumberFrame at the CFG exit block should have
-		// a single value number: the phi-node result
-		// of all return values.
-		ValueNumberFrame vnaFrameAtExit = vnaDataflow.getStartFact(cfg.getExit());
-		if (!vnaFrameAtExit.isValid()) {
-			return fact;
-		}
-		if (vnaFrameAtExit.getStackDepth() != 1) {
-			throw new DataflowAnalysisException("Unexpected stack depth at cfg exit");
-		}
-
 		// Find the annotation on the method, which serves to annotate the return value 
 		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
 		if (tqa == null) {
 			return fact;
 		}
-		
-		ValueNumber returnValue = vnaFrameAtExit.getTopValue();
-		fact.setValue(returnValue, flowValueFromWhen(tqa.when));
+		FlowValue flowValueOfReturnValue = flowValueFromWhen(tqa.when);
+
+		// Apply the annotation to every return value
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+			
+			if (location.getHandle().getInstruction().getOpcode() == Constants.RETURN) {
+				ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
+				if (!vnaFrameAtReturn.isValid()) {
+					continue;
+				}
+				ValueNumber topValue = vnaFrameAtReturn.getTopValue();
+				fact.setValue(topValue, flowValueOfReturnValue);
+			}
+		}
 		
 		return fact;
 	}
