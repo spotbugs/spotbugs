@@ -21,15 +21,17 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
-import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -40,52 +42,34 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * Analyze what type qualifiers need to be checked for particular methods.
- * 
- * @author Bill Pugh
+ * @author pugh
  */
 public class Analysis {
 	
-	/**
-	 * Get Collection of TypeQualifierValues that should be checked
-	 * in given method.
-	 * 
-	 * @param methodDescriptor MethodDescriptor identifying a method
-	 * @return Collection of TypeQualifierValues that should be checked for the method
-	 * @throws CheckedAnalysisException
-	 */
 	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(
 			/*ClassContext context, Method method*/MethodDescriptor methodDescriptor)
 			throws CheckedAnalysisException {
 		
-		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
-		
-		//XMethod xMethod = XFactory.createXMethod(context.getJavaClass(), method);
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		XMethod xMethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
-		MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
-		ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
+		ClassContext context = analysisCache.getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+		Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
 		
+		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
+		XMethod xMethod = XFactory.createXMethod(context.getJavaClass(), method);
 		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xMethod);
-		
 		addKnownTypeQualifiers(result, applicableApplicationsForMethod);
 		addKnownTypeQualifiersForParameters(result, xMethod);
-		
-		//CFG cfg = context.getCFG(method);
-		
-//		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-//			Location location = i.next();
-//			Instruction ins = location.getHandle().getInstruction();
-		InstructionList il = methodGen.getInstructionList();
-		for (InstructionHandle handle : il.getInstructionHandles()) {
-			Instruction ins = handle.getInstruction();
+		CFG cfg = context.getCFG(method);
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			Instruction ins = location.getHandle().getInstruction();
 			if (ins instanceof FieldInstruction) {
-				XField f = XFactory.createXField((FieldInstruction)ins, /*context.getConstantPoolGen()*/cpg);
+				XField f = XFactory.createXField((FieldInstruction)ins, context.getConstantPoolGen());
 				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(f);
 				addKnownTypeQualifiers(result, applicableApplications);
 			}
 			else if (ins instanceof InvokeInstruction) {
-				XMethod m = XFactory.createXMethod((InvokeInstruction)ins, /*context.getConstantPoolGen()*/cpg);
+				XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
 				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
 				addKnownTypeQualifiers(result, applicableApplications);
 				addKnownTypeQualifiersForParameters(result, m);
