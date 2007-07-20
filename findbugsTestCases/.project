@@ -3,6 +3,7 @@
 	<name>findbugsTestCases</name>
 	<comment></comment>
 	<projects>
+		<project>JSR305-ri</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
