@@ -35,12 +35,16 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  */
 public class TypeQualifierValueSet {
 	// States
-	private static final int VALID = 0;
-	private static final int TOP = 1;
-	private static final int BOTTOM = 2;
+	enum State { VALID, TOP, BOTTOM };
+
 
 	private Map<ValueNumber, FlowValue> valueMap;
-	private int state;
+	private State state = State.VALID;
+	
+	public String toString() {
+		if (state == State.VALID)  return valueMap.toString();
+		return state.toString();
+	}
 
 	public TypeQualifierValueSet() {
 		this.valueMap = new HashMap<ValueNumber, FlowValue>();
@@ -61,11 +65,11 @@ public class TypeQualifierValueSet {
 	}
 
 	public boolean isValid() {
-		return state == VALID;
+		return state == State.VALID;
 	}
 
 	public void makeValid() {
-		this.state = VALID;
+		this.state = State.VALID;
 		this.valueMap.clear();
 	}
 
@@ -76,21 +80,21 @@ public class TypeQualifierValueSet {
 	}
 
 	public boolean isTop() {
-		return state == TOP;
+		return state == State.TOP;
 	}
 
 	public void setTop() {
 		this.valueMap.clear();
-		this.state = TOP;
+		this.state = State.TOP;
 	}
 
 	public boolean isBottom() {
-		return state == BOTTOM;
+		return state == State.BOTTOM;
 	}
 
 	public void setBottom() {
 		this.valueMap.clear();
-		this.state = BOTTOM;
+		this.state = State.BOTTOM;
 	}
 
 	public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {
