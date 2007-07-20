@@ -64,5 +64,19 @@ public class TypeQualifierValue {
 		TypeQualifierValue other = (TypeQualifierValue) o;
 		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(typeQualifier.toString());
+		if (value != null) {
+			buf.append(':');
+			buf.append(value.toString());
+		}
+		return buf.toString();
+	}
 
 }

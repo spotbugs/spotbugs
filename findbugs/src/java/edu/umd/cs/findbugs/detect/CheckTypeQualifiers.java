@@ -97,7 +97,9 @@ public class CheckTypeQualifiers extends CFGDetector {
     		ForwardTypeQualifierDataflowFactory forwardDataflowFactory) throws CheckedAnalysisException {
     	
     	if (DEBUG) {
+    		System.out.println("----------------------------------------------------------------------");
     		System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
+    		System.out.println("----------------------------------------------------------------------");
     	}
 
     	ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
