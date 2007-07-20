@@ -48,10 +48,11 @@ public class TypeQualifierValueSet {
 
 	public TypeQualifierValueSet() {
 		this.valueMap = new HashMap<ValueNumber, FlowValue>();
+		this.state = State.TOP;
 	}
 
 	public void setValue(ValueNumber vn, FlowValue when) {
-		if (when != FlowValue.TOP) {
+		if (when == FlowValue.TOP) {
 			// TOP is the default, so it's not stored explicitly
 			valueMap.remove(vn);
 			return;

@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
 
+	private static final boolean DEBUG_VERBOSE = true;
 	private final DepthFirstSearch dfs;
 	private TypeQualifierValueSet entryFact;
 	
@@ -126,6 +127,10 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
 			throws DataflowAnalysisException {
 		
+		if (!fact.isValid()) {
+			return;
+		}
+		
 		short opcode = handle.getInstruction().getOpcode();
 		TypeQualifierAnnotation topOfStack = null;
 		
@@ -133,7 +138,13 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			// Model return value
 			XMethod calledMethod = XFactory.createXMethod((InvokeInstruction) handle.getInstruction(), cpg);
 			if (calledMethod.isResolved()) {
+				if (DEBUG_VERBOSE) {
+					System.out.print("  checking annotation on " + calledMethod.toString() + " ==> ");
+				}
 				topOfStack = TypeQualifierApplications.getApplicableApplication(calledMethod, typeQualifierValue);
+				if (DEBUG_VERBOSE) {
+					System.out.println(topOfStack != null ? topOfStack.toString() : "<none>");
+				}
 			}
 		} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
 			// Model field loads
@@ -147,7 +158,14 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
 			if (vnaFrameAfterInstruction.isValid()) {
 				ValueNumber topValue = vnaFrameAfterInstruction.getTopValue();
-				fact.setValue(topValue, flowValueFromWhen(topOfStack.when));
+				FlowValue flowValue = flowValueFromWhen(topOfStack.when);
+				if (DEBUG_VERBOSE) {
+					System.out.println("  Setting value " + topValue + " ==> " + flowValue);
+				}
+				fact.setValue(topValue, flowValue);
+				if (DEBUG_VERBOSE) {
+					System.out.println("  fact = " + factToString(fact));
+				}
 			}
 		}
 		
