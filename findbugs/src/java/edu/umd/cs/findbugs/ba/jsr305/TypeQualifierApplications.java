@@ -98,8 +98,8 @@ public class TypeQualifierApplications {
     	assert map != null;
     	assert v != null;
 	    EnumValue value = (EnumValue) v.getValue("when");
-	    assert value != null;
-	    map.put(TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value")), When.valueOf(value.value));
+	    When when = value == null ? When.ALWAYS : When.valueOf(value.value);
+	    map.put(TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value")), when);
     }
 
 	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
