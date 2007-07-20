@@ -26,12 +26,10 @@ package edu.umd.cs.findbugs.ba.jsr305;
  */
 public enum FlowValue {
 
+	TOP(0),
 	ALWAYS(Bits.YES),
-	UNKNOWN(Bits.UNCERTAIN),
 	NEVER(Bits.NO),
-	YES_FEASIBLE(Bits.YES|Bits.UNCERTAIN),
-	NO_FEASIBLE(Bits.NO|Bits.UNCERTAIN),
-	BOTH_FEASIBLE(Bits.YES|Bits.NO|Bits.UNCERTAIN);
+	MAYBE(Bits.YES|Bits.NO|Bits.UNCERTAIN);
 
 	private interface Bits {
 		public static final int YES = 1;
@@ -59,23 +57,18 @@ public enum FlowValue {
 
 	// Dataflow lattice:
 	//
-	//   Always  Unknown  Never
-	//       \    /   \    /
-	//        Yes       No
-	//      Feasible  Feasible
-	//           \     /
-	//            Both
-	//          Feasible
+	//       Top
+	//      /    \
+	//  Always  Never
+	//      \    /
+	//       Maybe
 	//
 	private static final FlowValue[][] mergeMatrix = {
-		//                                                                 YES_            NO_            BOTH_
-		//                     ALWAYS         UNKNOWN       NEVER          FEASIBLE        FEASIBLE       FEASIBLE
-		/* ALWAYS */         { ALWAYS },
-		/* UNKNOWN */        { YES_FEASIBLE,  UNKNOWN, },
-		/* NEVER */          { BOTH_FEASIBLE, NO_FEASIBLE,  NEVER, },
-		/* YES_FESIBLE */    { YES_FEASIBLE,  YES_FEASIBLE, BOTH_FEASIBLE, },
-		/* NO_FEASIBLE */    { BOTH_FEASIBLE, NO_FEASIBLE,  NO_FEASIBLE,   BOTH_FEASIBLE, },
-		/* BOTH_FEASIBLE */  { BOTH_FEASIBLE, BOTH_FEASIBLE, BOTH_FEASIBLE, BOTH_FEASIBLE, BOTH_FEASIBLE, BOTH_FEASIBLE, },
+		//              TOP     ALWAYS  NEVER    MAYBE
+		/* TOP */     { TOP,  },
+		/* ALWAYS */  { ALWAYS, ALWAYS, },
+		/* NEVER */   { NEVER,  MAYBE,  NEVER, },
+		/* MAYBE */   { MAYBE,  MAYBE,  MAYBE,   MAYBE },
 	};
 	
 	public static final FlowValue meet(FlowValue a, FlowValue b) {

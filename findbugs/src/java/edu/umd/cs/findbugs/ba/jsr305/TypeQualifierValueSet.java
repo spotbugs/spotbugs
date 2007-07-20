@@ -47,8 +47,8 @@ public class TypeQualifierValueSet {
 	}
 
 	public void setValue(ValueNumber vn, FlowValue when) {
-		if (when != FlowValue.UNKNOWN) {
-			// Unknown is the default, so it's not stored explicitly
+		if (when != FlowValue.TOP) {
+			// TOP is the default, so it's not stored explicitly
 			valueMap.remove(vn);
 			return;
 		}
@@ -57,7 +57,7 @@ public class TypeQualifierValueSet {
 
 	public FlowValue getValue(ValueNumber vn) {
 		FlowValue result = valueMap.get(vn);
-		return result != null ? result : FlowValue.UNKNOWN;
+		return result != null ? result : FlowValue.TOP;
 	}
 
 	public boolean isValid() {

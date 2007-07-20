@@ -95,7 +95,10 @@ public class TypeQualifierApplications {
      * @return
      */
     private static void constructTypeQualifierAnnotation( Map<TypeQualifierValue, When> map, AnnotationValue v) {
+    	assert map != null;
+    	assert v != null;
 	    EnumValue value = (EnumValue) v.getValue("when");
+	    assert value != null;
 	    map.put(TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value")), When.valueOf(value.value));
     }
 
