@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
@@ -63,6 +64,9 @@ public class TypeQualifierResolver {
 			XClass c;
 			try {
 				c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+			} catch (MissingClassException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
+				return;
 			} catch (CheckedAnalysisException e) {
 				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
 				return;

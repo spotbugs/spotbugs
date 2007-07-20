@@ -1370,6 +1370,15 @@ It is a fast detector.</p>
       ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers">
+    <Details>
+      <![CDATA[
+        <p>Check for violations of properties specified by JSR-305
+        type qualifier annotations.</p>
+      ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************

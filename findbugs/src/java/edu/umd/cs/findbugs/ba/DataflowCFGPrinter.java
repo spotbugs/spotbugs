@@ -30,6 +30,11 @@ import org.apache.bcel.generic.InstructionHandle;
 public class DataflowCFGPrinter <Fact, AnalysisType extends DataflowAnalysis<Fact>> extends CFGPrinter {
 	private Dataflow<Fact, AnalysisType> dataflow;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param dataflow the Dataflow object whose values should be used to annotate the printed CFG
+	 */
 	public DataflowCFGPrinter(Dataflow<Fact, AnalysisType> dataflow) {
 		super(dataflow.getCFG());
 		this.dataflow = dataflow;

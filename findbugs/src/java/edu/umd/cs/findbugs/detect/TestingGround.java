@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
+import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -77,7 +78,8 @@ public class TestingGround  implements Detector  {
 	        }
 	        JavaClass jClass = classContext.getJavaClass();
 	        for(Method m : jClass.getMethods()) {
-	        	Collection<TypeQualifierValue> result = Analysis.getRelevantTypeQualifiers(classContext, m);
+	        	Collection<TypeQualifierValue> result = Analysis.getRelevantTypeQualifiers(
+	        			/*classContext, m*/BCELUtil.getMethodDescriptor(classContext.getJavaClass(), m));
 	        	if (!result.isEmpty())
 	        		System.out.println(m.getName() + " " + m.getSignature() + " : " + result);
 	        }

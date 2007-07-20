@@ -184,6 +184,16 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		}
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XClass#findMethod(edu.umd.cs.findbugs.classfile.MethodDescriptor)
+	 */
+	public XMethod findMethod(MethodDescriptor descriptor) {
+		if (!descriptor.getClassDescriptor().equals(this)) {
+			throw new IllegalArgumentException();
+		}
+		return findMethod(descriptor.getName(), descriptor.getSignature(), descriptor.isStatic());
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String, java.lang.String, boolean)

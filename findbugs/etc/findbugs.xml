@@ -666,6 +666,9 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis"
 	speed="slow" reports="" disabled="true" hidden="true"/>
+	
+  <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"
+    speed="slow" reports="" disabled="true" hidden="true" />
 
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
