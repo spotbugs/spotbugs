@@ -25,6 +25,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -47,7 +48,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
 
-	private static final boolean DEBUG_VERBOSE = true;
+	private static final boolean DEBUG_VERBOSE = SystemProperties.getBoolean("ctq.dataflow.debug.verbose");
 	private final DepthFirstSearch dfs;
 	private TypeQualifierValueSet entryFact;
 	
