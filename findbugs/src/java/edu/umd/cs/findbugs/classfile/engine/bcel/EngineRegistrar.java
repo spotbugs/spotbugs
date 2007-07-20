@@ -117,6 +117,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ReturnPathTypeDataflowFactory(),
 		new ForwardTypeQualifierDataflowFactoryFactory(),
 		new XMethodFactory(),
+		new BackwardTypeQualifierDataflowFactoryFactory(),
 	};
 	
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {

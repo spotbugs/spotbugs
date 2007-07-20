@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -52,29 +53,18 @@ public class ForwardTypeQualifierDataflowFactory
 	    super(methodDescriptor);
     }
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue, edu.umd.cs.findbugs.classfile.MethodDescriptor)
-	 */
-	@Override
-	protected ForwardTypeQualifierDataflow getDataflow(TypeQualifierValue typeQualifierValue, MethodDescriptor methodDescriptor)
-			throws CheckedAnalysisException {
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
-
-		DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-		XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
-		CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
-		ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
-		ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
-
-		ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(
-				dfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue
-		);
-		ForwardTypeQualifierDataflow dataflow = new ForwardTypeQualifierDataflow(cfg, analysis);
-
-		dataflow.execute();
-		
-		return dataflow;
-	}
-
-
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowFactory#getDataflow(edu.umd.cs.findbugs.ba.DepthFirstSearch, edu.umd.cs.findbugs.ba.XMethod, edu.umd.cs.findbugs.ba.CFG, edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow, org.apache.bcel.generic.ConstantPoolGen, edu.umd.cs.findbugs.classfile.IAnalysisCache, edu.umd.cs.findbugs.classfile.MethodDescriptor)
+     */
+    @Override
+    protected ForwardTypeQualifierDataflow getDataflow(DepthFirstSearch dfs, XMethod xmethod, CFG cfg,
+    		ValueNumberDataflow vnaDataflow, ConstantPoolGen cpg, IAnalysisCache analysisCache, MethodDescriptor methodDescriptor,
+    		TypeQualifierValue typeQualifierValue) throws DataflowAnalysisException {
+    	ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(
+    			dfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue
+    	);
+    	ForwardTypeQualifierDataflow dataflow = new ForwardTypeQualifierDataflow(cfg, analysis);
+    	dataflow.execute();
+    	return dataflow;
+    }
 }

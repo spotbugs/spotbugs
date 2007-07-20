@@ -51,13 +51,13 @@ public class TypeQualifierValueSet {
 		this.state = State.TOP;
 	}
 
-	public void setValue(ValueNumber vn, FlowValue when) {
-		if (when == FlowValue.TOP) {
+	public void setValue(ValueNumber vn, FlowValue flowValue) {
+		if (flowValue == FlowValue.TOP) {
 			// TOP is the default, so it's not stored explicitly
 			valueMap.remove(vn);
 			return;
 		}
-		valueMap.put(vn, when);
+		valueMap.put(vn, flowValue);
 	}
 
 	public FlowValue getValue(ValueNumber vn) {
@@ -96,6 +96,15 @@ public class TypeQualifierValueSet {
 	public void setBottom() {
 		this.valueMap.clear();
 		this.state = State.BOTTOM;
+	}
+
+	public void propagateAcrossPhiNode(ValueNumber targetVN, ValueNumber sourceVN) {
+		assert targetVN.hasFlag(ValueNumber.PHI_NODE);
+
+		setValue(sourceVN, getValue(targetVN));
+		setValue(targetVN, FlowValue.TOP);
+		
+		// TODO: propagate sink location information
 	}
 
 	public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {

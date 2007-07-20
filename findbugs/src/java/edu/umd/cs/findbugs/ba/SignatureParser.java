@@ -175,6 +175,18 @@ public class SignatureParser {
 		}
 		throw new IndexOutOfBoundsException("Asked for parameter " + pos + " of " + signature);
 	}
+
+
+	/**
+	 * Determine whether or not given signature denotes a reference type.
+	 * 
+	 * @param signature a signature
+	 * @return true if signature denotes a reference type, false otherwise
+	 */
+	public static boolean isReferenceType(String signature) {
+		return signature.startsWith("L") || signature.startsWith("[");
+	}
+	
 	/**
 	 * Get the number of parameters passed to method invocation.
 	 * 

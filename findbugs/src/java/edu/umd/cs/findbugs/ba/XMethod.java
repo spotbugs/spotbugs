@@ -48,6 +48,11 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      * @return the MethodDescriptor identifying this object
      */
     public MethodDescriptor getMethodDescriptor();
+    
+	/**
+     * @return true if method's return type is a reference type, false otherwise
+     */
+    public boolean isReturnTypeReferenceType();
 
 	/**
 	 * Get ClassDescriptors (annotation classes) of annotations applied

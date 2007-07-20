@@ -127,6 +127,15 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	public boolean isSynchronized() {
 		return checkFlag(Constants.ACC_SYNCHRONIZED);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
+	 */
+	public boolean isReturnTypeReferenceType() {
+		SignatureParser parser = new SignatureParser(getSignature());
+		String returnTypeSig = parser.getReturnTypeSignature();
+		return SignatureParser.isReferenceType(returnTypeSig);
+	}
 
 	public @DottedClassName
 	String getClassName() {

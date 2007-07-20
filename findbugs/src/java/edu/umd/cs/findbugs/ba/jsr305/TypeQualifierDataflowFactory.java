@@ -25,6 +25,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -83,7 +84,15 @@ public abstract class TypeQualifierDataflowFactory
 		DataflowResult<DataflowType> result = new DataflowResult<DataflowType>();
 		
 		try {
-			DataflowType dataflow = getDataflow(typeQualifierValue, methodDescriptor);
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			
+			DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
+			XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
+			CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
+			ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
+			ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
+
+			DataflowType dataflow = getDataflow(dfs, xmethod, cfg, vnaDataflow, cpg, analysisCache, methodDescriptor, typeQualifierValue);
 			
 			result.dataflow = dataflow;
 		} catch (CheckedAnalysisException e) {
@@ -94,7 +103,15 @@ public abstract class TypeQualifierDataflowFactory
 		
 		return result;
 	}
+
+    protected abstract DataflowType getDataflow(
+    		DepthFirstSearch dfs,
+    		XMethod xmethod,
+    		CFG cfg,
+    		ValueNumberDataflow vnaDataflow,
+            ConstantPoolGen cpg,
+            IAnalysisCache analysisCache,
+            MethodDescriptor methodDescriptor,
+            TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException;
 	
-	protected abstract DataflowType getDataflow(
-			TypeQualifierValue typeQualifierValue, MethodDescriptor methodDescriptor) throws CheckedAnalysisException;
 }

@@ -124,4 +124,27 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		return fact1.equals(fact2);
 	}
 
+	/**
+	 * Convert a When value to a FlowValue value.
+	 * 
+	 * @param when a When value
+	 * @return the corresponding FlowValue
+	 */
+	protected FlowValue flowValueFromWhen(When when) {
+    	switch (when) {
+    	case ALWAYS:
+    		return FlowValue.ALWAYS;
+    	case ASSUME_ALWAYS:
+    		return FlowValue.ALWAYS;
+    	case MAYBE_NOT:
+    		return FlowValue.MAYBE;
+    	case NEVER:
+    		return FlowValue.NEVER;
+    	case UNKNOWN:
+    		return FlowValue.MAYBE;
+    	default:
+    		throw new IllegalStateException();
+    	}
+    }
+
 }

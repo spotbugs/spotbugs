@@ -171,22 +171,5 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		}
 		
 	}
-	
-	protected FlowValue flowValueFromWhen(When when) {
-		switch (when) {
-		case ALWAYS:
-			return FlowValue.ALWAYS;
-		case ASSUME_ALWAYS:
-			return FlowValue.ALWAYS;
-		case MAYBE_NOT:
-			return FlowValue.MAYBE;
-		case NEVER:
-			return FlowValue.NEVER;
-		case UNKNOWN:
-			return FlowValue.MAYBE;
-		default:
-			throw new IllegalStateException();
-		}
-	}
 
 }

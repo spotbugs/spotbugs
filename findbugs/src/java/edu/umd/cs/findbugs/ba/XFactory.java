@@ -81,6 +81,15 @@ public  class XFactory {
 				System.out.println("Unresolved xmethod: " + this);
 			}
 		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.XMethod#isReturnTypeReferenceType()
+		 */
+		public boolean isReturnTypeReferenceType() {
+			SignatureParser parser = new SignatureParser(getSignature());
+			String returnTypeSig = parser.getReturnTypeSignature();
+			return SignatureParser.isReferenceType(returnTypeSig);
+		}
 
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(java.lang.Object)

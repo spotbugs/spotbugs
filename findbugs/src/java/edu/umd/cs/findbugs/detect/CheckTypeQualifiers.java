@@ -26,6 +26,9 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
+import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflow;
+import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowFactory;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
@@ -46,6 +49,7 @@ import edu.umd.cs.findbugs.classfile.MissingClassException;
 public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
+	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
 	
 	private BugReporter bugReporter;
 	
@@ -63,17 +67,19 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		
-		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor);
 		ForwardTypeQualifierDataflowFactory forwardDataflowFactory =
 			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
+		BackwardTypeQualifierDataflowFactory backwardDataflowFactory =
+			analysisCache.getMethodAnalysis(BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
+		
+		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor);
 		if (DEBUG) {
 			System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
 		}
 		
 		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
 			try {
-				checkQualifier(methodDescriptor, cfg, typeQualifierValue, forwardDataflowFactory);
+				checkQualifier(methodDescriptor, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory);
 			} catch (MissingClassException e) {
 				bugReporter.reportMissingClass(e.getClassDescriptor());
 			} catch (CheckedAnalysisException e) {
@@ -94,7 +100,8 @@ public class CheckTypeQualifiers extends CFGDetector {
     		MethodDescriptor methodDescriptor,
     		CFG cfg,
     		TypeQualifierValue typeQualifierValue,
-    		ForwardTypeQualifierDataflowFactory forwardDataflowFactory) throws CheckedAnalysisException {
+    		ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
+    		BackwardTypeQualifierDataflowFactory backwardDataflowFactory) throws CheckedAnalysisException {
     	
     	if (DEBUG) {
     		System.out.println("----------------------------------------------------------------------");
@@ -103,13 +110,22 @@ public class CheckTypeQualifiers extends CFGDetector {
     	}
 
     	ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
-    	
-		if (DEBUG_DATAFLOW) {
+
+		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+			System.out.println("********* Forwards analysis *********");
 			DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p =
 				new DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis>(forwardDataflow);
 			p.print(System.out);
 		}
+		
+		BackwardTypeQualifierDataflow backwardDataflow = backwardDataflowFactory.getDataflow(typeQualifierValue);
 
+		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
+			System.out.println("********* Backwards analysis *********");
+			DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p =
+				new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(backwardDataflow);
+			p.print(System.out);
+		}
     }
 
 }
