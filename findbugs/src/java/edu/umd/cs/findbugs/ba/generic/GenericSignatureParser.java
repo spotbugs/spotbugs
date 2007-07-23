@@ -56,7 +56,7 @@ public class GenericSignatureParser {
 			boolean done;
 			do {
 				done = true;
-				int ch = signature.charAt(index);
+				char ch = signature.charAt(index);
 				switch (ch) {
 				case 'B':
 				case 'C':
@@ -80,8 +80,10 @@ public class GenericSignatureParser {
 					// contains the same number of '<' and '>' braces
 					do {
 						semi = signature.indexOf(';', startsemi + 1);
-						if (semi < 0)
-							throw new IllegalArgumentException("Invalid method signature: " + signature);
+						if (semi < 0) {
+							String remainder = signature.substring(startsemi+1);
+							throw new IllegalArgumentException("Invalid method signature: " + signature + " : " +remainder);
+						}
 						tmp = signature.substring(index, semi + 1);
 						startsemi = semi;
 					} while(tmp.split("<").length != tmp.split(">").length);
