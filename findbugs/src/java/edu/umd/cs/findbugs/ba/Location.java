@@ -68,7 +68,7 @@ public class Location implements Comparable<Location> {
 			lastInstruction = basicBlock.getExceptionThrower();
 		if (lastInstruction == null)
 			lastInstruction = basicBlock.getFirstInstruction();
-		*/
+		 */
 		if (lastInstruction == null)
 			return null;
 		return new Location(lastInstruction, basicBlock);
@@ -114,12 +114,12 @@ public class Location implements Comparable<Location> {
 	}
 
 	@Override
-		 public int hashCode() {
+	public int hashCode() {
 		return System.identityHashCode(basicBlock) + handle.getPosition();
 	}
 
 	@Override
-		 public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (!(o instanceof Location))
 			return false;
 		Location other = (Location) o;
@@ -127,9 +127,17 @@ public class Location implements Comparable<Location> {
 	}
 
 	@Override
-		 public String toString() {
+	public String toString() {
 		return handle.toString() + " in basic block " + basicBlock.getLabel();
+	}
+	
+	/**
+	 * @return a compact string of the form "bb:xx", where "bb" is the
+	 *         basic block number and "xx" is the bytecode offset
+	 */
+	public String toCompactString() {
+		return basicBlock.getLabel() + ":" + handle.getPosition();
 	}
 }
 
-// vim:ts=4
+//vim:ts=4

@@ -99,26 +99,15 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 				// Get the TypeQualifierAnnotation for this parameter
 				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, i, typeQualifierValue);
 				if (tqa != null) {
-					entryFact.setValue(vnaFrameAtEntry.getValue(i + firstParamSlot), flowValueFromWhen(tqa.when));
+					entryFact.setValue(
+							vnaFrameAtEntry.getValue(i + firstParamSlot),
+							flowValueFromWhen(tqa.when),
+							cfg.getLocationAtEntry());
 				}
 			}
 		}
 		
 		result.makeSameAs(entryFact);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
-	 */
-	@Override
-	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
-		if (!fact.isValid()) {
-			return;
-		}
-		
-		if (cfg.getNumNonExceptionSucessors(edge.getSource()) > 1) {
-			fact.onBranchDowngradeUncertainValues();
-		}
 	}
 
 	/* (non-Javadoc)
@@ -132,8 +121,10 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			return;
 		}
 		
+		Location location = new Location(handle, basicBlock);
 		short opcode = handle.getInstruction().getOpcode();
 		TypeQualifierAnnotation topOfStack = null;
+		Location sourceLoc = null;
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
 			// Model return value
@@ -146,16 +137,20 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 				if (DEBUG_VERBOSE) {
 					System.out.println(topOfStack != null ? topOfStack.toString() : "<none>");
 				}
+				sourceLoc = location;
 			}
 		} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
 			// Model field loads
 			XField loadedField = XFactory.createXField((FieldInstruction) handle.getInstruction(), cpg);
 			if (loadedField.isResolved()) {
 				topOfStack = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
+				sourceLoc = location;
 			}
 		}
 		
 		if (topOfStack != null) {
+			assert sourceLoc != null;
+			
 			ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
 			if (vnaFrameAfterInstruction.isValid()) {
 				ValueNumber topValue = vnaFrameAfterInstruction.getTopValue();
@@ -163,7 +158,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 				if (DEBUG_VERBOSE) {
 					System.out.println("  Setting value " + topValue + " ==> " + flowValue);
 				}
-				fact.setValue(topValue, flowValue);
+				fact.setValue(topValue, flowValue, sourceLoc);
 				if (DEBUG_VERBOSE) {
 					System.out.println("  fact = " + factToString(fact));
 				}

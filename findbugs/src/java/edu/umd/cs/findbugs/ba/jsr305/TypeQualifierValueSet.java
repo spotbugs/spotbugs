@@ -24,8 +24,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
@@ -40,25 +43,58 @@ public class TypeQualifierValueSet {
 	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.MAYBE;
 
 	private Map<ValueNumber, FlowValue> valueMap;
+	private Map<ValueNumber, Set<Location>> whereAlways;
+	private Map<ValueNumber, Set<Location>> whereNever;
 	private State state = State.VALID;
-	
-	public String toString() {
-		if (state == State.VALID)  return valueMap.toString();
-		return state.toString();
-	}
 
 	public TypeQualifierValueSet() {
 		this.valueMap = new HashMap<ValueNumber, FlowValue>();
+		this.whereAlways = new HashMap<ValueNumber, Set<Location>>();
+		this.whereNever = new HashMap<ValueNumber, Set<Location>>();
 		this.state = State.TOP;
 	}
 
-	public void setValue(ValueNumber vn, FlowValue flowValue) {
+	public void setValue(ValueNumber vn, FlowValue flowValue, Location location) {
+		setValue(vn, flowValue);
+		
+		if (flowValue == FlowValue.ALWAYS) {
+			addLocation(whereAlways, vn, location);
+		}
+		
+		if (flowValue == FlowValue.NEVER) {
+			addLocation(whereNever, vn, location);
+		}
+	}
+
+	private void setValue(ValueNumber vn, FlowValue flowValue) {
 		if (flowValue == DEFAULT_FLOW_VALUE) {
 			// Default flow value is not stored explicitly
 			valueMap.remove(vn);
-			return;
+		} else {
+			valueMap.put(vn, flowValue);
 		}
-		valueMap.put(vn, flowValue);
+	}
+
+	private static void addLocation(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn, Location location) {
+		Set<Location> locationSet = getOrCreateLocationSet(locationSetMap, vn);
+		locationSet.add(location);
+	}
+	
+	public Set<Location> getWhereAlways(ValueNumber vn) {
+		return getOrCreateLocationSet(whereAlways, vn);
+	}
+	
+	public Set<Location> getWhereNever(ValueNumber vn) {
+		return getOrCreateLocationSet(whereNever, vn);
+	}
+
+	private static Set<Location> getOrCreateLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn) {
+		Set<Location> locationSet = locationSetMap.get(vn);
+		if (locationSet == null) {
+			locationSet = new HashSet<Location>();
+			locationSetMap.put(vn, locationSet);
+		}
+		return locationSet;
 	}
 
 	public FlowValue getValue(ValueNumber vn) {
@@ -100,38 +136,56 @@ public class TypeQualifierValueSet {
 	}
 
 	public void propagateAcrossPhiNode(ValueNumber targetVN, ValueNumber sourceVN) {
+		assert isValid();
 		assert targetVN.hasFlag(ValueNumber.PHI_NODE);
 
 		setValue(sourceVN, getValue(targetVN));
-		setValue(targetVN, FlowValue.TOP); // ???
 		
-		// TODO: propagate sink location information
+		// XXX: should put some kind of bottom value here? Probably doesn't matter - targetVN will not be used
+		setValue(targetVN, FlowValue.MAYBE);
+		
+		// Propagate sink location information
+		transferLocationSet(whereAlways, sourceVN, targetVN);
+		transferLocationSet(whereNever, sourceVN, targetVN);
+	}
+
+    private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber sourceVN, ValueNumber targetVN) {
+		Set<Location> sinkLocSet = getOrCreateLocationSet(locationSetMap, targetVN);
+		for (Location sinkLoc : sinkLocSet) {
+			addLocation(locationSetMap, sourceVN, sinkLoc);
+		}
+		clearLocationSet(locationSetMap, targetVN);
+    }
+
+	private static void clearLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn) {
+		locationSetMap.remove(vn);
 	}
 
 	public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {
 		if (!isValid() || !fact.isValid()) {
 			throw new DataflowAnalysisException("merging an invalid TypeQualifierValueSet");
 		}
-
-		Set<ValueNumber> allValueNumbers = new HashSet<ValueNumber>();
-		allValueNumbers.addAll(this.valueMap.keySet());
-		allValueNumbers.addAll(fact.valueMap.keySet());
-
-		for (ValueNumber vn : allValueNumbers) {
+		
+		Set<ValueNumber> interesting = new HashSet<ValueNumber>();
+		this.getInterestingValueNumbers(interesting);
+		fact.getInterestingValueNumbers(interesting);
+		
+		for (ValueNumber vn : interesting) {
 			setValue(vn, FlowValue.meet(this.getValue(vn), fact.getValue(vn)));
+			mergeLocationSets(this.whereAlways, fact.whereAlways, vn);
+			mergeLocationSets(this.whereNever, fact.whereNever, vn);
 		}
 	}
 
-	public void onBranchDowngradeUncertainValues() throws DataflowAnalysisException {
-		// On a branch we change all uncertain values to UNKNOWN.
-		for (Iterator<Map.Entry<ValueNumber, FlowValue>> i = valueMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry<ValueNumber, FlowValue> entry = i.next();
-
-			if (entry.getValue().isUncertain()) {
-				// Unknown is the default, so it's not stored explicitly
-				i.remove();
-			}
+	private void mergeLocationSets(
+			Map<ValueNumber, Set<Location>> locationSetMapToUpdate,
+			Map<ValueNumber, Set<Location>> otherLocationSetMap,
+			ValueNumber vn) {
+		if (!otherLocationSetMap.containsKey(vn)) {
+			return;
 		}
+		Set<Location> locationSetToUpdate = getOrCreateLocationSet(whereAlways, vn);
+		locationSetToUpdate.addAll(getOrCreateLocationSet(otherLocationSetMap, vn));
 	}
 
 	/* (non-Javadoc)
@@ -156,5 +210,56 @@ public class TypeQualifierValueSet {
 	@Override
 	public int hashCode() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String toString() {
+		if (state != State.VALID) {
+			return state.toString();
+		}
+		
+		TreeSet<ValueNumber> interesting = new TreeSet<ValueNumber>(); 
+		getInterestingValueNumbers(interesting);
+		
+		StringBuffer buf = new StringBuffer();
+		
+		for (ValueNumber vn : interesting) {
+			if (buf.length() > 0) {
+				buf.append(", ");
+			}
+			buf.append(vn.getNumber());
+			buf.append("->");
+			buf.append("{");
+			buf.append(getValue(vn).toString());
+			buf.append("[");
+			appendLocations(buf, "YES=", getOrCreateLocationSet(whereAlways, vn));
+			buf.append(",");
+			appendLocations(buf, "NO=", getOrCreateLocationSet(whereNever, vn));
+			buf.append("]}");
+		}
+		
+		return buf.toString();
+	}
+
+	private void getInterestingValueNumbers(Set<ValueNumber> interesting) {
+		interesting.addAll(valueMap.keySet());
+		interesting.addAll(whereAlways.keySet());
+		interesting.addAll(whereNever.keySet());
+	}
+
+	private static void appendLocations(StringBuffer buf, String key, Set<Location> locationSet) {
+		TreeSet<Location> sortedLocSet = new TreeSet<Location>();
+		boolean first = true;
+		buf.append(key);
+		buf.append("(");
+		for (Location loc : sortedLocSet) {
+			if (!first) {
+				first = true;
+			} else {
+				buf.append(",");
+			}
+			buf.append(loc.toCompactString());
+		}
+		buf.append(")");
 	}
 }

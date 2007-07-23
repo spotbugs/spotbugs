@@ -126,6 +126,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 				new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(backwardDataflow);
 			p.print(System.out);
 		}
+		
+		
     }
 
 }

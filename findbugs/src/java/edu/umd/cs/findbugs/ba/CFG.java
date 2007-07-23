@@ -487,6 +487,19 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 		return numNonExceptionSuccessors;
 	}
+
+	/**
+	 * Get the Location representing the entry to the CFG.
+	 * Note that this is a "fake" Location, and shouldn't
+	 * be relied on to yield source line information.
+	 * 
+	 * @return Location at entry to CFG
+	 */
+	public Location getLocationAtEntry() {
+		InstructionHandle handle = getEntry().getFirstInstruction();
+		assert handle != null;
+		return new Location(handle, getEntry());
+	}
 }
 
 // vim:ts=4

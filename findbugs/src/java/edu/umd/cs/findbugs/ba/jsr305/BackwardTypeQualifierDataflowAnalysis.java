@@ -148,7 +148,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    				i,
 	    				sigParser);
 	    		FlowValue flowValue = flowValueFromWhen(tqa.when); 
-	    		fact.setValue(vn, flowValue);
+	    		fact.setValue(vn, flowValue, location);
 	    	}
 	    }
     }
@@ -166,7 +166,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    		if (vnaFrameAtStore.isValid()) {
 	    			ValueNumber vn = vnaFrameAtStore.getTopValue();
 	    			FlowValue flowValue = flowValueFromWhen(tqa.when);
-	    			fact.setValue(vn, flowValue);
+	    			fact.setValue(vn, flowValue, location);
 	    		}
 	    	}
 	    }
@@ -215,7 +215,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 					continue;
 				}
 				ValueNumber topValue = vnaFrameAtReturn.getTopValue();
-				fact.setValue(topValue, flowValueOfReturnValue);
+				fact.setValue(topValue, flowValueOfReturnValue, location);
 			}
 		}
 		
