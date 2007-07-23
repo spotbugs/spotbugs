@@ -29,14 +29,15 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
- * Set of ValueNumbers and their When values.
+ * Set of ValueNumbers and their corresponding FlowValues.
  * 
  * @author David Hovemeyer
  */
 public class TypeQualifierValueSet {
 	// States
 	enum State { VALID, TOP, BOTTOM };
-
+	
+	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.MAYBE;
 
 	private Map<ValueNumber, FlowValue> valueMap;
 	private State state = State.VALID;
@@ -52,8 +53,8 @@ public class TypeQualifierValueSet {
 	}
 
 	public void setValue(ValueNumber vn, FlowValue flowValue) {
-		if (flowValue == FlowValue.TOP) {
-			// TOP is the default, so it's not stored explicitly
+		if (flowValue == DEFAULT_FLOW_VALUE) {
+			// Default flow value is not stored explicitly
 			valueMap.remove(vn);
 			return;
 		}
@@ -62,7 +63,7 @@ public class TypeQualifierValueSet {
 
 	public FlowValue getValue(ValueNumber vn) {
 		FlowValue result = valueMap.get(vn);
-		return result != null ? result : FlowValue.TOP;
+		return result != null ? result : DEFAULT_FLOW_VALUE;
 	}
 
 	public boolean isValid() {
@@ -102,7 +103,7 @@ public class TypeQualifierValueSet {
 		assert targetVN.hasFlag(ValueNumber.PHI_NODE);
 
 		setValue(sourceVN, getValue(targetVN));
-		setValue(targetVN, FlowValue.TOP);
+		setValue(targetVN, FlowValue.TOP); // ???
 		
 		// TODO: propagate sink location information
 	}
