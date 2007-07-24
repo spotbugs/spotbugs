@@ -157,6 +157,11 @@ public class TypeQualifierValueSet {
 		// Propagate sink location information
 		transferLocationSet(whereAlways, toVN, fromVN);
 		transferLocationSet(whereNever, toVN, fromVN);
+		
+		// Remove all information about the "from" value
+		valueMap.remove(fromVN);
+		whereAlways.remove(fromVN);
+		whereNever.remove(fromVN);
 	}
 
     private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
