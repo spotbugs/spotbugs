@@ -166,7 +166,6 @@ public class TypeQualifierValueSet {
 
     private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
 		Set<Location> locSet = getOrCreateLocationSet(locationSetMap, fromVN);
-		assert locSet.isEmpty();
 		
 		for (Location loc : locSet) {
 			addLocation(locationSetMap, toVN, loc);
