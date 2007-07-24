@@ -78,7 +78,6 @@ public class GenericSignatureParser {
 					int leftCount = 0;
 					int i = startsemi+1;
 					loop: while (true) {
-						System.out.println(signature.substring(i) + " " + leftCount);
 						char c = signature.charAt(i);
 						switch (c) {
 						case ';' : 
@@ -95,7 +94,6 @@ public class GenericSignatureParser {
 						
 					}
 					String foo = signature.substring(startsemi, i+1);
-					System.out.println("found " + foo + " remainder = " +  signature.substring(i+1));
 					result.append(foo);
 					index = i+1;
 					break;
@@ -113,7 +111,6 @@ public class GenericSignatureParser {
 					throw new IllegalStateException("Invalid method signature: " + signature + " : " + signature.substring(index) + " " + result);
 				}
 			} while (!done);
-			System.out.println("Returning " + result);
 			return result.toString();
 		}
 
