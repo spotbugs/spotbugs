@@ -749,8 +749,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			if (!f.isResolved()) continue;
 			if (dontComplainAbout.matcher(fieldName).find()) continue;
-			if (fieldName.startsWith("this$")
-					|| fieldName.startsWith("this+")) {
+			if (lastDollar >= 0 && (fieldName.startsWith("this$")
+					|| fieldName.startsWith("this+"))) {
 				String outerClassName = className.substring(0, lastDollar);
 
 				try {
