@@ -172,6 +172,10 @@ public class CheckTypeQualifiers extends CFGDetector {
 	    	FlowValue forward = forwardsFact.getValue(vn);
 	    	FlowValue backward = backwardsFact.getValue(vn);
 	    	
+	    	if (DEBUG) {
+	    		System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward);
+	    	}
+	    	
 	    	if (FlowValue.valuesConflict(forward, backward)) {
 	    		// Issue warning
 	    		BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
