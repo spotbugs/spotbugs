@@ -186,7 +186,7 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 			return;
 		}
 
-		System.out.println("Setting " + condition.getValueNumber() + " to " + decision.getNullnessValue() + " on edge " + edge);
+		// System.out.println("Setting " + condition.getValueNumber() + " to " + decision.getNullnessValue() + " on edge " + edge);
 
 		changeNullnessOfValue(
 				condition.getValueNumber(),
