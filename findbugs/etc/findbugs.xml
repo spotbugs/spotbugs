@@ -668,7 +668,7 @@
 	speed="slow" reports="" disabled="true" hidden="true"/>
 	
   <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"
-    speed="slow" reports="" disabled="true" hidden="true" />
+    speed="slow" reports="CTQ_INCONSISTENT_USE" disabled="true" hidden="true" />
 
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
@@ -1000,5 +1000,6 @@
         experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
-  <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>  
+  <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>
+  <BugPattern abbrev="CTQ" type="CTQ_INCONSISTENT_USE" category="CORRECTNESS"/>  
 </FindbugsPlugin>

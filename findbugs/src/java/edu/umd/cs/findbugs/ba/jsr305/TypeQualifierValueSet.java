@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -97,6 +98,10 @@ public class TypeQualifierValueSet {
 		return result != null ? result : FlowValue.TOP;
 	}
 
+	public Collection<? extends ValueNumber> getValueNumbers() {
+		return valueMap.keySet();
+	}
+
 	public boolean isValid() {
 		return state == State.VALID;
 	}
@@ -144,21 +149,22 @@ public class TypeQualifierValueSet {
 		this.state = State.BOTTOM;
 	}
 
-	public void propagateAcrossPhiNode(ValueNumber targetVN, ValueNumber sourceVN) {
+	public void propagateAcrossPhiNode(ValueNumber fromVN, ValueNumber toVN) {
 		assert isValid();
-		assert targetVN.hasFlag(ValueNumber.PHI_NODE);
 
-		setValue(sourceVN, getValue(targetVN));
+		setValue(toVN, getValue(fromVN));
 		
 		// Propagate sink location information
-		transferLocationSet(whereAlways, sourceVN, targetVN);
-		transferLocationSet(whereNever, sourceVN, targetVN);
+		transferLocationSet(whereAlways, toVN, fromVN);
+		transferLocationSet(whereNever, toVN, fromVN);
 	}
 
-    private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber sourceVN, ValueNumber targetVN) {
-		Set<Location> sinkLocSet = getOrCreateLocationSet(locationSetMap, targetVN);
-		for (Location sinkLoc : sinkLocSet) {
-			addLocation(locationSetMap, sourceVN, sinkLoc);
+    private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
+		Set<Location> locSet = getOrCreateLocationSet(locationSetMap, fromVN);
+		assert locSet.isEmpty();
+		
+		for (Location loc : locSet) {
+			addLocation(locationSetMap, toVN, loc);
 		}
     }
 
@@ -224,32 +230,36 @@ public class TypeQualifierValueSet {
 		
 		StringBuffer buf = new StringBuffer();
 		
+		buf.append("{");
+		
 		for (ValueNumber vn : interesting) {
-			if (buf.length() > 0) {
+			if (buf.length() > 1) {
 				buf.append(", ");
 			}
 			buf.append(vn.getNumber());
 			buf.append("->");
-			buf.append("{");
 			buf.append(getValue(vn).toString());
 			buf.append("[");
 			appendLocations(buf, "YES=", getOrCreateLocationSet(whereAlways, vn));
 			buf.append(",");
 			appendLocations(buf, "NO=", getOrCreateLocationSet(whereNever, vn));
-			buf.append("]}");
+			buf.append("]");
 		}
+		
+		buf.append("}");
 		
 		return buf.toString();
 	}
 
 	private static void appendLocations(StringBuffer buf, String key, Set<Location> locationSet) {
 		TreeSet<Location> sortedLocSet = new TreeSet<Location>();
+		sortedLocSet.addAll(locationSet);
 		boolean first = true;
 		buf.append(key);
 		buf.append("(");
 		for (Location loc : sortedLocSet) {
-			if (!first) {
-				first = true;
+			if (first) {
+				first = false;
 			} else {
 				buf.append(",");
 			}

@@ -26,7 +26,9 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Abstract base class for type qualifier dataflow analyses.
@@ -146,5 +148,37 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     		throw new IllegalStateException();
     	}
     }
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+	 */
+	@Override
+	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
+		// Propagate flow values and source information across phi nodes.
+		
+		ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(edge.getTarget());
+		ValueNumberFrame sourceVnaFrame = vnaDataflow.getResultFact(edge.getSource());
+		
+		if (!targetVnaFrame.isValid() || !sourceVnaFrame.isValid()) {
+			return;
+		}
+
+		if (targetVnaFrame.getNumSlots() != sourceVnaFrame.getNumSlots()) {
+			throw new DataflowAnalysisException("wrong vna frame sizes on edge " + edge.toString());
+		}
+		
+		for (int i = 0; i < targetVnaFrame.getNumSlots(); i++) {
+			ValueNumber targetVN = targetVnaFrame.getValue(i);
+			ValueNumber sourceVN = sourceVnaFrame.getValue(i);
+			
+			if (!targetVN.equals(sourceVN)) {
+				// targetVN is a phi result
+				assert targetVN.hasFlag(ValueNumber.PHI_NODE);
+				propagateAcrossPhiNode(fact, sourceVN, targetVN);
+			}
+		}
+	}
+	
+	protected abstract void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN);
 
 }

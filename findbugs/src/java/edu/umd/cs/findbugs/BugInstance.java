@@ -53,8 +53,11 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -1369,12 +1372,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
 		return addSourceLine(classContext, method, location.getHandle());
 	}
+
+	/**
+	 * Add source line annotation for given Location in a method.
+	 * 
+	 * @param methodDescriptor the method
+	 * @param location         the Location in the method
+	 * @return this BugInstance
+	 */
+	public BugInstance addSourceLine(MethodDescriptor methodDescriptor, Location location) {
+		try {
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
+			Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
+			return addSourceLine(classContext, method, location);
+		} catch (CheckedAnalysisException e) {
+			return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName()));
+		}
+	}
+	
 	/**
 	 * Add source line annotation for given Location in a method. 
 	 * 
 	 * @param classContext the ClassContext
 	 * @param method       the Method
-	 * @param location     the Location in the method
+	 * @param handle       InstructionHandle of an instruction in the method
 	 * @return this BugInstance
 	 */
 	public BugInstance addSourceLine(ClassContext classContext, Method method, InstructionHandle handle) {

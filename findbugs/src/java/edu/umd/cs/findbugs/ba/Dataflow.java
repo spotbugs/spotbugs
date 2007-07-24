@@ -53,7 +53,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private boolean isForwards;
 	private int numIterations;
 
-	static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
 	/**
 	 * Constructor.
@@ -157,9 +157,13 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 				// Get start fact for block.
 				Fact start = analysis.getStartFact(block);
+				assert start != null;
+				
 				boolean needToRecompute = false;
 				//				 Get result facts for block,
 				Fact result = analysis.getResultFact(block);
+				assert result != null;
+				
 				int originalResultTimestamp = analysis.getLastUpdateTimestamp(result);
 
 				// Meet all of the logical predecessor results into this block's start.
@@ -290,7 +294,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				}
 
 				// See if the result changed.
-				if (DEBUG) debug(block, "orig result is " + origResult + "\n");
+				if (DEBUG) debug(block, "orig result is " + (origResult == null ? "TOP" : origResult) + "\n");
 				boolean thisResultChanged = false;
 				if (resultWasTop)
 					thisResultChanged = !analysis.isTop(result);

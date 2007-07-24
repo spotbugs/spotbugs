@@ -20,20 +20,28 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowFactory;
+import edu.umd.cs.findbugs.ba.jsr305.FlowValue;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -95,6 +103,7 @@ public class CheckTypeQualifiers extends CFGDetector {
      * @param cfg                    CFG of method
      * @param typeQualifierValue     TypeQualifierValue to check
 	 * @param forwardDataflowFactory ForwardTypeQualifierDataflowFactory used to create forward dataflow analysis objects
+	 * @param backwardDataflowFactory BackwardTypeQualifierDataflowFactory used to create backward dataflow analysis objects
      */
     private void checkQualifier(
     		MethodDescriptor methodDescriptor,
@@ -127,7 +136,66 @@ public class CheckTypeQualifiers extends CFGDetector {
 			p.print(System.out);
 		}
 		
+		// See if there are any locations or edges where
+		//
+		// - a backward ALWAYS meets a forward NEVER
+		// - a backward NEVER meets a forward ALWAYS
 		
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location loc = i.next();
+			
+			TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAtLocation(loc);
+			TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAfterLocation(loc);
+			
+			if (!forwardsFact.isValid() || !backwardsFact.isValid()) {
+				continue;
+			}
+			
+			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
+		}
+    }
+
+	/**
+     * @param methodDescriptor
+     * @param typeQualifierValue
+     * @param forwardsFact
+     * @param backwardsFact
+     * @return
+     */
+    private void check(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+            TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact) {
+	    Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
+	    valueNumberSet.addAll(forwardsFact.getValueNumbers());
+	    valueNumberSet.addAll(backwardsFact.getValueNumbers());
+	    
+	    for (ValueNumber vn : valueNumberSet) {
+	    	FlowValue forward = forwardsFact.getValue(vn);
+	    	FlowValue backward = backwardsFact.getValue(vn);
+	    	
+	    	if (FlowValue.valuesConflict(forward, backward)) {
+	    		// Issue warning
+	    		BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
+	    			.addClassAndMethod(methodDescriptor)
+	    			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+	    		
+	    		Set<Location> sourceSet = (forward == FlowValue.ALWAYS)
+	    			? forwardsFact.getWhereAlways(vn)
+	    			: forwardsFact.getWhereNever(vn);
+	    		
+	    		for (Location source : sourceSet) {
+	    			warning.addSourceLine(methodDescriptor, source).describe("SOURCE_LINE_VALUE_SOURCE");
+	    		}
+	    		
+	    		Set<Location> sinkSet = (backward == FlowValue.ALWAYS)
+	    			? backwardsFact.getWhereAlways(vn)
+	    			: backwardsFact.getWhereNever(vn);
+	    		for (Location sink : sinkSet) {
+	    			warning.addSourceLine(methodDescriptor, sink).describe("SOURCE_LINE_VALUE_SINK");
+	    		}
+	    		
+	    		bugReporter.reportBug(warning);
+	    	}
+	    }
     }
 
 }

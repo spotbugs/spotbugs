@@ -83,4 +83,17 @@ public enum FlowValue {
 		
 		return mergeMatrix[aIndex][bIndex];
 	}
+
+	/**
+	 * Determine whether given flow values conflict.
+	 * 
+	 * @param forward  a forwards flow value
+	 * @param backward a backwards flow value
+	 * @return true if values conflict, false otherwise
+	 */
+	public static boolean valuesConflict(FlowValue forward, FlowValue backward) {
+		return (forward == ALWAYS && backward == NEVER)
+			|| (forward == NEVER && backward == ALWAYS);
+	}
+
 }

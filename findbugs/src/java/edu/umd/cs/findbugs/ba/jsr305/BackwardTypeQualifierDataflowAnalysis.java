@@ -30,6 +30,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -75,37 +76,6 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		this.dfs = dfs;
 		this.rdfs = rdfs;
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
-	 */
-	@Override
-	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
-		// Handle phi-nodes by propagating information from
-		// the phi-result value in the target block to the corresponding input value
-		// in the source block.
-		
-		ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(edge.getTarget());
-		ValueNumberFrame sourceVnaFrame = vnaDataflow.getResultFact(edge.getSource());
-		
-		if (!targetVnaFrame.isValid() || !sourceVnaFrame.isValid()) {
-			return;
-		}
-
-		if (targetVnaFrame.getNumSlots() != sourceVnaFrame.getNumSlots()) {
-			throw new DataflowAnalysisException("wrong vna frame sizes on edge " + edge.toString());
-		}
-		
-		for (int i = 0; i < targetVnaFrame.getNumSlots(); i++) {
-			ValueNumber targetVN = targetVnaFrame.getValue(i);
-			ValueNumber sourceVN = sourceVnaFrame.getValue(i);
-			
-			if (!targetVN.equals(sourceVN)) {
-				// targetVN is a phi result
-				fact.propagateAcrossPhiNode(targetVN, sourceVN);
-			}
-		}
-	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
@@ -134,7 +104,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 	    
 	    XMethod calledMethod = XFactory.createXMethod(inv, cpg);
-	    SignatureParser sigParser = new SignatureParser(calledMethod.getSignature()); 
+	    SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
+	    
+	    boolean foundParamAnnotation = false;
 	    
 	    for (int i = 0; i < calledMethod.getNumParams(); i++) {
 	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
@@ -149,7 +121,12 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    				sigParser);
 	    		FlowValue flowValue = flowValueFromWhen(tqa.when); 
 	    		fact.setValue(vn, flowValue, location);
+	    		foundParamAnnotation = true;
 	    	}
+	    }
+	    
+	    if (Dataflow.DEBUG && foundParamAnnotation) {
+	    	System.out.println("After modeling param annotations: " + fact);
 	    }
     }
 
@@ -229,4 +206,12 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#propagateAcrossPhiNode(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet, edu.umd.cs.findbugs.ba.vna.ValueNumber, edu.umd.cs.findbugs.ba.vna.ValueNumber)
+	 */
+	@Override
+	protected void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
+		// Backwards analysis - propagate value from target to source
+		fact.propagateAcrossPhiNode(targetVN, sourceVN);
+	}
 }

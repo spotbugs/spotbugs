@@ -167,4 +167,12 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#propagateAcrossPhiNode(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet, edu.umd.cs.findbugs.ba.vna.ValueNumber, edu.umd.cs.findbugs.ba.vna.ValueNumber)
+	 */
+	@Override
+	protected void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN) {
+		// Forward analysis - propagate from source to target
+		fact.propagateAcrossPhiNode(sourceVN, targetVN);
+	}
 }
