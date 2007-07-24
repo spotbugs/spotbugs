@@ -198,7 +198,8 @@ public class GenericUtilities {
 			return new GenericObjectType(signature.substring(1,signature.length()-1));
 
 		} else if (signature.startsWith("[")) {
-			index = signature.lastIndexOf('[') + 1;
+			index++;
+			while (signature.charAt(index) == '[') index++;
 			return new ArrayType( getType(signature.substring(index)), index);
 
 		} else if (signature.startsWith("*")) {

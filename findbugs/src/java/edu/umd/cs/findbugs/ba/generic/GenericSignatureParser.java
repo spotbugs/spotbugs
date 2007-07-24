@@ -75,20 +75,29 @@ public class GenericSignatureParser {
 				case 'T':
 					String tmp = "";
 					int startsemi = index;
-					int semi = -1;
-					// find the substring that ends with a semicolon and
-					// contains the same number of '<' and '>' braces
-					do {
-						semi = signature.indexOf(';', startsemi + 1);
-						if (semi < 0) {
-							String remainder = signature.substring(startsemi+1);
-							throw new IllegalArgumentException("Invalid method signature: " + signature + " : " +remainder);
+					int leftCount = 0;
+					int i = startsemi+1;
+					loop: while (true) {
+						System.out.println(signature.substring(i) + " " + leftCount);
+						char c = signature.charAt(i);
+						switch (c) {
+						case ';' : 
+							if (leftCount == 0) break loop;
+							break;
+						case '<':
+							leftCount++;
+							break;
+						case '>' : 
+							leftCount--;
+							break;
 						}
-						tmp = signature.substring(index, semi + 1);
-						startsemi = semi;
-					} while(tmp.split("<").length != tmp.split(">").length);
-					result.append(tmp);
-					index = semi + 1;
+						i++;
+						
+					}
+					String foo = signature.substring(startsemi, i+1);
+					System.out.println("found " + foo + " remainder = " +  signature.substring(i+1));
+					result.append(foo);
+					index = i+1;
 					break;
 
 				case '[':
@@ -101,10 +110,10 @@ public class GenericSignatureParser {
 
 				case 'V':
 				default:
-					throw new IllegalStateException("Invalid method signature: " + signature);
+					throw new IllegalStateException("Invalid method signature: " + signature + " : " + signature.substring(index) + " " + result);
 				}
 			} while (!done);
-
+			System.out.println("Returning " + result);
 			return result.toString();
 		}
 

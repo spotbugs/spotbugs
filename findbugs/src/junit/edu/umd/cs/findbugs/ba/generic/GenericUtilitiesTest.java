@@ -53,7 +53,7 @@ public class GenericUtilitiesTest extends TestCase {
 		assertEquals(1,parser.getNumParameters());
 	}
 	public void testOKSignaturesThatHaveCausedProblems() {
-		GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>");
+		GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
 		GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;");
 	}
 }
