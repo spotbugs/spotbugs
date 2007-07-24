@@ -6047,8 +6047,8 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 </BugPattern>
 
   <BugPattern type="CTQ_INCONSISTENT_USE">
-    <ShortDescription>Inconsistent use of type qualifier annotations</ShortDescription>
-    <LongDescription>Inconsistent use of type qualifier annotations in {1}</LongDescription>
+    <ShortDescription>Inconsistent type qualifier annotations</ShortDescription>
+    <LongDescription>Inconsistent {2} annotations in {1}</LongDescription>
     <Details>
       <![CDATA[
         <p>
