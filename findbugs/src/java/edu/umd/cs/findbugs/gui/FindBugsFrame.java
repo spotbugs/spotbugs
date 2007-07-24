@@ -116,6 +116,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -2559,8 +2560,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			// We use reflection here, so there is no posible chance that the
 			// class loader will try to load OSXAdapter on a non Mac system
 			try {
-				Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui.OSXAdapter");
-				Class[] defArgs = {FindBugsFrame.class};
+				Class<?> osxAdapter = Class.forName("edu.umd.cs.findbugs.gui.OSXAdapter");
+				Class<?>[] defArgs = {FindBugsFrame.class};
 				Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
 				if (registerMethod != null) {
 					Object[] args = {this};
@@ -2625,7 +2626,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * @return an instance of the given kind of object which is in the
 	 *		 current selection, or null if there is no matching object
 	 */
-	private static Object getTreeSelectionOf(JTree tree, Class c) {
+	private static <E> E getTreeSelectionOf(JTree tree, Class<E> c) {
 		TreePath selPath = tree.getSelectionPath();
 
 		// There may not be anything selected at the moment
@@ -2639,7 +2640,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodeList[i];
 			Object nodeInfo = node.getUserObject();
 			if (nodeInfo != null && nodeInfo.getClass() == c)
-				return nodeInfo;
+				return c.cast(nodeInfo);
 		}
 		return null;
 	}
@@ -2664,7 +2665,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private BugInstance getCurrentBugInstance() {
 		JTree bugTree = getCurrentBugTree();
 		if (bugTree != null) {
-			return (BugInstance) getTreeSelectionOf(bugTree, BugInstance.class);
+			return getTreeSelectionOf(bugTree, BugInstance.class);
 		}
 		return null;
 	}

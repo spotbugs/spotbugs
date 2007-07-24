@@ -77,7 +77,7 @@ import edu.umd.cs.findbugs.classfile.ReflectionDatabaseFactory;
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
-	private static final IClassAnalysisEngine[] classAnalysisEngineList = {
+	private static final IClassAnalysisEngine<?>[] classAnalysisEngineList = {
 		new ClassContextClassAnalysisEngine(),
 		new JavaClassAnalysisEngine(),
 		new ConstantPoolGenFactory(),
@@ -85,7 +85,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new AssertionMethodsFactory(),
 	};
 
-	private static final IMethodAnalysisEngine[] methodAnalysisEngineList = {
+	private static final IMethodAnalysisEngine<?>[] methodAnalysisEngineList = {
 		new MethodFactory(),
 		new MethodGenFactory(),
 		new CFGFactory(),
@@ -139,11 +139,11 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerAnalysisEngines(IAnalysisCache analysisCache) {
-		for (IClassAnalysisEngine engine : classAnalysisEngineList) {
+		for (IClassAnalysisEngine<?> engine : classAnalysisEngineList) {
 			engine.registerWith(analysisCache);
 		}
 		
-		for (IMethodAnalysisEngine engine : methodAnalysisEngineList) {
+		for (IMethodAnalysisEngine<?> engine : methodAnalysisEngineList) {
 			engine.registerWith(analysisCache);
 		}
 

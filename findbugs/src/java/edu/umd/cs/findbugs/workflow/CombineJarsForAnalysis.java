@@ -44,7 +44,7 @@ public class CombineJarsForAnalysis {
 		if (classPrefix.length() > 0)
 			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream("auxilary.jar")));
 		
-		Set copied = new HashSet();
+		Set<String> copied = new HashSet<String>();
 		String [] fileList = args;
 		if (fileList.length == 0) fileList = readFromStandardInput();
 		for(String fInName : fileList) {

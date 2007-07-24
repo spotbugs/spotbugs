@@ -54,8 +54,8 @@ public class AnalysisCache implements IAnalysisCache {
 	// Fields
 	private IClassPath classPath;
 	private IErrorLogger errorLogger;
-	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
-	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
+	private Map<Class<?>, IClassAnalysisEngine<?>> classAnalysisEngineMap;
+	private Map<Class<?>, IMethodAnalysisEngine<?>> methodAnalysisEngineMap;
 	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
 	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
@@ -99,8 +99,8 @@ public class AnalysisCache implements IAnalysisCache {
 	AnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
 		this.classPath = classPath;
 		this.errorLogger = errorLogger;
-		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
-		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
+		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine<?>>();
+		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine<?>>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
 		this.classAnalysisMap = new HashMap<Class<?>, Map<ClassDescriptor,Object>>();
 		this.databaseMap = new HashMap<Class<?>, Object>();
@@ -127,7 +127,7 @@ public class AnalysisCache implements IAnalysisCache {
 		Object analysisResult = descriptorMap.get(classDescriptor);
 		if (analysisResult == null) {
 			// No cached result - compute (or recompute)
-			IAnalysisEngine<ClassDescriptor, E> engine = classAnalysisEngineMap.get(analysisClass);
+			IAnalysisEngine<ClassDescriptor, E> engine = (IAnalysisEngine<ClassDescriptor, E>) classAnalysisEngineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
 						"No analysis engine registered to produce " + analysisClass.getName());
@@ -219,11 +219,11 @@ public class AnalysisCache implements IAnalysisCache {
      * @return the computed analysis object for the method
 	 * @throws CheckedAnalysisException 
      */
-    private Object analyzeMethod(
+    private <E> E analyzeMethod(
     		ClassContext classContext,
-    		Class<?> analysisClass,
+    		Class<E> analysisClass,
     		MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-    	IMethodAnalysisEngine engine = methodAnalysisEngineMap.get(analysisClass);
+    	IMethodAnalysisEngine<E> engine = (IMethodAnalysisEngine<E>) methodAnalysisEngineMap.get(analysisClass);
     	if (engine == null) {
     		throw new IllegalArgumentException(
 					"No analysis engine registered to produce " + analysisClass.getName());
@@ -311,7 +311,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#registerMethodAnalysisEngine(java.lang.Class, edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine)
 	 */
 	public <E> void registerMethodAnalysisEngine(Class<E> analysisResultType,
-			IMethodAnalysisEngine methodAnalysisEngine) {
+			IMethodAnalysisEngine<E> methodAnalysisEngine) {
 		methodAnalysisEngineMap.put(analysisResultType, methodAnalysisEngine);
 	}
 

@@ -225,7 +225,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private Object lock = new Object();
 	private boolean newProject = false;
 
-	private Class osxAdapter;
+	private Class<?> osxAdapter;
 	private Method osxPrefsEnableMethod;
 
 	private Logger logger = new ConsoleLogger(this);

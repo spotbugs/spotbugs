@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public abstract class RelationalOp {
 
-	public abstract <T> boolean check(Comparable<T> x, Comparable<T> y);
+	public abstract <T extends Comparable<T>> boolean check(T x, T y);
 
 	final String value;
 	final String name;
@@ -65,7 +65,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp EQ = new RelationalOp("==", "EQ") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y) {
 			return x.compareTo(y) == 0;
 		}
 
@@ -73,7 +73,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp LEQ = new RelationalOp("<=", "LEQ") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y){
 			return x.compareTo(y) <= 0;
 		}
 
@@ -81,7 +81,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp NEQ = new RelationalOp("!=", "NEQ") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y) {
 			return x.compareTo(y) != 0;
 		}
 
@@ -89,7 +89,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp GEQ = new RelationalOp(">=", "GEQ") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y){
 			return x.compareTo(y) >= 0;
 		}
 
@@ -97,7 +97,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp LT = new RelationalOp("<", "LT") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y) {
 			return x.compareTo(y) < 0;
 		}
 
@@ -105,7 +105,7 @@ public abstract class RelationalOp {
 
 	public static final RelationalOp GT = new RelationalOp(">", "GT") {
 		@Override
-        public boolean check(Comparable x, Comparable y) {
+        public <T extends Comparable<T>> boolean check(T x, T y) {
 			return x.compareTo(y) > 0;
 		}
 

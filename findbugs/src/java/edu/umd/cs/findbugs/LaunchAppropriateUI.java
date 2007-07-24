@@ -35,7 +35,7 @@ public class LaunchAppropriateUI {
 		else {
 			String version = System.getProperty("java.version");
 
-			Class launchClass = null;
+			Class<?> launchClass = null;
 			if ("1.5".compareTo(version) <= 0) try {
 				launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver", false,
 						LaunchAppropriateUI.class.getClassLoader());

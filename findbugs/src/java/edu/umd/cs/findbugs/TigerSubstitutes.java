@@ -68,14 +68,14 @@ public class TigerSubstitutes {
 			return result;
 		}
 
-	  public static <U> Class<? extends U> asSubclass(Class base, Class<U> clazz) {
+	  public static <U> Class<? extends U> asSubclass(Class<?> base, Class<U> clazz) {
 		  if (clazz.isAssignableFrom(base))
 			  return (Class<? extends U>) base;
 		  else
 			  throw new ClassCastException(base.toString());
 	  }
 
-	  public static String getSimpleName(Class c) {
+	  public static String getSimpleName(Class<?> c) {
 			  if (c.isArray())
 				  return getSimpleName(c.getComponentType())+"[]";
 			  String name = c.getName();

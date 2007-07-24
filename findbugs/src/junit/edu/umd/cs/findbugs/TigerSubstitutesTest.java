@@ -66,7 +66,7 @@ public class TigerSubstitutesTest extends TestCase {
 	}
 
 	public static void main(String args[]) {
-		Class c = test.getClass();
+		Class<?> c = test.getClass();
 		System.out.println(c.getName());
 		System.out.println(c.getCanonicalName());
 		System.out.println(c.getSimpleName());

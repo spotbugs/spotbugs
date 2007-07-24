@@ -20,7 +20,7 @@ public final class SortedProperties extends Properties {
 	public synchronized Enumeration<Object> keys() {
 		// sort elements based on detector (prop key) names
 		Set set = keySet();
-		return sortKeys(set);
+		return (Enumeration<Object>) sortKeys(set);
 	}
 
 	/**
@@ -32,7 +32,7 @@ public final class SortedProperties extends Properties {
 	 * @return non null list wich contains all given keys, sorted lexicographically.
 	 * The list may be empty if given set was empty
 	 */
-	static public Enumeration sortKeys(Set<String> keySet) {
+	static public Enumeration<?> sortKeys(Set<String> keySet) {
 		List<String> sortedList = new ArrayList<String>();
 		sortedList.addAll(keySet);
 		Collections.sort(sortedList);

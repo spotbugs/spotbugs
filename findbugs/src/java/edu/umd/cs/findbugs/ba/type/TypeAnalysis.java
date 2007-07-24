@@ -800,8 +800,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// Get the exceptions that BCEL knows about.
 		// Note that all of these are unchecked.
 		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
-		Class[] exceptionList = exceptionThrower.getExceptions();
-		for (Class aExceptionList : exceptionList) {
+		Class<?>[] exceptionList = exceptionThrower.getExceptions();
+		for (Class<?> aExceptionList : exceptionList) {
 			exceptionTypeSet.addImplicit(ObjectTypeFactory.getInstance(aExceptionList.getName()));
 		}
 

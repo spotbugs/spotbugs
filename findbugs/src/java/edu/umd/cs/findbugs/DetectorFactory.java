@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 public class DetectorFactory {
 	private static final boolean DEBUG_JAVA_VERSION = SystemProperties.getBoolean("findbugs.debug.javaversion");
 
-	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
+	private static final Class<?>[] constructorArgTypes = new Class<?>[]{BugReporter.class};
 
 	static class ReflectionDetectorCreator {
 		private Class<?> detectorClass;

@@ -40,7 +40,7 @@ public class LaunchBrowser {
 		Method showMethod = null;
 		Object showObject = null;
 		try {
-			Class serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
+			Class<?> serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
 			Method lookupMethod = serviceManagerClass.getMethod("lookup", new Class[] { String.class });
 			showObject = lookupMethod.invoke(null, new Object[] { "javax.jnlp.BasicService" });
 			showMethod = showObject.getClass().getMethod("showDocument", new Class [] { URL.class });

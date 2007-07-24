@@ -46,7 +46,7 @@ public interface IAnalysisCache {
 	 * @param methodAnalysisEngine the method analysis engine to register
 	 */
 	public<E> void registerMethodAnalysisEngine(
-			Class<E> analysisResultType, IMethodAnalysisEngine methodAnalysisEngine);
+			Class<E> analysisResultType, IMethodAnalysisEngine<E> methodAnalysisEngine);
 
 	/**
 	 * Get an analysis of the given class.
