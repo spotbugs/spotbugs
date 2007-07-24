@@ -67,12 +67,7 @@ public class TypeQualifierValueSet {
 	}
 
 	private void setValue(ValueNumber vn, FlowValue flowValue) {
-		if (flowValue == DEFAULT_FLOW_VALUE) {
-			// Default flow value is not stored explicitly
-			valueMap.remove(vn);
-		} else {
-			valueMap.put(vn, flowValue);
-		}
+		valueMap.put(vn, flowValue);
 	}
 
 	private static void addLocation(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn, Location location) {
@@ -99,7 +94,7 @@ public class TypeQualifierValueSet {
 
 	public FlowValue getValue(ValueNumber vn) {
 		FlowValue result = valueMap.get(vn);
-		return result != null ? result : DEFAULT_FLOW_VALUE;
+		return result != null ? result : FlowValue.TOP;
 	}
 
 	public boolean isValid() {
@@ -109,12 +104,26 @@ public class TypeQualifierValueSet {
 	public void makeValid() {
 		this.state = State.VALID;
 		this.valueMap.clear();
+		this.whereAlways.clear();
+		this.whereNever.clear();
 	}
 
 	public void makeSameAs(TypeQualifierValueSet source) {
 		this.state = source.state;
 		this.valueMap.clear();
 		this.valueMap.putAll(source.valueMap);
+		copyLocationSetMap(this.whereAlways, source.whereAlways);
+		copyLocationSetMap(this.whereNever, source.whereNever);
+	}
+
+	private void copyLocationSetMap(Map<ValueNumber, Set<Location>> dest, Map<ValueNumber, Set<Location>> source) {
+		dest.keySet().retainAll(source.keySet());
+		
+		for (Map.Entry<ValueNumber, Set<Location>> entry : source.entrySet()) {
+			Set<Location> locSet = getOrCreateLocationSet(dest, entry.getKey());
+			locSet.clear();
+			locSet.addAll(entry.getValue());
+		}
 	}
 
 	public boolean isTop() {
@@ -141,9 +150,6 @@ public class TypeQualifierValueSet {
 
 		setValue(sourceVN, getValue(targetVN));
 		
-		// XXX: should put some kind of bottom value here? Probably doesn't matter - targetVN will not be used
-		setValue(targetVN, FlowValue.MAYBE);
-		
 		// Propagate sink location information
 		transferLocationSet(whereAlways, sourceVN, targetVN);
 		transferLocationSet(whereNever, sourceVN, targetVN);
@@ -154,12 +160,7 @@ public class TypeQualifierValueSet {
 		for (Location sinkLoc : sinkLocSet) {
 			addLocation(locationSetMap, sourceVN, sinkLoc);
 		}
-		clearLocationSet(locationSetMap, targetVN);
     }
-
-	private static void clearLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn) {
-		locationSetMap.remove(vn);
-	}
 
 	public void mergeWith(TypeQualifierValueSet fact) throws DataflowAnalysisException {
 		if (!isValid() || !fact.isValid()) {
@@ -167,8 +168,8 @@ public class TypeQualifierValueSet {
 		}
 		
 		Set<ValueNumber> interesting = new HashSet<ValueNumber>();
-		this.getInterestingValueNumbers(interesting);
-		fact.getInterestingValueNumbers(interesting);
+		interesting.addAll(this.valueMap.keySet());
+		interesting.addAll(fact.valueMap.keySet());
 		
 		for (ValueNumber vn : interesting) {
 			setValue(vn, FlowValue.meet(this.getValue(vn), fact.getValue(vn)));
@@ -219,7 +220,7 @@ public class TypeQualifierValueSet {
 		}
 		
 		TreeSet<ValueNumber> interesting = new TreeSet<ValueNumber>(); 
-		getInterestingValueNumbers(interesting);
+		interesting.addAll(valueMap.keySet());
 		
 		StringBuffer buf = new StringBuffer();
 		
@@ -239,12 +240,6 @@ public class TypeQualifierValueSet {
 		}
 		
 		return buf.toString();
-	}
-
-	private void getInterestingValueNumbers(Set<ValueNumber> interesting) {
-		interesting.addAll(valueMap.keySet());
-		interesting.addAll(whereAlways.keySet());
-		interesting.addAll(whereNever.keySet());
 	}
 
 	private static void appendLocations(StringBuffer buf, String key, Set<Location> locationSet) {
