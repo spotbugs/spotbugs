@@ -92,8 +92,12 @@ public enum FlowValue {
 	 * @return true if values conflict, false otherwise
 	 */
 	public static boolean valuesConflict(FlowValue forward, FlowValue backward) {
-		return (forward == ALWAYS && backward == NEVER)
-			|| (forward == NEVER && backward == ALWAYS);
+//		return (forward == ALWAYS && backward == NEVER)
+//			|| (forward == NEVER && backward == ALWAYS);
+		if (forward == TOP || backward == TOP) {
+			return false;
+		}
+		return ((backward == ALWAYS || backward == NEVER) && (forward != backward));
 	}
 
 }
