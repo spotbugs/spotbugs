@@ -723,7 +723,12 @@ public class SortedBugCollection implements BugCollection {
 		this.projectStats = projectStats;
 		this.comparator = comparator;
 		bugSet = new TreeSet<BugInstance>(comparator);
-		errorList = new LinkedHashSet<AnalysisError>();
+		errorList = new LinkedHashSet<AnalysisError>() { 
+			@Override public boolean add(AnalysisError a) {
+				if (this.size() > 1000) return false;
+				return super.add(a);
+			}
+		};
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
