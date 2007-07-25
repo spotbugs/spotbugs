@@ -668,7 +668,7 @@
 	speed="slow" reports="" disabled="true" hidden="true"/>
 	
   <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"
-    speed="slow" reports="CTQ_INCONSISTENT_USE" disabled="true" hidden="true" />
+    speed="slow" reports="CTQ_INCONSISTENT_USE"/>
 
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
