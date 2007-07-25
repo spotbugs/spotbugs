@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
-import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -351,15 +351,15 @@ public class NullDerefAndRedundantComparisonFinder {
 			BugAnnotation variableAnnotation = null;
 			try {
 				for (Location loc : derefLocationSet)  {
-					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : knownNullAndDoomedAt) {
-					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
-					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
 					if (variableAnnotation != null) break;
 				}
 
@@ -698,50 +698,31 @@ public class NullDerefAndRedundantComparisonFinder {
 		collector.foundNullDeref(classContext, location, valueNumber, refValue, vnaFrame);
 	}
 
+	/**
+	 * @deprecated Use {@link ValueNumberSourceInfo#findXFieldFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
+	 */
 	public static XField findXFieldFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
-			return null;
-
-		AvailableLoad load = vnaFrame.getLoad(valueNumber);
-		if (load != null) {
-			return load.getField();
-		}
-		return null;
+		return ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, valueNumber, vnaFrame);
 	}
 
+	/**
+	 * @deprecated Use {@link ValueNumberSourceInfo#findFieldAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
+	 */
 	public static FieldAnnotation findFieldAnnotationFromValueNumber(
 			Method method, Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, valueNumber,
-				vnaFrame);
-		if (field == null)
-			return null;
-		return FieldAnnotation.fromXField(field);
+		return ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 	}
 
+	/**
+	 * @deprecated Use {@link ValueNumberSourceInfo#findLocalAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
+	 */
 	public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
 			Method method, Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-
-		if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
-			return null;
-
-		LocalVariableAnnotation localAnnotation = null;
-		for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
-			if (valueNumber.equals(vnaFrame.getValue(i))) {
-				InstructionHandle handle = location.getHandle();
-				int position1 = handle.getPrev().getPosition();
-				int position2 = handle.getPosition();
-				localAnnotation = LocalVariableAnnotation
-						.getLocalVariableAnnotation(method, i, position1,
-								position2);
-				if (localAnnotation != null)
-					return localAnnotation;
-			}
-		}
-		return null;
+		return ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 	}
 
 	/**
@@ -751,19 +732,12 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param valueNumber
 	 * @param vnaFrame
 	 * @return
+	 * @deprecated Use {@link ValueNumberSourceInfo#findAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
 	public static BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		LocalVariableAnnotation ann = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(
-				method, location, valueNumber, vnaFrame);
-		if (ann != null && ann.isSignificant())
-			return ann;
-		FieldAnnotation field = NullDerefAndRedundantComparisonFinder.findFieldAnnotationFromValueNumber(method,
-				location, valueNumber, vnaFrame);
-		if (field != null)
-			return field;
-		return ann;
+		return ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {

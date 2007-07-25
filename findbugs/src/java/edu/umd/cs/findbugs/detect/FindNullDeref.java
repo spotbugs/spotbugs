@@ -90,6 +90,7 @@ import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -430,7 +431,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				try {
 				   ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
 				   ValueNumber valueNumber = vnaFrame.getTopValue();
-				   variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+				   variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 						  location, valueNumber, vnaFrame);
 
 			   } catch (DataflowAnalysisException e) {
@@ -467,7 +468,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			return;
 		IsNullValue tos = frame.getTopValue();
 		if (tos.isDefinitelyNull()) {
-			BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+			BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 					location, valueNumber, vnaFrame);
 
 			String bugPattern = "NP_NONNULL_RETURN_VIOLATION";
@@ -661,7 +662,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				if (vnaFrame != null) 
 					try {
 					valueNumber = vnaFrame. getArgument(instruction, classContext.getConstantPoolGen(), i, sigParser );
-					BugAnnotation variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+					BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 							location, valueNumber, vnaFrame);
 					warning.addOptionalAnnotation(variableAnnotation);
 				} catch (DataflowAnalysisException e) {
@@ -718,7 +719,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				 try {
 					ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
 					ValueNumber valueNumber = vnaFrame. getArgument(invokeInstruction, cpg, i, sigParser );
-					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 						   location, valueNumber, vnaFrame);
 
 				} catch (DataflowAnalysisException e) {
@@ -766,7 +767,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
 		int pc = location.getHandle().getPosition();
-		BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame);
 
 		boolean duplicated = false;
@@ -1008,7 +1009,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 						classContext.getConstantPoolGen());
 				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 					return;
-				variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 						location, valueNumber, vnaFrame);
 
 			}
@@ -1066,7 +1067,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 						classContext.getConstantPoolGen());
 				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 					return null;
-				variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 						location, valueNumber, vnaFrame);
 
 			}

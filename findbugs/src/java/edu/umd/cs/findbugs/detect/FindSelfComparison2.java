@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -154,7 +154,7 @@ public class FindSelfComparison2 implements Detector {
 		int priority = HIGH_PRIORITY;
 		if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
 			priority = NORMAL_PRIORITY;
-		XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, v0, frame);
+		XField field = ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, v0, frame);
 		BugAnnotation annotation;
 		String prefix;
 		if (field != null) {
@@ -163,7 +163,7 @@ public class FindSelfComparison2 implements Detector {
 			annotation = FieldAnnotation.fromXField(field);
 			prefix = "SA_FIELD_SELF_";
 		} else {
-			annotation  = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(method, location, v0, frame);
+			annotation  = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, v0, frame);
 			prefix = "SA_LOCAL_SELF_" ;
 			if (opcode == ISUB) return; // only report this if simple detector reports it
 		}

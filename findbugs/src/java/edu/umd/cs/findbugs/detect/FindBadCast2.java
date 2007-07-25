@@ -45,11 +45,11 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
-import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -321,7 +321,7 @@ public class FindBadCast2 implements Detector {
 			ValueNumber valueNumber = vFrame
 					.getTopValue();
 			boolean isParameter = paramValueNumberSet.contains(valueNumber);
-			BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+			BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 					location, valueNumber, vFrame);
 			try {
 				JavaClass castJavaClass = Repository.lookupClass(castName);
