@@ -20,15 +20,28 @@
 package edu.umd.cs.findbugs.internalAnnotations;
 
 import java.lang.annotation.Documented;
+/*
+import java.lang.annotation.ElementType;
+*/
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+/*
+import javax.annotation.meta.TypeQualifier;
+import javax.annotation.meta.When;
+*/
 
 /**
  * * Denotes a class name or package name where the / character is used to separate package/class name components. 
  * @author pugh
  */
 @Documented
+/*
+@TypeQualifier
+*/
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
-
+	/*
+	When when() default When.ALWAYS;
+	ElementType[] applyTo() default {};
+	*/
 }
