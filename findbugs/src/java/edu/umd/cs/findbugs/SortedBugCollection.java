@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -662,7 +663,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 	private Comparator<BugInstance> comparator;
 	private TreeSet<BugInstance> bugSet;
-	private List<AnalysisError> errorList;
+	private LinkedHashSet<AnalysisError> errorList;
 	private TreeSet<String> missingClassSet;
 	@CheckForNull private String summaryHTML;
 	private ProjectStats projectStats;
@@ -722,7 +723,7 @@ public class SortedBugCollection implements BugCollection {
 		this.projectStats = projectStats;
 		this.comparator = comparator;
 		bugSet = new TreeSet<BugInstance>(comparator);
-		errorList = new LinkedList<AnalysisError>();
+		errorList = new LinkedHashSet<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
