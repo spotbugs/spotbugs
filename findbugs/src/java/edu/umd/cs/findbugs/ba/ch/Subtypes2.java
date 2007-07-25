@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -327,6 +328,68 @@ public class Subtypes2 {
 	    	}
 	    }
 	    return isSubtype;
+    }
+    
+    public ReferenceType getFirstCommonSupertype(ReferenceType a, ReferenceType b) throws ClassNotFoundException {
+    	// Easy case: same types
+    	if (a.equals(b)) {
+    		return a;
+    	}
+    	
+    	boolean aIsArrayType = (a instanceof ArrayType);
+    	boolean bIsArrayType = (b instanceof ArrayType);
+    	
+    	if (aIsArrayType && bIsArrayType) {
+    		// Merging array types - kind of a pain.
+    		
+    		ArrayType aArrType = (ArrayType) a;
+    		ArrayType bArrType = (ArrayType) b;
+
+    		Type aBaseType = aArrType.getBasicType();
+    		Type bBaseType = bArrType.getBasicType();
+    		
+    		if ((aBaseType instanceof BasicType) || (bBaseType instanceof BasicType)) {
+    			// At least one of a or b has a primitive type as its base type,
+    			// and they differ either in number of dimensions or base types.
+    			return ObjectType.OBJECT;
+    		}
+    		
+    		int aNumDimensions = aArrType.getDimensions();
+    		int bNumDimensions = bArrType.getDimensions();
+
+    		if (aNumDimensions == bNumDimensions) {
+    			// Same number of dimensions is an easy case.
+    			// Compute the ObjectType which is the first common superclass
+    			// of the respective base types, and return a new array
+    			// with that base type and the same number of dimensions.
+    			ObjectType baseTypesFirstCommonSupertype = getFirstCommonSupertype((ObjectType) aBaseType, (ObjectType) bBaseType);
+    			return new ArrayType(baseTypesFirstCommonSupertype, aNumDimensions);
+    		}
+    		
+    		// Weird case: both arrays have an ObjectType as the base type,
+    		// but numbers of dimensions differ.
+    		// Common supertype is an array whose base type is Object
+    		// and whose number of dimensions is the
+    		// smaller number of dimensions of a and b.
+    		// E.g., first common supertype of String[][] and Integer[]
+    		// is Object[].
+    		return new ArrayType(ObjectType.OBJECT, Math.min(aNumDimensions, bNumDimensions));
+    	}
+
+    	if (aIsArrayType || bIsArrayType) {
+    		// One of a and b is an array type, but not both.
+    		// Common supertype is Object.
+    		return ObjectType.OBJECT;
+    	}
+    	
+    	// Neither a nor b is an array type.
+    	// Find first common supertypes of ObjectTypes.
+    	return getFirstCommonSupertype((ObjectType) a, (ObjectType) b);
+    }
+    
+    public ObjectType getFirstCommonSupertype(ObjectType a, ObjectType b) {
+    	// FIXME: implement
+    	throw new UnsupportedOperationException();
     }
     
     /**
