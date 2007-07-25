@@ -156,6 +156,10 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 	 */
 	@Override
 	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
+		if (!fact.isValid()) {
+			return;
+		}
+		
 		// Propagate flow values and source information across phi nodes.
 		
 		ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(edge.getTarget());
@@ -165,11 +169,12 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 			return;
 		}
 
-		if (targetVnaFrame.getNumSlots() != sourceVnaFrame.getNumSlots()) {
-			throw new DataflowAnalysisException("wrong vna frame sizes on edge " + edge.toString());
-		}
+		// The source and target frames can have different numbers of slots
+		// if the target is an exception handler.
+		// So, merge the minimum number of slots in either frame.
+		int numSlotsToMerge = Math.min(sourceVnaFrame.getNumSlots(), targetVnaFrame.getNumSlots());
 		
-		for (int i = 0; i < targetVnaFrame.getNumSlots(); i++) {
+		for (int i = 0; i < numSlotsToMerge; i++) {
 			ValueNumber targetVN = targetVnaFrame.getValue(i);
 			ValueNumber sourceVN = sourceVnaFrame.getValue(i);
 			
