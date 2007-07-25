@@ -29,7 +29,6 @@ import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
@@ -44,26 +43,26 @@ public class TypeQualifierValueSet {
 	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.MAYBE;
 
 	private Map<ValueNumber, FlowValue> valueMap;
-	private Map<ValueNumber, Set<Location>> whereAlways;
-	private Map<ValueNumber, Set<Location>> whereNever;
+	private Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;
+	private Map<ValueNumber, Set<SourceSinkInfo>> whereNever;
 	private State state = State.VALID;
 
 	public TypeQualifierValueSet() {
 		this.valueMap = new HashMap<ValueNumber, FlowValue>();
-		this.whereAlways = new HashMap<ValueNumber, Set<Location>>();
-		this.whereNever = new HashMap<ValueNumber, Set<Location>>();
+		this.whereAlways = new HashMap<ValueNumber, Set<SourceSinkInfo>>();
+		this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>();
 		this.state = State.TOP;
 	}
 
-	public void setValue(ValueNumber vn, FlowValue flowValue, Location location) {
+	public void setValue(ValueNumber vn, FlowValue flowValue, SourceSinkInfo location) {
 		setValue(vn, flowValue);
 		
 		if (flowValue == FlowValue.ALWAYS) {
-			addLocation(whereAlways, vn, location);
+			addSourceSinkInfo(whereAlways, vn, location);
 		}
 		
 		if (flowValue == FlowValue.NEVER) {
-			addLocation(whereNever, vn, location);
+			addSourceSinkInfo(whereNever, vn, location);
 		}
 	}
 
@@ -71,23 +70,23 @@ public class TypeQualifierValueSet {
 		valueMap.put(vn, flowValue);
 	}
 
-	private static void addLocation(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn, Location location) {
-		Set<Location> locationSet = getOrCreateLocationSet(locationSetMap, vn);
+	private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber vn, SourceSinkInfo location) {
+		Set<SourceSinkInfo> locationSet = getOrCreateSourceSinkInfoSet(locationSetMap, vn);
 		locationSet.add(location);
 	}
 	
-	public Set<Location> getWhereAlways(ValueNumber vn) {
-		return getOrCreateLocationSet(whereAlways, vn);
+	public Set<SourceSinkInfo> getWhereAlways(ValueNumber vn) {
+		return getOrCreateSourceSinkInfoSet(whereAlways, vn);
 	}
 	
-	public Set<Location> getWhereNever(ValueNumber vn) {
-		return getOrCreateLocationSet(whereNever, vn);
+	public Set<SourceSinkInfo> getWhereNever(ValueNumber vn) {
+		return getOrCreateSourceSinkInfoSet(whereNever, vn);
 	}
 
-	private static Set<Location> getOrCreateLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber vn) {
-		Set<Location> locationSet = locationSetMap.get(vn);
+	private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber vn) {
+		Set<SourceSinkInfo> locationSet = locationSetMap.get(vn);
 		if (locationSet == null) {
-			locationSet = new HashSet<Location>();
+			locationSet = new HashSet<SourceSinkInfo>();
 			locationSetMap.put(vn, locationSet);
 		}
 		return locationSet;
@@ -117,15 +116,15 @@ public class TypeQualifierValueSet {
 		this.state = source.state;
 		this.valueMap.clear();
 		this.valueMap.putAll(source.valueMap);
-		copyLocationSetMap(this.whereAlways, source.whereAlways);
-		copyLocationSetMap(this.whereNever, source.whereNever);
+		copySourceSinkInfoSetMap(this.whereAlways, source.whereAlways);
+		copySourceSinkInfoSetMap(this.whereNever, source.whereNever);
 	}
 
-	private void copyLocationSetMap(Map<ValueNumber, Set<Location>> dest, Map<ValueNumber, Set<Location>> source) {
+	private void copySourceSinkInfoSetMap(Map<ValueNumber, Set<SourceSinkInfo>> dest, Map<ValueNumber, Set<SourceSinkInfo>> source) {
 		dest.keySet().retainAll(source.keySet());
 		
-		for (Map.Entry<ValueNumber, Set<Location>> entry : source.entrySet()) {
-			Set<Location> locSet = getOrCreateLocationSet(dest, entry.getKey());
+		for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
+			Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(dest, entry.getKey());
 			locSet.clear();
 			locSet.addAll(entry.getValue());
 		}
@@ -155,8 +154,8 @@ public class TypeQualifierValueSet {
 		setValue(toVN, getValue(fromVN));
 		
 		// Propagate sink location information
-		transferLocationSet(whereAlways, toVN, fromVN);
-		transferLocationSet(whereNever, toVN, fromVN);
+		transferSourceSinkInfoSet(whereAlways, toVN, fromVN);
+		transferSourceSinkInfoSet(whereNever, toVN, fromVN);
 		
 		// Remove all information about the "from" value
 		valueMap.remove(fromVN);
@@ -164,11 +163,11 @@ public class TypeQualifierValueSet {
 		whereNever.remove(fromVN);
 	}
 
-    private static void transferLocationSet(Map<ValueNumber, Set<Location>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
-		Set<Location> locSet = getOrCreateLocationSet(locationSetMap, fromVN);
+    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
+		Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(locationSetMap, fromVN);
 		
-		for (Location loc : locSet) {
-			addLocation(locationSetMap, toVN, loc);
+		for (SourceSinkInfo loc : locSet) {
+			addSourceSinkInfo(locationSetMap, toVN, loc);
 		}
     }
 
@@ -183,20 +182,20 @@ public class TypeQualifierValueSet {
 		
 		for (ValueNumber vn : interesting) {
 			setValue(vn, FlowValue.meet(this.getValue(vn), fact.getValue(vn)));
-			mergeLocationSets(this.whereAlways, fact.whereAlways, vn);
-			mergeLocationSets(this.whereNever, fact.whereNever, vn);
+			mergeSourceSinkInfoSets(this.whereAlways, fact.whereAlways, vn);
+			mergeSourceSinkInfoSets(this.whereNever, fact.whereNever, vn);
 		}
 	}
 
-	private void mergeLocationSets(
-			Map<ValueNumber, Set<Location>> locationSetMapToUpdate,
-			Map<ValueNumber, Set<Location>> otherLocationSetMap,
+	private void mergeSourceSinkInfoSets(
+			Map<ValueNumber, Set<SourceSinkInfo>> locationSetMapToUpdate,
+			Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap,
 			ValueNumber vn) {
-		if (!otherLocationSetMap.containsKey(vn)) {
+		if (!otherSourceSinkInfoSetMap.containsKey(vn)) {
 			return;
 		}
-		Set<Location> locationSetToUpdate = getOrCreateLocationSet(whereAlways, vn);
-		locationSetToUpdate.addAll(getOrCreateLocationSet(otherLocationSetMap, vn));
+		Set<SourceSinkInfo> locationSetToUpdate = getOrCreateSourceSinkInfoSet(whereAlways, vn);
+		locationSetToUpdate.addAll(getOrCreateSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn));
 	}
 
 	/* (non-Javadoc)
@@ -244,9 +243,9 @@ public class TypeQualifierValueSet {
 			buf.append("->");
 			buf.append(getValue(vn).toString());
 			buf.append("[");
-			appendLocations(buf, "YES=", getOrCreateLocationSet(whereAlways, vn));
+			appendSourceSinkInfos(buf, "YES=", getOrCreateSourceSinkInfoSet(whereAlways, vn));
 			buf.append(",");
-			appendLocations(buf, "NO=", getOrCreateLocationSet(whereNever, vn));
+			appendSourceSinkInfos(buf, "NO=", getOrCreateSourceSinkInfoSet(whereNever, vn));
 			buf.append("]");
 		}
 		
@@ -255,19 +254,19 @@ public class TypeQualifierValueSet {
 		return buf.toString();
 	}
 
-	private static void appendLocations(StringBuffer buf, String key, Set<Location> locationSet) {
-		TreeSet<Location> sortedLocSet = new TreeSet<Location>();
+	private static void appendSourceSinkInfos(StringBuffer buf, String key, Set<SourceSinkInfo> locationSet) {
+		TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<SourceSinkInfo>();
 		sortedLocSet.addAll(locationSet);
 		boolean first = true;
 		buf.append(key);
 		buf.append("(");
-		for (Location loc : sortedLocSet) {
+		for (SourceSinkInfo loc : sortedLocSet) {
 			if (first) {
 				first = false;
 			} else {
 				buf.append(",");
 			}
-			buf.append(loc.toCompactString());
+			buf.append(loc.getLocation().toCompactString());
 		}
 		buf.append(")");
 	}

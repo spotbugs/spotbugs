@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.jsr305.FlowValue;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
+import edu.umd.cs.findbugs.ba.jsr305.SourceSinkInfo;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -58,9 +59,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
 	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
-	
+
 	private BugReporter bugReporter;
-	
+
 	public CheckTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -73,18 +74,18 @@ public class CheckTypeQualifiers extends CFGDetector {
 		if (DEBUG) {
 			System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
 		}
-		
+
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		ForwardTypeQualifierDataflowFactory forwardDataflowFactory =
 			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
 		BackwardTypeQualifierDataflowFactory backwardDataflowFactory =
 			analysisCache.getMethodAnalysis(BackwardTypeQualifierDataflowFactory.class, methodDescriptor);
-		
+
 		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor);
 		if (DEBUG) {
 			System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
 		}
-		
+
 		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
 			try {
 				checkQualifier(methodDescriptor, cfg, typeQualifierValue, forwardDataflowFactory, backwardDataflowFactory);
@@ -99,26 +100,26 @@ public class CheckTypeQualifiers extends CFGDetector {
 	/**
 	 * Check a specific TypeQualifierValue on a method.
 	 * 
-     * @param methodDescriptor       MethodDescriptor of method
-     * @param cfg                    CFG of method
-     * @param typeQualifierValue     TypeQualifierValue to check
+	 * @param methodDescriptor       MethodDescriptor of method
+	 * @param cfg                    CFG of method
+	 * @param typeQualifierValue     TypeQualifierValue to check
 	 * @param forwardDataflowFactory ForwardTypeQualifierDataflowFactory used to create forward dataflow analysis objects
 	 * @param backwardDataflowFactory BackwardTypeQualifierDataflowFactory used to create backward dataflow analysis objects
-     */
-    private void checkQualifier(
-    		MethodDescriptor methodDescriptor,
-    		CFG cfg,
-    		TypeQualifierValue typeQualifierValue,
-    		ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
-    		BackwardTypeQualifierDataflowFactory backwardDataflowFactory) throws CheckedAnalysisException {
-    	
-    	if (DEBUG) {
-    		System.out.println("----------------------------------------------------------------------");
-    		System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
-    		System.out.println("----------------------------------------------------------------------");
-    	}
+	 */
+	private void checkQualifier(
+			MethodDescriptor methodDescriptor,
+			CFG cfg,
+			TypeQualifierValue typeQualifierValue,
+			ForwardTypeQualifierDataflowFactory forwardDataflowFactory,
+			BackwardTypeQualifierDataflowFactory backwardDataflowFactory) throws CheckedAnalysisException {
 
-    	ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
+		if (DEBUG) {
+			System.out.println("----------------------------------------------------------------------");
+			System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
+			System.out.println("----------------------------------------------------------------------");
+		}
+
+		ForwardTypeQualifierDataflow forwardDataflow = forwardDataflowFactory.getDataflow(typeQualifierValue);
 
 		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
 			System.out.println("********* Forwards analysis *********");
@@ -126,7 +127,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				new DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis>(forwardDataflow);
 			p.print(System.out);
 		}
-		
+
 		BackwardTypeQualifierDataflow backwardDataflow = backwardDataflowFactory.getDataflow(typeQualifierValue);
 
 		if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || DEBUG_DATAFLOW_MODE.equals("both"))) {
@@ -135,71 +136,72 @@ public class CheckTypeQualifiers extends CFGDetector {
 				new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(backwardDataflow);
 			p.print(System.out);
 		}
-		
+
 		// See if there are any locations or edges where
 		//
 		// - a backward ALWAYS meets a forward NEVER
 		// - a backward NEVER meets a forward ALWAYS
-		
+
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location loc = i.next();
-			
+
 			TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAtLocation(loc);
 			TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAfterLocation(loc);
-			
+
 			if (!forwardsFact.isValid() || !backwardsFact.isValid()) {
 				continue;
 			}
-			
+
 			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
 		}
-    }
+	}
 
 	/**
-     * @param methodDescriptor
-     * @param typeQualifierValue
-     * @param forwardsFact
-     * @param backwardsFact
-     * @return
-     */
-    private void check(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
-            TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact) {
-	    Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
-	    valueNumberSet.addAll(forwardsFact.getValueNumbers());
-	    valueNumberSet.addAll(backwardsFact.getValueNumbers());
-	    
-	    for (ValueNumber vn : valueNumberSet) {
-	    	FlowValue forward = forwardsFact.getValue(vn);
-	    	FlowValue backward = backwardsFact.getValue(vn);
-	    	
-	    	if (DEBUG) {
-	    		System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward);
-	    	}
-	    	
-	    	if (FlowValue.valuesConflict(forward, backward)) {
-	    		// Issue warning
-	    		BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
-	    			.addClassAndMethod(methodDescriptor)
-	    			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
-	    		
-	    		Set<Location> sourceSet = (forward == FlowValue.ALWAYS)
-	    			? forwardsFact.getWhereAlways(vn)
-	    			: forwardsFact.getWhereNever(vn);
-	    		
-	    		for (Location source : sourceSet) {
-	    			warning.addSourceLine(methodDescriptor, source).describe("SOURCE_LINE_VALUE_SOURCE");
-	    		}
-	    		
-	    		Set<Location> sinkSet = (backward == FlowValue.ALWAYS)
-	    			? backwardsFact.getWhereAlways(vn)
-	    			: backwardsFact.getWhereNever(vn);
-	    		for (Location sink : sinkSet) {
-	    			warning.addSourceLine(methodDescriptor, sink).describe("SOURCE_LINE_VALUE_SINK");
-	    		}
-	    		
-	    		bugReporter.reportBug(warning);
-	    	}
-	    }
-    }
+	 * @param methodDescriptor
+	 * @param typeQualifierValue
+	 * @param forwardsFact
+	 * @param backwardsFact
+	 * @return
+	 */
+	private void check(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+			TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact) {
+		Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
+		valueNumberSet.addAll(forwardsFact.getValueNumbers());
+		valueNumberSet.addAll(backwardsFact.getValueNumbers());
+
+		for (ValueNumber vn : valueNumberSet) {
+			FlowValue forward = forwardsFact.getValue(vn);
+			FlowValue backward = backwardsFact.getValue(vn);
+
+			if (DEBUG) {
+				System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward);
+			}
+
+			if (FlowValue.valuesConflict(forward, backward)) {
+				// Issue warning
+				BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
+					.addClassAndMethod(methodDescriptor)
+					.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+
+				Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS)
+						? forwardsFact.getWhereAlways(vn)
+						: forwardsFact.getWhereNever(vn);
+
+				for (SourceSinkInfo source : sourceSet) {
+					warning.addSourceLine(methodDescriptor, source.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
+				}
+
+				Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS)
+						? backwardsFact.getWhereAlways(vn)
+						: backwardsFact.getWhereNever(vn);
+
+				for (SourceSinkInfo sink : sinkSet) {
+					warning.addSourceLine(methodDescriptor, sink.getLocation()).describe("SOURCE_LINE_VALUE_SINK");
+				}
+
+				bugReporter.reportBug(warning);
+			}
+		}
+	}
 
 }

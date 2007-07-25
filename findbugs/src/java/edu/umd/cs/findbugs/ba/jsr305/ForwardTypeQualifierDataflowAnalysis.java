@@ -102,7 +102,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 					entryFact.setValue(
 							vnaFrameAtEntry.getValue(i + firstParamSlot),
 							flowValueFromWhen(tqa.when),
-							cfg.getLocationAtEntry());
+							new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry()));
 				}
 			}
 		}
@@ -124,7 +124,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		Location location = new Location(handle, basicBlock);
 		short opcode = handle.getInstruction().getOpcode();
 		TypeQualifierAnnotation topOfStack = null;
-		Location sourceLoc = null;
+		SourceSinkInfo sourceLoc = null;
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
 			// Model return value
@@ -137,14 +137,14 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 				if (DEBUG_VERBOSE) {
 					System.out.println(topOfStack != null ? topOfStack.toString() : "<none>");
 				}
-				sourceLoc = location;
+				sourceLoc = new SourceSinkInfo(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location);
 			}
 		} else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
 			// Model field loads
 			XField loadedField = XFactory.createXField((FieldInstruction) handle.getInstruction(), cpg);
 			if (loadedField.isResolved()) {
 				topOfStack = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
-				sourceLoc = location;
+				sourceLoc = new SourceSinkInfo(SourceSinkType.FIELD_LOAD, location);
 			}
 		}
 		
