@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
-
 	private final DepthFirstSearch dfs;
 	private final ReverseDepthFirstSearch rdfs;
 	private TypeQualifierValueSet entryFact;
@@ -178,7 +177,13 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		// Find the annotation on the method, which serves to annotate the return value 
 		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
 		if (tqa == null) {
+			if (DEBUG_VERBOSE) {
+				System.out.println("No applicable type qualifier annotation on return value");
+			}
 			return fact;
+		}
+		if (DEBUG_VERBOSE) {
+			System.out.println("Return value type qualifier annotation is " + tqa);
 		}
 		FlowValue flowValueOfReturnValue = flowValueFromWhen(tqa.when);
 
@@ -186,7 +191,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
-			if (location.getHandle().getInstruction().getOpcode() == Constants.RETURN) {
+			if (location.getHandle().getInstruction().getOpcode() == Constants.ARETURN) {
 				ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
 				if (!vnaFrameAtReturn.isValid()) {
 					continue;
@@ -194,6 +199,10 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 				ValueNumber topValue = vnaFrameAtReturn.getTopValue();
 				fact.setValue(topValue, flowValueOfReturnValue, new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location));
 			}
+		}
+		
+		if (DEBUG_VERBOSE) {
+			System.out.println("Entry fact (at cfg exit): " + fact.toString());
 		}
 		
 		return fact;
