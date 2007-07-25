@@ -1283,7 +1283,7 @@ public class OpcodeStack implements Constants2
 			 //Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 			 //or the stack will resync with the code. But hopefully not false positives
 			 
-			 AnalysisContext.logError("Error procssing opcode " + OPCODE_NAMES[seen], e);
+			 AnalysisContext.logError("Error procssing opcode " + OPCODE_NAMES[seen] + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName() , e);
 			 if (DEBUG) 
 				 e.printStackTrace();
 			 clear();
