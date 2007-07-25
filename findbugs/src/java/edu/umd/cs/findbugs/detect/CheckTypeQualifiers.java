@@ -92,7 +92,10 @@ public class CheckTypeQualifiers extends CFGDetector {
 			} catch (MissingClassException e) {
 				bugReporter.reportMissingClass(e.getClassDescriptor());
 			} catch (CheckedAnalysisException e) {
-				bugReporter.logError("Exception checking type qualifier " + typeQualifierValue.toString(), e);
+				bugReporter.logError(
+						"Exception checking type qualifier " + typeQualifierValue.toString() +
+						" on method " + methodDescriptor.toString(),
+						e);
 			}
 		}
 	}
