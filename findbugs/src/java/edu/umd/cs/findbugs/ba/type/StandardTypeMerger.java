@@ -26,11 +26,9 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * A TypeMerger which applies standard Java semantics
@@ -165,12 +163,18 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		}
 	}
 
-	private boolean isThrowable(ReferenceType ref) throws ClassNotFoundException {
-		if (Subtypes2.ENABLE_SUBTYPES2) {
-			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-			return subtypes2.isSubtype(ref, ObjectType.THROWABLE);
-		} else {
-			return ref.isAssignmentCompatibleWith(ObjectType.THROWABLE);
+	private boolean isThrowable(ReferenceType ref) /*throws ClassNotFoundException*/ {
+		try {
+			if (Subtypes2.ENABLE_SUBTYPES2) {
+				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+				return subtypes2.isSubtype(ref, ObjectType.THROWABLE);
+			} else {
+				return ref.isAssignmentCompatibleWith(ObjectType.THROWABLE);
+			}
+		} catch (ClassNotFoundException e) {
+			// We'll just assume that it's not an exception type.
+			lookupFailureCallback.reportMissingClass(e);
+			return false;
 		}
 	}
 
