@@ -170,6 +170,13 @@ public abstract class AbstractBugReporter implements BugReporter {
 			// implementations.
 			return;
 		}
+		
+		if (message.trim().equals("")) {
+			// Subtypes2 throws ClassNotFoundExceptions with no message in
+			// some cases.  Ignore them (the missing classes will already
+			// have been reported).
+			return;
+		}
 
 		assert message.indexOf('<') == -1 : "message is " + message;
 		logMissingClass(message);
