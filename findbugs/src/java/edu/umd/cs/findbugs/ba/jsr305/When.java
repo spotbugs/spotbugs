@@ -29,38 +29,4 @@ package edu.umd.cs.findbugs.ba.jsr305;
  */
 public enum When {
 	ASSUME_ALWAYS, ALWAYS, UNKNOWN, MAYBE_NOT, NEVER;
-
-	// Dataflow lattice:
-	//
-	// Always    Never
-	//   |        |
-	// Assume     |
-	// always   Unknown
-	//     \    /
-	//      \  /
-	//      Maybe
-	//       not
-	private static final When[][] mergeMatrix = {
-                           // ASSUME_                                    MAYBE_
-                           // ALWAYS          ALWAYS          UNKNOWN    NOT         NEVER
-                           // ----------------------------------------------------------------
-		/* ASSUME_ALWAYS */ { ASSUME_ALWAYS, },
-		/* ALWAYS */        { ASSUME_ALWAYS,  ASSUME_ALWAYS, },
-		/* UNKNOWN */       { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN, },
-		/* MAYBE_NOT */     { MAYBE_NOT,      MAYBE_NOT,      MAYBE_NOT, MAYBE_NOT, },
-		/* NEVER */         { MAYBE_NOT,      MAYBE_NOT,      UNKNOWN,   MAYBE_NOT,  NEVER, },
-	};
-	
-	public static When meet(When a, When b) {
-		int aIndex = a.ordinal();
-		int bIndex = b.ordinal();
-		
-		if (aIndex < bIndex) {
-			int tmp = aIndex;
-			aIndex = bIndex;
-			bIndex = tmp;
-		}
-		
-		return mergeMatrix[aIndex][bIndex];
-	}
 }
