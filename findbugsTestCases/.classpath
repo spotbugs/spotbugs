@@ -6,5 +6,6 @@
 	<classpathentry kind="var" path="FINDBUGS_ANNOTATIONS"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/JSR305-ri/build/classes"/>
+	<classpathentry kind="lib" path="lib/j2ee.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
