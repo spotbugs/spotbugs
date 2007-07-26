@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="lib/asm-tree-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/asm-commons-3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

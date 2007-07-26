@@ -37,6 +37,7 @@
 	<property name="apiDoc.dir" value="apiJavaDoc"/>
 	<property name="annotationDoc.dir" value="annotationJavaDoc"/>
 	<property name="jnlp.dir" value="jnlp"/>
+	<property name="jsr305.dir" value="../JSR305-ri"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
@@ -61,6 +62,8 @@
 		<pathelement location="${jar.dir}/asm-3.0.jar"/>
 		<pathelement location="${jar.dir}/asm-commons-3.0.jar"/>
 		<pathelement location="${jar.dir}/asm-tree-3.0.jar"/>
+		<pathelement location="${jar.dir}/jsr305.jar"/>
+		<pathelement location="${jsr305.dir}/build/classes"/>
 	</path>
 	
 	<path id="tools.classpath">
