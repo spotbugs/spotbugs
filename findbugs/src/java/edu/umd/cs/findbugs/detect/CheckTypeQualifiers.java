@@ -26,6 +26,7 @@ import java.util.Set;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -41,9 +42,11 @@ import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
 import edu.umd.cs.findbugs.ba.jsr305.SourceSinkInfo;
+import edu.umd.cs.findbugs.ba.jsr305.SourceSinkType;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -153,20 +156,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 
 			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
 		}
-		
+
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
 			BasicBlock block = i.next();
 			check(methodDescriptor, typeQualifierValue, forwardDataflow.getResultFact(block), backwardDataflow.getStartFact(block));
 		}
 	}
 
-	/**
-	 * @param methodDescriptor
-	 * @param typeQualifierValue
-	 * @param forwardsFact
-	 * @param backwardsFact
-	 * @return
-	 */
 	private void check(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact) {
 		Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
@@ -182,29 +178,57 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 
 			if (FlowValue.valuesConflict(forward, backward)) {
-				// Issue warning
-				BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
-					.addClassAndMethod(methodDescriptor)
-					.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
-
-				Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS)
-						? forwardsFact.getWhereAlways(vn)
-						: forwardsFact.getWhereNever(vn);
-
-				for (SourceSinkInfo source : sourceSet) {
-					warning.addSourceLine(methodDescriptor, source.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
-				}
-
-				Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS)
-						? backwardsFact.getWhereAlways(vn)
-						: backwardsFact.getWhereNever(vn);
-
-				for (SourceSinkInfo sink : sinkSet) {
-					warning.addSourceLine(methodDescriptor, sink.getLocation()).describe("SOURCE_LINE_VALUE_SINK");
-				}
-
-				bugReporter.reportBug(warning);
+				emitWarning(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward);
 			}
+		}
+	}
+
+	private void emitWarning(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+			TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact, ValueNumber vn, FlowValue forward,
+			FlowValue backward) {
+		// Issue warning
+		BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
+			.addClassAndMethod(methodDescriptor)
+			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+
+		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS)
+				? forwardsFact.getWhereAlways(vn)
+				: forwardsFact.getWhereNever(vn);
+
+		// TODO
+//		LocalVariableAnnotation local = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber, vnaFrame)
+
+		for (SourceSinkInfo source : sourceSet) {
+			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+		}
+
+		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS)
+				? backwardsFact.getWhereAlways(vn)
+				: backwardsFact.getWhereNever(vn);
+
+		for (SourceSinkInfo sink : sinkSet) {
+			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+		}
+
+		bugReporter.reportBug(warning);
+	}
+
+	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
+		switch (sourceSinkInfo.getType()) {
+		case PARAMETER:
+		case RETURN_VALUE_OF_CALLED_METHOD:
+		case FIELD_LOAD:
+			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
+			break;
+			
+		case ARGUMENT_TO_CALLED_METHOD:
+		case RETURN_VALUE:
+		case FIELD_STORE:
+			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SINK");
+			return;
+			
+		default:
+			throw new IllegalStateException();
 		}
 	}
 

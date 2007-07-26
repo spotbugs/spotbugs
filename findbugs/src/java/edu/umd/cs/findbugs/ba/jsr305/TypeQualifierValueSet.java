@@ -54,15 +54,17 @@ public class TypeQualifierValueSet {
 		this.state = State.TOP;
 	}
 
-	public void setValue(ValueNumber vn, FlowValue flowValue, SourceSinkInfo location) {
+	public void setValue(ValueNumber vn, FlowValue flowValue, SourceSinkInfo sourceSinkInfo) {
+		assert sourceSinkInfo != null;
+		
 		setValue(vn, flowValue);
 		
-		if (flowValue == FlowValue.ALWAYS) {
-			addSourceSinkInfo(whereAlways, vn, location);
+		if (flowValue.isYes()) {
+			addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
 		}
 		
-		if (flowValue == FlowValue.NEVER) {
-			addSourceSinkInfo(whereNever, vn, location);
+		if (flowValue.isNo()) {
+			addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
 		}
 	}
 
@@ -70,9 +72,9 @@ public class TypeQualifierValueSet {
 		valueMap.put(vn, flowValue);
 	}
 
-	private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber vn, SourceSinkInfo location) {
-		Set<SourceSinkInfo> locationSet = getOrCreateSourceSinkInfoSet(locationSetMap, vn);
-		locationSet.add(location);
+	private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
+		Set<SourceSinkInfo> sourceSinkInfoSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, vn);
+		sourceSinkInfoSet.add(sourceSinkInfo);
 	}
 
 	public void pruneValue(ValueNumber vn) {
@@ -90,13 +92,13 @@ public class TypeQualifierValueSet {
 		return getOrCreateSourceSinkInfoSet(whereNever, vn);
 	}
 
-	private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber vn) {
-		Set<SourceSinkInfo> locationSet = locationSetMap.get(vn);
-		if (locationSet == null) {
-			locationSet = new HashSet<SourceSinkInfo>();
-			locationSetMap.put(vn, locationSet);
+	private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn) {
+		Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
+		if (sourceSinkInfoSet == null) {
+			sourceSinkInfoSet = new HashSet<SourceSinkInfo>();
+			sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
 		}
-		return locationSet;
+		return sourceSinkInfoSet;
 	}
 
 	public FlowValue getValue(ValueNumber vn) {
@@ -160,7 +162,7 @@ public class TypeQualifierValueSet {
 
 		setValue(toVN, getValue(fromVN));
 		
-		// Propagate sink location information
+		// Propagate source/sink information
 		transferSourceSinkInfoSet(whereAlways, toVN, fromVN);
 		transferSourceSinkInfoSet(whereNever, toVN, fromVN);
 		
@@ -170,11 +172,11 @@ public class TypeQualifierValueSet {
 		whereNever.remove(fromVN);
 	}
 
-    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> locationSetMap, ValueNumber toVN, ValueNumber fromVN) {
-		Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(locationSetMap, fromVN);
+    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber toVN, ValueNumber fromVN) {
+		Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, fromVN);
 		
 		for (SourceSinkInfo loc : locSet) {
-			addSourceSinkInfo(locationSetMap, toVN, loc);
+			addSourceSinkInfo(sourceSinkInfoSetMap, toVN, loc);
 		}
     }
 
@@ -195,14 +197,14 @@ public class TypeQualifierValueSet {
 	}
 
 	private void mergeSourceSinkInfoSets(
-			Map<ValueNumber, Set<SourceSinkInfo>> locationSetMapToUpdate,
+			Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMapToUpdate,
 			Map<ValueNumber, Set<SourceSinkInfo>> otherSourceSinkInfoSetMap,
 			ValueNumber vn) {
 		if (!otherSourceSinkInfoSetMap.containsKey(vn)) {
 			return;
 		}
-		Set<SourceSinkInfo> locationSetToUpdate = getOrCreateSourceSinkInfoSet(whereAlways, vn);
-		locationSetToUpdate.addAll(getOrCreateSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn));
+		Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(whereAlways, vn);
+		sourceSinkInfoSetToUpdate.addAll(getOrCreateSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn));
 	}
 
 	/* (non-Javadoc)
@@ -261,9 +263,9 @@ public class TypeQualifierValueSet {
 		return buf.toString();
 	}
 
-	private static void appendSourceSinkInfos(StringBuffer buf, String key, Set<SourceSinkInfo> locationSet) {
+	private static void appendSourceSinkInfos(StringBuffer buf, String key, Set<SourceSinkInfo> sourceSinkInfoSet) {
 		TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<SourceSinkInfo>();
-		sortedLocSet.addAll(locationSet);
+		sortedLocSet.addAll(sourceSinkInfoSet);
 		boolean first = true;
 		buf.append(key);
 		buf.append("(");
