@@ -112,7 +112,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 				valueNumbers.addAll(forwardFact.getValueNumbers());
 				
 				for (ValueNumber vn : valueNumbers) {
-					if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn))) {
+					if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn), typeQualifierValue.isStrictQualifier())) {
 						fact.pruneValue(vn);
 					}
 				}

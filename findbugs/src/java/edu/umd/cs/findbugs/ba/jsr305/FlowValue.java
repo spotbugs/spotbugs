@@ -89,15 +89,20 @@ public enum FlowValue {
 	 * 
 	 * @param forward  a forwards flow value
 	 * @param backward a backwards flow value
+	 * @param isStrictQualifier  true if the type qualifier being checked is strict
 	 * @return true if values conflict, false otherwise
 	 */
-	public static boolean valuesConflict(FlowValue forward, FlowValue backward) {
+	public static boolean valuesConflict(FlowValue forward, FlowValue backward, boolean isStrictQualifier) {
 //		return (forward == ALWAYS && backward == NEVER)
 //			|| (forward == NEVER && backward == ALWAYS);
 		if (forward == TOP || backward == TOP) {
 			return false;
 		}
-		return ((backward == ALWAYS || backward == NEVER) && (forward != backward));
+		if (isStrictQualifier) {
+			return ((backward == ALWAYS || backward == NEVER) && (forward != backward));
+		} else {
+			return (backward != MAYBE && forward != MAYBE && forward != backward);
+		}
 	}
 
 }

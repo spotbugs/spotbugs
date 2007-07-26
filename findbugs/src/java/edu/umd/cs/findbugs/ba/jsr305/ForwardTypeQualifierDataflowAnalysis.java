@@ -147,10 +147,17 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	}
 
 	private void modelReturnValue(TypeQualifierValueSet fact, Location location) throws DataflowAnalysisException {
+		// Nothing to do if called method does not return a reference value
+		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+		String calledMethodSig = inv.getSignature(cpg);
+		if (!calledMethodSig.endsWith(";")) {
+			return;
+		}
+		
 		FlowValue flowValue = null;
 		SourceSinkInfo sourceInfo = new SourceSinkInfo(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location);
 
-		XMethod xmethod = XFactory.createXMethod((InvokeInstruction) location.getHandle().getInstruction(), cpg);
+		XMethod xmethod = XFactory.createXMethod(inv, cpg);
 		if (xmethod.isResolved()) {
 			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
 			if (tqa != null) {

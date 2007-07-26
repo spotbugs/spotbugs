@@ -52,6 +52,16 @@ public class TypeQualifierValue {
 		return typeQualifier;
 	}
 
+	/**
+	 * Return whether or not this TypeQualifierValue denotes
+	 * a strict qualifier.
+	 * 
+	 * @return true if type qualifier is strict, false otherwise
+	 */
+	public boolean isStrictQualifier() {
+		// TODO: implement
+		return false;
+	}
 
 	public int hashCode() {
 		int result = typeQualifier.hashCode();
