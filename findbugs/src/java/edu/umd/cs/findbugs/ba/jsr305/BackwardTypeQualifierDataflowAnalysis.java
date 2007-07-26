@@ -120,16 +120,16 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		}
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
-			checkParameterAnnotations(handle, fact, location);
+			checkParameterAnnotations(fact, location);
 		} else if (handle.getInstruction() instanceof FieldInstruction) {
-			checkFieldStore(handle, fact, location);
+			checkFieldStore(fact, location);
 		}
 		
 	}
 
-    private void checkParameterAnnotations(InstructionHandle handle, TypeQualifierValueSet fact, Location location)
+    private void checkParameterAnnotations(TypeQualifierValueSet fact, Location location)
             throws DataflowAnalysisException {
-	    InvokeInstruction inv = (InvokeInstruction) handle.getInstruction();
+	    InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 	    
 	    XMethod calledMethod = XFactory.createXMethod(inv, cpg);
@@ -163,11 +163,11 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    }
     }
 
-    private void checkFieldStore(InstructionHandle handle, TypeQualifierValueSet fact, Location location)
+    private void checkFieldStore(TypeQualifierValueSet fact, Location location)
             throws DataflowAnalysisException {
-	    short opcode = handle.getInstruction().getOpcode();
+	    short opcode = location.getHandle().getInstruction().getOpcode();
 	    if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
-	    	XField writtenField = XFactory.createXField((FieldInstruction) handle.getInstruction(), cpg);
+	    	XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
 	    	if (tqa != null) {
 	    		// The ValueNumberFrame *before* the FieldInstruction should

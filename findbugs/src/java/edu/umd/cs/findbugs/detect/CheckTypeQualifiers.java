@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Method;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -103,6 +105,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 		}
 	}
+	
+	private String checkLocation;
 
 	/**
 	 * Check a specific TypeQualifierValue on a method.
@@ -154,11 +158,17 @@ public class CheckTypeQualifiers extends CFGDetector {
 				continue;
 			}
 
+			if (DEBUG) {
+				checkLocation = "Location " + loc.toCompactString();
+			}
 			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
 		}
 
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
 			BasicBlock block = i.next();
+			if (DEBUG) {
+				checkLocation = "End of basic block " + block.getLabel();
+			}
 			check(methodDescriptor, typeQualifierValue, forwardDataflow.getResultFact(block), backwardDataflow.getStartFact(block));
 		}
 	}
@@ -178,6 +188,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 
 			if (FlowValue.valuesConflict(forward, backward)) {
+				if (DEBUG) {
+					System.out.println("Emitting warning at " + checkLocation);
+				}
 				emitWarning(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact, vn, forward, backward);
 			}
 		}
@@ -216,6 +229,19 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
 		switch (sourceSinkInfo.getType()) {
 		case PARAMETER:
+			try {
+				Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+				LocalVariableAnnotation lva = LocalVariableAnnotation.getParameterLocalVariableAnnotation(
+						method,
+						sourceSinkInfo.getLocal());
+				lva.setDescription(lva.isSignificant()
+						? "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE_NAMED" : "LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE");
+				warning.add(lva);
+			} catch (CheckedAnalysisException e) {
+				warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
+			}
+			break;
+			
 		case RETURN_VALUE_OF_CALLED_METHOD:
 		case FIELD_LOAD:
 			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");

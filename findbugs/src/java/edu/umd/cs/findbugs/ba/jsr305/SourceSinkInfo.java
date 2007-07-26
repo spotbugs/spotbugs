@@ -27,10 +27,11 @@ import edu.umd.cs.findbugs.ba.Location;
  * 
  * @author David Hovemeyer
  */
-public class SourceSinkInfo {
+public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	private final SourceSinkType type;
 	private final Location location;
 	private int parameter;
+	private int local;
 
 	/**
 	 * Constructor.
@@ -63,11 +64,54 @@ public class SourceSinkInfo {
 	public void setParameter(int parameter) {
 		this.parameter = parameter;
 	}
+	
+	/**
+	 * @param parameter The parameter to set.
+	 * @param local     The local to set.
+	 */
+	public void setParameterAndLocal(int parameter, int local) {
+		this.parameter = parameter;
+		this.local = local;
+	}
 
 	/**
 	 * @return Returns the parameter.
 	 */
 	public int getParameter() {
 		return parameter;
+	}
+
+	/**
+	 * @return Returns the local.
+	 */
+	public int getLocal() {
+		return local;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(SourceSinkInfo o) {
+		return this.location.compareTo(o.location);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return location.hashCode();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+		SourceSinkInfo other = (SourceSinkInfo) obj;
+		return this.location.equals(other.location);
 	}
 }

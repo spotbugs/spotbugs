@@ -87,6 +87,18 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		return new LocalVariableAnnotation(localName, local, position1);
 	}
 
+	/**
+	 * Get a local variable annotation describing a parameter.
+	 * 
+	 * @param method a Method
+	 * @param local  the local variable containing the parameter
+	 * @return LocalVariableAnnotation describing the parameter
+	 */
+	public static LocalVariableAnnotation getParameterLocalVariableAnnotation(Method method, int local) {
+		LocalVariableAnnotation lva = getLocalVariableAnnotation(method, local, 0, 0);
+		return lva;
+	}
+
 	@Override
 	public Object clone() {
 		try {
