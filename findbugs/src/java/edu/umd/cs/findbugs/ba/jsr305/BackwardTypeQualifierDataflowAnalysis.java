@@ -120,14 +120,14 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		}
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
-			checkParameterAnnotations(fact, location);
+			modelMethodArguments(fact, location);
 		} else if (handle.getInstruction() instanceof FieldInstruction) {
-			checkFieldStore(fact, location);
+			modelFieldStore(fact, location);
 		}
 		
 	}
 
-    private void checkParameterAnnotations(TypeQualifierValueSet fact, Location location)
+    private void modelMethodArguments(TypeQualifierValueSet fact, Location location)
             throws DataflowAnalysisException {
 	    InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
@@ -137,25 +137,36 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    
 	    boolean foundParamAnnotation = false;
 	    
-	    for (int i = 0; i < calledMethod.getNumParams(); i++) {
-	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
-	    			calledMethod,
-	    			i,
-	    			typeQualifierValue);
-	    	if (tqa != null) {
-	    		ValueNumber vn = vnaFrame.getArgument(
-	    				inv,
-	    				cpg,
-	    				i,
-	    				sigParser);
-	    		FlowValue flowValue = flowValueFromWhen(tqa.when); 
+	    for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext(); ) {
+	    	int param = 0;
+	    	
+	    	String paramSig = i.next();
+	    	
+	    	if (SignatureParser.isReferenceType(paramSig)) {
 	    		
-	    		SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location);
-	    		info.setParameter(i);
-	    		
-	    		fact.setValue(vn, flowValue, info);
-	    		foundParamAnnotation = true;
+	    		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
+	    				calledMethod,
+	    				param,
+	    				typeQualifierValue);
+
+    			FlowValue flowValue = (tqa != null) ? flowValueFromWhen(tqa.when) : FlowValue.MAYBE;
+    			if (tqa != null) {
+        			foundParamAnnotation = true;
+    			}
+
+    			ValueNumber vn = vnaFrame.getArgument(
+	    					inv,
+	    					cpg,
+	    					param,
+	    					sigParser);
+
+    			SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location);
+    			info.setParameter(param);
+
+    			fact.setValue(vn, flowValue, info);
 	    	}
+	    	
+	    	param++;
 	    }
 	    
 	    if (Dataflow.DEBUG && foundParamAnnotation) {
@@ -163,22 +174,23 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    }
     }
 
-    private void checkFieldStore(TypeQualifierValueSet fact, Location location)
+    private void modelFieldStore(TypeQualifierValueSet fact, Location location)
             throws DataflowAnalysisException {
 	    short opcode = location.getHandle().getInstruction().getOpcode();
 	    if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
+			FlowValue flowValue = null;
+	    	
 	    	XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
-	    	if (tqa != null) {
-	    		// The ValueNumberFrame *before* the FieldInstruction should
-	    		// have the ValueNumber of the stored value on the top of the stack.
-	    		ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
-	    		if (vnaFrameAtStore.isValid()) {
-	    			ValueNumber vn = vnaFrameAtStore.getTopValue();
-	    			FlowValue flowValue = flowValueFromWhen(tqa.when);
-	    			fact.setValue(vn, flowValue, new SourceSinkInfo(SourceSinkType.FIELD_STORE, location));
-	    		}
-	    	}
+	    	flowValue = (tqa != null)  ? flowValueFromWhen(tqa.when) : FlowValue.MAYBE;
+
+    		// The ValueNumberFrame *before* the FieldInstruction should
+    		// have the ValueNumber of the stored value on the top of the stack.
+    		ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
+    		if (vnaFrameAtStore.isValid()) {
+    			ValueNumber vn = vnaFrameAtStore.getTopValue();
+    			fact.setValue(vn, flowValue, new SourceSinkInfo(SourceSinkType.FIELD_STORE, location));
+    		}
 	    }
     }
 
