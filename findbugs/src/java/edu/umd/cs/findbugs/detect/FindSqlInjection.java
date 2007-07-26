@@ -73,6 +73,7 @@ public class FindSqlInjection implements Detector {
 		int sawAppend = Integer.MAX_VALUE;
 		int sawUnsafeAppend = Integer.MAX_VALUE;
 		int sawTaint = Integer.MAX_VALUE;
+		int sawSeriousTaint = Integer.MAX_VALUE;
 
 		public boolean getSawOpenQuote(InstructionHandle handle) {
 			return sawOpenQuote <= handle.getPosition();
@@ -97,6 +98,9 @@ public class FindSqlInjection implements Detector {
 		public boolean getSawTaint(InstructionHandle handle) {
 			return sawTaint <= handle.getPosition();
 		}
+		public boolean getSawSeriousTaint(InstructionHandle handle) {
+			return sawSeriousTaint <= handle.getPosition();
+		}
 
 		public void setSawOpenQuote(InstructionHandle handle) {
 			sawOpenQuote = Math.min(sawOpenQuote, handle.getPosition());
@@ -118,6 +122,9 @@ public class FindSqlInjection implements Detector {
 			sawUnsafeAppend = Math.min(sawUnsafeAppend, handle.getPosition());
 		}
 
+		public void setSawSeriousTaint(InstructionHandle handle) {
+			sawSeriousTaint = Math.min(sawSeriousTaint, handle.getPosition());
+		}
 		public void setSawTaint(InstructionHandle handle) {
 			sawTaint = Math.min(sawTaint, handle.getPosition());
 		}
@@ -305,7 +312,11 @@ public class FindSqlInjection implements Detector {
 					} else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
 						// ignore it
 						assert true;
+					} else if (className.startsWith("javax.servlet") && methodName.startsWith("get")){
+						stringAppendState.setSawTaint(handle);
+						stringAppendState.setSawSeriousTaint(handle);
 					} else  stringAppendState.setSawTaint(handle);
+					
 				}
 			} else if (ins instanceof GETFIELD) {
 				GETFIELD getfield = (GETFIELD) ins;
@@ -404,7 +415,9 @@ public class FindSqlInjection implements Detector {
 			if (!stringAppendState.getSawUnsafeAppend(handle)) {
 				priority += 2;
 			}
-			else if (!stringAppendState.getSawTaint(handle)) {
+			else if (stringAppendState.getSawSeriousTaint(handle)) {
+				priority--;
+			} else if (!stringAppendState.getSawTaint(handle)) {
 				priority ++;
 			}
 		}
