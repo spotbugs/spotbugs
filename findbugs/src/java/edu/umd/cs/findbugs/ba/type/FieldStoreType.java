@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 /**
  * Field property storing the types of values stored
@@ -74,9 +75,21 @@ public class FieldStoreType {
 
 				// FIXME: this will mangle interface types, since
 				// getFirstCommonSuperclass() ignores interfaces.
+				/*
 				leastSupertype = (leastSupertype == null)
 					? (ReferenceType) type
 					: leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
+				*/
+				if (leastSupertype == null) {
+					leastSupertype = (ReferenceType) type;
+				} else {
+					if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
+						leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(
+								leastSupertype, (ReferenceType) type);
+					} else {
+						leastSupertype = leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
+					}
+				}
 
 			} catch (ClassFormatException e) {
 				// Bad signature: ignore

@@ -28,7 +28,9 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 /**
  * Class for keeping track of exceptions that can be
@@ -159,7 +161,11 @@ public class ExceptionSet implements Serializable {
 		ThrownExceptionIterator i = iterator();
 		ReferenceType result = i.next();
 		while (i.hasNext()) {
-			result = result.getFirstCommonSuperclass(i.next());
+			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
+				result = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(result, i.next());
+			} else {
+				result = result.getFirstCommonSuperclass(i.next());
+			}
 			if (result == null) {
 				// This should only happen if the class hierarchy
 				// is incomplete.  We'll just be conservative.

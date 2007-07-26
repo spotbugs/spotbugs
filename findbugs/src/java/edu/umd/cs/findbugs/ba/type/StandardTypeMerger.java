@@ -156,7 +156,11 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 				return ExceptionObjectType.fromExceptionSet(union);
 			}
 
-			return aRef.getFirstCommonSuperclass(bRef);
+			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
+				return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(aRef, bRef);
+			} else {
+				return aRef.getFirstCommonSuperclass(bRef);
+			}
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
 			return ObjectType.OBJECT;
