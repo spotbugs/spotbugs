@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.Location;
@@ -140,11 +141,6 @@ public class CheckTypeQualifiers extends CFGDetector {
 			p.print(System.out);
 		}
 
-		// See if there are any locations or edges where
-		//
-		// - a backward ALWAYS meets a forward NEVER
-		// - a backward NEVER meets a forward ALWAYS
-
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location loc = i.next();
 
@@ -156,6 +152,11 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 
 			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
+		}
+		
+		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
+			BasicBlock block = i.next();
+			check(methodDescriptor, typeQualifierValue, forwardDataflow.getResultFact(block), backwardDataflow.getStartFact(block));
 		}
 	}
 

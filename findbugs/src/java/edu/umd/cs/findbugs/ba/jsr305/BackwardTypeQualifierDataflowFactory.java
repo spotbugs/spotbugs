@@ -66,6 +66,14 @@ public class BackwardTypeQualifierDataflowFactory
 		BackwardTypeQualifierDataflowAnalysis analysis = new BackwardTypeQualifierDataflowAnalysis(
 				dfs, rdfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue
 				);
+
+		// Get the corresponding forward dataflow.
+		// We use it to halt tracking of backwards values once we know
+		// that they encounter a conflicting forward value.
+		ForwardTypeQualifierDataflowFactory forwardFactory =
+			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
+		ForwardTypeQualifierDataflow forwardDataflow = forwardFactory.getDataflow(typeQualifierValue);
+		analysis.setForwardTypeQualifierDataflow(forwardDataflow);
 		
 		BackwardTypeQualifierDataflow dataflow = new BackwardTypeQualifierDataflow(cfg, analysis);
 		

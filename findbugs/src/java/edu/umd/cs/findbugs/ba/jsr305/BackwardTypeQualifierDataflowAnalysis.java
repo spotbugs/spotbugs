@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.bcel.Constants;
@@ -27,6 +28,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -51,9 +53,11 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
+	private static final boolean PRUNE_CONFLICTING_VALUES = SystemProperties.getBoolean("ctq.pruneconflicting");
 	private final DepthFirstSearch dfs;
 	private final ReverseDepthFirstSearch rdfs;
 	private TypeQualifierValueSet entryFact;
+	private ForwardTypeQualifierDataflow forwardTypeQualifierDataflow;
 
 	/**
 	 * Constructor.
@@ -76,6 +80,13 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		this.rdfs = rdfs;
 	}
 	
+	/**
+	 * @param forwardTypeQualifierDataflow The forwardTypeQualifierDataflow to set.
+	 */
+	public void setForwardTypeQualifierDataflow(ForwardTypeQualifierDataflow forwardTypeQualifierDataflow) {
+		this.forwardTypeQualifierDataflow = forwardTypeQualifierDataflow;
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
 	 */
@@ -88,6 +99,25 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		}
 		
 		Location location = new Location(handle, basicBlock);
+		
+		if (PRUNE_CONFLICTING_VALUES && forwardTypeQualifierDataflow != null) {
+			// If we can establish a conflict between a forwards and backwards value,
+			// set the backwards value to TOP.  This prunes the set of locations
+			// where a conflict will be detected to a single location,
+			// preventing duplicate warnings about conflicting type qualifier uses.
+			TypeQualifierValueSet forwardFact = forwardTypeQualifierDataflow.getFactAfterLocation(location);
+			if (forwardFact.isValid()) {
+				HashSet<ValueNumber> valueNumbers = new HashSet<ValueNumber>();
+				valueNumbers.addAll(fact.getValueNumbers());
+				valueNumbers.addAll(forwardFact.getValueNumbers());
+				
+				for (ValueNumber vn : valueNumbers) {
+					if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn))) {
+						fact.pruneValue(vn);
+					}
+				}
+			}
+		}
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
 			checkParameterAnnotations(handle, fact, location);

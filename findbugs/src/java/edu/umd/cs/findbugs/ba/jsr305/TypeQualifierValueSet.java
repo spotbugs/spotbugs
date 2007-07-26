@@ -74,6 +74,13 @@ public class TypeQualifierValueSet {
 		Set<SourceSinkInfo> locationSet = getOrCreateSourceSinkInfoSet(locationSetMap, vn);
 		locationSet.add(location);
 	}
+
+	public void pruneValue(ValueNumber vn) {
+		assert isValid();
+		valueMap.remove(vn);
+		whereAlways.remove(vn);
+		whereNever.remove(vn);
+	}
 	
 	public Set<SourceSinkInfo> getWhereAlways(ValueNumber vn) {
 		return getOrCreateSourceSinkInfoSet(whereAlways, vn);
