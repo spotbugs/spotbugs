@@ -135,21 +135,21 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 	 * @return the corresponding FlowValue
 	 */
 	protected FlowValue flowValueFromWhen(When when) {
-    	switch (when) {
-    	case ALWAYS:
-    		return FlowValue.ALWAYS;
-    	case ASSUME_ALWAYS:
-    		return FlowValue.ALWAYS;
-    	case MAYBE_NOT:
-    		return FlowValue.MAYBE;
-    	case NEVER:
-    		return FlowValue.NEVER;
-    	case UNKNOWN:
-    		return FlowValue.MAYBE;
-    	default:
-    		throw new IllegalStateException();
-    	}
-    }
+		switch (when) {
+		case ALWAYS:
+			return FlowValue.ALWAYS;
+		case ASSUME_ALWAYS:
+			return FlowValue.ALWAYS;
+		case MAYBE_NOT:
+			return FlowValue.MAYBE;
+		case NEVER:
+			return FlowValue.NEVER;
+		case UNKNOWN:
+			return FlowValue.MAYBE;
+		default:
+			throw new IllegalStateException();
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
@@ -159,12 +159,12 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		if (!fact.isValid()) {
 			return;
 		}
-		
+
 		// Propagate flow values and source information across phi nodes.
-		
+
 		ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(edge.getTarget());
 		ValueNumberFrame sourceVnaFrame = vnaDataflow.getResultFact(edge.getSource());
-		
+
 		if (!targetVnaFrame.isValid() || !sourceVnaFrame.isValid()) {
 			return;
 		}
@@ -173,11 +173,11 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		// if the target is an exception handler.
 		// So, merge the minimum number of slots in either frame.
 		int numSlotsToMerge = Math.min(sourceVnaFrame.getNumSlots(), targetVnaFrame.getNumSlots());
-		
+
 		for (int i = 0; i < numSlotsToMerge; i++) {
 			ValueNumber targetVN = targetVnaFrame.getValue(i);
 			ValueNumber sourceVN = sourceVnaFrame.getValue(i);
-			
+
 			if (!targetVN.equals(sourceVN)) {
 				// targetVN is a phi result
 				assert targetVN.hasFlag(ValueNumber.PHI_NODE);
@@ -185,7 +185,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 			}
 		}
 	}
-	
+
 	protected abstract void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN);
 
 }
