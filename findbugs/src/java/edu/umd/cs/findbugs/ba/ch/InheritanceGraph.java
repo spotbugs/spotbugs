@@ -36,4 +36,15 @@ public class InheritanceGraph extends AbstractGraph<InheritanceEdge, ClassVertex
 		return new InheritanceEdge(source, target);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.graph.AbstractGraph#createEdge(edu.umd.cs.findbugs.graph.AbstractVertex, edu.umd.cs.findbugs.graph.AbstractVertex)
+	 */
+	@Override
+	public InheritanceEdge createEdge(ClassVertex source, ClassVertex target) {
+		if (!target.isInterface()) {
+			source.setDirectSuperclass(target);
+		}
+		return super.createEdge(source, target);
+	}
+
 }

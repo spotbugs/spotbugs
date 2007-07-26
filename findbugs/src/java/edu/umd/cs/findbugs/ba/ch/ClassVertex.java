@@ -35,10 +35,11 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private static final int FINISHED = 1;
 	private static final int APPLICATION_CLASS = 2;
 	private static final int INTERFACE = 4;
-	
+
 	private final ClassDescriptor classDescriptor;
 	private final @CheckForNull XClass xclass;
 	private int flags;
+	private ClassVertex directSuperclass;
 
 	private ClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
 		this.classDescriptor = classDescriptor;
@@ -48,7 +49,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 			setInterface();
 		}
 	}
-	
+
 	private ClassVertex(ClassDescriptor classDescriptor, boolean isInterfaceEdge) {
 		this.classDescriptor = classDescriptor;
 		this.xclass = null;
@@ -57,7 +58,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 			setInterface();
 		}
 	}
-	
+
 	/**
 	 * Factory method for resolved ClassVertex objects.
 	 * 
@@ -68,7 +69,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	public static ClassVertex createResolvedClassVertex(ClassDescriptor classDescriptor, XClass xclass) {
 		return new ClassVertex(classDescriptor, xclass);
 	}
-	
+
 	/**
 	 * Factory method for ClassVertex objects representing missing classes.
 	 * 
@@ -79,13 +80,13 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	public static ClassVertex createMissingClassVertex(ClassDescriptor classDescriptor, boolean isInterface) {
 		return new ClassVertex(classDescriptor, isInterface);
 	}
-	
+
 	/**
-     * @return Returns the classDescriptor.
-     */
-    public ClassDescriptor getClassDescriptor() {
-	    return classDescriptor;
-    }
+	 * @return Returns the classDescriptor.
+	 */
+	public ClassDescriptor getClassDescriptor() {
+		return classDescriptor;
+	}
 
 	/**
 	 * @return Returns the xClass.
@@ -117,44 +118,60 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	}
 
 	/**
-     * Mark this ClassVertex as representing an application class.
-     */
-    public void markAsApplicationClass() {
-    	setFlag(APPLICATION_CLASS, true);
-    }
-    
-    /**
-     * @return true if this ClassVertex represents an application class,
-     *         false otherwise
-     */
-    public boolean isApplicationClass() {
-    	return isFlagSet(APPLICATION_CLASS);
-    }
-    
-    /**
-     * Mark this ClassVertex as representing an interface.
-     */
-    private void setInterface() {
-    	setFlag(INTERFACE, true);
-    }
-    
-    /**
-     * @return true if this ClassVertex represents an interface,
-     *         false otherwise
-     */
-    public boolean isInterface() {
-    	return isFlagSet(INTERFACE);
-    }
+	 * Mark this ClassVertex as representing an application class.
+	 */
+	public void markAsApplicationClass() {
+		setFlag(APPLICATION_CLASS, true);
+	}
 
-    private void setFlag(int flag, boolean enable) {
-    	if (enable) {
-    		flags |= flag;
-    	} else {
-    		flags &= ~flag;
-    	}
-    }
-    
-    private boolean isFlagSet(int flag) {
-    	return (flags & flag) != 0;
-    }
+	/**
+	 * @return true if this ClassVertex represents an application class,
+	 *         false otherwise
+	 */
+	public boolean isApplicationClass() {
+		return isFlagSet(APPLICATION_CLASS);
+	}
+
+	/**
+	 * Mark this ClassVertex as representing an interface.
+	 */
+	private void setInterface() {
+		setFlag(INTERFACE, true);
+	}
+
+	/**
+	 * @return true if this ClassVertex represents an interface,
+	 *         false otherwise
+	 */
+	public boolean isInterface() {
+		return isFlagSet(INTERFACE);
+	}
+
+	/**
+	 * Set the ClassVertex representing the direct superclass.
+	 * 
+	 * @param target ClassVertex representing the direct superclass.
+	 */
+	public void setDirectSuperclass(ClassVertex target) {
+		this.directSuperclass = target;
+	}
+	
+	/**
+	 * @return Returns the directSuperclass.
+	 */
+	public ClassVertex getDirectSuperclass() {
+		return directSuperclass;
+	}
+
+	private void setFlag(int flag, boolean enable) {
+		if (enable) {
+			flags |= flag;
+		} else {
+			flags &= ~flag;
+		}
+	}
+
+	private boolean isFlagSet(int flag) {
+		return (flags & flag) != 0;
+	}
 }

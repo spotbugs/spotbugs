@@ -57,6 +57,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayArrayString;
 	ArrayType typeArrayInt;
 	ArrayType typeArrayArrayInt;
+	ArrayType typeArrayChar;
 	ObjectType typeDynamicString;
 	ObjectType typeStaticString;
 	ObjectType typeParameterString;
@@ -81,11 +82,12 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayArrayString = new ArrayType(typeString, 2);
 		typeArrayInt = new ArrayType(Type.INT, 1);
 		typeArrayArrayInt = new ArrayType(Type.INT, 2);
+		typeArrayChar = new ArrayType(Type.CHAR, 1);
 		typeDynamicString = new FindRefComparison.DynamicStringType();
 		typeStaticString = new FindRefComparison.StaticStringType();
 		typeParameterString = new FindRefComparison.ParameterStringType();
 	}
-	
+
 	private static Subtypes2 getSubtypes2() {
 		try {
 			return Global.getAnalysisCache().getDatabase(Subtypes2.class);
@@ -93,7 +95,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			throw new IllegalStateException();
 		}
 	}
-	
+
 	public void testStringSubtypeOfObject() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions(){
 			/* (non-Javadoc)
@@ -106,7 +108,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			}
 		});
 	}
-	
+
 	public void testStringSubtypeOfSerializable() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions(){
 			/* (non-Javadoc)
@@ -134,7 +136,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			}
 		});
 	}
-	
+
 	public void testInterfaceIsSubtypeOfObject() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions() {
 			public void run() throws ClassNotFoundException {
@@ -144,7 +146,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			}
 		});
 	}
-	
+
 	public void testArrays() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions() {
 			/* (non-Javadoc)
@@ -158,7 +160,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 			}
 		});
 	}
-	
+
 	public void testUnrelatedTypes() throws Throwable {
 		executeFindBugsTest(new RunnableWithExceptions(){
 			/* (non-Javadoc)
@@ -166,65 +168,132 @@ public class Subtypes2Test extends FindBugsTestCase {
 			 */
 			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
-				
+
 				assertFalse(test.isSubtype(typeInteger, typeString));
 			}
 		});
 	}
-	
+
 	public void testArraysWrongDimension() throws Throwable {
-	    executeFindBugsTest(new RunnableWithExceptions(){
-	    	/* (non-Javadoc)
-	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
-	    	 */
-	    	public void run() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
-				
-	    		assertFalse(test.isSubtype(typeArrayArrayString, typeArrayString));
-	    	}
-	    });
-    }
-	
+
+				assertFalse(test.isSubtype(typeArrayArrayString, typeArrayString));
+			}
+		});
+	}
+
 	public void testMultidimensionalArrayIsSubtypeOfObjectArray() throws Throwable {
-	    executeFindBugsTest(new RunnableWithExceptions() {
-	    	/* (non-Javadoc)
-	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
-	    	 */
-	    	public void run() throws Throwable {
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeArrayArrayString, typeArrayObject));
 				assertTrue(test.isSubtype(typeArrayArraySerializable, typeArrayObject));
 				assertTrue(test.isSubtype(typeArrayArrayInt, typeArrayObject));
-	    	}
-	    });
-    }
-	
+			}
+		});
+	}
+
 	public void testArrayOfPrimitiveIsSubtypeOfObject() throws Throwable {
-	    executeFindBugsTest(new RunnableWithExceptions(){
-	    	/* (non-Javadoc)
-	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
-	    	 */
-	    	public void run() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Exception {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeArrayInt, typeObject));
-	    	}
-	    });
-    }
-	
+			}
+		});
+	}
+
 	public void testSpecialStringSubclasses() throws Exception {
-	    executeFindBugsTest(new RunnableWithExceptions() {
-	    	/* (non-Javadoc)
-	    	 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
-	    	 */
-	    	public void run() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Exception {
 				Subtypes2 test = getSubtypes2();
 
 				assertTrue(test.isSubtype(typeDynamicString, typeString));
 				assertTrue(test.isSubtype(typeStaticString, typeString));
 				assertTrue(test.isSubtype(typeParameterString, typeString));
-	    	}
-	    });
-    }
+			}
+		});
+	}
+
+	public void testEasyFirstCommonSuperclass() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeObject));
+				assertEquals(typeString, test.getFirstCommonSupertype(typeString, typeString));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeString, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeString));
+
+				// Slightly harder one
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeString, typeInteger));
+			}
+		});
+	}
+
+	public void testInterfaceFirstCommonSuperclass() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+				
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeSerializable));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeClonable));
+				
+				assertEquals(typeSerializable, test.getFirstCommonSupertype(typeSerializable, typeSerializable));
+			}
+		});
+	}
+	
+	public void testArrayFirstCommonSuperclass() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+
+				// first common superclass of any array type and any object type is Object
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayInteger, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeArrayClonable));
+				
+				// same number of dimensions, base type is ref type
+				assertEquals(typeArrayObject, test.getFirstCommonSupertype(typeArrayString, typeArrayInteger));
+				
+				// same number of dimensions, base type primitive
+				assertEquals(typeArrayInt, test.getFirstCommonSupertype(typeArrayInt, typeArrayInt));
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayChar, typeArrayInt));
+				
+				// same number of dimensions, mismatch ref vs. primitive base type
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayString, typeArrayInt));
+				
+				// different number of dimensions, base type is ref type
+				assertEquals(typeArrayObject, test.getFirstCommonSupertype(typeArrayArraySerializable, typeArrayString));
+				
+				// different number of dimensions, mismatch base type
+				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayArrayString, typeArrayInt));
+			}
+		});
+	}
 }
