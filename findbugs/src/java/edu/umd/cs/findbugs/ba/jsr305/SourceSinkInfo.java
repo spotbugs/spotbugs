@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.Location;
 public class SourceSinkInfo {
 	private final SourceSinkType type;
 	private final Location location;
+	private int parameter;
 
 	/**
 	 * Constructor.
@@ -54,5 +55,19 @@ public class SourceSinkInfo {
 	 */
 	public Location getLocation() {
 		return location;
+	}
+	
+	/**
+	 * @param parameter The parameter to set.
+	 */
+	public void setParameter(int parameter) {
+		this.parameter = parameter;
+	}
+
+	/**
+	 * @return Returns the parameter.
+	 */
+	public int getParameter() {
+		return parameter;
 	}
 }

@@ -149,7 +149,11 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    				i,
 	    				sigParser);
 	    		FlowValue flowValue = flowValueFromWhen(tqa.when); 
-	    		fact.setValue(vn, flowValue, new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location));
+	    		
+	    		SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location);
+	    		info.setParameter(i);
+	    		
+	    		fact.setValue(vn, flowValue, info);
 	    		foundParamAnnotation = true;
 	    	}
 	    }

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Iterator;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -34,6 +36,7 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -91,17 +94,30 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			entryFact.makeValid();
 			
 			ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
-
+			
+			SignatureParser sigParser = new SignatureParser(xmethod.getSignature());
 			int firstParamSlot = xmethod.isStatic() ? 0 : 1;
-			for (int i = 0; i < xmethod.getNumParams(); i++) {
+
+			int param = 0;
+			int slot = 0;
+			
+			for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext(); ) {
+				String paramSig = i.next();
+				
 				// Get the TypeQualifierAnnotation for this parameter
-				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, i, typeQualifierValue);
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, param, typeQualifierValue);
 				if (tqa != null) {
+					SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry());
+					info.setParameter(param);
+					
 					entryFact.setValue(
-							vnaFrameAtEntry.getValue(i + firstParamSlot),
+							vnaFrameAtEntry.getValue(slot + firstParamSlot),
 							flowValueFromWhen(tqa.when),
-							new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry()));
+							info);
 				}
+				
+				param++;
+				slot += SignatureParser.getNumSlotsForType(paramSig);
 			}
 		}
 		
