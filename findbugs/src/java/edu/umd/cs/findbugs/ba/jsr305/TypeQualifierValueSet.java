@@ -203,7 +203,7 @@ public class TypeQualifierValueSet {
 		if (!otherSourceSinkInfoSetMap.containsKey(vn)) {
 			return;
 		}
-		Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(whereAlways, vn);
+		Set<SourceSinkInfo> sourceSinkInfoSetToUpdate = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMapToUpdate, vn);
 		sourceSinkInfoSetToUpdate.addAll(getOrCreateSourceSinkInfoSet(otherSourceSinkInfoSetMap, vn));
 	}
 
