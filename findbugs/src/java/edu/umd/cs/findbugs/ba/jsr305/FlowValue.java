@@ -52,7 +52,7 @@ public enum FlowValue {
 	}
 	
 	public boolean isNo() {
-		return (bits * Bits.NO) != 0;
+		return (bits & Bits.NO) != 0;
 	}
 
 	// Dataflow lattice:
