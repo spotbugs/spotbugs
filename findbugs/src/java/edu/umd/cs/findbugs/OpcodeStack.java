@@ -80,6 +80,7 @@ public class OpcodeStack implements Constants2
 	private List<Item> stack;
 	private List<Item> lvValues;
 	private List<Integer> lastUpdate;
+	private boolean top;
 
 
 
@@ -89,7 +90,11 @@ public class OpcodeStack implements Constants2
 	= AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
 
 
-	public static class Item
+	public static class ItemBase {
+		public ItemBase() {};
+		
+	}
+	public static class Item extends ItemBase
 	{ 		
 		public static final int SIGNED_BYTE = 1;
 		public static final int RANDOM_INT = 2;
@@ -526,6 +531,8 @@ public class OpcodeStack implements Constants2
 
 	@Override
 	public String toString() {
+		if (isTop())
+			return "TOP";
 		return stack.toString() + "::" +  lvValues.toString();
 	}
 
@@ -550,7 +557,7 @@ public class OpcodeStack implements Constants2
 		if (!needToMerge) return;
 		needToMerge = false;
 		boolean stackUpdated = false;
-		if (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3) {
+		if (!isTop() && (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3)) {
 			 pop();
 			 Item top = new Item("I"); 
 			 top.setCouldBeZero(true);
@@ -564,6 +571,7 @@ public class OpcodeStack implements Constants2
 		 if (jumpEntryLocations.get(dbc.getPC())) 
 			 jumpEntry = jumpEntries.get(dbc.getPC());
 		if (jumpEntry != null) {
+			reachOnlyByBranch = false;
 			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 			
 			if (DEBUG2) {
@@ -574,7 +582,15 @@ public class OpcodeStack implements Constants2
 				System.out.println(" current stack values " + stack);
 				
 			}
+			if (isTop()) {
+				lvValues = new ArrayList<Item>(jumpEntry);
+				if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
+				else stack.clear();
+				setTop(false);
+				return;
+			}
 			if (reachOnlyByBranch) {
+				setTop(false);
 				lvValues = new ArrayList<Item>(jumpEntry);
 				if (!stackUpdated) {
 					if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
@@ -583,6 +599,7 @@ public class OpcodeStack implements Constants2
 
 			}
 			else {
+				setTop(false);
 				mergeLists(lvValues, jumpEntry, false);
 				if (!stackUpdated && jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
 			}
@@ -599,10 +616,12 @@ public class OpcodeStack implements Constants2
 					foundException = true;
 				}
 			}
-			if (!foundException)
-				push(new Item("Ljava/lang/Throwable;"));
+			if (!foundException) {
+				setTop(true);
+				}
+			else reachOnlyByBranch = false;
 		}
-		reachOnlyByBranch = false;
+
 	}
 
 	int convertJumpToOneZeroState = 0;
@@ -630,6 +649,11 @@ public class OpcodeStack implements Constants2
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
 		 mergeJumps(dbc);
 		 needToMerge = true;
+		 try
+		 {
+		 if (isTop()) {
+		    return;
+		 }
 		 switch (seen) {
 		 case ICONST_1:
 			 convertJumpToOneZeroState = 1;
@@ -666,8 +690,7 @@ public class OpcodeStack implements Constants2
 		 default:convertJumpToZeroOneState = 0;
 		 }
 
-		 try
-		 {
+
 			 switch (seen) {
 				 case ALOAD:
 					 pushByLocalObjectLoad(dbc, dbc.getRegisterOperand());
@@ -777,6 +800,7 @@ public class OpcodeStack implements Constants2
 
 				 case TABLESWITCH:
 					seenTransferOfControl = true;
+					reachOnlyByBranch = true;
 					 pop();
 					 addJumpValue(dbc.getBranchTarget());
 					 int pc = dbc.getBranchTarget() - dbc.getBranchOffset();
@@ -897,6 +921,7 @@ public class OpcodeStack implements Constants2
 					reachOnlyByBranch = true;
 					addJumpValue(dbc.getBranchTarget());
 					stack.clear();
+					top = true;
 
 				 break;
 
@@ -1283,14 +1308,15 @@ public class OpcodeStack implements Constants2
 			 //Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 			 //or the stack will resync with the code. But hopefully not false positives
 			 
-			 AnalysisContext.logError("Error procssing opcode " + OPCODE_NAMES[seen] + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName() , e);
+			 String msg = "Error procssing opcode " + OPCODE_NAMES[seen] + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
+			AnalysisContext.logError(msg , e);
 			 if (DEBUG) 
 				 e.printStackTrace();
 			 clear();
 		 }
 		 finally {
 			 if (exceptionHandlers.get(dbc.getNextPC()))
-				 push(new Item());
+				 push(new Item("Ljava/lang/Throwable;"));
 			 if (DEBUG) {
 				 System.out.println(dbc.getNextPC() + "pc : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 				 System.out.println(this);
@@ -1643,7 +1669,10 @@ public class OpcodeStack implements Constants2
 			}
 		} else {
 			if (DEBUG2) {
-				System.out.println("Merging items");
+				if (intoSize == fromSize)
+				   System.out.println("Merging items");
+				else 
+					System.out.println("Bad merging items");
 				System.out.println("current items: " + mergeInto);
 				System.out.println("jump items: " + mergeFrom);
 			}
@@ -1675,7 +1704,7 @@ public class OpcodeStack implements Constants2
 				  System.out.println("Was null");
 
 			 jumpEntries.put(target, new ArrayList<Item>(lvValues));
-			jumpEntryLocations.set(target);
+			 jumpEntryLocations.set(target);
 
 			 if (stack.size() > 0) {
 			   jumpStackEntries.put(target, new ArrayList<Item>(stack));
@@ -1694,6 +1723,7 @@ public class OpcodeStack implements Constants2
 	 public int resetForMethodEntry(final DismantleBytecode v) {
 		 this.v = v;
 		 methodName = v.getMethodName();
+		setTop(false);
 		jumpEntries.clear();
 		jumpStackEntries.clear();
 		jumpEntryLocations.clear();
@@ -1722,8 +1752,15 @@ public class OpcodeStack implements Constants2
 			};
 			branchAnalysis.setupVisitorForClass(v.getThisClass());
 			branchAnalysis.doVisitMethod(v.getMethod());
-			if (!jumpEntries.isEmpty()) 
+			if (!jumpEntries.isEmpty()) {
+				resetForMethodEntry0(v);
+				System.out.println("Found dataflow for jumps in " + v.getMethodName());
+				for (Integer pc : jumpEntries.keySet()) {
+					List<Item> list = jumpEntries.get(pc);
+					System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+				}
 				branchAnalysis.doVisitMethod(v.getMethod());
+			}
 			if (DEBUG && !jumpEntries.isEmpty()) {
 				System.out.println("Found dataflow for jumps in " + v.getMethodName());
 				for (Integer pc : jumpEntries.keySet()) {
@@ -1746,6 +1783,7 @@ public class OpcodeStack implements Constants2
 		if (DEBUG) System.out.println(" --- ");
 		 stack.clear();
 		 lvValues.clear();
+		 top = false;
 		reachOnlyByBranch = false;
 		seenTransferOfControl = false;
 		String className = v.getClassName();
@@ -2087,6 +2125,26 @@ public class OpcodeStack implements Constants2
 
 		 return lvValues.get(index);
 	 }
+
+	/**
+     * @param top The top to set.
+     */
+    private void setTop(boolean top) {
+    	if (top) {
+    		if (!this.top)
+    		  this.top = true;
+    	} else if (this.top)
+    		this.top = false;
+    }
+
+	/**
+     * @return Returns the top.
+     */
+    private boolean isTop() {
+    	if (top)
+    		return true;
+	    return false;
+    }
 }
 
 // vim:ts=4
