@@ -104,19 +104,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	 * @throws DataflowAnalysisException
 	 */
 	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
-		if (location.getBasicBlock().isEmpty()) {
-			return getResultFact(location.getBasicBlock());
-		}
-
-		InstructionHandle logicalLastInstruction = isForwards()
-			? location.getBasicBlock().getLastInstruction()
-			: location.getBasicBlock().getFirstInstruction();
-
-		if (location.getHandle() == logicalLastInstruction) {
-			return getResultFact(location.getBasicBlock());
-		} else {
-			return getStartFact(location.getBasicBlock());
-		}
+		return getResultFact(location.getBasicBlock());
 	}
 
 	/**
