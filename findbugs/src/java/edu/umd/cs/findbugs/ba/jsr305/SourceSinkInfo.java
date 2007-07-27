@@ -57,14 +57,14 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @param parameter The parameter to set.
 	 */
 	public void setParameter(int parameter) {
 		this.parameter = parameter;
 	}
-	
+
 	/**
 	 * @param parameter The parameter to set.
 	 * @param local     The local to set.
@@ -87,14 +87,14 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	public int getLocal() {
 		return local;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(SourceSinkInfo o) {
 		return this.location.compareTo(o.location);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -102,7 +102,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	public int hashCode() {
 		return location.hashCode();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -113,5 +113,13 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 		}
 		SourceSinkInfo other = (SourceSinkInfo) obj;
 		return this.location.equals(other.location);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return type.toString() + "@" + location.toCompactString();
 	}
 }
