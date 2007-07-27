@@ -1754,10 +1754,12 @@ public class OpcodeStack implements Constants2
 			branchAnalysis.doVisitMethod(v.getMethod());
 			if (!jumpEntries.isEmpty()) {
 				resetForMethodEntry0(v);
+				if (DEBUG) {
 				System.out.println("Found dataflow for jumps in " + v.getMethodName());
 				for (Integer pc : jumpEntries.keySet()) {
 					List<Item> list = jumpEntries.get(pc);
 					System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+				}
 				}
 				branchAnalysis.doVisitMethod(v.getMethod());
 			}
