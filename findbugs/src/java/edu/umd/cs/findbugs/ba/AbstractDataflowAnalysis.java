@@ -83,6 +83,9 @@ public abstract class AbstractDataflowAnalysis <Fact> extends BasicAbstractDataf
 	 * Get the dataflow fact representing the point just after given Location.
 	 * Note "after" is meant in the logical sense, so for backward analyses,
 	 * after means before the location in the control flow sense.
+	 * 
+	 * @param location the location
+	 * @return the fact at the point just after the location
 	 */
 	@Override
 	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
