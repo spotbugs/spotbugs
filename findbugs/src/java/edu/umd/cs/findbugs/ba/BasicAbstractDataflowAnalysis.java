@@ -108,10 +108,11 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	}
 
 	/**
-	 * Get the fact that is true at the target of the given control edge.
+	 * Get the fact that is true on the given control edge,
+	 * <em>after applying the edge transfer function</em> (if any).
 	 * 
 	 * @param edge the edge
-	 * @return the fact that is true at the target of the edge
+	 * @return the fact that is true after applying the edge transfer function
 	 * @throws DataflowAnalysisException 
 	 */
 	public /*final*/ Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
