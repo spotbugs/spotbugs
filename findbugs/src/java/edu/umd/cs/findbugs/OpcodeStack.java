@@ -544,7 +544,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	boolean needToMerge = true;
-	boolean reachOnlyByBranch = false;
+	private boolean reachOnlyByBranch = false;
 	public static String getExceptionSig(DismantleBytecode dbc, CodeException e) {
 		if (e.getCatchType() == 0) return "Ljava/lang/Throwable;";
 		Constant c = dbc.getConstantPool().getConstant(e.getCatchType());
@@ -571,11 +571,11 @@ public class OpcodeStack implements Constants2
 		 if (jumpEntryLocations.get(dbc.getPC())) 
 			 jumpEntry = jumpEntries.get(dbc.getPC());
 		if (jumpEntry != null) {
-			reachOnlyByBranch = false;
+			setReachOnlyByBranch(false);
 			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 			
 			if (DEBUG2) {
-				System.out.println("XXXXXXX " + reachOnlyByBranch);
+				System.out.println("XXXXXXX " + isReachOnlyByBranch());
 				System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
 				System.out.println(" current lvValues " + lvValues);
 				System.out.println(" merging stack entry " + jumpStackEntry);
@@ -589,7 +589,7 @@ public class OpcodeStack implements Constants2
 				setTop(false);
 				return;
 			}
-			if (reachOnlyByBranch) {
+			if (isReachOnlyByBranch()) {
 				setTop(false);
 				lvValues = new ArrayList<Item>(jumpEntry);
 				if (!stackUpdated) {
@@ -606,13 +606,13 @@ public class OpcodeStack implements Constants2
 			if (DEBUG)
 				System.out.println(" merged lvValues " + lvValues);
 		}
-		else if (reachOnlyByBranch && !stackUpdated) {
+		else if (isReachOnlyByBranch() && !stackUpdated) {
 			stack.clear();
 
 			for(CodeException e : dbc.getCode().getExceptionTable()) {
 				if (e.getHandlerPC() == dbc.getPC()) {
 					push(new Item(getExceptionSig(dbc, e)));
-					reachOnlyByBranch = false;
+					setReachOnlyByBranch(false);
 					setTop(false);
 					return;
 					
@@ -799,7 +799,7 @@ public class OpcodeStack implements Constants2
 
 				 case TABLESWITCH:
 					seenTransferOfControl = true;
-					reachOnlyByBranch = true;
+					setReachOnlyByBranch(true);
 					 pop();
 					 addJumpValue(dbc.getBranchTarget());
 					 int pc = dbc.getBranchTarget() - dbc.getBranchOffset();
@@ -815,7 +815,7 @@ public class OpcodeStack implements Constants2
 				 case LRETURN:
 
 					seenTransferOfControl = true;
-					reachOnlyByBranch = true;
+					setReachOnlyByBranch(true);
 					 pop();
 				 break;
 				 case MONITORENTER:
@@ -890,7 +890,8 @@ public class OpcodeStack implements Constants2
 				 case ATHROW:
 					pop();
 					seenTransferOfControl = true;
-					reachOnlyByBranch = true;
+					setReachOnlyByBranch(true);
+					setTop(true);
 					break;
 
 				 case CHECKCAST:
@@ -911,16 +912,16 @@ public class OpcodeStack implements Constants2
 				 case RET:
 				 case RETURN:
 					seenTransferOfControl = true;
-					reachOnlyByBranch = true;
+					setReachOnlyByBranch(true);
 					break;
 
 				 case GOTO:
-				 case GOTO_W:					//It is assumed that no stack items are present when
+				 case GOTO_W:
 					seenTransferOfControl = true;
-					reachOnlyByBranch = true;
+					setReachOnlyByBranch(true);
 					addJumpValue(dbc.getBranchTarget());
 					stack.clear();
-					top = true;
+					setTop(true);
 
 				 break;
 
@@ -1287,7 +1288,12 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case JSR:
-					 push(new Item("")); //?
+					 seenTransferOfControl = true;
+					 setReachOnlyByBranch(false);
+					 push(new Item("")); // push return address on stack
+					 addJumpValue(dbc.getBranchTarget());
+					 pop();
+					 setTop(false);
 				 break;
 
 				case INVOKEINTERFACE:
@@ -1726,7 +1732,7 @@ public class OpcodeStack implements Constants2
 		jumpEntryLocations.clear();
 		lastUpdate.clear();
 		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
-		reachOnlyByBranch = false;
+		setReachOnlyByBranch(false);
 		 int result= resetForMethodEntry0(v);
 		 Code code = v.getMethod().getCode();
 		if (code == null) return result;
@@ -1783,7 +1789,7 @@ public class OpcodeStack implements Constants2
 		 stack.clear();
 		 lvValues.clear();
 		 top = false;
-		reachOnlyByBranch = false;
+		setReachOnlyByBranch(false);
 		seenTransferOfControl = false;
 		String className = v.getClassName();
 
@@ -2143,6 +2149,22 @@ public class OpcodeStack implements Constants2
     	if (top)
     		return true;
 	    return false;
+    }
+
+	/**
+     * @param reachOnlyByBranch The reachOnlyByBranch to set.
+     */
+    void setReachOnlyByBranch(boolean reachOnlyByBranch) {
+    	if (reachOnlyByBranch) 
+    		setTop(true);
+	    this.reachOnlyByBranch = reachOnlyByBranch;
+    }
+
+	/**
+     * @return Returns the reachOnlyByBranch.
+     */
+    boolean isReachOnlyByBranch() {
+	    return reachOnlyByBranch;
     }
 }
 
