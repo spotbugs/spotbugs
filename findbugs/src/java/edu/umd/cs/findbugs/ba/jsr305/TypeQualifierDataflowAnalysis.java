@@ -181,7 +181,15 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 			if (!targetVN.equals(sourceVN)) {
 				// targetVN is a phi result
 				assert targetVN.hasFlag(ValueNumber.PHI_NODE);
+				if (DEBUG_VERBOSE) {
+					System.out.println("Phi node: " + fact.valueNumberToString(sourceVN) +
+							" -> " + fact.valueNumberToString(targetVN));
+				}
 				propagateAcrossPhiNode(fact, sourceVN, targetVN);
+				if (DEBUG_VERBOSE) {
+					String dir = isForwards() ? "forwards" : "backwards";
+					System.out.println("After propagating phi node " + dir + ": " + fact.toString());
+				}
 			}
 		}
 	}

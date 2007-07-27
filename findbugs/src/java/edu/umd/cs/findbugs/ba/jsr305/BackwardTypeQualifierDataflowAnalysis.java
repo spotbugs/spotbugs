@@ -88,6 +88,18 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	}
 	
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet)
+	 */
+	@Override
+	public void edgeTransfer(Edge edge, TypeQualifierValueSet fact) throws DataflowAnalysisException {
+		if (PRUNE_CONFLICTING_VALUES && forwardTypeQualifierDataflow != null) {
+			pruneConflictingValues(fact, forwardTypeQualifierDataflow.getFactOnEdge(edge));
+		}
+		
+		super.edgeTransfer(edge, fact);
+	}
+	
+	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
 	 */
 	@Override
@@ -101,29 +113,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		Location location = new Location(handle, basicBlock);
 		
 		if (PRUNE_CONFLICTING_VALUES && forwardTypeQualifierDataflow != null) {
-			// If we can establish a conflict between a forwards and backwards value,
-			// set the backwards value to TOP.  This prunes the set of locations
-			// where a conflict will be detected to a single location,
-			// preventing duplicate warnings about conflicting type qualifier uses.
-			TypeQualifierValueSet forwardFact = forwardTypeQualifierDataflow.getFactAfterLocation(location);
-			if (forwardFact.isValid()) {
-				HashSet<ValueNumber> valueNumbers = new HashSet<ValueNumber>();
-				valueNumbers.addAll(fact.getValueNumbers());
-				valueNumbers.retainAll(forwardFact.getValueNumbers());
-				
-				for (ValueNumber vn : valueNumbers) {
-					if (DEBUG_VERBOSE) {
-						System.out.println("At " + location.toCompactString() +
-								": checking forw=" + forwardFact + " against back=" + fact);
-					}
-					if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn), typeQualifierValue.isStrictQualifier())) {
-						if (DEBUG_VERBOSE) {
-							System.out.println("Pruning backwards fact for VN " + vn);
-						}
-						fact.pruneValue(vn);
-					}
-				}
-			}
+			pruneConflictingValues(fact, forwardTypeQualifierDataflow.getFactAfterLocation(location));
 		}
 		
 		if (handle.getInstruction() instanceof InvokeInstruction) {
@@ -132,6 +122,20 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			modelFieldStore(fact, location);
 		}
 		
+	}
+
+	private void pruneConflictingValues(TypeQualifierValueSet fact, TypeQualifierValueSet forwardFact) {
+		if (forwardFact.isValid()) {
+			HashSet<ValueNumber> valueNumbers = new HashSet<ValueNumber>();
+			valueNumbers.addAll(fact.getValueNumbers());
+			valueNumbers.retainAll(forwardFact.getValueNumbers());
+
+			for (ValueNumber vn : valueNumbers) {
+				if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn), typeQualifierValue.isStrictQualifier())) {
+					fact.pruneValue(vn);
+				}
+			}
+		}
 	}
 
     private void modelMethodArguments(TypeQualifierValueSet fact, Location location)

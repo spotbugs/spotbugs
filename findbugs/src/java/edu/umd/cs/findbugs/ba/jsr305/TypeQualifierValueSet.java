@@ -115,15 +115,21 @@ public class TypeQualifierValueSet {
 	}
 
 	public void makeValid() {
+		/*
 		this.state = State.VALID;
 		this.valueMap.clear();
 		this.whereAlways.clear();
 		this.whereNever.clear();
+		*/
+		reset(State.VALID);
 	}
 
 	public void makeSameAs(TypeQualifierValueSet source) {
+		/*
 		this.state = source.state;
 		this.valueMap.clear();
+		*/
+		reset(source.state);
 		this.valueMap.putAll(source.valueMap);
 		copySourceSinkInfoSetMap(this.whereAlways, source.whereAlways);
 		copySourceSinkInfoSetMap(this.whereNever, source.whereNever);
@@ -144,8 +150,11 @@ public class TypeQualifierValueSet {
 	}
 
 	public void setTop() {
+		/*
 		this.valueMap.clear();
 		this.state = State.TOP;
+		*/
+		reset(State.TOP);
 	}
 
 	public boolean isBottom() {
@@ -153,8 +162,18 @@ public class TypeQualifierValueSet {
 	}
 
 	public void setBottom() {
+		/*
 		this.valueMap.clear();
 		this.state = State.BOTTOM;
+		*/
+		reset(State.BOTTOM);
+	}
+	
+	private void reset(State state) {
+		valueMap.clear();
+		whereAlways.clear();
+		whereNever.clear();
+		this.state = state;
 	}
 
 	public void propagateAcrossPhiNode(ValueNumber fromVN, ValueNumber toVN) {
@@ -163,8 +182,8 @@ public class TypeQualifierValueSet {
 		setValue(toVN, getValue(fromVN));
 		
 		// Propagate source/sink information
-		transferSourceSinkInfoSet(whereAlways, toVN, fromVN);
-		transferSourceSinkInfoSet(whereNever, toVN, fromVN);
+		transferSourceSinkInfoSet(whereAlways, fromVN, toVN);
+		transferSourceSinkInfoSet(whereNever, fromVN, toVN);
 		
 		// Remove all information about the "from" value
 		valueMap.remove(fromVN);
@@ -172,7 +191,10 @@ public class TypeQualifierValueSet {
 		whereNever.remove(fromVN);
 	}
 
-    private static void transferSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber toVN, ValueNumber fromVN) {
+    private static void transferSourceSinkInfoSet(
+    		Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
+    		ValueNumber fromVN,
+    		ValueNumber toVN) {
 		Set<SourceSinkInfo> locSet = getOrCreateSourceSinkInfoSet(sourceSinkInfoSetMap, fromVN);
 		
 		for (SourceSinkInfo loc : locSet) {
@@ -248,18 +270,26 @@ public class TypeQualifierValueSet {
 			if (buf.length() > 1) {
 				buf.append(", ");
 			}
-			buf.append(vn.getNumber());
-			buf.append("->");
-			buf.append(getValue(vn).toString());
-			buf.append("[");
-			appendSourceSinkInfos(buf, "YES=", getOrCreateSourceSinkInfoSet(whereAlways, vn));
-			buf.append(",");
-			appendSourceSinkInfos(buf, "NO=", getOrCreateSourceSinkInfoSet(whereNever, vn));
-			buf.append("]");
+			buf.append(valueNumberToString(vn));
 		}
 		
 		buf.append("}");
 		
+		return buf.toString();
+	}
+	
+	public String valueNumberToString(ValueNumber vn) {
+		StringBuffer buf = new StringBuffer();
+
+		buf.append(vn.getNumber());
+		buf.append("->");
+		buf.append(getValue(vn).toString());
+		buf.append("[");
+		appendSourceSinkInfos(buf, "YES=", getOrCreateSourceSinkInfoSet(whereAlways, vn));
+		buf.append(",");
+		appendSourceSinkInfos(buf, "NO=", getOrCreateSourceSinkInfoSet(whereNever, vn));
+		buf.append("]");
+
 		return buf.toString();
 	}
 

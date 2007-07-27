@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
+import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflow;
@@ -159,21 +160,40 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 
 			if (DEBUG) {
-				checkLocation = "Location " + loc.toCompactString();
+				checkLocation = "location " + loc.toCompactString();
 			}
-			check(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
+			checkForConflictingValues(methodDescriptor, typeQualifierValue, forwardsFact, backwardsFact);
 		}
-
-		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext(); ) {
-			BasicBlock block = i.next();
+		
+		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
+			Edge edge = i.next();
 			if (DEBUG) {
-				checkLocation = "End of basic block " + block.getLabel();
+				checkLocation = "edge " + edge.getLabel();
+				System.out.println("BEGIN CHECK EDGE " + edge.getLabel());
 			}
-			check(methodDescriptor, typeQualifierValue, forwardDataflow.getResultFact(block), backwardDataflow.getStartFact(block));
+
+			// NOTE: when checking forwards and backwards values on an edge,
+			// we don't want to apply BOTH edge transfer functions,
+			// since the purpose of the edge transfer function is to
+			// propagate information across phi nodes (effectively
+			// copying information about one value to another).
+			// Due to pruning of backwards values when a conflict is detected,
+			// we need to check backwards values as "early" as possible,
+			// meaning that we want to check at the edge target
+			// (before the backwards edge transfer function has pruned
+			// the backwards value.)
+			checkForConflictingValues(
+					methodDescriptor,
+					typeQualifierValue,
+					forwardDataflow.getFactOnEdge(edge),
+					backwardDataflow.getResultFact(edge.getTarget()));
+			if (DEBUG) {
+				System.out.println("END CHECK EDGE");
+			}
 		}
 	}
 
-	private void check(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
+	private void checkForConflictingValues(MethodDescriptor methodDescriptor, TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact) {
 		Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
 		valueNumberSet.addAll(forwardsFact.getValueNumbers());
@@ -184,7 +204,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			FlowValue backward = backwardsFact.getValue(vn);
 
 			if (DEBUG) {
-				System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward);
+				System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
 			}
 
 			if (FlowValue.valuesConflict(forward, backward, typeQualifierValue.isStrictQualifier())) {
