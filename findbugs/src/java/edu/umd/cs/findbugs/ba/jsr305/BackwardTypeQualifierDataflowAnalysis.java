@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
-	private static final boolean PRUNE_CONFLICTING_VALUES = SystemProperties.getBoolean("ctq.pruneconflicting");
+	private static final boolean PRUNE_CONFLICTING_VALUES = true; //SystemProperties.getBoolean("ctq.pruneconflicting");
 	private final DepthFirstSearch dfs;
 	private final ReverseDepthFirstSearch rdfs;
 	private TypeQualifierValueSet entryFact;

@@ -32,6 +32,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.graph.AbstractGraph;
+import edu.umd.cs.findbugs.util.NullIterator;
 
 /**
  * Simple control flow graph abstraction for BCEL.
@@ -372,6 +373,15 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 
 		return new Location(handle, basicBlock);
+	}
+	
+	/**
+	 * Get an Iterator over Edges removed from this CFG.
+	 * 
+	 * @return Iterator over Edges removed from this CFG
+	 */
+	public Iterator<Edge> removedEdgeIterator() {
+		return removedEdgeList != null ? removedEdgeList.iterator() : new NullIterator<Edge>();
 	}
 
 	/**
