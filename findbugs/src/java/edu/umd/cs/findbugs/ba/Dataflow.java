@@ -380,6 +380,17 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	public /*final*/ Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		return analysis.getFactAfterLocation(location);
 	}
+	
+	/**
+	 * Get the fact that is true on the given control edge.
+	 * 
+	 * @param edge the edge
+	 * @return the fact that is true on the edge
+	 * @throws DataflowAnalysisException 
+	 */
+	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+		return analysis.getFactOnEdge(edge);
+	}
 
 	/**
 	 * Get the analysis object.
