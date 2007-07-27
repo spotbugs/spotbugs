@@ -609,17 +609,16 @@ public class OpcodeStack implements Constants2
 		else if (reachOnlyByBranch && !stackUpdated) {
 			stack.clear();
 
-			boolean foundException = false;
 			for(CodeException e : dbc.getCode().getExceptionTable()) {
 				if (e.getHandlerPC() == dbc.getPC()) {
 					push(new Item(getExceptionSig(dbc, e)));
-					foundException = true;
+					reachOnlyByBranch = false;
+					setTop(false);
+					return;
+					
 				}
 			}
-			if (!foundException) {
-				setTop(true);
-				}
-			else reachOnlyByBranch = false;
+			setTop(true);
 		}
 
 	}
@@ -1315,8 +1314,6 @@ public class OpcodeStack implements Constants2
 			 clear();
 		 }
 		 finally {
-			 if (exceptionHandlers.get(dbc.getNextPC()))
-				 push(new Item("Ljava/lang/Throwable;"));
 			 if (DEBUG) {
 				 System.out.println(dbc.getNextPC() + "pc : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 				 System.out.println(this);
