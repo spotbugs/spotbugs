@@ -834,10 +834,13 @@ public class OpcodeStack implements Constants2
 				 case IF_ICMPGT:
 				 case IF_ICMPGE:
 
+				 {
 					seenTransferOfControl = true;
 					 pop(2);
-					 addJumpValue(dbc.getBranchTarget());
+					 int branchTarget = dbc.getBranchTarget();
+					 addJumpValue(branchTarget);
 					break;
+				 }
 
 
 				 case POP2:
@@ -1756,15 +1759,21 @@ public class OpcodeStack implements Constants2
 			branchAnalysis.setupVisitorForClass(v.getThisClass());
 			branchAnalysis.doVisitMethod(v.getMethod());
 			if (!jumpEntries.isEmpty()) {
-				resetForMethodEntry0(v);
-				if (DEBUG) {
-				System.out.println("Found dataflow for jumps in " + v.getMethodName());
-				for (Integer pc : jumpEntries.keySet()) {
-					List<Item> list = jumpEntries.get(pc);
-					System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+				int count = jumpEntries.size();
+				while (true) {
+					resetForMethodEntry0(v);
+					if (DEBUG) {
+						System.out.println("Found dataflow for jumps in " + v.getMethodName());
+						for (Integer pc : jumpEntries.keySet()) {
+							List<Item> list = jumpEntries.get(pc);
+							System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+						}
+					}
+					branchAnalysis.doVisitMethod(v.getMethod());
+					int count2 = jumpEntries.size();
+					if (count2 <= count) break;
+					count = count2;
 				}
-				}
-				branchAnalysis.doVisitMethod(v.getMethod());
 			}
 			if (DEBUG && !jumpEntries.isEmpty()) {
 				System.out.println("Found dataflow for jumps in " + v.getMethodName());
