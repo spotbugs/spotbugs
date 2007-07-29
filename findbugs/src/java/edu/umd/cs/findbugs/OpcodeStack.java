@@ -659,6 +659,7 @@ public class OpcodeStack implements Constants2
 		 try
 		 {
 		 if (isTop()) {
+			 encountedTop = true;
 		    return;
 		 }
 		 switch (seen) {
@@ -1703,6 +1704,7 @@ public class OpcodeStack implements Constants2
 		 stack.clear();
 		 lvValues.clear();
 	 }
+	 boolean encountedTop;
 	 BitSet exceptionHandlers = new BitSet();
 	 private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 	 private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
@@ -1746,7 +1748,7 @@ public class OpcodeStack implements Constants2
 			   stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
 		       branchAnalysis.doVisitMethod(method);
 		       int newCount = stack.jumpEntries.size();
-		       if (newCount == oldCount) break;
+		       if (newCount == oldCount || !stack.encountedTop) break;
 		       oldCount = newCount;
     		}
 
@@ -1790,6 +1792,8 @@ public void initialize() {
 	setTop(false);
 	jumpEntries.clear();
 	jumpStackEntries.clear();
+	jumpEntryLocations.clear();
+	encountedTop = false;
 	lastUpdate.clear();
 	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 	setReachOnlyByBranch(false);
