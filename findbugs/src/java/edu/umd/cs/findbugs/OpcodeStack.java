@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -136,7 +137,7 @@ public class OpcodeStack implements Constants2
 
 
 		public int getSize() {
-			if (signature.equals("J") || signature.equals("D")) return 2;
+			if (getSignature().equals("J") || getSignature().equals("D")) return 2;
 			return 1;
 		}
 
@@ -153,8 +154,8 @@ public class OpcodeStack implements Constants2
 		@Override
 		public int hashCode() {
 			int r = 42 + specialKind;
-			if (signature != null)
-				r+= signature.hashCode();
+			if (getSignature() != null)
+				r+= getSignature().hashCode();
 			r *= 31;
 			if (constValue != null)
 				r+= constValue.hashCode();
@@ -173,7 +174,7 @@ public class OpcodeStack implements Constants2
 			if (!(o instanceof Item)) return false;
 			Item that = (Item) o;
 
-			return equals(this.signature, that.signature)
+			return equals(this.getSignature(), that.getSignature())
 				&& equals(this.constValue, that.constValue)
 				&& equals(this.source, that.source)
 				&& this.specialKind == that.specialKind
@@ -187,7 +188,7 @@ public class OpcodeStack implements Constants2
 		@Override
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
-			buf.append(signature);
+			buf.append(getSignature());
 			switch(specialKind) {
 			case SIGNED_BYTE:
 				buf.append(", byte_array_load");
@@ -273,8 +274,8 @@ public class OpcodeStack implements Constants2
 			Item m = new Item();
 			m.flags = i1.flags & i2.flags;
 			m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
-			if (equals(i1.signature,i2.signature))
-				m.signature = i1.signature;
+			if (equals(i1.getSignature(),i2.getSignature()))
+				m.setSignature(i1.getSignature());
 			if (equals(i1.constValue,i2.constValue))
 				m.constValue = i1.constValue;
 			if (equals(i1.source,i2.source)) {
@@ -303,7 +304,7 @@ public class OpcodeStack implements Constants2
 			 this(signature, UNKNOWN);
 		 }
 		  public Item(Item it) {
-			this.signature = it.signature;
+			this.setSignature(it.getSignature());
 			this.constValue = it.constValue;
 			this.source = it.source;
 			this.registerNumber = it.registerNumber;
@@ -316,13 +317,13 @@ public class OpcodeStack implements Constants2
 			 this.registerNumber = reg;
 		 }
 		 public Item(String signature, FieldAnnotation f) {
-			this.signature = signature;
+			this.setSignature(signature);
 			if (f != null)
 				source = XFactory.createXField(f);
 			fieldLoadedFromRegister = -1;
 		 }
 		public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
-			this.signature = signature;
+			this.setSignature(signature);
 			if (f != null)
 				source = XFactory.createXField(f);
 			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
@@ -333,7 +334,7 @@ public class OpcodeStack implements Constants2
 		}
 
 		 public Item(String signature, Object constantValue) {
-			 this.signature = signature;
+			 this.setSignature(signature);
 			 constValue = constantValue;
 			 if (constantValue instanceof Integer) {
 				 int value = (Integer) constantValue;
@@ -352,7 +353,7 @@ public class OpcodeStack implements Constants2
 		 }
 
 		 public Item() {
-			 signature = "Ljava/lang/Object;";
+			 setSignature("Ljava/lang/Object;");
 			 constValue = null;
 			 setNull(true);
 		 }
@@ -366,7 +367,7 @@ public class OpcodeStack implements Constants2
 			 if (isArray()) {
 				 baseSig = getElementSignature();
 			 } else {
-				 baseSig = signature;
+				 baseSig = getSignature();
 			 }
 
 			 if (baseSig.length() == 0)
@@ -377,21 +378,21 @@ public class OpcodeStack implements Constants2
 		 }
 
 		 public boolean isArray() {
-			 return signature.startsWith("[");
+			 return getSignature().startsWith("[");
 		 }
 
 		 public String getElementSignature() {
 			 if (!isArray())
-				 return signature;
+				 return getSignature();
 			 else {
 				 int pos = 0;
-				 int len = signature.length();
+				 int len = getSignature().length();
 				 while (pos < len) {
-					 if (signature.charAt(pos) != '[')
+					 if (getSignature().charAt(pos) != '[')
 						 break;
 					 pos++;
 				 }
-				 return signature.substring(pos);
+				 return getSignature().substring(pos);
 			 }
 		 }
 
@@ -404,7 +405,7 @@ public class OpcodeStack implements Constants2
 			return false;
 		}
 		 public boolean isPrimitive() {
-			 return !signature.startsWith("L");
+			 return !getSignature().startsWith("L");
 		 }
 
 		 public int getRegisterNumber() {
@@ -534,6 +535,15 @@ public class OpcodeStack implements Constants2
 		public boolean isNull() {
 			return (flags & IS_NULL_FLAG) != 0;
 		}
+
+		/**
+         * @param signature The signature to set.
+         */
+        private void setSignature(String signature) {
+        	if (signature.indexOf(".") >= 0)
+        		throw new IllegalArgumentException("Bad dotted signature of " + signature);
+	        this.signature = signature;
+        }
 	}
 
 	@Override
@@ -910,7 +920,7 @@ public class OpcodeStack implements Constants2
 
 					 if (castTo.charAt(0) != '[') castTo = "L" + castTo + ";";
 					 it = new Item(pop());
-					 it.signature = castTo;
+					 it.setSignature(castTo);
 					 push(it);
 
 					 break;
@@ -1715,6 +1725,10 @@ public class OpcodeStack implements Constants2
 			 this.jumpStackEntries = jumpStackEntries;
 			 this.jumpEntryLocations = jumpEntryLocations;
 		 }
+		 public String toString() {
+			 return jumpEntries.toString()
+			    +"\n\t" + jumpStackEntries.toString();
+		 }
 	 }
 	 
 	 public static class JumpInfoFactory extends AnalysisFactory<JumpInfo> {
@@ -1742,7 +1756,7 @@ public class OpcodeStack implements Constants2
     		branchAnalysis.setupVisitorForClass(jclass);
     		int oldCount = 0;
     		while (true) {
-			   stack.resetForMethodEntry0(jclass.getClassName(), method);
+			   stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
 		       branchAnalysis.doVisitMethod(method);
 		       int newCount = stack.jumpEntries.size();
 		       if (newCount == oldCount) break;
@@ -1763,10 +1777,10 @@ public class OpcodeStack implements Constants2
 			 if (DEBUG)
 				  System.out.println("Was null");
 
-			 jumpEntries.put(target, new ArrayList<Item>(lvValues));
+			 jumpEntries.put(target, deepCopy(lvValues));
              jumpEntryLocations.set(target);
 			 if (stack.size() > 0) {
-			   jumpStackEntries.put(target, new ArrayList<Item>(stack));
+			   jumpStackEntries.put(target, deepCopy(stack));
 			}
 			 return;
 		 }
@@ -1780,10 +1794,26 @@ public class OpcodeStack implements Constants2
 	 private String methodName;
 	 DismantleBytecode v;
 	 
+	 
 	 public void learnFrom(JumpInfo info) {
-		 jumpEntries = new HashMap<Integer, List<Item>>(info.jumpEntries);
-		 jumpStackEntries = new HashMap<Integer, List<Item>>(info.jumpStackEntries);
+		 jumpEntries = deepCopy(info.jumpEntries);
+		 jumpStackEntries = deepCopy(info.jumpStackEntries);
 		 jumpEntryLocations = (BitSet) info.jumpEntryLocations.clone();
+	 }
+	 
+	 public List<Item> deepCopy(List<Item> list) {
+		 ArrayList<Item> result = new ArrayList<Item>(list.size());
+		 for(Item i : list)
+			 result.add(new Item(i));
+		 return result;
+		 
+	 }
+	 public Map<Integer, List<Item>> deepCopy( Map<Integer, List<Item>> jumpData) {
+		 HashMap<Integer, List<Item>> result = new HashMap<Integer, List<Item>>();
+		 for(Map.Entry<Integer, List<Item>> e : jumpData.entrySet()) {
+			 result.put(e.getKey(), deepCopy(e.getValue()));
+		 }
+		 return result;
 	 }
 public void initialize() {
 	setTop(false);
