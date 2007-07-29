@@ -98,11 +98,8 @@ public class OpcodeStack implements Constants2
 	= AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
 
 
-	public static class ItemBase {
-		public ItemBase() {};
-		
-	}
-	public static class Item extends ItemBase
+
+	public static class Item
 	{ 		
 		public static final int SIGNED_BYTE = 1;
 		public static final int RANDOM_INT = 2;
@@ -801,7 +798,7 @@ public class OpcodeStack implements Constants2
 
 					}
 				 }
-				 addJumpValue(dbc.getBranchTarget());
+				 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 
 			 break;
 				 case LOOKUPSWITCH:
@@ -810,10 +807,10 @@ public class OpcodeStack implements Constants2
 					seenTransferOfControl = true;
 					setReachOnlyByBranch(true);
 					 pop();
-					 addJumpValue(dbc.getBranchTarget());
+					 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 					 int pc = dbc.getBranchTarget() - dbc.getBranchOffset();
 					 for(int offset : dbc.getSwitchOffsets())
-						 addJumpValue(offset+pc);
+						 addJumpValue(dbc.getPC(), offset+pc);
 
 				 break;
 				 case ARETURN:
@@ -847,7 +844,7 @@ public class OpcodeStack implements Constants2
 					seenTransferOfControl = true;
 					 pop(2);
 					 int branchTarget = dbc.getBranchTarget();
-					 addJumpValue(branchTarget);
+					 addJumpValue(dbc.getPC(), branchTarget);
 					break;
 				 }
 
@@ -931,7 +928,7 @@ public class OpcodeStack implements Constants2
 				 case GOTO_W:
 					seenTransferOfControl = true;
 					setReachOnlyByBranch(true);
-					addJumpValue(dbc.getBranchTarget());
+					addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 					stack.clear();
 					setTop(true);
 
@@ -1303,7 +1300,7 @@ public class OpcodeStack implements Constants2
 					 seenTransferOfControl = true;
 					 setReachOnlyByBranch(false);
 					 push(new Item("")); // push return address on stack
-					 addJumpValue(dbc.getBranchTarget());
+					 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 					 pop();
 					 setTop(false);
 				 break;
@@ -1705,6 +1702,7 @@ public class OpcodeStack implements Constants2
 		 lvValues.clear();
 	 }
 	 boolean encountedTop;
+	 boolean backwardsBranch;
 	 BitSet exceptionHandlers = new BitSet();
 	 private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 	 private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
@@ -1748,7 +1746,7 @@ public class OpcodeStack implements Constants2
 			   stack.resetForMethodEntry0(ClassName.toSlashedClassName(jclass.getClassName()), method);
 		       branchAnalysis.doVisitMethod(method);
 		       int newCount = stack.jumpEntries.size();
-		       if (newCount == oldCount || !stack.encountedTop) break;
+		       if (newCount == oldCount || !stack.encountedTop || !stack.backwardsBranch) break;
 		       oldCount = newCount;
     		}
 
@@ -1757,10 +1755,12 @@ public class OpcodeStack implements Constants2
 
 	
 	 
-	 private void addJumpValue(int target) {
+	 private void addJumpValue(int from, int target) {
 		 if (DEBUG)
 			 System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + stack + " : " +  lvValues );
 
+		 if (from >= target)
+			 backwardsBranch = true;
 		 List<Item> atTarget = jumpEntries.get(target);
 		 if (atTarget == null) {
 			 if (DEBUG)
@@ -1794,6 +1794,7 @@ public void initialize() {
 	jumpStackEntries.clear();
 	jumpEntryLocations.clear();
 	encountedTop = false;
+	backwardsBranch = false;
 	lastUpdate.clear();
 	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 	setReachOnlyByBranch(false);
@@ -1836,6 +1837,9 @@ public void initialize() {
 		 stack.clear();
 		 lvValues.clear();
 		 top = false;
+		 encountedTop = false;
+		backwardsBranch = false;
+			
 		 setReachOnlyByBranch(false);
 		 seenTransferOfControl = false;
 		  exceptionHandlers.clear();
