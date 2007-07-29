@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnnotationRetentionDatabase;
 import edu.umd.cs.findbugs.ba.BlockTypeDataflow;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
@@ -118,6 +119,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ForwardTypeQualifierDataflowFactoryFactory(),
 		new XMethodFactory(),
 		new BackwardTypeQualifierDataflowFactoryFactory(),
+		new OpcodeStack.JumpInfoFactory()
 	};
 	
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {

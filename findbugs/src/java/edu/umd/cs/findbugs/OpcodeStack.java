@@ -51,6 +51,13 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -1363,7 +1370,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * @param opcode TODO
+	 * handle dcmp
 	 * 
 	 */
 	private void handleDcmp(int opcode) {
@@ -1395,7 +1402,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * @param opcode TODO
+	 * handle fcmp
 	 * 
 	 */
 	private void handleFcmp(int opcode) {
@@ -1424,7 +1431,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handle lcmp
 	 */
 	private void handleLcmp() {
 		Item it;
@@ -1448,7 +1455,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handle swap
 	 */
 	private void handleSwap() {
 		Item i1 = pop();
@@ -1458,7 +1465,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handleDup
 	 */
 	private void handleDup() {
 		Item it;
@@ -1468,7 +1475,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handle dupX1
 	 */
 	private void handleDupX1() {
 		Item it;
@@ -1481,7 +1488,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handle dup2
 	 */
 	private void handleDup2() {
 		Item it, it2;
@@ -1500,7 +1507,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * handle Dup2x1
 	 */
 	private void handleDup2X1() {
 		String signature;
@@ -1564,7 +1571,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
-	 * 
+	 * Handle DupX2
 	 */
 	private void handleDupX2() {
 		String signature;
@@ -1698,8 +1705,55 @@ public class OpcodeStack implements Constants2
 	 BitSet exceptionHandlers = new BitSet();
 	 private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 	 private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
-	private BitSet jumpEntryLocations = new BitSet();
+	 private BitSet jumpEntryLocations = new BitSet();
+	 static class JumpInfo {
+		 final Map<Integer, List<Item>> jumpEntries;
+		 final Map<Integer, List<Item>> jumpStackEntries;
+		 final BitSet jumpEntryLocations;
+		 JumpInfo(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
+			 this.jumpEntries = jumpEntries;
+			 this.jumpStackEntries = jumpStackEntries;
+			 this.jumpEntryLocations = jumpEntryLocations;
+		 }
+	 }
+	 
+	 public static class JumpInfoFactory extends AnalysisFactory<JumpInfo> {
 
+        public JumpInfoFactory()  {
+	        super("Jump info for opcode stack", JumpInfo.class);
+        }
+
+		public JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+        	Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
+        	AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+    		JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
+    		
+    		Code code = method.getCode();
+    		final OpcodeStack stack = new OpcodeStack();
+    		if (code == null) {
+    			return null;
+    		}
+    		DismantleBytecode branchAnalysis = new DismantleBytecode() {
+				@Override
+				public void sawOpcode(int seen) {
+					stack.sawOpcode(this, seen);
+				}
+    		};
+    		branchAnalysis.setupVisitorForClass(jclass);
+    		int oldCount = 0;
+    		while (true) {
+			   stack.resetForMethodEntry0(jclass.getClassName(), method);
+		       branchAnalysis.doVisitMethod(method);
+		       int newCount = stack.jumpEntries.size();
+		       if (newCount == oldCount) break;
+		       oldCount = newCount;
+    		}
+
+	        return new JumpInfo(stack.jumpEntries, stack.jumpStackEntries, stack.jumpEntryLocations);
+        }}
+
+	
+	 
 	 private void addJumpValue(int target) {
 		 if (DEBUG)
 			 System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + stack + " : " +  lvValues );
@@ -1710,8 +1764,7 @@ public class OpcodeStack implements Constants2
 				  System.out.println("Was null");
 
 			 jumpEntries.put(target, new ArrayList<Item>(lvValues));
-			 jumpEntryLocations.set(target);
-
+             jumpEntryLocations.set(target);
 			 if (stack.size() > 0) {
 			   jumpStackEntries.put(target, new ArrayList<Item>(stack));
 			}
@@ -1726,104 +1779,80 @@ public class OpcodeStack implements Constants2
 	 }
 	 private String methodName;
 	 DismantleBytecode v;
+	 
+	 public void learnFrom(JumpInfo info) {
+		 jumpEntries = new HashMap<Integer, List<Item>>(info.jumpEntries);
+		 jumpStackEntries = new HashMap<Integer, List<Item>>(info.jumpStackEntries);
+		 jumpEntryLocations = (BitSet) info.jumpEntryLocations.clone();
+	 }
+public void initialize() {
+	setTop(false);
+	jumpEntries.clear();
+	jumpStackEntries.clear();
+	lastUpdate.clear();
+	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
+	setReachOnlyByBranch(false);
+}
 	 public int resetForMethodEntry(final DismantleBytecode v) {
-		 this.v = v;
-		 methodName = v.getMethodName();
-		setTop(false);
-		jumpEntries.clear();
-		jumpStackEntries.clear();
-		jumpEntryLocations.clear();
-		lastUpdate.clear();
-		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
-		setReachOnlyByBranch(false);
-		 int result= resetForMethodEntry0(v);
-		 Code code = v.getMethod().getCode();
-		if (code == null) return result;
+		this.v = v;
+		initialize();
+
+		int result = resetForMethodEntry0(v);
+		Code code = v.getMethod().getCode();
+		if (code == null)
+			return result;
 
 		if (useIterativeAnalysis) {
-			// FIXME: Be clever
-			if (DEBUG) 
-				System.out.println(" --- Iterative analysis");
-			DismantleBytecode branchAnalysis = new DismantleBytecode() {
-				@Override
-				public void sawOpcode(int seen) {
-					OpcodeStack.this.sawOpcode(this, seen);
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			XMethod xMethod = XFactory.createXMethod(v.getThisClass(), v.getMethod());
+			try {
+				JumpInfo jump = analysisCache.getMethodAnalysis(JumpInfo.class, xMethod.getMethodDescriptor());
+				if (jump != null) {
+					learnFrom(jump);
 				}
-
-				// perhaps we don't need this
-//				@Override
-//				public void sawBranchTo(int pc) {
-//					addJumpValue(pc);
-//				}
-			};
-			branchAnalysis.setupVisitorForClass(v.getThisClass());
-			branchAnalysis.doVisitMethod(v.getMethod());
-			if (!jumpEntries.isEmpty()) {
-				int count = jumpEntries.size();
-				while (true) {
-					resetForMethodEntry0(v);
-					if (DEBUG) {
-						System.out.println("Found dataflow for jumps in " + v.getMethodName());
-						for (Integer pc : jumpEntries.keySet()) {
-							List<Item> list = jumpEntries.get(pc);
-							System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
-						}
-					}
-					branchAnalysis.doVisitMethod(v.getMethod());
-					int count2 = jumpEntries.size();
-					if (count2 <= count) break;
-					count = count2;
-				}
+			} catch (CheckedAnalysisException e) {
+				AnalysisContext.logError("Error getting jump information", e);
 			}
-			if (DEBUG && !jumpEntries.isEmpty()) {
-				System.out.println("Found dataflow for jumps in " + v.getMethodName());
-				for (Integer pc : jumpEntries.keySet()) {
-					List<Item> list = jumpEntries.get(pc);
-					System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
-				}
-			}
-			resetForMethodEntry0(v);
-			if (DEBUG) 
-				System.out.println(" --- End of Iterative analysis");
-
 		}
 
-		 return result;
+		return result;
 
-		}
+	}
 
 
-	private int resetForMethodEntry0(PreorderVisitor v) {
-		if (DEBUG) System.out.println(" --- ");
+	 private int resetForMethodEntry0(PreorderVisitor v) {
+		 return resetForMethodEntry0(v.getClassName(), v.getMethod());
+	 }
+	 private int resetForMethodEntry0(@SlashedClassName String className, Method m) {
+		 methodName = m.getName();
+			
+		 if (DEBUG) System.out.println(" --- ");
+		 String signature = m.getSignature();
 		 stack.clear();
 		 lvValues.clear();
 		 top = false;
-		setReachOnlyByBranch(false);
-		seenTransferOfControl = false;
-		String className = v.getClassName();
-
-		String signature = v.getMethodSig();
-		exceptionHandlers.clear();
-		 Method m = v.getMethod();
+		 setReachOnlyByBranch(false);
+		 seenTransferOfControl = false;
+		  exceptionHandlers.clear();
 		 Code code = m.getCode();
-		if (code != null) 
-	 {
-			CodeException[] exceptionTable = code.getExceptionTable();
-			if (exceptionTable != null)
-				for(CodeException ex : exceptionTable) 
-					exceptionHandlers.set(ex.getHandlerPC());
-		}
-		if (DEBUG) System.out.println(" --- " + className 
-				+ " " + m.getName() + " " + signature);
-		Type[] argTypes = Type.getArgumentTypes(signature);
-		int reg = 0;
-		if (!m.isStatic()) {
-			Item it = new Item("L" + className+";");
-			it.setInitialParameter(true);
-			it.registerNumber = reg;
-			setLVValue( reg, it);
-			reg += it.getSize();
-			}
+		 if (code != null) 
+		 {
+			 CodeException[] exceptionTable = code.getExceptionTable();
+			 if (exceptionTable != null)
+				 for(CodeException ex : exceptionTable) 
+					 exceptionHandlers.set(ex.getHandlerPC());
+		 }
+		 if (DEBUG) System.out.println(" --- " + className 
+				 + " " + m.getName() + " " + signature);
+		 Type[] argTypes = Type.getArgumentTypes(signature);
+		 int reg = 0;
+		 if (!m.isStatic()) {
+			 Item it = new Item("L" + className+";");
+			 it.setInitialParameter(true);
+			 it.registerNumber = reg;
+			 setLVValue( reg, it);
+			 reg += it.getSize();
+		 }
 		 for (Type argType : argTypes) {
 			 Item it = new Item(argType.getSignature());
 			 it.registerNumber = reg;
@@ -1831,8 +1860,8 @@ public class OpcodeStack implements Constants2
 			 setLVValue(reg, it);
 			 reg += it.getSize();
 		 }
-		return reg;
-	}
+		 return reg;
+	 }
 
 	 public int getStackDepth() {
 		 return stack.size();

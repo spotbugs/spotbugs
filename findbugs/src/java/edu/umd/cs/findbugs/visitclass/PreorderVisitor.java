@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.visitclass;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Attribute;
@@ -40,6 +39,9 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Interface to make the use of a visitor pattern programming style possible.
@@ -271,12 +273,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	/** Get the slash-formatted class name for the current or most recently visited class */
-	public String getClassName() {
+	public @SlashedClassName String getClassName() {
 		return className;
 	}
 
 	/** Get the dotted class name for the current or most recently visited class */
-	public String getDottedClassName() {
+	public @DottedClassName  String getDottedClassName() {
 		return dottedClassName;
 	}
 
