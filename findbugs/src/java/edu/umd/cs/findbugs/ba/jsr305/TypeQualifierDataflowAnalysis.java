@@ -141,11 +141,11 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		case ASSUME_ALWAYS:
 			return FlowValue.ALWAYS;
 		case MAYBE_NOT:
-			return FlowValue.MAYBE;
+			return FlowValue.UNKNOWN;
 		case NEVER:
 			return FlowValue.NEVER;
 		case UNKNOWN:
-			return FlowValue.MAYBE;
+			return FlowValue.UNKNOWN;
 		default:
 			throw new IllegalStateException();
 		}

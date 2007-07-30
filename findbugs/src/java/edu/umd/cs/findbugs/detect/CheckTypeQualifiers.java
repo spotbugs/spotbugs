@@ -280,7 +280,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				System.out.println("Check " + vn + ": forward=" + forward + ", backward=" + backward + " at " + checkLocation);
 			}
 
-			if (FlowValue.valuesConflict(forward, backward, typeQualifierValue.isStrictQualifier())) {
+			if (FlowValue.valuesConflict(forward, backward)) {
 				if (DEBUG) {
 					System.out.println("Emitting warning at " + checkLocation);
 				}

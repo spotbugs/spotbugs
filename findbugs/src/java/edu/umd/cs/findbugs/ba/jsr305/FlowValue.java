@@ -29,7 +29,7 @@ public enum FlowValue {
 	TOP(0),
 	ALWAYS(Bits.YES),
 	NEVER(Bits.NO),
-	MAYBE(Bits.YES|Bits.NO|Bits.UNCERTAIN);
+	UNKNOWN(Bits.YES|Bits.NO|Bits.UNCERTAIN);
 
 	private interface Bits {
 		public static final int YES = 1;
@@ -61,14 +61,14 @@ public enum FlowValue {
 	//      /    \
 	//  Always  Never
 	//      \    /
-	//       Maybe
+	//      Unknown
 	//
 	private static final FlowValue[][] mergeMatrix = {
-		//              TOP     ALWAYS  NEVER    MAYBE
+		//              TOP       ALWAYS    NEVER     UNKNOWN
 		/* TOP */     { TOP,  },
-		/* ALWAYS */  { ALWAYS, ALWAYS, },
-		/* NEVER */   { NEVER,  MAYBE,  NEVER, },
-		/* MAYBE */   { MAYBE,  MAYBE,  MAYBE,   MAYBE },
+		/* ALWAYS */  { ALWAYS,   ALWAYS, },
+		/* NEVER */   { NEVER,    UNKNOWN,  NEVER, },
+		/* UNKNOWN */ { UNKNOWN,  UNKNOWN,  UNKNOWN,  UNKNOWN },
 	};
 	
 	public static final FlowValue meet(FlowValue a, FlowValue b) {
@@ -92,17 +92,12 @@ public enum FlowValue {
 	 * @param isStrictQualifier  true if the type qualifier being checked is strict
 	 * @return true if values conflict, false otherwise
 	 */
-	public static boolean valuesConflict(FlowValue forward, FlowValue backward, boolean isStrictQualifier) {
-//		return (forward == ALWAYS && backward == NEVER)
-//			|| (forward == NEVER && backward == ALWAYS);
+	public static boolean valuesConflict(FlowValue forward, FlowValue backward) {
 		if (forward == TOP || backward == TOP) {
 			return false;
 		}
-		if (isStrictQualifier) {
-			return ((backward == ALWAYS || backward == NEVER) && (forward != backward));
-		} else {
-			return (backward != MAYBE && forward != MAYBE && forward != backward);
-		}
+		return (forward == ALWAYS && backward == NEVER)
+			|| (forward == NEVER && backward == ALWAYS);
 	}
 
 }

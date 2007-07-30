@@ -40,7 +40,7 @@ public class TypeQualifierValueSet {
 	// States
 	enum State { VALID, TOP, BOTTOM };
 	
-	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.MAYBE;
+	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.UNKNOWN;
 
 	private Map<ValueNumber, FlowValue> valueMap;
 	private Map<ValueNumber, Set<SourceSinkInfo>> whereAlways;

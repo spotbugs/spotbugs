@@ -131,7 +131,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			valueNumbers.retainAll(forwardFact.getValueNumbers());
 
 			for (ValueNumber vn : valueNumbers) {
-				if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn), typeQualifierValue.isStrictQualifier())) {
+				if (FlowValue.valuesConflict(forwardFact.getValue(vn), fact.getValue(vn))) {
 					fact.pruneValue(vn);
 				}
 			}
@@ -160,7 +160,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    				param,
 	    				typeQualifierValue);
 
-    			FlowValue flowValue = (tqa != null) ? flowValueFromWhen(tqa.when) : FlowValue.MAYBE;
+    			FlowValue flowValue = (tqa != null) ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
     			if (tqa != null) {
         			foundParamAnnotation = true;
     			}
@@ -193,7 +193,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	    	
 	    	XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
-	    	flowValue = (tqa != null)  ? flowValueFromWhen(tqa.when) : FlowValue.MAYBE;
+	    	flowValue = (tqa != null)  ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
 
     		// The ValueNumberFrame *before* the FieldInstruction should
     		// have the ValueNumber of the stored value on the top of the stack.

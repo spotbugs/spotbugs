@@ -185,7 +185,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
 	private void setTopOfStackValue(TypeQualifierValueSet fact, FlowValue flowValue, SourceSinkInfo sourceInfo, Location location) throws DataflowAnalysisException {
 		if (flowValue == null) {
-			flowValue = FlowValue.MAYBE;
+			flowValue = FlowValue.UNKNOWN;
 		}
 
 		ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
