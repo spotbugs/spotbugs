@@ -322,13 +322,12 @@ public class CheckTypeQualifiers extends CFGDetector {
 				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_OBSERVED_NAMED" : "LOCAL_VARIABLE_VALUE_OBSERVED");
 				warning.add(localVariable);
 			}
+			// Report where we observed the value
+			SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, locationToReport);
+			observedLocation.setDescription("SOURCE_LINE_VALUE_OBSERVED");
+			warning.add(observedLocation);
 		}
 		
-		// Report where we observed the value
-		SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, locationToReport);
-		observedLocation.setDescription("SOURCE_LINE_VALUE_OBSERVED");
-		warning.add(observedLocation);
-
 		// Add value sources
 		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
 		for (SourceSinkInfo source : sourceSet) {
