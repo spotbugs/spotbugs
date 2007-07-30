@@ -404,7 +404,7 @@ public class Subtypes2 {
 
 		// Try the cache
 		ObjectType firstCommonSupertype = firstCommonSupertypeQueryCache.get(a, b);
-		
+
 		// Need to compute answer?
 		if (firstCommonSupertype == null) {
 			ClassDescriptor aDesc = BCELUtil.getClassDescriptor(a);
@@ -415,13 +415,13 @@ public class Subtypes2 {
 
 			ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
 			ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
-			
+
 			// Work backwards until the lists diverge. 
 			// The last element common to both lists is the first
 			// common superclass.
 			int aIndex = aSuperList.size() - 1;
 			int bIndex = bSuperList.size() - 1;
-			
+
 			ClassVertex lastCommonInBackwardsSearch = null;
 			while (aIndex >= 0 && bIndex >= 0) {
 				if (aSuperList.get(aIndex) != bSuperList.get(bIndex)) {
@@ -435,7 +435,7 @@ public class Subtypes2 {
 				throw new IllegalStateException();
 			}
 			firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
-			
+
 			// Remember the answer
 			firstCommonSupertypeQueryCache.put(a, b, firstCommonSupertype);
 		}
