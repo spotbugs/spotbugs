@@ -308,8 +308,11 @@ public class CheckTypeQualifiers extends CFGDetector {
 			FlowValue backward,
 			Location locationToReport,
 			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
+		String bugType =
+			(backward == FlowValue.NEVER) ? "TQ_ALWAYS_SOURCE_FLOWS_TO_NEVER_SINK" : "TQ_NEVER_SOURCE_FLOWS_TO_ALWAYS_SINK";
+		
 		// Issue warning
-		BugInstance warning = new BugInstance(this, "CTQ_INCONSISTENT_USE", Priorities.NORMAL_PRIORITY)
+		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
 			.addClassAndMethod(methodDescriptor)
 			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
 

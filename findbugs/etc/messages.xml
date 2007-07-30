@@ -6046,14 +6046,44 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 </Details>
 </BugPattern>
 
-  <BugPattern type="CTQ_INCONSISTENT_USE">
-    <ShortDescription>Inconsistent type qualifier annotations</ShortDescription>
-    <LongDescription>Inconsistent {2} annotations in {1}</LongDescription>
+  <BugPattern type="TQ_ALWAYS_SOURCE_FLOWS_TO_NEVER_SINK">
+    <ShortDescription>Value annotated as ALWAYS used where value annotated as NEVER required</ShortDescription>
+    <LongDescription>Value specified as always carrying type qualifier @{2.excludingPackage} used where value never carrying that annotation is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
-        This method uses values annotated with type qualifiers
-        in an inconsistent way.
+        A value specified as carrying a type qualifier annotation is guaranteed
+        to be consumed in a location or locations requiring that the value not
+        carry that annotation.
+        </p>
+        
+        <p>
+        More precisely, a value annotated with a type qualifier specifying when=ALWAYS
+        is guaranteed to reach a use or uses where the same type qualifier specifies when=NEVER.
+        <em>TODO: example</em>.  
+        </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="TQ_NEVER_SOURCE_FLOWS_TO_ALWAYS_SINK">
+    <ShortDescription>Value annotated as NEVER used where value annotated as ALWAYS required</ShortDescription>
+    <LongDescription>Value specified as never carrying type qualifier @{2.excludingPackage} used where value always carrying that annotation is required</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+        A value specified as not carrying a type qualifier annotation is guaranteed
+        to be consumed in a location or locations requiring that the value does
+        carry that annotation.
+        </p>
+        
+        <p>
+        More precisely, a value annotated with a type qualifier specifying when=NEVER
+        is guaranteed to reach a use or uses where the same type qualifier specifies when=ALWAYS.
+        <b>For example</b>: say that the annotation @Tainted is a nickname for
+        the annotation @Untainted(when=NEVER). You would see this warning if
+        a value marked as @Tainted is guaranteed to reach a use or uses where
+        a value marked as @Untainted is required.  
         </p>
       ]]>
     </Details>
@@ -6180,7 +6210,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
   <BugCode abbrev="DP">Use doPrivileged</BugCode>
   <BugCode abbrev="GC">Suspicious calls to generic container methods</BugCode>
   <BugCode abbrev="STCAL">Static use of type Calendar or DateFormat</BugCode>
-  <BugCode abbrev="CTQ">Inconsistent use of type qualifier annotations</BugCode>
+  <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   </MessageCollection>
 
 
