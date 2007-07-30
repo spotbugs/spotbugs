@@ -177,10 +177,9 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		for (int i = 0; i < numSlotsToMerge; i++) {
 			ValueNumber targetVN = targetVnaFrame.getValue(i);
 			ValueNumber sourceVN = sourceVnaFrame.getValue(i);
-
-			if (!targetVN.equals(sourceVN)) {
+			
+			if (!targetVN.equals(sourceVN) && targetVN.hasFlag(ValueNumber.PHI_NODE)) {
 				// targetVN is a phi result
-				assert targetVN.hasFlag(ValueNumber.PHI_NODE);
 				if (DEBUG_VERBOSE) {
 					System.out.println("Phi node: " + fact.valueNumberToString(sourceVN) +
 							" -> " + fact.valueNumberToString(targetVN));
