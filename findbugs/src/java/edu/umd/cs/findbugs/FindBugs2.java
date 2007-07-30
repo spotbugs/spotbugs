@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -175,6 +177,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Create the execution plan (which passes/detectors to execute)
 			createExecutionPlan();
 
+			if (appClassList.size() == 0)
+				throw new IOException("No classes found to analyze");
+			
 			// Analyze the application
 			analyzeApplication();
 		} catch (CheckedAnalysisException e) {
@@ -575,19 +580,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		}
 	}
 
-	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList) {
-		   return edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, new OutEdges<ClassDescriptor>() {
-
-			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
-				try {
-				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
-				return classNameAndInfo.getReferencedClassDescriptorList();
-				} catch  (CheckedAnalysisException e2) {
-					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
-					return TigerSubstitutes.emptyList();
-
-				}
-			}});
+	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
+		return edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
 
 		}
 
@@ -702,7 +696,35 @@ public class FindBugs2 implements IFindBugsEngine {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
 			if (passCount > 0) {
-				List<ClassDescriptor> result = sortByCallGraph(classCollection);
+				OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
+
+					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
+						try {
+						XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
+						return classNameAndInfo.getReferencedClassDescriptorList();
+						} catch  (CheckedAnalysisException e2) {
+							AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
+							return TigerSubstitutes.emptyList();
+
+						}
+					}};
+				List<ClassDescriptor> result = sortByCallGraph(classCollection, outEdges);
+				
+				Map<ClassDescriptor, Integer> pos = new HashMap<ClassDescriptor, Integer>();
+				int phase = 0;
+				for(ClassDescriptor c : result) {
+					int p = -1;
+					for(ClassDescriptor dependsOn : outEdges.getOutEdges(c)) {
+						Integer x = pos.get(dependsOn);
+						if (x != null)
+							p = Math.max(p, x);
+					}
+					p++;
+					pos.put(c, p);
+					if (false) System.out.println(p + " " + c);
+				}
+				int next = 0;
+				
 				classCollection = result;
 				}
 			progress.startAnalysis(classCollection.size());
