@@ -76,6 +76,8 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	 * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
 	 */
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
+		if (className.length() == 0) 
+			throw new IllegalArgumentException("Request to load empty class");
 		className = ClassName.toSlashedClassName(className);
 		ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
 		try {
