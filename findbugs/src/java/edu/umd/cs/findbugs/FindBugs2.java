@@ -148,7 +148,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		// The analysis cache object
 		createAnalysisCache();
 
-		progress.reportNumberOfArchives(project.getFileCount());
+		progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
 
 		try {
 			// Discover all codebases in classpath and
