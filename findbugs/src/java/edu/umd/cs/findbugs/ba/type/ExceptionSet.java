@@ -162,7 +162,7 @@ public class ExceptionSet implements Serializable {
 		ReferenceType result = i.next();
 		while (i.hasNext()) {
 			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-				result = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(result, i.next());
+				result = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(result, i.next());
 			} else {
 				result = result.getFirstCommonSuperclass(i.next());
 			}

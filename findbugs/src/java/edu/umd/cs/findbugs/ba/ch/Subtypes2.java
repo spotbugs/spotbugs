@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 public class Subtypes2 {
 	public static final boolean ENABLE_SUBTYPES2 = true; //SystemProperties.getBoolean("findbugs.subtypes2");
 	public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES =
-		SystemProperties.getBoolean("findbugs.subtypes2.superclass");
+		true; //SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");
 	public static final boolean DEBUG_QUERIES = SystemProperties.getBoolean("findbugs.subtypes2.debugqueries");
 
@@ -336,7 +336,23 @@ public class Subtypes2 {
 		return isSubtype;
 	}
 
-	public ReferenceType getFirstCommonSupertype(ReferenceType a, ReferenceType b) throws ClassNotFoundException {
+	/**
+	 * Get the first common superclass of the given reference types.
+	 * Note that an interface type is never returned unless <code>a</code> and <code>b</code> are the
+	 * same type.  Otherwise, we try to return as accurate a type as possible.
+	 * This method is used as the meet operator in TypeDataflowAnalysis,
+	 * and is intended to follow (more or less) the JVM bytecode verifier
+	 * semantics.
+	 * 
+	 * <p>This method should be used in preference to the getFirstCommonSuperclass()
+	 * method in {@link ReferenceType}.</p>
+	 * 
+	 * @param a a ReferenceType
+	 * @param b another ReferenceType
+	 * @return the first common superclass of <code>a</code> and <code>b</code>
+	 * @throws ClassNotFoundException
+	 */
+	public ReferenceType getFirstCommonSuperclass(ReferenceType a, ReferenceType b) throws ClassNotFoundException {
 		// Easy case: same types
 		if (a.equals(b)) {
 			return a;
@@ -368,7 +384,7 @@ public class Subtypes2 {
 				// Compute the ObjectType which is the first common superclass
 				// of the respective base types, and return a new array
 				// with that base type and the same number of dimensions.
-				ObjectType baseTypesFirstCommonSupertype = getFirstCommonSupertype((ObjectType) aBaseType, (ObjectType) bBaseType);
+				ObjectType baseTypesFirstCommonSupertype = getFirstCommonSuperclass((ObjectType) aBaseType, (ObjectType) bBaseType);
 				return new ArrayType(baseTypesFirstCommonSupertype, aNumDimensions);
 			}
 
@@ -390,10 +406,26 @@ public class Subtypes2 {
 
 		// Neither a nor b is an array type.
 		// Find first common supertypes of ObjectTypes.
-		return getFirstCommonSupertype((ObjectType) a, (ObjectType) b);
+		return getFirstCommonSuperclass((ObjectType) a, (ObjectType) b);
 	}
 
-	public ObjectType getFirstCommonSupertype(ObjectType a, ObjectType b) throws ClassNotFoundException {
+	/**
+	 * Get the first common superclass of the given object types.
+	 * Note that an interface type is never returned unless <code>a</code> and <code>b</code> are the
+	 * same type.  Otherwise, we try to return as accurate a type as possible.
+	 * This method is used as the meet operator in TypeDataflowAnalysis,
+	 * and is intended to follow (more or less) the JVM bytecode verifier
+	 * semantics.
+	 * 
+	 * <p>This method should be used in preference to the getFirstCommonSuperclass()
+	 * method in {@link ReferenceType}.</p>
+	 * 
+	 * @param a an ObjectType
+	 * @param b another ObjectType
+	 * @return the first common superclass of <code>a</code> and <code>b</code>
+	 * @throws ClassNotFoundException
+	 */
+	public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b) throws ClassNotFoundException {
 		// This function is commutative, so don't clutter up the cache
 		// storing the answer to (A op B) and (B op A) separately.
 		if (a.getSignature().compareTo(b.getSignature()) > 0) {

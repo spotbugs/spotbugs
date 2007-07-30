@@ -238,13 +238,13 @@ public class Subtypes2Test extends FindBugsTestCase {
 			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
 
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeObject));
-				assertEquals(typeString, test.getFirstCommonSupertype(typeString, typeString));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeString, typeObject));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeString));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeObject, typeObject));
+				assertEquals(typeString, test.getFirstCommonSuperclass(typeString, typeString));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeString, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeObject, typeString));
 
 				// Slightly harder one
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeString, typeInteger));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeString, typeInteger));
 			}
 		});
 	}
@@ -257,11 +257,11 @@ public class Subtypes2Test extends FindBugsTestCase {
 			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
 				
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeObject));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeObject, typeSerializable));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeClonable));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeSerializable, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeObject, typeSerializable));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeSerializable, typeClonable));
 				
-				assertEquals(typeSerializable, test.getFirstCommonSupertype(typeSerializable, typeSerializable));
+				assertEquals(typeSerializable, test.getFirstCommonSuperclass(typeSerializable, typeSerializable));
 			}
 		});
 	}
@@ -275,24 +275,24 @@ public class Subtypes2Test extends FindBugsTestCase {
 				Subtypes2 test = getSubtypes2();
 
 				// first common superclass of any array type and any object type is Object
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayInteger, typeObject));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeSerializable, typeArrayClonable));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayInteger, typeObject));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeSerializable, typeArrayClonable));
 				
 				// same number of dimensions, base type is ref type
-				assertEquals(typeArrayObject, test.getFirstCommonSupertype(typeArrayString, typeArrayInteger));
+				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayString, typeArrayInteger));
 				
 				// same number of dimensions, base type primitive
-				assertEquals(typeArrayInt, test.getFirstCommonSupertype(typeArrayInt, typeArrayInt));
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayChar, typeArrayInt));
+				assertEquals(typeArrayInt, test.getFirstCommonSuperclass(typeArrayInt, typeArrayInt));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayChar, typeArrayInt));
 				
 				// same number of dimensions, mismatch ref vs. primitive base type
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayString, typeArrayInt));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayString, typeArrayInt));
 				
 				// different number of dimensions, base type is ref type
-				assertEquals(typeArrayObject, test.getFirstCommonSupertype(typeArrayArraySerializable, typeArrayString));
+				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArraySerializable, typeArrayString));
 				
 				// different number of dimensions, mismatch base type
-				assertEquals(typeObject, test.getFirstCommonSupertype(typeArrayArrayString, typeArrayInt));
+				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayArrayString, typeArrayInt));
 			}
 		});
 	}

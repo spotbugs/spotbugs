@@ -84,7 +84,7 @@ public class FieldStoreType {
 					leastSupertype = (ReferenceType) type;
 				} else {
 					if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-						leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(
+						leastSupertype = AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(
 								leastSupertype, (ReferenceType) type);
 					} else {
 						leastSupertype = leastSupertype.getFirstCommonSuperclass((ReferenceType) type);

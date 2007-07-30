@@ -157,7 +157,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			}
 
 			if (Subtypes2.ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES) {
-				return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSupertype(aRef, bRef);
+				return AnalysisContext.currentAnalysisContext().getSubtypes2().getFirstCommonSuperclass(aRef, bRef);
 			} else {
 				return aRef.getFirstCommonSuperclass(bRef);
 			}
