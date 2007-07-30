@@ -256,6 +256,8 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public JavaClass lookupClass(String className)
 			throws ClassNotFoundException {
 		try {
+			if (className.length() == 0) 
+				throw new IllegalArgumentException("Class name is empty");
 			if (!ClassName.isValidClassName(className)) {
 				throw new ClassNotFoundException("Invalid class name: " + className);
 			}
