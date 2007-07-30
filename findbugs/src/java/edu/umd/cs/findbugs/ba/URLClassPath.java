@@ -389,7 +389,7 @@ public class URLClassPath implements Serializable {
 		} catch (IOException e) {
 			classesThatCantBeFound.add(className);
 			throw new ClassNotFoundException("IOException while looking for class " +
-					className + ": " + e.toString());
+					className ,  e);
 		} finally {
 			if (in != null && !parsedClass) {
 				try {
