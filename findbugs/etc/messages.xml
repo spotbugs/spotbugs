@@ -6082,8 +6082,8 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
         is guaranteed to reach a use or uses where the same type qualifier specifies when=ALWAYS.
         <b>For example</b>: say that the annotation @Tainted is a nickname for
         the annotation @Untainted(when=NEVER). You would see this warning if
-        a value marked as @Tainted is guaranteed to reach a use or uses where
-        a value marked as @Untainted is required.  
+        a @Tainted value is guaranteed to reach a use or uses where
+        an @Untainted value is required.  
         </p>
       ]]>
     </Details>
