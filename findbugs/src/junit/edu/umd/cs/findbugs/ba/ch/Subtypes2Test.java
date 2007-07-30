@@ -57,6 +57,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayArrayString;
 	ArrayType typeArrayInt;
 	ArrayType typeArrayArrayInt;
+	ArrayType typeArrayArrayArrayInt;
 	ArrayType typeArrayChar;
 	ArrayType typeArrayArrayChar;
 	ArrayType typeArrayArrayArrayChar;
@@ -84,6 +85,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayArrayString = new ArrayType(typeString, 2);
 		typeArrayInt = new ArrayType(Type.INT, 1);
 		typeArrayArrayInt = new ArrayType(Type.INT, 2);
+		typeArrayArrayArrayInt = new ArrayType(Type.INT, 3);
 		typeArrayChar = new ArrayType(Type.CHAR, 1);
 		typeArrayArrayChar = new ArrayType(Type.CHAR, 2);
 		typeArrayArrayArrayChar = new ArrayType(Type.CHAR, 3);
@@ -305,6 +307,10 @@ public class Subtypes2Test extends FindBugsTestCase {
 				
 				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArrayInt, typeArrayArrayChar));
 				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArrayInt, typeArrayArrayArrayChar));
+				assertEquals(typeArrayArrayObject, test.getFirstCommonSuperclass(typeArrayArrayArrayChar, typeArrayArrayArrayInt));
+
+				// Sanity check
+				assertEquals(typeArrayArrayArrayChar, test.getFirstCommonSuperclass(typeArrayArrayArrayChar, typeArrayArrayArrayChar));
 			}
 		});
 	}
