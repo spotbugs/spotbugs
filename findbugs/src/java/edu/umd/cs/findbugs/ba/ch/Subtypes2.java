@@ -67,7 +67,7 @@ public class Subtypes2 {
 	private final Map<ClassDescriptor, SupertypeQueryResults> supertypeSetMap;
 	private final Map<ClassDescriptor, Set<ClassDescriptor>> subtypeSetMap;
 	private final Set<XClass> xclassSet;
-	private final DualKeyHashMap<ObjectType, ObjectType, ObjectType> firstCommonSupertypeQueryCache;
+	private final DualKeyHashMap<ReferenceType, ReferenceType, ReferenceType> firstCommonSuperclassQueryCache;
 
 	private final ObjectType SERIALIZABLE;
 	private final ObjectType CLONEABLE;
@@ -111,7 +111,7 @@ public class Subtypes2 {
 		this.xclassSet = new HashSet<XClass>();
 		this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
 		this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-		this.firstCommonSupertypeQueryCache = new DualKeyHashMap<ObjectType, ObjectType, ObjectType>();
+		this.firstCommonSuperclassQueryCache = new DualKeyHashMap<ReferenceType, ReferenceType, ReferenceType>();
 	}
 
 	/**
@@ -358,6 +358,15 @@ public class Subtypes2 {
 			return a;
 		}
 
+		ReferenceType answer = checkFirstCommonSuperclassQueryCache(a, b);
+		if (answer == null) {
+			answer = computeFirstCommonSuperclassOfReferenceTypes(a, b);
+			putFirstCommonSuperclassQueryCache(a, b, answer);
+		}
+		return answer;
+	}
+
+	private ReferenceType computeFirstCommonSuperclassOfReferenceTypes(ReferenceType a, ReferenceType b) throws ClassNotFoundException {
 		boolean aIsArrayType = (a instanceof ArrayType);
 		boolean bIsArrayType = (b instanceof ArrayType);
 
@@ -366,11 +375,11 @@ public class Subtypes2 {
 
 			ArrayType aArrType = (ArrayType) a;
 			ArrayType bArrType = (ArrayType) b;
-			
+
 			if (aArrType.getDimensions() == bArrType.getDimensions()) {
-				return getFirstCommonSuperclassOfSameDimensionArrays(aArrType, bArrType);
+				return computeFirstCommonSuperclassOfSameDimensionArrays(aArrType, bArrType);
 			} else {
-				return getFirstCommonSuperclassOfDifferentDimensionArrays(aArrType, bArrType);
+				return computeFirstCommonSuperclassOfDifferentDimensionArrays(aArrType, bArrType);
 			}
 		}
 
@@ -385,7 +394,6 @@ public class Subtypes2 {
 		return getFirstCommonSuperclass((ObjectType) a, (ObjectType) b);
 	}
 
-
 	/**
 	 * Get first common supertype of arrays with the same number of dimensions.
 	 * 
@@ -394,7 +402,7 @@ public class Subtypes2 {
 	 * @return first common supertype
 	 * @throws ClassNotFoundException
 	 */
-	private ReferenceType getFirstCommonSuperclassOfSameDimensionArrays(ArrayType aArrType, ArrayType bArrType)
+	private ReferenceType computeFirstCommonSuperclassOfSameDimensionArrays(ArrayType aArrType, ArrayType bArrType)
 			throws ClassNotFoundException {
 		assert aArrType.getDimensions() == bArrType.getDimensions();
 
@@ -434,7 +442,7 @@ public class Subtypes2 {
 	 * @param bArrType another ArrayType
 	 * @return ReferenceType representing first common superclass
 	 */
-	private ReferenceType getFirstCommonSuperclassOfDifferentDimensionArrays(ArrayType aArrType, ArrayType bArrType) {
+	private ReferenceType computeFirstCommonSuperclassOfDifferentDimensionArrays(ArrayType aArrType, ArrayType bArrType) {
 		assert aArrType.getDimensions() != bArrType.getDimensions();
 		
 		boolean aBaseTypeIsPrimitive = (aArrType.getBasicType() instanceof BasicType);
@@ -488,53 +496,69 @@ public class Subtypes2 {
 	 * @throws ClassNotFoundException
 	 */
 	public ObjectType getFirstCommonSuperclass(ObjectType a, ObjectType b) throws ClassNotFoundException {
-		// This function is commutative, so don't clutter up the cache
-		// storing the answer to (A op B) and (B op A) separately.
-		if (a.getSignature().compareTo(b.getSignature()) > 0) {
-			ObjectType tmp = a;
-			a = b;
-			b = tmp;
+		// Easy case
+		if (a.equals(b)) {
+			return a;
 		}
 
-		// Try the cache
-		ObjectType firstCommonSupertype = firstCommonSupertypeQueryCache.get(a, b);
-
-		// Need to compute answer?
+		ObjectType firstCommonSupertype = (ObjectType) checkFirstCommonSuperclassQueryCache(a, b);
 		if (firstCommonSupertype == null) {
-			ClassDescriptor aDesc = BCELUtil.getClassDescriptor(a);
-			ClassDescriptor bDesc = BCELUtil.getClassDescriptor(b);
-
-			ClassVertex aVertex = resolveClassVertex(aDesc);
-			ClassVertex bVertex = resolveClassVertex(bDesc);
-
-			ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
-			ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
-
-			// Work backwards until the lists diverge. 
-			// The last element common to both lists is the first
-			// common superclass.
-			int aIndex = aSuperList.size() - 1;
-			int bIndex = bSuperList.size() - 1;
-
-			ClassVertex lastCommonInBackwardsSearch = null;
-			while (aIndex >= 0 && bIndex >= 0) {
-				if (aSuperList.get(aIndex) != bSuperList.get(bIndex)) {
-					break;
-				}
-				lastCommonInBackwardsSearch = aSuperList.get(aIndex);
-				aIndex--;
-				bIndex--;
-			}
-			if (lastCommonInBackwardsSearch == null) {
-				throw new IllegalStateException();
-			}
-			firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
-
-			// Remember the answer
-			firstCommonSupertypeQueryCache.put(a, b, firstCommonSupertype);
+			firstCommonSupertype = computeFirstCommonSuperclassOfObjectTypes(a, b);
+			firstCommonSuperclassQueryCache.put(a, b, firstCommonSupertype);
 		}
 
 		return firstCommonSupertype;
+	}
+
+	private ObjectType computeFirstCommonSuperclassOfObjectTypes(ObjectType a, ObjectType b) throws ClassNotFoundException {
+	    ObjectType firstCommonSupertype;
+	    ClassDescriptor aDesc = BCELUtil.getClassDescriptor(a);
+	    ClassDescriptor bDesc = BCELUtil.getClassDescriptor(b);
+
+	    ClassVertex aVertex = resolveClassVertex(aDesc);
+	    ClassVertex bVertex = resolveClassVertex(bDesc);
+
+	    ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
+	    ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
+
+	    // Work backwards until the lists diverge. 
+	    // The last element common to both lists is the first
+	    // common superclass.
+	    int aIndex = aSuperList.size() - 1;
+	    int bIndex = bSuperList.size() - 1;
+
+	    ClassVertex lastCommonInBackwardsSearch = null;
+	    while (aIndex >= 0 && bIndex >= 0) {
+	    	if (aSuperList.get(aIndex) != bSuperList.get(bIndex)) {
+	    		break;
+	    	}
+	    	lastCommonInBackwardsSearch = aSuperList.get(aIndex);
+	    	aIndex--;
+	    	bIndex--;
+	    }
+	    if (lastCommonInBackwardsSearch == null) {
+	    	throw new IllegalStateException();
+	    }
+	    firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
+	    return firstCommonSupertype;
+    }
+
+	private void putFirstCommonSuperclassQueryCache(ReferenceType a, ReferenceType b, ReferenceType answer) {
+		if (a.getSignature().compareTo(b.getSignature()) > 0) {
+			ReferenceType tmp = a;
+			a = b;
+			b = tmp;
+		}
+		firstCommonSuperclassQueryCache.put(a, b, answer);
+	}
+
+	private ReferenceType checkFirstCommonSuperclassQueryCache(ReferenceType a, ReferenceType b) {
+		if (a.getSignature().compareTo(b.getSignature()) > 0) {
+			ReferenceType tmp = a;
+			a = b;
+			b = tmp;
+		}
+		return firstCommonSuperclassQueryCache.get(a, b);
 	}
 
 	/**
