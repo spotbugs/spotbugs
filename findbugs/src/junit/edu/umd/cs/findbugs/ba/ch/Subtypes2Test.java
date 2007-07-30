@@ -58,6 +58,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ArrayType typeArrayInt;
 	ArrayType typeArrayArrayInt;
 	ArrayType typeArrayChar;
+	ArrayType typeArrayArrayChar;
+	ArrayType typeArrayArrayArrayChar;
 	ObjectType typeDynamicString;
 	ObjectType typeStaticString;
 	ObjectType typeParameterString;
@@ -83,6 +85,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeArrayInt = new ArrayType(Type.INT, 1);
 		typeArrayArrayInt = new ArrayType(Type.INT, 2);
 		typeArrayChar = new ArrayType(Type.CHAR, 1);
+		typeArrayArrayChar = new ArrayType(Type.CHAR, 2);
+		typeArrayArrayArrayChar = new ArrayType(Type.CHAR, 3);
 		typeDynamicString = new FindRefComparison.DynamicStringType();
 		typeStaticString = new FindRefComparison.StaticStringType();
 		typeParameterString = new FindRefComparison.ParameterStringType();
@@ -274,25 +278,33 @@ public class Subtypes2Test extends FindBugsTestCase {
 			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
 
-				// first common superclass of any array type and any object type is Object
 				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayInteger, typeObject));
 				assertEquals(typeObject, test.getFirstCommonSuperclass(typeSerializable, typeArrayClonable));
 				
-				// same number of dimensions, base type is ref type
 				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayString, typeArrayInteger));
 				
-				// same number of dimensions, base type primitive
 				assertEquals(typeArrayInt, test.getFirstCommonSuperclass(typeArrayInt, typeArrayInt));
 				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayChar, typeArrayInt));
 				
-				// same number of dimensions, mismatch ref vs. primitive base type
 				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayString, typeArrayInt));
 				
-				// different number of dimensions, base type is ref type
 				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArraySerializable, typeArrayString));
 				
-				// different number of dimensions, mismatch base type
 				assertEquals(typeObject, test.getFirstCommonSuperclass(typeArrayArrayString, typeArrayInt));
+			}
+		});
+	}
+	
+	public void testArrayFirstCommonSuperclassTricky() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
+			 */
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+				
+				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArrayInt, typeArrayArrayChar));
+				assertEquals(typeArrayObject, test.getFirstCommonSuperclass(typeArrayArrayInt, typeArrayArrayArrayChar));
 			}
 		});
 	}
