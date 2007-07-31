@@ -6046,7 +6046,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 </Details>
 </BugPattern>
 
-  <BugPattern type="TQ_ALWAYS_SOURCE_FLOWS_TO_NEVER_SINK">
+  <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
     <ShortDescription>Value annotated as ALWAYS used where value annotated as NEVER required</ShortDescription>
     <LongDescription>Value specified as always carrying type qualifier @{2.excludingPackage} used where value never carrying that annotation is required</LongDescription>
     <Details>
@@ -6060,13 +6060,16 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
         <p>
         More precisely, a value annotated with a type qualifier specifying when=ALWAYS
         is guaranteed to reach a use or uses where the same type qualifier specifies when=NEVER.
+        </p>
+        
+        <p>
         <em>TODO: example</em>.  
         </p>
       ]]>
     </Details>
   </BugPattern>
 
-  <BugPattern type="TQ_NEVER_SOURCE_FLOWS_TO_ALWAYS_SINK">
+  <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>Value annotated as NEVER used where value annotated as ALWAYS required</ShortDescription>
     <LongDescription>Value specified as never carrying type qualifier @{2.excludingPackage} used where value always carrying that annotation is required</LongDescription>
     <Details>
@@ -6080,11 +6083,48 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
         <p>
         More precisely, a value annotated with a type qualifier specifying when=NEVER
         is guaranteed to reach a use or uses where the same type qualifier specifies when=ALWAYS.
+        </p>
+        
+        <p>
         <b>For example</b>: say that the annotation @Tainted is a nickname for
         the annotation @Untainted(when=NEVER). You would see this warning if
         a @Tainted value is guaranteed to reach a use or uses where
         an @Untainted value is required.  
         </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
+    <ShortDescription>Unknown value reaches a use requiring a type qualifier annotation</ShortDescription>
+    <LongDescription>Unknown value reaches a use requiring the @{2.withoutPackage} annotation</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      A value not known to definitely carry a type qualifier annotation
+      reaches a use which requires that annotation.
+      </p>
+      
+      <p>
+      TODO: example.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
+    <ShortDescription>Unknown value reaches a use which forbids values carrying type qualifier annotation</ShortDescription>
+    <LongDescription>Unknown value reaches a use which forbids values carrying the @{2.withoutPackage} annotation</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      A value which might carry a type qualifier annotation reaches
+      a use which forbids values carrying that annotation.
+      </p> 
+      
+      <p>
+      TODO: example.
+      </p>
       ]]>
     </Details>
   </BugPattern>

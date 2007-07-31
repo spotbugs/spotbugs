@@ -123,4 +123,28 @@ public enum FlowValue {
 		}
 	}
 
+	/**
+	 * Determine whether given backwards FlowValue
+	 * conflicts with given source.
+	 * 
+	 * @param backwardsFlowValue a backwards FlowValue
+	 * @param source             SourceSinkInfo object representing a source
+	 *                           reached by the backwards flow value
+	 * @param typeQualifierValue TypeQualifierValue being checked
+	 * @return true if backwards value conflicts with source, false if not
+	 */
+	public static boolean backwardsValueConflictsWithSource(FlowValue backwardsFlowValue, SourceSinkInfo source,
+			TypeQualifierValue typeQualifierValue) {
+
+		if (typeQualifierValue.isStrictQualifier()) {
+			// strict checking
+			return (backwardsFlowValue == ALWAYS && source.getTypeQualifierAnnotation().when != When.ALWAYS)
+				|| (backwardsFlowValue == NEVER && source.getTypeQualifierAnnotation().when != When.NEVER);
+		} else {
+			// NOT strict checking
+			return (backwardsFlowValue == ALWAYS && source.getTypeQualifierAnnotation().when == When.NEVER)
+				|| (backwardsFlowValue == NEVER && source.getTypeQualifierAnnotation().when == When.ALWAYS);
+		}
+	}
+
 }

@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -108,7 +109,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 						forwardDataflowFactory,
 						backwardDataflowFactory,
 						vnaDataflow
-						);
+				);
 			} catch (MissingClassException e) {
 				bugReporter.reportMissingClass(e.getClassDescriptor());
 			} catch (CheckedAnalysisException e) {
@@ -119,7 +120,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			}
 		}
 	}
-	
+
 	private String checkLocation;
 
 	/**
@@ -164,6 +165,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 			p.print(System.out);
 		}
 
+		checkDataflow(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+		checkValueSources(methodDescriptor, cfg, typeQualifierValue, vnaDataflow, forwardDataflow, backwardDataflow);
+	}
+
+	private void checkDataflow(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+			ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
+			BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException, CheckedAnalysisException {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location loc = i.next();
 
@@ -184,9 +192,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 					backwardsFact,
 					loc,
 					vnaDataflow.getFactAtLocation(loc)
-					);
+			);
 		}
-		
+
 		for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext(); ) {
 			Edge edge = i.next();
 			if (DEBUG) {
@@ -206,7 +214,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			// the backwards value.)
 			TypeQualifierValueSet forwardFact = forwardDataflow.getFactOnEdge(edge);
 			TypeQualifierValueSet backwardFact = backwardDataflow.getResultFact(edge.getTarget());
-			
+
 			// Get a "representative" location at which to report the warning (if any).
 			// Since this is an edge, it's a bit tricky.
 			// The location at the beginning of the target block should work.
@@ -217,7 +225,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			// that the FindBugs IR isn't as well-designed as it could be :-)
 			Location location = getLocationToReport(cfg, edge);
 			ValueNumberFrame vnaFrame = (location != null) ? vnaDataflow.getFactAtLocation(location) : null; 
-			
+
 			checkForConflictingValues(
 					methodDescriptor,
 					typeQualifierValue,
@@ -231,14 +239,51 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 	}
 
+	private void checkValueSources(MethodDescriptor methodDescriptor, CFG cfg, TypeQualifierValue typeQualifierValue,
+			ValueNumberDataflow vnaDataflow, ForwardTypeQualifierDataflow forwardDataflow,
+			BackwardTypeQualifierDataflow backwardDataflow) throws DataflowAnalysisException {
+
+		// Check to see if any backwards ALWAYS or NEVER values
+		// reach incompatible sources.
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+			Location location = i.next();
+
+			Set<SourceSinkInfo> sourceSet = forwardDataflow.getAnalysis().getSourceSinkInfoSet(location);
+
+			for (SourceSinkInfo source : sourceSet) {
+				ValueNumber vn = source.getValueNumber();
+				TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
+				FlowValue backwardsFlowValue = backwardsFact.getValue(vn);
+
+				if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
+					continue;
+				}
+
+				if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
+					emitSourceWarning(
+							methodDescriptor,
+							typeQualifierValue,
+							backwardsFlowValue,
+							backwardsFact,
+							source,
+							vn,
+							location
+							);
+				}
+			}
+		}
+	}
+
+
 	private Location getLocationToReport(CFG cfg, Edge edge) {
 		BasicBlock targetBlock = edge.getTarget();
-		
+
 		// Target block is nonempty?
 		if (targetBlock.getFirstInstruction() != null) {
 			return new Location(targetBlock.getFirstInstruction(), targetBlock);
 		}
-		
+
 		// Target block is an ETB?
 		if (targetBlock.isExceptionThrower()) {
 			BasicBlock fallThroughSuccessor = cfg.getSuccessorWithEdgeType(targetBlock, EdgeTypes.FALL_THROUGH_EDGE);
@@ -252,12 +297,12 @@ public class CheckTypeQualifiers extends CFGDetector {
 					}
 				}
 			}
-			
+
 			if (fallThroughSuccessor != null && fallThroughSuccessor.getFirstInstruction() != null) {
 				return new Location(fallThroughSuccessor.getFirstInstruction(), fallThroughSuccessor);
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -284,7 +329,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				if (DEBUG) {
 					System.out.println("Emitting warning at " + checkLocation);
 				}
-				emitWarning(
+				emitDataflowWarning(
 						methodDescriptor,
 						typeQualifierValue,
 						forwardsFact,
@@ -298,7 +343,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 	}
 
-	private void emitWarning(
+	private void emitDataflowWarning(
 			MethodDescriptor methodDescriptor,
 			TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact,
@@ -309,8 +354,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 			Location locationToReport,
 			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
 		String bugType =
-			(backward == FlowValue.NEVER) ? "TQ_ALWAYS_SOURCE_FLOWS_TO_NEVER_SINK" : "TQ_NEVER_SOURCE_FLOWS_TO_ALWAYS_SINK";
-		
+			(backward == FlowValue.NEVER) ? "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" : "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
+
 		// Issue warning
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
 			.addClassAndMethod(methodDescriptor)
@@ -331,11 +376,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 			warning.add(observedLocation);
 		}
 
+		/*
 		// Add value sources
 		Set<SourceSinkInfo> sourceSet = (forward == FlowValue.ALWAYS) ? forwardsFact.getWhereAlways(vn) : forwardsFact.getWhereNever(vn);
 		for (SourceSinkInfo source : sourceSet) {
 			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
 		}
+		*/
 
 		// Add value sinks
 		Set<SourceSinkInfo> sinkSet = (backward == FlowValue.ALWAYS) ? backwardsFact.getWhereAlways(vn) : backwardsFact.getWhereNever(vn);
@@ -344,6 +391,29 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 
 		bugReporter.reportBug(warning);
+	}
+
+	private void emitSourceWarning(
+			MethodDescriptor methodDescriptor,
+			TypeQualifierValue typeQualifierValue,
+			FlowValue backwardsFlowValue,
+			TypeQualifierValueSet backwardsFact,
+			SourceSinkInfo source,
+			ValueNumber vn,
+			Location location) {
+		String bugType =
+			(backwardsFlowValue == FlowValue.NEVER) ? "TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+		
+		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
+			.addClassAndMethod(methodDescriptor)
+			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+		
+		annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
+		
+		Set<SourceSinkInfo> sinkSet = (backwardsFlowValue == FlowValue.NEVER) ? backwardsFact.getWhereNever(vn) : backwardsFact.getWhereAlways(vn);
+		for (SourceSinkInfo sink : sinkSet) {
+			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
+		}
 	}
 
 	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
@@ -361,21 +431,20 @@ public class CheckTypeQualifiers extends CFGDetector {
 				warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
 			}
 			break;
-			
+
 		case RETURN_VALUE_OF_CALLED_METHOD:
 		case FIELD_LOAD:
 			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SOURCE");
 			break;
-			
+
 		case ARGUMENT_TO_CALLED_METHOD:
 		case RETURN_VALUE:
 		case FIELD_STORE:
 			warning.addSourceLine(methodDescriptor, sourceSinkInfo.getLocation()).describe("SOURCE_LINE_VALUE_SINK");
 			return;
-			
+
 		default:
 			throw new IllegalStateException();
 		}
 	}
-
 }
