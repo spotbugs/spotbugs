@@ -39,8 +39,11 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -99,17 +102,17 @@ public class Project implements XMLWriteable {
 	/**
 	 * The list of project files.
 	 */
-	private LinkedList<String> fileList;
+	private List<String> fileList;
 
 	/**
 	 * The list of source directories.
 	 */
-	private LinkedList<String> srcDirList;
+	private List<String> srcDirList;
 
 	/**
 	 * The list of auxiliary classpath entries.
 	 */
-	private LinkedList<String> auxClasspathEntryList;
+	private List<String> auxClasspathEntryList;
 
 	/**
 	 * Flag to indicate that this Project has been modified.
@@ -154,7 +157,23 @@ public class Project implements XMLWriteable {
 
 		return dup;
 	}
+	/**
+	 * add information from project2 to this project
+	 */
+	public void add(Project project2) {
+		optionsMap.putAll(project2.optionsMap);
+		fileList = appendWithoutDuplicates(fileList, project2.fileList);
+		srcDirList = appendWithoutDuplicates(srcDirList, project2.srcDirList);
+		auxClasspathEntryList = appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
 
+	}
+
+	public static <T> List<T> appendWithoutDuplicates(List<T> lst1, List<T> lst2) {
+		LinkedHashSet<T> joined = new LinkedHashSet<T>(lst1);
+		joined.addAll(lst2);
+		return new ArrayList<T>(joined);
+		
+	}
 	public void setCurrentWorkingDirectory(File f) {
 		this.currentWorkingDirectory = f;
 	}
@@ -922,7 +941,7 @@ public class Project implements XMLWriteable {
 	 * @return true if the value was not already present in the list,
 	 *         false otherwise
 	 */
-	private boolean addToListInternal(List<String> list, String value) {
+	private boolean addToListInternal(Collection<String> list, String value) {
 		if (!list.contains(value)) {
 			list.add(value);
 			isModified = true;
