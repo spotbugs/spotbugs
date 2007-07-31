@@ -141,6 +141,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	 */
 	@Override
 	public String toString() {
-		return type.toString() + "@" + location.toCompactString();
+		return type.toString() + "@" + location.toCompactString() + "[vn=" + vn.getNumber() +
+		",tqa="+tqa+"]";
 	}
 }
