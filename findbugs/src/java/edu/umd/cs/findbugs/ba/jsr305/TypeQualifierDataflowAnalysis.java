@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -197,6 +198,18 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 			sourceSinkMap.put(sourceSinkInfo.getLocation(), set);
 		}
 		set.add(sourceSinkInfo);
+	}
+
+	/**
+	 * Get the set of SourceSinkInfo objects representing sources/sinks
+	 * at a given Location.
+	 * 
+	 * @param location a Location
+	 * @return Set of SourceSinkInfo objects representing sources/sinks at the Location
+	 */
+	public Set<SourceSinkInfo> getSourceSinkInfoSet(Location location) {
+		Set<SourceSinkInfo> result = sourceSinkMap.get(location);
+		return result != null ? result : (Set<SourceSinkInfo>) Collections.EMPTY_SET;
 	}
 	
 	/* (non-Javadoc)
