@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -28,12 +29,43 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine;
 
 /**
  * Compute the union of two sets of bug results,
  * preserving annotations.
  */
 public class UnionResults {
+	
+	static class UnionResultsCommandLine extends CommandLine {
+		public String outputFile;
+		boolean withMessages;
+		
+		UnionResultsCommandLine() {
+			addSwitch("-withMessages", "Generated XML should contain msgs for external processing");
+			addOption("-output", "outputFile", "File in which to store combined results");
+		}
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+         */
+        @Override
+        protected void handleOption(String option, String optionExtraPart) throws IOException {
+        	if (option.equals("-withMessages")) withMessages = true;
+        	else throw new IllegalArgumentException("Unknown option : " + option);
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+         */
+        @Override
+        protected void handleOptionWithArgument(String option, String argument) throws IOException {
+        	if (option.equals("-output")) outputFile = argument;
+        	else throw new IllegalArgumentException("Unknown option : " + option);
+        }
+		
+	}
 
 	static {
 		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
@@ -56,20 +88,28 @@ public class UnionResults {
 	public static void main(String[] argv) throws Exception {
 
 
-		if (argv.length == 0 || "-help".equals(argv[0])) {
-			System.err.println("Usage: " + UnionResults.class.getName() + " <results1> <results2> ... <resultsn>");
-			System.exit(1);
-		}
+		final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
+
+		int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + UnionResults.class.getName()
+				+ " [options] [<results1> <results2> ... <resultsn>] ");
+		
 
 		SortedBugCollection results = new SortedBugCollection();
-		results.readXML(argv[0], new Project());
-		for(int i = 1; i < argv.length; i++) {
+		Project project = new Project();
+		results.readXML(argv[argCount++], project);
+		for(int i = argCount; i < argv.length; i++) {
 			SortedBugCollection more = new SortedBugCollection();
-			more.readXML(argv[i], new Project());
+			Project newProject = new Project();
+			more.readXML(argv[i], newProject);
+			project.add(newProject);
 			results = union(results, more);
 		}
 
-		results.writeXML(System.out, new Project());
+		results.setWithMessages(commandLine.withMessages);
+		if (commandLine.outputFile == null)
+			results.writeXML(System.out, project);
+		else
+			results.writeXML(commandLine.outputFile, project);
 	}
 
 
