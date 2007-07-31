@@ -89,7 +89,7 @@ public class Driver {
 				fontSize = num;
 			}
 
-			if(args[i].startsWith("--font=")){
+			else if(args[i].startsWith("--font=")){
 				float num = 0;
 				try{
 					num = Integer.valueOf(args[i].substring("--font=".length()));
@@ -100,13 +100,47 @@ public class Driver {
 				fontSize = num;
 			}
 
-			if(args[i].equals("-clear")){
+			else if(args[i].equals("-clear")){
 				GUISaveState.clear();
 				System.exit(0);
 			}
 
-			if (args[i].equals("-d") || args[i].equals("--nodock"))
+			else if (args[i].equals("-d") || args[i].equals("--nodock")) {
 				docking = false;
+			}
+			
+			else if (args[i].startsWith("-look:")) {
+				String arg = args[i].substring("-look:".length());
+
+				String theme = null;
+				if (arg.equals("plastic")) {
+					// You can get the Plastic look and feel from jgoodies.com:
+					//	http://www.jgoodies.com/downloads/libraries.html
+					// Just put "plastic.jar" in the lib directory, right next
+					// to the other jar files.
+					theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
+				} else if (arg.equals("gtk")) {
+					theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+				} else if (arg.equals("native")) {
+					theme = UIManager.getSystemLookAndFeelClassName();
+				} else {
+					System.err.println("Style '" + arg + "' not supported");
+				}
+
+				if (theme != null) {
+					try {
+						UIManager.setLookAndFeel(theme);
+					} catch (Exception e) {
+						System.err.println("Couldn't load " + arg +
+								" look and feel: " + e.toString());
+					}
+				}
+			}
+			
+			else {
+				System.err.println("Unknown option: " + args[i]);
+				System.exit(1);
+			}
 		}
 
 		try {
