@@ -54,15 +54,17 @@ public class TypeQualifierValueSet {
 		this.state = State.TOP;
 	}
 
-	public void setValue(ValueNumber vn, FlowValue flowValue, SourceSinkInfo sourceSinkInfo) {
+	public void modelSourceSink(SourceSinkInfo sourceSinkInfo) {
 		assert sourceSinkInfo != null;
-		
+		ValueNumber vn = sourceSinkInfo.getValueNumber();
+		FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getTypeQualifierAnnotation().when);
+
 		setValue(vn, flowValue);
-		
+
 		if (flowValue.isYes()) {
 			addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
 		}
-		
+
 		if (flowValue.isNo()) {
 			addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
 		}

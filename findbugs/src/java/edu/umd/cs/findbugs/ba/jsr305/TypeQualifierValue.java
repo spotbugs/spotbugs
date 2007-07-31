@@ -31,11 +31,12 @@ import edu.umd.cs.findbugs.util.Util;
 public class TypeQualifierValue {
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
+	private boolean isStrict;
 
 	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
-
 		this.typeQualifier =  typeQualifier;
 		this.value = value;
+		this.isStrict = false; // will be set to true if this is a strict type qualifier value
 	}
 
 	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
@@ -51,6 +52,14 @@ public class TypeQualifierValue {
 	public ClassDescriptor getTypeQualifierClassDescriptor() {
 		return typeQualifier;
 	}
+	
+	/**
+	 * Mark this as a type qualifier value that should
+	 * be checked strictly.
+	 */
+	public void setIsStrict() {
+		this.isStrict = true;
+	}
 
 	/**
 	 * Return whether or not this TypeQualifierValue denotes
@@ -59,8 +68,7 @@ public class TypeQualifierValue {
 	 * @return true if type qualifier is strict, false otherwise
 	 */
 	public boolean isStrictQualifier() {
-		// TODO: implement
-		return false;
+		return isStrict;
 	}
 
 	public int hashCode() {
@@ -88,5 +96,6 @@ public class TypeQualifierValue {
 		}
 		return buf.toString();
 	}
+
 
 }

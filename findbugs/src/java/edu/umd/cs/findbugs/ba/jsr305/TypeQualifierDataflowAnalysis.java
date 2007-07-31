@@ -19,13 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -44,6 +52,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 	protected final ValueNumberDataflow vnaDataflow;
 	protected final TypeQualifierValue typeQualifierValue;
 	protected final ConstantPoolGen cpg;
+	private Map<Location, Set<SourceSinkInfo>> sourceSinkMap;
 
 	/**
 	 * Constructor.
@@ -65,6 +74,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		this.vnaDataflow = vnaDataflow;
 		this.cpg = cpg;
 		this.typeQualifierValue = typeQualifierValue;
+		this.sourceSinkMap = new HashMap<Location, Set<SourceSinkInfo>>();
 	}
 
 	/* (non-Javadoc)
@@ -128,29 +138,6 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		return fact1.equals(fact2);
 	}
 
-	/**
-	 * Convert a When value to a FlowValue value.
-	 * 
-	 * @param when a When value
-	 * @return the corresponding FlowValue
-	 */
-	protected FlowValue flowValueFromWhen(When when) {
-		switch (when) {
-		case ALWAYS:
-			return FlowValue.ALWAYS;
-		case ASSUME_ALWAYS:
-			return FlowValue.ALWAYS;
-		case MAYBE_NOT:
-			return FlowValue.UNKNOWN;
-		case NEVER:
-			return FlowValue.NEVER;
-		case UNKNOWN:
-			return FlowValue.UNKNOWN;
-		default:
-			throw new IllegalStateException();
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
@@ -195,4 +182,43 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 
 	protected abstract void propagateAcrossPhiNode(TypeQualifierValueSet fact, ValueNumber sourceVN, ValueNumber targetVN);
 
+	/**
+	 * This method must be called before the dataflow analysis
+	 * is executed.
+	 * 
+	 * @throws DataflowAnalysisException
+	 */
+	public abstract void registerSourceSinkLocations() throws DataflowAnalysisException;
+	
+	protected void registerSourceSink(SourceSinkInfo sourceSinkInfo) {
+		Set<SourceSinkInfo> set = sourceSinkMap.get(sourceSinkInfo.getLocation());
+		if (set == null) {
+			set = new HashSet<SourceSinkInfo>();
+			sourceSinkMap.put(sourceSinkInfo.getLocation(), set);
+		}
+		set.add(sourceSinkInfo);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
+	 */
+	@Override
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeQualifierValueSet fact)
+			throws DataflowAnalysisException {
+		if (!fact.isValid()) {
+			return;
+		}
+		
+		// This is a simple process.
+		// Check to see if there are any sources/sinks at this location,
+		// and if set, model them.
+		
+		Location location = new Location(handle, basicBlock);
+		Set<SourceSinkInfo> sourceSinkSet = sourceSinkMap.get(location);
+		if (sourceSinkSet != null) {
+			for (SourceSinkInfo sourceSinkInfo : sourceSinkSet) {
+				fact.modelSourceSink(sourceSinkInfo);
+			}
+		}
+	}
 }

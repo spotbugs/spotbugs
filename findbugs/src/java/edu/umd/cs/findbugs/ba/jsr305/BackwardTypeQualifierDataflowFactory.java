@@ -74,6 +74,7 @@ public class BackwardTypeQualifierDataflowFactory
 			analysisCache.getMethodAnalysis(ForwardTypeQualifierDataflowFactory.class, methodDescriptor);
 		ForwardTypeQualifierDataflow forwardDataflow = forwardFactory.getDataflow(typeQualifierValue);
 		analysis.setForwardTypeQualifierDataflow(forwardDataflow);
+		analysis.registerSourceSinkLocations();
 		
 		BackwardTypeQualifierDataflow dataflow = new BackwardTypeQualifierDataflow(cfg, analysis);
 		

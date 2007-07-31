@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * Information about a source or sink in
@@ -30,6 +31,8 @@ import edu.umd.cs.findbugs.ba.Location;
 public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	private final SourceSinkType type;
 	private final Location location;
+	private final ValueNumber vn;
+	private final TypeQualifierAnnotation tqa;
 	private int parameter;
 	private int local;
 
@@ -38,10 +41,14 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	 * 
 	 * @param type     type of the source or sink
 	 * @param location Location of the source or sink
+	 * @param vn       the ValueNumber of the annotated value
+	 * @param tqa      the TypeQualifierAnnotation
 	 */
-	public SourceSinkInfo(SourceSinkType type, Location location) {
+	public SourceSinkInfo(SourceSinkType type, Location location, ValueNumber vn, TypeQualifierAnnotation tqa) {
 		this.type = type;
 		this.location = location;
+		this.vn = vn;
+		this.tqa = tqa;
 	}
 
 	/**
@@ -56,6 +63,20 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	 */
 	public Location getLocation() {
 		return location;
+	}
+	
+	/**
+	 * @return Returns the ValueNumber.
+	 */
+	public ValueNumber getValueNumber() {
+		return vn;
+	}
+	
+	/**
+	 * @return Returns the TypeQualifierAnnotation.
+	 */
+	public TypeQualifierAnnotation getTypeQualifierAnnotation() {
+		return tqa;
 	}
 
 	/**

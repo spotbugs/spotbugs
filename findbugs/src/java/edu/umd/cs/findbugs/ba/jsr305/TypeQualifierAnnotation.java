@@ -42,9 +42,9 @@ public class TypeQualifierAnnotation {
 	
 	private static DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> ();
 	
-	public static synchronized  @NonNull TypeQualifierAnnotation getValue(ClassDescriptor desc, Object value, When when) {
-		return getValue(TypeQualifierValue.getValue(desc, value), when);
-	}
+//	public static synchronized  @NonNull TypeQualifierAnnotation getValue(ClassDescriptor desc, Object value, When when) {
+//		return getValue(TypeQualifierValue.getValue(desc, value), when);
+//	}
 		
 	public static @NonNull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue, When> map) {
 		Collection<TypeQualifierAnnotation> result = new LinkedList<TypeQualifierAnnotation>();

@@ -63,8 +63,11 @@ public class ForwardTypeQualifierDataflowFactory
     	ForwardTypeQualifierDataflowAnalysis analysis = new ForwardTypeQualifierDataflowAnalysis(
     			dfs, xmethod, cfg, vnaDataflow, cpg, typeQualifierValue
     	);
+    	analysis.registerSourceSinkLocations();
+    	
     	ForwardTypeQualifierDataflow dataflow = new ForwardTypeQualifierDataflow(cfg, analysis);
     	dataflow.execute();
+    	
     	return dataflow;
     }
 }

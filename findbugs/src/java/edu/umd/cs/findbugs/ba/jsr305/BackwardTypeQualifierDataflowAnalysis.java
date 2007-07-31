@@ -56,7 +56,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	private static final boolean PRUNE_CONFLICTING_VALUES = true; //SystemProperties.getBoolean("ctq.pruneconflicting");
 	private final DepthFirstSearch dfs;
 	private final ReverseDepthFirstSearch rdfs;
-	private TypeQualifierValueSet entryFact;
+//	private TypeQualifierValueSet entryFact;
 	private ForwardTypeQualifierDataflow forwardTypeQualifierDataflow;
 
 	/**
@@ -110,18 +110,17 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			return;
 		}
 		
-		Location location = new Location(handle, basicBlock);
-		
 		if (PRUNE_CONFLICTING_VALUES && forwardTypeQualifierDataflow != null) {
+			Location location = new Location(handle, basicBlock);
 			pruneConflictingValues(fact, forwardTypeQualifierDataflow.getFactAfterLocation(location));
 		}
 		
-		if (handle.getInstruction() instanceof InvokeInstruction) {
-			modelMethodArguments(fact, location);
-		} else if (handle.getInstruction() instanceof FieldInstruction) {
-			modelFieldStore(fact, location);
-		}
-		
+//		if (handle.getInstruction() instanceof InvokeInstruction) {
+//			modelMethodArguments(fact, location);
+//		} else if (handle.getInstruction() instanceof FieldInstruction) {
+//			modelFieldStore(fact, location);
+//		}
+		super.transferInstruction(handle, basicBlock, fact);
 	}
 
 	private void pruneConflictingValues(TypeQualifierValueSet fact, TypeQualifierValueSet forwardFact) {
@@ -138,72 +137,72 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		}
 	}
 
-    private void modelMethodArguments(TypeQualifierValueSet fact, Location location)
-            throws DataflowAnalysisException {
-	    InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
-	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
-	    
-	    XMethod calledMethod = XFactory.createXMethod(inv, cpg);
-	    SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
-	    
-	    boolean foundParamAnnotation = false;
-	    
-	    for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext(); ) {
-	    	int param = 0;
-	    	
-	    	String paramSig = i.next();
-	    	
-	    	if (SignatureParser.isReferenceType(paramSig)) {
-	    		
-	    		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
-	    				calledMethod,
-	    				param,
-	    				typeQualifierValue);
-
-    			FlowValue flowValue = (tqa != null) ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
-    			if (tqa != null) {
-        			foundParamAnnotation = true;
-    			}
-
-    			ValueNumber vn = vnaFrame.getArgument(
-	    					inv,
-	    					cpg,
-	    					param,
-	    					sigParser);
-
-    			SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location);
-    			info.setParameter(param);
-
-    			fact.setValue(vn, flowValue, info);
-	    	}
-	    	
-	    	param++;
-	    }
-	    
-	    if (Dataflow.DEBUG && foundParamAnnotation) {
-	    	System.out.println("After modeling param annotations: " + fact);
-	    }
-    }
-
-    private void modelFieldStore(TypeQualifierValueSet fact, Location location)
-            throws DataflowAnalysisException {
-	    short opcode = location.getHandle().getInstruction().getOpcode();
-	    if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
-			FlowValue flowValue = null;
-	    	
-	    	XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
-	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
-	    	flowValue = (tqa != null)  ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
-
-    		// The ValueNumberFrame *before* the FieldInstruction should
-    		// have the ValueNumber of the stored value on the top of the stack.
-    		ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
-    		if (vnaFrameAtStore.isValid()) {
-    			ValueNumber vn = vnaFrameAtStore.getTopValue();
-    			fact.setValue(vn, flowValue, new SourceSinkInfo(SourceSinkType.FIELD_STORE, location));
-    		}
-	    }
-    }
+//    private void modelMethodArguments(TypeQualifierValueSet fact, Location location)
+//            throws DataflowAnalysisException {
+//	    InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+//	    ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
+//	    
+//	    XMethod calledMethod = XFactory.createXMethod(inv, cpg);
+//	    SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
+//	    
+//	    boolean foundParamAnnotation = false;
+//	    
+//	    for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext(); ) {
+//	    	int param = 0;
+//	    	
+//	    	String paramSig = i.next();
+//	    	
+//	    	if (SignatureParser.isReferenceType(paramSig)) {
+//	    		
+//	    		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
+//	    				calledMethod,
+//	    				param,
+//	    				typeQualifierValue);
+//
+//    			FlowValue flowValue = (tqa != null) ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
+//    			if (tqa != null) {
+//        			foundParamAnnotation = true;
+//    			}
+//
+//    			ValueNumber vn = vnaFrame.getArgument(
+//	    					inv,
+//	    					cpg,
+//	    					param,
+//	    					sigParser);
+//
+//    			SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn);
+//    			info.setParameter(param);
+//
+//    			fact.setValue(vn, flowValue, info);
+//	    	}
+//	    	
+//	    	param++;
+//	    }
+//	    
+//	    if (Dataflow.DEBUG && foundParamAnnotation) {
+//	    	System.out.println("After modeling param annotations: " + fact);
+//	    }
+//    }
+//
+//    private void modelFieldStore(TypeQualifierValueSet fact, Location location)
+//            throws DataflowAnalysisException {
+//	    short opcode = location.getHandle().getInstruction().getOpcode();
+//	    if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
+//			FlowValue flowValue = null;
+//	    	
+//	    	XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
+//	    	TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
+//	    	flowValue = (tqa != null)  ? flowValueFromWhen(tqa.when) : FlowValue.UNKNOWN;
+//
+//    		// The ValueNumberFrame *before* the FieldInstruction should
+//    		// have the ValueNumber of the stored value on the top of the stack.
+//    		ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
+//    		if (vnaFrameAtStore.isValid()) {
+//    			ValueNumber vn = vnaFrameAtStore.getTopValue();
+//    			fact.setValue(vn, flowValue, new SourceSinkInfo(SourceSinkType.FIELD_STORE, location, vn));
+//    		}
+//	    }
+//    }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#getBlockOrder(edu.umd.cs.findbugs.ba.CFG)
@@ -216,60 +215,155 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
 	 */
 	public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
-		if (entryFact == null) {
-			entryFact = createEntryFact();
-		}
-		
-		result.makeSameAs(entryFact);
+		result.makeValid();
 	}
 
-	private TypeQualifierValueSet createEntryFact() throws DataflowAnalysisException {
-		TypeQualifierValueSet fact = createFact();
-		fact.makeValid();
-
-		if (!xmethod.isReturnTypeReferenceType()) {
-			return fact;
-		}
-
-		// Find the annotation on the method, which serves to annotate the return value 
-		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
-		if (tqa == null) {
-			if (DEBUG_VERBOSE) {
-				System.out.println("No applicable type qualifier annotation on return value");
-			}
-			return fact;
-		}
-		if (DEBUG_VERBOSE) {
-			System.out.println("Return value type qualifier annotation is " + tqa);
-		}
-		FlowValue flowValueOfReturnValue = flowValueFromWhen(tqa.when);
-
-		// Apply the annotation to every return value
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
-			Location location = i.next();
-			
-			if (location.getHandle().getInstruction().getOpcode() == Constants.ARETURN) {
-				ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
-				if (!vnaFrameAtReturn.isValid()) {
-					continue;
-				}
-				ValueNumber topValue = vnaFrameAtReturn.getTopValue();
-				fact.setValue(topValue, flowValueOfReturnValue, new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location));
-			}
-		}
-		
-		if (DEBUG_VERBOSE) {
-			System.out.println("Entry fact (at cfg exit): " + fact.toString());
-		}
-		
-		return fact;
-	}
+//	private TypeQualifierValueSet createEntryFact() throws DataflowAnalysisException {
+//		TypeQualifierValueSet fact = createFact();
+//		fact.makeValid();
+//
+//		if (!xmethod.isReturnTypeReferenceType()) {
+//			return fact;
+//		}
+//
+//		// Find the annotation on the method, which serves to annotate the return value 
+//		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
+//		if (tqa == null) {
+//			if (DEBUG_VERBOSE) {
+//				System.out.println("No applicable type qualifier annotation on return value");
+//			}
+//			return fact;
+//		}
+//		if (DEBUG_VERBOSE) {
+//			System.out.println("Return value type qualifier annotation is " + tqa);
+//		}
+//		FlowValue flowValueOfReturnValue = flowValueFromWhen(tqa.when);
+//
+//		// Apply the annotation to every return value
+//		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+//			Location location = i.next();
+//			
+//			if (location.getHandle().getInstruction().getOpcode() == Constants.ARETURN) {
+//				ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
+//				if (!vnaFrameAtReturn.isValid()) {
+//					continue;
+//				}
+//				ValueNumber topValue = vnaFrameAtReturn.getTopValue();
+//				fact.setValue(topValue, flowValueOfReturnValue, new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location, topValue));
+//			}
+//		}
+//		
+//		if (DEBUG_VERBOSE) {
+//			System.out.println("Entry fact (at cfg exit): " + fact.toString());
+//		}
+//		
+//		return fact;
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#isForwards()
 	 */
 	public boolean isForwards() {
 		return false;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDataflowAnalysis#registerSourceSinkLocations()
+	 */
+	@Override
+	public void registerSourceSinkLocations() throws DataflowAnalysisException {
+		registerInstructionSinks();
+	}
+
+	private void registerInstructionSinks() throws DataflowAnalysisException {
+		TypeQualifierAnnotation returnValueAnnotation = null;
+		if (xmethod.isReturnTypeReferenceType()) {
+			returnValueAnnotation =
+				TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
+		}
+		
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			
+			short opcode = location.getHandle().getInstruction().getOpcode();
+
+			if (returnValueAnnotation != null && opcode == Constants.ARETURN) {
+				modelReturn(returnValueAnnotation, location);
+			} else if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
+				modelFieldStore(location);
+			} else if (location.getHandle().getInstruction() instanceof InvokeInstruction) {
+				modelArguments(location);
+			}
+		}
+	}
+
+	private void modelReturn(TypeQualifierAnnotation returnValueAnnotation, Location location) throws DataflowAnalysisException {
+		// Model return statement
+		ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
+		if (vnaFrameAtReturn.isValid()) {
+			ValueNumber topValue = vnaFrameAtReturn.getTopValue();
+			registerSourceSink(
+					new SourceSinkInfo(
+							SourceSinkType.RETURN_VALUE,
+							location,
+							topValue,
+							returnValueAnnotation)
+			);
+		}
+	}
+
+	private void modelFieldStore(Location location) throws DataflowAnalysisException {
+		// Model field stores
+		XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
+		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
+
+		// The ValueNumberFrame *before* the FieldInstruction should
+		// have the ValueNumber of the stored value on the top of the stack.
+		if (tqa != null) {
+			ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
+			if (vnaFrameAtStore.isValid()) {
+				ValueNumber vn = vnaFrameAtStore.getTopValue();
+				registerSourceSink(new SourceSinkInfo(SourceSinkType.FIELD_STORE, location, vn, tqa));
+			}
+		}
+	}
+
+	private void modelArguments(Location location) throws DataflowAnalysisException {
+		// Model arguments to called method
+		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
+
+		XMethod calledMethod = XFactory.createXMethod(inv, cpg);
+		SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
+
+		for (Iterator<String> j = sigParser.parameterSignatureIterator(); j.hasNext(); ) {
+			int param = 0;
+
+			String paramSig = j.next();
+
+			if (SignatureParser.isReferenceType(paramSig)) {
+
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
+						calledMethod,
+						param,
+						typeQualifierValue);
+
+				if (tqa != null) {
+					ValueNumber vn = vnaFrame.getArgument(
+							inv,
+							cpg,
+							param,
+							sigParser);
+
+					SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, tqa);
+					info.setParameter(param);
+
+					registerSourceSink(info);
+				}
+			}
+
+			param++;
+		}
 	}
 
 	/* (non-Javadoc)

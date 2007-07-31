@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -35,6 +36,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @author William Pugh
  */
 public class TypeQualifierApplications {
+	static final boolean DEBUG = SystemProperties.getBoolean("tqa.debug");
 	
 	static Map<AnnotatedObject, Collection<AnnotationValue>> objectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> parameterAnnotations 
@@ -97,9 +99,16 @@ public class TypeQualifierApplications {
     private static void constructTypeQualifierAnnotation( Map<TypeQualifierValue, When> map, AnnotationValue v) {
     	assert map != null;
     	assert v != null;
-	    EnumValue value = (EnumValue) v.getValue("when");
-	    When when = value == null ? When.ALWAYS : When.valueOf(value.value);
-	    map.put(TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value")), when);
+	    EnumValue whenValue = (EnumValue) v.getValue("when");
+	    When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
+	    TypeQualifierValue tqv = TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value"));
+	    if (whenValue == null) {
+	    	tqv.setIsStrict();
+	    }
+	    map.put(tqv, when);
+	    if (DEBUG && whenValue == null) {
+	    	System.out.println("When value unspecified for type qualifier value " + tqv);
+	    }
     }
 
 	 static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {

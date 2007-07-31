@@ -100,4 +100,27 @@ public enum FlowValue {
 			|| (forward == NEVER && backward == ALWAYS);
 	}
 
+	/**
+	 * Convert a When value to a FlowValue value.
+	 * 
+	 * @param when a When value
+	 * @return the corresponding FlowValue
+	 */
+	public static FlowValue flowValueFromWhen(When when) {
+		switch (when) {
+		case ALWAYS:
+			return FlowValue.ALWAYS;
+		case ASSUME_ALWAYS:
+			return FlowValue.ALWAYS;
+		case MAYBE_NOT:
+			return FlowValue.UNKNOWN;
+		case NEVER:
+			return FlowValue.NEVER;
+		case UNKNOWN:
+			return FlowValue.UNKNOWN;
+		default:
+			throw new IllegalStateException();
+		}
+	}
+
 }
