@@ -224,7 +224,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		
 		// This is a simple process.
 		// Check to see if there are any sources/sinks at this location,
-		// and if set, model them.
+		// and if so, model them.
 		
 		Location location = new Location(handle, basicBlock);
 		Set<SourceSinkInfo> sourceSinkSet = sourceSinkMap.get(location);
