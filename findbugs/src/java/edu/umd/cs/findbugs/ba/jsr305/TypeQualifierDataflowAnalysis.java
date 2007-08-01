@@ -77,6 +77,13 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		this.typeQualifierValue = typeQualifierValue;
 		this.sourceSinkMap = new HashMap<Location, Set<SourceSinkInfo>>();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
+	 */
+	public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
+		result.makeValid();
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#isFactValid(java.lang.Object)

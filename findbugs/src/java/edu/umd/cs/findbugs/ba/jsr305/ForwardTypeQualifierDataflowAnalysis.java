@@ -52,7 +52,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowAnalysis {
 	private final DepthFirstSearch dfs;
-//	private TypeQualifierValueSet entryFact;
 
 	/**
 	 * Constructor.
@@ -84,19 +83,6 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	 */
 	public boolean isForwards() {
 		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(java.lang.Object)
-	 */
-	public void initEntryFact(TypeQualifierValueSet result) throws DataflowAnalysisException {
-//		if (entryFact == null) {
-//			entryFact = createFact();
-//			entryFact.makeValid();
-//		}
-//
-//		result.makeSameAs(entryFact);
-		result.makeValid();
 	}
 	
 	/* (non-Javadoc)
