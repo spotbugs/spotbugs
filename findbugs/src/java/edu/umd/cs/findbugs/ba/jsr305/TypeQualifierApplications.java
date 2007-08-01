@@ -29,7 +29,10 @@ import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -158,6 +161,64 @@ public class TypeQualifierApplications {
 			}
 		}
 		return null;
+	}
+	
+	private static class ReturnTypeAnnotationLookupResult extends TypeQualifierAnnotationLookupResult {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotationLookupResult#combine(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation, edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation)
+		 */
+		@Override
+		protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+			// TODO: implement
+			return super.combine(a, b);
+		}
+	}
+	
+	private static class ReturnTypeAnnotationAccumulator implements InheritanceGraphVisitor {
+		private TypeQualifierValue typeQualifierValue;
+		private XMethod xmethod;
+		private TypeQualifierAnnotationLookupResult result;
+		
+		public ReturnTypeAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
+			assert !xmethod.isStatic();
+			this.typeQualifierValue = typeQualifierValue;
+			this.xmethod = xmethod;
+			this.result = new ReturnTypeAnnotationLookupResult();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
+		 */
+		public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
+			assert xclass != null;
+			
+			// See if this class has a matching method
+			XMethod xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
+			if (xm == null) {
+				// No - end this branch of the search
+				return false;
+			}
+			
+			// See if matching method is annotated
+			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(xm), typeQualifierValue);
+			if (tqa == null) {
+				// continue search in supertype
+				return true;
+			} else {
+				// This branch of search ends here.
+				// Add partial result.
+				result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xm, tqa));
+				return false;
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass, edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
+		 */
+		public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
+			return (target != null);
+		}
+
 	}
 	
 	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
