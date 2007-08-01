@@ -127,7 +127,7 @@ public class RejarClassesForAnalysis {
 					if (commandLine.maxClasses < Integer.MAX_VALUE)
 						writeToAuxilaryOut = true;
 					analysisClassCount++;
-					if (analysisClassCount > commandLine.maxClasses) {
+					if (analysisClassCount >= commandLine.maxClasses) {
 						analysisClassCount = 0;
 						analyzeOut.close();
 						analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput(commandLine))));
