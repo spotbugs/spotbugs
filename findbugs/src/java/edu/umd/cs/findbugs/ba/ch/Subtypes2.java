@@ -607,6 +607,77 @@ public class Subtypes2 {
 	public Collection<XClass> getXClassCollection() {
 		return Collections.unmodifiableCollection(xclassSet);
 	}
+	
+	/**
+	 * Starting at the class named by the given ClassDescriptor,
+	 * traverse the inheritance graph, exploring the entire fan-out
+	 * of all supertypes (both class and interface).
+	 * 
+	 * @param start   ClassDescriptor naming the class where the traversal should start
+	 * @param visitor an InheritanceGraphVisitor
+	 * @throws ClassNotFoundException 
+	 */
+	public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor) throws ClassNotFoundException {
+		ClassVertex startVertex = resolveClassVertex(start);
+
+		LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+		workList.addLast(startVertex);
+		
+		Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
+		
+		while (!workList.isEmpty()) {
+			ClassVertex vertex = workList.removeFirst();
+			assert !seen.contains(vertex.getClassDescriptor());
+			
+			seen.add(vertex.getClassDescriptor());
+			
+			if (!visitor.visitClass(vertex.getClassDescriptor(), vertex.getXClass())) {
+				continue;
+			}
+			
+			if (!vertex.isResolved()) {
+				continue;
+			}
+			
+			if (visitEdge(vertex, vertex.getXClass().getSuperclassDescriptor(), false, visitor)
+					&& !seen.contains(vertex.getXClass().getSuperclassDescriptor())) {
+				addToWorkList(workList, vertex.getXClass().getSuperclassDescriptor());
+			}
+			
+			for (ClassDescriptor ifaceDesc : vertex.getXClass().getInterfaceDescriptorList()) {
+				if (visitEdge(vertex, ifaceDesc, true, visitor)
+						&& !seen.contains(ifaceDesc)) {
+					addToWorkList(workList, ifaceDesc);
+				}
+			}
+		}
+	}
+
+	private void addToWorkList(LinkedList<ClassVertex> workList, ClassDescriptor supertypeDescriptor) {
+		ClassVertex next = classDescriptorToVertexMap.get(supertypeDescriptor);
+		assert next != null;
+		workList.addLast(next);
+	}
+
+	private boolean visitEdge(
+			ClassVertex vertex,
+			@CheckForNull ClassDescriptor supertypeDescriptor,
+			boolean isInterfaceEdge,
+			InheritanceGraphVisitor visitor) {
+		if (supertypeDescriptor == null) {
+			// We reached java.lang.Object
+			return false;
+		}
+		
+		ClassVertex supertypeVertex;
+		try {
+			supertypeVertex = resolveClassVertex(supertypeDescriptor);
+		} catch (ClassNotFoundException e) {
+			supertypeVertex = addClassVertexForMissingClass(supertypeDescriptor, isInterfaceEdge);
+		}
+		
+		return visitor.visitEdge(vertex.getClassDescriptor(), vertex.getXClass(), supertypeDescriptor, supertypeVertex.getXClass());
+	}
 
 	/**
 	 * Compute set of known subtypes of class named by given ClassDescriptor.
