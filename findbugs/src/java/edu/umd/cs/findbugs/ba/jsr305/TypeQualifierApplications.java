@@ -159,6 +159,26 @@ public class TypeQualifierApplications {
 		}
 		return null;
 	}
+	
+	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+		// TODO: if o is an XMethod, the results should include annotations on supertype methods
+		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
+		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
+		if (tqa != null) {
+			result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
+		}
+		return result;
+	}
+
+	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+		// TODO: result should include annotations on supertype methods
+		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
+		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
+		if (tqa != null) {
+			result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
+		}
+		return result;
+	}
 
 	/**
 	 * Get the applicable TypeQualifierAnnotation matching given
@@ -172,7 +192,8 @@ public class TypeQualifierApplications {
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
 	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
-		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
+		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotation(o, typeQualifierValue);
+		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 	
 	/**
@@ -188,6 +209,7 @@ public class TypeQualifierApplications {
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
 	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
-		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
+		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotation(o, parameter, typeQualifierValue);
+		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 }
