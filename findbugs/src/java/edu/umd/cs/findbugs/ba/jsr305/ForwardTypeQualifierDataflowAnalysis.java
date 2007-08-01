@@ -166,7 +166,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		int firstParamSlot = xmethod.isStatic() ? 0 : 1;
 
 		int param = 0;
-		int slot = 0;
+		int slotOffset = 0;
 
 		for (Iterator<String> i = sigParser.parameterSignatureIterator(); i.hasNext(); ) {
 			String paramSig = i.next();
@@ -175,13 +175,13 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			SourceSinkInfo info;
 			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, param, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-			ValueNumber vn = vnaFrameAtEntry.getValue(slot + firstParamSlot);
+			ValueNumber vn = vnaFrameAtEntry.getValue(slotOffset + firstParamSlot);
 			info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, when);
-			info.setParameterAndLocal(param, slot);
+			info.setParameterAndLocal(param, slotOffset + firstParamSlot);
 			registerSourceSink(info);
 
 			param++;
-			slot += SignatureParser.getNumSlotsForType(paramSig);
+			slotOffset += SignatureParser.getNumSlotsForType(paramSig);
 		}
 	}
 
