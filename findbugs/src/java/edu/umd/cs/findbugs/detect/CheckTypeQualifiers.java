@@ -193,7 +193,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 					typeQualifierValue,
 					forwardsFact,
 					backwardsFact,
-					loc,
+					loc, // location to report
+					loc, // location where doomed value is observed
 					vnaDataflow.getFactAtLocation(loc)
 			);
 		}
@@ -218,24 +219,31 @@ public class CheckTypeQualifiers extends CFGDetector {
 			TypeQualifierValueSet forwardFact = forwardDataflow.getFactOnEdge(edge);
 			TypeQualifierValueSet backwardFact = backwardDataflow.getResultFact(edge.getTarget());
 
-			// Get a "representative" location at which to report the warning (if any).
-			// Since this is an edge, it's a bit tricky.
-			// The location at the beginning of the target block should work.
-			// HOWEVER: the target block could be empty if it's an ETB,
-			// in which case we pick the location at beginning of its
-			// fall-through successor.
-			// (If you've read this far, you're probably getting the sense
-			// that the FindBugs IR isn't as well-designed as it could be :-)
-			Location location = getLocationToReport(cfg, edge);
-			ValueNumberFrame vnaFrame = (location != null) ? vnaDataflow.getFactAtLocation(location) : null; 
+			// The edge target location is where we can check
+			// for conflicting flow values.
+			Location edgeTargetLocation = getEdgeTargetLocation(cfg, edge);
+			ValueNumberFrame vnaFrame = (edgeTargetLocation != null) ? vnaDataflow.getFactAtLocation(edgeTargetLocation) : null; 
+
+			// What location do we want to report to the user
+			// as where the conflict occurs?
+			// The edge source location is generally better,
+			// but edge target location is ok as a fallback.
+			Location locationToReport;
+			if (edge.getSource().getLastInstruction() != null) {
+				locationToReport = getEdgeSourceLocation(cfg, edge);
+			} else {
+				locationToReport = edgeTargetLocation;
+			}
 
 			checkForConflictingValues(
 					methodDescriptor,
 					typeQualifierValue,
 					forwardFact,
 					backwardFact,
-					location,
-					vnaFrame);
+					locationToReport,
+					edgeTargetLocation,
+					vnaFrame
+			);
 			if (DEBUG) {
 				System.out.println("END CHECK EDGE");
 			}
@@ -278,14 +286,14 @@ public class CheckTypeQualifiers extends CFGDetector {
 							source,
 							vn,
 							location
-							);
+					);
 				}
 			}
 		}
 	}
 
 
-	private Location getLocationToReport(CFG cfg, Edge edge) {
+	private Location getEdgeTargetLocation(CFG cfg, Edge edge) {
 		BasicBlock targetBlock = edge.getTarget();
 
 		// Target block is nonempty?
@@ -315,12 +323,18 @@ public class CheckTypeQualifiers extends CFGDetector {
 		return null;
 	}
 
+	private Location getEdgeSourceLocation(CFG cfg, Edge edge) {
+		BasicBlock sourceBlock = edge.getSource();
+		return (sourceBlock.getLastInstruction() != null) ? new Location(sourceBlock.getLastInstruction(), sourceBlock) : null;
+	}
+
 	private void checkForConflictingValues(
 			MethodDescriptor methodDescriptor,
 			TypeQualifierValue typeQualifierValue,
 			TypeQualifierValueSet forwardsFact,
 			TypeQualifierValueSet backwardsFact,
 			Location locationToReport,
+			Location locationWhereDoomedValueIsObserved,
 			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
 		Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
 		valueNumberSet.addAll(forwardsFact.getValueNumbers());
@@ -347,6 +361,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 						forward,
 						backward,
 						locationToReport,
+						locationWhereDoomedValueIsObserved,
 						vnaFrame);
 			}
 		}
@@ -361,6 +376,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			FlowValue forward,
 			FlowValue backward,
 			Location locationToReport,
+			Location locationWhereDoomedValueIsObserved,
 			ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
 		String bugType =
 			(backward == FlowValue.NEVER) ? "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" : "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED";
@@ -371,15 +387,22 @@ public class CheckTypeQualifiers extends CFGDetector {
 			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
 
 		// Hopefully we can find the conflicted value in a local variable
-		if (locationToReport != null) {
+		if (locationWhereDoomedValueIsObserved != null) {
 			Method method = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor); 
 			LocalVariableAnnotation localVariable =
-				ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, locationToReport, vn, vnaFrame);
+				ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, locationWhereDoomedValueIsObserved, vn, vnaFrame);
 			if (localVariable != null) {
 				localVariable.setDescription(localVariable.isSignificant() ? "LOCAL_VARIABLE_VALUE_DOOMED_NAMED" : "LOCAL_VARIABLE_VALUE_DOOMED");
 				warning.add(localVariable);
 			}
-			// Report where we observed the value
+			// Report where we observed the value.
+			// Note that for conflicts detected on control edges,
+			// we REPORT the edge source location
+			// rather than the target location, even though it is the
+			// target location where the conflict is detected.
+			// The only reason to use a different reporting location
+			// is to produce a more informative report for the user,
+			// since the edge source is where the branch is found.
 			SourceLineAnnotation observedLocation = SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, locationToReport);
 			observedLocation.setDescription("SOURCE_LINE_VALUE_DOOMED");
 			warning.add(observedLocation);
