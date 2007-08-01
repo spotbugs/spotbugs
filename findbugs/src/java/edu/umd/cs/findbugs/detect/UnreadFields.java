@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -322,7 +323,10 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		   String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
 			String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
 			if (fieldName != null && fieldSignature != null && fieldClass != null) {
-			   XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "L"+fieldSignature+";", false);
+				XField f = XFactory.createXField(fieldClass.replace('/','.'), 
+					   fieldName, 
+					   ClassName.toSignature(fieldSignature), 
+					   false);
 			   reflectiveFields.add(f);
 			 }
 
