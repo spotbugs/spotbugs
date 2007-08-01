@@ -63,12 +63,6 @@ public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngin
 	 * IAnalysisEngine methods
 	 * ---------------------------------------------------------------------- */
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
-	 */
-	public final boolean canRecompute() {
-		throw new IllegalStateException();
-	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)

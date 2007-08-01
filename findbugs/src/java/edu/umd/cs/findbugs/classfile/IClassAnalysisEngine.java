@@ -25,4 +25,17 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public interface IClassAnalysisEngine<ResultType> extends IAnalysisEngine<ClassDescriptor, ResultType> {
+	
+	/**
+	 * Return true if analysis results produced by this
+	 * analysis engine can be recomputed.
+	 * Unless some correctness criterion prevents analysis results
+	 * from being recomputed, analysis engines should
+	 * return true (allowing the cache to be kept to a manageable size).
+	 * 
+	 * @return true if analysis results produced by this engine
+	 *         can be recomputed, false if for some reason the
+	 *         analysis results must be retained indefinitely  
+	 */
+	public boolean canRecompute();
 }
