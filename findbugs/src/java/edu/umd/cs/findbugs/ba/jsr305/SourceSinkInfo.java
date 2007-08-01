@@ -32,7 +32,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	private final SourceSinkType type;
 	private final Location location;
 	private final ValueNumber vn;
-	private final TypeQualifierAnnotation tqa;
+	private final When when;
 	private int parameter;
 	private int local;
 
@@ -42,13 +42,14 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	 * @param type     type of the source or sink
 	 * @param location Location of the source or sink
 	 * @param vn       the ValueNumber of the annotated value
-	 * @param tqa      the TypeQualifierAnnotation
+	 * @param when     the When value used (explicitly or implicitly) to annotate this
+	 *                 source or sink
 	 */
-	public SourceSinkInfo(SourceSinkType type, Location location, ValueNumber vn, TypeQualifierAnnotation tqa) {
+	public SourceSinkInfo(SourceSinkType type, Location location, ValueNumber vn, When when) {
 		this.type = type;
 		this.location = location;
 		this.vn = vn;
-		this.tqa = tqa;
+		this.when = when;
 	}
 
 	/**
@@ -71,12 +72,12 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	public ValueNumber getValueNumber() {
 		return vn;
 	}
-	
+
 	/**
-	 * @return Returns the TypeQualifierAnnotation.
+	 * @return Returns the when.
 	 */
-	public TypeQualifierAnnotation getTypeQualifierAnnotation() {
-		return tqa;
+	public When getWhen() {
+		return when;
 	}
 
 	/**
@@ -142,6 +143,6 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	@Override
 	public String toString() {
 		return type.toString() + "@" + location.toCompactString() + "[vn=" + vn.getNumber() +
-		",tqa="+tqa+"]";
+			",when=" + when + "]";
 	}
 }

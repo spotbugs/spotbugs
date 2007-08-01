@@ -135,9 +135,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		XMethod xmethod = XFactory.createXMethod(inv, cpg);
 		if (xmethod.isResolved()) {
 			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
-			if (tqa != null) {
-				registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, tqa);
-			}
+			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
+			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when);
 		}
 	}
 
@@ -145,18 +144,17 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		XField loadedField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 		if (loadedField.isResolved()) {
 			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
-			if (tqa != null) {
-				registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, tqa);
-			}
+			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
+			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when);
 		}
 
 	}
 
-	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, TypeQualifierAnnotation tqa) throws DataflowAnalysisException {
+	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when) throws DataflowAnalysisException {
 		ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
 		if (vnaFrameAfterInstruction.isValid()) {
 			ValueNumber tosValue = vnaFrameAfterInstruction.getTopValue();
-			SourceSinkInfo sourceSinkInfo = new SourceSinkInfo(sourceSinkType, location, tosValue, tqa);
+			SourceSinkInfo sourceSinkInfo = new SourceSinkInfo(sourceSinkType, location, tosValue, when);
 			registerSourceSink(sourceSinkInfo);
 		}
 	}
@@ -174,15 +172,13 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			String paramSig = i.next();
 
 			// Get the TypeQualifierAnnotation for this parameter
+			SourceSinkInfo info;
 			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, param, typeQualifierValue);
-			if (tqa != null) {
-				ValueNumber vn = vnaFrameAtEntry.getValue(slot + firstParamSlot); 
-
-				SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, tqa);
-				info.setParameterAndLocal(param, slot);
-
-				registerSourceSink(info);
-			}
+			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
+			ValueNumber vn = vnaFrameAtEntry.getValue(slot + firstParamSlot);
+			info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, when);
+			info.setParameterAndLocal(param, slot);
+			registerSourceSink(info);
 
 			param++;
 			slot += SignatureParser.getNumSlotsForType(paramSig);

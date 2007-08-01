@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -168,7 +169,7 @@ public class TypeQualifierApplications {
 	 * @return the TypeQualifierAnnotation matching the AnnotatedObject/TypeQualifierValue,
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
-	public static TypeQualifierAnnotation getApplicableApplication(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
 		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
 	}
 	
@@ -184,7 +185,7 @@ public class TypeQualifierApplications {
 	 * @return the TypeQualifierAnnotation matching the parameter,
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
-	public static TypeQualifierAnnotation getApplicableApplication(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
 		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
 	}
 }

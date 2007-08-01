@@ -57,7 +57,7 @@ public class TypeQualifierValueSet {
 	public void modelSourceSink(SourceSinkInfo sourceSinkInfo) {
 		assert sourceSinkInfo != null;
 		ValueNumber vn = sourceSinkInfo.getValueNumber();
-		FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getTypeQualifierAnnotation().when);
+		FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
 
 		setValue(vn, flowValue);
 

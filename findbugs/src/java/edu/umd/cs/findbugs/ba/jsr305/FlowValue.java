@@ -138,12 +138,12 @@ public enum FlowValue {
 
 		if (typeQualifierValue.isStrictQualifier()) {
 			// strict checking
-			return (backwardsFlowValue == ALWAYS && source.getTypeQualifierAnnotation().when != When.ALWAYS)
-				|| (backwardsFlowValue == NEVER && source.getTypeQualifierAnnotation().when != When.NEVER);
+			return (backwardsFlowValue == ALWAYS && source.getWhen() != When.ALWAYS)
+				|| (backwardsFlowValue == NEVER && source.getWhen() != When.NEVER);
 		} else {
 			// NOT strict checking
-			return (backwardsFlowValue == ALWAYS && source.getTypeQualifierAnnotation().when == When.NEVER)
-				|| (backwardsFlowValue == NEVER && source.getTypeQualifierAnnotation().when == When.ALWAYS);
+			return (backwardsFlowValue == ALWAYS && source.getWhen() == When.NEVER)
+				|| (backwardsFlowValue == NEVER && source.getWhen() == When.ALWAYS);
 		}
 	}
 

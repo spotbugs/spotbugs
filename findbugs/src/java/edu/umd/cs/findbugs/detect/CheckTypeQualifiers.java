@@ -144,6 +144,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 		if (DEBUG) {
 			System.out.println("----------------------------------------------------------------------");
 			System.out.println("Checking type qualifier " + typeQualifierValue.toString() + " on method " + methodDescriptor.toString());
+			if (typeQualifierValue.isStrictQualifier()) {
+				System.out.println("  Strict type qualifier");
+			}
 			System.out.println("----------------------------------------------------------------------");
 		}
 
@@ -255,6 +258,12 @@ public class CheckTypeQualifiers extends CFGDetector {
 				ValueNumber vn = source.getValueNumber();
 				TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
 				FlowValue backwardsFlowValue = backwardsFact.getValue(vn);
+				
+				if (DEBUG) {
+					System.out.println("Checking value source at " + location.toCompactString());
+					System.out.println("  back=" + backwardsFact);
+					System.out.println("  source=" + source);
+				}
 
 				if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
 					continue;

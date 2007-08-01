@@ -287,7 +287,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			
 			short opcode = location.getHandle().getInstruction().getOpcode();
 
-			if (returnValueAnnotation != null && opcode == Constants.ARETURN) {
+			if (opcode == Constants.ARETURN) {
 				modelReturn(returnValueAnnotation, location);
 			} else if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
 				modelFieldStore(location);
@@ -298,17 +298,14 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	}
 
 	private void modelReturn(TypeQualifierAnnotation returnValueAnnotation, Location location) throws DataflowAnalysisException {
+		When when = (returnValueAnnotation != null) ? returnValueAnnotation.when : When.UNKNOWN;
+		
 		// Model return statement
 		ValueNumberFrame vnaFrameAtReturn = vnaDataflow.getFactAtLocation(location);
 		if (vnaFrameAtReturn.isValid()) {
 			ValueNumber topValue = vnaFrameAtReturn.getTopValue();
-			registerSourceSink(
-					new SourceSinkInfo(
-							SourceSinkType.RETURN_VALUE,
-							location,
-							topValue,
-							returnValueAnnotation)
-			);
+			SourceSinkInfo sink = new SourceSinkInfo(SourceSinkType.RETURN_VALUE, location, topValue, when); 
+			registerSourceSink(sink);
 		}
 	}
 
@@ -316,15 +313,15 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		// Model field stores
 		XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
-
+		When when = (tqa != null) ? tqa.when : When.UNKNOWN;
+		
 		// The ValueNumberFrame *before* the FieldInstruction should
 		// have the ValueNumber of the stored value on the top of the stack.
-		if (tqa != null) {
-			ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
-			if (vnaFrameAtStore.isValid()) {
-				ValueNumber vn = vnaFrameAtStore.getTopValue();
-				registerSourceSink(new SourceSinkInfo(SourceSinkType.FIELD_STORE, location, vn, tqa));
-			}
+		ValueNumberFrame vnaFrameAtStore = vnaDataflow.getFactAtLocation(location);
+		if (vnaFrameAtStore.isValid()) {
+			ValueNumber vn = vnaFrameAtStore.getTopValue();
+			SourceSinkInfo sink = new SourceSinkInfo(SourceSinkType.FIELD_STORE, location, vn, when); 
+			registerSourceSink(sink);
 		}
 	}
 
@@ -347,19 +344,18 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 						calledMethod,
 						param,
 						typeQualifierValue);
+				When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 
-				if (tqa != null) {
-					ValueNumber vn = vnaFrame.getArgument(
-							inv,
-							cpg,
-							param,
-							sigParser);
+				ValueNumber vn = vnaFrame.getArgument(
+						inv,
+						cpg,
+						param,
+						sigParser);
 
-					SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, tqa);
-					info.setParameter(param);
+				SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
+				info.setParameter(param);
 
-					registerSourceSink(info);
-				}
+				registerSourceSink(info);
 			}
 
 			param++;
