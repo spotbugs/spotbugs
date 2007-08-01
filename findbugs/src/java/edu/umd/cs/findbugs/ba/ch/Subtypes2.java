@@ -537,8 +537,7 @@ public class Subtypes2 {
 	    	bIndex--;
 	    }
 	    if (lastCommonInBackwardsSearch == null) {
-	    	throw new IllegalStateException("Could not find least common superclass of " + a + "(" + aSuperList +") and " 
-	    			+ b + " (" + bSuperList +")");
+	    	return ObjectType.OBJECT;
 	    }
 	    firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
 	    return firstCommonSupertype;
