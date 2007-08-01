@@ -565,7 +565,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		// to the set of referenced classes.
 		for (String pkg : referencedPackageSet) {
 			ClassDescriptor pkgInfoDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(pkg + ".package-info");
-			if (DEBUG) {
+			if (false && DEBUG) {
 				System.out.println("Checking package " + pkg + " for package-info...");
 			}
 			try {
