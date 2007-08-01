@@ -169,8 +169,15 @@ public class TypeQualifierApplications {
 		 */
 		@Override
 		protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
-			// TODO: implement
-			return super.combine(a, b);
+			TypeQualifierAnnotation combined = TypeQualifierAnnotation.combineReturnTypeAnnotations(a, b);
+			if (combined == null) {
+				// XXX: annotations are not compatible.
+				// Creating an UNKNOWN annotation is probably fine,
+				// since it will prevent the
+				// return value annotation from being checked.
+				combined = TypeQualifierAnnotation.getValue(a.typeQualifier, When.UNKNOWN);
+			}
+			return combined;
 		}
 	}
 	
@@ -222,7 +229,7 @@ public class TypeQualifierApplications {
 	}
 	
 	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
-		// TODO: if o is an XMethod, the results should include annotations on supertype methods
+		// TODO: if o is an XMethod (and not static), the result should consider annotations on supertype methods
 		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
 		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
 		if (tqa != null) {
@@ -232,7 +239,7 @@ public class TypeQualifierApplications {
 	}
 
 	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
-		// TODO: result should include annotations on supertype methods
+		// TODO: result should consider annotations on supertype methods
 		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
 		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
 		if (tqa != null) {

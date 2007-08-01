@@ -25,11 +25,15 @@ import java.util.Map;
 
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
- * @author pwilliam
+ * A type qualifier applied to a field, method, parameter, or return value.
+ * 
+ * @author Bill Pugh
+ * @author David Hovemeyer
  */
 public class TypeQualifierAnnotation {
 	
@@ -46,6 +50,64 @@ public class TypeQualifierAnnotation {
 //	public static synchronized  @NonNull TypeQualifierAnnotation getValue(ClassDescriptor desc, Object value, When when) {
 //		return getValue(TypeQualifierValue.getValue(desc, value), when);
 //	}
+
+	// When lattice:
+	//
+	// In subtypes:
+	//    - return value type must be at least as narrow as supertypes
+	//    - parameter types must be at least as wide as supertypes 
+	//
+	//            TOP               TOP is invalid as return type:
+	//         /   |   \            means that no When value is narrow enough
+	//        /    |    \           for combination of supertype annotations
+	//       /     |     \
+	// Always   Unknown   Never  ^  Narrower
+	//     \     /   \     /     |  
+	//      Maybe     Maybe      |
+	//        Yes      Not       |
+	//           \      /        |
+	//            Maybe          | 
+	//            Either         v  Wider
+	
+	private static final When TOP = null;
+	
+	private static final When[][] combineReturnValueMatrix = {
+		//                   ALWAYS       MAYBE_YES        UNKNOWN        MAYBE_NOT        MAYBE_EITHER       NEVER
+		/* ALWAYS */       { When.ALWAYS, },
+		/* MAYBE_YES */    { When.ALWAYS, When.MAYBE_YES},
+		/* UNKNOWN */      { TOP,         When.UNKNOWN,    When.UNKNOWN, },
+		/* MAYBE_NOT */    { TOP,         When.UNKNOWN,    When.UNKNOWN,  When.MAYBE_NOT },
+		/* MAYBE_EITHER */ { When.ALWAYS, When.MAYBE_YES,  When.UNKNOWN,  When.MAYBE_NOT,  When.MAYBE_EITHER, },
+		/* NEVER */        { TOP,         TOP,             TOP,           When.NEVER,      When.NEVER,       When.NEVER },
+	};
+
+	/**
+	 * Combine return type annotations.
+	 * 
+	 * @param a a TypeQualifierAnnotation used on a return value
+	 * @param b another TypeQualifierAnnotation used on a return value 
+	 * @return combined return type annotation that is at least as permissive as
+	 *         either <code>a</code> or <code>b</code>,
+	 *         or null if no such TypeQualifierAnnotation exists
+	 */
+	public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+		assert a.typeQualifier.equals(b.typeQualifier);
+		
+		When aWhen = a.when;
+		When bWhen = b.when;
+		if (aWhen.ordinal() < bWhen.ordinal()) {
+			When tmp = aWhen;
+			aWhen = bWhen;
+			bWhen = tmp;
+		}
+		
+		When combined = combineReturnValueMatrix[aWhen.ordinal()][bWhen.ordinal()];
+		if (combined != null) {
+			return getValue(a.typeQualifier, combined);
+		} else {
+			return null;
+		}
+	}
 		
 	public static @NonNull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue, When> map) {
 		Collection<TypeQualifierAnnotation> result = new LinkedList<TypeQualifierAnnotation>();
@@ -53,8 +115,8 @@ public class TypeQualifierAnnotation {
 			result.add(getValue(e.getKey(), e.getValue()));
 		}
 		return result;
-		
 	}
+	
 	public static synchronized  @NonNull TypeQualifierAnnotation getValue(TypeQualifierValue desc, When when) {
 		TypeQualifierAnnotation result = map.get(desc, when);
 		if (result != null) return result;
