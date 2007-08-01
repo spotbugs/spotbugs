@@ -23,8 +23,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.annotation.meta.When;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**

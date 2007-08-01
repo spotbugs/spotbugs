@@ -20,21 +20,18 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.util.Iterator;
-import java.util.Map;
+
+import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
 import edu.umd.cs.findbugs.ba.SignatureParser;

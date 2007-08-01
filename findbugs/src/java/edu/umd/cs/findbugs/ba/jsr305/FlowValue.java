@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import javax.annotation.meta.When;
+
 /**
  * Flow value type for type qualifier dataflow analysis.
  * 
@@ -110,9 +112,11 @@ public enum FlowValue {
 		switch (when) {
 		case ALWAYS:
 			return FlowValue.ALWAYS;
-		case ASSUME_ALWAYS:
-			return FlowValue.ALWAYS;
+		case MAYBE_EITHER:
+			return FlowValue.UNKNOWN;
 		case MAYBE_NOT:
+			return FlowValue.UNKNOWN;
+		case MAYBE_YES:
 			return FlowValue.UNKNOWN;
 		case NEVER:
 			return FlowValue.NEVER;
