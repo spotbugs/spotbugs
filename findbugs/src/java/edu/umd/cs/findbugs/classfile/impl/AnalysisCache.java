@@ -20,9 +20,9 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
@@ -279,21 +279,14 @@ public class AnalysisCache implements IAnalysisCache {
 		if (descriptorMap == null) {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
-			descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE) {
-				IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
-
-				/* (non-Javadoc)
-				 * @see edu.umd.cs.findbugs.util.MapCache#removeEldestEntry(java.util.Map.Entry)
-				 */
-				@Override
-				protected boolean removeEldestEntry(Entry<DescriptorType, Object> eldest) {
-					if (!engine.canRecompute()) {
-						return false;
-					} else {
-						return super.removeEldestEntry(eldest);
-					}
-				}
-			};
+			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
+			if (false && analysisClass.equals(JavaClass.class))
+				descriptorMap = new MapCache<DescriptorType, Object>(5000);
+			else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) 
+				descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
+			else 
+				descriptorMap = new HashMap<DescriptorType, Object>();
+			
 			analysisClassToDescriptorMapMap.put(analysisClass, descriptorMap);
 		}
 	    return descriptorMap;
