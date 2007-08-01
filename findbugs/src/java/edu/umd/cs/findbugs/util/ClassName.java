@@ -28,6 +28,11 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * @author David Hovemeyer
  */
 public abstract class ClassName {
+	
+	public static String toSignature(@SlashedClassName String className) {
+		if (className.charAt(0) == '[' || className.endsWith(";")) return className;
+		return "L" + className + ";";
+	}
 	/**
 	 * Convert class name to slashed format.
 	 * If the class name is already in slashed format,
