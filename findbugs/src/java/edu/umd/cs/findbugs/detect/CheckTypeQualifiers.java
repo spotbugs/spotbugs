@@ -423,6 +423,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 		for (SourceSinkInfo sink : sinkSet) {
 			annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, sink);
 		}
+		
+		bugReporter.reportBug(warning);
 	}
 
 	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {

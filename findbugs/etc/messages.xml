@@ -6097,7 +6097,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
   
   <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
     <ShortDescription>Unknown value reaches a use requiring a type qualifier annotation</ShortDescription>
-    <LongDescription>Unknown value reaches a use requiring the @{2.withoutPackage} annotation</LongDescription>
+    <LongDescription>Unknown value reaches a use requiring the @{2.excludingPackage} annotation</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -6114,7 +6114,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
   
   <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>Unknown value reaches a use which forbids values carrying type qualifier annotation</ShortDescription>
-    <LongDescription>Unknown value reaches a use which forbids values carrying the @{2.withoutPackage} annotation</LongDescription>
+    <LongDescription>Unknown value reaches a use which forbids values carrying the @{2.excludingPackage} annotation</LongDescription>
     <Details>
       <![CDATA[
       <p>
