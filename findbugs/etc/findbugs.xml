@@ -1003,6 +1003,6 @@
   <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED" category="CORRECTNESS"/>
-  <BugPattern abbreb="TQ" type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
-  <BugPattern abbreb="TQ" type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
+  <BugPattern abbrev="TQ" type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
+  <BugPattern abbrev="TQ" type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
 </FindbugsPlugin>
