@@ -14,3 +14,5 @@ The dom4j license is in the file LICENSE-dom4j.txt
 The AppleJavaExtensions license is in the file LICENSE-AppleJavaExtensions.txt
 
 The Docbook 4.2 XML DTD license is in the file LICENSE-docbook.txt
+
+The JSR-305 reference implementation license is in LICENSE-jsr305.txt
