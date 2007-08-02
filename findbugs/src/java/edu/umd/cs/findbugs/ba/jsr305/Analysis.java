@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -30,13 +31,19 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
+import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -46,43 +53,97 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author pugh
  */
 public class Analysis {
+	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug.analysis");
 	
 	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(
 			MethodDescriptor methodDescriptor)
 			throws CheckedAnalysisException {
 		
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		ClassContext context = analysisCache.getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
-		Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
-		
-		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
-		
-		XMethod xMethod = XFactory.createXMethod(context.getJavaClass(), method);
-		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xMethod);
-		addKnownTypeQualifiers(result, applicableApplicationsForMethod);
-		addKnownTypeQualifiersForParameters(result, xMethod);
-		CFG cfg = context.getCFG(method);
-		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			Location location = i.next();
-			Instruction ins = location.getHandle().getInstruction();
-			if (ins instanceof FieldInstruction) {
-				XField f = XFactory.createXField((FieldInstruction)ins, context.getConstantPoolGen());
-				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(f);
-				addKnownTypeQualifiers(result, applicableApplications);
-			}
-			else if (ins instanceof InvokeInstruction) {
-				XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
-				Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
-				addKnownTypeQualifiers(result, applicableApplications);
-				addKnownTypeQualifiersForParameters(result, m);
-				
+		final IAnalysisCache analysisCache = Global.getAnalysisCache();
+		final HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
+
+		XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
+
+		if (methodDescriptor.isStatic()) {
+			getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
+		} else {
+			
+			// Instance method - must consider type qualifiers inherited from superclasses
+			
+			InheritanceGraphVisitor visitor = new OverriddenMethodsVisitor(xmethod) {
+				/* (non-Javadoc)
+				 * @see edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#visitOverriddenMethod(edu.umd.cs.findbugs.ba.XMethod)
+				 */
+				@Override
+				protected boolean visitOverriddenMethod(XMethod xmethod) {
+					try {
+	                    getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
+                    } catch (CheckedAnalysisException e) {
+                    	if (DEBUG) {
+                    		System.out.println("**** Error getting relevant type qualifiers ****");
+                    		e.printStackTrace(System.out);
+                    	}
+                    	throw new AnalysisException("Error getting relevant type qualifiers for " + xmethod, e);
+                    }
+					return true;
+				}
+			};
+			
+			try {
+				AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), visitor);
+			} catch (ClassNotFoundException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				return (Collection<TypeQualifierValue>) Collections.EMPTY_SET;
+			} catch (AnalysisException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
+						"Error getting relevant type qualifiers for " + xmethod.toString(), e);
+				return (Collection<TypeQualifierValue>) Collections.EMPTY_SET;
 			}
 		}
-		
 		
 		return result;
 		
 	}
+
+	private static void getDirectlyRelevantTypeQualifiers(XMethod xmethod, IAnalysisCache analysisCache,
+            HashSet<TypeQualifierValue> result) throws CheckedAnalysisException, CFGBuilderException {
+		
+		if (DEBUG) {
+			System.out.println("Accumulating relevant type qualifiers for " + xmethod);
+			System.out.println(  "Before=" + result);
+		}
+		
+	    ClassContext context = analysisCache.getClassAnalysis(ClassContext.class, xmethod.getMethodDescriptor().getClassDescriptor());
+		Method method = analysisCache.getMethodAnalysis(Method.class, xmethod.getMethodDescriptor());
+
+		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xmethod);
+		addKnownTypeQualifiers(result, applicableApplicationsForMethod);
+		addKnownTypeQualifiersForParameters(result, xmethod);
+		
+		if (method.getCode() != null) {
+			CFG cfg = context.getCFG(method);
+			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+				Location location = i.next();
+				Instruction ins = location.getHandle().getInstruction();
+				if (ins instanceof FieldInstruction) {
+					XField f = XFactory.createXField((FieldInstruction)ins, context.getConstantPoolGen());
+					Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(f);
+					addKnownTypeQualifiers(result, applicableApplications);
+				}
+				else if (ins instanceof InvokeInstruction) {
+					XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
+					Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
+					addKnownTypeQualifiers(result, applicableApplications);
+					addKnownTypeQualifiersForParameters(result, m);
+
+				}
+			}
+		}
+		
+		if (DEBUG) {
+			System.out.println("  After=" + result);
+		}
+    }
 
 	/**
      * @param result
