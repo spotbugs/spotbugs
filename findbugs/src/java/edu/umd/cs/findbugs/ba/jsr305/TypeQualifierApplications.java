@@ -29,10 +29,9 @@ import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -152,7 +151,7 @@ public class TypeQualifierApplications {
 	/*
 	 * XXX: is there a more efficient way to do this?
 	 */
-	private static TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
+	static TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
 			Collection<TypeQualifierAnnotation> typeQualifierAnnotations,
 			TypeQualifierValue typeQualifierValue) {
 		for (TypeQualifierAnnotation typeQualifierAnnotation : typeQualifierAnnotations) {
@@ -163,89 +162,85 @@ public class TypeQualifierApplications {
 		return null;
 	}
 	
-	private static class ReturnTypeAnnotationLookupResult extends TypeQualifierAnnotationLookupResult {
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotationLookupResult#combine(edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation, edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation)
-		 */
-		@Override
-		protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
-			TypeQualifierAnnotation combined = TypeQualifierAnnotation.combineReturnTypeAnnotations(a, b);
-			if (combined == null) {
-				// XXX: annotations are not compatible.
-				// Creating an UNKNOWN annotation is probably fine,
-				// since it will prevent the
-				// return value annotation from being checked.
-				combined = TypeQualifierAnnotation.getValue(a.typeQualifier, When.UNKNOWN);
+	/**
+	 * Look up the type qualifier annotation(s) on given AnnotatedObject.
+	 * If the AnnotatedObject is an instance method,
+	 * annotations applied to supertype methods which the method overrides
+	 * are considered.
+	 * 
+	 * @param o                  an AnnotatedObject
+	 * @param typeQualifierValue a TypeQualifierValue specifying the kind of annotation we want to look up
+	 * @return TypeQualifierAnnotationLookupResult summarizing the relevant TypeQualifierAnnotation(s)
+	 */
+	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotationConsideringSupertypes(
+			AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+		if (o instanceof XMethod && !((XMethod)o).isStatic()) {
+			// Instance method: accumulate return value annotations in supertypes, if any
+			XMethod xmethod = (XMethod) o;
+			ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, xmethod);
+			return accumulateSupertypeAnnotations(xmethod, accumulator);
+		} else {
+			// Annotated object is not an instance method, so we don't have to check supertypes
+			// for inherited annotations
+			TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
+			TypeQualifierAnnotation tqa = getDirectOrDefaultTypeQualifierAnnotation(o, typeQualifierValue);
+			if (tqa != null) {
+				result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
 			}
-			return combined;
+			return result;
 		}
 	}
 	
-	private static class ReturnTypeAnnotationAccumulator implements InheritanceGraphVisitor {
-		private TypeQualifierValue typeQualifierValue;
-		private XMethod xmethod;
-		private TypeQualifierAnnotationLookupResult result;
+	public static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
+	}
+
+	/**
+	 * Look up the type qualifier annotation(s) on given method parameter.
+	 * If the method is an instance method,
+	 * annotations applied to supertype methods which the method overrides
+	 * are considered.
+	 * 
+	 * @param xmethod            a method
+	 * @param parameter          parameter (0 == first parameter)
+	 * @param typeQualifierValue a TypeQualifierValue specifying the kind of annotation we want to look up
+	 * @return TypeQualifierAnnotationLookupResult summarizing the relevant TypeQualifierAnnotation(s)
+	 */
+	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotationConsideringSupertypes(
+			XMethod o,
+			int parameter,
+			TypeQualifierValue typeQualifierValue) {
 		
-		public ReturnTypeAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
-			assert !xmethod.isStatic();
-			this.typeQualifierValue = typeQualifierValue;
-			this.xmethod = xmethod;
-			this.result = new ReturnTypeAnnotationLookupResult();
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
-		 */
-		public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
-			assert xclass != null;
-			
-			// See if this class has a matching method
-			XMethod xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
-			if (xm == null) {
-				// No - end this branch of the search
-				return false;
+		if (o instanceof XMethod && !((XMethod) o).isStatic()) {
+			XMethod xmethod = (XMethod) o;
+			ParameterAnnotationAccumulator accumulator = new ParameterAnnotationAccumulator(typeQualifierValue, xmethod, parameter);
+			return accumulateSupertypeAnnotations(xmethod, accumulator);
+		} else {
+			TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
+			TypeQualifierAnnotation tqa = getDirectOrDefaultTypeQualifierAnnotation(o, parameter, typeQualifierValue);
+			if (tqa != null) {
+				result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
 			}
-			
-			// See if matching method is annotated
-			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(xm), typeQualifierValue);
-			if (tqa == null) {
-				// continue search in supertype
-				return true;
-			} else {
-				// This branch of search ends here.
-				// Add partial result.
-				result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xm, tqa));
-				return false;
-			}
+			return result;
 		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass, edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
-		 */
-		public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
-			return (target != null);
-		}
-
 	}
 	
-	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
-		// TODO: if o is an XMethod (and not static), the result should consider annotations on supertype methods
-		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
-		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
-		if (tqa != null) {
-			result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
-		}
-		return result;
+	public static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(XMethod o, int parameter,
+			TypeQualifierValue typeQualifierValue) {
+		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
 	}
 
-	public static TypeQualifierAnnotationLookupResult lookupTypeQualifierAnnotation(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
-		// TODO: result should consider annotations on supertype methods
-		TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
-		TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
-		if (tqa != null) {
-			result.addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(o, tqa));
+	private static TypeQualifierAnnotationLookupResult accumulateSupertypeAnnotations(
+			XMethod xmethod,
+			AbstractMethodAnnotationAccumulator accumulator) {
+		try {
+			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), accumulator);
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 		}
-		return result;
+		return accumulator.getResult();
 	}
 
 	/**
@@ -259,8 +254,8 @@ public class TypeQualifierApplications {
 	 * @return the TypeQualifierAnnotation matching the AnnotatedObject/TypeQualifierValue,
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
-	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
-		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotation(o, typeQualifierValue);
+	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, typeQualifierValue);
 		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 	
@@ -276,8 +271,8 @@ public class TypeQualifierApplications {
 	 * @return the TypeQualifierAnnotation matching the parameter,
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
-	public static @CheckForNull TypeQualifierAnnotation getApplicableApplication(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
-		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotation(o, parameter, typeQualifierValue);
+	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, parameter, typeQualifierValue);
 		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 }

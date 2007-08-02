@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 
@@ -79,17 +81,23 @@ public class TypeQualifierAnnotationLookupResult {
 	/**
 	 * Get the effective TypeQualifierAnnotation.
 	 * 
-	 * @return the effective TypeQualifierAnnotation
+	 * @return the effective TypeQualifierAnnotation,
+	 *         or null if no effective TypeQualifierAnnotation
+	 *         can be found
 	 */
-	public TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
+	public @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
+		boolean firstPartialResult = true;
 		TypeQualifierAnnotation effective = null;
+
 		for (PartialResult partialResult : partialResultList) {
-			if (effective == null) {
+			if (firstPartialResult) {
 				effective = partialResult.getTypeQualifierAnnotation();
+				firstPartialResult = false;
 			} else {
 				effective = combine(effective, partialResult.getTypeQualifierAnnotation());
 			}
 		}
+		
 		return effective;
 	}
 
@@ -99,9 +107,10 @@ public class TypeQualifierAnnotationLookupResult {
 	 * 
 	 * @param a a TypeQualifierAnnotation
 	 * @param b another TypeQualifierAnnotation
-	 * @return combined TypeQualifierAnnotation compatible with both input TypeQualifierAnnotations
+	 * @return combined TypeQualifierAnnotation compatible with both input TypeQualifierAnnotations,
+	 *         or null if no such TypeQualifierAnnotation exists
 	 */
 	protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 }

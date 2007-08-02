@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 public class Analysis {
 	
 	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(
-			/*ClassContext context, Method method*/MethodDescriptor methodDescriptor)
+			MethodDescriptor methodDescriptor)
 			throws CheckedAnalysisException {
 		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
@@ -56,6 +56,7 @@ public class Analysis {
 		Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
 		
 		HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
+		
 		XMethod xMethod = XFactory.createXMethod(context.getJavaClass(), method);
 		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xMethod);
 		addKnownTypeQualifiers(result, applicableApplicationsForMethod);

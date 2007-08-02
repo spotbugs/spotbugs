@@ -65,20 +65,32 @@ public class TypeQualifierAnnotation {
 	//     \     /   \     /     |  
 	//      Maybe     Maybe      |
 	//        Yes      Not       |
-	//           \      /        |
+	//           \     /         |
 	//            Maybe          | 
 	//            Either         v  Wider
+	//
+	// XXX: the placement of Unknown in this lattice seems a bit weird, but it seems to work
 	
 	private static final When TOP = null;
 	
 	private static final When[][] combineReturnValueMatrix = {
 		//                   ALWAYS       MAYBE_YES        UNKNOWN        MAYBE_NOT        MAYBE_EITHER       NEVER
 		/* ALWAYS */       { When.ALWAYS, },
-		/* MAYBE_YES */    { When.ALWAYS, When.MAYBE_YES},
+		/* MAYBE_YES */    { When.ALWAYS, When.MAYBE_YES },
 		/* UNKNOWN */      { TOP,         When.UNKNOWN,    When.UNKNOWN, },
 		/* MAYBE_NOT */    { TOP,         When.UNKNOWN,    When.UNKNOWN,  When.MAYBE_NOT },
 		/* MAYBE_EITHER */ { When.ALWAYS, When.MAYBE_YES,  When.UNKNOWN,  When.MAYBE_NOT,  When.MAYBE_EITHER, },
 		/* NEVER */        { TOP,         TOP,             TOP,           When.NEVER,      When.NEVER,       When.NEVER },
+	};
+	
+	private static final When[][] combineParameterMatrix = {
+		//                   ALWAYS             MAYBE_YES          UNKNOWN         MAYBE_NOT          MAYBE_EITHER       NEVER
+		/* ALWAYS */       { When.ALWAYS, },
+		/* MAYBE_YES */    { When.MAYBE_YES,    When.MAYBE_YES, },
+		/* UNKNOWN */      { When.MAYBE_YES,    When.MAYBE_YES,    When.UNKNOWN, },
+		/* MAYBE_NOT */    { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_NOT, },
+		/* MAYBE_EITHER */ { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_EITHER, When.MAYBE_EITHER, },
+		/* NEVER */        { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_NOT,    When.MAYBE_EITHER, When.NEVER },
 	};
 
 	/**
@@ -86,13 +98,29 @@ public class TypeQualifierAnnotation {
 	 * 
 	 * @param a a TypeQualifierAnnotation used on a return value
 	 * @param b another TypeQualifierAnnotation used on a return value 
-	 * @return combined return type annotation that is at least as permissive as
-	 *         either <code>a</code> or <code>b</code>,
+	 * @return combined return type annotation that is at least as narrow as
+	 *         both <code>a</code> or <code>b</code>,
 	 *         or null if no such TypeQualifierAnnotation exists
 	 */
 	public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+		return combineAnnotations(a, b, combineReturnValueMatrix);
+	}
+	
+	/**
+	 * 
+	 * @param a a TypeQualifierAnnotation used on a method parameter
+	 * @param b another TypeQualifierAnnotation used on a method parameter  
+	 * @return combined parameter annotation that is at least as wide
+	 *         as both a and b
+	 */
+	public static @NonNull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+		return combineAnnotations(a, b, combineParameterMatrix);
+	}
+
+	private static TypeQualifierAnnotation combineAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b,
+			When[][] mergeMatrix) {
 		assert a.typeQualifier.equals(b.typeQualifier);
-		
+
 		When aWhen = a.when;
 		When bWhen = b.when;
 		if (aWhen.ordinal() < bWhen.ordinal()) {
@@ -100,8 +128,8 @@ public class TypeQualifierAnnotation {
 			aWhen = bWhen;
 			bWhen = tmp;
 		}
-		
-		When combined = combineReturnValueMatrix[aWhen.ordinal()][bWhen.ordinal()];
+
+		When combined = mergeMatrix[aWhen.ordinal()][bWhen.ordinal()];
 		if (combined != null) {
 			return getValue(a.typeQualifier, combined);
 		} else {

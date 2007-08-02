@@ -157,7 +157,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		TypeQualifierAnnotation returnValueAnnotation = null;
 		if (xmethod.isReturnTypeReferenceType()) {
 			returnValueAnnotation =
-				TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
+				TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
 		}
 		
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -190,7 +190,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	private void modelFieldStore(Location location) throws DataflowAnalysisException {
 		// Model field stores
 		XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
-		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(writtenField, typeQualifierValue);
+		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(writtenField, typeQualifierValue);
 		When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 		
 		// The ValueNumberFrame *before* the FieldInstruction should
@@ -218,7 +218,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
 			if (SignatureParser.isReferenceType(paramSig)) {
 
-				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(
 						calledMethod,
 						param,
 						typeQualifierValue);

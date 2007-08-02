@@ -117,7 +117,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
 		XMethod xmethod = XFactory.createXMethod(inv, cpg);
 		if (xmethod.isResolved()) {
-			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, typeQualifierValue);
+			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when);
 		}
@@ -126,7 +126,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	private void registerFieldLoadSource(Location location) throws DataflowAnalysisException {
 		XField loadedField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 		if (loadedField.isResolved()) {
-			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(loadedField, typeQualifierValue);
+			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(loadedField, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when);
 		}
@@ -156,7 +156,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
 			// Get the TypeQualifierAnnotation for this parameter
 			SourceSinkInfo info;
-			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplication(xmethod, param, typeQualifierValue);
+			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, param, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			ValueNumber vn = vnaFrameAtEntry.getValue(slotOffset + firstParamSlot);
 			info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, when);
