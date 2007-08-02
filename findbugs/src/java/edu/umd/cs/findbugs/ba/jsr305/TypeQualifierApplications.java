@@ -38,7 +38,10 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
+ * Figure out where and how type qualifier annotations are applied.
+ * 
  * @author William Pugh
+ * @author David Hovemeyer
  */
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("tqa.debug");
@@ -192,7 +195,7 @@ public class TypeQualifierApplications {
 		}
 	}
 	
-	public static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(AnnotatedObject o,
+	static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
 		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o), typeQualifierValue);
 	}
@@ -227,7 +230,7 @@ public class TypeQualifierApplications {
 		}
 	}
 	
-	public static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(XMethod o, int parameter,
+	static TypeQualifierAnnotation getDirectOrDefaultTypeQualifierAnnotation(XMethod o, int parameter,
 			TypeQualifierValue typeQualifierValue) {
 		return findMatchingTypeQualifierAnnotation(getApplicableApplications(o, parameter), typeQualifierValue);
 	}
