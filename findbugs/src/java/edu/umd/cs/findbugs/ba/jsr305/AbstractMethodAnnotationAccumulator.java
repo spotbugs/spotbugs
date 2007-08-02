@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
+import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
@@ -30,13 +31,12 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * 
  * @author David Hovemeyer
  */
-public abstract class AbstractMethodAnnotationAccumulator implements InheritanceGraphVisitor {
+public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMethodsVisitor {
 	private final TypeQualifierValue typeQualifierValue;
-	private final XMethod xmethod;
 
 	protected AbstractMethodAnnotationAccumulator(TypeQualifierValue typeQualifierValue, XMethod xmethod) {
+		super(xmethod);
 		this.typeQualifierValue= typeQualifierValue;
-		this.xmethod = xmethod;
 	}
 	
 	/**
@@ -46,44 +46,22 @@ public abstract class AbstractMethodAnnotationAccumulator implements Inheritance
 		return typeQualifierValue;
 	}
 
-	/**
-	 * @return Returns the xmethod.
-	 */
-	public XMethod getXmethod() {
-		return xmethod;
-	}
-
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
+	 * @see edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor#visitOverriddenMethod(edu.umd.cs.findbugs.ba.XMethod)
 	 */
-	public boolean visitClass(ClassDescriptor classDescriptor, XClass xclass) {
-		assert xclass != null;
-
-		// See if this class has a matching method
-		XMethod xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
-		if (xm == null) {
-			// No - end this branch of the search
-			return false;
-		}
-
+	@Override
+	protected boolean visitOverriddenMethod(XMethod xmethod) {
 		// See if matching method is annotated
-		TypeQualifierAnnotation tqa = lookupAnnotation(xm);
+		TypeQualifierAnnotation tqa = lookupAnnotation(xmethod);
 		if (tqa == null) {
 			// continue search in supertype
 			return true;
 		} else {
 			// This branch of search ends here.
 			// Add partial result.
-			getResult().addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xm, tqa));
+			getResult().addPartialResult(new TypeQualifierAnnotationLookupResult.PartialResult(xmethod, tqa));
 			return false;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor#visitEdge(edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass, edu.umd.cs.findbugs.classfile.ClassDescriptor, edu.umd.cs.findbugs.ba.XClass)
-	 */
-	public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, XClass target) {
-		return (target != null);
 	}
 
 	public abstract TypeQualifierAnnotationLookupResult getResult();
