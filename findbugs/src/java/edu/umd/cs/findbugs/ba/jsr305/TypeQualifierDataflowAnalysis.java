@@ -236,6 +236,9 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 		Location location = new Location(handle, basicBlock);
 		Set<SourceSinkInfo> sourceSinkSet = sourceSinkMap.get(location);
 		if (sourceSinkSet != null) {
+			if (DEBUG_VERBOSE) {
+				System.out.println("Modeling source/sink at " + location.toCompactString() + ": " + sourceSinkSet.toString());
+			}
 			for (SourceSinkInfo sourceSinkInfo : sourceSinkSet) {
 				fact.modelSourceSink(sourceSinkInfo);
 			}

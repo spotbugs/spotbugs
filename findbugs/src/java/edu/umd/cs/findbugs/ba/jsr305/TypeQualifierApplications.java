@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  * @author David Hovemeyer
  */
 public class TypeQualifierApplications {
-	static final boolean DEBUG = SystemProperties.getBoolean("tqa.debug");
+	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
 	
 	static Map<AnnotatedObject, Collection<AnnotationValue>> objectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> parameterAnnotations 
@@ -258,7 +258,13 @@ public class TypeQualifierApplications {
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
 	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+		if (DEBUG) {
+			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
+		}
 		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, typeQualifierValue);
+		if (DEBUG) {
+			System.out.println("  => Answer: " + lookupResult);
+		}
 		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 	
@@ -275,7 +281,13 @@ public class TypeQualifierApplications {
 	 *         or null if there is no matching TypeQualifierAnnotation
 	 */
 	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+		if (DEBUG) {
+			System.out.println("Looking up application of " + typeQualifierValue + " on " + o + " parameter " + parameter);
+		}
 		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, parameter, typeQualifierValue);
+		if (DEBUG) {
+			System.out.println("  => Answer: " + lookupResult);
+		}
 		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
 }

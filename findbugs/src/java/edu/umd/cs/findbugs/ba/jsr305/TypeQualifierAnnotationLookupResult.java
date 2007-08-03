@@ -66,6 +66,14 @@ public class TypeQualifierAnnotationLookupResult {
 		public TypeQualifierAnnotation getTypeQualifierAnnotation() {
 			return typeQualifierAnnotation;
 		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return annotatedObject + ":" + typeQualifierAnnotation;
+		}
 	}
 
 	private List<PartialResult> partialResultList;
@@ -112,5 +120,13 @@ public class TypeQualifierAnnotationLookupResult {
 	 */
 	protected TypeQualifierAnnotation combine(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
 		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return partialResultList.toString();
 	}
 }

@@ -136,7 +136,9 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 			return false;
 		}
 		SourceSinkInfo other = (SourceSinkInfo) obj;
-		return this.location.equals(other.location);
+		return this.type.equals(other.type)
+			&& this.vn.equals(other.vn)
+			&& this.location.equals(other.location);
 	}
 
 	/* (non-Javadoc)
