@@ -276,6 +276,14 @@ public class CheckTypeQualifiers extends CFGDetector {
 				if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
 					continue;
 				}
+				
+				// Check to see if this warning has already been reported because
+				// the dataflow values conflict directly with each other.
+				TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
+				FlowValue forwardsFlowValue = forwardsFact.getValue(vn);
+				if (FlowValue.valuesConflict(forwardsFlowValue, backwardsFlowValue)) {
+					continue;
+				}
 
 				if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
 					emitSourceWarning(
