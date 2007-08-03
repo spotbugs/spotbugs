@@ -6081,8 +6081,8 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
-    <ShortDescription>Value annotated as NEVER used where value annotated as ALWAYS required</ShortDescription>
-    <LongDescription>Value specified as never carrying type qualifier @{2.excludingPackage} used where value always carrying that annotation is required</LongDescription>
+    <ShortDescription>Value annotated as never carrying a type qualifier used where value carrying that qualifier is required</ShortDescription>
+    <LongDescription>Value annotated as never carrying type qualifier @{2.excludingPackage} used where value carrying that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -6095,13 +6095,10 @@ public @NonNegative Integer example(@Negative Integer value) {
         More precisely, a value annotated with a type qualifier specifying when=NEVER
         is guaranteed to reach a use or uses where the same type qualifier specifies when=ALWAYS.
         </p>
-        
+
         <p>
-        <b>For example</b>: say that the annotation @Tainted is a nickname for
-        the annotation @Untainted(when=NEVER). You would see this warning if
-        a @Tainted value is guaranteed to reach a use or uses where
-        an @Untainted value is required.  
-        </p>
+        TODO: example
+        </p>        
       ]]>
     </Details>
   </BugPattern>
