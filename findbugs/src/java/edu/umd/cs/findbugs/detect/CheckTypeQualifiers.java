@@ -442,7 +442,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			ValueNumber vn,
 			Location location) {
 		String bugType =
-			(backwardsFlowValue == FlowValue.NEVER) ? "TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+			(backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
 		
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
 			.addClassAndMethod(methodDescriptor)

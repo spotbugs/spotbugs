@@ -6095,24 +6095,36 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
     </Details>
   </BugPattern>
   
-  <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
-    <ShortDescription>Unknown value reaches a use requiring a type qualifier annotation</ShortDescription>
-    <LongDescription>Unknown value reaches a use requiring the @{2.excludingPackage} annotation</LongDescription>
+  <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
+    <ShortDescription>Value that might not carry a type qualifier reaches a use requiring that type qualifier</ShortDescription>
+    <LongDescription>Value that might not carry the @{2.excludingPackage} annotation reaches a use requiring that annotation</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      A value not known to definitely carry a type qualifier annotation
+      A value that might not carry a type qualifier annotation
       reaches a use which requires that annotation.
       </p>
       
       <p>
-      TODO: example.
+      For example, consider the following method:
+      </p>
+      <blockquote>
+<pre>
+public @Untainted Object mustReturnUntainted(Object unknown) {
+    return unknown;
+}
+</pre>
+      </blockquote>
+      <p>
+      The <code>mustReturnUntainted</code> method is required to
+      return a value carrying the @Untainted annotation,
+      but a value not known to carry that annotation is returned.
       </p>
       ]]>
     </Details>
   </BugPattern>
   
-  <BugPattern type="TQ_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
+  <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
     <ShortDescription>Unknown value reaches a use which forbids values carrying type qualifier annotation</ShortDescription>
     <LongDescription>Unknown value reaches a use which forbids values carrying the @{2.excludingPackage} annotation</LongDescription>
     <Details>
