@@ -6047,13 +6047,13 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 </BugPattern>
 
   <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
-    <ShortDescription>Value annotated as ALWAYS used where value annotated as NEVER required</ShortDescription>
-    <LongDescription>Value specified as always carrying type qualifier @{2.excludingPackage} used where value never carrying that annotation is required</LongDescription>
+    <ShortDescription>Value annotated as carrying a type qualifier used where a value that must not carry that qualifier is required</ShortDescription>
+    <LongDescription>Value annotated as carrying type qualifier @{2.excludingPackage} used where a value that must not carry that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
-        A value specified as carrying a type qualifier annotation is guaranteed
-        to be consumed in a location or locations requiring that the value not
+        A value specified as carrying a type qualifier annotation is
+        consumed in a location or locations requiring that the value not
         carry that annotation.
         </p>
         
@@ -6063,8 +6063,19 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
         </p>
         
         <p>
-        <em>TODO: example</em>.  
+        For example, say that @NonNegative is a nickname for
+        the type qualifier annotation @Negative(when=When.NEVER).
+        The following code will generate this warning because
+        the return statement requires a @NonNegative value,
+        but receives one that is marked as @Negative.   
         </p>
+        <blockquote>
+<pre>
+public @NonNegative Integer example(@Negative Integer value) {
+    return value;
+}
+</pre>
+        </blockquote>
       ]]>
     </Details>
   </BugPattern>
