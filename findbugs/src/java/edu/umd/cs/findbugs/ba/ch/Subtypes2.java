@@ -637,8 +637,8 @@ public class Subtypes2 {
 			}
 			
 			ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
-			if (visitEdge(vertex, superclassDescriptor, false, visitor)) {
-				assert !seen.contains(superclassDescriptor);
+			if (!vertex.isInterface() && visitEdge(vertex, superclassDescriptor, false, visitor)) {
+				assert !seen.contains(superclassDescriptor) : " Already seen " + superclassDescriptor;
 				addToWorkList(workList, superclassDescriptor);
 				seen.add(superclassDescriptor);
 			}
