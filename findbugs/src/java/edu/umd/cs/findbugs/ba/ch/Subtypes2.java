@@ -627,9 +627,6 @@ public class Subtypes2 {
 		seen.add(startVertex.getClassDescriptor());
 		while (!workList.isEmpty()) {
 			ClassVertex vertex = workList.removeFirst();
-			assert !seen.contains(vertex.getClassDescriptor());
-			
-		
 			
 			if (!visitor.visitClass(vertex.getClassDescriptor(), vertex.getXClass())) {
 				continue;
