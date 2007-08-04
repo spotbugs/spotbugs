@@ -624,12 +624,12 @@ public class Subtypes2 {
 		workList.addLast(startVertex);
 		
 		Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
-		
+		seen.add(startVertex.getClassDescriptor());
 		while (!workList.isEmpty()) {
 			ClassVertex vertex = workList.removeFirst();
 			assert !seen.contains(vertex.getClassDescriptor());
 			
-			seen.add(vertex.getClassDescriptor());
+		
 			
 			if (!visitor.visitClass(vertex.getClassDescriptor(), vertex.getXClass())) {
 				continue;
@@ -639,15 +639,18 @@ public class Subtypes2 {
 				continue;
 			}
 			
-			if (visitEdge(vertex, vertex.getXClass().getSuperclassDescriptor(), false, visitor)
-					&& !seen.contains(vertex.getXClass().getSuperclassDescriptor())) {
-				addToWorkList(workList, vertex.getXClass().getSuperclassDescriptor());
+			ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
+			if (visitEdge(vertex, superclassDescriptor, false, visitor)) {
+				assert !seen.contains(superclassDescriptor);
+				addToWorkList(workList, superclassDescriptor);
+				seen.add(superclassDescriptor);
 			}
 			
 			for (ClassDescriptor ifaceDesc : vertex.getXClass().getInterfaceDescriptorList()) {
 				if (visitEdge(vertex, ifaceDesc, true, visitor)
 						&& !seen.contains(ifaceDesc)) {
 					addToWorkList(workList, ifaceDesc);
+					seen.add(ifaceDesc);
 				}
 			}
 		}
