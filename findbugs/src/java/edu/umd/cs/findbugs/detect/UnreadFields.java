@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -34,7 +35,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.Type;
 
-public class UnreadFields extends BytecodeScanningDetector  {
+public class UnreadFields extends OpcodeStackDetector  {
 	private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
 
 	static class ProgramPoint {
@@ -237,7 +238,6 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	int count_aload_1;
 
-	private OpcodeStack opcodeStack = new OpcodeStack();
 	private int previousOpcode;
 	private int previousPreviousOpcode;
 	@Override
@@ -248,7 +248,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		previousPreviousOpcode = -1;
 		nullTested.clear();
 		seenInvokeStatic = false;
-		opcodeStack.resetForMethodEntry(this);
+		
 		staticFieldsReadInThisMethod.clear();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
@@ -317,11 +317,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 		if (saState == 4) saState = 0;
 
-		opcodeStack.mergeJumps(this);
+		
 		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-		   String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-		   String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
-			String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
+		   String fieldName = (String) stack.getStackItem(0).getConstant();
+		   String fieldSignature = (String) stack.getStackItem(1).getConstant();
+			String  fieldClass = (String) stack.getStackItem(2).getConstant();
 			if (fieldName != null && fieldSignature != null && fieldClass != null) {
 				XField f = XFactory.createXField(fieldClass.replace('/','.'), 
 					   fieldName, 
@@ -332,8 +332,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 		}
 		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-			String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+			String fieldName = (String) stack.getStackItem(0).getConstant();
+			 String  fieldClass = (String) stack.getStackItem(1).getConstant();
 			 if (fieldName != null && fieldClass != null) {
 				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
 				reflectiveFields.add(f);
@@ -341,8 +341,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 		 }
 		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-			String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+			String fieldName = (String) stack.getStackItem(0).getConstant();
+			 String  fieldClass = (String) stack.getStackItem(1).getConstant();
 			 if (fieldName != null && fieldClass != null) {
 				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "J", false);
 				reflectiveFields.add(f);
@@ -399,8 +399,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				calledFromConstructors.add(getNameConstantOperand()+":"+sig);
 			}
 			int pos = PreorderVisitor.getNumberArguments(sig);
-			if (opcodeStack.getStackDepth() > pos) {
-				OpcodeStack.Item item = opcodeStack.getStackItem(pos);
+			if (stack.getStackDepth() > pos) {
+				OpcodeStack.Item item = stack.getStackItem(pos);
 				boolean superCall = seen == INVOKESPECIAL
 				&&  !invokedClassName .equals(getClassName());
 
@@ -422,8 +422,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 
 		if ((seen == IFNULL || seen == IFNONNULL) 
-			&& opcodeStack.getStackDepth() > 0)  {
-			OpcodeStack.Item item = opcodeStack.getStackItem(0);
+			&& stack.getStackDepth() > 0)  {
+			OpcodeStack.Item item = stack.getStackItem(0);
 			XField f = item.getXField();
 			if (f != null) {
 				nullTested.add(f);
@@ -468,8 +468,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				break;
 			default: throw new RuntimeException("Impossible");
 			}
-			if (opcodeStack.getStackDepth() >= pos) {
-			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
+			if (stack.getStackDepth() >= pos) {
+			OpcodeStack.Item item = stack.getStackItem(pos);
 			XField f = item.getXField();
 			if (DEBUG) System.out.println("RRR: " + f + " " + nullTested.contains(f)  + " " + writtenInConstructorFields.contains(f) + " " +  writtenNonNullFields.contains(f));
 			if (f != null && !nullTested.contains(f) 
@@ -509,8 +509,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		} else if ((seen == PUTFIELD || seen == PUTSTATIC) && !selfAssignment) {
 			XField f = XFactory.createReferencedXField(this);
 			OpcodeStack.Item item = null;
-			if (opcodeStack.getStackDepth() > 0) {
-				item = opcodeStack.getStackItem(0);
+			if (stack.getStackDepth() > 0) {
+				item = stack.getStackItem(0);
 				if (!item.isNull()) nullTested.add(f);
 			}
 			writtenFields.add(f);
@@ -537,16 +537,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				writtenOutsideOfConstructorFields.add(f);
 			}
 
-
 		}
-		opcodeStack.sawOpcode(this, seen);
 		previousPreviousOpcode = previousOpcode;
 		previousOpcode = seen;
-		if (false && DEBUG) {
-		System.out.println("After " + OPCODE_NAMES[seen] + " opcode stack is");
-		System.out.println(opcodeStack);
-		}
-
 	}
 
 	static Pattern dontComplainAbout = Pattern.compile("class[$]");

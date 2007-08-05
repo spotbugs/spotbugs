@@ -36,9 +36,10 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.Util;
 
-public class InfiniteLoop extends BytecodeScanningDetector {
+public class InfiniteLoop extends OpcodeStackDetector {
 
 	private static final boolean active = true;
 
@@ -126,24 +127,14 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				result = f.to;
 		return result;
 	}
-	OpcodeStack stack = new OpcodeStack();
-
+	
 	public InfiniteLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	@Override
-	public void visit(JavaClass obj) {
-	}
-
-	@Override
-	public void visit(Method obj) {
-	}
-
-	@Override
 	public void visit(Code obj) {
 		clearRegModified();
-		stack.resetForMethodEntry(this);
 		backwardBranches.clear();
 		forwardConditionalBranches.clear();
 		forwardJumps.clear();
@@ -204,7 +195,6 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		if (false) System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
-		stack.mergeJumps(this);
 		if (isRegisterStore())  regModifiedAt(getRegisterOperand(), getPC());
 		switch (seen) {
 		case GOTO:
@@ -320,7 +310,6 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			break;
 		}
 
-		stack.sawOpcode(this, seen);
 	}
 
 	/**

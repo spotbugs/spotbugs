@@ -31,12 +31,11 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class FindSelfComparison extends BytecodeScanningDetector {
+public class FindSelfComparison extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
-
-	OpcodeStack stack = new OpcodeStack();
 
 	public FindSelfComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -45,27 +44,19 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 	String className;
 	int state;
 	int putFieldRegister;
-	@Override
-	public void visit(JavaClass obj) {
-	}
-
-	@Override
-	public void visit(Method obj) {
-	}
+	
 
 	@Override
 	public void visit(Code obj) {
 		whichRegister = -1;
 		registerLoadCount = 0;
-		stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
 
 	@Override
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
-		stack.mergeJumps(this);
-
+		
 		switch (state) {
 		case 0:
 			if (seen == DUP_X1) state = 4;
@@ -141,7 +132,6 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		case IF_ICMPGE: 
 			checkForSelfOperation(seen, "COMPARISON");
 		}
-		stack.sawOpcode(this, seen);
 		if (isRegisterLoad() && seen != IINC) {
 			if (getRegisterOperand() == whichRegister) registerLoadCount++;
 			else {

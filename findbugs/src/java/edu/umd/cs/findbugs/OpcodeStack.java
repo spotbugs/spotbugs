@@ -2192,7 +2192,7 @@ public void initialize() {
 	/**
      * @return Returns the top.
      */
-    private boolean isTop() {
+    public boolean isTop() {
     	if (top)
     		return true;
 	    return false;

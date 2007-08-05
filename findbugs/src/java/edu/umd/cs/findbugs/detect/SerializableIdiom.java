@@ -46,8 +46,9 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class SerializableIdiom extends BytecodeScanningDetector
+public class SerializableIdiom extends OpcodeStackDetector
 		{
 
 	final static boolean reportTransientFieldOfNonSerializableClass =
@@ -380,13 +381,11 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	@Override
 		 public void visit(Code obj) {
 		if (isSerializable) {
-			stack.resetForMethodEntry(this);
 			super.visit(obj);
 		}
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		if (seen == PUTFIELD) {
 			String nameOfClass = getClassConstantOperand();
 			if ( getClassName().equals(nameOfClass))  {
@@ -439,10 +438,9 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			}
 
 		}
-		stack.sawOpcode(this,seen);
-	}
-	private OpcodeStack stack = new OpcodeStack();
 
+	}
+	
 	@Override
 	public void visit(Field obj) {
 		int flags = obj.getAccessFlags();

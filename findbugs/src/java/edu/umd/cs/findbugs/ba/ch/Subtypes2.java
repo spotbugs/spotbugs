@@ -180,7 +180,8 @@ public class Subtypes2 {
 
 	private void addVertexToGraph(ClassDescriptor classDescriptor, ClassVertex vertex) {
 		if (classDescriptorToVertexMap.get(classDescriptor) != null) {
-			throw new IllegalStateException();
+			if (true) return;
+			throw new IllegalStateException("Can't find class vertex for " + classDescriptor);
 		}
 
 		if (DEBUG) {

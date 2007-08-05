@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -39,12 +40,11 @@ import org.apache.bcel.generic.*;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public class RuntimeExceptionCapture extends BytecodeScanningDetector implements Detector, StatelessDetector {
+public class RuntimeExceptionCapture extends OpcodeStackDetector implements Detector, StatelessDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("rec.debug");
 
 	private BugReporter bugReporter;
 	private Method method;
-	private OpcodeStack stack = new OpcodeStack();
 	private List<ExceptionCaught> catchList;
 	private List<ExceptionThrown> throwList;
 
@@ -95,7 +95,6 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		 public void visitCode(Code obj) {
 		catchList = new ArrayList<ExceptionCaught>();
 		throwList = new ArrayList<ExceptionThrown>();
-				stack.resetForMethodEntry(this);
 
 		super.visitCode(obj);
 
@@ -140,6 +139,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	@Override
 		 public void visit(CodeException obj) {
+		try {
 		super.visit(obj);
 		int type = obj.getCatchType();
 		if (type == 0) return;
@@ -149,7 +149,6 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			new ExceptionCaught(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
 		catchList.add(caughtException);
 
-		try {
 			// See if the store that saves the exception object
 			// is alive or dead.  We rely on the fact that javac
 			// always (?) emits an ASTORE instruction to save
@@ -186,8 +185,6 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
-		try {
 			switch (seen) {
 			case ATHROW:
 				if (stack.getStackDepth() > 0) {
@@ -231,11 +228,10 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			default:
 				break;
 			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
+		
 	}
 
-}
+
+	}
 
 // vim:ts=4

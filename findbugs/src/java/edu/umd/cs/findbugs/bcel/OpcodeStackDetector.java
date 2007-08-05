@@ -43,8 +43,9 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 		super.visit(obj);
 	}
 	@Override
-	public void beforeOpcode(int seen) {
+	public boolean beforeOpcode(int seen) {
 		stack.mergeJumps(this);
+		return !stack.isTop();
 	}
 
 	@Override

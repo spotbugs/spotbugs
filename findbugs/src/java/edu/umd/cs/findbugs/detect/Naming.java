@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -108,20 +109,52 @@ public class Naming extends PreorderVisitor implements Detector {
 						priority++;
 						AnalysisContext.reportMissingClass(e);
 					}
-					String pattern = "NM_VERY_CONFUSING";
+					
+					
+					boolean intentional = false;
+					
 					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
 					else if (priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) {
-						pattern = "NM_VERY_CONFUSING_INTENTIONAL";
+						intentional = false;
 						priority = NORMAL_PRIORITY;
 					}
 					XFactory xFactory = AnalysisContext.currentXFactory();
 					if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
 
+					
+					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
+					String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
+					
 					bugReporter.reportBug(new BugInstance(this, pattern, priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
 					.addClass(m2.getClassName())
 					.addMethod(m2));
+					}
+					if (!m.getSignature().equals(m2.getSignature()) 
+							&& removePackageNamesFromSignature(m.getSignature()).equals(
+									removePackageNamesFromSignature(m2.getSignature()))) {
+						String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
+						
+						Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
+						Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
+						while (s.hasNext()) {
+							String p = s.next();
+							String p2 = s2.next();
+							if (!p.equals(p2)) {
+								bugReporter.reportBug(new BugInstance(this, pattern, priority)
+								.addClass(m.getClassName())
+								.addMethod(m)
+								.addClass(m2.getClassName())
+								.addMethod(m2)
+								.addFoundAndExpectedType(p, p2)
+								);
+								
+							}
+						}
+						
+						// 
+					}
 					return true;
 				}
 			} catch (ClassNotFoundException e) {

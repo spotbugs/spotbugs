@@ -21,16 +21,17 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+
 import java.util.*;
 import org.apache.bcel.classfile.Code;
 
-public class FindFloatEquality extends BytecodeScanningDetector implements StatelessDetector 
+public class FindFloatEquality extends OpcodeStackDetector implements StatelessDetector 
 {
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_COMP = 1;
 	private int priority;
 	private BugReporter bugReporter;
-	private OpcodeStack opStack = new OpcodeStack();
 	private int state;
 
 	public FindFloatEquality(BugReporter bugReporter) {
@@ -46,7 +47,6 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		priority = LOW_PRIORITY;
 
 
-		opStack.resetForMethodEntry(this);
 		state = SAW_NOTHING;
 
 		super.visit(obj);
@@ -82,17 +82,14 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	}
 	@Override
 		 public void sawOpcode(int seen) {
-		if (false) System.out.println(OPCODE_NAMES[seen] + " " +  state);
-		opStack.mergeJumps(this);
-		try {
 			switch ( seen ) {
 				case FCMPG:
 				case FCMPL:
 				case DCMPG:
 				case DCMPL:
-					if (opStack.getStackDepth() >= 2) {
-						OpcodeStack.Item first = opStack.getStackItem(0);
-						OpcodeStack.Item second = opStack.getStackItem(1);
+					if (stack.getStackDepth() >= 2) {
+						OpcodeStack.Item first = stack.getStackItem(0);
+						OpcodeStack.Item second = stack.getStackItem(1);
 
 						Number n1 = (Number)first.getConstant();
 						Number n2 = (Number)second.getConstant();
@@ -149,8 +146,5 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 				break;
 			}
 		}
-		finally {
-			opStack.sawOpcode(this, seen);
-		}
+		
 	}
-}

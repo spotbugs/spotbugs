@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import org.apache.bcel.classfile.Method;
 
-public class FindNonShortCircuit extends BytecodeScanningDetector implements
+public class FindNonShortCircuit extends OpcodeStackDetector implements
 		StatelessDetector {
 
 	int stage1 = 0;
@@ -46,11 +47,8 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-	OpcodeStack stack = new OpcodeStack();
-
 	@Override
 	public void visit(Method obj) {
-		stack.resetForMethodEntry(this);
 		clearAll();
 		prevOpcode = NOP;
 	}
@@ -68,7 +66,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
 		// System.out.println(stack);
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
@@ -76,7 +73,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		scanForBooleanValue(seen);
 		scanForDanger(seen);
 		scanForShortCircuit(seen);
-		stack.sawOpcode(this, seen);
 		prevOpcode = seen;
 	}
 

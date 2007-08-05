@@ -21,12 +21,13 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+
 import org.apache.bcel.classfile.*;
 
-public class FindBadForLoop extends BytecodeScanningDetector implements  StatelessDetector {
+public class FindBadForLoop extends OpcodeStackDetector implements  StatelessDetector {
 
 
-	OpcodeStack stack = new OpcodeStack();
 	BugReporter bugReporter;
 
 	public FindBadForLoop(BugReporter bugReporter) {
@@ -35,20 +36,12 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 
 
 
-	@Override
-		 public void visit(JavaClass obj) {
-	}
-
-	@Override
-		 public void visit(Method obj) {
-	}
-
+	
 				LineNumberTable lineNumbers; 
 	@Override
 		 public void visit(Code obj) {
 			lastRegStore = -1;
 			lineNumbers = obj.getLineNumberTable();
-			stack.resetForMethodEntry(this);
 			super.visit(obj);
 	}
 
@@ -56,8 +49,6 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 	int lastRegStore;
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
-		try {
 		if (seen == ISTORE
 			|| seen == ISTORE_0
 			|| seen == ISTORE_1
@@ -108,15 +99,6 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 			  }
 
 			  }
-			}
-
-				stack.sawOpcode(this, seen);
-
-		} catch (RuntimeException e) {
-			// FIXME
-			System.out.println("Exception at " + getPC() 
-				+ " in " + getFullyQualifiedMethodName());
-			e.printStackTrace(System.out);
 			}
 	}
 

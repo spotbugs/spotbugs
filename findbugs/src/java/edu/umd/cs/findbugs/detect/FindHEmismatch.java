@@ -43,8 +43,9 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class FindHEmismatch extends BytecodeScanningDetector implements
+public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
 	boolean hasFields = false;
 
@@ -77,8 +78,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	MethodAnnotation hashCodeMethod = null;
 
 	 HashSet<String> nonHashableClasses = new HashSet<String>();
-	OpcodeStack stack = new OpcodeStack();
-
+	
 	public  boolean isHashableClassName(String dottedClassName) {
 		return !nonHashableClasses.contains(dottedClassName);
 	}
@@ -301,8 +301,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 
 	@Override
 	public void visit(Method obj) {
-		stack.resetForMethodEntry(this);
-
+	
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
 			return;
@@ -373,7 +372,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		if (seen == INVOKEVIRTUAL) {
 			String className = getClassConstantOperand();
 			if (className.equals("java/util/Map") || className.equals("java/util/HashMap") 
@@ -394,7 +392,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 						&& stack.getStackDepth() >= 2) check(0);
 			}
 		}
-		stack.sawOpcode(this, seen);
 	}
 	private void check(int pos) {
 		OpcodeStack.Item item = stack.getStackItem(pos);

@@ -31,10 +31,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 
-public class BadResultSetAccess extends BytecodeScanningDetector {
+public class BadResultSetAccess extends OpcodeStackDetector {
 
 	private static final Set<String> dbFieldTypesSet = new HashSet<String>() 
 	{
@@ -66,7 +67,6 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 		}
 	};
 
-	private OpcodeStack stack = new OpcodeStack();
 	private BugReporter bugReporter;
 
 	public BadResultSetAccess(BugReporter bugReporter) {
@@ -74,16 +74,10 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 	}
 
 
-	@Override
-		 public void visit(Method obj) {
-		stack.resetForMethodEntry(this);
-		super.visit(obj);
-	}
-
+	
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
-		try {
+
 			if (seen == INVOKEINTERFACE) {
 				String methodName = getNameConstantOperand();
 				String clsConstant = getClassConstantOperand();
@@ -108,9 +102,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 					}
 				}
 			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
+		
 	}
 }
 

@@ -29,12 +29,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
  * equals and hashCode are blocking methods on URL's. Warn about invoking equals or hashCode on them,
  * or defining Set or Maps with them as keys.
  */
-public class URLProblems extends BytecodeScanningDetector {
+public class URLProblems extends OpcodeStackDetector {
 
 	final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", 
 		"Map<Ljava/net/URL",
@@ -69,11 +70,6 @@ public class URLProblems extends BytecodeScanningDetector {
 							HIGH_PRIORITY).addClass(this).addClass(this));
 			}
 	}
-	OpcodeStack stack = new OpcodeStack();
-	@Override
-	public void visit(Method method) {
-	 stack.resetForMethodEntry(this);
-	}
 
 
 	void check(String className, Pattern name, int target, int url) {
@@ -89,7 +85,6 @@ public class URLProblems extends BytecodeScanningDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
@@ -111,6 +106,5 @@ public class URLProblems extends BytecodeScanningDetector {
 						.addCalledMethod(this), this);
 			}
 		}
-		stack.sawOpcode(this,seen);
 	}
 }

@@ -31,33 +31,17 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class BadSyntaxForRegularExpression 
-extends BytecodeScanningDetector {
+extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
 
 	public BadSyntaxForRegularExpression(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-
-
-
-	@Override
-	public void visit(JavaClass obj) {
-	}
-
-	@Override
-	public void visit(Method obj) {
-	}
-
-	OpcodeStack stack = new OpcodeStack();
-	@Override
-	public void visit(Code obj) {
-	stack.resetForMethodEntry(this);
-		super.visit(obj);
-	}
-
+	
 	private void singleDotPatternWouldBeSilly(int stackDepth, boolean ignorePasswordMasking) {
 		if (ignorePasswordMasking && stackDepth != 1) 
 			throw new IllegalArgumentException("Password masking requires stack depth 1, but is " + stackDepth);
@@ -124,7 +108,6 @@ extends BytecodeScanningDetector {
 
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		if (seen == INVOKESTATIC 
 			&& getClassConstantOperand().equals("java/util/regex/Pattern")
 			&& getNameConstantOperand().equals("compile")
@@ -174,7 +157,7 @@ extends BytecodeScanningDetector {
 			singleDotPatternWouldBeSilly(0, false);
 			}
 
-		stack.sawOpcode(this,seen);
+
 	}
 
 }

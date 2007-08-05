@@ -55,11 +55,9 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 	public void visit(Field f) {
 		if (f.getName().equals("this$0")) hasThisDollarZero = true;
 	}
-	OpcodeStack stack = new OpcodeStack();
 	@Override
 		 public void visit(Code obj) {
 		if (hasThisDollarZero) {
-		stack.resetForMethodEntry(this);
 		super.visit(obj);
 		}
 	}
@@ -71,8 +69,6 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 	}
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
-		try {
 		 if (seen != INVOKEVIRTUAL) return;
 		 if (!getClassName().equals(getClassConstantOperand())) return;
 		 XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
@@ -108,9 +104,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		 }
 
 
-		} finally {
-		stack.sawOpcode(this, seen);
-		}
+		
 	}
 
 }

@@ -21,11 +21,13 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+
 import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector implements  StatelessDetector {
+public @java.lang.Deprecated class FindBadCast extends OpcodeStackDetector implements  StatelessDetector {
 
 
 	private HashSet<String> castTo = new HashSet<String>();
@@ -57,22 +59,8 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 
 
 
-	@Override
-		 public void visit(JavaClass obj) {
-	}
 
-	@Override
-		 public void visit(Method obj) {
-	}
-
-	/*
-		public boolean prescreen(ClassContext classContext, Method method) {
-				BitSet bytecodeSet = classContext.getBytecodeSet(method);
-				return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
-		}
-	*/
 	private int parameters;
-	OpcodeStack stack = new OpcodeStack();
 	@Override
 		 public void visit(Code obj) {
 		if (DEBUG)  {
@@ -86,7 +74,6 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		if (DEBUG) {
 			System.out.println(stack);
 			printOpCode(seen);
@@ -229,7 +216,6 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 			castTo.add(to);
 			}
 		}
-		stack.sawOpcode(this,seen);
 
 	}
 

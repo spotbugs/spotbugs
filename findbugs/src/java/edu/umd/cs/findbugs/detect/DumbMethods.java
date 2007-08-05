@@ -52,8 +52,9 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class DumbMethods extends BytecodeScanningDetector  {
+public class DumbMethods extends OpcodeStackDetector  {
 
 	private static final ObjectType CONDITION_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Condition");
 
@@ -89,8 +90,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	}
 
 
-	OpcodeStack stack = new OpcodeStack();
-
+	
 	boolean isSynthetic;
 	@Override
 	public void visit(JavaClass obj) {
@@ -113,8 +113,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	@Override
 		 public void visit(Method method) {
 		String cName = getDottedClassName();
-		stack.resetForMethodEntry(this);
-
+		
 		isPublicStaticVoidMain = method.isPublic() && method.isStatic()
 				&& getMethodName().equals("main")
 				|| cName.toLowerCase().indexOf("benchmark") >= 0;
@@ -141,7 +140,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	boolean freshRandomOneBelowTos = false;
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		String opcodeName = OPCODE_NAMES[seen];
 
 		if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
@@ -719,7 +717,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 
 
 	} finally {
-		stack.sawOpcode(this,seen);
 		prevOpcode = seen;
 	}
 	}

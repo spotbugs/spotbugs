@@ -32,8 +32,9 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
+public class InfiniteRecursiveLoop extends OpcodeStackDetector implements 
 		StatelessDetector {
 
 	private BugReporter bugReporter;
@@ -54,13 +55,6 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-
-
-	@Override
-		 public void visit(JavaClass obj) {
-	}
-
-
 	@Override
 		 public void visit(Method obj) {
 		seenTransferOfControl = false;
@@ -68,11 +62,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		seenReturn = false;
 		seenThrow = false;
 		largestBranchTarget = -1;
-		try {
-		stack.resetForMethodEntry(this);
-		} catch (Throwable e) {
-			throw new RuntimeException("error in " + getFullyQualifiedMethodName() + " " + e.getMessage(), e);
-		}
+		
 		if (DEBUG) {
 			System.out.println();
 			System.out.println(" --- " + getFullyQualifiedMethodName());
@@ -87,8 +77,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		seenTransferOfControl = true;
 	}
 
-	OpcodeStack stack = new OpcodeStack();
-
+	
 	/** Signal an infinite loop if either:
 	 * we see a call to the same method with the same parameters, or
 	 * we see a call to the same (dynamically dispatched method), and there
@@ -96,7 +85,6 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 	 */
 	@Override
 		 public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		if (seenReturn && seenTransferOfControl && seenStateChange)
 			return;
 
@@ -223,7 +211,6 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 			seenStateChange = true;
 			break;
 		}
-		stack.sawOpcode(this, seen);
 	}
 
 }

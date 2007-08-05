@@ -23,27 +23,23 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+
 import org.apache.bcel.classfile.*;
 
-public class UseObjectEquals extends BytecodeScanningDetector implements StatelessDetector {
+public class UseObjectEquals extends OpcodeStackDetector implements StatelessDetector {
 	private BugReporter bugReporter;
-	private OpcodeStack stack = new OpcodeStack();
-
+	
 	public UseObjectEquals(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 
 
-	@Override
-		 public void visit(Method obj) {
-		super.visit(obj);
-		stack.resetForMethodEntry(this);
-	}
+	
 
 	@Override
 		 public void sawOpcode(int seen) {		
-		stack.mergeJumps(this);
 		if ((seen == INVOKEVIRTUAL) 
 		&&   getNameConstantOperand().equals("equals")
 		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
@@ -74,7 +70,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Statele
 				}
 		}
 
-		stack.sawOpcode(this, seen);
+		
 	}
 }
 

@@ -33,9 +33,10 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.Util;
 
-public class FindPuzzlers extends BytecodeScanningDetector {
+public class FindPuzzlers extends OpcodeStackDetector {
 
 
 	BugReporter bugReporter;
@@ -51,7 +52,6 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
 		prevOpCode = NOP;
 		previousMethodInvocation = null;
-		stack.resetForMethodEntry(this);
 		badlyComputingOddState = 0;
 		resetIMulCastLong();
 		imul_distance = 10000;
@@ -72,7 +72,6 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	int badlyComputingOddState;
 	int prevOpCode;
 	XMethod previousMethodInvocation;
-	OpcodeStack stack = new OpcodeStack();
 	boolean isTigerOrHigher;
 
 	@Override
@@ -97,8 +96,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
-
+		
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + ternaryConversionState);
 		if (seen == IMUL) {
 			if (imul_distance != 1) resetIMulCastLong();
@@ -411,7 +409,6 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				}
 
 			}
-		stack.sawOpcode(this,seen);
 		if (seen == INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")  && getNameConstantOperand().equals("<init>")
 				&& getSigConstantOperand().length() == 4
 		) 
