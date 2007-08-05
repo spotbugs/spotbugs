@@ -134,7 +134,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					if (!m.getSignature().equals(m2.getSignature()) 
 							&& removePackageNamesFromSignature(m.getSignature()).equals(
 									removePackageNamesFromSignature(m2.getSignature()))) {
-						String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
+						String pattern = intentional  ?  "NM_VERY_CONFUSING_WRONG_PACKAGE_INTENTIONAL" : "NM_VERY_CONFUSING_WRONG_PACKAGE";
 						
 						Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
 						Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
