@@ -32,8 +32,13 @@ public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
 		public String prefix;
 		int maxClasses;
-		
+		long maxAge;
+		public String inputFileList;
 		RejarClassesForAnalysisCommandLine() {
+			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this");
+			addOption("-inputFileList", "filename", "text file containing names of jar files");
+
+
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
 			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed e.g., edu.umd.cs.)");
 		}
@@ -52,19 +57,28 @@ public class RejarClassesForAnalysis {
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
         	if (option.equals("-prefix")) prefix = argument;
-        	else if (option.equals("-maxClasses"))
+        	else if (option.equals("-inputFileList"))
+				inputFileList = argument;
+			else if (option.equals("-maxClasses"))
         		maxClasses = Integer.parseInt(argument);
+        	else if (option.equals("-maxAge"))
+        		maxAge = System.currentTimeMillis() - (24*60*60*1000L)*Integer.parseInt(argument);
         	else throw new IllegalArgumentException("Unknown option : " + option);
         }
 		
 	}
 
-	public static String [] readFromStandardInput() throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+	public static List<String> readFromStandardInput() throws IOException {
+		return readFrom(new InputStreamReader(System.in));
+	}
+
+	public static List<String> readFrom(Reader r) throws IOException {
+		BufferedReader in = new BufferedReader(r);
 		List<String> lst = new LinkedList<String>();
-		while(true) {
+		while (true) {
 			String s = in.readLine();
-			if (s == null) return lst.toArray(new String[lst.size()]);
+			if (s == null)
+				return lst;
 			lst.add(s);
 		}
 	}
@@ -92,13 +106,24 @@ public class RejarClassesForAnalysis {
 			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream("auxilary.jar")));
 		
 		Set<String> copied = new HashSet<String>();
-		String [] fileList = args;
-		if (fileList.length == 0) fileList = readFromStandardInput();
+		List<String> fileList;
+
+		if (commandLine.inputFileList != null)
+			fileList = readFrom(new FileReader(commandLine.inputFileList));
+		else if (argCount == args.length)
+			fileList = readFromStandardInput();
+		else
+			fileList = Arrays.asList(args).subList(argCount, args.length - 1);
 		for(String fInName : fileList) {
-			System.err.println("Opening " + fInName);
+			File f = new File(fInName);
+			if (f.lastModified() < commandLine.maxAge) {
+				System.err.println("Skipping " + fInName + ", too old ("+new Date(f.lastModified())+")");
+				continue;
+			}
+			System.err.println("Opening " + f);
 			ZipFile zipInputFile;
 			try {
-				zipInputFile = new ZipFile(fInName);
+				zipInputFile = new ZipFile(f);
 			} catch(IOException e) {
 				e.printStackTrace();
 				continue;

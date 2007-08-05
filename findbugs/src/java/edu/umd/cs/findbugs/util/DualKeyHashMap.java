@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author William Pugh
@@ -35,6 +37,15 @@ public class DualKeyHashMap<K1, K2, V>  {
 		return m.get(k2);
 	}
 	
+	public Map<K2, V> get(K1 k1) {
+		Map<K2, V> m = map.get(k1);
+		if (m == null) return Collections.EMPTY_MAP;
+		return m;
+	}
+	
+	public Set<K1> keySet() {
+		return map.keySet();
+	}
 	public V put(K1 k1, K2 k2, V v) {
 		Map<K2, V> m = map.get(k1);
 		if (m == null) {
