@@ -115,7 +115,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					
 					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
 					else if (priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) {
-						intentional = false;
+						intentional = true;
 						priority = NORMAL_PRIORITY;
 					}
 					XFactory xFactory = AnalysisContext.currentXFactory();
