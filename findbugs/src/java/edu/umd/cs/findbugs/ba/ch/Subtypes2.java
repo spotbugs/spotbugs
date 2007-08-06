@@ -179,10 +179,7 @@ public class Subtypes2 {
 	}
 
 	private void addVertexToGraph(ClassDescriptor classDescriptor, ClassVertex vertex) {
-		if (classDescriptorToVertexMap.get(classDescriptor) != null) {
-			if (true) return;
-			throw new IllegalStateException("Can't find class vertex for " + classDescriptor);
-		}
+		assert classDescriptorToVertexMap.get(classDescriptor) == null;
 
 		if (DEBUG) {
 			System.out.println("Adding " + classDescriptor.toDottedClassName() + " to inheritance graph");
@@ -722,12 +719,15 @@ public class Subtypes2 {
 			return false;
 		}
 		
-		ClassVertex supertypeVertex;
-		try {
-			supertypeVertex = resolveClassVertex(supertypeDescriptor);
-		} catch (ClassNotFoundException e) {
-			supertypeVertex = addClassVertexForMissingClass(supertypeDescriptor, isInterfaceEdge);
+		ClassVertex supertypeVertex = classDescriptorToVertexMap.get(supertypeDescriptor);
+		if (supertypeVertex == null) {
+			try {
+				supertypeVertex = resolveClassVertex(supertypeDescriptor);
+			} catch (ClassNotFoundException e) {
+				supertypeVertex = addClassVertexForMissingClass(supertypeDescriptor, isInterfaceEdge);
+			}
 		}
+		assert supertypeVertex != null;
 		
 		return visitor.visitEdge(vertex.getClassDescriptor(), vertex.getXClass(), supertypeDescriptor, supertypeVertex.getXClass());
 	}
