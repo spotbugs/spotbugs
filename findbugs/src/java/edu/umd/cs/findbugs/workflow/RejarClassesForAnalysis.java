@@ -30,9 +30,9 @@ import edu.umd.cs.findbugs.config.CommandLine;
  */
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
-		public String prefix;
+		public String prefix = "";
 		int maxClasses;
-		long maxAge;
+		long maxAge = Long.MIN_VALUE;
 		public String inputFileList;
 		RejarClassesForAnalysisCommandLine() {
 			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this");
