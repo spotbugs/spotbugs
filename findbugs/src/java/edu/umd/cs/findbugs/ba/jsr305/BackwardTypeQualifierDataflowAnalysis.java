@@ -157,7 +157,8 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		TypeQualifierAnnotation returnValueAnnotation = null;
 		if (xmethod.isReturnTypeReferenceType()) {
 			returnValueAnnotation =
-				TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
+				//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
+				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, typeQualifierValue);
 		}
 		
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -190,7 +191,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	private void modelFieldStore(Location location) throws DataflowAnalysisException {
 		// Model field stores
 		XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
-		TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(writtenField, typeQualifierValue);
+		TypeQualifierAnnotation tqa =
+			//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(writtenField, typeQualifierValue);
+			TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(writtenField, typeQualifierValue);
 		When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 		
 		// The ValueNumberFrame *before* the FieldInstruction should

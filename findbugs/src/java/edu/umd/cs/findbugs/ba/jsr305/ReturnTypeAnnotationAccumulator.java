@@ -51,7 +51,7 @@ class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulato
 
 	@Override
 	protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
-		return TypeQualifierApplications.getDirectOrDefaultTypeQualifierAnnotation(xm, getTypeQualifierValue());
+		return TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, getTypeQualifierValue());
     }
 
 }

@@ -51,6 +51,17 @@ public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMeth
 	 */
 	@Override
 	protected boolean visitOverriddenMethod(XMethod xmethod) {
+		
+		// If xmethod is the method where the visitation begins,
+		// then we don't want to try to compute the effective annotation
+		// (since that would cause an infinite recursion).
+		// Instead, continue to supertype methods.
+		// XXX: hack for now
+		if ((this instanceof ReturnTypeAnnotationAccumulator) &&
+				xmethod == getXmethod()) {
+			return true;
+		}
+		
 		// See if matching method is annotated
 		TypeQualifierAnnotation tqa = lookupAnnotation(xmethod);
 		if (tqa == null) {

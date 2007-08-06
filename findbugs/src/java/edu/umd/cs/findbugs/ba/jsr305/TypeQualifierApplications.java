@@ -46,9 +46,28 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
 	
-	static Map<AnnotatedObject, Collection<AnnotationValue>> objectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
-	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> parameterAnnotations 
-	= new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
+	/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
+	static Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations =
+		new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
+	
+	/** Type qualifier annotations applied directly to method parameters. */
+	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
+		new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
+
+	private static class EffectiveTypeQualifierAnnotation {
+		TypeQualifierAnnotation typeQualifierAnnotation;
+		
+		public EffectiveTypeQualifierAnnotation(TypeQualifierAnnotation typeQualifierAnnotation) {
+			this.typeQualifierAnnotation = typeQualifierAnnotation;
+		}
+	}
+
+	/**
+	 * Map of TypeQualifierValues to maps containing, for each AnnotatedObject,
+	 * the effective TypeQualifierAnnotation (if any) for that AnnotatedObject.
+	 */
+	static Map<TypeQualifierValue, Map<AnnotatedObject, EffectiveTypeQualifierAnnotation>> effectiveObjectAnnotations =
+		new HashMap<TypeQualifierValue, Map<AnnotatedObject,EffectiveTypeQualifierAnnotation>>();
 	
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -58,12 +77,12 @@ public class TypeQualifierApplications {
 	 *         applied to this AnnotatedObject
 	 */
 	 static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
-		Collection<AnnotationValue> result = objectAnnotations.get(m);
+		Collection<AnnotationValue> result = directObjectAnnotations.get(m);
 		if (result != null) return result;
 		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifierNicknames(m.getAnnotations());
 		if (result.size() == 0) result = Collections.emptyList();
-		objectAnnotations.put(m, result);
+		directObjectAnnotations.put(m, result);
 		return result;
 	}
 	
@@ -76,12 +95,12 @@ public class TypeQualifierApplications {
 	 *         applied to this parameter
 	 */
 	static Collection<AnnotationValue> getDirectAnnotation(XMethod m, int parameter) {
-		Collection<AnnotationValue> result = parameterAnnotations.get(m, parameter);
+		Collection<AnnotationValue> result = directParameterAnnotations.get(m, parameter);
 		if (result != null) return result;
 		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifierNicknames(m.getParameterAnnotations(parameter));
 		if (result.size() == 0) result = Collections.emptyList();
-		parameterAnnotations.put(m, parameter, result);
+		directParameterAnnotations.put(m, parameter, result);
 		return result;
 	}
 	
@@ -120,7 +139,7 @@ public class TypeQualifierApplications {
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of annotated object
 	 */
-	public static void getApplicableApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
+	public static void getDirectApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o);
 		for(AnnotationValue v : values) {
 			Object a = v.getValue("applyTo");
@@ -174,7 +193,7 @@ public class TypeQualifierApplications {
 		AnnotatedObject outer = o.getContainingScope();
 		if (outer != null) 
 			getApplicableScopedApplications(result, outer, e);
-		getApplicableApplications(result, o, e);
+		getDirectApplications(result, o, e);
 	}
 
 	/**
@@ -351,27 +370,27 @@ public class TypeQualifierApplications {
 		return accumulator.getResult();
 	}
 
-	/**
-	 * Get the applicable TypeQualifierAnnotation matching given
-	 * TypeQualifierValue for given AnnotatedObject.
-	 * Returns null if there is no applicable annotation of the
-	 * given TypeQualifierValue for this object.
-	 * 
-	 * @param o                  an AnnotatedObject
-	 * @param typeQualifierValue a TypeQualifierValue 
-	 * @return the TypeQualifierAnnotation matching the AnnotatedObject/TypeQualifierValue,
-	 *         or null if there is no matching TypeQualifierAnnotation
-	 */
-	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
-		if (DEBUG) {
-			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
-		}
-		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, typeQualifierValue);
-		if (DEBUG) {
-			System.out.println("  => Answer: " + lookupResult);
-		}
-		return lookupResult.getEffectiveTypeQualifierAnnotation();
-	}
+//	/**
+//	 * Get the applicable TypeQualifierAnnotation matching given
+//	 * TypeQualifierValue for given AnnotatedObject.
+//	 * Returns null if there is no applicable annotation of the
+//	 * given TypeQualifierValue for this object.
+//	 * 
+//	 * @param o                  an AnnotatedObject
+//	 * @param typeQualifierValue a TypeQualifierValue 
+//	 * @return the TypeQualifierAnnotation matching the AnnotatedObject/TypeQualifierValue,
+//	 *         or null if there is no matching TypeQualifierAnnotation
+//	 */
+//	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(AnnotatedObject o, TypeQualifierValue typeQualifierValue) {
+//		if (DEBUG) {
+//			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
+//		}
+//		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, typeQualifierValue);
+//		if (DEBUG) {
+//			System.out.println("  => Answer: " + lookupResult);
+//		}
+//		return lookupResult.getEffectiveTypeQualifierAnnotation();
+//	}
 	
 	/**
 	 * Get the applicable TypeQualifierAnnotation matching given
@@ -395,4 +414,116 @@ public class TypeQualifierApplications {
 		}
 		return lookupResult.getEffectiveTypeQualifierAnnotation();
 	}
+	
+	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
+			AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+		if (DEBUG) {
+			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
+		}
+		
+		Map<AnnotatedObject, EffectiveTypeQualifierAnnotation> map = effectiveObjectAnnotations.get(typeQualifierValue);
+		if (map == null) {
+			map = new HashMap<AnnotatedObject, EffectiveTypeQualifierAnnotation>();
+			effectiveObjectAnnotations.put(typeQualifierValue, map);
+		}
+		
+		// Check cached answer
+		EffectiveTypeQualifierAnnotation result = map.get(o);
+		
+		if (result == null) {
+			// Compute answer
+			
+			TypeQualifierAnnotation tqa;
+
+			// See if there is a direct application
+			tqa = getDirectTypeQualifierAnnotation(o, typeQualifierValue);
+
+			// If it's an instance method, check for an inherited annotation
+			if (tqa == null && (o instanceof XMethod) && !((XMethod) o).isStatic()) {
+				tqa = getInheritedTypeQualifierAnnotation((XMethod) o, typeQualifierValue);
+			}
+
+			// Check for a default (outer scope) annotation
+			if (tqa == null) {
+				tqa = getDefaultTypeQualifierAnnotation(o, typeQualifierValue);
+			}
+			
+			// Cache computed answer
+			result = new EffectiveTypeQualifierAnnotation(tqa);
+			map.put(o, result);
+		}
+		if (DEBUG) {
+			System.out.println("  => Answer: " + result.typeQualifierAnnotation);
+		}
+
+		// Return cached answer
+		return result.typeQualifierAnnotation;
+	}
+
+
+	/**
+	 * Get a directly-applied TypeQualifierAnnotation on given AnnotatedObject.
+	 * 
+	 * @param o                  an AnnotatedObject
+	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
+	 * @return directly-applied TypeQualifierAnnotation, or null if there is no
+	 *         such annotation on the AnnotatedObject
+	 */
+	private static TypeQualifierAnnotation getDirectTypeQualifierAnnotation(AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+		TypeQualifierAnnotation result;
+		
+		Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+		getDirectApplications(applications, o, o.getElementType());
+		
+		Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
+		result = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+		
+		return result;
+	}
+
+	private static TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod o, TypeQualifierValue typeQualifierValue) {
+		assert !o.isStatic();
+		
+		ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, o);
+		try {
+			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(o.getClassDescriptor(), accumulator);
+			return accumulator.getResult().getEffectiveTypeQualifierAnnotation();
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			return null;
+		}
+	}
+
+	/**
+	 * @param o
+	 * @param typeQualifierValue
+	 * @param result
+	 * @return
+	 */
+	private static TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+		TypeQualifierAnnotation result = null;
+
+		ElementType elementType = o.getElementType();
+		while (o.getContainingScope() != null) {
+			o = o.getContainingScope();
+			Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+			getDirectApplications(applications, o, elementType);
+			Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
+			result = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+			if (result != null) {
+				// Great - found an outer scope with a relevant annotation
+				break;
+			}
+		}
+		return result;
+	}
+	
+//	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
+//			XMethod xmethod,
+//			int parameter,
+//			TypeQualifierValue typeQualifierValue) {
+//	}
 }
