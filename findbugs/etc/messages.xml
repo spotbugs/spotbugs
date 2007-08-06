@@ -3056,7 +3056,7 @@ You should try hard to eliminate one of them, unless you are forced to have both
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="NM_VERY_CONFUSING_WRONG_PACKAGE">
+  <BugPattern type="NM_WRONG_PACKAGE">
     <ShortDescription>Method doesn't override method in superclass due to wrong package for parameter</ShortDescription>
     <LongDescription>{1} doesn't override method in superclass because parameter type {4} doesn't match superclass parameter type {5}</LongDescription>
     <Details>
@@ -3086,7 +3086,7 @@ types are <code>Foo</code>'s from different packages.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="NM_VERY_CONFUSING_WRONG_PACKAGE_INTENTIONAL">
+  <BugPattern type="NM_WRONG_PACKAGE_INTENTIONAL">
     <ShortDescription>Method intentionally doesn't override method in superclass due to wrong package for parameter</ShortDescription>
     <LongDescription>{1} doesn't override method in superclass because parameter type {4} doesn't match superclass parameter type {5}</LongDescription>
     <Details>
