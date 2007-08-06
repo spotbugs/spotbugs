@@ -21,6 +21,7 @@ ShowHelpAndExit() {
 fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
 fb_mainclass="edu.umd.cs.findbugs.LaunchAppropriateUI"
 user_jvmargs=''
+ea_arg=''
 debug_arg=''
 conservespace_arg=''
 workhard_arg=''
@@ -45,6 +46,10 @@ while [ $# -gt 0 ]; do
 	-jvmArgs)
 		shift
 		user_jvmargs="$1"
+		;;
+		
+	-ea)
+		ea_arg='-ea'
 		;;
 
 	-maxHeap)
@@ -98,7 +103,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props"
+fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props $ea_arg"
 fb_maxheap="-Xmx${maxheap}m"
 
 # Extra JVM args for MacOSX.
