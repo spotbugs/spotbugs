@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
 		public String prefix = "";
-		int maxClasses;
+		int maxClasses = Integer.MAX_VALUE;
 		long maxAge = Long.MIN_VALUE;
 		public String inputFileList;
 		RejarClassesForAnalysisCommandLine() {

@@ -49,10 +49,10 @@ public class CountClassVersions {
 		}
 	}
 	static class CountClassVersionsCommandLine extends CommandLine {
-		public String prefix;
+		public String prefix = "";
 		public String inputFileList;
 
-		long maxAge;
+		long maxAge = Long.MIN_VALUE;
 
 		CountClassVersionsCommandLine() {
 			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this");
