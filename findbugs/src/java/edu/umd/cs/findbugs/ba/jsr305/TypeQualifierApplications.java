@@ -182,7 +182,7 @@ public class TypeQualifierApplications {
 			// Instance method: accumulate return value annotations in supertypes, if any
 			XMethod xmethod = (XMethod) o;
 			ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, xmethod);
-			return accumulateSupertypeAnnotations(xmethod, accumulator);
+			return accumulateSupertypeAnnotations(accumulator);
 		} else {
 			// Annotated object is not an instance method, so we don't have to check supertypes
 			// for inherited annotations
@@ -219,7 +219,7 @@ public class TypeQualifierApplications {
 		if (o instanceof XMethod && !((XMethod) o).isStatic()) {
 			XMethod xmethod = (XMethod) o;
 			ParameterAnnotationAccumulator accumulator = new ParameterAnnotationAccumulator(typeQualifierValue, xmethod, parameter);
-			return accumulateSupertypeAnnotations(xmethod, accumulator);
+			return accumulateSupertypeAnnotations(accumulator);
 		} else {
 			TypeQualifierAnnotationLookupResult result = new TypeQualifierAnnotationLookupResult();
 			TypeQualifierAnnotation tqa = getDirectOrDefaultTypeQualifierAnnotation(o, parameter, typeQualifierValue);
@@ -236,9 +236,9 @@ public class TypeQualifierApplications {
 	}
 
 	private static TypeQualifierAnnotationLookupResult accumulateSupertypeAnnotations(
-			XMethod xmethod,
 			AbstractMethodAnnotationAccumulator accumulator) {
 		try {
+			XMethod xmethod = accumulator.getXmethod();
 			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), accumulator);
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
