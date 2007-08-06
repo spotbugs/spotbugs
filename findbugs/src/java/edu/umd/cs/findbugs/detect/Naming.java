@@ -43,9 +43,22 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.props.AbstractWarningProperty;
+import edu.umd.cs.findbugs.props.PriorityAdjustment;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Naming extends PreorderVisitor implements Detector {
+	public static class NamingProperty extends AbstractWarningProperty {
+		private NamingProperty(String name, PriorityAdjustment priorityAdjustment) {
+			super(name, priorityAdjustment);
+		}
+		public static final NamingProperty METHOD_IS_CALLED = new NamingProperty(
+				"CONFUSING_METHOD_IS_CALLED", PriorityAdjustment.LOWER_PRIORITY);
+		public static final NamingProperty METHOD_IS_DEPRECATED = new NamingProperty(
+				"CONFUSING_METHOD_IS_DEPRECATED", PriorityAdjustment.LOWER_PRIORITY);
+
+	}
 	String baseClassName;
 	boolean classIsPublicOrProtected;
 
@@ -94,6 +107,8 @@ public class Naming extends PreorderVisitor implements Detector {
 			try {
 				if (confusingMethodNames(m, m2)
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
+					WarningPropertySet propertySet = new WarningPropertySet();
+					
 					int priority = HIGH_PRIORITY;
 					boolean intentional = false;
 					try {
@@ -118,18 +133,24 @@ public class Naming extends PreorderVisitor implements Detector {
 					}
 					
 					XFactory xFactory = AnalysisContext.currentXFactory();
-					if (!intentional && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
-					else if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
+					if (!intentional && AnalysisContext.currentXFactory().isCalled(m)) 
+						propertySet.addProperty(NamingProperty.METHOD_IS_CALLED);
+					else if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) 
+						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
 					
+					
+					priority = propertySet.computePriority(priority);
 					
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
 					String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
 					
-					bugReporter.reportBug(new BugInstance(this, pattern, priority)
+					BugInstance bug = new BugInstance(this, pattern, priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
 					.addClass(m2.getClassName())
-					.addMethod(m2));
+					.addMethod(m2);
+					propertySet.decorateBugInstance(bug);
+					bugReporter.reportBug(bug);
 					}
 					if (!m.getSignature().equals(m2.getSignature()) 
 							&& removePackageNamesFromSignature(m.getSignature()).equals(
@@ -142,12 +163,14 @@ public class Naming extends PreorderVisitor implements Detector {
 							String p = s.next();
 							String p2 = s2.next();
 							if (!p.equals(p2)) {
-								bugReporter.reportBug(new BugInstance(this, pattern, priority)
+								BugInstance bug = new BugInstance(this, pattern, priority)
 								.addClass(m.getClassName())
 								.addMethod(m)
 								.addClass(m2.getClassName())
 								.addMethod(m2)
-								.addFoundAndExpectedType(p, p2)
+								.addFoundAndExpectedType(p, p2);
+								propertySet.decorateBugInstance(bug);
+								bugReporter.reportBug(bug
 								);
 								
 							}

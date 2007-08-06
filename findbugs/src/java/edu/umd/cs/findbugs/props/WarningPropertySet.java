@@ -29,13 +29,13 @@ import java.util.*;
  * 
  * @author David Hovemeyer
  */
-public class WarningPropertySet implements Cloneable {
-	private Map<WarningProperty, Object> map;
+public class WarningPropertySet<T extends WarningProperty> implements Cloneable {
+	private Map<T, Object> map;
 
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer("{ ");
-		for (Map.Entry<WarningProperty, Object> entry : map.entrySet()) {
+		for (Map.Entry<T, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();
 			buf.append("  ");
@@ -54,7 +54,7 @@ public class WarningPropertySet implements Cloneable {
 	 * Constructor Creates empty object.
 	 */
 	public WarningPropertySet() {
-		this.map = new HashMap<WarningProperty, Object>();
+		this.map = new HashMap<T, Object>();
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class WarningPropertySet implements Cloneable {
 	 *            the WarningProperty
 	 * @return this object
 	 */
-	public WarningPropertySet addProperty(WarningProperty prop) {
+	public WarningPropertySet<T> addProperty(T prop) {
 		map.put(prop, Boolean.TRUE);
 		return this;
 	}
@@ -86,7 +86,7 @@ public class WarningPropertySet implements Cloneable {
 	 *            the WarningProperty
 	 * @return this object
 	 */
-	public WarningPropertySet removeProperty(WarningProperty prop) {
+	public WarningPropertySet<T> removeProperty(T prop) {
 		map.remove(prop);
 		return this;
 	}
@@ -100,7 +100,7 @@ public class WarningPropertySet implements Cloneable {
 	 *            the attribute value
 	 * @return this object
 	 */
-	public WarningPropertySet setProperty(WarningProperty prop, String value) {
+	public WarningPropertySet<T> setProperty(T prop, String value) {
 		map.put(prop, value);
 		return this;
 	}
@@ -113,7 +113,7 @@ public class WarningPropertySet implements Cloneable {
 	 * @param value
 	 *            the attribute value
 	 */
-	public void setProperty(WarningProperty prop, Boolean value) {
+	public void setProperty(T prop, Boolean value) {
 		map.put(prop, value);
 	}
 
@@ -124,7 +124,7 @@ public class WarningPropertySet implements Cloneable {
 	 *            the WarningProperty
 	 * @return true if the set contains the WarningProperty, false if not
 	 */
-	public boolean containsProperty(WarningProperty prop) {
+	public boolean containsProperty(T prop) {
 		return map.keySet().contains(prop);
 	}
 
@@ -139,7 +139,7 @@ public class WarningPropertySet implements Cloneable {
 	 * @return true if the set contains the WarningProperty and has an attribute
 	 *         equal to the one given, false otherwise
 	 */
-	public boolean checkProperty(WarningProperty prop, Object value) {
+	public boolean checkProperty(T prop, Object value) {
 		Object attribute = getProperty(prop);
 		return (attribute != null && attribute.equals(value));
 	}
@@ -153,7 +153,7 @@ public class WarningPropertySet implements Cloneable {
 	 * @return the WarningProperty's attribute value, or null if the set does
 	 *         not contain the WarningProperty
 	 */
-	public Object getProperty(WarningProperty prop) {
+	public Object getProperty(T prop) {
 		return map.get(prop);
 	}
 
@@ -174,7 +174,7 @@ public class WarningPropertySet implements Cloneable {
 		int aLittleBitLower = 0;
 		int priority = basePriority;
 		if (!relaxedReporting) {
-			for (WarningProperty warningProperty : map.keySet()) {
+			for (T warningProperty : map.keySet()) {
 				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
 				if (adj == PriorityAdjustment.FALSE_POSITIVE)
 					falsePositive = true;
@@ -243,7 +243,7 @@ public class WarningPropertySet implements Cloneable {
 	 *            the BugInstance
 	 */
 	public void decorateBugInstance(BugInstance bugInstance) {
-		for (Map.Entry<WarningProperty, Object> entry : map.entrySet()) {
+		for (Map.Entry<T, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();
 			if (attribute == null)

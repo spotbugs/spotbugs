@@ -212,7 +212,7 @@ public class FindDeadLocalStores implements Detector {
 
 			BugInstance pendingBugReportAboutOverwrittenParameter = null;
 			try {
-				WarningPropertySet propertySet = new WarningPropertySet();
+				WarningPropertySet<DeadLocalStoreProperty> propertySet = new WarningPropertySet<DeadLocalStoreProperty>();
 				// Skip any instruction which is not a store
 				if (!isStore(location))
 					continue;
