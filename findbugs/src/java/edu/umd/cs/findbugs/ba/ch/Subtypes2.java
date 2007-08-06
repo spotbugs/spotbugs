@@ -610,57 +610,109 @@ public class Subtypes2 {
 	}
 	
 	/**
-	 * Starting at the class named by the given ClassDescriptor,
-	 * traverse the inheritance graph, exploring the entire fan-out
-	 * of all supertypes (both class and interface).
+	 * An in-progress traversal of one path from a class or interface
+	 * to java.lang.Object.
+	 */
+	private static class SupertypeTraversalPath {
+		ClassVertex next;
+		Set<ClassDescriptor> seen;
+		
+		public SupertypeTraversalPath(ClassVertex next) {
+			this.next = next;
+			this.seen = new HashSet<ClassDescriptor>();
+		}
+		
+		public ClassVertex getNext() {
+			return next;
+		}
+		
+		public boolean hasBeenSeen(ClassDescriptor classDescriptor) {
+			return seen.contains(classDescriptor);
+		}
+
+		public void markSeen(ClassDescriptor classDescriptor) {
+			seen.add(classDescriptor);
+		}
+
+		public void setNext(ClassVertex next) {
+			assert !hasBeenSeen(next.getClassDescriptor());
+			this.next = next;
+		}
+		
+		public SupertypeTraversalPath fork(ClassVertex next) {
+			SupertypeTraversalPath dup = new SupertypeTraversalPath(null);
+			dup.seen.addAll(this.seen);
+			dup.setNext(next);
+			return dup;
+		}
+
+	}
+	
+	/**
+	 * Starting at the class or interface named by the given ClassDescriptor,
+	 * traverse the inheritance graph, exploring all paths from
+	 * the class or interface to java.lang.Object.
 	 * 
 	 * @param start   ClassDescriptor naming the class where the traversal should start
 	 * @param visitor an InheritanceGraphVisitor
 	 * @throws ClassNotFoundException 
 	 */
 	public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor) throws ClassNotFoundException {
-		ClassVertex startVertex = resolveClassVertex(start);
-
-		LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
-		workList.addLast(startVertex);
+		LinkedList<SupertypeTraversalPath> workList = new LinkedList<SupertypeTraversalPath>();
 		
-		Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
-		seen.add(startVertex.getClassDescriptor());
+		ClassVertex startVertex = resolveClassVertex(start);
+		workList.addLast(new SupertypeTraversalPath(startVertex));
+		
 		while (!workList.isEmpty()) {
-			ClassVertex vertex = workList.removeFirst();
+			SupertypeTraversalPath cur = workList.removeFirst();
+			
+			ClassVertex vertex = cur.getNext();
+			assert !cur.hasBeenSeen(vertex.getClassDescriptor());
+			cur.markSeen(vertex.getClassDescriptor());
 			
 			if (!visitor.visitClass(vertex.getClassDescriptor(), vertex.getXClass())) {
+				// Visitor doesn't want to continue on this path
 				continue;
 			}
 			
 			if (!vertex.isResolved()) {
+				// Unknown class - so, we don't know its immediate supertypes
 				continue;
 			}
-			
-			ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
-			if (!vertex.isInterface() && visitEdge(vertex, superclassDescriptor, false, visitor)) {
-				assert !seen.contains(superclassDescriptor) : " Already seen " + superclassDescriptor;
-				addToWorkList(workList, superclassDescriptor);
-				seen.add(superclassDescriptor);
+
+			// Advance to direct superclass
+			if (traverseEdge(vertex, vertex.getXClass().getSuperclassDescriptor(), false, visitor)) {
+				addToWorkList(workList, cur, vertex.getXClass().getSuperclassDescriptor());
 			}
 			
+			// Advance to directly-implemented interfaces
 			for (ClassDescriptor ifaceDesc : vertex.getXClass().getInterfaceDescriptorList()) {
-				if (visitEdge(vertex, ifaceDesc, true, visitor)
-						&& !seen.contains(ifaceDesc)) {
-					addToWorkList(workList, ifaceDesc);
-					seen.add(ifaceDesc);
+				if (traverseEdge(vertex, ifaceDesc, true, visitor)) {
+					addToWorkList(workList, cur, ifaceDesc);
 				}
 			}
 		}
 	}
 
-	private void addToWorkList(LinkedList<ClassVertex> workList, ClassDescriptor supertypeDescriptor) {
-		ClassVertex next = classDescriptorToVertexMap.get(supertypeDescriptor);
-		assert next != null;
-		workList.addLast(next);
+	private void addToWorkList(
+			LinkedList<SupertypeTraversalPath> workList,
+			SupertypeTraversalPath curPath,
+			ClassDescriptor supertypeDescriptor) {
+		ClassVertex vertex = classDescriptorToVertexMap.get(supertypeDescriptor);
+		
+		// The vertex should already have been added to the graph
+		assert vertex != null;
+		
+		if (curPath.hasBeenSeen(vertex.getClassDescriptor())) {
+			// This can only happen when the inheritance graph has a cycle
+			return;
+		}
+		
+		SupertypeTraversalPath newPath = curPath.fork(vertex);
+		workList.addLast(newPath);
 	}
 
-	private boolean visitEdge(
+	private boolean traverseEdge(
 			ClassVertex vertex,
 			@CheckForNull ClassDescriptor supertypeDescriptor,
 			boolean isInterfaceEdge,
