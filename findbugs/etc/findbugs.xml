@@ -656,7 +656,7 @@
             speed="fast"
             hidden="true" />
   
-  <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="" />
+  <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="TESTING" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
             speed="fast"
@@ -806,8 +806,8 @@
   <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_INTENTIONAL" category="BAD_PRACTICE" />
-  <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_WRONG_PACKAGE" category="CORRECTNESS" />
-  <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_WRONG_PACKAGE_INTENTIONAL" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_WRONG_PACKAGE_INTENTIONAL" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
