@@ -95,32 +95,32 @@ public class Naming extends PreorderVisitor implements Detector {
 				if (confusingMethodNames(m, m2)
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
 					int priority = HIGH_PRIORITY;
+					boolean intentional = false;
 					try {
 					JavaClass clazz = Repository.lookupClass(m.getClassName());
-					if (definedIn(clazz, m2))
-						priority+=2;
+					if (definedIn(clazz, m2)) {
+						intentional = true;
+						priority = NORMAL_PRIORITY;
+					}
 					for(JavaClass i : clazz.getAllInterfaces()) 
-						if (definedIn(i, m)) 
-							priority+=2;
+						if (definedIn(i, m))  {
+							priority = NORMAL_PRIORITY;
+							intentional = true;
+						}
 					for(JavaClass s : clazz.getSuperClasses()) 
-						if (definedIn(s, m)) 
-							priority+=2;
+						if (definedIn(s, m)) {
+							intentional = true;
+							priority = NORMAL_PRIORITY;
+						}
 					} catch (ClassNotFoundException e) {
 						priority++;
 						AnalysisContext.reportMissingClass(e);
 					}
 					
-					
-					boolean intentional = false;
-					
-					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
-					else if (priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) {
-						intentional = true;
-						priority = NORMAL_PRIORITY;
-					}
 					XFactory xFactory = AnalysisContext.currentXFactory();
-					if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
-
+					if (!intentional && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
+					else if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
+					
 					
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
 					String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
