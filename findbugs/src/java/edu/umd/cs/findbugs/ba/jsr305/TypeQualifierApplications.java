@@ -54,8 +54,12 @@ public class TypeQualifierApplications {
 	static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
 		new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
 
+	/**
+	 * Result from computing the "effective"
+	 * TypeQualifierAnnotation on some AnnotatedObject or method parameter.
+	 */
 	private static class EffectiveTypeQualifierAnnotation {
-		TypeQualifierAnnotation typeQualifierAnnotation;
+		@CheckForNull TypeQualifierAnnotation typeQualifierAnnotation;
 		
 		public EffectiveTypeQualifierAnnotation(TypeQualifierAnnotation typeQualifierAnnotation) {
 			this.typeQualifierAnnotation = typeQualifierAnnotation;
@@ -68,6 +72,13 @@ public class TypeQualifierApplications {
 	 */
 	static Map<TypeQualifierValue, Map<AnnotatedObject, EffectiveTypeQualifierAnnotation>> effectiveObjectAnnotations =
 		new HashMap<TypeQualifierValue, Map<AnnotatedObject,EffectiveTypeQualifierAnnotation>>();
+
+	/**
+	 * Map of TypeQualifierValues to maps containing, for each XMethod/parameter,
+	 * the effective TypeQualifierAnnotation (if any) for that XMethod/parameter.
+	 */
+	static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>> effectiveParameterAnnotations =
+		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,EffectiveTypeQualifierAnnotation>>();
 	
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -113,7 +124,7 @@ public class TypeQualifierApplications {
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 */
-	static void getApplicableApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
+	static void getDirectApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		ElementType e = ElementType.PARAMETER;
 		for(AnnotationValue v : values) {
@@ -225,7 +236,7 @@ public class TypeQualifierApplications {
 	static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
 		ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
-		getApplicableApplications(result, o, parameter);
+		getDirectApplications(result, o, parameter);
 	}
 
 	/**
@@ -242,7 +253,7 @@ public class TypeQualifierApplications {
 		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
 		ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
-		getApplicableApplications(result, o, parameter);
+		getDirectApplications(result, o, parameter);
 		return TypeQualifierAnnotation.getValues(result);
 	}
 
@@ -392,28 +403,28 @@ public class TypeQualifierApplications {
 //		return lookupResult.getEffectiveTypeQualifierAnnotation();
 //	}
 	
-	/**
-	 * Get the applicable TypeQualifierAnnotation matching given
-	 * TypeQualifierValue for given method parameter.
-	 * Returns null if there is no applicable annotation of the
-	 * given TypeQualifierValue for this parameter.
-	 * 
-	 * @param o                  an XMethod
-	 * @param parameter          parameter number (0 for first declared parameter)
-	 * @param typeQualifierValue a TypeQualifierValue 
-	 * @return the TypeQualifierAnnotation matching the parameter,
-	 *         or null if there is no matching TypeQualifierAnnotation
-	 */
-	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
-		if (DEBUG) {
-			System.out.println("Looking up application of " + typeQualifierValue + " on " + o + " parameter " + parameter);
-		}
-		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, parameter, typeQualifierValue);
-		if (DEBUG) {
-			System.out.println("  => Answer: " + lookupResult);
-		}
-		return lookupResult.getEffectiveTypeQualifierAnnotation();
-	}
+//	/**
+//	 * Get the applicable TypeQualifierAnnotation matching given
+//	 * TypeQualifierValue for given method parameter.
+//	 * Returns null if there is no applicable annotation of the
+//	 * given TypeQualifierValue for this parameter.
+//	 * 
+//	 * @param o                  an XMethod
+//	 * @param parameter          parameter number (0 for first declared parameter)
+//	 * @param typeQualifierValue a TypeQualifierValue 
+//	 * @return the TypeQualifierAnnotation matching the parameter,
+//	 *         or null if there is no matching TypeQualifierAnnotation
+//	 */
+//	public static @CheckForNull TypeQualifierAnnotation getApplicableApplicationConsideringSupertypes(XMethod o, int parameter, TypeQualifierValue typeQualifierValue) {
+//		if (DEBUG) {
+//			System.out.println("Looking up application of " + typeQualifierValue + " on " + o + " parameter " + parameter);
+//		}
+//		TypeQualifierAnnotationLookupResult lookupResult = lookupTypeQualifierAnnotationConsideringSupertypes(o, parameter, typeQualifierValue);
+//		if (DEBUG) {
+//			System.out.println("  => Answer: " + lookupResult);
+//		}
+//		return lookupResult.getEffectiveTypeQualifierAnnotation();
+//	}
 	
 	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
 			AnnotatedObject o,
@@ -521,9 +532,88 @@ public class TypeQualifierApplications {
 		return result;
 	}
 	
-//	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
-//			XMethod xmethod,
-//			int parameter,
-//			TypeQualifierValue typeQualifierValue) {
-//	}
+	public static @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
+			XMethod xmethod,
+			int parameter,
+			TypeQualifierValue typeQualifierValue) {
+		
+		DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation> map =
+			effectiveParameterAnnotations.get(typeQualifierValue);
+		if (map == null) {
+			map = new DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>();
+			effectiveParameterAnnotations.put(typeQualifierValue, map);
+		}
+		
+		// Check cached answer
+		EffectiveTypeQualifierAnnotation result = map.get(xmethod, parameter);
+		if (result == null) {
+			// Compute answer
+			
+			TypeQualifierAnnotation tqa;
+			
+			// Check direct application
+			tqa = getDirectTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+			
+			// If it's an instance method, check for inherited annotation
+			if (tqa == null && !xmethod.isStatic()) {
+				tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+			}
+			
+			// Check for default (outer scope) annotation
+			if (tqa == null) {
+				tqa = getDefaultTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+			}
+			
+			// Cache answer
+			result = new EffectiveTypeQualifierAnnotation(tqa);
+			map.put(xmethod, parameter, result);
+		}
+		
+		// Return cached answer
+		return result.typeQualifierAnnotation;
+	}
+
+	private static @CheckForNull TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
+			TypeQualifierValue typeQualifierValue) {
+		Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+		getDirectApplications(applications, xmethod, parameter);
+		
+		Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
+		return findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+	}
+
+	private static @CheckForNull TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
+			TypeQualifierValue typeQualifierValue) {
+		ParameterAnnotationAccumulator accumulator = new ParameterAnnotationAccumulator(typeQualifierValue, xmethod, parameter);
+		try {
+			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), accumulator);
+			return accumulator.getResult().getEffectiveTypeQualifierAnnotation();
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			return null;
+		}
+	}
+
+	private static @CheckForNull TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(
+			XMethod xmethod,
+			int parameter,
+			TypeQualifierValue typeQualifierValue) {
+		AnnotatedObject o = xmethod;
+
+		while (o.getContainingScope() != null) {
+			o = o.getContainingScope();
+
+			Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+			getDirectApplications(applications, o, ElementType.PARAMETER);
+
+			Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
+			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+			if (tqa != null) {
+				// Found matching annotation in outer scope
+				return tqa;
+			}
+		}
+
+		return null;
+	}
 }

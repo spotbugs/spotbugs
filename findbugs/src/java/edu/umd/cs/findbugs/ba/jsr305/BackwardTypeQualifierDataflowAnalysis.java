@@ -221,7 +221,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
 			if (SignatureParser.isReferenceType(paramSig)) {
 
-				TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
 						calledMethod,
 						param,
 						typeQualifierValue);

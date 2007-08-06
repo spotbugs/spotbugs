@@ -56,9 +56,7 @@ public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMeth
 		// then we don't want to try to compute the effective annotation
 		// (since that would cause an infinite recursion).
 		// Instead, continue to supertype methods.
-		// XXX: hack for now
-		if ((this instanceof ReturnTypeAnnotationAccumulator) &&
-				xmethod == getXmethod()) {
+		if (xmethod == getXmethod()) {
 			return true;
 		}
 		

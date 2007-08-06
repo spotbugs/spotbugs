@@ -160,7 +160,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
 			// Get the TypeQualifierAnnotation for this parameter
 			SourceSinkInfo info;
-			TypeQualifierAnnotation tqa = TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, param, typeQualifierValue);
+			TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, param, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			ValueNumber vn = vnaFrameAtEntry.getValue(slotOffset + firstParamSlot);
 			info = new SourceSinkInfo(SourceSinkType.PARAMETER, cfg.getLocationAtEntry(), vn, when);
