@@ -111,7 +111,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			FieldVariable field = (FieldVariable) binding.getVariable();
 			XField xfield =
 					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
-			if (xfield == null || (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
+			if (xfield == null) return;
+			if (false && (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
 				return;
 
 			// XXX: for now, ignore lazy initialization of instance fields
@@ -125,7 +126,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			}
 
 			// Ignore non-reference fields
-			if (!xfield.getSignature().startsWith("[")) {
+			if (!xfield.getSignature().startsWith("[") && !xfield.getSignature().startsWith("L")) {
 				if (DEBUG) System.out.println("Ignoring non-reference field " + xfield.getName());
 				return;
 			}
