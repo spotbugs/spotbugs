@@ -207,6 +207,10 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
 				priority = NORMAL_PRIORITY;
+			if ((xfield.getAccessFlags() & Constants.ACC_VOLATILE) == 0)
+				priority--;
+			else if (xfield.getSignature().startsWith("["))
+				priority--;
 
 			// Report the bug.
 			InstructionHandle start = match.getLabeledInstruction("start");
