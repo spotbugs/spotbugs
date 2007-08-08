@@ -67,7 +67,7 @@ public class TestGenericObjectType extends TestCase {
 		assertEquals(obj.getClassName(), underlyingClass);
 		assertEquals(obj.getTypeCategory(), typeCategory);
 
-		if (typeCategory == TypeCategory.PARAMETERS) {
+		if (typeCategory == TypeCategory.PARAMETERIZED) {
 			assertTrue(obj.hasParameters());
 			assertTrue(obj.getNumParameters() == parameters.size());
 			for (int i=0; i<obj.getNumParameters(); i++)
@@ -110,7 +110,7 @@ public class TestGenericObjectType extends TestCase {
 				"Ljava/util/List<Ljava/lang/Comparable;>;", 
 				"java.util.List<java.lang.Comparable>", 
 				"java.util.List", 
-				GenericUtilities.TypeCategory.PARAMETERS, 
+				GenericUtilities.TypeCategory.PARAMETERIZED, 
 				null, 
 				null,
 				GenericUtilities.getTypes("Ljava/lang/Comparable;")
@@ -123,7 +123,7 @@ public class TestGenericObjectType extends TestCase {
 				"LDummyClass<Ljava/lang/Comparable;TE;>;", 
 				"DummyClass<java.lang.Comparable,E>", 
 				"DummyClass", 
-				GenericUtilities.TypeCategory.PARAMETERS, 
+				GenericUtilities.TypeCategory.PARAMETERIZED, 
 				null, 
 				null,
 				Arrays.asList(

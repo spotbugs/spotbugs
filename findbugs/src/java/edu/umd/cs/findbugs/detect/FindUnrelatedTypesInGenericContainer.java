@@ -467,9 +467,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
 		}
 
+		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) {
+			return IncompatibleTypes.getPriorityForAssumingCompatible(((GenericObjectType)parmType).getObjectType(), argType);
+		}
+		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) {
+			return IncompatibleTypes.getPriorityForAssumingCompatible(parmType, ((GenericObjectType)argType).getObjectType());
+		}
 		// -~- Parameter Types: compare base type then parameters
-		if ( parmCat == TypeCategory.PARAMETERS && 
-				argCat  == TypeCategory.PARAMETERS ) {
+		if ( parmCat == TypeCategory.PARAMETERIZED && 
+				argCat  == TypeCategory.PARAMETERIZED ) {
 			GenericObjectType parmGeneric = (GenericObjectType) parmType;
 			GenericObjectType argGeneric  = (GenericObjectType) argType;
 
@@ -483,8 +489,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		//     are incompatible. (We already know neither is java.lang.Object)
 		if (false) {
 			// not true. Consider class Foo extends ArrayList<String>
-			if ( parmCat == TypeCategory.PARAMETERS ^ 
-					argCat  == TypeCategory.PARAMETERS ) {
+			if ( parmCat == TypeCategory.PARAMETERIZED ^ 
+					argCat  == TypeCategory.PARAMETERIZED ) {
 				return IncompatibleTypes.SEEMS_OK; // fix this when we know what we are doing here
 			}
 		}

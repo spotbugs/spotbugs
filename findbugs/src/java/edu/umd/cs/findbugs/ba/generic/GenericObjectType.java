@@ -76,9 +76,9 @@ public class GenericObjectType extends ObjectType {
 	 */
 	public GenericUtilities.TypeCategory getTypeCategory() {
 		if (hasParameters() && variable == null && extension == null) {
-			return GenericUtilities.TypeCategory.PARAMETERS;
+			return GenericUtilities.TypeCategory.PARAMETERIZED;
 
-		} else if(!hasParameters() && variable != null && extension == null){
+		} else if(!hasParameters() && variable != null && extension == null) {
 			if (variable.equals("*")) return GenericUtilities.TypeCategory.WILDCARD;
 			else return GenericUtilities.TypeCategory.TYPE_VARIABLE;
 
