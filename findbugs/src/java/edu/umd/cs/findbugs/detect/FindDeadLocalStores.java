@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
@@ -38,8 +39,10 @@ import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.IndexedInstruction;
@@ -53,6 +56,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
+import org.apache.tools.ant.util.ClasspathUtils;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -60,6 +64,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -73,6 +78,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
@@ -243,8 +249,9 @@ public class FindDeadLocalStores implements Detector {
 					System.out.println("    Store at " + sourceLineAnnotation.getStartLine() + "@" +
 							location.getHandle().getPosition() + " is " +
 							(storeLive ? "live" : "dead"));
+					System.out.println("Previous is: " + 	location.getHandle().getPrev());
 				}
-
+			
 				// Note source lines of live stores.
 				if (storeLive && sourceLineAnnotation.getStartLine() > 0) {
 					liveStoreSourceLineSet.set(sourceLineAnnotation.getStartLine());
@@ -257,7 +264,7 @@ public class FindDeadLocalStores implements Detector {
 					continue;
 				propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, name);
 
-				boolean isParameter = local < localsThatAreParameters;
+							boolean isParameter = local < localsThatAreParameters;
 				if (isParameter)
 					propertySet.addProperty(DeadLocalStoreProperty.IS_PARAMETER);
 
@@ -288,6 +295,43 @@ public class FindDeadLocalStores implements Detector {
 				InstructionHandle prevInsHandle = location.getHandle().getPrev();
 				if (prevInsHandle != null) {
 					Instruction prevIns = prevInsHandle.getInstruction();
+					boolean foundDeadClassInitialization = false;
+					String initializationOf = null;
+					if (prevIns instanceof GETSTATIC) {
+							GETSTATIC getStatic = (GETSTATIC)prevIns;
+							ConstantPoolGen cpg = methodGen.getConstantPool();
+							foundDeadClassInitialization =  getStatic.getFieldName(cpg).startsWith("class$")
+									&& getStatic.getSignature(cpg).equals("Ljava/lang/Class;");
+							for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
+								Location location2 = j.next();
+								if (location2.getHandle().getPosition() + 15 == location.getHandle().getPosition()) {
+									Instruction  instruction2 = location2.getHandle().getInstruction();
+									if (instruction2 instanceof LDC) {
+										String n = (String) ((LDC)instruction2).getValue(methodGen.getConstantPool());
+										initializationOf = ClassName.toSignature(n);
+									}
+								}}
+
+						}
+					else if (prevIns instanceof LDC) {
+						LDC ldc = (LDC) prevIns;
+						Type t = ldc.getType(methodGen.getConstantPool());
+						if (t.getSignature().equals("Ljava/lang/Class;")) {
+							ConstantClass v = (ConstantClass) ldc.getValue(methodGen.getConstantPool());
+							initializationOf = ClassName.toSignature(v.getBytes(javaClass.getConstantPool()));
+							foundDeadClassInitialization = true;
+						}
+						
+					}
+					if (foundDeadClassInitialization) {
+						BugInstance bugInstance = new BugInstance(this,  "DLS_DEAD_STORE_OF_CLASS_LITERAL", 
+								Priorities.NORMAL_PRIORITY).addClassAndMethod(
+										methodGen,
+										javaClass.getSourceFileName()).add(lvAnnotation).addType(initializationOf);
+						accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
+						continue;
+					}
+
 					if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction)
 						propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_CONSTANT);
 					else if (prevIns instanceof ACONST_NULL) {

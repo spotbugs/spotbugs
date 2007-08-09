@@ -507,7 +507,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
             speed="moderate"
-            reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN,DLS_DEAD_LOCAL_STORE_OF_NULL" />
+            reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN,DLS_DEAD_LOCAL_STORE_OF_NULL,DLS_DEAD_STORE_OF_CLASS_LITERAL" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields"
             speed="fast"
@@ -939,6 +939,7 @@
   <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"/>
+  <BugPattern abbrev="DLS" type="DLS_DEAD_STORE_OF_CLASS_LITERAL" category="CORRECTNESS"/>
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_OF_NULL" category="STYLE"/>
   <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"/>
