@@ -95,7 +95,7 @@ public abstract class FindBugsTestCase extends TestCase {
 		(byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x09,
 	};
 
-    private final class TestRunnerThread extends Thread {
+    private static final class TestRunnerThread extends Thread {
 	    private RunnableWithExceptions runnable;
 	    private JUnitDetectorAdapter detectorAdapter;
 

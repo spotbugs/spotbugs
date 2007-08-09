@@ -25,11 +25,11 @@ import edu.umd.cs.findbugs.TigerSubstitutes;
  * @author pugh
  */
 public class MultiMap<K,  V> {
-	final Class<? extends Collection> containerClass;
+	final Class<? extends Collection<V>> containerClass;
+   @SuppressWarnings("unchecked")
    public  MultiMap(Class<? extends Collection> c) {
-		containerClass = c;
+		containerClass = (Class<? extends Collection<V>>) c;
 	}
-	@SuppressWarnings("unchecked")
 	private Collection<V> makeCollection() {
 		try {
 			return containerClass.newInstance();

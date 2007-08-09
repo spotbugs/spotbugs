@@ -107,7 +107,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			try {
 				if (confusingMethodNames(m, m2)
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
-					WarningPropertySet propertySet = new WarningPropertySet();
+					WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
 					
 					int priority = HIGH_PRIORITY;
 					boolean intentional = false;

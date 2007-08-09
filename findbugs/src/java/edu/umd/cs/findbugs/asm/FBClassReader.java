@@ -57,7 +57,7 @@ public class FBClassReader extends ClassReader {
         return labels[offset];    
     }
 
-    private class MyClassAdapter extends ClassAdapter {
+    private static class MyClassAdapter extends ClassAdapter {
 
         public MyClassAdapter(ClassVisitor cv) {
             super(cv);

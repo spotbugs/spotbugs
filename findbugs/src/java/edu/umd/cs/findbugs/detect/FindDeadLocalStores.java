@@ -502,7 +502,7 @@ public class FindDeadLocalStores implements Detector {
 	 * @param pc
 	 *            program counter value of the instruction
 	 */
-	private void checkLocalVariableName(LocalVariableTable lvt, int local, int pc, WarningPropertySet propertySet) {
+	private void checkLocalVariableName(LocalVariableTable lvt, int local, int pc, WarningPropertySet<DeadLocalStoreProperty> propertySet) {
 		if (lvt != null) {
 			LocalVariable lv = lvt.getLocalVariable(local, pc);
 			if (lv != null) {

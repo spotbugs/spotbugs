@@ -96,6 +96,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
+import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.Util;
@@ -547,7 +548,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (dangerousCallTargetList.isEmpty())
 			return;
 
-		WarningPropertySet propertySet = new WarningPropertySet();
+		WarningPropertySet<NullArgumentWarningProperty> propertySet = new WarningPropertySet<NullArgumentWarningProperty>();
 
 		// See if there are any safe targets
 		Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
@@ -628,7 +629,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	}
 
 	private void decorateWarning(Location location,
-			WarningPropertySet propertySet, BugInstance warning) {
+			WarningPropertySet<?> propertySet, BugInstance warning) {
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet,
 					classContext, method, location);
@@ -638,7 +639,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 	private void addParamAnnotations(Location location,
 			BitSet definitelyNullArgSet, BitSet violatedParamSet,
-			WarningPropertySet propertySet, BugInstance warning)   {
+			WarningPropertySet<NullArgumentWarningProperty> propertySet, BugInstance warning)   {
 		ValueNumberFrame vnaFrame = null;
 		try {
 			vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
@@ -758,7 +759,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	public void foundNullDeref(ClassContext classContext, Location location,
 			ValueNumber valueNumber, IsNullValue refValue,
 			ValueNumberFrame vnaFrame) {
-		WarningPropertySet propertySet = new WarningPropertySet();
+		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 			return;
 
@@ -817,7 +818,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 	}
 
-	private void reportNullDeref(WarningPropertySet propertySet,
+	private void reportNullDeref(WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext, Method method, Location location,
 			String type, int priority, BugAnnotation variable) {
 
