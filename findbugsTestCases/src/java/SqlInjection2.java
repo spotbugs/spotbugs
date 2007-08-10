@@ -21,5 +21,9 @@ public class SqlInjection2 {
 		query.executeQuery("select * from " + request.getParameter("ANIMAL"));
 	}
 	
+	public void trueHigherPriorityPositive(Statement query) throws SQLException {
+		query.executeQuery("select * from zoon where animal='" + request.getParameter("ANIMAL") +"'");
+	}
+	
 }
 
