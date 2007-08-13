@@ -709,7 +709,11 @@ public class FindBugs2 implements IFindBugsEngine {
 						}
 					}};
 				List<ClassDescriptor> result = sortByCallGraph(classCollection, outEdges);
-				
+
+				if (false) {
+				//
+				// DHH - as far as I can tell, this code does not do anything
+				//
 				Map<ClassDescriptor, Integer> pos = new HashMap<ClassDescriptor, Integer>();
 				int phase = 0;
 				for(ClassDescriptor c : result) {
@@ -724,6 +728,7 @@ public class FindBugs2 implements IFindBugsEngine {
 					if (false) System.out.println(p + " " + c);
 				}
 				int next = 0;
+				}
 				
 				classCollection = result;
 				}
