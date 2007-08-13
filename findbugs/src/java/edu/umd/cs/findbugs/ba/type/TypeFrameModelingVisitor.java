@@ -397,7 +397,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				frame.pushValue(resultType);
 				frame.setExact(frame.getStackLocation(0), topIsExact);
 				return true;
-			} else if (signature.equals("()[Ljava/lang/Object;")) {
+			} else if (signature.equals("()[Ljava/lang/Object;")  && isCollection(target)) {
 				consumeStack(obj);
 				pushReturnType(obj);
 				frame.setExact(frame.getStackLocation(0), true);
