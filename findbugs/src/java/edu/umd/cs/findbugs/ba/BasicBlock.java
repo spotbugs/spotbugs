@@ -27,6 +27,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
@@ -70,8 +71,10 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		nullCheckInstructionSet.set(Constants.SASTORE);
 		nullCheckInstructionSet.set(Constants.MONITORENTER);
 		nullCheckInstructionSet.set(Constants.ARRAYLENGTH);
-		// nullCheckInstructionSet.set(Constants.MONITOREXIT);
-		//nullCheckInstructionSet.set(Constants.ATHROW);
+		//nullCheckInstructionSet.set(Constants.MONITOREXIT);
+		if (!SystemProperties.getBoolean("npe.noAthrow")) {
+			nullCheckInstructionSet.set(Constants.ATHROW);
+		}
 		// Any others?
 	}
 
