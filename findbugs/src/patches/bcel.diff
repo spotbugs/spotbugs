@@ -1,3 +1,16 @@
+
+Property changes on: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2
+___________________________________________________________________
+Name: svn:ignore
+   - bin
+velocity.log
+*~
+   + bin
+velocity.log
+*~
+bcel.jar
+
+
 Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.classpath
 ===================================================================
 --- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.classpath	(revision 510968)
@@ -39,7 +52,7 @@ Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml
 --- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml	(revision 0)
 +++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml	(revision 0)
 @@ -0,0 +1,39 @@
-+<project name="bcel" default="build">
++<project name="bcel" default="jar">
 +
 +	<property name="src.dir" value="src/java"/>
 +	<property name="classes.dir" value="eclipse"/>
@@ -78,6 +91,213 @@ Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml
 +</project>
 +
 +<!-- vim:set ts=4: -->
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/AbstractLocalVariableTable.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/AbstractLocalVariableTable.java	(revision 0)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/AbstractLocalVariableTable.java	(revision 0)
+@@ -0,0 +1,187 @@
++/*
++ * Copyright  2000-2004 The Apache Software Foundation
++ *
++ *  Licensed under the Apache License, Version 2.0 (the "License"); 
++ *  you may not use this file except in compliance with the License.
++ *  You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License. 
++ *
++ */
++package org.apache.bcel.classfile;
++
++import java.io.DataInputStream;
++import java.io.DataOutputStream;
++import java.io.IOException;
++import org.apache.bcel.Constants;
++
++/**
++ * This class represents colection of local variables in a
++ * method. This attribute is contained in the <em>Code</em> attribute.
++ *
++ * @version $Id: LocalVariableTable.java 386056 2006-03-15 11:31:56Z tcurdt $
++ * @author  <A HREF="mailto:m.dahm@gmx.de">M. Dahm</A>
++ * @see     Code
++ * @see LocalVariable
++ */
++abstract public class AbstractLocalVariableTable extends Attribute {
++
++    private int local_variable_table_length; // Table of local
++    private LocalVariable[] local_variable_table; // variables
++
++
++    /**
++     * Initialize from another object. Note that both objects use the same
++     * references (shallow copy). Use copy() for a physical copy.
++     */
++    public AbstractLocalVariableTable(AbstractLocalVariableTable c) {
++        this(c.getNameIndex(), c.getLength(), c.getLocalVariableTable(), c.getConstantPool());
++    }
++
++
++    /**
++     * @param name_index Index in constant pool to `LocalVariableTable'
++     * @param length Content length in bytes
++     * @param local_variable_table Table of local variables
++     * @param constant_pool Array of constants
++     */
++    public AbstractLocalVariableTable(int name_index, int length, LocalVariable[] local_variable_table,
++            ConstantPool constant_pool) {
++        super(Constants.ATTR_LOCAL_VARIABLE_TABLE, name_index, length, constant_pool);
++        setLocalVariableTable(local_variable_table);
++    }
++
++
++    /**
++     * Construct object from file stream.
++     * @param name_index Index in constant pool
++     * @param length Content length in bytes
++     * @param file Input stream
++     * @param constant_pool Array of constants
++     * @throws IOException
++     */
++    AbstractLocalVariableTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool)
++            throws IOException {
++        this(name_index, length, (LocalVariable[]) null, constant_pool);
++        local_variable_table_length = (file.readUnsignedShort());
++        local_variable_table = new LocalVariable[local_variable_table_length];
++        for (int i = 0; i < local_variable_table_length; i++) {
++            local_variable_table[i] = new LocalVariable(file, constant_pool);
++        }
++    }
++
++
++
++
++    /**
++     * Dump local variable table attribute to file stream in binary format.
++     *
++     * @param file Output file stream
++     * @throws IOException
++     */
++    public final void dump( DataOutputStream file ) throws IOException {
++        super.dump(file);
++        file.writeShort(local_variable_table_length);
++        for (int i = 0; i < local_variable_table_length; i++) {
++            local_variable_table[i].dump(file);
++        }
++    }
++
++
++    /**
++     * @return Array of local variables of method.
++     */
++    public final LocalVariable[] getLocalVariableTable() {
++        return local_variable_table;
++    }
++
++
++    /** 
++     * @return first matching variable using index
++     * 
++     * @param index the variable slot
++     * 
++     * @return the first LocalVariable that matches the slot or null if not found
++     * 
++     * @deprecated since 5.2 because multiple variables can share the
++     *             same slot, use getLocalVariable(int index, int pc) instead.
++     */
++    public final LocalVariable getLocalVariable( int index ) {
++        for (int i = 0; i < local_variable_table_length; i++) {
++            if (local_variable_table[i].getIndex() == index) {
++                return local_variable_table[i];
++            }
++        }
++        return null;
++    }
++
++
++    /** 
++     * @return matching variable using index when variable is used at supplied pc
++     * 
++     * @param index the variable slot
++     * @param pc the current pc that this variable is alive
++     * 
++     * @return the LocalVariable that matches or null if not found
++     */
++    public final LocalVariable getLocalVariable( int index, int pc ) {
++        for (int i = 0; i < local_variable_table_length; i++) {
++            if (local_variable_table[i].getIndex() == index) {
++                int start_pc = local_variable_table[i].getStartPC();
++                int end_pc = start_pc + local_variable_table[i].getLength();
++                if ((pc >= start_pc) && (pc < end_pc)) {
++                    return local_variable_table[i];
++                }
++            }
++        }
++        return null;
++    }
++
++
++    public final void setLocalVariableTable( LocalVariable[] local_variable_table ) {
++        this.local_variable_table = local_variable_table;
++        local_variable_table_length = (local_variable_table == null)
++                ? 0
++                : local_variable_table.length;
++    }
++
++
++    /**
++     * @return String representation.
++     */
++    public final String toString() {
++        StringBuffer buf = new StringBuffer("");
++        for (int i = 0; i < local_variable_table_length; i++) {
++            buf.append(local_variable_table[i].toString());
++            if (i < local_variable_table_length - 1) {
++                buf.append('\n');
++            }
++        }
++        return buf.toString();
++    }
++
++
++    /**
++     * @return deep copy of this attribute
++     */
++    public Attribute copy( ConstantPool _constant_pool ) {
++        AbstractLocalVariableTable c = (AbstractLocalVariableTable) clone();
++        c.local_variable_table = new LocalVariable[local_variable_table_length];
++        for (int i = 0; i < local_variable_table_length; i++) {
++            c.local_variable_table[i] = local_variable_table[i].copy();
++        }
++        c.constant_pool = _constant_pool;
++        return c;
++    }
++
++
++    public final int getTableLength() {
++        return local_variable_table_length;
++    }
++}
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Attribute.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Attribute.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Attribute.java	(working copy)
+@@ -159,7 +159,9 @@
+                 return new LineNumberTable(name_index, length, file, constant_pool);
+             case Constants.ATTR_LOCAL_VARIABLE_TABLE:
+                 return new LocalVariableTable(name_index, length, file, constant_pool);
+-            case Constants.ATTR_INNER_CLASSES:
++            case Constants.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
++                return new LocalVariableTypeTable(name_index, length, file, constant_pool);
++           case Constants.ATTR_INNER_CLASSES:
+                 return new InnerClasses(name_index, length, file, constant_pool);
+             case Constants.ATTR_SYNTHETIC:
+                 return new Synthetic(name_index, length, file, constant_pool);
 Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Constant.java
 ===================================================================
 --- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Constant.java	(revision 510968)
@@ -200,6 +420,35 @@ Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apa
      }
  
  
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/DescendingVisitor.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/DescendingVisitor.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/DescendingVisitor.java	(working copy)
+@@ -185,6 +185,9 @@
+         }
+         stack.pop();
+     }
++    public void visitLocalVariableTypeTable( LocalVariableTypeTable table ) {
++        
++    }
+ 
+ 
+     public void visitStackMap( StackMap table ) {
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/EmptyVisitor.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/EmptyVisitor.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/EmptyVisitor.java	(working copy)
+@@ -158,4 +158,10 @@
+ 
+     public void visitStackMapEntry( StackMapEntry obj ) {
+     }
++
++
++    public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
++        // TODO Auto-generated method stub
++        
++    }
+ }
 Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LineNumber.java
 ===================================================================
 --- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LineNumber.java	(revision 510968)
@@ -262,6 +511,234 @@ Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apa
      }
  
  
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTable.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTable.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTable.java	(working copy)
+@@ -30,11 +30,7 @@
+  * @see     Code
+  * @see LocalVariable
+  */
+-public class LocalVariableTable extends Attribute {
+-
+-    private int local_variable_table_length; // Table of local
+-    private LocalVariable[] local_variable_table; // variables
+-
++public class LocalVariableTable extends AbstractLocalVariableTable {
+ 
+     /**
+      * Initialize from another object. Note that both objects use the same
+@@ -53,8 +49,7 @@
+      */
+     public LocalVariableTable(int name_index, int length, LocalVariable[] local_variable_table,
+             ConstantPool constant_pool) {
+-        super(Constants.ATTR_LOCAL_VARIABLE_TABLE, name_index, length, constant_pool);
+-        setLocalVariableTable(local_variable_table);
++        super(name_index,length, local_variable_table, constant_pool);
+     }
+ 
+ 
+@@ -68,12 +63,7 @@
+      */
+     LocalVariableTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool)
+             throws IOException {
+-        this(name_index, length, (LocalVariable[]) null, constant_pool);
+-        local_variable_table_length = (file.readUnsignedShort());
+-        local_variable_table = new LocalVariable[local_variable_table_length];
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            local_variable_table[i] = new LocalVariable(file, constant_pool);
+-        }
++       super(name_index,length, file, constant_pool);
+     }
+ 
+ 
+@@ -87,111 +77,4 @@
+     public void accept( Visitor v ) {
+         v.visitLocalVariableTable(this);
+     }
+-
+-
+-    /**
+-     * Dump local variable table attribute to file stream in binary format.
+-     *
+-     * @param file Output file stream
+-     * @throws IOException
+-     */
+-    public final void dump( DataOutputStream file ) throws IOException {
+-        super.dump(file);
+-        file.writeShort(local_variable_table_length);
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            local_variable_table[i].dump(file);
+-        }
+-    }
+-
+-
+-    /**
+-     * @return Array of local variables of method.
+-     */
+-    public final LocalVariable[] getLocalVariableTable() {
+-        return local_variable_table;
+-    }
+-
+-
+-    /** 
+-     * @return first matching variable using index
+-     * 
+-     * @param index the variable slot
+-     * 
+-     * @return the first LocalVariable that matches the slot or null if not found
+-     * 
+-     * @deprecated since 5.2 because multiple variables can share the
+-     *             same slot, use getLocalVariable(int index, int pc) instead.
+-     */
+-    public final LocalVariable getLocalVariable( int index ) {
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            if (local_variable_table[i].getIndex() == index) {
+-                return local_variable_table[i];
+-            }
+-        }
+-        return null;
+-    }
+-
+-
+-    /** 
+-     * @return matching variable using index when variable is used at supplied pc
+-     * 
+-     * @param index the variable slot
+-     * @param pc the current pc that this variable is alive
+-     * 
+-     * @return the LocalVariable that matches or null if not found
+-     */
+-    public final LocalVariable getLocalVariable( int index, int pc ) {
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            if (local_variable_table[i].getIndex() == index) {
+-                int start_pc = local_variable_table[i].getStartPC();
+-                int end_pc = start_pc + local_variable_table[i].getLength();
+-                if ((pc >= start_pc) && (pc < end_pc)) {
+-                    return local_variable_table[i];
+-                }
+-            }
+-        }
+-        return null;
+-    }
+-
+-
+-    public final void setLocalVariableTable( LocalVariable[] local_variable_table ) {
+-        this.local_variable_table = local_variable_table;
+-        local_variable_table_length = (local_variable_table == null)
+-                ? 0
+-                : local_variable_table.length;
+-    }
+-
+-
+-    /**
+-     * @return String representation.
+-     */
+-    public final String toString() {
+-        StringBuffer buf = new StringBuffer("");
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            buf.append(local_variable_table[i].toString());
+-            if (i < local_variable_table_length - 1) {
+-                buf.append('\n');
+-            }
+-        }
+-        return buf.toString();
+-    }
+-
+-
+-    /**
+-     * @return deep copy of this attribute
+-     */
+-    public Attribute copy( ConstantPool _constant_pool ) {
+-        LocalVariableTable c = (LocalVariableTable) clone();
+-        c.local_variable_table = new LocalVariable[local_variable_table_length];
+-        for (int i = 0; i < local_variable_table_length; i++) {
+-            c.local_variable_table[i] = local_variable_table[i].copy();
+-        }
+-        c.constant_pool = _constant_pool;
+-        return c;
+-    }
+-
+-
+-    public final int getTableLength() {
+-        return local_variable_table_length;
+-    }
+ }
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTypeTable.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTypeTable.java	(revision 0)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LocalVariableTypeTable.java	(revision 0)
+@@ -0,0 +1,22 @@
++package org.apache.bcel.classfile;
++
++import java.io.DataInputStream;
++import java.io.IOException;
++
++public class LocalVariableTypeTable extends AbstractLocalVariableTable {
++
++    public LocalVariableTypeTable(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
++        super(name_index, length, file, constant_pool);
++    }
++    
++    /**
++     * Called by objects that are traversing the nodes of the tree implicitely
++     * defined by the contents of a Java class. I.e., the hierarchy of methods,
++     * fields, attributes, etc. spawns a tree of objects.
++     *
++     * @param v Visitor object
++     */
++    public void accept( Visitor v ) {
++        v.visitLocalVariableTypeTable(this);
++    }
++}
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Visitor.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Visitor.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Visitor.java	(working copy)
+@@ -103,6 +103,7 @@
+ 
+ 
+     public void visitLocalVariableTable( LocalVariableTable obj );
++    public void visitLocalVariableTypeTable( LocalVariableTypeTable obj );
+ 
+ 
+     public void visitMethod( Method obj );
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/Constants.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/Constants.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/Constants.java	(working copy)
+@@ -729,13 +729,16 @@
+   public static final byte ATTR_PMG                           			= 9;
+   public static final byte ATTR_SIGNATURE                     			= 10;
+   public static final byte ATTR_STACK_MAP                     			= 11;
+-  public static final byte ATTR_RUNTIMEVISIBLE_ANNOTATIONS    			= 12;
+-  public static final byte ATTR_RUNTIMEINVISIBLE_ANNOTATIONS  			= 13;
+-  public static final byte ATTR_RUNTIMEVISIBLE_PARAMETER_ANNOTATIONS 	= 14;
+-  public static final byte ATTR_RUNTIMEINVISIBLE_PARAMETER_ANNOTATIONS 	= 15;
+-  public static final byte ATTR_ANNOTATION_DEFAULT                      = 16;
++  public static final byte ATTR_LOCAL_VARIABLE_TYPE_TABLE                    = 12;
++  public static final byte ATTR_RUNTIMEVISIBLE_ANNOTATIONS    			= 13;
++  public static final byte ATTR_RUNTIMEINVISIBLE_ANNOTATIONS  			= 14;
++  public static final byte ATTR_RUNTIMEVISIBLE_PARAMETER_ANNOTATIONS 	= 15;
++  public static final byte ATTR_RUNTIMEINVISIBLE_PARAMETER_ANNOTATIONS 	= 16;
++  public static final byte ATTR_ANNOTATION_DEFAULT                      = 17;
++ 
++  
+ 
+-  public static final short KNOWN_ATTRIBUTES = 12;//should be 17
++  public static final short KNOWN_ATTRIBUTES = 13;//should be 17
+ 
+   public static final String[] ATTRIBUTE_NAMES = {
+     "SourceFile", "ConstantValue", "Code", "Exceptions",
+@@ -741,7 +744,7 @@
+     "SourceFile", "ConstantValue", "Code", "Exceptions",
+     "LineNumberTable", "LocalVariableTable",
+     "InnerClasses", "Synthetic", "Deprecated",
+-    "PMGClass", "Signature", "StackMap", 
++    "PMGClass", "Signature", "StackMap", "LocalVariableTypeTable", 
+     "RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations",
+     "RuntimeVisibleParameterAnnotations", "RuntimeInvisibleParameterAnnotations",
+     "AnnotationDefault"
 Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ArrayType.java
 ===================================================================
 --- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ArrayType.java	(revision 510968)
