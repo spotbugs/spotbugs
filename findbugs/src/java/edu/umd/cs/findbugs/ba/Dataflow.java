@@ -27,7 +27,6 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
 
 /**
  * Perform dataflow analysis on a method using a control flow graph.
