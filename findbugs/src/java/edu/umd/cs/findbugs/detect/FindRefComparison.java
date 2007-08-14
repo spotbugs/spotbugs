@@ -778,7 +778,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-			return;
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
