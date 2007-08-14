@@ -82,7 +82,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
 						getMethodName().equals("finalize") && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addCalledMethod(this).describe("METHOD_CALLED")
+					.addCalledMethod(this)
 					.addSourceLine(this, getPC()));
 		if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize"))
 			sawSuperFinalize = true;
