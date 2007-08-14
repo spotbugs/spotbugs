@@ -70,6 +70,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
+	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
 
 	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
@@ -673,15 +674,22 @@ public class FindBugs2 implements IFindBugsEngine {
 	 */
 	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
+		
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
+		
 		int [] classesPerPass = new int[executionPlan.getNumPasses()];
-		classesPerPass[0] = referencedClassSet .size();
-		for(int i = 0; i < classesPerPass.length; i++)
+		classesPerPass[0] = referencedClassSet.size();
+		for(int i = 0; i < classesPerPass.length; i++) {
 			classesPerPass[i] = i == 0 ? referencedClassSet.size() : appClassList.size();
+		}
 		progress.predictPassCount(classesPerPass);
+		
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
-
+			
+			// The first pass is generally a non-reporting pass which
+			// gathers information about referenced classes.
+			boolean isNonReportingFirstPass = multiplePasses && passCount == 0;
 
 			// Instantiate the detectors
 			Detector2[] detectorList = pass.instantiateDetector2sInPass(bugReporter);
@@ -689,49 +697,30 @@ public class FindBugs2 implements IFindBugsEngine {
 			// If there are multiple passes, then on the first pass,
 			// we apply detectors to all classes referenced by the application classes.
 			// On subsequent passes, we apply detector only to application classes.
-			Collection<ClassDescriptor> classCollection = (multiplePasses && passCount == 0)
+			Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass)
 					? referencedClassSet 
 					: appClassList;
 			if (DEBUG) {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
-			if (passCount > 0) {
+			
+			if (!isNonReportingFirstPass) {
 				OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
-
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
-						XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
-						return classNameAndInfo.getReferencedClassDescriptorList();
+							XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
+							return classNameAndInfo.getReferencedClassDescriptorList();
 						} catch  (CheckedAnalysisException e2) {
 							AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
 							return TigerSubstitutes.emptyList();
 
 						}
-					}};
+					}
+				};
 				List<ClassDescriptor> result = sortByCallGraph(classCollection, outEdges);
 
-				if (false) {
-				//
-				// DHH - as far as I can tell, this code does not do anything
-				//
-				Map<ClassDescriptor, Integer> pos = new HashMap<ClassDescriptor, Integer>();
-				int phase = 0;
-				for(ClassDescriptor c : result) {
-					int p = -1;
-					for(ClassDescriptor dependsOn : outEdges.getOutEdges(c)) {
-						Integer x = pos.get(dependsOn);
-						if (x != null)
-							p = Math.max(p, x);
-					}
-					p++;
-					pos.put(c, p);
-					if (false) System.out.println(p + " " + c);
-				}
-				int next = 0;
-				}
-				
 				classCollection = result;
-				}
+			}
 			progress.startAnalysis(classCollection.size());
 
 			for (ClassDescriptor classDescriptor : classCollection) {
@@ -739,7 +728,10 @@ public class FindBugs2 implements IFindBugsEngine {
 					System.out.println("Class " + classDescriptor);
 				}
 
-				if (!classScreener.matches(classDescriptor.toResourceName())) {
+				// Check to see if class is excluded by the class screener.
+				// In general, we do not want to screen classes from the
+				// first pass, even if they would otherwise be excluded.
+				if ((SCREEN_FIRST_PASS_CLASSES || !isNonReportingFirstPass) && !classScreener.matches(classDescriptor.toResourceName())) {
 					if (DEBUG) {
 						System.out.println("*** Excluded by class screener");
 					}
