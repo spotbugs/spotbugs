@@ -43,6 +43,9 @@ public class MultiMap<K,  V> {
 	public Collection<? extends K> keySet() {
 		return map.keySet();
 	}
+	public void clear() {
+		map.clear();
+	}
 	public void add(K k, V v) {
 		Collection<V> s = map.get(k);
 		if (s == null) {

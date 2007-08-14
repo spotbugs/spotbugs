@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
  * Accumulate warnings that may occur at multiple source locations,
@@ -35,7 +34,7 @@ import java.util.Map;
 public class BugAccumulator {
 
 	private BugReporter reporter;
-	private Map<BugInstance, List<SourceLineAnnotation>> map;
+	private MultiMap<BugInstance, SourceLineAnnotation> map;
 	
 	/**
 	 * Constructor.
@@ -44,7 +43,7 @@ public class BugAccumulator {
 	 */
 	public BugAccumulator(BugReporter reporter) {
 		this.reporter = reporter;
-		this.map = new HashMap<BugInstance, List<SourceLineAnnotation>>();
+		this.map = new MultiMap<BugInstance, SourceLineAnnotation>(LinkedList.class);
 	}
 
 	/**
@@ -54,12 +53,8 @@ public class BugAccumulator {
 	 * @param sourceLine the source location
 	 */
 	public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
-		List<SourceLineAnnotation> where = map.get(bug);
-		if (where == null) {
-			where = new LinkedList<SourceLineAnnotation>();
-			map.put(bug, where);
-		}
-		where.add(sourceLine);
+		map.add(bug,sourceLine);
+		
 	}
 
 	/**
@@ -74,15 +69,13 @@ public class BugAccumulator {
 		accumulateBug(bug, source);
 	}
 	
-	/**
-	 * Get an Iterator over the BugAccumulator's map entry set.
-	 * This allows a way to post-process the accumulated warnings to
-	 * remove some if necessary. 
-	 * 
-	 * @return an Iterator over the BugAccumulator's map entry set
-	 */
-	public Iterator<Map.Entry<BugInstance, List<SourceLineAnnotation>>> entrySetIterator() {
-		return map.entrySet().iterator();
+
+	public Iterable<? extends BugInstance> uniqueBugs() {
+		return map.keySet();
+	}
+	
+	public Iterable<? extends SourceLineAnnotation> locations(BugInstance bug) {
+		return map.get(bug);
 	}
 	
 	/**
@@ -90,10 +83,9 @@ public class BugAccumulator {
 	 * Clears all accumulated warnings as a side-effect.
 	 */
 	public void reportAccumulatedBugs() {
-		for(Map.Entry<BugInstance,List<SourceLineAnnotation>> e : map.entrySet()) {
-			BugInstance bug = e.getKey();
+		for(BugInstance bug : map.keySet()) {
 			boolean first = true;
-			for (SourceLineAnnotation source : e.getValue()) {
+			for (SourceLineAnnotation source  : map.get(bug)) {
 				if (source != null) {
 					bug.addSourceLine(source);
 					if (first) {

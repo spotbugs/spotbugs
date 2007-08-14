@@ -482,10 +482,9 @@ public class FindDeadLocalStores implements Detector {
 		// Eliminate any accumulated warnings for instructions
 		// that (due to inlining) *can* be live stores.
 	entryLoop:
-		for (Iterator<Map.Entry<BugInstance, List<SourceLineAnnotation>>> i = accumulator.entrySetIterator();
-				i.hasNext(); ) {
-			Map.Entry<BugInstance, List<SourceLineAnnotation>> entry = i.next();
-			for (SourceLineAnnotation annotation : entry.getValue()) {
+		for (Iterator<? extends BugInstance> i = accumulator.uniqueBugs().iterator(); i.hasNext(); ) {
+			
+			for (SourceLineAnnotation annotation : accumulator.locations(i.next())) {
 				if (liveStoreSourceLineSet.get(annotation.getStartLine())) {
 					// This instruction can be a live store; don't report
 					// it as a warning.
