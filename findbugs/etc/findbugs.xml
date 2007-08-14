@@ -563,7 +563,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
-            reports="RV_RETURN_VALUE_IGNORED"
+            reports="RV_RETURN_VALUE_IGNORED,RV_EXCEPTION_NOT_THROWN"
 		/>
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
@@ -854,6 +854,7 @@
   <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS" />
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
+  <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE" />
   <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="CORRECTNESS" />

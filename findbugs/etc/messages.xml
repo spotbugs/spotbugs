@@ -3782,6 +3782,34 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
+
+
+  <BugPattern type="RV_EXCEPTION_NOT_THROWN">
+    <ShortDescription>Exception created and dropped rather than thrown</ShortDescription>
+    <LongDescription>{1} forgets to throw new {2.nameAndSignature}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,
+something like  </p>
+<blockquote>
+<pre>
+if (x < 0)
+  new IllegalArgumentException("x must be nonnegative");
+</pre>
+</blockquote>
+<p>It was probably the intent of the programmer to throw the created exception:</p>
+<blockquote>
+<pre>
+if (x < 0)
+  throw new IllegalArgumentException("x must be nonnegative");
+</pre>
+</blockquote>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="RV_RETURN_VALUE_IGNORED2">
     <ShortDescription>Method ignores return value</ShortDescription>
     <LongDescription>{1} ignores return value of {2}</LongDescription>

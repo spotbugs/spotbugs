@@ -116,11 +116,16 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 												'/')
 												+ ";"))
 					priority++;
+				
+				String pattern = "RV_RETURN_VALUE_IGNORED";
+				if (callSeen.getName().equals("<init>") 
+						&& callSeen.getClassName().endsWith("Exception"))
+					pattern = "RV_EXCEPTION_NOT_THROWN";
 				BugInstance warning = new BugInstance(this,
-						"RV_RETURN_VALUE_IGNORED", priority).addClassAndMethod(
-						this).addMethod(className, methodName, signature,
-						seen == Constants.INVOKESTATIC).describe(
-						"METHOD_CALLED").addSourceLine(this, callPC);
+						pattern, priority)
+						.addClassAndMethod(this)
+						.addMethod(callSeen).describe("METHOD_CALLED")
+						.addSourceLine(this, callPC);
 				bugReporter.reportBug(warning);
 			}
 			state = SCAN;
@@ -129,8 +134,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 			className = getDottedClassConstantOperand();
 			methodName = getNameConstantOperand();
 			signature = getSigConstantOperand();
-			callSeen = XFactory.createXMethod(className, methodName, signature,
-					seen == INVOKESTATIC);
+			callSeen = XFactory.createReferencedXMethod(this);
 			state = SAW_INVOKE;
 			if (DEBUG) System.out.println("  invoking " + callSeen);
 		} else
@@ -153,8 +157,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 						priority++;
 					bugReporter.reportBug(new BugInstance(this,
 							"RV_RETURN_VALUE_IGNORED", priority)
-							.addClassAndMethod(this).addCalledMethod(this).describe(
-									"METHOD_CALLED").addSourceLine(this));
+							.addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
 				}
 
 			}

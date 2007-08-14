@@ -286,6 +286,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
 			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
 		}
+		else if (key.equals("nameAndSignature")) {
+			 return getNameInClass(primaryClass);
+		}
 		else if (key.equals("shortMethod") )
 			return className + "." + methodName + "(...)";
 		else if (key.equals("hash")){
