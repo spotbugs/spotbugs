@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -171,6 +172,7 @@ public  class XFactory {
 //	.unmodifiableSet(fields.keySet());
 
 	private  Set<XMethod> calledMethods = new HashSet<XMethod>();
+	private Set<String> calledMethodSignatures = new HashSet<String>();
 	private boolean calledMethodsIsInterned = false;
 
 	/**
@@ -185,14 +187,38 @@ public  class XFactory {
 	}
 
 	public boolean isCalled(XMethod m) {
-		if (!calledMethodsIsInterned) {
-			Set<XMethod> tmp = new HashSet<XMethod>();
-			for(XMethod m2 : calledMethods)
-				tmp.add(intern(m2));
-			calledMethodsIsInterned = true;
-		}
+		updatedCalledMethods();
 		return calledMethods.contains(m);
 	}
+	public boolean nameAndSignatureIsCalled(XMethod m) {
+		updatedCalledMethods();
+		return calledMethodSignatures.contains(getDetailedSignature(m));
+	}
+
+	/**
+     * 
+     */
+    private void updatedCalledMethods() {
+	    if (!calledMethodsIsInterned) {
+			Set<XMethod> tmp = new HashSet<XMethod>();
+			calledMethodSignatures.clear();
+			for(XMethod m2 : calledMethods) {
+				tmp.add(intern(m2));
+				calledMethodSignatures.add(getDetailedSignature(m2));
+			}
+			calledMethods = tmp;
+			
+			calledMethodsIsInterned = true;
+		}
+    }
+
+	/**
+     * @param m2
+     * @return
+     */
+    private static String getDetailedSignature(XMethod m2) {
+	    return m2.getName()+m2.getSignature()+m2.isStatic();
+    }
 
 	public boolean isInterned(XMethod m) {
 		return methods.containsKey(m);
@@ -243,7 +269,7 @@ public  class XFactory {
 	/*
 	 * Create a new, never-before-seen, XMethod object and intern it.
 	 */
-	private static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
+	private static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		XFactory xFactory = AnalysisContext.currentXFactory();
 
 		boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
@@ -295,7 +321,7 @@ public  class XFactory {
 	 * @param isStatic
 	 * @return the created XMethod
 	 */
-	public  static XMethod createXMethod(String className, String methodName, String methodSig, boolean isStatic) {
+	public  static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
 		XMethod m;
 		XFactory xFactory = AnalysisContext.currentXFactory();
 		m = createXMethod(className, methodName, methodSig, isStatic ? Constants.ACC_STATIC : 0);

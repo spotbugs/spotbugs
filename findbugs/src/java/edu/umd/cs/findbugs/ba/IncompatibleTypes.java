@@ -125,7 +125,10 @@ public class IncompatibleTypes {
 						.getClassName());
 				JavaClass rhsClass = analysisContext.lookupClass(rhsType
 						.getClassName());
-
+				XMethod lhsEquals = XFactory.createXMethod(lhsClass.getClassName(), "equals", "(Ljava/lang/Object;)Z", false);
+				XMethod rhsEquals = XFactory.createXMethod(rhsClass.getClassName(), "equals", "(Ljava/lang/Object;)Z", false);
+				if (lhsEquals.equals(rhsEquals) && !lhsEquals.getClassName().equals("java.lang.Object"))
+					return SEEMS_OK;
 				if (!lhsClass.isInterface() && !rhsClass.isInterface()) {
 					// Both are class types, and therefore there is no possible
 					// way
