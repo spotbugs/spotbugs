@@ -267,7 +267,7 @@ public class GenericUtilities {
 	}
 	public static int lastMatchedLeftAngleBracket(String s) {
 		int nesting = 0;
-		int pos = s.length()-1;
+		int pos = s.length()-2;
 
 		while (true) {
 			if (pos < 0) 

@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**
@@ -39,13 +42,23 @@ public class GenericUtilitiesTest extends TestCase {
 	public void testNestedSignature() {
 		GenericObjectType t = (GenericObjectType) GenericUtilities.getType(SAMPLE_SIGNATURE);
 		String s = t.getSignature();
-		System.out.println(s);
+		// System.out.println(s);
 		assertEquals(1,t.getNumParameters());
 	}
+	public void testNestedSignature2() {
+		List<ReferenceType> parameters = GenericUtilities.getTypes("Lcom/google/common/util/WeakIdentityHashMap<TK;TV;>.IdentityWeakReference;TV;");
+
+		System.out.println(parameters);
+		assertEquals(2,parameters.size());
+		ReferenceType t = parameters.get(0);
+		
+		assertEquals("com.google.common.util.WeakIdentityHashMap.IdentityWeakReference",t.toString());
+	}
+	
 	public void testMapSignature() {
 		GenericObjectType t = (GenericObjectType) GenericUtilities.getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
 		String s = t.getSignature();
-		System.out.println(s);
+		// System.out.println(s);
 		assertEquals(2,t.getNumParameters());
 	}
 	public void testNestedSignatureParser() {
