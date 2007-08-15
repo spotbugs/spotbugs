@@ -68,6 +68,34 @@ public class JAIFParser {
 		}
 		return t;
 	}
+	
+	private void expectEndOfLine() throws IOException, JAIFSyntaxException {
+		// extract-annotations seems to sometimes produce multiple newlines where
+		// the grammar indicates that only one will appear.
+		// So, we treat any sequence of one or more newlines as one newline.
+		int nlCount = 0;
+		JAIFToken t;
+
+		while (true) {
+			if (atEOF()) {
+				t = null;
+				break;
+			}
+			
+			t = scanner.peekToken();
+			if (t.kind != JAIFTokenKind.NEWLINE) {
+				break;
+			}
+			
+			++nlCount;
+			scanner.nextToken();
+		}
+		
+		if (nlCount < 1) {
+			String msg = (t == null) ? "Unexpected end of file" : "Unexpected token " + t + " (was expecting <newline>)";
+			throw new JAIFSyntaxException(this, msg);
+		}
+	}
 
 	private String readCompoundName() throws IOException, JAIFSyntaxException {
 		StringBuffer buf = new StringBuffer();
@@ -118,8 +146,6 @@ public class JAIFParser {
 			// However, I'm pretty sure we want a compound name.
 			pkgName = readCompoundName();
 
-			callback.startPackageDefinition(pkgName);
-
 			expect(":");
 
 			t = scanner.peekToken();
@@ -130,9 +156,11 @@ public class JAIFParser {
 			pkgName = ""; // default package
 		}
 		
-		//
-		// TODO: more
-		//
+		expectEndOfLine();
+
+		callback.startPackageDefinition(pkgName);
+
+		
 		
 		callback.endPackageDefinition(pkgName);
 	}
