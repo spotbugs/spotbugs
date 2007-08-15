@@ -174,9 +174,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
-		annotationClass = lastPortion(annotationClass);
-		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 
+		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
+		annotationClass = lastPortion(annotationClass);
 		if (n == null)
 			return;
 
