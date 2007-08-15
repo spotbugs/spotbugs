@@ -19,15 +19,29 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-/**
- * @author David Hovemeyer
- */
-public class JAIFSyntaxException extends Exception {
-	public JAIFSyntaxException(JAIFParser parser, String msg) {
-		super(msg + " at " + parser.getLineNumber());
-	}
+
+class JAIFToken {
+	JAIFTokenKind kind;
+	String lexeme;
 	
-	public JAIFSyntaxException(JAIFScanner scanner, String msg) {
-		super(msg + " at " + scanner.getLineNumber());
+	public JAIFToken(JAIFTokenKind kind, String lexeme) {
+		this.kind = kind;
+		this.lexeme = lexeme;
+	}
+
+	public boolean isStartOfAnnotationName() {
+		return lexeme.startsWith("@");
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		if (lexeme.equals("\n")) {
+			return "<newline>";
+		} else {
+			return lexeme;
+		}
 	}
 }

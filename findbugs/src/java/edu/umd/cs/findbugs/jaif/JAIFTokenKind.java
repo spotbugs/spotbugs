@@ -19,15 +19,14 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-/**
- * @author David Hovemeyer
- */
-public class JAIFSyntaxException extends Exception {
-	public JAIFSyntaxException(JAIFParser parser, String msg) {
-		super(msg + " at " + parser.getLineNumber());
-	}
-	
-	public JAIFSyntaxException(JAIFScanner scanner, String msg) {
-		super(msg + " at " + scanner.getLineNumber());
-	}
+public enum JAIFTokenKind {
+	NEWLINE,
+	COLON,
+	DOT,
+	IDENTIFIER_OR_KEYWORD,
+	LPAREN,
+	RPAREN,
+	COMMA,
+	EQUALS,
+	NUMERIC_LITERAL;
 }
