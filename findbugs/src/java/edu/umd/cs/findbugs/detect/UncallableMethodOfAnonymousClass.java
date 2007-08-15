@@ -126,7 +126,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 				JavaClass superClass = clazz.getSuperClass();
 				String superClassName = superClass.getClassName();
 				if (superClass.isInterface() || superClassName.equals("java.lang.Object"))
-						priority = HIGH_PRIORITY;
+						priority = NORMAL_PRIORITY;
 				else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
 						priority = NORMAL_PRIORITY;
 				else
