@@ -169,6 +169,19 @@ public class GenericUtilities {
 			return type.toString();
 	}
 
+	 static String stripAngleBrackets(String s) {
+		if (s.indexOf('<') == -1) return s;
+		StringBuffer result = new StringBuffer(s.length());
+		int nesting = 0;
+		for(int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '<') nesting++;
+			else if (c == '>') nesting--;
+			else if (nesting == 0)
+				result.append(c);
+		}
+		return result.toString();
+	}
 	/**
 	 * This method is analogous to <code>Type.getType(String)</code>, 
 	 * except that it also accepts signatures with generic information.
@@ -189,11 +202,12 @@ public class GenericUtilities {
 		if (signature.startsWith("L")) {
 			index = lastMatchedLeftAngleBracket(signature);
 			if (index < 0)
-				return Type.getType(signature);
+				return Type.getType(stripAngleBrackets(signature));
 
-			List<ReferenceType> parameters = GenericUtilities.getTypes(
-					signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1)));			
-			return new GenericObjectType(removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$'),	parameters);		
+			String typeParameters = signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1));
+			List<ReferenceType> parameters = GenericUtilities.getTypes(typeParameters);			
+			String baseType = removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$');
+			return new GenericObjectType(baseType,	parameters);		
 
 		} else if (signature.startsWith("T")) {
 			// ignore the prefix "T" and the suffix ";"
@@ -263,6 +277,7 @@ public class GenericUtilities {
 				nesting--;
 				if (nesting == 0) return pos;
 			} else if (c == '>') nesting++;
+			else if (nesting == 0) return -1;
 			pos--;
 		}
 	}

@@ -315,8 +315,12 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
 					continue; // should never happen
 
+				System.out.println("Argument : " + ii);
+				System.out.println("Frame: " + frame);
+				System.out.println("Operand: " + operand.toString(true));
 				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
 				Type argType = frame.getArgument(inv, cpg, ii, sigParser);
+				System.out.println("Comparing " + parmType + " with actual argument " + argType);
 				matches[ii] = compareTypes(parmType, argType);
 
 				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
