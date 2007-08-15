@@ -65,7 +65,7 @@ public class JAIFScannerTest extends TestCase {
     }
 
 	public void testScanIdentifier() throws Exception {
-	    JAIFScanner scanner = getScanner("@foobar Baz123   ( Boing Boing) @Yum@Yum __123");
+	    JAIFScanner scanner = getScanner("@foobar Baz123   ( Boing Boing) @Yum@Yum __123  $plotz");
 	    
 	    checkToken(scanner, "@foobar", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 	    checkToken(scanner, "Baz123", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
@@ -76,6 +76,7 @@ public class JAIFScannerTest extends TestCase {
 	    checkToken(scanner, "@Yum", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 	    checkToken(scanner, "@Yum", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 	    checkToken(scanner, "__123", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
+	    checkToken(scanner, "$plotz", JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 		checkToken(scanner, "\n", JAIFTokenKind.NEWLINE);
     }
 }
