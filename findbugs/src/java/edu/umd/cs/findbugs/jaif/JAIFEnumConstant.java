@@ -19,30 +19,28 @@
 
 package edu.umd.cs.findbugs.jaif;
 
+/**
+ * @author David Hovemeyer
+ */
+public class JAIFEnumConstant {
+	private String name;
 
-class JAIFToken {
-	JAIFTokenKind kind;
-	String lexeme;
+	public JAIFEnumConstant(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return Returns the name.
+	 */
+	public String getName() {
+		return name;
+	}
 	
-	public JAIFToken(JAIFTokenKind kind, String lexeme) {
-		this.kind = kind;
-		this.lexeme = lexeme;
-		System.out.println("token: " + this);
-	}
-
-	public boolean isStartOfAnnotationName() {
-		return lexeme.startsWith("@");
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		if (lexeme.equals("\n")) {
-			return "<newline>";
-		} else {
-			return lexeme;
-		}
+		return "enum constant " + name;
 	}
 }

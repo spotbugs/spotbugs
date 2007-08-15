@@ -24,10 +24,10 @@ package edu.umd.cs.findbugs.jaif;
  */
 public class JAIFSyntaxException extends Exception {
 	public JAIFSyntaxException(JAIFParser parser, String msg) {
-		super(msg + " at " + parser.getLineNumber());
+		super(msg + " at line " + parser.getLineNumber());
 	}
 	
 	public JAIFSyntaxException(JAIFScanner scanner, String msg) {
-		super(msg + " at " + scanner.getLineNumber());
+		super(msg + " at line " + scanner.getLineNumber());
 	}
 }

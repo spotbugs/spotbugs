@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.jaif;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.util.Locale;
 
 /**
  * Parse an external annotation file.
@@ -108,21 +110,24 @@ public class JAIFParser {
 		JAIFToken t = scanner.peekToken();
 		
 		String pkgName;
-		if (t.kind == JAIFTokenKind.IDENTIFIER_OR_KEYWORD) {
+		
+		if (t.kind != JAIFTokenKind.NEWLINE) {
+			// Optional package name and package-level annotations
+			
 			// Hmmm....the spec says just a plain identifier here.
 			// However, I'm pretty sure we want a compound name.
 			pkgName = readCompoundName();
+
+			callback.startPackageDefinition(pkgName);
+
+			expect(":");
+
+			t = scanner.peekToken();
+			while (t.isStartOfAnnotationName()) {
+				parseAnnotation();
+			}
 		} else {
-			pkgName = "";
-		}
-		
-		callback.startPackageDefinition(pkgName);
-		
-		expect(":");
-		
-		t = scanner.peekToken();
-		while (t.isStartOfAnnotationName()) {
-			parseAnnotation();
+			pkgName = ""; // default package
 		}
 		
 		//
@@ -162,9 +167,123 @@ public class JAIFParser {
 		callback.annotationField(id.lexeme, constant);
 	}
 
-	private Object parseConstant() {
-		// TODO Auto-generated method stub
-		return null;
+	private Object parseConstant() throws IOException, JAIFSyntaxException {
+		JAIFToken t = scanner.peekToken();
+		
+		switch (t.kind) {
+		case IDENTIFIER_OR_KEYWORD:
+			// This is an enum constant specified by a compound name.
+			// Represent it as a JAIFEnumConstant object.
+			String name = readCompoundName();
+			return new JAIFEnumConstant(name);
+		case DECIMAL_LITERAL:
+			t = scanner.nextToken();
+			return Integer.parseInt(t.lexeme);
+		case OCTAL_LITERAL:
+			t = scanner.nextToken();
+			return Integer.parseInt(t.lexeme, 8);
+		case HEX_LITERAL:
+			t = scanner.nextToken();
+			return Integer.parseInt(t.lexeme, 16);
+		case FLOATING_POINT_LITERAL:
+			t = scanner.nextToken();
+			boolean isFloat = t.lexeme.toLowerCase(Locale.ENGLISH).endsWith("f");
+			if (isFloat) {
+				return Float.parseFloat(t.lexeme);
+			} else {
+				return Double.parseDouble(t.lexeme);
+			}
+		case STRING_LITERAL:
+			t = scanner.nextToken();
+			return unparseStringLiteral(t.lexeme);
+		default:
+			throw new JAIFSyntaxException(this, "Illegal constant");
+		}
 	}
 
+	private Object unparseStringLiteral(String lexeme) {
+		StringBuffer buf = new StringBuffer();
+
+		int where = 1; // skip initial double quote char
+
+		while (true) {
+			assert where < lexeme.length();
+			char c = lexeme.charAt(where); 
+
+			if (c == '"') {
+				break;
+			}
+
+			if (c != '\\') {
+				buf.append(c);
+				where++;
+				continue;
+			}
+
+			where++;
+			assert where < lexeme.length();
+			
+			c = lexeme.charAt(where);
+			switch (c) {
+			case 'b':
+				buf.append('\b'); where++; break;
+			case 't':
+				buf.append('\t'); where++; break;
+			case 'n':
+				buf.append('\n'); where++; break;
+			case 'f':
+				buf.append('\t'); where++; break;
+			case 'r':
+				buf.append('\r'); where++; break;
+			case '"':
+				buf.append('"'); where++; break;
+			case '\'':
+				buf.append('\''); where++; break;
+			case '\\':
+				buf.append('\\'); where++; break;
+			default:
+				char value = (char) 0;
+				while (c >= '0' && c <= '7') {
+					value *= 8;
+					value += (c - '0');
+					where++;
+					assert where < lexeme.length();
+					c = lexeme.charAt(where);
+				}
+				buf.append(value);
+			}
+		}
+
+		return buf.toString();
+	}
+
+	public static void main(String[] args) throws Exception {
+	    if (args.length != 1) {
+	    	System.err.println("Usage: " + JAIFParser.class.getName() + " <jaif file>");
+	    	System.exit(1);
+	    }
+	    
+	    JAIFEvents callback = new JAIFEvents() {
+	    	public void annotationField(String fieldName, Object constant) {
+	    		System.out.println("    " + fieldName + "=" + constant);
+	    	}
+
+	    	public void endAnnotation(String annotationName) {
+	    	}
+
+	    	public void endPackageDefinition(String pkgName) {
+	    	}
+
+	    	public void startAnnotation(String annotationName) {
+	    		System.out.println("  annotation " + annotationName);
+	    	}
+
+	    	public void startPackageDefinition(String pkgName) {
+	    		System.out.println("package " + pkgName);
+	    	}
+	    };
+    	
+    	JAIFParser parser = new JAIFParser(new FileReader(args[0]), callback);
+    	parser.parse();
+    }
 }
