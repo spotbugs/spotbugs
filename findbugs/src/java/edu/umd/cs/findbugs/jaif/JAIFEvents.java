@@ -28,10 +28,40 @@ package edu.umd.cs.findbugs.jaif;
 public interface JAIFEvents {
 
 	/**
-	 * Called to indicate the start of a package.
+	 * Called to indicate the start of a package definition.
 	 * 
 	 * @param pkgName package name
 	 */
-	void startPackage(String pkgName);
+	void startPackageDefinition(String pkgName);
+	
+	/**
+	 * Called to indicate the end of a package definition.
+	 * 
+	 * @param pkgName
+	 */
+	void endPackageDefinition(String pkgName);
+
+	/**
+	 * Called to indicate the start of an annotation.
+	 * 
+	 * @param annotationName annotation name
+	 */
+	void startAnnotation(String annotationName);
+
+	/**
+	 * Called to indicate the end of an annotation.
+	 * 
+	 * @param annotationName annotation name
+	 */
+	void endAnnotation(String annotationName);
+
+	/**
+	 * Called to visit an annotation field.
+	 * 
+	 * @param fieldName annotation field name
+	 * @param constant  constant value of the annotation field (one of the java.lang wrapper types,
+	 *                  or a String, or ???)
+	 */
+	void annotationField(String fieldName, Object constant);
 
 }
