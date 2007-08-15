@@ -776,6 +776,21 @@
         sourcepath="src/java5" splitindex="true" use="true" version="true"/>
 		</target>
 
+	<!--
+		Rebuild jar305.jar.
+		JSR305-ri must be checked out "next to" findbugs,
+		and must have its classes built.
+	-->
+	<target name="jsr305.jar">
+		<jar destfile="${jar.dir}/jsr305.jar">
+			<fileset dir="${jsr305.dir}/build/classes">
+				<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="${jsr305.dir}/src/main/java">
+				<include name="**/*.java"/>
+			</fileset>
+		</jar>
+	</target>
 	
 </project>
 
