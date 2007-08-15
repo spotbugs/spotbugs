@@ -49,10 +49,6 @@ public class JAIFParser {
 		return scanner.getLineNumber();
 	}
 	
-	private boolean atEOF() throws IOException {
-		return scanner.atEOF();
-	}
-	
 	private JAIFToken expect(String s) throws IOException, JAIFSyntaxException {
 		JAIFToken t = scanner.nextToken();
 		if (!t.lexeme.equals(s)) {
@@ -77,7 +73,7 @@ public class JAIFParser {
 		JAIFToken t;
 
 		while (true) {
-			if (atEOF()) {
+			if (scanner.atEOF()) {
 				t = null;
 				break;
 			}
@@ -128,7 +124,7 @@ public class JAIFParser {
 	
 	private void parseAnnotationFile() throws IOException, JAIFSyntaxException {
 		parsePackageDefinition();
-		while (!atEOF()) {
+		while (!scanner.atEOF()) {
 			parsePackageDefinition();
 		}
 	}
@@ -160,7 +156,14 @@ public class JAIFParser {
 
 		callback.startPackageDefinition(pkgName);
 
-		
+		while (!scanner.atEOF()) {
+			t = scanner.peekToken();
+			if (t.lexeme.equals("package")) {
+				break;
+			}
+			
+			parseAnnotationDefinitionOrClassDefinition();
+		}
 		
 		callback.endPackageDefinition(pkgName);
 	}
@@ -283,6 +286,36 @@ public class JAIFParser {
 		}
 
 		return buf.toString();
+	}
+	
+	private void parseAnnotationDefinitionOrClassDefinition() throws IOException, JAIFSyntaxException {
+		JAIFToken t = scanner.peekToken();
+		
+		if (t.lexeme.equals("annotation")) {
+			parseAnnotationDefinition();
+		} else if (t.lexeme.equals("class")) {
+			parseClassDefinition();
+		} else {
+			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (expected `annotation' or `class')");
+		}
+	}
+	
+	private void parseAnnotationDefinition() throws IOException, JAIFSyntaxException {
+		expect("annotation");
+		
+		String retention = null;
+		
+		JAIFToken t = scanner.peekToken();
+		if (t.lexeme.equals("visible") || t.lexeme.equals("invisible") || t.lexeme.equals("source")) {
+			retention = t.lexeme;
+			scanner.nextToken();
+		}
+		
+		String annotationName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
+	}
+	
+	private void parseClassDefinition() {
+		
 	}
 
 	public static void main(String[] args) throws Exception {
