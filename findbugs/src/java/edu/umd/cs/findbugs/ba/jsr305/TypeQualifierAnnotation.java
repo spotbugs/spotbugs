@@ -74,23 +74,19 @@ public class TypeQualifierAnnotation {
 	private static final When TOP = null;
 	
 	private static final When[][] combineReturnValueMatrix = {
-		//                   ALWAYS       MAYBE_YES        UNKNOWN        MAYBE_NOT        MAYBE_EITHER       NEVER
+		//                   ALWAYS       UNKNOWN        MAYBE_EITHER       NEVER
 		/* ALWAYS */       { When.ALWAYS, },
-		/* MAYBE_YES */    { When.ALWAYS, When.MAYBE_YES },
-		/* UNKNOWN */      { TOP,         When.UNKNOWN,    When.UNKNOWN, },
-		/* MAYBE_NOT */    { TOP,         When.UNKNOWN,    When.UNKNOWN,  When.MAYBE_NOT },
-		/* MAYBE_EITHER */ { When.ALWAYS, When.MAYBE_YES,  When.UNKNOWN,  When.MAYBE_NOT,  When.MAYBE_EITHER, },
-		/* NEVER */        { TOP,         TOP,             TOP,           When.NEVER,      When.NEVER,       When.NEVER },
+		/* UNKNOWN */      { When.ALWAYS, When.UNKNOWN, },
+		/* MAYBE_EITHER */ { When.ALWAYS, When.UNKNOWN,  When.MAYBE, },
+		/* NEVER */        { TOP,         TOP,           When.NEVER,       When.NEVER },
 	};
 	
 	private static final When[][] combineParameterMatrix = {
-		//                   ALWAYS             MAYBE_YES          UNKNOWN         MAYBE_NOT          MAYBE_EITHER       NEVER
+		//                   ALWAYS             UNKNOWN         MAYBE            NEVER
 		/* ALWAYS */       { When.ALWAYS, },
-		/* MAYBE_YES */    { When.MAYBE_YES,    When.MAYBE_YES, },
-		/* UNKNOWN */      { When.MAYBE_YES,    When.MAYBE_YES,    When.UNKNOWN, },
-		/* MAYBE_NOT */    { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_NOT, },
-		/* MAYBE_EITHER */ { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_EITHER, When.MAYBE_EITHER, },
-		/* NEVER */        { When.MAYBE_EITHER, When.MAYBE_EITHER, When.MAYBE_NOT, When.MAYBE_NOT,    When.MAYBE_EITHER, When.NEVER },
+		/* UNKNOWN */      { When.UNKNOWN,    When.UNKNOWN, },
+		/* MAYBE_EITHER */ { When.MAYBE,      When.MAYBE,          When.MAYBE, },
+		/* NEVER */        { When.MAYBE,      When.UNKNOWN,        When.MAYBE,     When.NEVER },
 	};
 
 	/**

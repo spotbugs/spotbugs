@@ -112,11 +112,7 @@ public enum FlowValue {
 		switch (when) {
 		case ALWAYS:
 			return FlowValue.ALWAYS;
-		case MAYBE_EITHER:
-			return FlowValue.UNKNOWN;
-		case MAYBE_NOT:
-			return FlowValue.UNKNOWN;
-		case MAYBE_YES:
+		case MAYBE:
 			return FlowValue.UNKNOWN;
 		case NEVER:
 			return FlowValue.NEVER;
