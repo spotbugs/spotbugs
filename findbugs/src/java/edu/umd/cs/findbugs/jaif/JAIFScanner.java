@@ -53,6 +53,7 @@ public class JAIFScanner {
 
 	// See http://java.sun.com/docs/books/jls/third_edition/html/lexical.html
 	// Hexidecimal floating-point literals are not implemented.
+	// Unicode escapes are not implemented (but could be implemented in the fillLineBuf() method).
 
 	private static final String ID_START = "[@A-Za-z_\\$]";
 	private static final String ID_REST  = "[A-Za-z0-9_\\$]";
@@ -69,6 +70,10 @@ public class JAIFScanner {
 	private static final String HEX_SIGNIFIER = "0[Xx]";
 	private static final String HEX_DIGITS = "[0-9A-Fa-f]+";
 	private static final String INT_TYPE_SUFFIX_OPT = "[Ll]?";
+	private static final String INPUT_CHAR = "[^\\\\\\\"]";// anything other than backslash or double-quote character
+	private static final String OCT_ESCAPE  = "([0-7]|[0-3]?[0-7][0-7])";
+	private static final String ESCAPE_SEQ = "(\\\\[btnfr\"'\\\\]|\\\\" + OCT_ESCAPE + ")";
+	private static final String STRING_CHARS_OPT = "(" + INPUT_CHAR + "|" + ESCAPE_SEQ + ")*";
 	
 	private static final TokenPattern[] TOKEN_PATTERNS = {
 		// Misc. syntax
@@ -94,6 +99,9 @@ public class JAIFScanner {
 		new TokenPattern("0" + OCTAL_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.OCTAL_LITERAL),
 		new TokenPattern(HEX_SIGNIFIER + HEX_DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.HEX_LITERAL),
 		new TokenPattern(DIGITS + INT_TYPE_SUFFIX_OPT, JAIFTokenKind.DECIMAL_LITERAL),
+		
+		// String literals
+		new TokenPattern("\"" + STRING_CHARS_OPT + "\"", JAIFTokenKind.STRING_LITERAL),
 	};
 	
 	private BufferedReader reader;
@@ -184,6 +192,6 @@ public class JAIFScanner {
 			}
 		}
 		
-		throw new JAIFSyntaxException(this, "Unrecognized token (trying to match text `" + lineBuf + "'");
+		throw new JAIFSyntaxException(this, "Unrecognized token (trying to match text `" + lineBuf + "')");
 	}
 }

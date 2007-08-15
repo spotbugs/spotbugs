@@ -131,4 +131,15 @@ public class JAIFScannerTest extends TestCase {
 		checkToken(scanner, "91919191l", JAIFTokenKind.DECIMAL_LITERAL);
 		checkToken(scanner, "\n", JAIFTokenKind.NEWLINE);
 	}
+
+	public void testScanStringLiteral() throws Exception {
+	    JAIFScanner scanner = getScanner("\"hello\"    \"foobie bletch\"  \"\\\"\"  \"\\\\\\6\\45\\037\"  \"\\b\\t\\f\\n\"  ");
+	    
+	    checkToken(scanner, "\"hello\"", JAIFTokenKind.STRING_LITERAL);
+	    checkToken(scanner, "\"foobie bletch\"", JAIFTokenKind.STRING_LITERAL);
+	    checkToken(scanner, "\"\\\"\"", JAIFTokenKind.STRING_LITERAL);
+	    checkToken(scanner, "\"\\\\\\6\\45\\037\"", JAIFTokenKind.STRING_LITERAL);
+	    checkToken(scanner, "\"\\b\\t\\f\\n\"", JAIFTokenKind.STRING_LITERAL);
+		checkToken(scanner, "\n", JAIFTokenKind.NEWLINE);
+    }
 }
