@@ -62,22 +62,19 @@ public class TypeQualifierAnnotation {
 	//        /    |    \           for combination of supertype annotations
 	//       /     |     \
 	// Always   Unknown   Never  ^  Narrower
-	//     \     /   \     /     |  
-	//      Maybe     Maybe      |
-	//        Yes      Not       |
-	//           \     /         |
-	//            Maybe          | 
-	//            Either         v  Wider
+	//       \     |     /       |
+	//        \    |    /        |
+	//         \   |   /         |
+	//           Maybe           v  Wider 
 	//
-	// XXX: the placement of Unknown in this lattice seems a bit weird, but it seems to work
 	
 	private static final When TOP = null;
 	
 	private static final When[][] combineReturnValueMatrix = {
-		//                   ALWAYS       UNKNOWN        MAYBE_EITHER       NEVER
+		//                   ALWAYS       UNKNOWN        MAYBE            NEVER
 		/* ALWAYS */       { When.ALWAYS, },
 		/* UNKNOWN */      { When.ALWAYS, When.UNKNOWN, },
-		/* MAYBE_EITHER */ { When.ALWAYS, When.UNKNOWN,  When.MAYBE, },
+		/* MAYBE */        { When.ALWAYS, When.UNKNOWN,  When.MAYBE, },
 		/* NEVER */        { TOP,         TOP,           When.NEVER,       When.NEVER },
 	};
 	
@@ -85,7 +82,7 @@ public class TypeQualifierAnnotation {
 		//                   ALWAYS             UNKNOWN         MAYBE            NEVER
 		/* ALWAYS */       { When.ALWAYS, },
 		/* UNKNOWN */      { When.UNKNOWN,    When.UNKNOWN, },
-		/* MAYBE_EITHER */ { When.MAYBE,      When.MAYBE,          When.MAYBE, },
+		/* MAYBE */        { When.MAYBE,      When.MAYBE,          When.MAYBE, },
 		/* NEVER */        { When.MAYBE,      When.UNKNOWN,        When.MAYBE,     When.NEVER },
 	};
 
