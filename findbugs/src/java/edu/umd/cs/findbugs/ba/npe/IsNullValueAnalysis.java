@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -137,32 +138,34 @@ public class IsNullValueAnalysis
 					methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
 			NullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 			int paramShift = instanceMethod ? 1 : 0;
-			for (int i = 0; i < numLocals; ++i) {
+			 Type[] argumentTypes = methodGen.getArgumentTypes();
+            for (int i = 0; i < numLocals; ++i) {
+				cachedEntryFact.setValue(i, IsNullValue.nonReportingNotNullValue());
+			}
+			if (paramShift == 1)
+				cachedEntryFact.setValue(0,IsNullValue.nonNullValue());
+			
+			int slot = paramShift;
+			for (int paramIndex = 0; paramIndex < argumentTypes.length ; paramIndex++) {
 				IsNullValue value;
 
-				int paramIndex = i - paramShift;
-
-				if (instanceMethod && i == 0) {
+				XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
+				NullnessAnnotation n = db.getResolvedAnnotation(methodParameter, false);
+				if (n == NullnessAnnotation.CHECK_FOR_NULL)
+					// Parameter declared @CheckForNull
+					value = IsNullValue.parameterMarkedAsMightBeNull(methodParameter);
+				else if (n == NullnessAnnotation.NONNULL) 
+					// Parameter declared @NonNull
+					// TODO: label this so we don't report defensive programming
 					value = IsNullValue.nonNullValue();
-				} else if (paramIndex >= methodGen.getArgumentTypes().length) {
+				else 
+					// Don't know; use default value, normally non-reporting nonnull
 					value = IsNullValue.nonReportingNotNullValue();
-				} else {
-					XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
-					NullnessAnnotation n = db.getResolvedAnnotation(methodParameter, false);
-					if (n == NullnessAnnotation.CHECK_FOR_NULL)
-						// Parameter declared @CheckForNull
-						value = IsNullValue.parameterMarkedAsMightBeNull(methodParameter);
-					else if (n == NullnessAnnotation.NONNULL) 
-						// Parameter declared @NonNull
-						// TODO: label this so we don't report defensive programming
-						value = IsNullValue.nonNullValue();
-					else 
-						// Don't know; use default value, normally non-reporting nonnull
-						value = IsNullValue.nonReportingNotNullValue();
-				}
 
-				cachedEntryFact.setValue(i, value);
-			}
+				cachedEntryFact.setValue(slot, value);
+
+				slot += argumentTypes[paramIndex].getSize();
+				}
 		}
 		copy(cachedEntryFact, result);
 	}
