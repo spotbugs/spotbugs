@@ -283,6 +283,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
 		else if (key.equals("givenClass")) {
+			if (methodName.equals("<init>")) {
+				return "new " + shorten(primaryClass.getPackageName(), className) + getSignatureInClass(primaryClass);
+			}
 			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
 			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
 		}
@@ -313,9 +316,15 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param primaryClass TODO
 	 */
 	public String getNameInClass(ClassAnnotation primaryClass) {
-		return  getNameInClass(true, false, false);
+		return  getNameInClass(true, false, false, false);
 	}
-
+	public String getSignatureInClass(ClassAnnotation primaryClass) {
+		return  getNameInClass(true, false, false, true);
+	}
+	
+	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash) {
+		return getNameInClass(shortenPackages, useJVMMethodName, hash, false);
+	}
 	/**
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
@@ -330,12 +339,14 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param useJVMMethodName TODO
 	 * @param hash TODO
 	 */
-	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash) {
+	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash, boolean omitMethodName) {
 		// Convert to "nice" representation
 		StringBuffer result = new StringBuffer();
-		if (useJVMMethodName)
-			result.append(getMethodName());
-		else result.append(getJavaSourceMethodName());
+		if (!omitMethodName) {
+			if (useJVMMethodName)
+				result.append(getMethodName());
+			else result.append(getJavaSourceMethodName());
+		}
 		result.append('(');
 
 		// append args
@@ -371,7 +382,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public String getFullMethod(ClassAnnotation primaryClass) {
 		if (fullMethod == null) {
-			fullMethod = className + "." + getNameInClass(primaryClass);
+			if (methodName.equals("<init>"))
+				fullMethod = "new " + className + getSignatureInClass(primaryClass);
+			else fullMethod = className + "." + getNameInClass(primaryClass);
 		}
 
 		return fullMethod;
