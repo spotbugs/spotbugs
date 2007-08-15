@@ -3035,8 +3035,8 @@ Names of fields that are not final should be in mixed case with a lowercase firs
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization or the packages of their parameters. 
-This is very confusing because if the capitalization and parameter package names were
+  <p> The referenced methods have names that differ only by capitalization. 
+This is very confusing because if the capitalization were
 identical then one of the methods would override the other.
 </p>
 ]]>
@@ -3047,7 +3047,7 @@ identical then one of the methods would override the other.
     <LongDescription>VERY confusing (but perhaps intentional) to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization or the packages of their parameters. 
+  <p> The referenced methods have names that differ only by capitalization. 
 This is very confusing because if the capitalization were
 identical then one of the methods would override the other. From the existence of other methods, it
 seems that the existence of both of these methods is intentional, but is sure is confusing. 
