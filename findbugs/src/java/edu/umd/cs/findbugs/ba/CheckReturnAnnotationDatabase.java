@@ -39,7 +39,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		if (IGNORE_BUILTIN_ANNOTATIONS) return;
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
-		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.io.File","createNewFile", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.util.Enumeration","hasMoreElements", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.security.MessageDigest","digest", "([B)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -68,7 +68,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
 
 		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
@@ -76,6 +76,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.lang.String", "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.lang.String", "<init>", "([BLjava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.lang.String", "<init>", "(Ljava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.lang.String", "<init>", "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigDecimal;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
@@ -83,6 +84,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.InetAddress", "getByName", "(Ljava/lang/String;)Ljava/util/InetAddress;", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+
 		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 
 		try {
@@ -115,7 +118,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 			try {
 
 				if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass))
-					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
+					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}
