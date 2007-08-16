@@ -1471,7 +1471,7 @@ ASMƒoƒCƒgƒR[ƒh‰ðÍƒtƒŒ[ƒ€ƒ[ƒN‚ðŽg—p‚µ‚½ƒfƒBƒeƒNƒ^‚Ìì¬•û–@‚ðŽ¦‚·‚½‚ß‚ÌƒTƒ“ƒ
 
   <BugPattern type="DM_NUMBER_CTOR">
     <ShortDescription>”ñŒø—¦‚ÈNumber‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ªŒÄ‚Ño‚³‚ê‚Ä‚¢‚Ü‚·BvalueOfƒXƒ^ƒeƒBƒbƒNƒƒ\ƒbƒh‚ð‘ã‚í‚è‚ÉŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</ShortDescription>
-    <LongDescription>{1} ƒƒ\ƒbƒh‚ÍA”ñŒø—¦‚È {3} ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B‘ã‚í‚è‚É {4} ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
+    <LongDescription>{1} ƒƒ\ƒbƒh‚ÍA”ñŒø—¦‚È {2} ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B‘ã‚í‚è‚É {3} ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
     <Details>
       <![CDATA[
       <p>

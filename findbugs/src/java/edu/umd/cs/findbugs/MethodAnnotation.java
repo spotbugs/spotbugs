@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -383,11 +384,16 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public String getFullMethod(ClassAnnotation primaryClass) {
 		if (fullMethod == null) {
 			if (methodName.equals("<init>"))
-				fullMethod = "new " + className + getSignatureInClass(primaryClass);
-			else fullMethod = className + "." + getNameInClass(primaryClass);
+				fullMethod = "new " + stripJavaLang(className) + getSignatureInClass(primaryClass);
+			else fullMethod = stripJavaLang(className) + "." + getNameInClass(primaryClass);
 		}
 
 		return fullMethod;
+	}
+	
+	public String stripJavaLang(@DottedClassName String className) {
+		if (className.startsWith("java.lang.")) return className.substring(10);
+		return className;
 	}
 
 	private String getUglyMethod() {

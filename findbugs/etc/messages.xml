@@ -1848,7 +1848,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
   <BugPattern type="DM_NUMBER_CTOR">
     <ShortDescription>Method invokes inefficient Number constructor; use static valueOf instead</ShortDescription>
-    <LongDescription>Method {1} invokes inefficient {3} constructor; use {4} instead</LongDescription>
+    <LongDescription>Method {1} invokes inefficient {2} constructor; use {3} instead</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -3786,7 +3786,7 @@ dateString = dateString.trim();
 
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">
     <ShortDescription>Exception created and dropped rather than thrown</ShortDescription>
-    <LongDescription>{1} forgets to throw new {2.nameAndSignature}</LongDescription>
+    <LongDescription>{1} forgets to throw {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
    <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,

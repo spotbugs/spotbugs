@@ -22,10 +22,16 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Detector to find calls to Number constructors with base type argument in
@@ -46,32 +52,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class NumberConstructor extends BytecodeScanningDetector {
 
-  /**
-   * Immutable information class of one handled number types.
-   */
-  static class Info {
-	public final boolean isRealNumber;
-	public final String argName;       
-	public final String constrArgs;
-
-	public Info(boolean isRealNumber, String argName, String constrArgs) {
-	  this.isRealNumber = isRealNumber;
-	  this.argName = argName;
-	  this.constrArgs = constrArgs;         
-	}
-  }
-
-  private static final Map<String, Info> boxClasses = new HashMap<String, Info>();
-  static {
-	boxClasses.put("java/lang/Byte", new Info(false, "byte", "(B)V"));
-	boxClasses.put("java/lang/Character", new Info(false, "char", "(C)V"));
-	boxClasses.put("java/lang/Short", new Info(false, "short", "(S)V"));
-	boxClasses.put("java/lang/Integer", new Info(false, "int", "(I)V"));
-	boxClasses.put("java/lang/Long", new Info(false, "long", "(J)V"));
-	boxClasses.put("java/lang/Float", new Info(true, "float", "(F)V"));
-	boxClasses.put("java/lang/Double", new Info(true, "double", "(D)V"));
-  }
-
+  private final Map<String, XMethod> boxClasses = new HashMap<String, XMethod>();
+  private final BugAccumulator bugAccumulator;
   private final BugReporter bugReporter;
   private boolean constantArgument;
 
@@ -81,8 +63,21 @@ public class NumberConstructor extends BytecodeScanningDetector {
    */
   public NumberConstructor(BugReporter bugReporter) {
 	this.bugReporter = bugReporter;
+	this.bugAccumulator = new BugAccumulator(bugReporter);
+	handle("java/lang/Byte", false, "(B)V");
+	handle("java/lang/Character", false, "(C)V");
+	handle("java/lang/Short", false, "(S)V");
+	handle("java/lang/Integer", false, "(I)V");
+	handle("java/lang/Long", false, "(J)V");
+	handle("java/lang/Float", true, "(F)V");
+	handle("java/lang/Double", true, "(D)V");
+
   }
 
+  private void handle(String className, boolean isFloatingPoint, String sig) {
+	  XMethod m = XFactory.createXMethod(className, "valueOf", sig, true);
+	  boxClasses.put(className, m);
+  }
   /**
    * The detector is only meaningful for Java5 class libraries.
    * 
@@ -95,7 +90,12 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	  super.visitClassContext(classContext);
 	}
   }
-
+  
+  @Override
+  public void visit(Code obj) {
+	  super.visit(obj);
+	  bugAccumulator.reportAccumulatedBugs();
+  }
   @Override
   public void sawOpcode(int seen) {
 	// detect if previous op was a constant number
@@ -118,18 +118,18 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	  return;
 	}
 	String cls = getClassConstantOperand(); 
-	Info info = boxClasses.get(cls);
-	if (info == null) {
+	XMethod shouldCall = boxClasses.get(cls);
+	if (shouldCall == null) {
 	  return;
 	}
 
-	if (!info.constrArgs.equals(getSigConstantOperand())) {
+	if (!shouldCall.getSignature().substring(0,3).equals(getSigConstantOperand().substring(0,3))) {
 	  return;
 	}
 
 	int prio;
 	String type;
-	if (info.isRealNumber) {
+	if (cls.equals("java/lang/Float") || cls.equals("java/lang/Double")) {
 	  prio = LOW_PRIORITY;
 	  type = "DM_FP_NUMBER_CTOR";
 	} else {
@@ -138,11 +138,12 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	}
 
 	cls = cls.substring(cls.lastIndexOf('/')+1);
-	bugReporter.reportBug(new BugInstance(this, type, prio)
+	bugAccumulator.accumulateBug(
+			new BugInstance(this, type, prio)
 			  .addClass(this)
 			  .addMethod(this)
-			  .addSourceLine(this)
-			  .addString(cls+"("+info.argName+")")
-			  .addString(cls+".valueOf("+info.argName+")"));
+			  .addCalledMethod(this)
+			  .addMethod(shouldCall).describe("SHOULD_CALL"), 
+			this);
   }
 }
