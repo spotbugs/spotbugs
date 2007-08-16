@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Detector to find calls to Number constructors with base type argument in
@@ -74,8 +75,8 @@ public class NumberConstructor extends BytecodeScanningDetector {
 
   }
 
-  private void handle(String className, boolean isFloatingPoint, String sig) {
-	  XMethod m = XFactory.createXMethod(className, "valueOf", sig, true);
+  private void handle(@SlashedClassName String className, boolean isFloatingPoint, String sig) {
+	  XMethod m = XFactory.createXMethod(ClassName.toDottedClassName(className), "valueOf", sig, true);
 	  boxClasses.put(className, m);
   }
   /**
