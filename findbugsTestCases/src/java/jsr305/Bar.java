@@ -5,6 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import javax.annotation.Tainted;
+import javax.annotation.Untainted;
 import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.When;
 
@@ -18,4 +20,6 @@ public @interface Bar {
 	int iField() default 1;
 	char cField() default 'Z';
 	String[] strArrField() default { "Blat", "Thud" };
+	
+	When[] eArrField() default { When.ALWAYS, When.MAYBE };
 }

@@ -9,7 +9,7 @@ public class TestViolatedInheritedAnnotations implements I1, I2 {
 	@Foo(when=When.ALWAYS) Object always;
 	@Foo(when=When.NEVER) Object never;
 	
-	@Bar(when=When.MAYBE, strArrField={"yip", "yip"}, cField='Q') Object barField;
+	@Bar(when=When.MAYBE, strArrField={"yip", "yip"}, cField='Q', eArrField={When.UNKNOWN}) Object barField;
 
 	public Object alwaysReturnFoo1() {
 		return never;
