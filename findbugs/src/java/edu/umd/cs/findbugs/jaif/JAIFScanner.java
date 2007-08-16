@@ -175,7 +175,7 @@ public class JAIFScanner {
 		
 		if (lineBuf.equals("")) {
 			// Reached end of line.
-			next = new JAIFToken(JAIFTokenKind.NEWLINE, "\n");
+			next = new JAIFToken(JAIFTokenKind.NEWLINE, "\n", lineNum);
 			lineBuf = null;
 			return;
 		}
@@ -187,7 +187,7 @@ public class JAIFScanner {
 			if (m.find()) {
 				String lexeme = m.group();
 				lineBuf = lineBuf.substring(lexeme.length());
-				next = new JAIFToken(tokenPattern.getKind(lexeme), lexeme);
+				next = new JAIFToken(tokenPattern.getKind(lexeme), lexeme, lineNum);
 				return;
 			}
 		}

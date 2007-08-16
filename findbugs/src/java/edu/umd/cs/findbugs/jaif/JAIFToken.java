@@ -19,15 +19,22 @@
 
 package edu.umd.cs.findbugs.jaif;
 
-
+/**
+ * One lexical token of an external annotations file.
+ * 
+ * @author David Hovemeyer
+ * @see http://pag.csail.mit.edu/jsr308/annotation-file-utilities/
+ */
 class JAIFToken {
 	JAIFTokenKind kind;
 	String lexeme;
+	int lineNum;
 	
-	public JAIFToken(JAIFTokenKind kind, String lexeme) {
+	public JAIFToken(JAIFTokenKind kind, String lexeme, int lineNum) {
 		this.kind = kind;
 		this.lexeme = lexeme;
-		System.out.println("token: " + this);
+		this.lineNum = lineNum;
+//		System.out.println("token: " + this);
 	}
 
 	public boolean isStartOfAnnotationName() {

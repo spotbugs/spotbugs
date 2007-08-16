@@ -20,17 +20,31 @@
 package edu.umd.cs.findbugs.jaif;
 
 public enum JAIFTokenKind {
-	NEWLINE,
-	COLON,
-	DOT,
-	IDENTIFIER_OR_KEYWORD,
-	LPAREN,
-	RPAREN,
-	COMMA,
-	EQUALS,
-	OCTAL_LITERAL,
-	DECIMAL_LITERAL,
-	HEX_LITERAL,
-	FLOATING_POINT_LITERAL,
-	STRING_LITERAL;
+	NEWLINE("<newline>"),
+	COLON(":"),
+	DOT("."),
+	IDENTIFIER_OR_KEYWORD("<identifier or keyword>"),
+	LPAREN("("),
+	RPAREN(")"),
+	COMMA(","),
+	EQUALS("="),
+	OCTAL_LITERAL("<octal literal>"),
+	DECIMAL_LITERAL("<decimal literal>"),
+	HEX_LITERAL("<hex literal>"),
+	FLOATING_POINT_LITERAL("<floating point literal>"),
+	STRING_LITERAL("<string literal>");
+	
+	private String stringRep;
+	
+	private JAIFTokenKind(String stringRep) {
+		this.stringRep = stringRep;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
+	@Override
+	public String toString() {
+		return stringRep;
+	}
 }

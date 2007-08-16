@@ -64,4 +64,26 @@ public interface JAIFEvents {
 	 */
 	void annotationField(String fieldName, Object constant);
 
+	/**
+	 * Called to indicate the start of an annotation definition.
+	 * 
+	 * @param annotationName name of the annotation
+	 * @param retention      retention: one of "visible", "invisible", or "source"
+	 */
+	void startAnnotationDefinition(String annotationName, String retention);
+
+	/**
+	 * Called to indicate the end of an annotation definition.
+	 * 
+	 * @param annotationName name of the annotation
+	 */
+	void endAnnotationDefinition(String annotationName);
+
+	/**
+	 * Called to visit an annotation field definition.
+	 * 
+	 * @param type       type of the annotation field (in JVM signature format)
+	 * @param fieldName name of the annotation field
+	 */
+	void annotationFieldDefinition(String type, String fieldName);
 }

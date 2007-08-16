@@ -60,7 +60,7 @@ public class JAIFParser {
 	private JAIFToken expect(JAIFTokenKind kind) throws IOException, JAIFSyntaxException {
 		JAIFToken t = scanner.nextToken();
 		if (t.kind != kind) {
-			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (was expecting a " + kind.toString() + ")");
+			throw new JAIFSyntaxException(this, "Unexpected token " + t + " (was expecting a `" + kind.toString() + "' token)");
 		}
 		return t;
 	}
@@ -117,6 +117,18 @@ public class JAIFParser {
 				buf.append(t.lexeme);
 				scanner.nextToken();
 			}
+		}
+		
+		return buf.toString();
+	}
+	
+	private String readType() throws IOException, JAIFSyntaxException {
+		StringBuffer buf = new StringBuffer();
+		
+		JAIFToken t = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
+		
+		if (t.lexeme.equals("enum")) {
+			
 		}
 		
 		return buf.toString();
@@ -312,8 +324,25 @@ public class JAIFParser {
 		}
 		
 		String annotationName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
+		
+		expect(JAIFTokenKind.COLON);
+		expectEndOfLine();
+		
+		callback.startAnnotationDefinition(annotationName, retention);
+		
+		t = scanner.peekToken();
+		while (t.kind != JAIFTokenKind.NEWLINE) {
+			parseAnnotationFieldDefinition();
+		}
 	}
 	
+	private void parseAnnotationFieldDefinition() throws IOException, JAIFSyntaxException {
+		String type = readType();
+		String fieldName = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD).lexeme;
+		
+		callback.annotationFieldDefinition(type, fieldName);
+	}
+
 	private void parseClassDefinition() {
 		
 	}
@@ -341,6 +370,17 @@ public class JAIFParser {
 
 	    	public void startPackageDefinition(String pkgName) {
 	    		System.out.println("package " + pkgName);
+	    	}
+	    	
+	    	public void startAnnotationDefinition(String annotationName, String retention) {
+	    		System.out.println("  annotation " + annotationName + " " + retention);
+	    	}
+	    	
+	    	public void endAnnotationDefinition(String annotationName) {
+	    	}
+	    	
+	    	public void annotationFieldDefinition(String type, String fieldName) {
+	    		System.out.println("    " + type + " " + fieldName);
 	    	}
 	    };
     	
