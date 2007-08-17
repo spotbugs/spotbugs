@@ -34,6 +34,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -81,6 +83,22 @@ public class TypeQualifierApplications {
 	 */
 	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>> effectiveParameterAnnotations =
 		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,EffectiveTypeQualifierAnnotation>>();
+
+	// FindBugs-specific default-annotation annotations.
+	// I.e.:
+	//   @DefaultAnnotationForParameters({Nonnull.class})
+	//   public class MyClass {
+	//      ...
+	//   }
+	
+	private static final ClassDescriptor DEFAULT_ANNOTATION =
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotation");
+	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS =
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForFields");
+	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_METHODS =
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForMethods");
+	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS =
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForParameters");
 	
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -295,7 +313,49 @@ public class TypeQualifierApplications {
 		}
 		return null;
 	}
+
+	/**
+	 * Check to see if one of the FindBugs-specific default annotation mechanisms
+	 * is used on given AnnotatedObject to define a default value for
+	 * given TypeQualifierValue. 
+	 * 
+     * @param o                  an AnnotatedObject
+     * @param typeQualifierValue a TypeQualifierValue
+	 * @param elementType        type of annotated element
+     * @return default TypeQualifierAnnotation, or null if none 
+     */
+    private static TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
+    	TypeQualifierAnnotation result;
+    	
+    	if ((result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
+    		return result;
+    	}
+
+    	switch (elementType) {
+    	case FIELD:
+    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
+    	case METHOD:
+    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
+    	case PARAMETER:
+    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
+    	default:
+    		// ignore
+    	}
+    	
+    	return result;
+    }
 	
+    private static TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
+    		TypeQualifierValue typeQualifierValue) {
+    	
+    	// TODO:
+    	// - check to see if default annotation is present; if not, return null
+    	// - get value - should be array of Type
+    	// - scan through array elements; see if any match the TypeQualifierValue (including type qualifier nicknames)
+    	
+    	return null;
+    }
+
 	/**
 	 * Get the effective TypeQualifierAnnotation on given
 	 * AnnotatedObject.  Takes into account inherited and
@@ -413,11 +473,19 @@ public class TypeQualifierApplications {
 		ElementType elementType = o.getElementType();
 		while (o.getContainingScope() != null) {
 			o = o.getContainingScope();
+			
+			// Check direct applications of the type qualifier
 			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, elementType);
 			result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (result != null) {
 				// Great - found an outer scope with a relevant annotation
+				break;
+			}
+			
+			// Check FindBugs-specific default annotations
+			result = getFindBugsDefaultAnnotation(o, typeQualifierValue, elementType);
+			if (result != null) {
 				break;
 			}
 		}
