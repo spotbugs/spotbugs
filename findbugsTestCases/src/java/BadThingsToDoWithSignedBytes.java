@@ -51,6 +51,32 @@ public class BadThingsToDoWithSignedBytes {
 		return b < 128;
 	}
 
+	// 200
+	boolean compareGT200(int pos) {
+		int b = buf[pos];
+		return b > 200;
+	}
+	boolean compareGE200(int pos) {
+		int b = buf[pos];
+		return b >= 200;
+	}
+	boolean compareNE200(int pos) {
+		int b = buf[pos];
+		return b != 200;
+	}
+	boolean compareEQ200(int pos) {
+		int b = buf[pos];
+		return b == 200;
+	}
+	boolean compareLE200(int pos) {
+		int b = buf[pos];
+		return b <= 200;
+	}
+	boolean compareLT200(int pos) {
+		int b = buf[pos];
+		return b < 200;
+	}
+
 	boolean isHundred(int pos) {
 		int b = buf[pos];
 		return b == 100 || b == 200;
