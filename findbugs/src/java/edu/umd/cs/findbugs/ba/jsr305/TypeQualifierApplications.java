@@ -23,7 +23,9 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.meta.When;
 
@@ -116,15 +118,15 @@ public class TypeQualifierApplications {
 	}
 	
 	/**
-	 * Populate a map of TypeQualifierValues to When values representing
+	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
 	 * method parameter. 
 	 * 
-	 * @param result    Map of TypeQualifierValues to When values
+	 * @param result    Set of TypeQualifierAnnotations
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 */
-	private static void getDirectApplications(Map<TypeQualifierValue, When> result, XMethod o, int parameter) {
+	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		ElementType e = ElementType.PARAMETER;
 		for(AnnotationValue v : values) {
@@ -142,15 +144,15 @@ public class TypeQualifierApplications {
 	}
 	
 	/**
-	 * Populate a map of TypeQualifierValues to When values representing
+	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
 	 * AnnotatedObject. 
 	 * 
-	 * @param result Map of TypeQualifierValues to When values
+	 * @param result Set of TypeQualifierAnnotations
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of annotated object
 	 */
-	private static void getDirectApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
+	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o);
 		for(AnnotationValue v : values) {
 			Object a = v.getValue("applyTo");
@@ -167,14 +169,14 @@ public class TypeQualifierApplications {
 	}
 	
 	/**
-	 * Resolve a raw AnnotationValue into a TypeQualifierValue/When pair,
-	 * using given map to remember previously resolved instances.
+	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation,
+	 * using given set to remember previously resolved instances.
 	 * 
-	 * @param map Map of resolved TypeQualifierValue/When pairs
+	 * @param set Set of resolved TypeQualifierAnnotations
 	 * @param v   a raw AnnotationValue
 	 */
-	private static void constructTypeQualifierAnnotation(Map<TypeQualifierValue, When> map, AnnotationValue v) {
-		assert map != null;
+	private static void constructTypeQualifierAnnotation(Set<TypeQualifierAnnotation> set, AnnotationValue v) {
+		assert set != null;
 		assert v != null;
 		EnumValue whenValue = (EnumValue) v.getValue("when");
 		When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
@@ -184,23 +186,23 @@ public class TypeQualifierApplications {
 			// In this case, the type qualifier requires strict checking.
 			tqv.setIsStrict();
 		}
-		map.put(tqv, when);
+		set.add(TypeQualifierAnnotation.getValue(tqv, when));
 		if (DEBUG && whenValue == null) {
 			System.out.println("When value unspecified for type qualifier value " + tqv);
 		}
 	}
 
 	/**
-	 * Populate map of TypeQualifierValues to When values
+	 * Populate Set of TypeQualifierAnnotations
 	 * for given AnnotatedObject,
 	 * taking into account annotations
 	 * applied to outer scopes (e.g., enclosing classes and packages.)
 	 * 
-	 * @param result map of TypeQualifierValues to When values
+	 * @param result Set of TypeQualifierAnnotations
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of AnnotatedObject
 	 */
-	private static void getApplicableScopedApplications(Map<TypeQualifierValue, When> result, AnnotatedObject o, ElementType e) {
+	private static void getApplicableScopedApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
 		AnnotatedObject outer = o.getContainingScope();
 		if (outer != null) 
 			getApplicableScopedApplications(result, outer, e);
@@ -218,9 +220,9 @@ public class TypeQualifierApplications {
 	 * @return Collection of resolved TypeQualifierAnnotations
 	 */
 	private static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(AnnotatedObject o, ElementType e) {
-		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
+		Set<TypeQualifierAnnotation> result = new HashSet<TypeQualifierAnnotation>();
 		getApplicableScopedApplications(result, o, e);
-		return  TypeQualifierAnnotation.getValues(result);
+		return result;
 	}
 
 	/**
@@ -234,11 +236,11 @@ public class TypeQualifierApplications {
 	 * @return Collection of resolved TypeQualifierAnnotations
 	 */
 	private static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(XMethod o, int parameter) {
-		Map<TypeQualifierValue, When> result = new HashMap<TypeQualifierValue, When>();
+		Set<TypeQualifierAnnotation> result = new HashSet<TypeQualifierAnnotation>();
 		ElementType e = ElementType.PARAMETER;
 		getApplicableScopedApplications(result, o, e);
 		getDirectApplications(result, o, parameter);
-		return TypeQualifierAnnotation.getValues(result);
+		return result;
 	}
 
 	/**
@@ -365,11 +367,10 @@ public class TypeQualifierApplications {
 			TypeQualifierValue typeQualifierValue) {
 		TypeQualifierAnnotation result;
 		
-		Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, o, o.getElementType());
 		
-		Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
-		result = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+		result = findMatchingTypeQualifierAnnotation(/*annotations*/applications, typeQualifierValue);
 		
 		return result;
 	}
@@ -412,10 +413,9 @@ public class TypeQualifierApplications {
 		ElementType elementType = o.getElementType();
 		while (o.getContainingScope() != null) {
 			o = o.getContainingScope();
-			Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, elementType);
-			Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
-			result = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+			result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (result != null) {
 				// Great - found an outer scope with a relevant annotation
 				break;
@@ -487,11 +487,10 @@ public class TypeQualifierApplications {
 	 */
 	private static @CheckForNull TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
 			TypeQualifierValue typeQualifierValue) {
-		Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, xmethod, parameter);
 		
-		Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
-		return findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+		return findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 	}
 
 	/**
@@ -536,11 +535,10 @@ public class TypeQualifierApplications {
 		while (o.getContainingScope() != null) {
 			o = o.getContainingScope();
 
-			Map<TypeQualifierValue, When> applications = new HashMap<TypeQualifierValue, When>();
+			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, ElementType.PARAMETER);
 
-			Collection<TypeQualifierAnnotation> annotations = TypeQualifierAnnotation.getValues(applications);
-			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(annotations, typeQualifierValue);
+			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (tqa != null) {
 				// Found matching annotation in outer scope
 				return tqa;
