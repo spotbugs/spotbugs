@@ -324,7 +324,7 @@ public class TypeQualifierApplications {
 	 * @param elementType        type of annotated element
      * @return default TypeQualifierAnnotation, or null if none 
      */
-    private static TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
+    private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
     	TypeQualifierAnnotation result;
     	
     	if ((result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
@@ -345,7 +345,7 @@ public class TypeQualifierApplications {
     	return result;
     }
 	
-    private static TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
+    private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
     		TypeQualifierValue typeQualifierValue) {
     	
     	// TODO:
