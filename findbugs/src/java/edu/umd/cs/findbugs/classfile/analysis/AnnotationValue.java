@@ -29,34 +29,69 @@ import org.objectweb.asm.AnnotationVisitor;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * @author pwilliam
+ * The "raw" version of an annotation appearing in a class file.
+ * 
+ * @author William Pugh
  */
 public class AnnotationValue {
 	private final ClassDescriptor annotationClass;
+	private Map<String, Object> valueMap = new HashMap<String, Object>();
+	private Map<String, Object> typeMap = new HashMap<String, Object>();
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param annotationClass the annotation class
+	 */
 	public AnnotationValue(ClassDescriptor annotationClass) {
 		this.annotationClass  = annotationClass;
 	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param annotationClass JVM signature of the annotation class
+	 */
 	public AnnotationValue(String annotationClass) {
 		this.annotationClass  = ClassDescriptor.createClassDescriptorFromSignature(annotationClass);
 	}
-	Map<String, Object> valueMap = new HashMap<String, Object>();
 
-	Map<String, Object> typeMap = new HashMap<String, Object>();
-
+	/**
+	 * @return ClassDescriptor referring to the annotation class
+	 */
 	public ClassDescriptor getAnnotationClass() {
 		return annotationClass;
 	}
+	
+	/**
+	 * Get the value of given annotation element.
+	 * See <a href="http://asm.objectweb.org/current/doc/javadoc/user/org/objectweb/asm/AnnotationVisitor.html">AnnotationVisitor Javadoc</a>
+	 * for information on what the object returned could be.
+	 * 
+	 * @param name name of annotation element
+	 * @return the element value (primitive value, String value, enum value, Type, or array of one of the previous)
+	 */
 	public Object getValue(String name) {
 		return valueMap.get(name);
 	}
+	
+	/**
+	 * Get a descriptor specifying the type of an annotation element.
+	 * 
+	 * @param name name of annotation element
+	 * @return descriptor specifying the type of the annotation element
+	 */
 	public Object getDesc(String name) {
 		return typeMap.get(name);
 	}
+	
 	public String toString() {
 		return annotationClass + ":" + valueMap.toString();
 	}
 
+	/**
+	 * Get an AnnotationVisitor which can populate this AnnotationValue object.
+	 */
 	public AnnotationVisitor getAnnotationVisitor() {
 		return new AnnotationVisitor() {
 			public void visit(String name, Object value) {
