@@ -430,7 +430,7 @@ public class TypeQualifierApplications {
 		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, o, o.getElementType());
 		
-		result = findMatchingTypeQualifierAnnotation(/*annotations*/applications, typeQualifierValue);
+		result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 		
 		return result;
 	}
@@ -603,12 +603,18 @@ public class TypeQualifierApplications {
 		while (o.getContainingScope() != null) {
 			o = o.getContainingScope();
 
+			// Check for direct type qualifier annotation
 			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, ElementType.PARAMETER);
-
 			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (tqa != null) {
 				// Found matching annotation in outer scope
+				return tqa;
+			}
+			
+			// Check for FindBugs-specific default annotation
+			tqa = getFindBugsDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
+			if (tqa != null) {
 				return tqa;
 			}
 		}
