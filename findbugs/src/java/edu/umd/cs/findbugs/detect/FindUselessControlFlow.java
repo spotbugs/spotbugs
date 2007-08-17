@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.BitSet;
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 
 /**
@@ -79,14 +80,28 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 				if (lineNumbers != null) {
 					int branchLineNumber = lineNumbers.getSourceLine(getPC());
 					int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
-					if (branchLineNumber +1 == targetLineNumber || branchLineNumber  == targetLineNumber ) priority = HIGH_PRIORITY;
-					else if (branchLineNumber +2 < targetLineNumber) priority = LOW_PRIORITY;
+					int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
+					
+					if (branchLineNumber +1 == targetLineNumber || branchLineNumber  == targetLineNumber && nextLine == branchLineNumber+1) priority = HIGH_PRIORITY;
+					else if (branchLineNumber +2 < Math.max(targetLineNumber, nextLine)) priority = LOW_PRIORITY;
 				} else priority = LOW_PRIORITY;
 				bugReporter.reportBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			}
 		}
+	}
+	
+	public static int getNextSourceLine(LineNumberTable lineNumbers, int sourceLine) {
+		int result = Integer.MAX_VALUE;
+		for(LineNumber ln : lineNumbers.getLineNumberTable()) {
+			
+			int thisLine = ln.getLineNumber();
+			if (sourceLine < thisLine && thisLine < result) 
+				result = thisLine;
+		}
+		return result;
+		
 	}
 }
 
