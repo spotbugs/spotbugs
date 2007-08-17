@@ -62,10 +62,11 @@ public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
 	boolean classIsPublicOrProtected;
 
-	public static boolean definedIn(JavaClass clazz, XMethod m) {
+	public static @CheckForNull XMethod definedIn(JavaClass clazz, XMethod m) {
 		for(Method m2 : clazz.getMethods()) 
-			if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) return true;
-		return false;
+			if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) 
+				return XFactory.createXMethod(clazz, m2);
+		return null;
 	}
 
 	public static  boolean confusingMethodNames(XMethod m1, XMethod m2) {
@@ -110,22 +111,22 @@ public class Naming extends PreorderVisitor implements Detector {
 					WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
 					
 					int priority = HIGH_PRIORITY;
-					boolean intentional = false;
+					XMethod m3 = null;
 					try {
 					JavaClass clazz = Repository.lookupClass(m.getClassName());
-					if (definedIn(clazz, m2)) {
-						intentional = true;
+					if ((m3 = definedIn(clazz, m2)) == null) {
+						 // the method we don't override is also defined in our class
 						priority = NORMAL_PRIORITY;
 					}
-					for(JavaClass i : clazz.getAllInterfaces()) 
-						if (definedIn(i, m))  {
+					if (m3 == null) for(JavaClass s : clazz.getSuperClasses()) 
+						if ((m3 = definedIn(s, m)) != null) {
+							// the method we define is also defined in our superclass
 							priority = NORMAL_PRIORITY;
-							intentional = true;
 						}
-					for(JavaClass s : clazz.getSuperClasses()) 
-						if (definedIn(s, m)) {
-							intentional = true;
+					if (false && m3 == null) for(JavaClass i : clazz.getAllInterfaces()) 
+						if ((m3 = definedIn(i, m)) != null)  {
 							priority = NORMAL_PRIORITY;
+							// the method we define is also defined in an interface
 						}
 					} catch (ClassNotFoundException e) {
 						priority++;
@@ -133,7 +134,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					}
 					
 					XFactory xFactory = AnalysisContext.currentXFactory();
-					if (!intentional && AnalysisContext.currentXFactory().isCalled(m)) 
+					if (m3 == null && AnalysisContext.currentXFactory().isCalled(m)) 
 						propertySet.addProperty(NamingProperty.METHOD_IS_CALLED);
 					else if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) 
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
@@ -142,20 +143,21 @@ public class Naming extends PreorderVisitor implements Detector {
 					priority = propertySet.computePriority(priority);
 					
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
-					String pattern = intentional  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
+					String pattern = m3 != null  ?  "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
 					
 					BugInstance bug = new BugInstance(this, pattern, priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
 					.addClass(m2.getClassName())
 					.addMethod(m2);
+					if (m3 != null) bug.addMethod(m3);
 					propertySet.decorateBugInstance(bug);
 					bugReporter.reportBug(bug);
 					}
 					if (!m.getSignature().equals(m2.getSignature()) 
 							&& removePackageNamesFromSignature(m.getSignature()).equals(
 									removePackageNamesFromSignature(m2.getSignature()))) {
-						String pattern = intentional  ?  "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
+						String pattern = m3 != null  ?  "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
 						
 						Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
 						Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
@@ -169,6 +171,7 @@ public class Naming extends PreorderVisitor implements Detector {
 								.addClass(m2.getClassName())
 								.addMethod(m2)
 								.addFoundAndExpectedType(p, p2);
+								if (m3 != null) bug.addMethod(m3);
 								propertySet.decorateBugInstance(bug);
 								bugReporter.reportBug(bug
 								);
@@ -223,11 +226,36 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 	}
 
+	public String stripPackageName(String className) {
+		if (className.indexOf('.') >= 0)
+			return className.substring(className.lastIndexOf('.')+1);
+		else if (className.indexOf('/') >= 0)
+			return className.substring(className.lastIndexOf('/')+1);
+		else return className;
+	}
+	
+	public boolean sameBaseName(String class1, String class2) {
+		return class1 != null && class2 != null && stripPackageName(class1).equals(stripPackageName(class2));
+	}
 	@Override
 		 public void visitJavaClass(JavaClass obj) {
-		if (obj.isInterface()) return;
 		String name = obj.getClassName();
 		if (!visited.add(name)) return;
+		String superClassName = obj.getSuperclassName();
+		if (sameBaseName(superClassName, name)) {
+			bugReporter.reportBug(new BugInstance(this, 
+					"NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", 
+					HIGH_PRIORITY ).addClass(this).addClass(superClassName));
+		}
+		for(String interfaceName : obj.getInterfaceNames())
+		if (sameBaseName(interfaceName, name)) {
+			bugReporter.reportBug(new BugInstance(this, 
+					"NM_SAME_SIMPLE_NAME_AS_INTERFACE", 
+					NORMAL_PRIORITY ).addClass(this).addClass(interfaceName));
+		}
+		if (obj.isInterface()) return;
+
+
 		try {
 			JavaClass supers[] = Repository.getSuperClasses(obj);
 			for (JavaClass aSuper : supers) {

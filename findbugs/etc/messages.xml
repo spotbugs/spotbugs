@@ -2995,6 +2995,35 @@ that you want to invoke the inherited method, not the method in the outer class.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS">
+    <ShortDescription>Class names shouldn't shadow name of superclass</ShortDescription>
+    <LongDescription>The class name {0} shadows the name of the superclass {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class has a simple name that is identical to that of its superclass, except
+that its superclass is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>). 
+This can be exceptionally confusing, create lots of situations in which you have to look at import statements
+to resolve references and creates many
+opportunities to accidently define methods that do not override methods in their superclasses.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="NM_SAME_SIMPLE_NAME_AS_INTERFACE">
+    <ShortDescription>Class names shouldn't shadow name of implemented interface</ShortDescription>
+    <LongDescription>The class name {0} shadows the name of implemented interface {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class has a simple name that is identical to that of an implemented interface, except
+that the interfaceis in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>). 
+This can be exceptionally confusing, create lots of situations in which you have to look at import statements
+to resolve references and creates many
+opportunities to accidently define methods that do not override methods in their superclasses.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="NM_CLASS_NAMING_CONVENTION">
     <ShortDescription>Class names should start with an upper case letter</ShortDescription>
     <LongDescription>The class name {0} doesn't start with an upper case letter</LongDescription>
@@ -3043,7 +3072,7 @@ identical then one of the methods would override the other.
     </Details>
   </BugPattern>
   <BugPattern type="NM_VERY_CONFUSING_INTENTIONAL">
-    <ShortDescription>Very confusing method names (but intentional)</ShortDescription>
+    <ShortDescription>Very confusing method names</ShortDescription>
     <LongDescription>VERY confusing (but perhaps intentional) to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
@@ -3087,7 +3116,7 @@ types are <code>Foo</code>'s from different packages.
     </Details>
   </BugPattern>
   <BugPattern type="NM_WRONG_PACKAGE_INTENTIONAL">
-    <ShortDescription>Method intentionally doesn't override method in superclass due to wrong package for parameter</ShortDescription>
+    <ShortDescription>Method doesn't override method in superclass due to wrong package for parameter</ShortDescription>
     <LongDescription>{1} doesn't override method in superclass because parameter type {4} doesn't match superclass parameter type {5}</LongDescription>
     <Details>
 <![CDATA[
