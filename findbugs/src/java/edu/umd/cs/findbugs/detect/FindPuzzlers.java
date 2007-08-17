@@ -24,6 +24,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -39,9 +40,11 @@ import edu.umd.cs.findbugs.visitclass.Util;
 public class FindPuzzlers extends OpcodeStackDetector {
 
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
+	final BugAccumulator bugAccumulator;
 	public FindPuzzlers(BugReporter bugReporter) {
 		this.bugReporter =  bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -57,6 +60,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 		imul_distance = 10000;
 		ternaryConversionState = 0;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	int imul_constant;
@@ -118,11 +122,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			if (priority >= LOW_PRIORITY && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
 			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
 				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
-				bugReporter.reportBug(new BugInstance(this, 
+				bugAccumulator.accumulateBug(new BugInstance(this, 
 						"ICAST_INTEGER_MULTIPLY_CAST_TO_LONG", 
 						priority)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
+				.addClassAndMethod(this), this);
 			}
 		}
 
@@ -135,12 +138,12 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						int priority = NORMAL_PRIORITY;
 						if (seen == GETSTATIC) priority--;
 						if (!targetClass.isPublic()) priority++;
-						bugReporter.reportBug(new BugInstance(this, 
+						bugAccumulator.accumulateBug(new BugInstance(this, 
 								"IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION", 
 								priority)
-						.addClassAndMethod(this).addClass(getDottedClassConstantOperand())
-						.addSourceLine(this)
-						);
+						.addClassAndMethod(this).addClass(getDottedClassConstantOperand()),
+						this);
+						
 					}
 				} catch (ClassNotFoundException e) {
 					// ignore it
@@ -156,9 +159,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 
 			if (item0.isArray() || item1.isArray()) {
-				bugReporter.reportBug(new BugInstance("EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance("EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+				.addClassAndMethod(this), this);
 			}
 		}
 
@@ -166,9 +168,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 		if (seen >= IALOAD && seen <= SALOAD || seen >= IASTORE && seen <= SASTORE ) {
 			Item index  = stack.getStackItem(0);
 			if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION)
-				bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
+				.addClassAndMethod(this), this);
+				
 		}
 
 		if ((seen == IFEQ || seen == IFNE) && getPrevOpcode(1) == IMUL
@@ -177,9 +179,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				)
 				&& getPrevOpcode(3) == IREM
 		)
-			bugReporter.reportBug(new BugInstance(this, "IM_MULTIPLYING_RESULT_OF_IREM", LOW_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this));
+			bugAccumulator.accumulateBug(new BugInstance(this, "IM_MULTIPLYING_RESULT_OF_IREM", LOW_PRIORITY)
+			.addClassAndMethod(this), this);
+			
 
 
 		if (seen == I2S && getPrevOpcode(1) == IUSHR && !shiftOfNonnegativeValue && 
@@ -187,8 +189,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				|| seen == I2B && getPrevOpcode(1) == IUSHR && !shiftOfNonnegativeValue
 				&& (!constantArgumentToShift || valueOfConstantArgumentToShift % 8 != 0)) 
 
-			bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
-			.addClassAndMethod(this).addSourceLine(this));
+			bugAccumulator.accumulateBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
+			.addClassAndMethod(this), this);
 
 
 		constantArgumentToShift = false;
@@ -212,12 +214,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					constantArgumentToShift = true;
 					valueOfConstantArgumentToShift = ((Integer) rightHandSide);
 					if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
-						bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
+						bugAccumulator.accumulateBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
 								valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : HIGH_PRIORITY)
 						.addClassAndMethod(this)
-						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT)
-						.addSourceLine(this)
-						);
+						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT), this);
 				}
 				if (leftHandSide != null 
 						&& leftHandSide instanceof Integer
@@ -286,9 +286,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				|| seen == ISTORE_2
 				|| seen == ISTORE_3)
 				&& getRegisterOperand() == prevOpcodeIncrementedRegister) {
-			bugReporter.reportBug(new BugInstance(this, "DLS_OVERWRITTEN_INCREMENT", HIGH_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this));
+			bugAccumulator.accumulateBug(new BugInstance(this, "DLS_OVERWRITTEN_INCREMENT", HIGH_PRIORITY)
+			.addClassAndMethod(this), this);
+			
 
 		}
 		if (seen == IINC) {
@@ -320,9 +320,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			break;
 		case 3:
 			if (seen == IF_ICMPEQ || seen == IF_ICMPNE)  {
-				bugReporter.reportBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
+				.addClassAndMethod(this), this);
 			}
 			badlyComputingOddState = 0;
 			break;
@@ -342,9 +341,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			String signature = item.getSignature();
 			if (signature != null && signature.startsWith("[")) 
-				bugReporter.reportBug(new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
+				.addClassAndMethod(this), this);
 		}
 
 		if (isTigerOrHigher) {
@@ -356,13 +354,13 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						&& getNameConstantOperand().endsWith("Value")
 						&& getSigConstantOperand().length() == 3) {
 					if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
-						bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+						bugAccumulator.accumulateBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
+						
 					else 
-						bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+						bugAccumulator.accumulateBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
+						
 					ternaryConversionState = 1;
 				} else ternaryConversionState = 0;
 
@@ -398,9 +396,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					 if (size == Integer.MAX_VALUE) {
 					JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
 					if (targetClass.getSuperclassName().startsWith("junit")) {
-						bugReporter.reportBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+						bugAccumulator.accumulateBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
+						
 
 					}
 					 }

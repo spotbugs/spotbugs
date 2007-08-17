@@ -83,7 +83,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 	boolean hasNativeMethods;
 	boolean isSerializable;
 	boolean sawSelfCallInConstructor;
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 	boolean publicOrProtectedConstructor;
 
 	public Set<? extends XField> getReadFields() {
@@ -99,6 +100,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		context.setUnreadFields(this);
 	}
@@ -257,6 +259,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			needsOuterObjectInConstructor.add(getDottedClassName());
 			// System.out.println(betterClassName + " needs outer object in constructor");
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -376,14 +379,14 @@ public class UnreadFields extends OpcodeStackDetector  {
 					priority++;
 				if (getClassName().indexOf('$') != -1)
 					priority++;
-				bugReporter.reportBug(new BugInstance(this, 
+				bugAccumulator.accumulateBug(
+						new BugInstance(this, 
 						"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
-					priority
-					)
+						priority)
 						.addClassAndMethod(this)
-						.addField(f)
-						.addSourceLine(this)
-					);
+						.addField(f), 
+					this);
+						
 				}
 			}
 
@@ -708,13 +711,13 @@ public class UnreadFields extends OpcodeStackDetector  {
 					priority--;
 				}
 				for (ProgramPoint p : assumedNonNullAt)
-					bugReporter.reportBug(new BugInstance(this,
+					bugAccumulator.accumulateBug(new BugInstance(this,
 							"NP_UNWRITTEN_FIELD",
 							npPriority)
 							.addClassAndMethod(p.method)
-							.addField(f)
-							.addSourceLine(p.sourceLine)
-					);
+							.addField(f), 
+						p.sourceLine);
+							
 			} else {
 				if (f.isStatic()) priority++;
 				if (finalFields.contains(f)) priority++;
@@ -800,7 +803,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 				}
 			}
 		}
-
+		bugAccumulator.reportAccumulatedBugs();
 	}
 	/**
 	 * @param instance

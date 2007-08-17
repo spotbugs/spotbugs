@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -69,7 +70,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	private static final String PROP_SKIP_SYNCHRONIZED_CHECK = "staticcal.skipsynccheck";
 
 	/** The reporter to report to */
-	private BugReporter reporter;
+	final private BugReporter reporter;
+	final private BugAccumulator bugAccumulator;
 
 	/** Name of the class being inspected */
 	private String currentClass;
@@ -101,6 +103,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	public StaticCalendarDetector(BugReporter aReporter) {
 		reporter = aReporter;
+		bugAccumulator = new BugAccumulator(reporter);
 	}
 
 	/**
@@ -162,6 +165,10 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		}
 	}
 	
+	@Override public void visit(Code obj) {
+		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
+	}
 
 	/**
 	 * Checks for method invocations ({@link org.apache.bcel.generic.INVOKEVIRTUAL})
@@ -244,8 +251,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				tBugType = "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE";
 			}
 			if (tBugType != null) {
-				reporter.reportBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
-				        .addOptionalField(field).addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
+				        .addOptionalField(field), this);
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);

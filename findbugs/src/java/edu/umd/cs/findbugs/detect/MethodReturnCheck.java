@@ -48,7 +48,8 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 
 	boolean previousOpcodeWasNEW;
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
 
@@ -64,6 +65,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -86,6 +88,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 		if (DEBUG)
 			System.out.println("Visiting " + method);
 		super.visitCode(code);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -124,9 +127,8 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 				BugInstance warning = new BugInstance(this,
 						pattern, priority)
 						.addClassAndMethod(this)
-						.addMethod(callSeen).describe("METHOD_CALLED")
-						.addSourceLine(this, callPC);
-				bugReporter.reportBug(warning);
+						.addMethod(callSeen).describe("METHOD_CALLED");
+				bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
 			}
 			state = SCAN;
 		} else if (INVOKE_OPCODE_SET.get(seen)) {
@@ -155,9 +157,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 									callSeen.getClassName().replace('.', '/')
 											+ ";"))
 						priority++;
-					bugReporter.reportBug(new BugInstance(this,
+					bugAccumulator.accumulateBug(new BugInstance(this,
 							"RV_RETURN_VALUE_IGNORED", priority)
-							.addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
+							.addClassAndMethod(this).addCalledMethod(this), this);
 				}
 
 			}
