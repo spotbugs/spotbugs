@@ -241,17 +241,20 @@ public class Naming extends PreorderVisitor implements Detector {
 		 public void visitJavaClass(JavaClass obj) {
 		String name = obj.getClassName();
 		if (!visited.add(name)) return;
+
 		String superClassName = obj.getSuperclassName();
+		if (!name.equals("java.lang.Object")) {
 		if (sameBaseName(superClassName, name)) {
 			bugReporter.reportBug(new BugInstance(this, 
 					"NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", 
-					HIGH_PRIORITY ).addClass(this).addClass(superClassName));
+					HIGH_PRIORITY ).addClass(name).addClass(superClassName));
 		}
 		for(String interfaceName : obj.getInterfaceNames())
 		if (sameBaseName(interfaceName, name)) {
 			bugReporter.reportBug(new BugInstance(this, 
 					"NM_SAME_SIMPLE_NAME_AS_INTERFACE", 
-					NORMAL_PRIORITY ).addClass(this).addClass(interfaceName));
+					NORMAL_PRIORITY ).addClass(name).addClass(interfaceName));
+		}
 		}
 		if (obj.isInterface()) return;
 
