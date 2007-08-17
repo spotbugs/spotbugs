@@ -24,6 +24,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.meta.TypeQualifierNickname;
+import javax.annotation.meta.When;
+
 /**
  * Used to indicate that the nullness of element is unknown, or may vary in
  * unknown ways in subclasses.
@@ -33,6 +36,8 @@ import java.lang.annotation.Target;
 		 ElementType.PARAMETER, 
 		 ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.CLASS)
+@javax.annotation.Nonnull(when=When.UNKNOWN)
+@TypeQualifierNickname
 public @interface UnknownNullness {
 
 }

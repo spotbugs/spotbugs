@@ -57,6 +57,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -72,7 +74,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
 	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 
 	public CheckTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -101,6 +103,11 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 
 		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
+			if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals("javax/annotation/Nonnull")) {
+				// Checking @Nonnull annotations is the bailiwick of FindNullDeref.
+				continue;
+			}
+			
 			try {
 				checkQualifier(
 						methodDescriptor,

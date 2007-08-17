@@ -24,6 +24,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.meta.TypeQualifierNickname;
+import javax.annotation.meta.When;
+
 /**
  * The annotated element must not be null. 
  * 
@@ -35,6 +38,8 @@ import java.lang.annotation.Target;
 		 ElementType.PARAMETER, 
 		 ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.CLASS)
+@javax.annotation.Nonnull(when=When.ALWAYS)
+@TypeQualifierNickname
 public @interface NonNull {
 
 }
