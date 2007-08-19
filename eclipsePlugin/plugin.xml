@@ -9,6 +9,7 @@
 
    <runtime>
 	  <library name="findbugs-plugin.jar"/>
+	  <library name="jsr305.jar"/>
 	  <library name="bcel.jar"/>
 	  <library name="dom4j-full.jar"/>
 	  <library name="findbugs.jar"/>

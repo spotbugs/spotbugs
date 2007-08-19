@@ -40,6 +40,7 @@
 		</fileset>
 		<fileset file="findbugs.jar"/>
 		<fileset file="bcel.jar"/>
+		<fileset file="jsr305.jar"/>
 		<fileset file="dom4j-full.jar"/>
 	</path>
 	
@@ -223,7 +224,7 @@
 	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
 		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
 		<copy todir="${fbeclipse.dir}">
-			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,bcel.jar,annotations.jar"/>
+			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,jsr305.jar,bcel.jar,annotations.jar"/>
 		</copy>
 		<copy todir="${fbeclipse.dir}/plugin">
 			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
