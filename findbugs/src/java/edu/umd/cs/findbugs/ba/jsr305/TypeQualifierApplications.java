@@ -334,10 +334,13 @@ public class TypeQualifierApplications {
     	switch (elementType) {
     	case FIELD:
     		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
+    		break;
     	case METHOD:
     		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
+    		break;
     	case PARAMETER:
     		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
+    		break;
     	default:
     		// ignore
     	}

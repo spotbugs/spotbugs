@@ -614,7 +614,7 @@ public class Subtypes2 {
 		ClassVertex next;
 		Set<ClassDescriptor> seen;
 		
-		public SupertypeTraversalPath(ClassVertex next) {
+		public SupertypeTraversalPath(@CheckForNull ClassVertex next) {
 			this.next = next;
 			this.seen = new HashSet<ClassDescriptor>();
 		}
