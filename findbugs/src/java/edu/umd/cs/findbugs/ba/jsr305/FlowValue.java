@@ -135,6 +135,10 @@ public enum FlowValue {
 	 */
 	public static boolean backwardsValueConflictsWithSource(FlowValue backwardsFlowValue, SourceSinkInfo source,
 			TypeQualifierValue typeQualifierValue) {
+		// Never report a warning for UNKNOWN sources
+		if (source.getWhen() == When.UNKNOWN) {
+			return false;
+		}
 
 		if (typeQualifierValue.isStrictQualifier()) {
 			// strict checking
