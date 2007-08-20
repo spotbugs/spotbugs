@@ -14,12 +14,13 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("idcd.debug");
 
-	private BugReporter bugReporter;
-	private final BugAccumulator bugAccumulator = new BugAccumulator(bugReporter);
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 	private int prevOpCode;
 
 	public IDivResultCastToDouble(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
