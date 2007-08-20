@@ -41,9 +41,9 @@ public abstract class ClassName {
 	 * @param className a class name
 	 * @return the same class name in slashed format
 	 */
-	public static @SlashedClassName String toSlashedClassName(@DottedClassName String className) {
+	public static @SlashedClassName String toSlashedClassName(String className) {
 		if (className.indexOf('.') >= 0) {
-			className = className.replace('.', '/');
+			return className.replace('.', '/');
 		}
 		return className;
 	}
