@@ -70,6 +70,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	 */
 	@Override
 	protected void setUp() throws Exception {
+		super.setUp();
 		typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
 		typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
 		typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
