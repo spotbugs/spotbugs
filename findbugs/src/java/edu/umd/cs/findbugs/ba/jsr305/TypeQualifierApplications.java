@@ -29,6 +29,8 @@ import java.util.Set;
 
 import javax.annotation.meta.When;
 
+import org.objectweb.asm.Type;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -111,7 +113,7 @@ public class TypeQualifierApplications {
 		Collection<AnnotationValue> result = directObjectAnnotations.get(m);
 		if (result != null) return result;
 		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
-		result = TypeQualifierResolver.resolveTypeQualifierNicknames(m.getAnnotations());
+		result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
 		if (result.size() == 0) result = Collections.emptyList();
 		directObjectAnnotations.put(m, result);
 		return result;
@@ -129,7 +131,7 @@ public class TypeQualifierApplications {
 		Collection<AnnotationValue> result = directParameterAnnotations.get(m, parameter);
 		if (result != null) return result;
 		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
-		result = TypeQualifierResolver.resolveTypeQualifierNicknames(m.getParameterAnnotations(parameter));
+		result = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(parameter));
 		if (result.size() == 0) result = Collections.emptyList();
 		directParameterAnnotations.put(m, parameter, result);
 		return result;
@@ -351,10 +353,35 @@ public class TypeQualifierApplications {
     private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
     		TypeQualifierValue typeQualifierValue) {
     	
-    	// TODO:
     	// - check to see if default annotation is present; if not, return null
+    	AnnotationValue annotationValue = o.getAnnotation(defaultAnnotation);
+    	if (annotationValue == null) {
+    		return null;
+    	}
+    	
     	// - get value - should be array of Type
+    	Object value = annotationValue.getValue("value");
+    	if (value == null || !(value instanceof Object[])) {
+    		return null;
+    	}
+    	Object[] types = (Object[]) value;
+    	
     	// - scan through array elements; see if any match the TypeQualifierValue (including type qualifier nicknames)
+    	for (Object obj : types) {
+    		if (!(obj instanceof Type)) {
+    			if (DEBUG) {
+    				System.out.println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
+    			}
+    			continue;
+    		}
+    		
+    		Type type = (Type) obj;
+    		
+    		if (type.getClassName().equals(typeQualifierValue.getTypeQualifierClassDescriptor().getClassName())) {
+    			// Found a match!
+    			
+    		}
+    	}
     	
     	return null;
     }
