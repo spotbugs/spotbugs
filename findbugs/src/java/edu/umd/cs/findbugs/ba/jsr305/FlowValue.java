@@ -135,19 +135,17 @@ public enum FlowValue {
 	 */
 	public static boolean backwardsValueConflictsWithSource(FlowValue backwardsFlowValue, SourceSinkInfo source,
 			TypeQualifierValue typeQualifierValue) {
-		// Never report a warning for UNKNOWN sources
-		if (source.getWhen() == When.UNKNOWN) {
-			return false;
-		}
+
+		When sourceWhen = source.getWhen();
 
 		if (typeQualifierValue.isStrictQualifier()) {
 			// strict checking
-			return (backwardsFlowValue == ALWAYS && source.getWhen() != When.ALWAYS)
-				|| (backwardsFlowValue == NEVER && source.getWhen() != When.NEVER);
+			return (backwardsFlowValue == ALWAYS && sourceWhen != When.ALWAYS)
+				|| (backwardsFlowValue == NEVER && sourceWhen != When.NEVER);
 		} else {
 			// NOT strict checking
-			return (backwardsFlowValue == ALWAYS && source.getWhen() == When.NEVER)
-				|| (backwardsFlowValue == NEVER && source.getWhen() == When.ALWAYS);
+			return (backwardsFlowValue == ALWAYS && (sourceWhen == When.NEVER || sourceWhen == When.MAYBE))
+				|| (backwardsFlowValue == NEVER && (sourceWhen == When.ALWAYS || sourceWhen == When.MAYBE));
 		}
 	}
 
