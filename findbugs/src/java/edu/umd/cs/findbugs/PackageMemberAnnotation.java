@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Abstract base class for BugAnnotations describing constructs
@@ -32,9 +33,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 public abstract class PackageMemberAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = -8208567669352996892L;
 
-	protected String className;
-	protected String sourceFileName;
-	protected String description;
+	protected final @DottedClassName String className;
+	protected  String sourceFileName;
+	protected  String description;
 	protected SourceLineAnnotation sourceLines;
 
 	/**
@@ -42,7 +43,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 *
 	 * @param className name of the class
 	 */
-	protected PackageMemberAnnotation(String className, String description) {
+	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
 		this.className = className;
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		if (context != null) this.sourceFileName = context.lookupSourceFile(className);
@@ -70,7 +71,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	/**
 	 * Get the class name.
 	 */
-	public final String getClassName() {
+	public final @DottedClassName String getClassName() {
 		return className;
 	}
 
