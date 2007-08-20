@@ -34,10 +34,12 @@ import org.objectweb.asm.Type;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -200,12 +202,22 @@ public class TypeQualifierApplications {
 		assert v != null;
 		EnumValue whenValue = (EnumValue) v.getValue("when");
 		When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
-		TypeQualifierValue tqv = TypeQualifierValue.getValue(v.getAnnotationClass(), v.getValue("value"));
-		if (whenValue == null) {
-			// The TypeQualifierValue does not have an explicit when value.
-			// In this case, the type qualifier requires strict checking.
-			tqv.setIsStrict();
-		}
+		ClassDescriptor annotationClass = v.getAnnotationClass();
+		TypeQualifierValue tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
+		
+		try {
+			XClass annotationInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
+	    	XMethod whenAttribute = annotationInfo.findMethod("when", "()Ljavax/annotation/meta/When;", false);
+			if (whenAttribute == null) {
+				// The TypeQualifierValue does not have an explicit when value.
+				// In this case, the type qualifier requires strict checking.
+				tqv.setIsStrict();
+			}
+        } catch (CheckedAnalysisException e) {
+	        AnalysisContext.logError("Error getting info for " + annotationClass, e)  ;      }
+		
+		
+	
 		set.add(TypeQualifierAnnotation.getValue(tqv, when));
 		if (DEBUG && whenValue == null) {
 			System.out.println("When value unspecified for type qualifier value " + tqv);
