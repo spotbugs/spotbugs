@@ -32,26 +32,51 @@ import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
- * @author pwilliam
+ * Resolve annotations into type qualifiers.
+ * 
+ * @author William Pugh
  */
 public class TypeQualifierResolver {
 
-	public static Collection<AnnotationValue> resolveTypeQualifierNicknames(AnnotationValue value) {
-		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
-		resolveTypeQualifierNicknames(value, result, onStack);
-		return result;
-	}
-	public static Collection<AnnotationValue> resolveTypeQualifierNicknames(Collection<AnnotationValue> values) {
+//	/**
+//	 * Resolve an AnnotationValue into a list of AnnotationValues
+//	 * representing type qualifier annotations.
+//	 * 
+//	 * @param value AnnotationValue representing the use of an annotation
+//	 * @return Collection of AnnotationValues representing resolved
+//	 *         TypeQualifier annotations
+//	 */
+//	public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
+//		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
+//		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
+//		resolveTypeQualifierNicknames(value, result, onStack);
+//		return result;
+//	}
+
+	/**
+	 * Resolve collection of AnnotationValues (which have been used to
+	 * annotate an AnnotatedObject or method parameter)
+	 * into collection of resolved type qualifier AnnotationValues. 
+	 * 
+	 * @param values Collection of AnnotationValues used to annotate an AnnotatedObject or method parameter
+	 * @return Collection of resolved type qualifier AnnotationValues
+	 */
+	public static Collection<AnnotationValue> resolveTypeQualifiers(Collection<AnnotationValue> values) {
 		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
 		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
 		for(AnnotationValue value : values) resolveTypeQualifierNicknames(value, result, onStack);
 		return result;
 	}
+	
 	/**
-	 * @param value
-	 * @param result
-	 * @param onStack
+	 * Resolve an annotation into AnnotationValues representing any type qualifier(s)
+	 * the annotation resolves to.  Detects annotations which are directly
+	 * marked as TypeQualifier annotations, and also resolves the use of TypeQualifierNickname
+	 * annotations.
+	 * 
+	 * @param value   AnnotationValue representing the use of an annotation
+	 * @param result  LinkedList containing resolved type qualifier AnnotationValues
+	 * @param onStack stack of annotations being processed; used to detect cycles in type qualifier nicknames
 	 */
 	private static void resolveTypeQualifierNicknames(AnnotationValue value, LinkedList<AnnotationValue> result,
 	        LinkedList<ClassDescriptor> onStack) {
