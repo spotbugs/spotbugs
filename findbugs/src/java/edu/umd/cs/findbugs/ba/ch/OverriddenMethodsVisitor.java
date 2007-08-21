@@ -60,12 +60,14 @@ public abstract class OverriddenMethodsVisitor implements InheritanceGraphVisito
 
 		// See if this class has an overridden method
 		XMethod xm = xclass.findMethod(xmethod.getName(), xmethod.getSignature(), false);
-		if (xm == null) {
-			// No - end this branch of the search
-			return false;
-		}
 
-		return visitOverriddenMethod(xm);
+		if (xm != null) {
+			return visitOverriddenMethod(xm);
+		} else {
+			// Even though this particular class doesn't contain the method we're
+			// looking for, a superclass might, so we need to keep going.
+			return true;
+		}
 	}
 
 	/* (non-Javadoc)
