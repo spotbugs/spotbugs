@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
  * @author David Hovemeyer
  */
 public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotationDatabase {
+	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.npe.tq.debug");
 
 	private final TypeQualifierValue nonnullTypeQualifierValue;
 	
@@ -72,13 +74,18 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull(edu.umd.cs.findbugs.ba.XMethod, int)
 	 */
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
-		TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param, nonnullTypeQualifierValue);
-		
-		if (tqa == null) {
-			return false;
+		if (DEBUG) {
+			System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
 		}
 		
-		return tqa.when == When.ALWAYS; 
+		TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param, nonnullTypeQualifierValue);
+		boolean answer = (tqa != null) && tqa.when == When.ALWAYS; 
+		
+		if (DEBUG) {
+			System.out.println(answer ? "yes" : "no");
+		}
+		
+		return answer;
 	}
 
 	/* (non-Javadoc)
