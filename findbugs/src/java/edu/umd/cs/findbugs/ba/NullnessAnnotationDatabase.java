@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 /**
  * @author pugh
  */
-public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> {
+public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> implements INullnessAnnotationDatabase {
 
 	public NullnessAnnotationDatabase() {
 		setAddClassOnly(true);
@@ -99,7 +99,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addMethodParameterAnnotation("java.util.concurrent.ExecutorService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.AbstractExecutorService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.ExecutorCompletionService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.AbstractExecutorService", "newTaskFor", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		addMethodParameterAnnotation("java.util.concurrent.AbstractExecutorServiceNullnessAnnotationDatabase", "newTaskFor", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.ExecutorCompletionService", "newTaskFor", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 
 		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addIfUnderCorePoolSize", "(Ljava/lang/Runnable;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
@@ -127,6 +127,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 
 		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 	}
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull(edu.umd.cs.findbugs.ba.XMethod, int)
+     */
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;
 		XMethodParameter xmp = new XMethodParameter(m,param);
@@ -139,6 +142,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		return resolvedAnnotation == NullnessAnnotation.NONNULL;
 	}
 
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation(java.lang.Object, boolean)
+     */
 	@CheckForNull @Override
 	public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
 

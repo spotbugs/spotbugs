@@ -26,18 +26,25 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 /**
  * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
  * and convey them to FindNullDeref.
+ * 
+ * @deprecated AnnotationDatabases are being phased out, since
+ *             annotations are now stored directly in the XClass/XMethod/XField objects.
+ *             Resolving nullness annotations will be handled through the
+ *             JSR-305 type qualifier code. 
  */
 public class NoteNonNullAnnotations
-		extends BuildNonNullAnnotationDatabase
-		implements Detector, NonReportingDetector {
+	extends BuildNonNullAnnotationDatabase
+	implements Detector, NonReportingDetector {
 
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
-		AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase(); // force initialization
+		super(AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase
+				? (NullnessAnnotationDatabase) AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() : null);
 	}
 
 	public void visitClassContext(ClassContext classContext) {

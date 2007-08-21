@@ -28,9 +28,11 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SyntheticElements;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -57,9 +59,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		defaultKind.put("ForFields", AnnotationDatabase.FIELD);
 
 	}
+	
+	private @CheckForNull NullnessAnnotationDatabase database;
 
-	public BuildNonNullAnnotationDatabase() {
-
+	public BuildNonNullAnnotationDatabase(@CheckForNull NullnessAnnotationDatabase database) {
+		this.database = database;
 	}
 
 	static String lastPortion(String className) {
@@ -73,17 +77,18 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
 			return;
 		}
+		if (database == null) {
+			return;
+		}
+		
 		if (visitingMethod()) {
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					XFactory.createXMethod(this));
 		} else if (visitingField()) {
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					XFactory.createXField(this));
 		} else {
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					getDottedClassName());
 		}
 	}
@@ -91,18 +96,22 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
 			return;
 		}
+		if (database == null) {
+			return;
+		}
 		if (obj.isSynthetic())
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					getDottedClassName());
 	}
 	@Override public void visit(Field f) {
 		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
 			return;
 		}
+		if (database == null) {
+			return;
+		}
 		if (f.isSynthetic())
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					XFactory.createXField(this));
 	}
 
@@ -110,9 +119,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
 			return;
 		}
+		if (database == null) {
+			return;
+		}
 		if (m.isSynthetic())
-			AnalysisContext.currentAnalysisContext()
-			.getNullnessAnnotationDatabase().addSyntheticElement(
+			database.addSyntheticElement(
 					XFactory.createXMethod(this));
 	}
 
@@ -120,7 +131,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 
-
+		if (database == null) {
+			return;
+		}
 
 		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 		annotationClass = lastPortion(annotationClass);
@@ -139,8 +152,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 					for (Object aClass : (Object[]) v) {
 						n = NullnessAnnotation.Parser.parse((String) aClass);
 						if (n != null)
-							AnalysisContext.currentAnalysisContext()
-									.getNullnessAnnotationDatabase()
+							database
 									.addDefaultAnnotation(annotationTarget,
 											getDottedClassName(), n);
 					}
@@ -148,24 +160,24 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			}
 		}
 		else if (visitingMethod())
-			AnalysisContext.currentAnalysisContext()
-					.getNullnessAnnotationDatabase().addDirectAnnotation(
+			database.addDirectAnnotation(
 							XFactory.createXMethod(this), n);
 		else if (visitingField())
-			AnalysisContext.currentAnalysisContext()
-					.getNullnessAnnotationDatabase().addDirectAnnotation(
+			database.addDirectAnnotation(
 							XFactory.createXField(this), n);
 
 	}
 	@Override
 	public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
+		if (database == null) {
+			return;
+		}
 
 		XMethod xmethod = XFactory.createXMethod(this);
 
 		XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
-		AnalysisContext.currentAnalysisContext()
-				.getNullnessAnnotationDatabase().addDirectAnnotation(
+		database.addDirectAnnotation(
 						xparameter, NullnessAnnotation.UNKNOWN_NULLNESS);
 
 	}
@@ -174,6 +186,9 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
+		if (database == null) {
+			return;
+		}
 
 		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 		annotationClass = lastPortion(annotationClass);
@@ -191,8 +206,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		}
 		XMethodParameter xparameter = new XMethodParameter(xmethod, p);
 
-		AnalysisContext.currentAnalysisContext()
-				.getNullnessAnnotationDatabase().addDirectAnnotation(
+		database.addDirectAnnotation(
 						xparameter, n);
 
 	}

@@ -107,7 +107,7 @@ public abstract class AnalysisContext {
 		}
 	};
 
-	public abstract NullnessAnnotationDatabase getNullnessAnnotationDatabase();
+	public abstract INullnessAnnotationDatabase getNullnessAnnotationDatabase();
 	public abstract CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase();
 	public abstract AnnotationRetentionDatabase getAnnotationRetentionDatabase();
 	public abstract JCIPAnnotationDatabase getJCIPAnnotationDatabase();

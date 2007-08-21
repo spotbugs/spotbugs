@@ -50,10 +50,10 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
@@ -136,7 +136,7 @@ public class IsNullValueAnalysis
 			boolean instanceMethod = !methodGen.isStatic();
 			XMethod xm = XFactory.createXMethod(methodGen.getClassName(), 
 					methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
-			NullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+			INullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 			int paramShift = instanceMethod ? 1 : 0;
 			 Type[] argumentTypes = methodGen.getArgumentTypes();
             for (int i = 0; i < numLocals; ++i) {

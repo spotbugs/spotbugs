@@ -22,19 +22,28 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 
 /**
  * Training detector to
  * store NonNull, PossiblyNull and CheckForNull annotations to database files.
  * 
  * @author David Hovemeyer
+ * 
+ * @deprecated AnnotationDatabases are being phased out, since
+ *             annotations are now stored directly in the XClass/XMethod/XField objects.
+ *             Resolving nullness annotations will be handled through the
+ *             JSR-305 type qualifier code. 
  */
 public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 		implements Detector, TrainingDetector {
 
 
 	public TrainNonNullAnnotations(BugReporter bugReporter) {
+		super(AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase
+				? (NullnessAnnotationDatabase) AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase() : null);
 	}
 
 	/* (non-Javadoc)

@@ -57,7 +57,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	private NullnessAnnotationDatabase nullnessAnnotationDatabase; //= new NullnessAnnotationDatabase();
 
 	@Override
-	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
+	public INullnessAnnotationDatabase getNullnessAnnotationDatabase() {
 		return nullnessAnnotationDatabase;
 	}
 

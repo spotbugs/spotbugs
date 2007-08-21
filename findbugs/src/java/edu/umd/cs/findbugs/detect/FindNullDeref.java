@@ -63,11 +63,11 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -702,7 +702,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
 
-		NullnessAnnotationDatabase db = AnalysisContext
+		INullnessAnnotationDatabase db = AnalysisContext
 				.currentAnalysisContext().getNullnessAnnotationDatabase();
 		SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
 	   for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet
