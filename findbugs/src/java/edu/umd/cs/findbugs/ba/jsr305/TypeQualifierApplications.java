@@ -531,6 +531,9 @@ public class TypeQualifierApplications {
 			XMethod xmethod,
 			int parameter,
 			TypeQualifierValue typeQualifierValue) {
+		if (DEBUG) {
+			System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
+		}
 		
 		DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation> map =
 			effectiveParameterAnnotations.get(typeQualifierValue);
@@ -562,6 +565,10 @@ public class TypeQualifierApplications {
 			// Cache answer
 			result = new EffectiveTypeQualifierAnnotation(tqa);
 			map.put(xmethod, parameter, result);
+		}
+
+		if (DEBUG) {
+			System.out.println("  => Answer: " + result.typeQualifierAnnotation);
 		}
 		
 		// Return cached answer
