@@ -38,20 +38,20 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
  */
 public class TypeQualifierResolver {
 
-//	/**
-//	 * Resolve an AnnotationValue into a list of AnnotationValues
-//	 * representing type qualifier annotations.
-//	 * 
-//	 * @param value AnnotationValue representing the use of an annotation
-//	 * @return Collection of AnnotationValues representing resolved
-//	 *         TypeQualifier annotations
-//	 */
-//	public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
-//		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-//		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
-//		resolveTypeQualifierNicknames(value, result, onStack);
-//		return result;
-//	}
+	/**
+	 * Resolve an AnnotationValue into a list of AnnotationValues
+	 * representing type qualifier annotations.
+	 * 
+	 * @param value AnnotationValue representing the use of an annotation
+	 * @return Collection of AnnotationValues representing resolved
+	 *         TypeQualifier annotations
+	 */
+	public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
+		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
+		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
+		resolveTypeQualifierNicknames(value, result, onStack);
+		return result;
+	}
 
 	/**
 	 * Resolve collection of AnnotationValues (which have been used to
@@ -111,6 +111,7 @@ public class TypeQualifierResolver {
 		}
 
 	}
+
 
 
 }

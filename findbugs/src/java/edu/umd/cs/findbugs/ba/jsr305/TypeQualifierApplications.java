@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,11 +54,11 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
-	
+
 	/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
 	private static Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations =
 		new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
-	
+
 	/** Type qualifier annotations applied directly to method parameters. */
 	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
 		new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
@@ -68,7 +69,7 @@ public class TypeQualifierApplications {
 	 */
 	private static class EffectiveTypeQualifierAnnotation {
 		@CheckForNull TypeQualifierAnnotation typeQualifierAnnotation;
-		
+
 		public EffectiveTypeQualifierAnnotation(TypeQualifierAnnotation typeQualifierAnnotation) {
 			this.typeQualifierAnnotation = typeQualifierAnnotation;
 		}
@@ -94,16 +95,16 @@ public class TypeQualifierApplications {
 	//   public class MyClass {
 	//      ...
 	//   }
-	
+
 	private static final ClassDescriptor DEFAULT_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotation");
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotation");
 	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForFields");
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForFields");
 	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_METHODS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForMethods");
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForMethods");
 	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotation/DefaultAnnotationForParameters");
-	
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForParameters");
+
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
 	 * 
@@ -111,7 +112,7 @@ public class TypeQualifierApplications {
 	 * @return Collection of AnnotationValues representing annotations directly
 	 *         applied to this AnnotatedObject
 	 */
-	 private static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
+	private static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
 		Collection<AnnotationValue> result = directObjectAnnotations.get(m);
 		if (result != null) return result;
 		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
@@ -120,7 +121,7 @@ public class TypeQualifierApplications {
 		directObjectAnnotations.put(m, result);
 		return result;
 	}
-	
+
 	/**
 	 * Get the direct annotations (if any) on given method parameter.
 	 * 
@@ -138,7 +139,7 @@ public class TypeQualifierApplications {
 		directParameterAnnotations.put(m, parameter, result);
 		return result;
 	}
-	
+
 	/**
 	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
@@ -164,7 +165,7 @@ public class TypeQualifierApplications {
 				constructTypeQualifierAnnotation(result, v);
 		}
 	}
-	
+
 	/**
 	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
@@ -191,20 +192,32 @@ public class TypeQualifierApplications {
 	}
 	
 	/**
-	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation,
-	 * using given set to remember previously resolved instances.
+	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation.
 	 * 
-	 * @param set Set of resolved TypeQualifierAnnotations
 	 * @param v   a raw AnnotationValue
+	 * @return a constructed TypeQualifierAnnotation
 	 */
-	private static void constructTypeQualifierAnnotation(Set<TypeQualifierAnnotation> set, AnnotationValue v) {
-		assert set != null;
+	public static TypeQualifierAnnotation constructTypeQualifierAnnotation(AnnotationValue v) {
 		assert v != null;
 		EnumValue whenValue = (EnumValue) v.getValue("when");
 		When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
 		ClassDescriptor annotationClass = v.getAnnotationClass();
 		TypeQualifierValue tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-		set.add(TypeQualifierAnnotation.getValue(tqv, when));
+		TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when); 
+		return tqa;
+	}
+	
+	/**
+	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation,
+	 * storing result in given Set.
+	 * 
+	 * @param set Set of resolved TypeQualifierAnnotations
+	 * @param v   a raw AnnotationValue
+	 */
+	public static void constructTypeQualifierAnnotation(Set<TypeQualifierAnnotation> set, AnnotationValue v) {
+		assert set != null;
+		TypeQualifierAnnotation tqa = constructTypeQualifierAnnotation(v);
+		set.add(tqa);
 	}
 
 	/**
@@ -316,70 +329,102 @@ public class TypeQualifierApplications {
 	 * is used on given AnnotatedObject to define a default value for
 	 * given TypeQualifierValue. 
 	 * 
-     * @param o                  an AnnotatedObject
-     * @param typeQualifierValue a TypeQualifierValue
+	 * @param o                  an AnnotatedObject
+	 * @param typeQualifierValue a TypeQualifierValue
 	 * @param elementType        type of annotated element
-     * @return default TypeQualifierAnnotation, or null if none 
-     */
-    private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
-    	TypeQualifierAnnotation result;
-    	
-    	if ((result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
-    		return result;
-    	}
+	 * @return default TypeQualifierAnnotation, or null if none 
+	 */
+	private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
+		TypeQualifierAnnotation result;
 
-    	switch (elementType) {
-    	case FIELD:
-    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
-    		break;
-    	case METHOD:
-    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
-    		break;
-    	case PARAMETER:
-    		result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
-    		break;
-    	default:
-    		// ignore
-    	}
-    	
-    	return result;
-    }
-	
-    private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
-    		TypeQualifierValue typeQualifierValue) {
-    	
-    	// - check to see if default annotation is present; if not, return null
-    	AnnotationValue annotationValue = o.getAnnotation(defaultAnnotation);
-    	if (annotationValue == null) {
-    		return null;
-    	}
-    	
-    	// - get value - should be array of Type
-    	Object value = annotationValue.getValue("value");
-    	if (value == null || !(value instanceof Object[])) {
-    		return null;
-    	}
-    	Object[] types = (Object[]) value;
-    	
-    	// - scan through array elements; see if any match the TypeQualifierValue (including type qualifier nicknames)
-    	for (Object obj : types) {
-    		if (!(obj instanceof Type)) {
-    			if (DEBUG) {
-    				System.out.println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
-    			}
-    			continue;
-    		}
-    		
-    		Type type = (Type) obj;
-    		
-    		if (type.getClassName().equals(typeQualifierValue.getTypeQualifierClassDescriptor().getClassName())) {
-    			// Found a match!
-    			
-    		}
-    	}
-    	
-    	return null;
-    }
+		if ((result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
+			return result;
+		}
+
+		switch (elementType) {
+		case FIELD:
+			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
+			break;
+		case METHOD:
+			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
+			break;
+		case PARAMETER:
+			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
+			break;
+		default:
+			// ignore
+		}
+
+		return result;
+	}
+
+	private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
+			TypeQualifierValue typeQualifierValue) {
+
+		if (DEBUG) {
+			System.out.println("Checking for " + defaultAnnotation + " containing " + typeQualifierValue + " on " + o);
+		}
+
+		// - check to see if default annotation is present; if not, return null
+		AnnotationValue annotationValue = o.getAnnotation(defaultAnnotation);
+		if (annotationValue == null) {
+			if (DEBUG) {
+				System.out.println("   ===> no " + defaultAnnotation);
+			}
+			return null;
+		}
+
+		// - get value - should be Type or array of Type
+		Object value = annotationValue.getValue("value");
+		if (value == null) {
+			if (DEBUG) {
+				System.out.println("   ===> value is null");
+			}
+			return null;
+		}
+		Object[] types;
+		if (value instanceof Object[]) {
+			types = (Object[]) value;
+		} else {
+			types = new Object[]{ value };
+		}
+
+		// - scan through array elements; see if any match the TypeQualifierValue (including type qualifier nicknames)
+		for (Object obj : types) {
+			if (!(obj instanceof Type)) {
+				if (DEBUG) {
+					System.out.println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
+				}
+				continue;
+			}
+
+			Type type = (Type) obj;
+			if (DEBUG) {
+				System.out.println("  ===> checking " + type.getDescriptor());
+			}
+			if (type.getDescriptor().startsWith("[")) {
+				continue;
+			}
+			ClassDescriptor typeDesc = DescriptorFactory.instance().getClassDescriptor(type.getInternalName());
+
+			// There is no general way to figure out whether a particular
+			// type is a type qualifier we're interested in without
+			// resolving it.
+			AnnotationValue annotation = new AnnotationValue(typeDesc);
+			Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotation);
+			for (AnnotationValue typeQualifier : resolvedTypeQualifiers) {
+				TypeQualifierAnnotation tqa = constructTypeQualifierAnnotation(typeQualifier);
+				if (tqa.typeQualifier.equals(typeQualifierValue)) {
+					if (DEBUG) {
+						System.out.println("  ===> Found match " + tqa);
+					}
+					return tqa; 
+				}
+			}
+		}
+
+		return null;
+	}
 
 	/**
 	 * Get the effective TypeQualifierAnnotation on given
@@ -399,19 +444,19 @@ public class TypeQualifierApplications {
 		if (DEBUG) {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
 		}
-		
+
 		Map<AnnotatedObject, EffectiveTypeQualifierAnnotation> map = effectiveObjectAnnotations.get(typeQualifierValue);
 		if (map == null) {
 			map = new HashMap<AnnotatedObject, EffectiveTypeQualifierAnnotation>();
 			effectiveObjectAnnotations.put(typeQualifierValue, map);
 		}
-		
+
 		// Check cached answer
 		EffectiveTypeQualifierAnnotation result = map.get(o);
-		
+
 		if (result == null) {
 			// Compute answer
-			
+
 			TypeQualifierAnnotation tqa;
 
 			// See if there is a direct application
@@ -426,7 +471,7 @@ public class TypeQualifierApplications {
 			if (tqa == null) {
 				tqa = getDefaultTypeQualifierAnnotation(o, typeQualifierValue);
 			}
-			
+
 			// Cache computed answer
 			result = new EffectiveTypeQualifierAnnotation(tqa);
 			map.put(o, result);
@@ -451,12 +496,12 @@ public class TypeQualifierApplications {
 	private static TypeQualifierAnnotation getDirectTypeQualifierAnnotation(AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
 		TypeQualifierAnnotation result;
-		
+
 		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, o, o.getElementType());
-		
+
 		result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
-		
+
 		return result;
 	}
 
@@ -471,7 +516,7 @@ public class TypeQualifierApplications {
 	 */
 	private static TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod o, TypeQualifierValue typeQualifierValue) {
 		assert !o.isStatic();
-		
+
 		ReturnTypeAnnotationAccumulator accumulator = new ReturnTypeAnnotationAccumulator(typeQualifierValue, o);
 		try {
 			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(o.getClassDescriptor(), accumulator);
@@ -498,7 +543,7 @@ public class TypeQualifierApplications {
 		ElementType elementType = o.getElementType();
 		while (o.getContainingScope() != null) {
 			o = o.getContainingScope();
-			
+
 			// Check direct applications of the type qualifier
 			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, elementType);
@@ -507,7 +552,7 @@ public class TypeQualifierApplications {
 				// Great - found an outer scope with a relevant annotation
 				break;
 			}
-			
+
 			// Check FindBugs-specific default annotations
 			result = getFindBugsDefaultAnnotation(o, typeQualifierValue, elementType);
 			if (result != null) {
@@ -516,7 +561,7 @@ public class TypeQualifierApplications {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get the effective TypeQualifierAnnotation on given method parameter.
 	 * Takes into account inherited and default (outer scope) annotations.
@@ -534,34 +579,34 @@ public class TypeQualifierApplications {
 		if (DEBUG) {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
 		}
-		
+
 		DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation> map =
 			effectiveParameterAnnotations.get(typeQualifierValue);
 		if (map == null) {
 			map = new DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>();
 			effectiveParameterAnnotations.put(typeQualifierValue, map);
 		}
-		
+
 		// Check cached answer
 		EffectiveTypeQualifierAnnotation result = map.get(xmethod, parameter);
 		if (result == null) {
 			// Compute answer
-			
+
 			TypeQualifierAnnotation tqa;
-			
+
 			// Check direct application
 			tqa = getDirectTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
-			
+
 			// If it's an instance method, check for inherited annotation
 			if (tqa == null && !xmethod.isStatic()) {
 				tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
 			}
-			
+
 			// Check for default (outer scope) annotation
 			if (tqa == null) {
 				tqa = getDefaultTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
 			}
-			
+
 			// Cache answer
 			result = new EffectiveTypeQualifierAnnotation(tqa);
 			map.put(xmethod, parameter, result);
@@ -570,7 +615,7 @@ public class TypeQualifierApplications {
 		if (DEBUG) {
 			System.out.println("  => Answer: " + result.typeQualifierAnnotation);
 		}
-		
+
 		// Return cached answer
 		return result.typeQualifierAnnotation;
 	}
@@ -589,7 +634,7 @@ public class TypeQualifierApplications {
 			TypeQualifierValue typeQualifierValue) {
 		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, xmethod, parameter);
-		
+
 		return findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 	}
 
@@ -606,7 +651,7 @@ public class TypeQualifierApplications {
 	private static @CheckForNull TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
 			TypeQualifierValue typeQualifierValue) {
 		assert !xmethod.isStatic();
-		
+
 		ParameterAnnotationAccumulator accumulator = new ParameterAnnotationAccumulator(typeQualifierValue, xmethod, parameter);
 		try {
 			AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), accumulator);
@@ -643,7 +688,7 @@ public class TypeQualifierApplications {
 				// Found matching annotation in outer scope
 				return tqa;
 			}
-			
+
 			// Check for FindBugs-specific default annotation
 			tqa = getFindBugsDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
 			if (tqa != null) {
