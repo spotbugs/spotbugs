@@ -32,8 +32,10 @@ import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -200,13 +202,22 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
 		return lookupFailureCallback;
 	}
-
+	
+	private TypeQualifierNullnessAnnotationDatabase tqNullnessDatabase;
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getNullnessAnnotationDatabase()
 	 */
 	@Override
-	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
-		return getDatabase(NullnessAnnotationDatabase.class);
+	public INullnessAnnotationDatabase getNullnessAnnotationDatabase() {
+		if (IsNullValueAnalysisFeatures.USE_TYPE_QUALIFIERS) {
+			if (tqNullnessDatabase == null) {
+				tqNullnessDatabase = new TypeQualifierNullnessAnnotationDatabase();
+			}
+			return tqNullnessDatabase;
+		} else {
+			return getDatabase(NullnessAnnotationDatabase.class);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -347,7 +358,9 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public void updateDatabases(int pass) {
 		if (pass == 0) {
 			getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
-			getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
+			if (getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase) {
+				((NullnessAnnotationDatabase) getNullnessAnnotationDatabase()).loadAuxiliaryAnnotations();
+			}
 		}
 
 	}

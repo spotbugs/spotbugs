@@ -59,4 +59,12 @@ public interface IsNullValueAnalysisFeatures {
 	public static final boolean UNKNOWN_VALUES_ARE_NSP =
 		SystemProperties.getBoolean("findbugs.nullderef.assumensp");
 
+	/**
+	 * If this property is true, then
+	 * resolution of nullness annotations is based on
+	 * JSR-305 type qualifiers rather than an AnnotationDatabase.
+	 */
+	public static final boolean USE_TYPE_QUALIFIERS =
+		SystemProperties.getBoolean("findbugs.npe.tq");
+
 }
