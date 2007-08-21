@@ -204,24 +204,7 @@ public class TypeQualifierApplications {
 		When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
 		ClassDescriptor annotationClass = v.getAnnotationClass();
 		TypeQualifierValue tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-		
-		try {
-			XClass annotationInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
-	    	XMethod whenAttribute = annotationInfo.findMethod("when", "()Ljavax/annotation/meta/When;", false);
-			if (whenAttribute == null) {
-				// The TypeQualifierValue does not have an explicit when value.
-				// In this case, the type qualifier requires strict checking.
-				tqv.setIsStrict();
-			}
-        } catch (CheckedAnalysisException e) {
-	        AnalysisContext.logError("Error getting info for " + annotationClass, e)  ;      }
-		
-		
-	
 		set.add(TypeQualifierAnnotation.getValue(tqv, when));
-		if (DEBUG && whenValue == null) {
-			System.out.println("When value unspecified for type qualifier value " + tqv);
-		}
 	}
 
 	/**
