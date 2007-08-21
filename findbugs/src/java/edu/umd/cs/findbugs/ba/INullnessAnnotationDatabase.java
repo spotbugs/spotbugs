@@ -48,4 +48,60 @@ public interface INullnessAnnotationDatabase {
 	@CheckForNull
 	public abstract NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal);
 
+	/**
+	 * Load "built-in" annotations that might not be evident from the
+	 * analyzed/referenced code.
+	 */
+	public void loadAuxiliaryAnnotations();
+	
+	/**
+	 * Add a default nullness annotation to the database.
+	 * 
+	 * @param cName      class name (FIXME: is this right?)
+	 * @param annotation the default NullnessAnnotation
+	 */
+	public void addDefaultMethodAnnotation(String cName, NullnessAnnotation annotation);
+	
+	/**
+	 * Add a field annotation to the database.
+	 * 
+	 * @param cName        class name
+	 * @param mName        field name
+	 * @param mSig         field signature
+	 * @param isStatic     true if field is static, false otherwise
+	 * @param annotation   NullnessAnnotation to add
+	 */
+	public void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
+	
+	/**
+	 * Add a field annotation to the database.
+	 * 
+	 * @param cName        class name
+	 * @param mName        method name
+	 * @param mSig         method signature
+	 * @param isStatic     true if method is static, false otherwise
+	 * @param annotation   NullnessAnnotation to add
+	 */
+	public void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
+
+	/**
+	 * Add a method parameter annotation to the database.
+	 * 
+	 * @param cName       class name
+	 * @param mName       method name
+	 * @param mSig        method signature
+	 * @param isStatic    true if method is static, false otherwise
+	 * @param param       parameter (0 == first parameter)
+	 * @param annotation  the NullnessAnnotation to add
+	 */
+	public void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, NullnessAnnotation annotation);
+	
+	/**
+	 * Add a default annotation to the database.
+	 * 
+	 * @param target FIXME: what does this mean?
+	 * @param c      FIXME: what does this mean?
+	 * @param n      the default NullnessAnnotation
+	 */
+	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n);
 }

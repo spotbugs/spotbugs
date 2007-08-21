@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XField;
@@ -78,6 +79,43 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		}
 		
 		return tqa.when == When.ALWAYS; 
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+	 */
+	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n) {
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultMethodAnnotation(java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+	 */
+	public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addFieldAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+	 */
+	public void addFieldAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+	 */
+	public void addMethodAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodParameterAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+	 */
+	public void addMethodParameterAnnotation(String name, String name2, String sig, boolean isStatic, int param,
+			NullnessAnnotation annotation) {
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#loadAuxiliaryAnnotations()
+	 */
+	public void loadAuxiliaryAnnotations() {
 	}
 
 	/**

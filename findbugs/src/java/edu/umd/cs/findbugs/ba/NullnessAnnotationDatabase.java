@@ -33,100 +33,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	}
 	@Override
 	public void loadAuxiliaryAnnotations() {
-		if (IGNORE_BUILTIN_ANNOTATIONS) return;
-		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
-		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
-		addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
-		addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
-		addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
-
-		addMethodAnnotation("java.lang.Class", "newInstance", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.lang.Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", true, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.lang.Object", "clone", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.lang.Object", "toString", "()Ljava/lang/String;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.lang.Object", "getClass", "()Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
-
-		addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0, NullnessAnnotation.NONNULL);
-
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentLinkedQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$WaitQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ThreadPoolExecutor$Worker", NullnessAnnotation.UNKNOWN_NULLNESS);
-
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.AbstractExecutorService", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$ConcurrentSkipListSubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$HeadIndex", NullnessAnnotation.UNKNOWN_NULLNESS)
-		;
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Index", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$SubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListSet$ConcurrentSkipListSubSet", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingDeque$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue$QNode", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferStack", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
-
-
-		addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.Executors", "callable", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Callable;", true, 1, NullnessAnnotation.CHECK_FOR_NULL);
-
-		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addWorker", "(Ljava/lang/Runnable;Z)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
-
-		addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove", "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-
-
-		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;", false, NullnessAnnotation.NONNULL);
-		addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;", false, NullnessAnnotation.NONNULL);
-
-
-		addMethodParameterAnnotation("java.util.concurrent.ExecutorService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.AbstractExecutorService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.ExecutorCompletionService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.AbstractExecutorServiceNullnessAnnotationDatabase", "newTaskFor", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.ExecutorCompletionService", "newTaskFor", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-
-		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addIfUnderCorePoolSize", "(Ljava/lang/Runnable;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addThread", "(Ljava/lang/Runnable;)Ljava/lang/Thread;", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "afterExecute", "(Ljava/lang/Runnable;Ljava/lang/Throwable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-
-
-
-		addMethodParameterAnnotation("java.util.EnumMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.EnumMap", "containsKey", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.EnumMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.EnumMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-
-		addMethodParameterAnnotation("java.util.SortedMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.SortedMap", "containsKey", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.SortedMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.SortedMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-
-		addMethodParameterAnnotation("java.util.SortedSet", "add", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.SortedSet", "remove", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
-		addMethodParameterAnnotation("java.util.SortedSet", "cotains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
-
-		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
-		addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false, NullnessAnnotation.CHECK_FOR_NULL);
-
-		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
+		DefaultNullnessAnnotations.addDefaultNullnessAnnotations(this);
 	}
+	
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull(edu.umd.cs.findbugs.ba.XMethod, int)
      */
@@ -171,5 +80,46 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		}
 		NullnessAnnotation result =  super.getResolvedAnnotation(o, getMinimal);
 		return result;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultMethodAnnotation(java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
+	 */
+	@Override
+	public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
+		super.addDefaultMethodAnnotation(name, annotation);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
+	 */
+	@Override
+	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n) {
+		super.addDefaultAnnotation(target, c, n);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addFieldAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
+	 */
+	@Override
+	public void addFieldAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+		super.addFieldAnnotation(name, name2, sig, isStatic, annotation);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addMethodAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
+	 */
+	@Override
+	public void addMethodAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+		super.addMethodAnnotation(name, name2, sig, isStatic, annotation);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addMethodParameterAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
+	 */
+	@Override
+	public void addMethodParameterAnnotation(String name, String name2, String sig, boolean isStatic, int param,
+			NullnessAnnotation annotation) {
+		super.addMethodParameterAnnotation(name, name2, sig, isStatic, param, annotation);
 	}
 }
