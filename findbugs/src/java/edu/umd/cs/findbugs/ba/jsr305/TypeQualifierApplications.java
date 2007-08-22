@@ -89,22 +89,6 @@ public class TypeQualifierApplications {
 	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>> effectiveParameterAnnotations =
 		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,EffectiveTypeQualifierAnnotation>>();
 
-	// FindBugs-specific default-annotation annotations.
-	// I.e.:
-	//   @DefaultAnnotationForParameters({Nonnull.class})
-	//   public class MyClass {
-	//      ...
-	//   }
-
-	private static final ClassDescriptor DEFAULT_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotation");
-	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_FIELDS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForFields");
-	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_METHODS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForMethods");
-	private static final ClassDescriptor DEFAULT_ANNOTATION_FOR_PARAMETERS =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DefaultAnnotationForParameters");
-
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
 	 * 
@@ -337,19 +321,19 @@ public class TypeQualifierApplications {
 	private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
 		TypeQualifierAnnotation result;
 
-		if ((result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
+		if ((result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
 			return result;
 		}
 
 		switch (elementType) {
 		case FIELD:
-			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
+			result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_FIELDS, o, typeQualifierValue);
 			break;
 		case METHOD:
-			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
+			result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_METHODS, o, typeQualifierValue);
 			break;
 		case PARAMETER:
-			result = checkFindBugsDefaultAnnotation(DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
+			result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_PARAMETERS, o, typeQualifierValue);
 			break;
 		default:
 			// ignore
