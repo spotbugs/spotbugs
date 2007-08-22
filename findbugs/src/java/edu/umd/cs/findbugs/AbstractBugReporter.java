@@ -188,6 +188,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	public void reportMissingClass(ClassDescriptor classDescriptor) {
 		if (DEBUG_MISSING_CLASSES) {
 			System.out.println("Missing class: " + classDescriptor);
+			new Throwable().printStackTrace(System.out);
 		}
 
 		if (verbosityLevel == SILENT)
