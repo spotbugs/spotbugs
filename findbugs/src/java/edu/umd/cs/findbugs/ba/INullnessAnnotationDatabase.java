@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Interface for querying nullness annotations on methods, fields,
@@ -99,9 +100,9 @@ public interface INullnessAnnotationDatabase {
 	/**
 	 * Add a default annotation to the database.
 	 * 
-	 * @param target FIXME: what does this mean?
-	 * @param c      FIXME: what does this mean?
+	 * @param target one of AnnotationDatabase.METHOD, AnnotationDatabase.FIELD, AnnotationDatabase.PARAMETER, or AnnotationDatabase.ANY
+	 * @param c      dotted class name of class default annotation pertains to
 	 * @param n      the default NullnessAnnotation
 	 */
-	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n);
+	public void addDefaultAnnotation(String target, @DottedClassName String c, NullnessAnnotation n);
 }
