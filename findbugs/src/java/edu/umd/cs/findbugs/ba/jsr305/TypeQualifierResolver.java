@@ -90,7 +90,11 @@ public class TypeQualifierResolver {
 			try {
 				c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
 			} catch (MissingClassException e) {
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
+				// Hmm....this is a tough call.
+				// We probably don't want to bug users about
+				// annotations that are used in their code but aren't available
+				// at analysis time.
+//				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
 				return;
 			} catch (CheckedAnalysisException e) {
 				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);

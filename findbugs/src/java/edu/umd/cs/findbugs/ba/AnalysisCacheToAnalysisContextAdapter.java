@@ -358,9 +358,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public void updateDatabases(int pass) {
 		if (pass == 0) {
 			getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
-			if (getNullnessAnnotationDatabase() instanceof NullnessAnnotationDatabase) {
-				((NullnessAnnotationDatabase) getNullnessAnnotationDatabase()).loadAuxiliaryAnnotations();
-			}
+			getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
 		}
 
 	}

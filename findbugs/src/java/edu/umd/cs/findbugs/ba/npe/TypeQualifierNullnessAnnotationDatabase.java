@@ -19,21 +19,39 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.lang.annotation.ElementType;
+
 import javax.annotation.meta.When;
 
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Type;
+
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
+import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.jsr305.FindBugsDefaultAnnotations;
+import edu.umd.cs.findbugs.ba.jsr305.JSR305NullnessAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
 /**
  * Implementation of INullnessAnnotationDatabase that
@@ -87,11 +105,83 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		
 		return answer;
 	}
+	
+	// NOTE:
+	// The way we handle adding default annotations is to actually add AnnotationValues
+	// to the corresponding XFoo objects, giving the illusion that the annotations
+	// were actually read from the underlying class files.
+
+	/**
+	 * Convert a NullnessAnnotation into the ClassDescriptor
+	 * of the equivalent JSR-305 nullness type qualifier.
+	 * 
+	 * @param n a NullnessAnnotation
+	 * @return ClassDescriptor of the equivalent JSR-305 nullness type qualifier
+	 */
+	private ClassDescriptor getNullnessAnnotationClassDescriptor(NullnessAnnotation n) {
+		if (n == NullnessAnnotation.CHECK_FOR_NULL) {
+			return JSR305NullnessAnnotations.CHECK_FOR_NULL;
+		} else if (n == NullnessAnnotation.NONNULL) {
+			return JSR305NullnessAnnotations.NONNULL;
+		} else if (n == NullnessAnnotation.NULLABLE) {
+			return JSR305NullnessAnnotations.NULLABLE;
+		} else if (n == NullnessAnnotation.UNKNOWN_NULLNESS) {
+			return JSR305NullnessAnnotations.NULLABLE;
+		} else {
+			throw new IllegalArgumentException("Unknown NullnessAnnotation: " + n);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
 	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n) {
+		if (DEBUG) {
+			System.out.println("addDefaultAnnotation: target=" + target + ", c=" + c + ", n=" + n);
+		}
+		
+		ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(c);
+		XClass xclass;
+		
+		// Get the XClass (really a ClassInfo object)
+		try {
+			xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+		} catch (MissingClassException e) {
+//			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor());
+			return;
+		} catch (CheckedAnalysisException e) {
+//			AnalysisContext.logError("Error adding built-in nullness annotation", e);
+			return;
+		}
+		
+		// Get the default annotation type
+		ClassDescriptor defaultAnnotationType;
+		if (target == AnnotationDatabase.ANY) {
+			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION;
+		} else if (target == AnnotationDatabase.FIELD) {
+			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_FIELDS;
+		} else if (target == AnnotationDatabase.METHOD) {
+			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_METHODS;
+		} else if (target == AnnotationDatabase.PARAMETER) {
+			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_PARAMETERS;
+		} else {
+			throw new IllegalArgumentException("Unknown target for default annotation: " + target);
+		}
+
+		// Get the JSR-305 nullness annotation type 
+		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(n);
+		
+		// Construct an AnnotationValue containing the default annotation
+		AnnotationValue annotationValue = new AnnotationValue(defaultAnnotationType);
+		AnnotationVisitor v = annotationValue.getAnnotationVisitor();
+		v.visit("value", Type.getObjectType(nullnessAnnotationType.getClassName()));
+		v.visitEnd();
+		
+		if (DEBUG) {
+			System.out.println("Adding AnnotationValue " + annotationValue + " to class " + xclass);
+		}
+		
+		((ClassInfo)xclass).addAnnotation(annotationValue);
 	}
 
 	/* (non-Javadoc)
@@ -123,6 +213,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#loadAuxiliaryAnnotations()
 	 */
 	public void loadAuxiliaryAnnotations() {
+		DefaultNullnessAnnotations.addDefaultNullnessAnnotations(this);
 	}
 
 	/**
@@ -132,7 +223,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @param tqa Nonnull-based TypeQualifierAnnotation
 	 * @return corresponding NullnessAnnotation
 	 */
-	private NullnessAnnotation toNullnessAnnotation(TypeQualifierAnnotation tqa) {
+	private NullnessAnnotation toNullnessAnnotation(@CheckForNull TypeQualifierAnnotation tqa) {
 		if (tqa == null) {
 			return null;
 		}

@@ -23,6 +23,7 @@ import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 	private final ClassDescriptor immediateEnclosingClass;
 
-	final Map<ClassDescriptor, AnnotationValue> classAnnotations;
+	/*final*/ Map<ClassDescriptor, AnnotationValue> classAnnotations;
 	final private String classSourceSignature;
 
 
@@ -241,6 +242,23 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	}
 	public AnnotationValue getAnnotation(ClassDescriptor desc) {
 		return classAnnotations.get(desc);
+	}
+	
+	/**
+	 * Destructively add an annotation to the object.
+	 * In general, this is not a great idea, since it could cause
+	 * the same class to appear to have different annotations
+	 * at different times.  However, this method is necessary
+	 * for "built-in" annotations that FindBugs adds to
+	 * system classes.  As long as we add such annotations early
+	 * enough that nobody will notice, we should be ok. 
+	 * 
+	 * @param annotationValue an AnnotationValue to add to the class
+	 */
+	public void addAnnotation(AnnotationValue annotationValue) {
+		HashMap<ClassDescriptor, AnnotationValue> updatedMap = new HashMap<ClassDescriptor, AnnotationValue>(classAnnotations);
+		updatedMap.put(annotationValue.getAnnotationClass(), annotationValue);
+		classAnnotations = Util.immutableMap(updatedMap);
 	}
 
 	public ElementType getElementType() {
