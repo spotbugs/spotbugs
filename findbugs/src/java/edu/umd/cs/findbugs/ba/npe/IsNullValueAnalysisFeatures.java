@@ -65,6 +65,6 @@ public interface IsNullValueAnalysisFeatures {
 	 * JSR-305 type qualifiers rather than an AnnotationDatabase.
 	 */
 	public static final boolean USE_TYPE_QUALIFIERS =
-		SystemProperties.getBoolean("findbugs.npe.tq");
+		true; //SystemProperties.getBoolean("findbugs.npe.tq");
 
 }
