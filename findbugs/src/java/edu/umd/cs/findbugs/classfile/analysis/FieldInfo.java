@@ -54,8 +54,6 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 
 		final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
 
-		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>();
-
 		public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
 			this.className = className;
 			this.fieldName = fieldName;
@@ -73,8 +71,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 		}
 
 		public FieldInfo build() {
-			return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, 
-				 fieldParameterAnnotations, true);
+			return new FieldInfo(className, fieldName, fieldSignature, fieldSourceSignature, accessFlags, fieldAnnotations, true);
 		}
 	}
 
@@ -83,7 +80,6 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	final String fieldSourceSignature;
 	final Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
-	//final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations;
 	final boolean isResolved;
 	
 	/**
@@ -93,7 +89,6 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
      * @param isStatic
      * @param accessFlags
      * @param fieldAnnotations
-     * @param fieldParameterAnnotations
      * @param isResolved
      */
     private FieldInfo(
@@ -103,14 +98,11 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
     		String fieldSourceSignature,
     		int accessFlags,
     		Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
-    		Map<Integer,
-    		Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations,
     		boolean isResolved) {
 	    super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 	    this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Constants.ACC_FINAL : 0);
 		this.fieldSourceSignature = fieldSourceSignature;
 		this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
-		//this.fieldParameterAnnotations = Util.immutableMap(fieldParameterAnnotations);
 		this.isResolved = isResolved;
     }
 
@@ -252,7 +244,6 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 				null, // without seeing the definition we don't know if it has a generic type
 				isStatic ? Constants.ACC_STATIC : 0,
 				new HashMap<ClassDescriptor, AnnotationValue>(),
-				new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(),
 				false);
 	}
 	
