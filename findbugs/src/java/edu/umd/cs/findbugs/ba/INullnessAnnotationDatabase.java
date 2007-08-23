@@ -55,13 +55,13 @@ public interface INullnessAnnotationDatabase {
 	 */
 	public void loadAuxiliaryAnnotations();
 	
-	/**
-	 * Add a default nullness annotation to the database.
-	 * 
-	 * @param cName      class name (FIXME: is this right?)
-	 * @param annotation the default NullnessAnnotation
-	 */
-	public void addDefaultMethodAnnotation(String cName, NullnessAnnotation annotation);
+//	/**
+//	 * Add a default nullness annotation to the database.
+//	 * 
+//	 * @param cName      class name (FIXME: is this right?)
+//	 * @param annotation the default NullnessAnnotation
+//	 */
+//	public void addDefaultMethodAnnotation(String cName, NullnessAnnotation annotation);
 	
 	/**
 	 * Add a field annotation to the database.

@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 
 /**
  * Implementation of INullnessAnnotationDatabase that
@@ -73,6 +74,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation(java.lang.Object, boolean)
 	 */
 	public NullnessAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
+		if (DEBUG) {
+			System.out.println("getResolvedAnnotation: o=" + o + "...");
+		}
+		
 		TypeQualifierAnnotation tqa = null;
 		
 		if (o instanceof XMethodParameter) {
@@ -85,7 +90,11 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 					(AnnotatedObject) o, nonnullTypeQualifierValue);
 		}
 		
-		return toNullnessAnnotation(tqa);
+		NullnessAnnotation result = toNullnessAnnotation(tqa);
+		if (DEBUG) {
+			System.out.println("   ==> " + (result != null ? result.toString() : "not found"));
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -181,19 +190,42 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			System.out.println("Adding AnnotationValue " + annotationValue + " to class " + xclass);
 		}
 		
+		// Destructively add the annotation to the ClassInfo object
 		((ClassInfo)xclass).addAnnotation(annotationValue);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultMethodAnnotation(java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
-	 */
-	public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultMethodAnnotation(java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
+//	 */
+//	public void addDefaultMethodAnnotation(String name, NullnessAnnotation annotation) {
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addFieldAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
-	public void addFieldAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+	public void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation) {
+		if (DEBUG) {
+			System.out.println("addFieldAnnotation: annotate " + cName + "." + mName + " with " + annotation);
+		}
+		
+		XField xfield;
+		
+		xfield = XFactory.createXField(cName, mName, mSig, isStatic);
+		if (xfield == null) {
+			if (DEBUG) {
+				System.out.println("  Field not found!");
+			}
+			return;
+		}
+		
+		// Get JSR-305 nullness annotation type
+		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
+		
+		// Create an AnnotationValue
+		AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
+		
+		// Destructively add the annotation to the FieldInfo object
+		((FieldInfo)xfield).addAnnotation(annotationValue);
 	}
 
 	/* (non-Javadoc)

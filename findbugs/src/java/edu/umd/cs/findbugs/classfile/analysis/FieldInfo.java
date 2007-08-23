@@ -78,7 +78,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	final int accessFlags;
 
 	final String fieldSourceSignature;
-	final Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
+	Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
 	final boolean isResolved;
 	
@@ -216,6 +216,23 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	}
 	public Collection<AnnotationValue> getAnnotations() {
 		return fieldAnnotations.values();
+	}
+	
+	/**
+	 * Destructively add an annotation.
+	 * We do this for "built-in" annotations that might not
+	 * be directly evident in the code.
+	 * It's not a great idea in general, but we can
+	 * get away with it as long as it's done early
+	 * enough (i.e., before anyone asks what annotations
+	 * this field has.) 
+	 * 
+	 * @param annotationValue an AnnotationValue representing a field annotation
+	 */
+	public void addAnnotation(AnnotationValue annotationValue) {
+		HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(fieldAnnotations);
+		updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
+		fieldAnnotations = updatedAnnotations;
 	}
 
 	/* (non-Javadoc)
