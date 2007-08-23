@@ -92,9 +92,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	final String methodSourceSignature;
 
-	final Map<ClassDescriptor, AnnotationValue> methodAnnotations;
+	Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
-	final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
+	Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
 	/**
 	 * @param className
@@ -250,6 +250,42 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	
 	public Collection<AnnotationValue> getAnnotations() {
 		return methodAnnotations.values();
+	}
+
+	/**
+	 * Destructively add an annotation.
+	 * We do this for "built-in" annotations that might not
+	 * be directly evident in the code.
+	 * It's not a great idea in general, but we can
+	 * get away with it as long as it's done early
+	 * enough (i.e., before anyone asks what annotations
+	 * this method has.) 
+	 * 
+	 * @param annotationValue an AnnotationValue representing a method annotation
+	 */
+	public void addAnnotation(AnnotationValue annotationValue) {
+		HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(methodAnnotations);
+		updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
+		methodAnnotations = updatedAnnotations;
+	}
+	
+	/**
+	 * Destructively add a parameter annotation.
+	 * 
+	 * @param param           parameter (0 == first parameter)
+	 * @param annotationValue an AnnotationValue representing a parameter annotation
+	 */
+	public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
+		HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations =
+			new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(methodParameterAnnotations);
+		Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.get(param);
+		if (paramMap == null) {
+			paramMap = new HashMap<ClassDescriptor, AnnotationValue>();
+			updatedAnnotations.put(param, paramMap);
+		}
+		paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
+		
+		methodParameterAnnotations = updatedAnnotations;
 	}
 	
 	/* (non-Javadoc)

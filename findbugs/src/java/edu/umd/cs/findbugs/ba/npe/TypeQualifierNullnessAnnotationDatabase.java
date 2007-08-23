@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 
 /**
  * Implementation of INullnessAnnotationDatabase that
@@ -231,14 +232,54 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
-	public void addMethodAnnotation(String name, String name2, String sig, boolean isStatic, NullnessAnnotation annotation) {
+	public void addMethodAnnotation(String cName, String mName, String sig, boolean isStatic, NullnessAnnotation annotation) {
+		if (DEBUG) {
+			System.out.println("addMethodAnnotation: annotate " + cName + "." + mName + " with " + annotation);
+		}
+		
+		XMethod xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
+		if (xmethod == null || !xmethod.isResolved()) {
+			if (DEBUG) {
+				System.out.println("  Method not found!");
+			}
+			return;
+		}
+		
+		// Get JSR-305 nullness annotation type
+		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
+		
+		// Create an AnnotationValue
+		AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
+		
+		// Destructively add the annotation to the MethodInfo object
+		((MethodInfo)xmethod).addAnnotation(annotationValue);
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodParameterAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
-	public void addMethodParameterAnnotation(String name, String name2, String sig, boolean isStatic, int param,
+	public void addMethodParameterAnnotation(String cName, String mName, String sig, boolean isStatic, int param,
 			NullnessAnnotation annotation) {
+		if (DEBUG) {
+			System.out.println("addMethodParameterAnnotation: annotate " + cName + "." + mName + " param " + param + " with " + annotation);
+		}
+		
+		XMethod xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
+		if (xmethod == null || !xmethod.isResolved()) {
+			if (DEBUG) {
+				System.out.println("  Method not found!");
+			}
+			return;
+		}
+		
+		// Get JSR-305 nullness annotation type
+		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
+		
+		// Create an AnnotationValue
+		AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
+		
+		// Destructively add the annotation to the MethodInfo object
+		((MethodInfo) xmethod).addParameterAnnotation(param, annotationValue);
 	}
 
 	/* (non-Javadoc)

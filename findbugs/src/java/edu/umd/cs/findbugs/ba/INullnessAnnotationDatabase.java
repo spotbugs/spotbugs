@@ -66,36 +66,36 @@ public interface INullnessAnnotationDatabase {
 	/**
 	 * Add a field annotation to the database.
 	 * 
-	 * @param cName        class name
+	 * @param cName        dotted class name
 	 * @param mName        field name
 	 * @param mSig         field signature
 	 * @param isStatic     true if field is static, false otherwise
 	 * @param annotation   NullnessAnnotation to add
 	 */
-	public void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
+	public void addFieldAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
 	
 	/**
 	 * Add a field annotation to the database.
 	 * 
-	 * @param cName        class name
+	 * @param cName        dotted class name
 	 * @param mName        method name
 	 * @param mSig         method signature
 	 * @param isStatic     true if method is static, false otherwise
 	 * @param annotation   NullnessAnnotation to add
 	 */
-	public void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
+	public void addMethodAnnotation(@DottedClassName  String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
 
 	/**
 	 * Add a method parameter annotation to the database.
 	 * 
-	 * @param cName       class name
+	 * @param cName       dotted class name
 	 * @param mName       method name
 	 * @param mSig        method signature
 	 * @param isStatic    true if method is static, false otherwise
 	 * @param param       parameter (0 == first parameter)
 	 * @param annotation  the NullnessAnnotation to add
 	 */
-	public void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, NullnessAnnotation annotation);
+	public void addMethodParameterAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, int param, NullnessAnnotation annotation);
 	
 	/**
 	 * Add a default annotation to the database.
