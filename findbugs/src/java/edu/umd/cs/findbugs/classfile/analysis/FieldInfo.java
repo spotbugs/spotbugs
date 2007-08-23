@@ -83,7 +83,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	final String fieldSourceSignature;
 	final Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
-	final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations;
+	//final Map<Integer, Map<ClassDescriptor, AnnotationValue>> fieldParameterAnnotations;
 	final boolean isResolved;
 	
 	/**
@@ -110,7 +110,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	    this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Constants.ACC_FINAL : 0);
 		this.fieldSourceSignature = fieldSourceSignature;
 		this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
-		this.fieldParameterAnnotations = Util.immutableMap(fieldParameterAnnotations);
+		//this.fieldParameterAnnotations = Util.immutableMap(fieldParameterAnnotations);
 		this.isResolved = isResolved;
     }
 
