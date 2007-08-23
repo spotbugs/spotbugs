@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2007 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -192,20 +192,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		// Discover all directly and indirectly referenced codebases
 		processWorkList(classPath, projectWorkList, progress);
 
-		boolean foundJavaLangObject = false;
-
-		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
-			try {
-			ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource("java/lang/Object.class");
-			foundJavaLangObject = true;
-			break;
-			} catch (ResourceNotFoundException e) {
-				assert true;
-			}
-		}
-
-		if (!foundJavaLangObject) 
-			processWorkList(classPath, buildSystemCodebaseList(), progress);
+		// If not already located, try to locate any additional codebases
+		// containing classes required for analysis.
+		locateCodebasesRequiredForAnalysis(classPath, progress);
 
 		// Add all discovered codebases to the classpath
 		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
@@ -249,6 +238,53 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		}
 	}
 
+	/**
+	 * Make an effort to find the codebases containing any files required for analysis.
+	 */
+	private void locateCodebasesRequiredForAnalysis(IClassPath classPath, IClassPathBuilderProgress progress)
+			throws InterruptedException, IOException, ResourceNotFoundException {
+		boolean foundJavaLangObject = false;
+		boolean foundFindBugsAnnotations = false;
+		boolean foundJSR305Annotations = false;
+
+		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+			if (!foundJavaLangObject) {
+				foundJavaLangObject = probeCodeBaseForResource(discoveredCodeBase, "java/lang/Object.class");
+			}
+			if (!foundFindBugsAnnotations) {
+				foundFindBugsAnnotations = probeCodeBaseForResource(discoveredCodeBase, "edu/umd/cs/findbugs/annotations/Nonnull.class");
+			}
+			if (!foundJSR305Annotations) {
+				foundJSR305Annotations = probeCodeBaseForResource(discoveredCodeBase, "javax/annotation/meta/TypeQualifier.class");
+			}
+		}
+
+		if (!foundJavaLangObject) { 
+			processWorkList(classPath, buildSystemCodebaseList(), progress);
+		}
+		if (!foundFindBugsAnnotations) {
+			processWorkList(classPath, buildFindBugsAnnotationCodebaseList(), progress);
+		}
+		if (!foundJSR305Annotations) {
+			processWorkList(classPath, buildJSR305AnnotationsCodebaseList(), progress);
+		}
+	}
+
+	/**
+	 * Probe a codebase to see if a given source exists in that code base.
+	 * 
+	 * @param resourceName name of a resource
+	 * @return true if the resource exists in the codebase, false if not
+	 */
+	private boolean probeCodeBaseForResource(DiscoveredCodeBase discoveredCodeBase, String resourceName) {
+		try {
+			ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource(resourceName);
+			return true;
+		} catch (ResourceNotFoundException e) {
+			return false;
+		}
+	}
+
 	private void dumpCodeBaseList(Iterator<? extends ICodeBase> i, String desc)
 			throws InterruptedException {
 		System.out.println("  " + desc + ":");
@@ -279,6 +315,33 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				String extDir = st.nextToken();
 				addWorkListItemsForExtDir(workList, extDir);
 			}
+		}
+
+		return workList;
+	}
+
+	/**
+	 * Create a worklist that will add the FindBugs lib/annotations.jar to the classpath.
+	 */
+	private LinkedList<WorkListItem> buildFindBugsAnnotationCodebaseList() {
+		return createFindBugsLibWorkList("annotations.jar");
+	}
+
+	/**
+	 * Create a worklist that will add the FindBugs lib/jsr305.jar to the classpath.
+	 */
+	private LinkedList<WorkListItem> buildJSR305AnnotationsCodebaseList() {
+		return createFindBugsLibWorkList("jsr305.jar");
+	}
+
+	private LinkedList<WorkListItem> createFindBugsLibWorkList(String jarFileName) {
+		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+
+		String findbugsHome = SystemProperties.getProperty("findbugs.home");
+		if (findbugsHome != null) {
+			ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(
+					findbugsHome + File.separator + "lib" + File.separator + jarFileName);
+			workList.add(new WorkListItem(codeBaseLocator, false, ICodeBase.IN_SYSTEM_CLASSPATH));
 		}
 
 		return workList;
