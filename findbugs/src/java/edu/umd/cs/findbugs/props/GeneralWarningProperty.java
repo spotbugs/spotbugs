@@ -52,4 +52,9 @@ public class GeneralWarningProperty extends AbstractWarningProperty {
 	/** Warning occurs on an exception control path. */
 	public static final GeneralWarningProperty ON_EXCEPTION_PATH =
 		new GeneralWarningProperty("ON_EXCEPTION_PATH", PriorityAdjustment.NO_ADJUSTMENT);
+	
+	/** issue is in uncallable method */
+	public static final GeneralWarningProperty IN_UNCALLABLE_METHOD =
+		new GeneralWarningProperty("IN_UNCALLABLE_METHOD", PriorityAdjustment.AT_MOST_LOW);
+	
 }

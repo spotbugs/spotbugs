@@ -548,7 +548,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (dangerousCallTargetList.isEmpty())
 			return;
 
-		WarningPropertySet<NullArgumentWarningProperty> propertySet = new WarningPropertySet<NullArgumentWarningProperty>();
+		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 
 		// See if there are any safe targets
 		Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
@@ -591,13 +591,20 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		else
 			propertySet
 					.addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
-
+		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
+		
 		BugInstance warning = new BugInstance(this,bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method).addMethod(
 						XFactory.createXMethod(invokeInstruction, cpg))
 				.describe("METHOD_CALLED").addSourceLine(classContext,
 						method,  location);
 
+		boolean uncallable = false;
+		if (!AnalysisContext.currentXFactory().isCalled(calledFrom) && !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic())) {
+			propertySet
+			.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
+			uncallable = true;
+		}
 		// Check which params might be null
 		addParamAnnotations(location,
 				definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
@@ -625,6 +632,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			}}
 
 		decorateWarning(location, propertySet, warning);
+		if (uncallable) warning.lowerPriority();
 		bugReporter.reportBug(warning);
 	}
 
@@ -639,7 +647,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 	private void addParamAnnotations(Location location,
 			BitSet definitelyNullArgSet, BitSet violatedParamSet,
-			WarningPropertySet<NullArgumentWarningProperty> propertySet, BugInstance warning)   {
+			WarningPropertySet<? super NullArgumentWarningProperty> propertySet, BugInstance warning)   {
 		ValueNumberFrame vnaFrame = null;
 		try {
 			vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
