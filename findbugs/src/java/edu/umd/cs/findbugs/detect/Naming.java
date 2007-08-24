@@ -195,11 +195,20 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) return false;
 		for (XMethod m2 : others) {
 			if (confusingMethodNames(m,m2)) {
+				XMethod mm1 = m;
+				XMethod mm2 = m2;
+				if (m.compareTo(m2) < 0) {
+					mm1 = m;
+					mm2 = m2;
+				} else {
+					mm1 = m2;
+					mm2 = m;
+				}
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
-						.addClass(m.getClassName())
-						.addMethod(m)
-						.addClass(m2.getClassName())
-						.addMethod(m2));
+						.addClass(mm1.getClassName())
+						.addMethod(mm1)
+						.addClass(mm2.getClassName())
+						.addMethod(mm2));
 				return true;
 			}
 		}
