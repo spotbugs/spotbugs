@@ -24,6 +24,9 @@ import java.util.Calendar;
 import java.util.Collection;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -106,6 +109,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		bugAccumulator = new BugAccumulator(reporter);
 	}
 
+	private boolean sawDateClass;
 	/**
 	 * Remembers the class name and resets temporary fields.
 	 */
@@ -115,9 +119,21 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		currentMethod = null;
 		currentCFG = null;
 		currentLockDataFlow = null;
-		super.visit(someObj);
+		sawDateClass = false;
+
 	}
 
+	@Override
+	public void visit(ConstantPool pool) {
+		for(Constant constant : pool.getConstantPool()) {
+			if (constant instanceof ConstantClass) {
+				ConstantClass cc = (ConstantClass) constant;
+				String className = cc.getBytes(pool);
+				if (className.equals("java/util/Calendar") || className.equals("java/text/DateFormat"))
+						sawDateClass = true;
+			}
+		}
+	}
 	/**
 	 * Checks if the visited field is of type {@link Calendar} or
 	 * {@link DateFormat} or a subclass of either one. If so and the field is
@@ -153,7 +169,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visitMethod(Method obj) {
-		try {
+		if (sawDateClass) try {
 			super.visitMethod(obj);
 			currentMethod = obj;
 			currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
@@ -166,8 +182,10 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	}
 	
 	@Override public void visit(Code obj) {
-		super.visit(obj);
-		bugAccumulator.reportAccumulatedBugs();
+		if (sawDateClass) {
+			super.visit(obj);
+			bugAccumulator.reportAccumulatedBugs();
+		}
 	}
 
 	/**
