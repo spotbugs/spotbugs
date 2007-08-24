@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * @author pugh
  */
 public class TopologicalSort {
-	final static boolean DEBUG = true;
+	final static boolean DEBUG = false;
 	
 	public interface OutEdges<E> {
 		Collection<E> getOutEdges(E e);
