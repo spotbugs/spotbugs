@@ -61,6 +61,9 @@ public class MultiMap<K,  V> {
 			if (s.isEmpty()) map.remove(k);
 		}
 	}
+	public void removeAll(K k) {
+		map.remove(k);
+	}
 	public Collection<V> get(K k) {
 		Collection<V> s = map.get(k);
 		if (s != null) return s;
