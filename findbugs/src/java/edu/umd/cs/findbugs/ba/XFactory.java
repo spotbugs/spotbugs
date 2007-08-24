@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -186,10 +187,48 @@ public  class XFactory {
 			calledMethodsIsInterned = false;
 	}
 
+	
 	public boolean isCalled(XMethod m) {
 		updatedCalledMethods();
 		return calledMethods.contains(m);
 	}
+
+	public boolean isCalledDirectlyOrIndirectly(XMethod m) {
+		if (isCalled(m)) return true;
+		if (m.isStatic() || m.isPrivate() || m.getName().equals("<init>")) return false;
+		try {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		XClass clazz =  analysisCache.getClassAnalysis(XClass.class, m.getClassDescriptor());
+		if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) return true;
+		for(ClassDescriptor i : clazz.getInterfaceDescriptorList())
+			if (isCalledDirectlyOrIndirectly(i, m)) return true;
+		
+		return false;
+		} catch (Exception e) {
+			AnalysisContext.logError("Error checking to see if " + m + " is called", e);
+			return false;
+		}
+	}
+	/**
+     * @param superclassDescriptor
+     * @param m
+     * @return
+	 * @throws CheckedAnalysisException 
+     */
+    private boolean isCalledDirectlyOrIndirectly(@CheckForNull ClassDescriptor clazzDescriptor, XMethod m) throws CheckedAnalysisException {
+    	if (clazzDescriptor == null) return false;
+    	IAnalysisCache analysisCache = Global.getAnalysisCache();
+		XClass clazz =  analysisCache.getClassAnalysis(XClass.class, clazzDescriptor);
+		XMethod m2 = clazz.findMethod(m.getMethodDescriptor());
+		if (m2 != null && isCalled(m2)) return true;
+		if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) return true;
+		for(ClassDescriptor i : clazz.getInterfaceDescriptorList())
+			if (isCalledDirectlyOrIndirectly(i, m)) return true;
+		
+		return false;
+		
+    }
+
 	public boolean nameAndSignatureIsCalled(XMethod m) {
 		updatedCalledMethods();
 		return calledMethodSignatures.contains(getDetailedSignature(m));

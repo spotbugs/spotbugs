@@ -600,7 +600,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 						method,  location);
 
 		boolean uncallable = false;
-		if (!AnalysisContext.currentXFactory().isCalled(calledFrom) && !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic())) {
+		if (!AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(calledFrom) 
+				&& !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic())) {
+			
 			propertySet
 			.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
 			uncallable = true;

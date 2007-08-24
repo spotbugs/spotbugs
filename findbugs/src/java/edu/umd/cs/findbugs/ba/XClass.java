@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
@@ -39,7 +40,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	 * @return ClassDescriptor of this class's immediate superclass, or
 	 *         null if this class has no immediate superclass
 	 */
-	public ClassDescriptor getSuperclassDescriptor();
+	public @CheckForNull ClassDescriptor getSuperclassDescriptor();
 
 	/**
 	 * Get ClassDescriptors of interfaces directly implemented by this class.
