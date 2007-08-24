@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * An adapter allowing classes implementing the Detector interface
@@ -55,13 +56,19 @@ public class DetectorToDetector2Adapter implements Detector2 {
 	 */
 	public void visitClass(ClassDescriptor classDescriptor)
 			throws CheckedAnalysisException {
-
+		Profiler profiler = Profiler.getInstance();
+		
 		// Just get the ClassContext from the analysis cache
 		// and apply the detector to it.
 
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+		profiler.start(detector.getClass());
+		try {
 		detector.visitClassContext(classContext);
+		} finally {
+			profiler.end(detector.getClass());
+		}
 	}
 
 	/* (non-Javadoc)

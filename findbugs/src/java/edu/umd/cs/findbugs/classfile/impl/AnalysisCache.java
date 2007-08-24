@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
@@ -132,9 +133,10 @@ public class AnalysisCache implements IAnalysisCache {
 				throw new IllegalArgumentException(
 						"No analysis engine registered to produce " + analysisClass.getName());
 			}
-
+			Profiler profiler = Profiler.getInstance();
 			// Perform the analysis
 			try {
+				profiler.start(engine.getClass());
 				analysisResult = engine.analyze(this, classDescriptor);
 
 				// If engine returned null, we need to construct
@@ -150,6 +152,8 @@ public class AnalysisCache implements IAnalysisCache {
 			} catch (RuntimeException e) {
 				// Exception - make note
 				analysisResult = new AbnormalAnalysisResult(e);
+			} finally {
+				profiler.end(engine.getClass());
 			}
 
 			// Save the result
@@ -228,7 +232,13 @@ public class AnalysisCache implements IAnalysisCache {
     		throw new IllegalArgumentException(
 					"No analysis engine registered to produce " + analysisClass.getName());
     	}
+    	Profiler profiler = Profiler.getInstance();
+    	profiler.start(engine.getClass());
+    	try {
     	return engine.analyze(this, methodDescriptor);
+    	} finally {
+    		profiler.end(engine.getClass());
+    	}
     }
 
 	/* (non-Javadoc)

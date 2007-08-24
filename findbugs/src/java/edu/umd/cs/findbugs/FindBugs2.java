@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -582,7 +583,9 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 
 	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
-		return edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
+		List<ClassDescriptor> evaluationOrder = edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
+		edu.umd.cs.findbugs.util.TopologicalSort.countBadEdges(evaluationOrder, outEdges);
+		return evaluationOrder;
 
 		}
 
@@ -674,7 +677,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 */
 	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
-		
+		Profiler profiler = Profiler.getInstance();
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
 		
 		int [] classesPerPass = new int[executionPlan.getNumPasses()];
@@ -741,6 +744,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
 				notifyClassObservers(classDescriptor);
 
+
 				for (Detector2 detector : detectorList) {
 					if (Thread.interrupted())
 						throw new InterruptedException();
@@ -748,6 +752,7 @@ public class FindBugs2 implements IFindBugsEngine {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
 					try {
+						profiler.start(detector.getClass());
 						detector.visitClass(classDescriptor);
 					} catch (ClassFormatException e) {
 						logRecoverableException(classDescriptor, detector, e);
@@ -763,6 +768,9 @@ public class FindBugs2 implements IFindBugsEngine {
 						logRecoverableException(classDescriptor, detector, e);
 					} catch (RuntimeException e) {
 						logRecoverableException(classDescriptor, detector, e);
+					}
+					finally {
+						profiler.end(detector.getClass());
 					}
 				}
 
@@ -785,6 +793,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		// Flush any queued error reports
 		bugReporter.reportQueuedErrors();
+		profiler.report();
 	}
 
 	/**
