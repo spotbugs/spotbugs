@@ -219,7 +219,7 @@ public  class XFactory {
     	if (clazzDescriptor == null) return false;
     	IAnalysisCache analysisCache = Global.getAnalysisCache();
 		XClass clazz =  analysisCache.getClassAnalysis(XClass.class, clazzDescriptor);
-		XMethod m2 = clazz.findMethod(m.getMethodDescriptor());
+		XMethod m2 = clazz.findMethod(m.getName(), m.getSignature(), m.isStatic());
 		if (m2 != null && isCalled(m2)) return true;
 		if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) return true;
 		for(ClassDescriptor i : clazz.getInterfaceDescriptorList())
