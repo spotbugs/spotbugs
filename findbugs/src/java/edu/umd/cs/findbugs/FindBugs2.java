@@ -673,6 +673,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		}
 	}
 
+	static private final boolean USE_REFERENCES = SystemProperties.getBoolean("tsort.references");
 	/**
 	 * Analyze the classes in the application codebase.
 	 */
@@ -714,7 +715,7 @@ public class FindBugs2 implements IFindBugsEngine {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
 							XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
-							if (classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
+							if (false && classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
 								return ((ClassNameAndSuperclassInfo)classNameAndInfo).getCalledClassDescriptorList();
 							}
 							return classNameAndInfo.getReferencedClassDescriptorList();
