@@ -1254,6 +1254,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 
 
+		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
+		boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(calledFrom) 
+				&& !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic());
+		if (uncallable) priority++;			
 
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
@@ -1286,12 +1290,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			}
 		}
 
+		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+
 		if (allDerefsAtDoomedLocations) {
 			// Add a WarningProperty
-			WarningPropertySet propertySet = new WarningPropertySet();
 			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
-			propertySet.decorateBugInstance(bugInstance);
 		}
+		if (uncallable)
+			propertySet.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
+		propertySet.decorateBugInstance(bugInstance);
 
 
 		// Report it
