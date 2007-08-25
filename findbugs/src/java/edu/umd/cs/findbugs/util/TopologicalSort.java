@@ -123,6 +123,8 @@ public class TopologicalSort {
 	}
 	static class Worker2<E> implements SortAlgorithm<E> {
 		Worker2(Collection<E> consider, OutEdges<E> outEdges) {
+			if (outEdges == null)
+				throw new IllegalArgumentException("outEdges must not be null");
 			this.consider = new LinkedHashSet<E>(consider);
 			this.outEdges = outEdges;
 			this.result = new ArrayList<E>(consider.size());
@@ -157,10 +159,11 @@ public class TopologicalSort {
 				oEdges = new MultiMap<E, E>(LinkedList.class);
 				
 				for(E e : consider) 
-					for(E e2 : outEdges.getOutEdges(e)) if (e != e2 && consider.contains(e2)) {
-						iEdges.add(e2, e);
-						oEdges.add(e,e2);
-					}
+					for(E e2 : outEdges.getOutEdges(e)) 
+						  if (e != e2 && consider.contains(e2)) {
+						    iEdges.add(e2, e);
+						    oEdges.add(e,e2);
+					      }
 				for(E e : consider) {
 					HashSet<E> both = new HashSet<E>(iEdges.get(e));
 					both.retainAll(oEdges.get(e));

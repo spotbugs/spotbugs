@@ -110,7 +110,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 			this.referencedClassDescriptorList = referencedClassDescriptorList;
 		}
 		public void setCalledClassDescriptorList(Collection<ClassDescriptor> calledClassDescriptorList) {
-			this.calledClassDescriptorList = referencedClassDescriptorList;
+			this.calledClassDescriptorList = calledClassDescriptorList;
 		}
 	}
 
@@ -137,6 +137,8 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		this.codeBaseEntry = codeBaseEntry;
 		this.accessFlags = accessFlags;
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
+		if (calledClassDescriptorList == null)
+			throw new NullPointerException("calledCBelassDescriptorList must not be null");
 		this.calledClassDescriptorList = calledClassDescriptorList;
 	}
 
