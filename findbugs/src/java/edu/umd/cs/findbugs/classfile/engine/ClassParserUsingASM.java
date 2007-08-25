@@ -232,10 +232,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
     	ArrayList<ClassDescriptor> calledClasses = new ArrayList<ClassDescriptor>(referencedClasses.cardinality());
     	for (int i = referencedClasses.nextSetBit(0); i >= 0; i = referencedClasses.nextSetBit(i+1)) {
     	     ClassDescriptor classDescriptor = classConstants.get(i);
+    	     // System.out.println(expectedClassDescriptor + " " + i + "->" + classDescriptor);
     	     if (classDescriptor != null) calledClasses.add(classDescriptor);
     	 }
 
-
+    	cBuilder.setCalledClassDescriptorList(calledClasses);
     	cBuilder.setReferencedClassDescriptorList(referencedClassSet);
     }
 
