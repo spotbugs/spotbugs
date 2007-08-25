@@ -189,6 +189,7 @@ public  class XFactory {
 
 	
 	public boolean isCalled(XMethod m) {
+		if (m.getName().equals("<clinit>")) return true;
 		updatedCalledMethods();
 		return calledMethods.contains(m);
 	}
