@@ -31,13 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * @author pugh
  */
 public class TopologicalSort {
-	final static boolean DEBUG = false;
+	final static boolean DEBUG = SystemProperties.getBoolean("tsort.debug");
 	
 	public interface OutEdges<E> {
 		Collection<E> getOutEdges(E e);
