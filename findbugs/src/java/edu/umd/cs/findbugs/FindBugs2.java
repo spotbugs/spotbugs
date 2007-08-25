@@ -679,7 +679,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		int passCount = 0;
 		Profiler profiler = Profiler.getInstance();
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
-		
+		if (executionPlan.getNumPasses() == 0)
+			throw new AssertionError("no analysis passes");
 		int [] classesPerPass = new int[executionPlan.getNumPasses()];
 		classesPerPass[0] = referencedClassSet.size();
 		for(int i = 0; i < classesPerPass.length; i++) {
