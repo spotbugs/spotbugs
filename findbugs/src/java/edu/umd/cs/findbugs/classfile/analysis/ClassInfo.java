@@ -70,9 +70,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 		public ClassInfo build() {
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
-					referencedClassDescriptorList,classAnnotations,
-					fieldDescriptorList.toArray(new FieldDescriptor[0]), methodDescriptorList.toArray(new MethodDescriptor[0]), 
-					immediateEnclosingClass );
+					referencedClassDescriptorList,calledClassDescriptorList,
+					classAnnotations, fieldDescriptorList.toArray(new FieldDescriptor[0]), 
+					methodDescriptorList.toArray(new MethodDescriptor[0]), immediateEnclosingClass );
 		}
 
 		/**
@@ -133,21 +133,22 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 *            codebase entry class was loaded from
 	 * @param accessFlags
 	 *            class's access flags
+	 * @param referencedClassDescriptorList
+	 *            ClassDescriptors of all classes/interfaces referenced by the
+	 *            class
+	 * @param calledClassDescriptors TODO
 	 * @param fieldDescriptorList
 	 *            FieldDescriptors of fields defined in the class
 	 * @param methodDescriptorList
 	 *            MethodDescriptors of methods defined in the class
-	 * @param referencedClassDescriptorList
-	 *            ClassDescriptors of all classes/interfaces referenced by the
-	 *            class
 	 */
 	private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
 			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
 			Collection<ClassDescriptor> referencedClassDescriptorList,
-			Map<ClassDescriptor, AnnotationValue> classAnnotations,
-			FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList,
-			ClassDescriptor immediateEnclosingClass) {
-		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList);
+			Collection<ClassDescriptor> calledClassDescriptors,
+			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldDescriptor[] fieldDescriptorList,
+			MethodDescriptor[] methodDescriptorList, ClassDescriptor immediateEnclosingClass) {
+		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors);
 		this.classSourceSignature = classSourceSignature;
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;

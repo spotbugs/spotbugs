@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
@@ -174,16 +178,23 @@ public class ClassParserUsingASM implements ClassParserInterface {
     	int constantPoolCount = classReader.readUnsignedShort(8);
     	int offset = 10;
     	char [] buf = new char[1024];
+    	Map<Integer, ClassDescriptor> classConstants = new HashMap<Integer, ClassDescriptor>();
+    	BitSet referencedClasses = new BitSet();
     	// System.out.println("constant pool count: " + constantPoolCount);
     	for(int count = 1; count < constantPoolCount; count++) {
     		int tag = classReader.readByte(offset);
 
     		int size;
             switch (tag) {
-                case Constants.CONSTANT_Fieldref:
-                case Constants.CONSTANT_Methodref:
-                case Constants.CONSTANT_InterfaceMethodref:   
-                case Constants.CONSTANT_Integer:
+                 case Constants.CONSTANT_Methodref:
+                	int classIndex = classReader.readUnsignedShort(offset+1);
+                	referencedClasses.set(classIndex);
+                	int nameIndex = classReader.readUnsignedShort(offset+3);
+                	 size = 5;
+                	break;
+                 case Constants.CONSTANT_InterfaceMethodref:   
+                 case Constants.CONSTANT_Fieldref:
+                 case Constants.CONSTANT_Integer:
                 case Constants.CONSTANT_Float:
                 case Constants.CONSTANT_NameAndType:
                     size = 5;
@@ -201,7 +212,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 	if (className.indexOf('[') >= 0) {
     					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
     				} else if (ClassName.isValidClassName(className)) {
-    					referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
+    					ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
+						referencedClassSet.add(classDescriptor);
+    					classConstants.put(count, classDescriptor);
     				}
                     size = 3;
                     break;
@@ -216,7 +229,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
     		// System.out.println(count + "@" + offset + " : [" + tag +"] size="+size);
             offset += size;
     	}
-    	
+    	ArrayList<ClassDescriptor> calledClasses = new ArrayList<ClassDescriptor>(referencedClasses.cardinality());
+    	for (int i = referencedClasses.nextSetBit(0); i >= 0; i = referencedClasses.nextSetBit(i+1)) {
+    	     ClassDescriptor classDescriptor = classConstants.get(i);
+    	     if (classDescriptor != null) calledClasses.add(classDescriptor);
+    	 }
+
+
     	cBuilder.setReferencedClassDescriptorList(referencedClassSet);
     }
 

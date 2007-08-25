@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import edu.umd.cs.findbugs.ba.XClass;
@@ -40,7 +41,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	private final ICodeBaseEntry codeBaseEntry;
 
 	private final int accessFlags;
-	private final Collection<ClassDescriptor> referencedClassDescriptorList;
+	private final Collection<ClassDescriptor> referencedClassDescriptorList,calledClassDescriptorList;
 
 	public static class Builder {
 		ClassDescriptor classDescriptor;
@@ -54,10 +55,11 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		int accessFlags;
 		
 		Collection<ClassDescriptor> referencedClassDescriptorList;
+		Collection<ClassDescriptor>  calledClassDescriptorList = Collections.emptyList();
 
 		public ClassNameAndSuperclassInfo build() {
 			return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
-			        accessFlags,referencedClassDescriptorList);
+			        accessFlags,referencedClassDescriptorList, calledClassDescriptorList);
 		}
 
 		/**
@@ -107,7 +109,9 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		public void setReferencedClassDescriptorList(Collection<ClassDescriptor> referencedClassDescriptorList) {
 			this.referencedClassDescriptorList = referencedClassDescriptorList;
 		}
-
+		public void setCalledClassDescriptorList(Collection<ClassDescriptor> calledClassDescriptorList) {
+			this.calledClassDescriptorList = referencedClassDescriptorList;
+		}
 	}
 
 	/**
@@ -124,14 +128,16 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	 * @param accessFlags
 	 *            class's access flags
 	 */
-	public ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
-	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, Collection<ClassDescriptor> referencedClassDescriptorList) {
+	 ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
+	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, Collection<ClassDescriptor> referencedClassDescriptorList, 
+	        Collection<ClassDescriptor> calledClassDescriptorList) {
 		super(classDescriptor.getClassName());
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
 		this.accessFlags = accessFlags;
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
+		this.calledClassDescriptorList = calledClassDescriptorList;
 	}
 
 	/**
@@ -166,6 +172,12 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	 */
 	public Collection<ClassDescriptor> getReferencedClassDescriptorList() {
 		return referencedClassDescriptorList;
+	}
+	/**
+	 * @return Returns the called class descriptor list.
+	 */
+	public Collection<ClassDescriptor> getCalledClassDescriptorList() {
+		return calledClassDescriptorList;
 	}
 	/**
 	 * @return Returns the superclassDescriptor.

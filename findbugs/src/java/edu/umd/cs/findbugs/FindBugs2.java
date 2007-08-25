@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -713,6 +714,9 @@ public class FindBugs2 implements IFindBugsEngine {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
 							XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
+							if (classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
+								return ((ClassNameAndSuperclassInfo)classNameAndInfo).getCalledClassDescriptorList();
+							}
 							return classNameAndInfo.getReferencedClassDescriptorList();
 						} catch  (CheckedAnalysisException e2) {
 							AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
