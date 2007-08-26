@@ -27,11 +27,15 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * @author pugh
  */
 public class Profiler {
 
+	final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
+	
 	private static Profiler instance = new Profiler();
 
 	private Profiler() {
@@ -127,7 +131,7 @@ public class Profiler {
 	}
 
 	public void report() {
-		if (true)
+		if (!REPORT)
 			return;
 		try {
 			Comparator<Pair<Class<?>, AtomicLong>> c = new Comparator<Pair<Class<?>, AtomicLong>>() {
