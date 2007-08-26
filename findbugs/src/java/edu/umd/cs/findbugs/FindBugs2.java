@@ -713,7 +713,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
 			
-			if (true || !isNonReportingFirstPass) {
+			if (!isNonReportingFirstPass) {
 				OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
