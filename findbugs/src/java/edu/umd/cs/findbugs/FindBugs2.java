@@ -142,6 +142,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @throws InterruptedException
 	 */
 	public void execute() throws IOException, InterruptedException {
+		Profiler profiler = Profiler.getInstance();
 		// Get the class factory for creating classpath/codebase/etc. 
 		classFactory = ClassFactory.instance();
 
@@ -152,7 +153,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		createAnalysisCache();
 
 		progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
-
+		profiler.start(this.getClass());
+		
 		try {
 			// Discover all codebases in classpath and
 			// enumerate all classes (application and non-application)
@@ -192,6 +194,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		} finally {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
+			profiler.end(this.getClass());
 		}
 	}
 
@@ -710,7 +713,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
 			
-			if (!isNonReportingFirstPass) {
+			if (true || !isNonReportingFirstPass) {
 				OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
