@@ -60,10 +60,9 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
 		if (descriptor instanceof ClassInfo) return (ClassInfo) descriptor;
-		
-		// Get class data
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 
+		
 		// Read the class info
 		ClassParserInterface parser;
 		
@@ -72,6 +71,8 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 			parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
 		} else {
 			// Get InputStream reading from class data
+			// Get class data
+
 			DataInputStream classDataIn =
 				new DataInputStream(new ByteArrayInputStream(classData.getData()));
 

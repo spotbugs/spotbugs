@@ -127,7 +127,7 @@ public class ClassParser implements ClassParserInterface {
 			builder.setInterfaceDescriptorList(interfaceDescriptorList);
 			builder.setCodeBaseEntry(codeBaseEntry);
 			builder.setAccessFlags(access_flags);
-			builder.setReferencedClassDescriptorList(referencedClassDescriptorList);
+			builder.setReferencedClassDescriptors(referencedClassDescriptorList);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}

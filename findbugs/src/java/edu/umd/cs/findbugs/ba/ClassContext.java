@@ -67,12 +67,14 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonExceptionPostdominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonImplicitExceptionPostDominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedBytecodeCallback;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedCode;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
+import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
@@ -220,34 +222,14 @@ public class ClassContext {
 		List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
 		final Map<String, Method> map = new HashMap<String, Method>();
 		for (Method m : methodList) {
-			map.put(m.getName() + m.getSignature(), m);
+			map.put(m.getName() + m.getSignature() + m.isStatic(), m);
 		}
-		final ConstantPoolGen cpg = getConstantPoolGen();
-		final String thisClassName = getJavaClass().getClassName();
+		final MultiMap<Method, Method> multiMap =
+			SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
 		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, new OutEdges<Method>() {
 
 			public Collection<Method> getOutEdges(Method method) {
-				HashSet<Method> result = new HashSet<Method>();
-				try {
-					CFG cfg = getCFG(method);
-					for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-						Instruction ins = i.next().getHandle().getInstruction();
-						if (ins instanceof InvokeInstruction) {
-							InvokeInstruction inv = (InvokeInstruction) ins;
-							String className = inv.getClassName(cpg);
-							if (!thisClassName.equals(className)) continue;
-							String signature = inv.getSignature(cpg);
-							if (signature.indexOf('L') < 0 && signature.indexOf('[') < 0) continue;
-							String methodKey = inv.getMethodName(cpg) + signature;
-							Method method2 = map.get(methodKey);
-							if (method2 != null) result.add(method2);
-						}
-					}
-				} catch (CFGBuilderException e) {
-					AnalysisContext.logError("Error getting methods called by " + thisClassName + "." + method.getName() + ":"
-							+ method.getSignature(), e);
-				}
-				return result;
+				return multiMap.get(method);
 			}
 		});
 		assert methodList.size() == methodsInCallOrder.size();

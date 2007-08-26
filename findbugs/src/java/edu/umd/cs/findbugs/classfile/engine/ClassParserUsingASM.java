@@ -31,6 +31,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -54,25 +55,26 @@ public class ClassParserUsingASM implements ClassParserInterface {
 	private @SlashedClassName String slashedClassName;
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
-	
-	
+
+
 	public ClassParserUsingASM(ClassReader classReader,
 			@CheckForNull ClassDescriptor expectedClassDescriptor,
 			ICodeBaseEntry codeBaseEntry) {
 		this.classReader = classReader;
 		this.expectedClassDescriptor = expectedClassDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
-		
+
 	}
 	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
-     */
-    public void parse(final ClassNameAndSuperclassInfo.Builder cBuilder) throws InvalidClassFileFormatException {
+	 * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
+	 */
+	public void parse(final ClassNameAndSuperclassInfo.Builder cBuilder) throws InvalidClassFileFormatException {
 
-    	cBuilder.setCodeBaseEntry(codeBaseEntry);
+		cBuilder.setCodeBaseEntry(codeBaseEntry);
 
-    	
-    	classReader.accept(new ClassVisitor(){
+		final TreeSet<ClassDescriptor> calledClassSet = new TreeSet<ClassDescriptor>();
+
+		classReader.accept(new ClassVisitor(){
 
 			public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)  {
 				ClassParserUsingASM.this.slashedClassName = name;
@@ -83,7 +85,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				if (cBuilder instanceof ClassInfo.Builder) {
 					((ClassInfo.Builder)cBuilder).setSourceSignature(signature);
 				}
-            }
+			}
 
 			public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
 				if (cBuilder instanceof ClassInfo.Builder) {
@@ -91,18 +93,18 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					((ClassInfo.Builder)cBuilder).addAnnotation(desc, value);
 					return value.getAnnotationVisitor();	
 				}
-	            return null;
-            }
+				return null;
+			}
 
 			public void visitAttribute(Attribute arg0) {
-	            // TODO Auto-generated method stub
-	            
-            }
+				// TODO Auto-generated method stub
+
+			}
 
 			public void visitEnd() {
-	            // TODO Auto-generated method stub
-	            
-            }
+				// TODO Auto-generated method stub
+
+			}
 
 			public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 				if (cBuilder instanceof ClassInfo.Builder) {
@@ -128,9 +130,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			}
 
 			public void visitInnerClass(String arg0, String arg1, String arg2, int arg3) {
-	            // TODO Auto-generated method stub
-	            
-            }
+				// TODO Auto-generated method stub
+
+			}
 
 			public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 				if (cBuilder instanceof ClassInfo.Builder) {
@@ -144,104 +146,98 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							return value.getAnnotationVisitor();
 						}
 
+						@Override
+						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+							if (opcode == Opcodes.INVOKEINTERFACE) return;
+							if (desc.indexOf('[') == -1 || desc.indexOf('L') == -1) return;
+							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
+							ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
+							calledClassSet.add(classDescriptor);
+						}
+
 						public void visitEnd() {
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									mBuilder.build());
-	                        
-                        }
+
+						}
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
-                                boolean visible) {
+								boolean visible) {
 							AnnotationValue value = new AnnotationValue(desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
 							return value.getAnnotationVisitor();
-                        }};
-					
+						}};
+
 				}
 				return null;
-            }
+			}
 
 			public void visitOuterClass(String owner, String name, String desc) {
 				if (cBuilder instanceof ClassInfo.Builder) 
-				  ((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(ClassDescriptor.createClassDescriptor(owner));
-	            
-            }
+					((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(ClassDescriptor.createClassDescriptor(owner));
+
+			}
 
 			public void visitSource(String arg0, String arg1) {
-	            // TODO Auto-generated method stub
-	            
-            }}, ClassReader.SKIP_CODE);
-    	TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
-		
-    	// collect class references
-    	
-    	int constantPoolCount = classReader.readUnsignedShort(8);
-    	int offset = 10;
-    	char [] buf = new char[1024];
-    	Map<Integer, ClassDescriptor> classConstants = new HashMap<Integer, ClassDescriptor>();
-    	BitSet referencedClasses = new BitSet();
-    	// System.out.println("constant pool count: " + constantPoolCount);
-    	for(int count = 1; count < constantPoolCount; count++) {
-    		int tag = classReader.readByte(offset);
+				// TODO Auto-generated method stub
 
-    		int size;
-            switch (tag) {
-                 case Constants.CONSTANT_Methodref:
-                	int classIndex = classReader.readUnsignedShort(offset+1);
-                	referencedClasses.set(classIndex);
-                	int nameIndex = classReader.readUnsignedShort(offset+3);
-                	 size = 5;
-                	break;
-                 case Constants.CONSTANT_InterfaceMethodref:   
-                 case Constants.CONSTANT_Fieldref:
-                 case Constants.CONSTANT_Integer:
-                case Constants.CONSTANT_Float:
-                case Constants.CONSTANT_NameAndType:
-                    size = 5;
-                    break;
-                case Constants.CONSTANT_Long:
-                case Constants.CONSTANT_Double:
-                    size = 9;
-                    count++;
-                    break;
-                case Constants.CONSTANT_Utf8:
-                    size = 3 + classReader.readUnsignedShort(offset+1);
-                    break;
-                case Constants.CONSTANT_Class:
-                	@SlashedClassName String className = classReader.readUTF8(offset+1, buf);
-                	if (className.indexOf('[') >= 0) {
-    					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
-    				} else if (ClassName.isValidClassName(className)) {
-    					ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
-						referencedClassSet.add(classDescriptor);
-    					classConstants.put(count, classDescriptor);
-    				}
-                    size = 3;
-                    break;
-                // case ClassWriter.CLASS:
-                // case ClassWriter.STR:
-                case Constants.CONSTANT_String:
-                    size = 3;
-                    break;
-                default:
-                   throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset + " while parsing " + slashedClassName + " from " + codeBaseEntry);
-            }
-    		// System.out.println(count + "@" + offset + " : [" + tag +"] size="+size);
-            offset += size;
-    	}
-    	ArrayList<ClassDescriptor> calledClasses = new ArrayList<ClassDescriptor>(referencedClasses.cardinality());
-    	for (int i = referencedClasses.nextSetBit(0); i >= 0; i = referencedClasses.nextSetBit(i+1)) {
-    	     ClassDescriptor classDescriptor = classConstants.get(i);
-    	     // System.out.println(expectedClassDescriptor + " " + i + "->" + classDescriptor);
-    	     if (classDescriptor != null) calledClasses.add(classDescriptor);
-    	 }
+			}}, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+		TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
 
-    	cBuilder.setCalledClassDescriptorList(calledClasses);
-    	cBuilder.setReferencedClassDescriptorList(referencedClassSet);
-    }
+		// collect class references
 
-    public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
-    		parse((ClassNameAndSuperclassInfo.Builder) builder);
+		int constantPoolCount = classReader.readUnsignedShort(8);
+		int offset = 10;
+		char [] buf = new char[1024];
+		// System.out.println("constant pool count: " + constantPoolCount);
+		for(int count = 1; count < constantPoolCount; count++) {
+			int tag = classReader.readByte(offset);
 
-    }
+			int size;
+			switch (tag) {
+			case Constants.CONSTANT_Methodref:
+			case Constants.CONSTANT_InterfaceMethodref:   
+			case Constants.CONSTANT_Fieldref:
+			case Constants.CONSTANT_Integer:
+			case Constants.CONSTANT_Float:
+			case Constants.CONSTANT_NameAndType:
+				size = 5;
+				break;
+			case Constants.CONSTANT_Long:
+			case Constants.CONSTANT_Double:
+				size = 9;
+				count++;
+				break;
+			case Constants.CONSTANT_Utf8:
+				size = 3 + classReader.readUnsignedShort(offset+1);
+				break;
+			case Constants.CONSTANT_Class:
+				@SlashedClassName String className = classReader.readUTF8(offset+1, buf);
+				if (className.indexOf('[') >= 0) {
+					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
+				} else if (ClassName.isValidClassName(className)) {
+					ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(className);
+					referencedClassSet.add(classDescriptor);
+				}
+				size = 3;
+				break;
+				// case ClassWriter.CLASS:
+				// case ClassWriter.STR:
+			case Constants.CONSTANT_String:
+				size = 3;
+				break;
+			default:
+				throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset + " while parsing " + slashedClassName + " from " + codeBaseEntry);
+			}
+			// System.out.println(count + "@" + offset + " : [" + tag +"] size="+size);
+			offset += size;
+		}
+		cBuilder.setCalledClassDescriptors(calledClassSet);
+		cBuilder.setReferencedClassDescriptors(referencedClassSet);
+	}
+
+	public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
+		parse((ClassNameAndSuperclassInfo.Builder) builder);
+
+	}
 }

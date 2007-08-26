@@ -205,6 +205,9 @@ public  class XFactory {
 			if (isCalledDirectlyOrIndirectly(i, m)) return true;
 		
 		return false;
+		} catch (MissingClassException e) {
+			AnalysisContext.reportMissingClass(e.getClassNotFoundException());
+			return false;
 		} catch (Exception e) {
 			AnalysisContext.logError("Error checking to see if " + m + " is called", e);
 			return false;
