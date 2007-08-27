@@ -70,6 +70,8 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  * @author David Hovemeyer
  */
 public class FindBugs2 implements IFindBugsEngine {
+	private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
+	
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
@@ -709,7 +711,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass)
 					? referencedClassSet 
 					: appClassList;
-			if (DEBUG) {
+			if (DEBUG || LIST_ORDER) {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
 			
@@ -718,7 +720,7 @@ public class FindBugs2 implements IFindBugsEngine {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 						try {
 							XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
-							if (false && classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
+							if (classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
 								return ((ClassNameAndSuperclassInfo)classNameAndInfo).getCalledClassDescriptorList();
 							}
 							return classNameAndInfo.getReferencedClassDescriptorList();
@@ -733,8 +735,15 @@ public class FindBugs2 implements IFindBugsEngine {
 
 				classCollection = result;
 			}
+			if (LIST_ORDER) {
+				System.out.println("Analysis order:");
+				for(ClassDescriptor c : classCollection) {
+					System.out.println("  " + c);
+				}
+			}
 			progress.startAnalysis(classCollection.size());
 
+			Global.getAnalysisCache().purgeAllMethodAnalysis();
 			for (ClassDescriptor classDescriptor : classCollection) {
 				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
