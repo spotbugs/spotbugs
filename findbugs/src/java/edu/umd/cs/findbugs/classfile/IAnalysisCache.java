@@ -104,6 +104,7 @@ public interface IAnalysisCache {
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor);
 
+	public void purgeAllMethodAnalysis();
 	/**
 	 * Register a database factory.
 	 * 
