@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -50,7 +51,7 @@ public class AnalysisCache implements IAnalysisCache {
 	/**
 	 * Maximum number of class analysis results to cache.
 	 */
-	private static final int MAX_CLASS_RESULTS_TO_CACHE = 20;
+	private static final int MAX_CLASS_RESULTS_TO_CACHE = 200;
 
 	// Fields
 	private IClassPath classPath;
@@ -114,6 +115,24 @@ public class AnalysisCache implements IAnalysisCache {
 		return classPath;
 	}
 
+	public void purgeAllMethodAnalysis() {
+		System.out.println("ZZZ : purging all method analyses");
+		
+		try {
+		for(Object c : getAllClassAnalysis(ClassContext.class).values()) {
+			if (c instanceof ClassContext) ((ClassContext)c).purgeAllMethodAnalyses();
+		}}
+		catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Unable to purge method analysis" , e);
+		}
+	}
+	private  <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass) 
+	throws CheckedAnalysisException {
+		Map<ClassDescriptor, Object> descriptorMap =
+			findOrCreateDescriptorMap(classAnalysisMap, (Map)classAnalysisEngineMap, analysisClass);
+		return (Map<ClassDescriptor, E>) descriptorMap;
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
@@ -128,6 +147,8 @@ public class AnalysisCache implements IAnalysisCache {
 		Object analysisResult = descriptorMap.get(classDescriptor);
 		if (analysisResult == null) {
 			// No cached result - compute (or recompute)
+			if (false && analysisClass == ClassContext.class)
+				System.out.println("ZZZ Generating " + analysisClass.getSimpleName() + " for " + classDescriptor);
 			IAnalysisEngine<ClassDescriptor, E> engine = (IAnalysisEngine<ClassDescriptor, E>) classAnalysisEngineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
@@ -156,6 +177,9 @@ public class AnalysisCache implements IAnalysisCache {
 				profiler.end(engine.getClass());
 			}
 
+			if (false && analysisClass == ClassContext.class)
+				System.out.println("ZZZ Generated " + hex(analysisResult) + " for " + classDescriptor);
+		
 			// Save the result
 			descriptorMap.put(classDescriptor, analysisResult);
 		}
@@ -181,6 +205,9 @@ public class AnalysisCache implements IAnalysisCache {
 		return (E) descriptorMap.get(classDescriptor);
 	}
 
+	String hex(Object o) {
+		return Integer.toHexString(System.identityHashCode(o));
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
 	 */
@@ -191,7 +218,11 @@ public class AnalysisCache implements IAnalysisCache {
 
 		if (object == null) {
 			try {
-				object = analyzeMethod(classContext, analysisClass, methodDescriptor);
+				if (false) {
+				System.out.println("ZZZ creating " + analysisClass.getSimpleName() + " for " + methodDescriptor);
+				System.out.println("ZZZ Currently have " + classContext.getObjectMap(analysisClass).keySet() 
+						+ " in " + hex(classContext.getObjectMap(analysisClass)) +"/" + hex(classContext)+"/"+hex(this));
+				} object = analyzeMethod(classContext, analysisClass, methodDescriptor);
 				if (object == null) {
 					object = NULL_ANALYSIS_RESULT;
 				}
@@ -202,6 +233,9 @@ public class AnalysisCache implements IAnalysisCache {
 			}
 			
 			classContext.putMethodAnalysis(analysisClass, methodDescriptor, object);
+			if (false) System.out.println("ZZZ updated to " + classContext.getObjectMap(analysisClass).keySet() 
+					+ " in " + Integer.toString(System.identityHashCode(classContext.getObjectMap(analysisClass)),16));
+			
 		}
 		if (Debug.VERIFY_INTEGRITY && object == null) {
 			throw new IllegalStateException("AnalysisFactory failed to produce a result object");
@@ -261,6 +295,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
 		try {
+			if (false) System.out.println("ZZZ purging analysis for " + methodDescriptor);
 	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 	        classContext.purgeMethodAnalyses(methodDescriptor);
         } catch (CheckedAnalysisException e) {
@@ -284,8 +319,7 @@ public class AnalysisCache implements IAnalysisCache {
     findOrCreateDescriptorMap(final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap, 
     		                  final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType,E>> engineMap, 
     		                  final Class<E> analysisClass) {
-	    Map<DescriptorType, Object> descriptorMap;
-	    descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
+	    Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
 		if (descriptorMap == null) {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
