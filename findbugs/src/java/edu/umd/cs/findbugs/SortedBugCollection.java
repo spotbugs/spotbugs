@@ -566,17 +566,31 @@ public class SortedBugCollection implements BugCollection {
 				xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
 				xmlOutput.writeText(error.getExceptionMessage());
 				xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
-			}
 
-			String stackTrace[] = error.getStackTrace();
-			if (stackTrace != null) {
-				for (String aStackTrace : stackTrace) {
-					xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
-					xmlOutput.writeText(aStackTrace);
-					xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+				String stackTrace[] = error.getStackTrace();
+				if (stackTrace != null) {
+					for (String aStackTrace : stackTrace) {
+						xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+						xmlOutput.writeText(aStackTrace);
+						xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+					}
+				}
+
+				if (error.getNestedExceptionMessage() != null) {
+					xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
+					xmlOutput.writeText(error.getNestedExceptionMessage());
+					xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
+
+					stackTrace = error.getNestedStackTrace();
+					if (stackTrace != null) {
+						for (String aStackTrace : stackTrace) {
+							xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+							xmlOutput.writeText(aStackTrace);
+							xmlOutput.closeTag(ERROR_STACK_TRACE_ELEMENT_NAME);
+						}
+					}
 				}
 			}
-
 			xmlOutput.closeTag(ERROR_ELEMENT_NAME);
 		}
 

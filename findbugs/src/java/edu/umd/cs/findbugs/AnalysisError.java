@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 
+import org.apache.tools.ant.taskdefs.optional.script.ScriptDef.NestedElement;
+
 /**
  * Object recording a recoverable error that occurred during analysis.
  * 
@@ -11,7 +13,8 @@ public class AnalysisError {
 	private String message;
 	private String exceptionMessage;
 	private String[] stackTrace;
-
+	private String nestedExceptionMessage;
+	private String[] nestedStackTrace;
 	/**
 	 * Constructor.
 	 * 
@@ -31,14 +34,29 @@ public class AnalysisError {
 		this.message = message;
 		if (exception != null) {
 			exceptionMessage = exception.toString();
-			StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
-			ArrayList<String> arr = new ArrayList<String>();
-			for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
-				arr.add(aExceptionStackTrace.toString());
+			stackTrace =  getStackTraceAsStringArray(exception);
+			Throwable initCause = exception.getCause();
+			if (initCause != null) {
+				nestedExceptionMessage = initCause.toString();
+				nestedStackTrace = getStackTraceAsStringArray(initCause);
 			}
-			stackTrace = arr.toArray(new String[arr.size()]);
+			
 		}
 	}
+
+	/**
+     * @param exception
+     * @return
+     */
+    private String[] getStackTraceAsStringArray(Throwable exception) {
+	    StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
+	    ArrayList<String> arr = new ArrayList<String>();
+	    for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
+	    	arr.add(aExceptionStackTrace.toString());
+	    }
+	    String[] tmp = arr.toArray(new String[arr.size()]);
+	    return tmp;
+    }
 
 	/**
 	 * Set the message describing the error.
@@ -73,7 +91,13 @@ public class AnalysisError {
 	public String getExceptionMessage() {
 		return exceptionMessage;
 	}
-
+	/**
+	 * Get the exception message.  This is the value returned by
+	 * calling toString() on the original exception object.
+	 */
+	public String getNestedExceptionMessage() {
+		return nestedExceptionMessage;
+	}
 	/**
 	 * Set the stack trace elements.
 	 * These are the strings returned by calling toString()
@@ -92,5 +116,13 @@ public class AnalysisError {
 	 */
 	public String[] getStackTrace() {
 		return stackTrace;
+	}
+	/**
+	 * Get the stack trace elements.
+	 * These are the strings returned by calling toString()
+	 * on each StackTraceElement in the original exception.
+	 */
+	public String[] getNestedStackTrace() {
+		return nestedStackTrace;
 	}
 }
