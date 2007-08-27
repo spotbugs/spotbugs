@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,7 +120,8 @@ public class AnalysisCache implements IAnalysisCache {
 		// System.out.println("ZZZ : purging all method analyses");
 		
 		try {
-		for(Object c : getAllClassAnalysis(ClassContext.class).values()) {
+		Collection<ClassContext> allClassContexts = getAllClassAnalysis(ClassContext.class).values();
+		for(Object c : allClassContexts) {
 			if (c instanceof ClassContext) ((ClassContext)c).purgeAllMethodAnalyses();
 		}}
 		catch (ClassCastException e) {
