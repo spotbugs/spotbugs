@@ -576,7 +576,7 @@ public class SortedBugCollection implements BugCollection {
 					}
 				}
 
-				if (error.getNestedExceptionMessage() != null) {
+				if (false && error.getNestedExceptionMessage() != null) {
 					xmlOutput.openTag(ERROR_EXCEPTION_ELEMENT_NAME);
 					xmlOutput.writeText(error.getNestedExceptionMessage());
 					xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
