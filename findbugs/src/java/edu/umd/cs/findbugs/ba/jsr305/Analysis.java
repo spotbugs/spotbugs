@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -79,7 +80,7 @@ public class Analysis {
 					try {
 	                    getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
                     } catch (CheckedAnalysisException e) {
-                    	if (DEBUG) {
+                    	if (true || DEBUG) {
                     		System.out.println("**** Error getting relevant type qualifiers ****");
                     		e.printStackTrace(System.out);
                     	}
@@ -107,7 +108,7 @@ public class Analysis {
 
 	private static void getDirectlyRelevantTypeQualifiers(XMethod xmethod, IAnalysisCache analysisCache,
             HashSet<TypeQualifierValue> result) throws CheckedAnalysisException, CFGBuilderException {
-		
+		try {
 		if (DEBUG) {
 			System.out.println("Accumulating relevant type qualifiers for " + xmethod);
 			System.out.println(  "Before=" + result);
@@ -142,6 +143,9 @@ public class Analysis {
 		
 		if (DEBUG) {
 			System.out.println("  After=" + result);
+		}
+		} catch (MethodUnprofitableException e) {
+			assert true; // ignore it
 		}
     }
 
