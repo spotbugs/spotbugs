@@ -80,7 +80,7 @@ public class Analysis {
 					try {
 	                    getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
                     } catch (CheckedAnalysisException e) {
-                    	if (true || DEBUG) {
+                    	if (DEBUG) {
                     		System.out.println("**** Error getting relevant type qualifiers ****");
                     		e.printStackTrace(System.out);
                     	}
