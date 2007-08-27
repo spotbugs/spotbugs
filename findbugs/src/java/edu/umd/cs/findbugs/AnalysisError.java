@@ -2,8 +2,6 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 
-import org.apache.tools.ant.taskdefs.optional.script.ScriptDef.NestedElement;
-
 /**
  * Object recording a recoverable error that occurred during analysis.
  * 
