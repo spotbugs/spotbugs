@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
- * As a first scanning pass, make a note of unconditionally dereferenced
+ * Make a note of unconditionally dereferenced
  * parameters for later use by FindNullDerefs.
  * 
  * @author David Hovemeyer
