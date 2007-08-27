@@ -329,11 +329,15 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 			int numWordsConsumed,
 			int numWordsProduced,
 			Value pushValue) {
+		if (frame.getStackDepth() < numWordsConsumed) {
+			throw new IllegalArgumentException(" asked to pop " + numWordsConsumed + " stack elements but only " + frame.getStackDepth() 
+					+ " elements remain in " + frame + " while processing " + ins);
+		}
 		try {
 			while (numWordsConsumed-- > 0)
 				frame.popValue();
 		} catch (DataflowAnalysisException e) {
-			throw new InvalidBytecodeException(e.toString());
+			throw new InvalidBytecodeException("Not enough values on the stack", e);
 		}
 
 		while (numWordsProduced-- > 0)
