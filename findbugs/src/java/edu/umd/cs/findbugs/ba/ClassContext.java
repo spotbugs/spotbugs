@@ -37,6 +37,7 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
@@ -117,7 +118,7 @@ public class ClassContext {
 		this.methodAnalysisObjectMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
 	}
 	
-	private Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
+	public Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
 		Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
 		if (objectMap == null) {
 			objectMap = new HashMap<MethodDescriptor, Object>();
@@ -156,7 +157,10 @@ public class ClassContext {
 		Map<MethodDescriptor, Object> objectMap = getObjectMap(analysisClass);
 		return objectMap.get(methodDescriptor);
 	}
-
+	public void purgeAllMethodAnalyses() {
+		methodAnalysisObjectMap.clear();
+	}
+		   
 	/**
 	 * Purge all CFG-based method analyses for given method.
 	 * 
@@ -221,17 +225,49 @@ public class ClassContext {
 		if (methodsInCallOrder != null) return methodsInCallOrder;
 		List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
 		final Map<String, Method> map = new HashMap<String, Method>();
+		
 		for (Method m : methodList) {
 			map.put(m.getName() + m.getSignature() + m.isStatic(), m);
 		}
 		final MultiMap<Method, Method> multiMap =
 			SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
-		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, new OutEdges<Method>() {
+		OutEdges<Method> edges1 = new OutEdges<Method>() {
 
 			public Collection<Method> getOutEdges(Method method) {
 				return multiMap.get(method);
 			}
-		});
+		};
+		OutEdges<Method> edges2 =  new OutEdges<Method>() {
+			final ConstantPoolGen cpg = getConstantPoolGen();
+			final String thisClassName = getJavaClass().getClassName();
+		
+			public Collection<Method> getOutEdges(Method method) {
+				HashSet<Method> result = new HashSet<Method>();
+				try {
+					CFG cfg = getCFG(method);
+					for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+						Instruction ins = i.next().getHandle().getInstruction();
+						if (ins instanceof InvokeInstruction) {
+							InvokeInstruction inv = (InvokeInstruction) ins;
+							String className = inv.getClassName(cpg);
+							if (!thisClassName.equals(className)) continue;
+							String signature = inv.getSignature(cpg);
+							if (signature.indexOf('L') < 0 && signature.indexOf('[') < 0) continue;
+							String methodKey = inv.getMethodName(cpg) + signature + (inv instanceof INVOKESTATIC);
+							Method method2 = map.get(methodKey);
+							if (method2 != null) result.add(method2);
+						}
+					}
+				} catch (CFGBuilderException e) {
+					AnalysisContext.logError("Error getting methods called by " + thisClassName + "." + method.getName() + ":"
+							+ method.getSignature(), e);
+				}
+				return result;
+			}
+		};
+
+		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, edges1);
+		
 		assert methodList.size() == methodsInCallOrder.size();
 		return methodsInCallOrder;
 	}
