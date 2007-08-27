@@ -149,10 +149,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 							if (opcode == Opcodes.INVOKEINTERFACE) return;
-							if (desc.indexOf('[') == -1 || desc.indexOf('L') == -1) return;
+							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
+							if (desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
 							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
 							ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
 							calledClassSet.add(classDescriptor);
+							// System.out.println("Added call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner);
+							
 						}
 
 						public void visitEnd() {
