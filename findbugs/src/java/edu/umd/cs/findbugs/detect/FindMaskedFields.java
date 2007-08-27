@@ -48,7 +48,6 @@ import edu.umd.cs.findbugs.ba.XField;
 public class FindMaskedFields extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 	private int numParms;
-	private Set<Field> maskedFields = new HashSet<Field>();
 	private Map<String, Field> classFields = new HashMap<String, Field>();
 	private boolean staticMethod;
 
@@ -94,7 +93,6 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 				fields = superClass.getFields();
 				for (Field fld : fields) {
 					if (!fld.isStatic()
-							&& !maskedFields.contains(fld)
 							&& (fld.isPublic() || fld.isProtected())) {
 						fieldName = fld.getName();
 						if (fieldName.length() == 1)
@@ -109,7 +107,6 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 								&& fieldName.equals("out"))
 								) continue;
 						if (classFields.containsKey(fieldName)) {
-							maskedFields.add(fld);
 							Field maskingField = classFields.get(fieldName);
 							String mClassName = getDottedClassName();
 							FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(),
