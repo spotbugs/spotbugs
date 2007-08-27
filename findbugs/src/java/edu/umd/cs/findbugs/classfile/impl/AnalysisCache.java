@@ -116,13 +116,15 @@ public class AnalysisCache implements IAnalysisCache {
 	}
 
 	public void purgeAllMethodAnalysis() {
-		System.out.println("ZZZ : purging all method analyses");
+		// System.out.println("ZZZ : purging all method analyses");
 		
 		try {
 		for(Object c : getAllClassAnalysis(ClassContext.class).values()) {
 			if (c instanceof ClassContext) ((ClassContext)c).purgeAllMethodAnalyses();
 		}}
-		catch (CheckedAnalysisException e) {
+		catch (ClassCastException e) {
+			AnalysisContext.logError("Unable to purge method analysis" , e);
+		} catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Unable to purge method analysis" , e);
 		}
 	}
