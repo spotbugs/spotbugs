@@ -70,7 +70,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * Dataflow analysis to find values unconditionally derefenced in the future.
+ * Dataflow analysis to find values unconditionally dereferenced in the future.
  * 
  * @author David Hovemeyer
  */
