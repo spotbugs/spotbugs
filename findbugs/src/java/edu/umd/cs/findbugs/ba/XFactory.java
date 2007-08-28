@@ -198,18 +198,21 @@ public  class XFactory {
 		if (isCalled(m)) return true;
 		if (m.isStatic() || m.isPrivate() || m.getName().equals("<init>")) return false;
 		try {
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		XClass clazz =  analysisCache.getClassAnalysis(XClass.class, m.getClassDescriptor());
-		if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) return true;
-		for(ClassDescriptor i : clazz.getInterfaceDescriptorList())
-			if (isCalledDirectlyOrIndirectly(i, m)) return true;
-		
-		return false;
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			XClass clazz =  analysisCache.getClassAnalysis(XClass.class, m.getClassDescriptor());
+			if (isCalledDirectlyOrIndirectly(clazz.getSuperclassDescriptor(), m)) return true;
+			for(ClassDescriptor i : clazz.getInterfaceDescriptorList())
+				if (isCalledDirectlyOrIndirectly(i, m)) return true;
+
+			return false;
+		} catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
+			// AnalysisContext.reportMissingClass(e.getClassNotFoundException());
+			return false;
 		} catch (MissingClassException e) {
 			AnalysisContext.reportMissingClass(e.getClassNotFoundException());
 			return false;
 		} catch (Exception e) {
-			AnalysisContext.logError("Error checking to see if " + m + " is called", e);
+			AnalysisContext.logError("Error checking to see if " + m + " is called (" + e.getClass().getCanonicalName()+")", e);
 			return false;
 		}
 	}
