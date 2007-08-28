@@ -271,7 +271,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			}
 			return;
 		}
-		
+		if (!(xmethod instanceof MethodInfo)) {
+			AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
+			return;
+		}
 		// Get JSR-305 nullness annotation type
 		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
 		
