@@ -120,16 +120,13 @@ public class AnalysisCache implements IAnalysisCache {
 		// System.out.println("ZZZ : purging all method analyses");
 		
 		try {
-		Map<ClassDescriptor, ClassContext> map = getAllClassAnalysis(ClassContext.class);
-		Collection<?> allClassContexts = map.values();
-		for(Object c : allClassContexts) {
-			if (c instanceof ClassContext) 
-				((ClassContext)c).purgeAllMethodAnalyses();
-			else if (c instanceof AbnormalAnalysisResult) {
-				AbnormalAnalysisResult a = (AbnormalAnalysisResult)c;
-				// System.out.println(a.checkedAnalysisException);
+			Map<ClassDescriptor, ClassContext> map = getAllClassAnalysis(ClassContext.class);
+			Collection<?> allClassContexts = map.values();
+			for(Object c : allClassContexts) {
+				if (c instanceof ClassContext) 
+					((ClassContext)c).purgeAllMethodAnalyses();
 			}
-		}}
+		}
 		catch (ClassCastException e) {
 			AnalysisContext.logError("Unable to purge method analysis" , e);
 		} catch (CheckedAnalysisException e) {
