@@ -239,7 +239,11 @@ public class IsNullValueAnalysis
 		int start = fact.getNumSlots() - numProduced;
 		Location location = new Location(handle, basicBlock);
 		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
-
+		if (!vnaFrameAfter.isValid()) {
+			assert false:  "Invalid VNA after location " + location;
+			// vnaDataflow.dumpDataflow();
+			return;
+		}
 		for (int i = start; i < fact.getNumSlots(); ++i) {
 			ValueNumber value = vnaFrameAfter.getValue(i);
 			IsNullValue isNullValue = fact.getValue(i);
