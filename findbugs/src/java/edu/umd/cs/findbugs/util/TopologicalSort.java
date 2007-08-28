@@ -191,8 +191,13 @@ public class TopologicalSort {
 							i.remove();
 							foundSomething = true;
 						} else {
-							int myScore = -( oEdges.get(e).size() - iEdges.get(e).size());
+							// Higher score: more likely to choose
+							int myScore = score(e);
+							
+							// myScore -= oEdges.get(e).size(); // more needs, more reluctant
+							// myScore += iEdges.get(e).size(); // needed more, more eager
 							if (bestScore < myScore) {
+								// my score is better than the best seen so far
 								bestScore = myScore;
 								best = e;
 							}
@@ -200,6 +205,16 @@ public class TopologicalSort {
 					} // iterator
 					if (!foundSomething) {
 						if (DEBUG) {
+							if (best.toString().equals("org/eclipse/jdt/internal/core/JavaModel")) {
+								System.out.println("Full dump for org/eclipse/jdt/internal/core/JavaModel {");
+								for(E e : remaining) {
+									System.out.printf(" %4d %s\n", score(e), e);
+									System.out.println("  needs: " + oEdges.get(e));
+									System.out.println("  needed by: " + iEdges.get(e));
+									}
+								System.out.println("} Full dump for org/eclipse/jdt/internal/core/JavaModel");
+								
+							}
 						System.out.println("do " + best + " first, reluctantly");
 						System.out.println("  needs: " + oEdges.get(best));
 						System.out.println("  needed by: " + iEdges.get(best));
@@ -214,6 +229,22 @@ public class TopologicalSort {
 
 				return doFirst;
 		}
+		/**
+         * @param e
+         * @return
+         */
+        private int score(E e) {
+	        int myScore = 0;
+	        for(E e2 : oEdges.get(e)) 
+	        	if (iEdges.get(e2).size() == 1)
+	        		myScore -= 2;
+	        	else myScore -= 1;
+	        for(E e2 : iEdges.get(e)) 
+	        	if (oEdges.get(e2).size() == 1)
+	        		myScore += 2;
+	        	else myScore += 1;
+	        return myScore;
+        }
 		
 	}
 }
