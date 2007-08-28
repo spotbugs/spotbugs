@@ -242,10 +242,17 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		return fact;
 	}
 
+	private final static boolean TRACE = false;
 	@Override
 	public ValueNumberFrame getFactAfterLocation(Location location) {
+		if (TRACE) System.out.println("getting fact after " + location);
 		ValueNumberFrame fact = factAfterLocationMap.get(location);
 		if (fact == null) {
+			if (TRACE) System.out.println("Initialized fact after " + location 
+					+ " @ " + Integer.toHexString(System.identityHashCode(location))
+					+ " in " + Integer.toHexString(System.identityHashCode(this))
+					+ " : " + factAfterLocationMap.containsKey(location));
+			
 			fact = createFact();
 			makeFactTop(fact);
 			factAfterLocationMap.put(location, fact);
