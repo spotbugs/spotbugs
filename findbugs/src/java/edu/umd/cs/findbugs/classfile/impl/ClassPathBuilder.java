@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -337,7 +338,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	private LinkedList<WorkListItem> createFindBugsLibWorkList(String jarFileName) {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 
-		String findbugsHome = SystemProperties.getProperty("findbugs.home");
+		String findbugsHome = FindBugs.getHome();
 		if (findbugsHome != null) {
 			ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(
 					findbugsHome + File.separator + "lib" + File.separator + jarFileName);
