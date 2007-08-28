@@ -181,7 +181,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
-				if (DEBUG)
+				if (DEBUG || DEBUG_NULLARG)
 					System.out.println("Checking for NP in " + currentMethod);
 				analyzeMethod(classContext, method);
 			} catch (MissingClassException e) {
