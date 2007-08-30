@@ -27,10 +27,10 @@ import org.objectweb.asm.MethodVisitor;
 /**
  * @author pwilliam
  */
-public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
+public abstract class AbstractMethodVisitor implements MethodVisitor {
 
+	public void visitSomeInsn() {}
 	
-
 	/* (non-Javadoc)
 	 * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
 	 */
@@ -44,7 +44,6 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 */
 	public void visitAttribute(Attribute attr) {
 		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)
@@ -55,12 +54,11 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 
 	}
 
-
 	/* (non-Javadoc)
 	 * @see org.objectweb.asm.MethodVisitor#visitFieldInsn(int, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -76,7 +74,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitIincInsn(int, int)
 	 */
 	public void visitIincInsn(int var, int increment) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -84,7 +82,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitInsn(int)
 	 */
 	public void visitInsn(int opcode) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -92,7 +90,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitIntInsn(int, int)
 	 */
 	public void visitIntInsn(int opcode, int operand) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -100,7 +98,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitJumpInsn(int, org.objectweb.asm.Label)
 	 */
 	public void visitJumpInsn(int opcode, Label label) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -116,7 +114,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitLdcInsn(java.lang.Object)
 	 */
 	public void visitLdcInsn(Object cst) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -140,7 +138,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitLookupSwitchInsn(org.objectweb.asm.Label, int[], org.objectweb.asm.Label[])
 	 */
 	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -156,7 +154,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitMethodInsn(int, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -164,7 +162,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitMultiANewArrayInsn(java.lang.String, int)
 	 */
 	public void visitMultiANewArrayInsn(String desc, int dims) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -189,7 +187,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitTypeInsn(int, java.lang.String)
 	 */
 	public void visitTypeInsn(int opcode, String type) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 
@@ -197,7 +195,7 @@ public abstract class AbstractMethodAnnotationVisitor implements MethodVisitor {
 	 * @see org.objectweb.asm.MethodVisitor#visitVarInsn(int, int)
 	 */
 	public void visitVarInsn(int opcode, int var) {
-		// TODO Auto-generated method stub
+		visitSomeInsn();
 
 	}
 

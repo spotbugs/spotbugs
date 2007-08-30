@@ -24,23 +24,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.meta.When;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AbstractClassMember;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
@@ -522,6 +520,10 @@ public class TypeQualifierApplications {
 	 */
 	private static TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
+		
+		if (o instanceof AbstractClassMember 
+				&& (((AbstractClassMember)o).getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
+				return null; // synthetic methods don't get default annotations
 		TypeQualifierAnnotation result = null;
 
 		ElementType elementType = o.getElementType();
@@ -659,6 +661,9 @@ public class TypeQualifierApplications {
 			XMethod xmethod,
 			int parameter,
 			TypeQualifierValue typeQualifierValue) {
+		
+		if ((xmethod.getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0) 
+			return null;  // synthetic methods don't get default annotations
 		AnnotatedObject o = xmethod;
 
 		while (o.getContainingScope() != null) {

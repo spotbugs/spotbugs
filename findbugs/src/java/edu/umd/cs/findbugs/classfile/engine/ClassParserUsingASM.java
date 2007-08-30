@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -34,6 +35,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -43,6 +45,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.filter.MethodMatcher;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -55,7 +58,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 	private @SlashedClassName String slashedClassName;
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
-
+	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL };
+	
 
 	public ClassParserUsingASM(ClassReader classReader,
 			@CheckForNull ClassDescriptor expectedClassDescriptor,
@@ -76,6 +80,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 		classReader.accept(new ClassVisitor(){
 
+			boolean isInnerClass = false;
+			
 			public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)  {
 				ClassParserUsingASM.this.slashedClassName = name;
 				cBuilder.setAccessFlags(access);
@@ -107,6 +113,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			}
 
 			public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+				if (name.equals("this$0")) isInnerClass = true;
 				if (cBuilder instanceof ClassInfo.Builder) {
 					final FieldInfo.Builder fBuilder = new FieldInfo.Builder(slashedClassName, name, desc, access);
 					fBuilder.setSourceSignature(signature);
@@ -129,17 +136,56 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				return null;
 			}
 
-			public void visitInnerClass(String arg0, String arg1, String arg2, int arg3) {
-				// TODO Auto-generated method stub
+			public void visitInnerClass(String name, String outerName, String innerName, int access) {
+				if (name.equals(slashedClassName)  && outerName != null) {
+					if (cBuilder instanceof ClassInfo.Builder) {
+						ClassDescriptor outerClassDescriptor = ClassDescriptor.createClassDescriptor(outerName);
+						((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
+					}
+
+				}
 
 			}
-
-			public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+			
+			public MethodVisitor visitMethod(int access, final String methodName, final String methodDesc, String signature, String[] exceptions) {
 				if (cBuilder instanceof ClassInfo.Builder) {
-					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, name, desc, access);
+					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
 					mBuilder.setSourceSignature(signature);
-					return new AbstractMethodAnnotationVisitor(){
+					return new AbstractMethodVisitor(){
 
+						int variable;
+						State state = State.INITIAL;
+						
+						@Override
+						public void visitSomeInsn() {
+							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
+						}
+						@Override
+						public void visitVarInsn(int opcode, int var) {
+							if (opcode == Opcodes.ALOAD && var == 0)
+								state = State.THIS_LOADED;
+							else if (state == State.THIS_LOADED) switch(opcode) {
+							case Opcodes.ALOAD:
+							case Opcodes.ILOAD:
+							case Opcodes.LLOAD:
+							case Opcodes.DLOAD:
+							case Opcodes.FLOAD:
+								state = State.VARIABLE_LOADED;
+								variable = var;
+							} else visitSomeInsn();
+						}
+						@Override
+						public void visitFieldInsn(int opcode,
+			                    String owner,
+			                    String name,
+			                    String desc) {
+							if (state == State.VARIABLE_LOADED && methodName.equals("<init>") 
+									&& owner.equals(slashedClassName) && name.indexOf('$') >= 0) {
+								
+						
+								// System.out.println("Parameter " + (variable-1) + " to new " + slashedClassName + methodDesc +  " is synthetic");
+							}
+							}
 						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
 							AnnotationValue value = new AnnotationValue(desc);
 							mBuilder.addAnnotation(desc, value);
@@ -155,7 +201,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor(owner);
 							calledClassSet.add(classDescriptor);
 							// System.out.println("Added call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner);
-							
+							state = State.AFTER_METHOD_CALL;
 						}
 
 						public void visitEnd() {
@@ -166,7 +212,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
 								boolean visible) {
+							if (false)
+								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); ) 
+								System.out.println("   " + i.next());
 							AnnotationValue value = new AnnotationValue(desc);
+							if (isInnerClass && methodName.equals("<init>")) {
+								parameter++;
+							}
+							// System.out.println(isInnerClass + " parameter " + parameter + " of " + slashedClassName+"." + methodName +methodDesc + " is annotated " + desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
 							return value.getAnnotationVisitor();
 						}};
@@ -176,9 +229,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			}
 
 			public void visitOuterClass(String owner, String name, String desc) {
-				if (cBuilder instanceof ClassInfo.Builder) 
-					((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(ClassDescriptor.createClassDescriptor(owner));
-
+				
 			}
 
 			public void visitSource(String arg0, String arg1) {
