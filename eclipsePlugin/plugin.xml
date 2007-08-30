@@ -19,6 +19,11 @@
 	  <library name="asm-3.0.jar">
 		 <export name="*"/>
 	  </library>
+   <library name="asm-commons-3.0.jar">
+      <export
+            name="*">
+      </export>
+   </library>
    </runtime>
 
    <requires>
