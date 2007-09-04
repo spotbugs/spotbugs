@@ -58,11 +58,12 @@ import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * A user-friendly front end for finding null pointer dereferences
@@ -124,6 +125,8 @@ public class NullDerefAndRedundantComparisonFinder {
 	}
 
 	public void execute() {
+		Profiler profiler = Profiler.getInstance();
+		profiler.start(this.getClass());
 		try {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
@@ -147,6 +150,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		}  catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error while for guaranteed derefs in " +
 					method.getName(), e);
+		} finally {
+			profiler.end(this.getClass());
 		}
 
 	}
