@@ -173,6 +173,8 @@ public class IncompatibleTypes {
 
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
+		} catch (MissingClassException e) {
+			AnalysisContext.reportMissingClass(e.getClassNotFoundException());
 		} catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error checking for incompatible types", e);
         }
