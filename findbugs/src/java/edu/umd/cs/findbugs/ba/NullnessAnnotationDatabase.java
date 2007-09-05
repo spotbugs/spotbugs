@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * @author pugh
@@ -57,6 +58,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	@CheckForNull @Override
 	public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
 
+		Profiler profiler = Profiler.getInstance();
+		profiler.start(this.getClass());
+		try {
 		if (o instanceof XMethodParameter) {
 			XMethodParameter mp = (XMethodParameter) o;
 			XMethod m = mp.getMethod();
@@ -80,6 +84,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		}
 		NullnessAnnotation result =  super.getResolvedAnnotation(o, getMinimal);
 		return result;
+		} finally {
+			profiler.end(this.getClass());
+		}
 	}
 	
 	/* (non-Javadoc)

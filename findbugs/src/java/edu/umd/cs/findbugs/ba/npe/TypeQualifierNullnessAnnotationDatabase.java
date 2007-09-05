@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * Implementation of INullnessAnnotationDatabase that
@@ -75,6 +76,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation(java.lang.Object, boolean)
 	 */
 	public NullnessAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
+		Profiler profiler = Profiler.getInstance();
+		profiler.start(this.getClass());
+		try {
+		
 		if (DEBUG) {
 			System.out.println("getResolvedAnnotation: o=" + o + "...");
 		}
@@ -96,6 +101,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			System.out.println("   ==> " + (result != null ? result.toString() : "not found"));
 		}
 		return result;
+		} finally {
+			profiler.end(this.getClass());
+		}
 	}
 
 	/* (non-Javadoc)

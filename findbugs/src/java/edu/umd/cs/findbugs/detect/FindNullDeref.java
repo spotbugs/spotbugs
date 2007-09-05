@@ -95,6 +95,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
@@ -303,7 +304,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		return NullnessAnnotation.UNKNOWN_NULLNESS;
 	}
 
+	static class CheckCallSitesAndReturnInstructions {};
 	private void checkCallSitesAndReturnInstructions() {
+		Profiler profiler = Profiler.getInstance();
+		profiler.start(CheckCallSitesAndReturnInstructions.class);
 		try {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -331,7 +335,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 		} catch (CheckedAnalysisException e) {
 		   AnalysisContext.logError("error:", e);
-		} 
+		} finally {
+			profiler.end(CheckCallSitesAndReturnInstructions.class);
+		}
 	}
 
 	private void examineCallSite(Location location, ConstantPoolGen cpg,
