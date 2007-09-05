@@ -29,6 +29,11 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
 
 public class IncompatibleTypes {
 	final int priority;
@@ -111,25 +116,37 @@ public class IncompatibleTypes {
 
 	}
 
+	
+	static @NonNull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
+		IAnalysisCache cache = Global.getAnalysisCache();
+		while (true) {
+		 XMethod result = xClass.findMethod(name, sig, isStatic);
+		 if (result != null) return result;
+		 if (isStatic) throw  new CheckedAnalysisException();
+		 xClass = cache.getClassAnalysis(XClass.class, xClass.getSuperclassDescriptor());
+		}
+		 
+	}
 	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
 			ObjectType lhsType, ObjectType rhsType) {
-		// See if the types are related by inheritance.
 		try {
+		// See if the types are related by inheritance.
+		ClassDescriptor lhsDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(lhsType.getClassName());
+		ClassDescriptor rhsDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(rhsType.getClassName());
+		
+		IAnalysisCache cache = Global.getAnalysisCache();
+		XClass lhs = cache.getClassAnalysis(XClass.class, lhsDescriptor);
+		XClass rhs = cache.getClassAnalysis(XClass.class, rhsDescriptor);
 			if (!Hierarchy.isSubtype(lhsType, rhsType)
 					&& !Hierarchy.isSubtype(rhsType, lhsType)) {
 				AnalysisContext analysisContext = AnalysisContext
 						.currentAnalysisContext();
-
 				// Look up the classes
-				JavaClass lhsClass = analysisContext.lookupClass(lhsType
-						.getClassName());
-				JavaClass rhsClass = analysisContext.lookupClass(rhsType
-						.getClassName());
-				XMethod lhsEquals = XFactory.createXMethod(lhsClass.getClassName(), "equals", "(Ljava/lang/Object;)Z", false);
-				XMethod rhsEquals = XFactory.createXMethod(rhsClass.getClassName(), "equals", "(Ljava/lang/Object;)Z", false);
+				XMethod lhsEquals = getInvokedMethod(lhs, "equals", "(Ljava/lang/Object;)Z", false);
+				XMethod rhsEquals = getInvokedMethod(rhs, "equals", "(Ljava/lang/Object;)Z", false);
 				if (lhsEquals.equals(rhsEquals) && !lhsEquals.getClassName().equals("java.lang.Object"))
 					return SEEMS_OK;
-				if (!lhsClass.isInterface() && !rhsClass.isInterface()) {
+				if (!lhs.isInterface() && !rhs.isInterface()) {
 					// Both are class types, and therefore there is no possible
 					// way
 					// the compared objects can have the same runtime type.
@@ -140,12 +157,12 @@ public class IncompatibleTypes {
 					// intersection does not contain at least one instantiable
 					// class,
 					// then issue a warning of the appropriate type.
-					Set<JavaClass> commonSubtypes = analysisContext
-							.getSubtypes().getTransitiveCommonSubtypes(
-									lhsClass, rhsClass);
+					Set<ClassDescriptor> commonSubtypes = analysisContext
+							.getSubtypes2().getTransitiveCommonSubtypes(
+									lhsDescriptor, rhsDescriptor);
 
 					if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
-						if (lhsClass.isInterface() && rhsClass.isInterface())
+						if (lhs.isInterface() && rhs.isInterface())
 							return UNRELATED_INTERFACES;
 						else
 							return UNRELATED_CLASS_AND_INTERFACE;
@@ -156,14 +173,20 @@ public class IncompatibleTypes {
 
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
-		}
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error checking for incompatible types", e);
+        }
 		return SEEMS_OK;
 	}
 
 	private static boolean containsAtLeastOneInstantiableClass(
-			Set<JavaClass> commonSubtypes) {
-		for (JavaClass javaClass : commonSubtypes) {
-			if (!javaClass.isInterface() && !javaClass.isAbstract())
+			Set<ClassDescriptor> commonSubtypes) throws CheckedAnalysisException {
+		IAnalysisCache cache = Global.getAnalysisCache();
+		for (ClassDescriptor classDescriptor : commonSubtypes) {
+			
+			XClass xclass = cache.getClassAnalysis(XClass.class, classDescriptor);
+			
+			if (!xclass.isInterface() && !xclass.isAbstract())
 				return true;
 		}
 		return false;

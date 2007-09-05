@@ -70,6 +70,12 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	 */
 	public boolean isInterface();
 
+	/**
+	 * @return true if the class is an abstract
+	 */
+	public boolean isAbstract();
+
+
 	public Collection<ClassDescriptor> getAnnotationDescriptors();
 
 	public AnnotationValue getAnnotation(ClassDescriptor desc);

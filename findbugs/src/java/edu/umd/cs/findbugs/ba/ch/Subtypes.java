@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
+@Deprecated // use Subtypes2 instead
 public class Subtypes {
 	private static final boolean DEBUG_HIERARCHY = false || SystemProperties.getBoolean("findbugs.debug.hierarchy");
 

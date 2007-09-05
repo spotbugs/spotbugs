@@ -248,6 +248,7 @@ public abstract class AnalysisContext {
 	 * 
 	 * @return the Subtypes database
 	 */
+	@Deprecated // use Subtypes2 instead
 	public abstract Subtypes getSubtypes();
 
 	/**

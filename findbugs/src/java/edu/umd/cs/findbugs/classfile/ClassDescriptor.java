@@ -39,7 +39,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	 * 
 	 * @param className class name in VM format, e.g. "java/lang/String"
 	 */
-	public ClassDescriptor(@SlashedClassName String className) {
+	 protected ClassDescriptor(@SlashedClassName String className) {
 		if (className.indexOf('.') >= 0) {
 			throw new IllegalArgumentException("Class name " + className + " not in VM format");
 		}

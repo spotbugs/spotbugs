@@ -596,6 +596,11 @@ public class Subtypes2 {
 		return result;
 	}
 
+	public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2) throws ClassNotFoundException {
+		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(getSubtypes(classDescriptor1));
+		result.retainAll(getSubtypes(classDescriptor2));
+		return result;
+	}
 	/**
 	 * Get Collection of all XClass objects (resolved classes)
 	 * seen so far.
