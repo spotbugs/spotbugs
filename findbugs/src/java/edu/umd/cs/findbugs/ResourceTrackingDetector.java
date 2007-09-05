@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ResourceTracker;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * Abstract implementation of a Detector to find methods where a
@@ -151,7 +152,13 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
+			Profiler profiler = Profiler.getInstance();
+			profiler.start(resourceTracker.getClass());
+			try {
 			dataflow.execute();
+			} finally {
+				profiler.end(resourceTracker.getClass());
+			}
 			inspectResult(classContext, methodGen, cfg, dataflow, resource);
 		}
 		} catch (RuntimeException e) {

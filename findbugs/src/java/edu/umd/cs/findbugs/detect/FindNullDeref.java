@@ -173,11 +173,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 						|| method.getCode() == null)
 					continue;
 
-				MethodGen mg = classContext.getMethodGen(method);
-				if (mg == null) {
-					continue;
-				}
-				currentMethod = SignatureConverter.convertMethodSignature(mg);
+				currentMethod = SignatureConverter.convertMethodSignature(jclass, method);
 
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;

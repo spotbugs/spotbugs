@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.type.*;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.*;
 import java.util.*;
 import org.apache.bcel.Constants;
@@ -93,6 +94,36 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final byte T_PARAMETER_STRING = T_AVAIL_TYPE + 2;
 
 	private static final String STRING_SIGNATURE = "Ljava/lang/String;";
+
+	/**
+     * @author pugh
+     */
+    private final class SpecialTypeAnalysis extends TypeAnalysis {
+	    /**
+	     * @param method
+	     * @param methodGen
+	     * @param cfg
+	     * @param dfs
+	     * @param typeMerger
+	     * @param visitor
+	     * @param lookupFailureCallback
+	     * @param exceptionSetFactory
+	     */
+	    private SpecialTypeAnalysis(Method method, MethodGen methodGen, CFG cfg, DepthFirstSearch dfs, TypeMerger typeMerger,
+	            TypeFrameModelingVisitor visitor, RepositoryLookupFailureCallback lookupFailureCallback,
+	            ExceptionSetFactory exceptionSetFactory) {
+		    super(method, methodGen, cfg, dfs, typeMerger, visitor, lookupFailureCallback, exceptionSetFactory);
+	    }
+
+	    @Override public void initEntryFact(TypeFrame result) {
+	    	super.initEntryFact(result);
+	    	for(int i = 0; i < methodGen.getMaxLocals(); i++) {
+	    		Type t = result.getValue(i);
+	    		if (t.equals(ObjectType.STRING))
+	    			result.setValue(i, parameterStringTypeInstance);
+	    	}
+	    }
+    }
 
 	/**
 	 * Type representing a dynamically created String.
@@ -476,18 +507,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		RefComparisonTypeFrameModelingVisitor visitor =
 			new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
 		TypeAnalysis typeAnalysis =
-			new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory) {
-			@Override public void initEntryFact(TypeFrame result) {
-				super.initEntryFact(result);
-				for(int i = 0; i < methodGen.getMaxLocals(); i++) {
-					Type t = result.getValue(i);
-					if (t.equals(ObjectType.STRING))
-						result.setValue(i, parameterStringTypeInstance);
-				}
-			}
-		};
+			new SpecialTypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
+		Profiler profiler = Profiler.getInstance();
+		profiler.start(SpecialTypeAnalysis.class);
+		try {
 		typeDataflow.execute();
+		} finally {
+			profiler.end(SpecialTypeAnalysis.class);
+		}
 
 		// Inspect Locations in the method for suspicious ref comparisons and calls to equals()
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
