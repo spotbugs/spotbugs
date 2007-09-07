@@ -433,14 +433,18 @@
 		<echo>Running JUnit test cases for FindBugs...</echo>
 		<delete dir="build/junit"/>
 		<mkdir dir="build/junit"/>	
-		<junit fork="yes">
+		<junit fork="yes" printsummary="on">
 			<jvmarg value="-Dfindbugs.home=."/>
-			<formatter type="xml"/>
+			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
 			<classpath refid="tools.classpath"/>
-				<batchtest todir="build/junit">
-					<fileset dir="${junitsrc.dir}"/>
-					</batchtest>
-			</junit>
+			<!-- junit needs fileset to point to .java files (not .class) -->
+			<batchtest todir="build/junit">
+				<fileset dir="${junitsrc.dir}">
+					<include name="**/*Test.java"/>
+                    <include name="**/Test*.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
 	</target>
 
 	<target name="smoketest" depends="runjunit,validatesampleoutput"/>
