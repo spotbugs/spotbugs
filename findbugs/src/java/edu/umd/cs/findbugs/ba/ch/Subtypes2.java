@@ -606,6 +606,28 @@ public class Subtypes2 {
 		return result;
 	}
 
+	/**
+	 * Get known subtypes of given class.
+	 * 
+	 * @param classDescriptor ClassDescriptor naming a class
+	 * @return Set of ClassDescriptors which are the known subtypes of the class
+	 * @throws ClassNotFoundException 
+	 */
+	public Set<ClassDescriptor> getDirectSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+		
+        ClassVertex startVertex = resolveClassVertex(classDescriptor);
+        
+        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+     // Add all known subtype vertices to the work list
+    	Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(startVertex);
+    	while (i.hasNext()) {
+    		InheritanceEdge edge = i.next();
+    		result.add(edge.getSource().getClassDescriptor());
+    	}
+        
+        
+        return result;
+	}
 	public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2) throws ClassNotFoundException {
 		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(getSubtypes(classDescriptor1));
 		result.retainAll(getSubtypes(classDescriptor2));

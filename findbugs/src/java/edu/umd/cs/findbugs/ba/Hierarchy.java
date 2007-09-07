@@ -734,8 +734,10 @@ public class Hierarchy {
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 
 		// Get the receiver class.
+		String receiverClassName = ((ObjectType) receiverType).getClassName();
+		System.out.println(receiverClassName + "." + methodName + methodSig);
 		JavaClass receiverClass = analysisContext.lookupClass(
-				((ObjectType) receiverType).getClassName());
+				receiverClassName);
 
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
@@ -758,7 +760,7 @@ public class Hierarchy {
 			   invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
 			&& !receiverTypeIsExact;
 
-		if (virtualCall) {
+		if (virtualCall && !receiverClassName.equals("java.lang.Object")) {
 			// This is a true virtual call: assume that any concrete
 			// subtype method may be called.
 			Set<JavaClass> subTypeSet = analysisContext.getSubtypes().getTransitiveSubtypes(receiverClass);
