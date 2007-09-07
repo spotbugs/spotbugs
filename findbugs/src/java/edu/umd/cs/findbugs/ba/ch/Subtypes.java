@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,7 +41,11 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Support for class hierarchy queries.
@@ -74,13 +80,45 @@ public class Subtypes {
 	 * @param c a class or interface
 	 * @return set of immediate subtypes
 	 */
-	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
-		if (!allClasses.contains(c))
-			addClass(c);
-		compute();
-		return immediateSubtypes.get(c);
-	}
 
+	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
+		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		try {
+	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
+        } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	        return Collections.emptySet();
+        } catch (CheckedAnalysisException e) {
+        	 AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
+ 	        return Collections.emptySet();
+        }
+	}
+	private  JavaClass getJavaClass(ClassDescriptor descriptor) throws CheckedAnalysisException {
+		return Global.getAnalysisCache().getClassAnalysis(JavaClass.class, descriptor);
+	}
+	private JavaClass getJavaClass(XClass xClass) throws CheckedAnalysisException {
+		return Global.getAnalysisCache().getClassAnalysis(JavaClass.class, xClass.getClassDescriptor());
+	}
+		
+	
+	private Set<JavaClass> getJavaClasses(Collection<ClassDescriptor> descriptors) throws CheckedAnalysisException {
+		HashSet<JavaClass> result = new HashSet<JavaClass>();
+		for(ClassDescriptor c : descriptors) 
+			result.add(getJavaClass(c));
+		return result;
+	}
+	
+	private Set<JavaClass> getJavaClassesFromXClasses(Collection<XClass> xclasses) throws CheckedAnalysisException {
+		HashSet<JavaClass> result = new HashSet<JavaClass>();
+		for(XClass c : xclasses) 
+			result.add(getJavaClass(c));
+		return result;
+	}
+	private static Subtypes2 subtypes2() {
+		AnalysisContext analysisContext = AnalysisContext
+		.currentAnalysisContext();
+		return analysisContext.getSubtypes2();
+	}
 	/**
 	 * Determine if a class or interface has subtypes
 	 * 
@@ -88,10 +126,13 @@ public class Subtypes {
 	 * @return true if c has any subtypes/interfaces
 	 */
 	public boolean hasSubtypes(JavaClass c) {
-		if (!allClasses.contains(c))
-			addClass(c);
-		compute();
-		return !immediateSubtypes.get(c).isEmpty();
+		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		try {
+	        return !subtypes2().getSubtypes(classDescriptor).isEmpty();
+        } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	        return false;
+        }
 	}
 
 	/**
@@ -99,9 +140,13 @@ public class Subtypes {
 	 * 
 	 * @return set of all known classes and interfaces
 	 */
+	@Deprecated
 	public Set<JavaClass> getAllClasses() {
-		compute();
-		return allClasses;
+		try {
+	        return getJavaClassesFromXClasses(subtypes2().getXClassCollection());
+        } catch (CheckedAnalysisException e) {
+	        throw new AssertionError("We're screwed");
+        }
 	}
 
 	/**
@@ -112,10 +157,16 @@ public class Subtypes {
 	 * @return set of all transitive subtypes
 	 */
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
-		if (!allClasses.contains(c))
-			addClass(c);
-		compute();
-		return transitiveSubtypes.get(c);
+		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		try {
+	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
+        } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	        return Collections.emptySet();
+        } catch (CheckedAnalysisException e) {
+        	 AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
+ 	        return Collections.emptySet();
+        }
 	}
 
 	/**
@@ -130,24 +181,18 @@ public class Subtypes {
 	 * @return set of all common subtypes of <i>a</i> and <i>b</i>
 	 */
 	public Set<JavaClass> getTransitiveCommonSubtypes(JavaClass a, JavaClass b) {
-		Set<JavaClass> result = new HashSet<JavaClass>();
-
-		// Get all subtypes of A, inclusive
-		result.addAll(getTransitiveSubtypes(a));
-		result.add(a);
-
-		// Is B a subtype of A?
-		boolean bIsSubtypeOfA = result.contains(b); 
-
-		// Remove all subtypes of A which aren't proper subtypes of B
-		result.retainAll(getTransitiveSubtypes(b));
-
-		// Fix up: if B is a subtype of A, then we were wrong to
-		// remove it.  Add it back if appropriate.
-		if (bIsSubtypeOfA)
-			result.add(b);
-
-		return result;
+		ClassDescriptor aD = ClassDescriptor.createClassDescriptor(a);
+		ClassDescriptor bD = ClassDescriptor.createClassDescriptor(b);
+		try {
+	        return getJavaClasses(subtypes2().getTransitiveCommonSubtypes(aD, bD));
+        } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	        return Collections.emptySet();
+        } catch (CheckedAnalysisException e) {
+        	 AnalysisContext.logError("Error checking common subtypes of " + a.getClassName() + " and " + b.getClassName(), e);
+ 	        return Collections.emptySet();
+        }
+		
 	}
 
 	private void addReferencedClasses(JavaClass c) {
@@ -362,10 +407,6 @@ public class Subtypes {
 	 * @return true if it's an application class, false if not
 	 */
 	public boolean isApplicationClass(JavaClass javaClass) {
-		boolean isAppClass = applicationClasses.contains(javaClass);
-		if (DEBUG_HIERARCHY) {
-			System.out.println(javaClass.getClassName() + " ==> " + (isAppClass ? "IS" : "IS NOT") + " an application class (" + applicationClasses.size() + " entries in app class map)");
-		}
-		return isAppClass;
+		return subtypes2().isApplicationClass(ClassDescriptor.createClassDescriptor(javaClass));
 	}
 }

@@ -149,7 +149,7 @@ public class Profiler {
 			};
 			TreeSet<Pair<Class<?>, AtomicLong>> treeSet = new TreeSet<Pair<Class<?>, AtomicLong>>(c);
 			for (Map.Entry<Class<?>, AtomicLong> e : profile.entrySet()) {
-				treeSet.add(new Pair(e.getKey(), e.getValue()));
+				treeSet.add(new Pair<Class<?>, AtomicLong>(e.getKey(), e.getValue()));
 			}
 			Pair<Class<?>, AtomicLong> prev = null;
 			for (Pair<Class<?>, AtomicLong> e : treeSet) {

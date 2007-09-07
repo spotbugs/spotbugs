@@ -132,6 +132,16 @@ public class Subtypes2 {
 
 	}
 
+	
+	public boolean isApplicationClass(ClassDescriptor descriptor) {
+        try {
+	        return resolveClassVertex(descriptor).isApplicationClass();
+        } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	        return true;
+        }
+	}
+
 	/**
 	 * Add a class or interface, and its transitive supertypes, to the inheritance graph.
 	 * 

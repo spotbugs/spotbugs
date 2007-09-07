@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.io.Serializable;
 
+import org.apache.bcel.classfile.JavaClass;
+
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -143,7 +145,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
 	    return createClassDescriptor(dottedClassName.replace('.','/'));
     }
-
+	public static ClassDescriptor createClassDescriptor(JavaClass c) {
+	    return createClassDescriptorFromDottedClassName(c.getClassName());
+    }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
