@@ -525,7 +525,21 @@ public class Subtypes2 {
 
 	    ClassVertex aVertex = resolveClassVertex(aDesc);
 	    ClassVertex bVertex = resolveClassVertex(bDesc);
-
+	    if (bVertex.getXClass().isInterface())  {
+	    	ClassDescriptor tmp = aDesc;
+	    	aDesc = bDesc;
+	    	bDesc = aDesc;
+	    	ClassVertex tmp2 = aVertex;
+	    	aVertex = bVertex;
+	    	bVertex = tmp2;
+	    }
+	    if (aVertex.getXClass().isInterface()) {
+	    	Set<ClassDescriptor> bSuperTypes = computeKnownSupertypes(bDesc);
+	    	if (bSuperTypes.contains(aDesc))  {
+	    		System.out.println("Merge " + a + " & " + b + " = " + a);
+	    		return a;
+	    	}
+	    }
 	    ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
 	    ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
 
@@ -799,6 +813,36 @@ public class Subtypes2 {
 			while (i.hasNext()) {
 				InheritanceEdge edge = i.next();
 				workList.addLast(edge.getSource());
+			}
+		}
+
+		return result;
+	}
+
+	private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+		LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+
+		ClassVertex startVertex = resolveClassVertex(classDescriptor);
+		workList.addLast(startVertex);
+
+		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+
+		while (!workList.isEmpty()) {
+			ClassVertex current = workList.removeFirst();
+
+			if (result.contains(current.getClassDescriptor())) {
+				// Already added this class
+				continue;
+			}
+
+			// Add class to the result
+			result.add(current.getClassDescriptor());
+
+			// Add all known subtype vertices to the work list
+			Iterator<InheritanceEdge> i = graph.outgoingEdgeIterator(current);
+			while (i.hasNext()) {
+				InheritanceEdge edge = i.next();
+				workList.addLast(edge.getTarget());
 			}
 		}
 
