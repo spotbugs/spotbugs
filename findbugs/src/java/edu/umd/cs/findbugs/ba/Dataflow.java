@@ -52,7 +52,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private boolean isForwards;
 	private int numIterations;
 
-	public static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
+	public static boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
 	/**
 	 * Constructor.
@@ -107,19 +107,19 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		boolean change;
 
 		if (DEBUG) {
-			String shortAnalysisName = analysis.getClass().getName();
-			int pkgEnd = shortAnalysisName.lastIndexOf('.');
-			if (pkgEnd >= 0) {
-				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
-			}
-			System.out.println("Executing " + shortAnalysisName + " on " + getFullyQualifiedMethodName());
+			reportAnalysis("Executing");
 		}
 
 		int timestamp = 0;
 		do {
 			change = false;
 			++numIterations;
+			if (numIterations >= MAX_ITERS-3 && !DEBUG ) {
+				DEBUG = true;
+				reportAnalysis("Too many iterations analyzing");
+			}
 
+			
 			if (DEBUG) {
 				System.out.println("----------------------------------------------------------------------");
 				System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
@@ -127,8 +127,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			}
 
 			if (numIterations >= MAX_ITERS) {
-				assert false : "Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName();
-				break;
+				throw new AssertionError( "Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName());
 			}
 
 			analysis.startIteration();
@@ -316,6 +315,18 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			analysis.finishIteration();
 		} while (change);
 	}
+	/**
+	 * @param msg TODO
+     * 
+     */
+    private void reportAnalysis(String msg) {
+	    String shortAnalysisName = analysis.getClass().getName();
+	    int pkgEnd = shortAnalysisName.lastIndexOf('.');
+	    if (pkgEnd >= 0) {
+	    	shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
+	    }
+	    System.out.println(msg + " " + shortAnalysisName + " on " + getFullyQualifiedMethodName());
+    }
 
 	private static String blockId(BasicBlock bb) {
 		InstructionHandle handle = bb.getFirstInstruction();
