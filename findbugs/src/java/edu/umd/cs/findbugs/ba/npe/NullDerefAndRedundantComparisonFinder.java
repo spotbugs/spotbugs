@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
@@ -147,6 +148,8 @@ public class NullDerefAndRedundantComparisonFinder {
 			examineNullValues();
 		}
 		examineRedundantBranches();
+		}  catch (MissingClassException e) {
+			AnalysisContext.reportMissingClass(e.getClassNotFoundException());
 		}  catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error while for guaranteed derefs in " +
 					method.getName(), e);
