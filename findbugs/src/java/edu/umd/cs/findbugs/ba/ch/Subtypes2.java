@@ -536,7 +536,6 @@ public class Subtypes2 {
 	    if (aVertex.getXClass().isInterface()) {
 	    	Set<ClassDescriptor> bSuperTypes = computeKnownSupertypes(bDesc);
 	    	if (bSuperTypes.contains(aDesc))  {
-	    		System.out.println("Merge " + a + " & " + b + " = " + a);
 	    		return a;
 	    	}
 	    }
