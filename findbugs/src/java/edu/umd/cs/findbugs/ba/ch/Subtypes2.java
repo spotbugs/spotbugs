@@ -528,7 +528,7 @@ public class Subtypes2 {
 	    if (bVertex.getXClass().isInterface())  {
 	    	ClassDescriptor tmp = aDesc;
 	    	aDesc = bDesc;
-	    	bDesc = aDesc;
+	    	bDesc = tmp;
 	    	ClassVertex tmp2 = aVertex;
 	    	aVertex = bVertex;
 	    	bVertex = tmp2;
