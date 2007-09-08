@@ -47,6 +47,11 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ObjectType typeObject;
 	ObjectType typeInteger;
 	ObjectType typeString;
+	
+	ObjectType typeList;
+	ObjectType typeMap;
+	ObjectType typeCollection;
+	ObjectType typeHashSet;
 	ArrayType typeArraySerializable;
 	ArrayType typeArrayClonable;
 	ArrayType typeArrayObject;
@@ -76,6 +81,11 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
 		typeInteger = ObjectTypeFactory.getInstance("java.lang.Integer");
 		typeString = ObjectTypeFactory.getInstance("java.lang.String");
+		
+		typeList = ObjectTypeFactory.getInstance("java.util.List");
+		typeMap  = ObjectTypeFactory.getInstance("java.util.Map");
+		typeCollection  = ObjectTypeFactory.getInstance("java.util.Collection");
+		typeHashSet  = ObjectTypeFactory.getInstance("java.util.HashSet");
 		typeArraySerializable = new ArrayType(typeSerializable,1);
 		typeArrayClonable = new ArrayType(typeClonable,1);
 		typeArrayObject = new ArrayType(typeObject,1);
@@ -300,9 +310,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	
 	public void testArrayFirstCommonSuperclassTricky() throws Exception {
 		executeFindBugsTest(new RunnableWithExceptions() {
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.RunnableWithExceptions#run()
-			 */
+
 			public void run() throws Throwable {
 				Subtypes2 test = getSubtypes2();
 				
@@ -314,5 +322,24 @@ public class Subtypes2Test extends FindBugsTestCase {
 				assertEquals(typeArrayArrayArrayChar, test.getFirstCommonSuperclass(typeArrayArrayArrayChar, typeArrayArrayArrayChar));
 			}
 		});
+	}
+	
+	public void testInterfaces() throws Exception {
+		executeFindBugsTest(new RunnableWithExceptions() {
+
+			public void run() throws Throwable {
+				Subtypes2 test = getSubtypes2();
+				assertEquals(typeCollection, test.getFirstCommonSuperclass(typeCollection, typeHashSet));
+				assertEquals(typeCollection, test.getFirstCommonSuperclass(typeHashSet, typeCollection));
+				
+			}
+		});
+		/*
+		ObjectType typeList;
+		ObjectType typeMap;
+		ObjectType typeCollection;
+		ObjectType typeHashSet;
+		*/
+
 	}
 }
