@@ -735,7 +735,6 @@ public class Hierarchy {
 
 		// Get the receiver class.
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		System.out.println(receiverClassName + "." + methodName + methodSig);
 		JavaClass receiverClass = analysisContext.lookupClass(
 				receiverClassName);
 
