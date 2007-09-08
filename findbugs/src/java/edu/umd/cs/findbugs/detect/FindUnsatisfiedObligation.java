@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.obl.PolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * Find unsatisfied obligations in Java methods.
@@ -123,7 +124,13 @@ public class FindUnsatisfiedObligation implements Detector {
 			Dataflow<StateSet, ObligationAnalysis> dataflow =
 				new Dataflow<StateSet, ObligationAnalysis>(cfg, analysis);
 
+			Profiler profiler = Profiler.getInstance();
+			profiler.start(analysis.getClass());
+			try {
 			dataflow.execute();
+			} finally {
+				profiler.end(analysis.getClass());
+			}
 
 			if (DEBUG_PRINTCFG) {
 				System.out.println("Dataflow CFG:");
