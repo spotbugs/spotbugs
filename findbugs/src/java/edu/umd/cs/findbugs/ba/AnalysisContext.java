@@ -204,6 +204,14 @@ public abstract class AnalysisContext {
 	 * Report an error
 	 */
 	static public void logError(String msg, Exception e) {
+		if (e instanceof MissingClassException) {
+			reportMissingClass(((MissingClassException)e).getClassNotFoundException());
+			return;
+		}
+		if (e instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
+			reportMissingClass(((edu.umd.cs.findbugs.classfile.MissingClassException)e).toClassNotFoundException());
+			return;
+		}
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
 		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
