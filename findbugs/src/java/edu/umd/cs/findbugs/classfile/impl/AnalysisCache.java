@@ -196,8 +196,6 @@ public class AnalysisCache implements IAnalysisCache {
 			return (E) ((AbnormalAnalysisResult) analysisResult).returnOrThrow();
 		}
 
-		// If we could assume a 1.5 or later JVM, the Class.cast()
-		// method could do this cast without a warning.
 		return (E) analysisResult;
 	}
 
@@ -252,7 +250,7 @@ public class AnalysisCache implements IAnalysisCache {
 			return (E) ((AbnormalAnalysisResult) object).returnOrThrow();
 		}
 		
-		return (E) object;
+		return analysisClass.cast(object);
 	}
 	
 	/**
