@@ -551,10 +551,23 @@ public class Subtypes2 {
 	    	aIndex--;
 	    	bIndex--;
 	    }
-	    if (lastCommonInBackwardsSearch == null) {
-	    	return ObjectType.OBJECT;
-	    }
-	    firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
+	    if (lastCommonInBackwardsSearch == null) 
+	    	firstCommonSupertype = ObjectType.OBJECT;
+	    else
+	    	firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
+	    if (firstCommonSupertype.equals(ObjectType.OBJECT)) {
+	    	 // see if we can't do better
+	    	 ClassDescriptor objDesc= BCELUtil.getClassDescriptor(ObjectType.OBJECT);
+	    	 aSuperTypes.retainAll(bSuperTypes);
+	    	 aSuperTypes.remove(objDesc);
+	    	 for(ClassDescriptor c : aSuperTypes) 
+	    		 if (c.getPackageName().equals(aDesc.getPackageName()) || c.getPackageName().equals(bDesc.getPackageName()))
+	    			 return ObjectTypeFactory.getInstance(c.toDottedClassName());
+	    	 	
+	    	 for(ClassDescriptor c : aSuperTypes) 
+	    		 return ObjectTypeFactory.getInstance(c.toDottedClassName());
+	    	 }
+
 	    return firstCommonSupertype;
     }
 
