@@ -525,20 +525,14 @@ public class Subtypes2 {
 
 	    ClassVertex aVertex = resolveClassVertex(aDesc);
 	    ClassVertex bVertex = resolveClassVertex(bDesc);
-	    if (bVertex.getXClass().isInterface())  {
-	    	ClassDescriptor tmp = aDesc;
-	    	aDesc = bDesc;
-	    	bDesc = tmp;
-	    	ClassVertex tmp2 = aVertex;
-	    	aVertex = bVertex;
-	    	bVertex = tmp2;
-	    }
-	    if (aVertex.getXClass().isInterface()) {
-	    	Set<ClassDescriptor> bSuperTypes = computeKnownSupertypes(bDesc);
-	    	if (bSuperTypes.contains(aDesc))  {
+
+
+	    Set<ClassDescriptor> aSuperTypes = computeKnownSupertypes(aDesc);
+		Set<ClassDescriptor> bSuperTypes = computeKnownSupertypes(bDesc);
+	    if (bSuperTypes.contains(aDesc))  
 	    		return a;
-	    	}
-	    }
+	    if (aSuperTypes.contains(bDesc))  
+    		return b;
 	    ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
 	    ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
 
