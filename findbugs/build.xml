@@ -432,6 +432,7 @@
     <findbugs home="."
               output="xml:withMessages"
 			  jvmargs="-Xmx600m"
+			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
               outputFile="${sampleoutput.dir}/findbugs.xml" >
       <class location="${classes.dir}" />
