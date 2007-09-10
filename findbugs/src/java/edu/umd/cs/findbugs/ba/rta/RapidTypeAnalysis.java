@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
  * classes.  RTA is an algorithm devised by David Bacon to compute
  * an accurate call graph for an object-oriented program.
  */
+@Deprecated
 public class RapidTypeAnalysis implements IClassObserver {
 	// Set of classes observed.
 	private HashSet<JavaClass> observedClassSet;
@@ -39,6 +40,7 @@ public class RapidTypeAnalysis implements IClassObserver {
 	/**
 	 * Constructor.
 	 */
+	@Deprecated
 	public RapidTypeAnalysis() {
 		this.observedClassSet = new HashSet<JavaClass>();
 	}
@@ -51,6 +53,7 @@ public class RapidTypeAnalysis implements IClassObserver {
 		try {
 			JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor);
 			observedClassSet.add(javaClass);
+			throw new UnsupportedOperationException();
 		} catch (ClassNotFoundException e) {
 			// Shouldn't happen
 		}
