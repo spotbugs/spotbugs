@@ -6,3 +6,6 @@ analyses
 worklist
 classpath
 codebases
+decorator
+servlet
+writeup
