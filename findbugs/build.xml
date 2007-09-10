@@ -426,6 +426,20 @@
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
   </target>
+  <target name="findbugscheck" depends="anttask,classes,jars">
+   <property name="findbugs.home" value="." />
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <mkdir dir="${sampleoutput.dir}"/>
+    <findbugs home="."
+              output="xml:withMessages"
+			  jvmargs="-Xmx600m"
+			  projectName="FindBugs"
+              outputFile="${sampleoutput.dir}/findbugs.xml" >
+      <class location="${classes.dir}" />
+      <sourcePath path="src/java:src/java5"/>
+	  <auxClasspath refid="tools.classpath"/>
+    </findbugs>
+  </target>
 
 
 	<!-- Run JUnit test cases -->
@@ -447,7 +461,7 @@
 		</junit>
 	</target>
 
-	<target name="smoketest" depends="runjunit,validatesampleoutput"/>
+	<target name="smoketest" depends="clean,findbugscheck,runjunit,validatesampleoutput"/>
 
 
 	<!-- Get version properties.  -->
