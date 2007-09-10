@@ -219,7 +219,7 @@ public class ClassParser implements ClassParserInterface {
 			if (end < 0) {
 				break;
 			}
-			@SlashedClassName String className = signature.substring(1, end);
+			@SlashedClassName String className = signature.substring(start+1, end);
 			if (ClassName.isValidClassName(className)) {
 				referencedClassSet.add(DescriptorFactory.instance().getClassDescriptor(className));
 			}
