@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * 
  * @author David Hovemeyer
  */
+@Deprecated
 public class LegacyAnalysisContext extends AnalysisContext {
 
 	private RepositoryLookupFailureCallback lookupFailureCallback;

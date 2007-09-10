@@ -1,13 +1,17 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class Analyze {
 	static private JavaClass serializable;
@@ -147,13 +151,18 @@ public class Analyze {
 	 *            Known type of object
 	 * @param y
 	 *            Type queried about
-	 * @return 0 - 1 value indicating probablility
+	 * @return 0 - 1 value indicating probability
 	 */
 	public static double deepInstanceOf(JavaClass x, JavaClass y)
 			throws ClassNotFoundException {
 
 		if (x.equals(y))
 			return 1.0;
+		if (y.getClassName().equals("java.lang.Object")) return 1.0;
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		ClassDescriptor xDesc = ClassDescriptor.createClassDescriptor(x);
+		ClassDescriptor yDesc = ClassDescriptor.createClassDescriptor(y);
+		
 		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
 		if (xIsSubtypeOfY)
 			return 1.0;
@@ -165,42 +174,36 @@ public class Analyze {
 				return 0.0;
 		}
 
-		Subtypes subtypes = AnalysisContext.currentAnalysisContext()
-				.getSubtypes();
-		subtypes.addClass(x);
-		subtypes.addClass(y);
+		Set<ClassDescriptor> transitiveCommonSubtypes = subtypes2.getTransitiveCommonSubtypes(xDesc, yDesc);
 
-		Set<JavaClass> xSubtypes = subtypes.getTransitiveSubtypes(x);
-
-		Set<JavaClass> ySubtypes = subtypes.getTransitiveSubtypes(y);
-
-		boolean emptyIntersection = true;
-
-		boolean concreteClassesInXButNotY = false;
-		for(JavaClass s : xSubtypes) {
-			if (ySubtypes.contains(s)) emptyIntersection = false;
-			else if (!s.isInterface() && !s.isAbstract())
-				concreteClassesInXButNotY = true;
-		}
-
-
-		if (emptyIntersection) {
-			if (concreteClassesInXButNotY) {
-				if (x.isAbstract() || x.isInterface()) return 0.2;
-				return 0.1;
+		if (transitiveCommonSubtypes.isEmpty()) {
+			for(ClassDescriptor c : subtypes2.getSubtypes(xDesc)) {
+				XClass cx;
+                try {
+	                cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                } catch (CheckedAnalysisException e) {
+	                continue;
+                }
+				if (!cx.isAbstract() && !cx.isInterface()) {
+					if (x.isAbstract() || x.isInterface()) return 0.2;
+					return 0.1;
+				}
 			}
 			return 0.3;
 		}
 
 		// exist classes that are both X and Y
-
-		if (!concreteClassesInXButNotY) {
-			// only abstract/interfaces that are X but not Y
-			return 0.99;
+		Set<ClassDescriptor> xButNotY =  subtypes2.getSubtypes(xDesc);
+		xButNotY.removeAll(transitiveCommonSubtypes);
+		for(ClassDescriptor c : xButNotY) {
+			XClass cx;
+            try {
+	            cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+            } catch (CheckedAnalysisException e) {
+	           continue;
+            }
+			if (!cx.isAbstract() && !cx.isInterface()) return 0.7;
 		}
-
-		// Concrete classes in X but not Y
-		return 0.7;
-
+		return 0.99;
 	}
 }
