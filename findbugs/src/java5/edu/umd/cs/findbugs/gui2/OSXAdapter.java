@@ -33,14 +33,13 @@ public class OSXAdapter extends ApplicationAdapter {
 
 	// pseudo-singleton model; no point in making multiple instances
 	// of the EAWT application or our adapter
-	private static OSXAdapter theAdapter;
-	private static com.apple.eawt.Application theApplication;
+	private static OSXAdapter theAdapter = new OSXAdapter();
+	private static final com.apple.eawt.Application theApplication  = new com.apple.eawt.Application();
 
 	// reference to the app where the existing quit, about, prefs code is
-	private MainFrame mainApp;
+	private  static MainFrame mainApp;
 
-	private OSXAdapter (MainFrame inApp) {
-		mainApp = inApp;
+	private OSXAdapter () {
 	}
 
 	// implemented handler methods. These are basically hooks into
@@ -105,14 +104,12 @@ public class OSXAdapter extends ApplicationAdapter {
 	// The main entry-point for this functionality.  This is the only method
 	// that needs to be called at runtime, and it can easily be done using
 	// reflection (see MyApp.java) 
-	public static void registerMacOSXApplication(MainFrame inApp) {
-		if (theApplication == null) {
-			theApplication = new com.apple.eawt.Application();
-		}			
+	public static void registerMacOSXApplication(MainFrame inApp) {			
+		if (mainApp != null)
+			throw new IllegalStateException("application already set");
+		
+		mainApp = inApp;
 
-		if (theAdapter == null) {
-			theAdapter = new OSXAdapter(inApp);
-		}
 		theApplication.addApplicationListener(theAdapter);
 
 		theApplication.addPreferencesMenuItem();
@@ -121,9 +118,7 @@ public class OSXAdapter extends ApplicationAdapter {
 	// Another static entry point for EAWT functionality.  Enables the 
 	// "Preferences..." menu item in the application menu. 
 	public static void enablePrefs(boolean enabled) {
-		if (theApplication == null) {
-			theApplication = new com.apple.eawt.Application();
-		}
+
 		theApplication.setEnabledPreferencesMenu(enabled);
 	}
 }

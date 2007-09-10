@@ -194,7 +194,6 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 					new OutputStreamWriter(out, Charset.forName("UTF-8")));
 
 			TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
-			XFactory xFactory = AnalysisContext.currentXFactory();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
 				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor().toDottedClassName())) {

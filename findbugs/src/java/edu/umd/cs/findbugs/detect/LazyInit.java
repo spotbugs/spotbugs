@@ -23,6 +23,11 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.bcp.*;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.util.ClassName;
+
 import java.util.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -112,7 +117,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			XField xfield =
 					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
 			if (xfield == null) return;
-			if (false && (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
+			if ((xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
 				return;
 
 			// XXX: for now, ignore lazy initialization of instance fields
@@ -131,7 +136,28 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				return;
 			}
 
-			// TODO:  Strings are safe to pass by data race in 1.5
+			//  Strings are (mostly) safe to pass by data race in 1.5
+			if (xfield.getSignature().equals("Ljava/lang/String;"))
+				return;
+			
+			//  GUI types should not be  accessed from multiple threads
+			
+			ClassDescriptor fieldType = ClassDescriptor.fromFieldSignature(xfield.getSignature());
+
+			while (fieldType != null) {
+					XClass fieldClass;
+                    try {
+	                    fieldClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, fieldType);
+                    } catch (CheckedAnalysisException e) {
+	                  break;
+                    }
+					
+					String name = fieldClass.getClassDescriptor().getClassName();
+					if (name.startsWith("java/awt") || name.startsWith("javax/swing"))
+						return;
+					if (name.equals("java/lang/Object")) break;
+					fieldType = fieldClass.getSuperclassDescriptor();
+				}
 
 			// Get locations matching the beginning of the object creation,
 			// and the final field store.
@@ -207,9 +233,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
 				priority = NORMAL_PRIORITY;
-			if ((xfield.getAccessFlags() & Constants.ACC_VOLATILE) == 0)
-				priority--;
-			else if (xfield.getSignature().startsWith("["))
+			if (xfield.getSignature().startsWith("["))
 				priority--;
 
 			// Report the bug.

@@ -98,7 +98,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	/**
      * @author pugh
      */
-    private final class SpecialTypeAnalysis extends TypeAnalysis {
+    private final static class SpecialTypeAnalysis extends TypeAnalysis {
 	    /**
 	     * @param method
 	     * @param methodGen

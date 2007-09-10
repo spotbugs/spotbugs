@@ -179,11 +179,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			                    String owner,
 			                    String name,
 			                    String desc) {
-							if (state == State.VARIABLE_LOADED && methodName.equals("<init>") 
+							if (false && state == State.VARIABLE_LOADED && methodName.equals("<init>") 
 									&& owner.equals(slashedClassName) && name.indexOf('$') >= 0) {
 								
 						
-								// System.out.println("Parameter " + (variable-1) + " to new " + slashedClassName + methodDesc +  " is synthetic");
+								System.out.println("Parameter " + (variable-1) + " to new " + slashedClassName + methodDesc +  " is synthetic");
 							}
 							}
 						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {

@@ -968,7 +968,8 @@ public class Subtypes2 {
 		XClass xclass = vertex.getXClass();
 
 		// Direct superclass
-		addInheritanceEdge(vertex, xclass.getSuperclassDescriptor(), false, workList);
+		ClassDescriptor superclassDescriptor = xclass.getSuperclassDescriptor();
+		if (superclassDescriptor != null) addInheritanceEdge(vertex, superclassDescriptor, false, workList);
 
 		// Directly implemented interfaces
 		for (ClassDescriptor ifaceDesc : xclass.getInterfaceDescriptorList()) {

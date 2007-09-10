@@ -49,10 +49,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 	ObjectType typeString;
 	
 	ObjectType typeList;
-	ObjectType typeMap;
 	ObjectType typeCollection;
 	ObjectType typeHashSet;
-	ArrayType typeArraySerializable;
 	ArrayType typeArrayClonable;
 	ObjectType typeComparable;
 	
@@ -87,10 +85,8 @@ public class Subtypes2Test extends FindBugsTestCase {
 		typeComparable = ObjectTypeFactory.getInstance("java.lang.Comparable");
 		
 		typeList = ObjectTypeFactory.getInstance("java.util.List");
-		typeMap  = ObjectTypeFactory.getInstance("java.util.Map");
 		typeCollection  = ObjectTypeFactory.getInstance("java.util.Collection");
 		typeHashSet  = ObjectTypeFactory.getInstance("java.util.HashSet");
-		typeArraySerializable = new ArrayType(typeSerializable,1);
 		typeArrayClonable = new ArrayType(typeClonable,1);
 		typeArrayComparable= new ArrayType(typeComparable,1);
 		typeArrayObject = new ArrayType(typeObject,1);

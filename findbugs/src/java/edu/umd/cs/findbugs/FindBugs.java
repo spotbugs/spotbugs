@@ -466,7 +466,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/**
 	 * FindBugs home directory.
 	 */
-	private static String home;
+	private static String home = SystemProperties.getProperty("findbugs.home");
 
 	/**
 	 * Known URL protocols.
@@ -878,12 +878,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * Get the FindBugs home directory.
 	 */
 	public static String getHome() {
-		if (home == null) {
-			home = SystemProperties.getProperty("findbugs.home");
-			if (home == null) {
-				System.err.println("Error: The findbugs.home property is not set!");
-			}
-		}
 		return home;
 	}
 

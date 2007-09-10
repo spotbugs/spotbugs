@@ -113,6 +113,23 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		}
 		return createClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
 	}
+	
+	/**
+	 * Create a class descriptor from a field signature
+	 * 
+	 */
+	public static ClassDescriptor fromFieldSignature(String signature) {
+		int start = signature.indexOf('L');
+		if (start < 0) {
+			return null;
+		}
+		signature = signature.substring(start);
+		int end = signature.indexOf(';');
+		if (end < 0) {
+			return null;
+		}
+		return createClassDescriptor(signature.substring(start+1, end));
+	}
 
 	/**
 	 * Determine whether or not the given resource name refers to a class.

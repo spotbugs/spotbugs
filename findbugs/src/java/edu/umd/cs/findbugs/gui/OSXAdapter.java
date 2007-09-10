@@ -86,7 +86,7 @@ public class OSXAdapter extends ApplicationAdapter {
 	// The main entry-point for this functionality.  This is the only method
 	// that needs to be called at runtime, and it can easily be done using
 	// reflection (see MyApp.java) 
-	public static void registerMacOSXApplication(FindBugsFrame inApp) {
+	public static synchronized void registerMacOSXApplication(FindBugsFrame inApp) {
 		if (theApplication == null) {
 			theApplication = new com.apple.eawt.Application();
 		}			
@@ -99,7 +99,7 @@ public class OSXAdapter extends ApplicationAdapter {
 
 	// Another static entry point for EAWT functionality.  Enables the 
 	// "Preferences..." menu item in the application menu. 
-	public static void enablePrefs(boolean enabled) {
+	public static synchronized void enablePrefs(boolean enabled) {
 		if (theApplication == null) {
 			theApplication = new com.apple.eawt.Application();
 		}

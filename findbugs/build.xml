@@ -447,7 +447,7 @@
 		<echo>Running JUnit test cases for FindBugs...</echo>
 		<delete dir="build/junit"/>
 		<mkdir dir="build/junit"/>	
-		<junit fork="yes" printsummary="on">
+		<junit fork="yes">
 			<jvmarg value="-Dfindbugs.home=."/>
 			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
 			<classpath refid="tools.classpath"/>
