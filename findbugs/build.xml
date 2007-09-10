@@ -63,7 +63,6 @@
 		<pathelement location="${jar.dir}/asm-commons-3.0.jar"/>
 		<pathelement location="${jar.dir}/asm-tree-3.0.jar"/>
 		<pathelement location="${jar.dir}/jsr305.jar"/>
-		<pathelement location="${jsr305.dir}/build/classes"/>
 	</path>
 	
 	<path id="tools.classpath">
