@@ -631,6 +631,7 @@ public abstract class Frame<ValueType> {
 	 * the values.
 	 */
 	protected String valueToString(ValueType value) {
+		if (value == null) return "null";
 		return value.toString();
 	}
 
