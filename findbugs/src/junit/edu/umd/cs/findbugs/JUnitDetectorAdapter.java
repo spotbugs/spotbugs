@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  */
 public class JUnitDetectorAdapter implements Detector2 {
 	
-	private BugReporter bugReporter;
 	private Throwable throwable;
 	private boolean testExecuted;
 	
@@ -41,7 +40,6 @@ public class JUnitDetectorAdapter implements Detector2 {
 		new InheritableThreadLocal<RunnableWithExceptions>();
 	
 	public JUnitDetectorAdapter(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		instance.set(this);
 	}
 	
