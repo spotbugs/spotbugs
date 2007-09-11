@@ -119,11 +119,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				whereEqual = we.getClassName();
 				classThatDefinesEqualsIsAbstract = we.isAbstract();
 				Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
-				inheritedEquals = XFactory.createXMethod(we, m);
-				if (m != null && m.isFinal())
-					inheritedEqualsIsFinal = true;
-				if (m != null && m.isAbstract())
-					inheritedEqualsIsAbstract = true;
+				if (m != null) {
+					inheritedEquals = XFactory.createXMethod(we, m);
+					inheritedEqualsIsFinal = m.isFinal();
+					inheritedEqualsIsAbstract = m.isAbstract();
+				}
 			}
 		}
 		boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
