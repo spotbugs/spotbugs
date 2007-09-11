@@ -214,8 +214,7 @@ public class ClassParser implements ClassParserInterface {
 			if (start < 0) {
 				break;
 			}
-			signature = signature.substring(start);
-			int end = signature.indexOf(';');
+			int end = signature.indexOf(';', start);
 			if (end < 0) {
 				break;
 			}
