@@ -20,9 +20,25 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
-import org.apache.bcel.classfile.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
 	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
@@ -101,15 +117,19 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 			initializedFields.add(FieldAnnotation.fromReferencedField(this));
 
 		else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+			UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+			XField xField = XFactory.createReferencedXField(this);
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 			int nextOpcode = codeBytes[getPC() + 3];
 			// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
-			if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f)) {
-				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", NORMAL_PRIORITY)
+			if (nextOpcode != POP
+					&& !initializedFields.contains(f) 
+					&& declaredFields.contains(f)) {
+				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addField(f)
 				.addSourceLine(this));
-				initializedFields.add(FieldAnnotation.fromReferencedField(this));
+				initializedFields.add(f);
 			}
 		} else if (
 				(seen == INVOKESPECIAL
