@@ -383,23 +383,7 @@ public class FindSqlInjection implements Detector {
 		}
 	}
 
-	private @CheckForNull
-	InstructionHandle getPreviousInstruction(CFG cfg, Location startLocation, boolean skipNops) {
-		Location loc = startLocation;
-		InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
-		if (prev != null)
-			return prev;
-		BasicBlock block = loc.getBasicBlock();
-		while (true) {
-			block = cfg.getPredecessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
-			if (block == null)
-				return null;
-			InstructionHandle lastInstruction = block.getLastInstruction();
-			if (lastInstruction != null)
-				return lastInstruction;
-		}
-	}
-
+	
 	private BugInstance generateBugInstance(JavaClass javaClass, MethodGen methodGen, InstructionHandle handle,
 			StringAppendState stringAppendState) {
 		Instruction instruction = handle.getInstruction();

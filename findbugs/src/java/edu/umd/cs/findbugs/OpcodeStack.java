@@ -1726,8 +1726,7 @@ public class OpcodeStack implements Constants2
 
 		public JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         	Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
-        	AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-    		JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
+        	JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
     		
     		Code code = method.getCode();
     		final OpcodeStack stack = new OpcodeStack();

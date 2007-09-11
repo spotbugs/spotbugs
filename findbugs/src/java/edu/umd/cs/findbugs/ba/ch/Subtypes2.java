@@ -310,8 +310,7 @@ public class Subtypes2 {
 		}
 		ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
 		ClassDescriptor possibleSuperclassClassDescriptor = BCELUtil.getClassDescriptor(possibleSupertype);
-		ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
-
+		
 		// In principle, we should be able to answer no if the ObjectType objects
 		// are not equal and possibleSupertype is final.
 		// However, internally FindBugs creates special "subtypes" of java.lang.String

@@ -44,11 +44,9 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class NoteSyntheticElements extends PreorderVisitor implements Detector, NonReportingDetector {
 
-	private BugReporter bugReporter;
 	private SyntheticElements database;
 	
 	public NoteSyntheticElements(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 	
 	/* (non-Javadoc)

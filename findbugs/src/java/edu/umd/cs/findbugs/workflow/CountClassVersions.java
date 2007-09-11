@@ -98,7 +98,6 @@ public class CountClassVersions {
 		        + " [options] [<jarFile>+] ");
 
 		int analysisClassCount = 0;
-		Set<String> copied = new HashSet<String>();
 		List<String> fileList;
 
 		if (commandLine.inputFileList != null)

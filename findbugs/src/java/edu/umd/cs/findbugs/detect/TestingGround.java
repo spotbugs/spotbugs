@@ -21,12 +21,13 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public class TestingGround extends OpcodeStackDetector {
+public class TestingGround implements Detector {
 
 	BugReporter bugReporter;
 
@@ -34,20 +35,13 @@ public class TestingGround extends OpcodeStackDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-	public void visit(Code obj) {
-		if (getMethodName().equals("bug1479629") 
-				) {
-			super.visit(obj);
-		}
+	public void visitClassContext(ClassContext classContext) {	
+		System.out.println("---- " + classContext.getClassDescriptor());
+	    classContext.getMethodsInCallOrder();
 	}
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-     */
-    @Override
-    public void sawOpcode(int seen) {
-	   System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " : " + stack);
-	    
+
+
+	public void report() {
     }
 
 	}

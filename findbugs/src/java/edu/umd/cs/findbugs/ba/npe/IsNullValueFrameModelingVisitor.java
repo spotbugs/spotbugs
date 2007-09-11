@@ -134,8 +134,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	private void handleInvoke(InvokeInstruction obj) {
 		Type callType = obj.getLoadClassType(getCPG());
 		Type returnType = obj.getReturnType(getCPG());
-		String methodName = obj.getMethodName(getCPG());
-
+		
 		boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
 
 		// Determine if we are going to model the return value of this call.

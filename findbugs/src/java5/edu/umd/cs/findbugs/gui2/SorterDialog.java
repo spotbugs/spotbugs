@@ -55,12 +55,10 @@ public class SorterDialog extends FBDialog {
 	private ArrayList<JCheckBox> checkBoxSortList = new ArrayList<JCheckBox>();
 	private CheckBoxList chBList;
 	JButton sortApply;
-	private static SorterDialog instance;
+	private static SorterDialog instance = new SorterDialog();
 
 	public static SorterDialog getInstance()
 	{
-		if (instance==null)
-			instance=new SorterDialog();
 		return instance;
 	}
 

@@ -74,7 +74,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 	Set<String> calledFromConstructors = new HashSet<String>();
 	Set<XField> writtenInConstructorFields = new HashSet<XField>();
 	Set<XField> writtenOutsideOfConstructorFields = new HashSet<XField>();
-
+	
 	Set<XField> readFields = new HashSet<XField>();
 	Set<XField> constantFields = new HashSet<XField>();
 	Set<XField> finalFields = new HashSet<XField>();
@@ -311,7 +311,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		boolean selfAssignment = false;
 		if (pendingGetField != null) {
 			if (seen != PUTFIELD && seen != PUTSTATIC) 
-			readFields.add(pendingGetField);
+				readFields.add(pendingGetField);
 			else if ( XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC) ) 
 				selfAssignment = true;
 			else 

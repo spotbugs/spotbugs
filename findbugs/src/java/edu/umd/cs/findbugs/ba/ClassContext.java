@@ -237,6 +237,7 @@ public class ClassContext {
 				return multiMap.get(method);
 			}
 		};
+		if (false) {
 		OutEdges<Method> edges2 =  new OutEdges<Method>() {
 			final ConstantPoolGen cpg = getConstantPoolGen();
 			final String thisClassName = getJavaClass().getClassName();
@@ -265,7 +266,7 @@ public class ClassContext {
 				return result;
 			}
 		};
-
+		}
 		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, edges1);
 		
 		assert methodList.size() == methodsInCallOrder.size();
