@@ -67,6 +67,34 @@ public class BlockType extends BitSet {
 	BlockType() {
 	}
 
+	@Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = super.hashCode();
+	    result = prime * result + depth;
+	    result = prime * result + (isTop ? 1231 : 1237);
+	    result = prime * result + (isValid ? 1231 : 1237);
+	    return result;
+    }
+
+	@Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (!super.equals(obj))
+		    return false;
+	    if (!(obj instanceof BlockType))
+		    return false;
+	    final BlockType other = (BlockType) obj;
+	    if (depth != other.depth)
+		    return false;
+	    if (isTop != other.isTop)
+		    return false;
+	    if (isValid != other.isValid)
+		    return false;
+	    return true;
+    }
+
 	/**
 	 * Return whether or not this value is valid,
 	 * meaning it contains a valid representation of the

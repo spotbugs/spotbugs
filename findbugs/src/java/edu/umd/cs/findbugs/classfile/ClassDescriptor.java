@@ -95,12 +95,20 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	/**
 	 * Get the name of the package in dotted format.
 	 * 
-	 * @return the name of the class in dotted format
+	 * @return the name of the package in dotted format
 	 */
 	public  @DottedClassName  String getPackageName() {
 		return ClassName.extractPackageName(ClassName.toDottedClassName(className));
 	}
 
+	/**
+	 * Get the simple name of the class 
+	 * 
+	 * @return the simple name of the class
+	 */
+	public   String getSimpleName() {
+		return ClassName.extractSimpleName(ClassName.toDottedClassName(className));
+	}
 	/**
 	 * Create a class descriptor from a resource name.
 	 * 

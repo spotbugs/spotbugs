@@ -274,7 +274,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				bug.addMethod(equalsMethod);
 			bugReporter.reportBug(bug);
 		}
-		if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null) {
+		if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null 
+				&& !inheritedEqualsIsFinal && !inheritedEquals.getClassDescriptor().getSimpleName().startsWith("Abstract") && !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
 			BugInstance bug = new BugInstance(this,
 					"EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY)
 					.addClass(getDottedClassName()).addMethod(inheritedEquals);
@@ -306,7 +307,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
 			return;
-		if (!obj.getName().startsWith("this$")  && !obj.isSynthetic())
+		if (!obj.getName().startsWith("this$")  && !obj.isSynthetic() && !obj.isTransient())
 			hasFields = true;
 	}
 

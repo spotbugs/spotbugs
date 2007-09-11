@@ -66,6 +66,31 @@ public class Filter extends OrMatcher {
 
 	}
 	
+	@Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = super.hashCode();
+	    result = prime * result + ((disabled == null) ? 0 : disabled.hashCode());
+	    return result;
+    }
+
+	@Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (!super.equals(obj))
+		    return false;
+	    if (!(obj instanceof Filter))
+		    return false;
+	    final Filter other = (Filter) obj;
+	    if (disabled == null) {
+		    if (other.disabled != null)
+			    return false;
+	    } else if (!disabled.equals(other.disabled))
+		    return false;
+	    return true;
+    }
+
 	public boolean isEmpty() {
 		return super.numberChildren() == 0;
 	}

@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class AndMatcher extends CompoundMatcher {
 
-	boolean anyMatches = false;
+	transient boolean anyMatches = false;
 	public boolean anyMatches() {
 		return anyMatches;
 	}
