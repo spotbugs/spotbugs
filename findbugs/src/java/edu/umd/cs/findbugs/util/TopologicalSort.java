@@ -127,14 +127,11 @@ public class TopologicalSort {
 				throw new IllegalArgumentException("outEdges must not be null");
 			this.consider = new LinkedHashSet<E>(consider);
 			this.outEdges = outEdges;
-			this.result = new ArrayList<E>(consider.size());
 
 		}
 		OutEdges<E> outEdges;
 
-		List<E> result;
 
-		HashSet<E> visited = new HashSet<E>();
 		Set<E> consider = new HashSet<E>();
 		MultiMap<E, E> iEdges, oEdges;
 		private void removeVertex(E e) {
