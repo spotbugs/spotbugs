@@ -55,19 +55,22 @@ public class Version {
 	 */
 	public static final int RELEASE_CANDIDATE = 0;
 
-	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
-	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
 	/**
 	 * Release date.
 	 */
-	public static final String COMPUTED_DATE = dateFormat.format(new Date());
+	public static final String COMPUTED_DATE;
 	public static final String DATE;
-
-	public static final String COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+	public static final String COMPUTED_ECLIPSE_DATE;
 	public static final String ECLIPSE_DATE;
 
-
-
+	static {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
+		SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
+		
+		COMPUTED_DATE = dateFormat.format(new Date());
+		COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+	}
+	
 	/**
 	 * Preview release number.
 	 * "0" indicates that the version is not a preview release.
