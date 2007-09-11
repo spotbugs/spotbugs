@@ -17,6 +17,9 @@
     <Bug pattern="SE_BAD_FIELD"/>
   </Match>
   <Match>
+    <Bug pattern="DM_EXIT"/>
+  </Match>
+  <Match>
     <Priority value="3"/>
   </Match>
   <Match>
