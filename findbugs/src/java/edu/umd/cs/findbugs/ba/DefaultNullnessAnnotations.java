@@ -35,7 +35,7 @@ public class DefaultNullnessAnnotations {
 		
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		
-		database.addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
@@ -50,31 +50,31 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.lang.Object", "equals", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0, NullnessAnnotation.NONNULL);
 
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentLinkedQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$WaitQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ThreadPoolExecutor$Worker", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentLinkedQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.LinkedBlockingQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$WaitQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ThreadPoolExecutor$Worker", NullnessAnnotation.UNKNOWN_NULLNESS);
 
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.AbstractExecutorService", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$ConcurrentSkipListSubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$HeadIndex", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.AbstractExecutorService", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$ConcurrentSkipListSubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$HeadIndex", NullnessAnnotation.UNKNOWN_NULLNESS);
 		
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Index", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$SubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListSet$ConcurrentSkipListSubSet", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingDeque$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue$QNode", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferStack", NullnessAnnotation.UNKNOWN_NULLNESS);
-		database.addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Index", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$SubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.ConcurrentSkipListSet$ConcurrentSkipListSubSet", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.LinkedBlockingDeque$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue$QNode", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferStack", NullnessAnnotation.UNKNOWN_NULLNESS);
+		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
 
 
 		database.addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);

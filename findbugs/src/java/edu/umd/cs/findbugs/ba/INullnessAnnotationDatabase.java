@@ -104,5 +104,5 @@ public interface INullnessAnnotationDatabase {
 	 * @param c      dotted class name of class default annotation pertains to
 	 * @param n      the default NullnessAnnotation
 	 */
-	public void addDefaultAnnotation(String target, @DottedClassName String c, NullnessAnnotation n);
+	public void addDefaultAnnotation(AnnotationDatabase.Target target, @DottedClassName String c, NullnessAnnotation n);
 }

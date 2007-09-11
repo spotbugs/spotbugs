@@ -101,7 +101,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)
 	 */
 	@Override
-	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n) {
+	public void addDefaultAnnotation(AnnotationDatabase.Target target, String c, NullnessAnnotation n) {
 		super.addDefaultAnnotation(target, c, n);
 	}
 

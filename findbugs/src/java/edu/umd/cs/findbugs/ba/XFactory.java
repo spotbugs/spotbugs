@@ -355,6 +355,7 @@ public  class XFactory {
 	 * @return an XMethod representing the Method
 	 */
 	public static XMethod createXMethod(JavaClass javaClass , Method method) {
+		if (method == null) throw new NullPointerException("method must not be null");
 		XMethod xmethod = createXMethod(javaClass.getClassName(), method);
 		assert xmethod.isResolved();
 		return xmethod;

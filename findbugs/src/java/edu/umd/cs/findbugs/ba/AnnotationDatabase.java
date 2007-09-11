@@ -44,43 +44,24 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");
 	public static final boolean IGNORE_BUILTIN_ANNOTATIONS = SystemProperties.getBoolean("findbugs.ignoreBuiltinAnnotations");
 
-	/**
-	 * 
-	 */
-	public static final String FIELD = "Field";
-
-	/**
-	 * 
-	 */
-	public static final String METHOD = "Method";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER = "Parameter";
-
-	/**
-	 * 
-	 */
-	public static final String ANY = "Any";
-
+	public static enum Target { FIELD, METHOD, PARAMETER, @Deprecated CLASS, ANY };
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
 	private Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
 
 	private Set<Object> syntheticElements = new HashSet<Object>();
 
-	private final Map<String, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<String, Map<String, AnnotationEnum>>();
+	private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>();
 
 	private Subtypes subtypes;
 	public AnnotationDatabase() {
-		defaultAnnotation.put(ANY,
+		defaultAnnotation.put(Target.ANY,
 				new HashMap<String, AnnotationEnum>());
-		defaultAnnotation.put(PARAMETER,
+		defaultAnnotation.put(Target.PARAMETER,
 				new HashMap<String, AnnotationEnum>());
-		defaultAnnotation.put(METHOD,
+		defaultAnnotation.put(Target.METHOD,
 				new HashMap<String, AnnotationEnum>());
-		defaultAnnotation.put(FIELD,
+		defaultAnnotation.put(Target.FIELD,
 				new HashMap<String, AnnotationEnum>());
 		subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
 
@@ -104,7 +85,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		seen.add(n);
 	}
 
-	public void addDefaultAnnotation(String target, String c,
+	public void addDefaultAnnotation(Target target, String c,
 			AnnotationEnum n) {
 		if (!defaultAnnotation.containsKey(target))
 			return;
@@ -149,7 +130,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		try {
 
 			String className;
-			String kind;
+			Target kind;
 			boolean isParameterToInitMethodofAnonymousInnerClass = false;
 			boolean isSyntheticMethod = false;
 			if (o instanceof XMethod || o instanceof XMethodParameter) {
@@ -158,14 +139,14 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 				if (o instanceof XMethod) {
 					m = (XMethod) o;
 					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
-					kind = METHOD;
+					kind = Target.METHOD;
 					className = m.getClassName();
 				} else if (o instanceof XMethodParameter) {
 					m = ((XMethodParameter) o).getMethod();
 					// Don't 
 					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
 					className = m.getClassName();
-					kind = PARAMETER;
+					kind = Target.PARAMETER;
 					if (m.getName().equals("<init>")) {
 						int i = className.lastIndexOf("$");
 						if (i+1 < className.length()
@@ -215,10 +196,11 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 			 else if (o instanceof XField) {
 
 				className = ((XField) o).getClassName();
-				kind = FIELD;
+				kind = Target.FIELD;
 			} else if (o instanceof String) {
+				assert false;
 				className = (String) o;
-				kind = "CLASS";
+				kind = Target.CLASS;
 			} else throw new IllegalArgumentException("Can't look up annotation for " + o.getClass().getName());
 
 			// <init> method parameters for inner classes don't inherit default annotations
@@ -238,7 +220,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 			if (n != null)
 				return n;
 
-			n = defaultAnnotation.get(ANY).get(className);
+			n = defaultAnnotation.get(Target.ANY).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for any is " + n);
 			if (n != null)
@@ -253,7 +235,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 			if (n != null)
 				return n;
 
-			n = defaultAnnotation.get(ANY).get(className);
+			n = defaultAnnotation.get(Target.ANY).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for any is " + n);
 			if (n != null)
@@ -332,7 +314,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
 		if (addClassOnly) return;
 
-			addDefaultAnnotation(AnnotationDatabase.METHOD, cName, annotation);
+			addDefaultAnnotation(AnnotationDatabase.Target.METHOD, cName, annotation);
 
 
 	}

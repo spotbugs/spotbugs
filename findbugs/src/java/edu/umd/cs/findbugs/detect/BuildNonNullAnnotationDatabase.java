@@ -51,12 +51,12 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
-	private static final Map<String, String> defaultKind = new HashMap<String, String>();
+	private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
 	static {
-		defaultKind.put("", AnnotationDatabase.ANY);
-		defaultKind.put("ForParameters", AnnotationDatabase.PARAMETER);
-		defaultKind.put("ForMethods", AnnotationDatabase.METHOD);
-		defaultKind.put("ForFields", AnnotationDatabase.FIELD);
+		defaultKind.put("", AnnotationDatabase.Target.ANY);
+		defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
+		defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
+		defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
 
 	}
 	
@@ -146,7 +146,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 				annotationClass = annotationClass.substring("DefaultAnnotation"
 						.length());
 
-				String annotationTarget = defaultKind.get(annotationClass);
+				AnnotationDatabase.Target annotationTarget = defaultKind.get(annotationClass);
 
 				if (annotationTarget != null)
 					for (Object aClass : (Object[]) v) {

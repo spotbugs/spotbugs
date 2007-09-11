@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.ba.jsr305.FindBugsDefaultAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.JSR305NullnessAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
@@ -153,7 +154,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
-	public void addDefaultAnnotation(String target, String c, NullnessAnnotation n) {
+	public void addDefaultAnnotation(Target target, String c, NullnessAnnotation n) {
 		if (DEBUG) {
 			System.out.println("addDefaultAnnotation: target=" + target + ", c=" + c + ", n=" + n);
 		}
@@ -174,13 +175,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		
 		// Get the default annotation type
 		ClassDescriptor defaultAnnotationType;
-		if (target == AnnotationDatabase.ANY) {
+		if (target == AnnotationDatabase.Target.ANY) {
 			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION;
-		} else if (target == AnnotationDatabase.FIELD) {
+		} else if (target == AnnotationDatabase.Target.FIELD) {
 			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_FIELDS;
-		} else if (target == AnnotationDatabase.METHOD) {
+		} else if (target == AnnotationDatabase.Target.METHOD) {
 			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_METHODS;
-		} else if (target == AnnotationDatabase.PARAMETER) {
+		} else if (target == AnnotationDatabase.Target.PARAMETER) {
 			defaultAnnotationType = FindBugsDefaultAnnotations.DEFAULT_ANNOTATION_FOR_PARAMETERS;
 		} else {
 			throw new IllegalArgumentException("Unknown target for default annotation: " + target);
