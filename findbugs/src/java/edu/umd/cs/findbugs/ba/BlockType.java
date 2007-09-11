@@ -42,7 +42,7 @@ import java.util.BitSet;
  * the dataflow lattice.</p>
  *
  * <p>The dataflow lattice is effectively finite-height because
- * real Java methods are guarnateed to have a finite 
+ * real Java methods are guaranteed to have a finite 
  * catch and finally block nesting level.</p>
  *
  * @see BlockTypeAnalysis
