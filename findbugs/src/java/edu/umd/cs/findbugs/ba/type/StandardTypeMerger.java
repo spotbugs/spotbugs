@@ -131,11 +131,6 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 	 * @return the merged Type
 	 */
 	protected Type mergeReferenceTypes(ReferenceType aRef, ReferenceType bRef) throws DataflowAnalysisException {
-		// Two concrete object types.
-		// According to the JVM spec, 2nd edition, 4.9.2,
-		// the result of merging types is the "first common superclass".
-		// Interfaces are NOT considered!
-		// This will use the Repository to look up classes.
 		if (aRef.equals(bRef)) return aRef;
 		byte aType = aRef.getType();
 		byte bType = bRef.getType();
