@@ -129,6 +129,7 @@ public class Subtypes {
 	 */
 	@Deprecated
 	public Set<JavaClass> getAllClasses() {
+		assert false;
 		try {
 	        return getJavaClassesFromXClasses(subtypes2().getXClassCollection());
         } catch (CheckedAnalysisException e) {
@@ -144,6 +145,7 @@ public class Subtypes {
 	 * @return set of all transitive subtypes
 	 */
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
+		assert !c.getClassName().equals("java.lang.Object");
 		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
 		try {
 	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
