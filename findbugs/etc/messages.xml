@@ -2205,6 +2205,21 @@ Don't do it.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="EQ_DOESNT_OVERRIDE_EQUALS">
+    <ShortDescription>Class doesn't override equals in superclass</ShortDescription>
+    <LongDescription>{0} doesn't override {1.givenClass}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class extends a class that defines an equals method and adds fields, but doesn't
+define an equals method itself. Thus, equality on instances of this class will
+ignore the identity of the subclass and the added fields. Be sure this is what is intended,
+and that you don't need to override the equals method. Even if you don't need to override
+the equals method, consider overriding it anyone to document the fact
+that the equals method for the subclass just return the result of
+invoking super.equals(o).
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
     <ShortDescription>Covariant equals() method defined</ShortDescription>
     <LongDescription>{0} defines equals({0.givenClass}) method but not equals(Object)</LongDescription>

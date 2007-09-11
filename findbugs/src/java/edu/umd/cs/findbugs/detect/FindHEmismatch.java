@@ -43,7 +43,10 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
@@ -106,6 +109,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
 		boolean inheritedEqualsIsAbstract = false;
+		XMethod inheritedEquals = null;
 		if (!hasEqualsObject) {
 			JavaClass we = Lookup.findSuperImplementor(obj, "equals",
 					"(Ljava/lang/Object;)Z", bugReporter);
@@ -115,6 +119,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				whereEqual = we.getClassName();
 				classThatDefinesEqualsIsAbstract = we.isAbstract();
 				Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
+				inheritedEquals = XFactory.createXMethod(we, m);
 				if (m != null && m.isFinal())
 					inheritedEqualsIsFinal = true;
 				if (m != null && m.isAbstract())
@@ -269,6 +274,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				bug.addMethod(equalsMethod);
 			bugReporter.reportBug(bug);
 		}
+		if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null) {
+			BugInstance bug = new BugInstance(this,
+					"EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY)
+					.addClass(getDottedClassName()).addMethod(inheritedEquals);
+			bugReporter.reportBug(bug);
+		}
 	}
 
 	@Override
@@ -295,7 +306,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
 			return;
-		if (!obj.getName().startsWith("this$"))
+		if (!obj.getName().startsWith("this$")  && !obj.isSynthetic())
 			hasFields = true;
 	}
 
