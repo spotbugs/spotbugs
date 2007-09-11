@@ -5,6 +5,18 @@
     <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED,NM_CLASS_NOT_EXCEPTION,EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_PKGPROTECT,MS_MUTABLE_ARRAY"/>
   </Match>
   <Match>
+    <Bug category="MALICIOUS_CODE"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+  </Match>
+  <Match>
+    <Bug pattern="SE_BAD_FIELD"/>
+  </Match>
+  <Match>
     <Priority value="3"/>
   </Match>
   <Match>
