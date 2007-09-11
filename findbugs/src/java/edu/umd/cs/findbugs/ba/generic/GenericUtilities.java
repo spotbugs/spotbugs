@@ -74,7 +74,7 @@ public class GenericUtilities {
 		 {
 			@Override
 			public String asString(GenericObjectType obj) {
-				String result = obj.toString();
+				String result = obj.toPlainString();
 				result += "<";
 				for (Type t : obj.parameters) {
 					result += GenericUtilities.getString(t) + ",";

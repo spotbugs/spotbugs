@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Extension to ObjectType that includes additional information
@@ -51,6 +52,22 @@ public class GenericObjectType extends ObjectType {
 
 	final @CheckForNull Type extension;
 
+	@Override
+	public int hashCode() {
+		return 13*super.hashCode() 
+		+ 9*Util.nullSafeHashcode(parameters) 
+		+ 7*Util.nullSafeHashcode(variable)
+		+ Util.nullSafeHashcode(extension);
+	}
+	
+	@Override public boolean equals(Object o) {
+		if (!(o instanceof GenericObjectType)) return false;
+		if (!super.equals(o)) return false;
+		GenericObjectType that = (GenericObjectType)o;
+		return Util.nullSafeEquals(this.parameters, that.parameters)
+			&& Util.nullSafeEquals(this.variable, that.variable)
+			&& Util.nullSafeEquals(this.extension, that.extension);
+	}
 	public Type getUpperBound() {
 		if ("+".equals(variable)) return extension;
 		return this;
@@ -177,9 +194,17 @@ public class GenericObjectType extends ObjectType {
 	 * in this object. Otherwise this returns the same value as ObjectType.toString()
 	 */
 	public String toString(boolean includeGenerics) {
-		if (!includeGenerics) return super.toString();
+		// if (!includeGenerics) return super.toString();
 
 		return getTypeCategory().asString(this);
 	}
+	
+	public String toString() {
+		return getTypeCategory().asString(this);
+	}
 
+	
+	public String toPlainString() {
+		return super.toString();
+	}
 }
