@@ -61,8 +61,6 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 
 	private int callPC;
 
-	private String className, methodName, signature;
-
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -133,9 +131,6 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 			state = SCAN;
 		} else if (INVOKE_OPCODE_SET.get(seen)) {
 			callPC = getPC();
-			className = getDottedClassConstantOperand();
-			methodName = getNameConstantOperand();
-			signature = getSigConstantOperand();
 			callSeen = XFactory.createReferencedXMethod(this);
 			state = SAW_INVOKE;
 			if (DEBUG) System.out.println("  invoking " + callSeen);
