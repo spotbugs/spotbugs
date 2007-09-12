@@ -419,7 +419,7 @@
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
-			  jvmargs="-Xmx600m"
+			  jvmargs="-ea -Xmx600m"
 			  projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
@@ -431,7 +431,7 @@
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
-			  jvmargs="-Xmx600m"
+			  jvmargs="-ea -Xmx600m"
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
               outputFile="${sampleoutput.dir}/findbugs.xml" >
@@ -448,7 +448,7 @@
 		<delete dir="build/junit"/>
 		<mkdir dir="build/junit"/>	
 		<junit fork="yes">
-			<jvmarg value="-Dfindbugs.home=."/>
+			<jvmarg value="-ea -Dfindbugs.home=."/>
 			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
 			<classpath refid="tools.classpath"/>
 			<!-- junit needs fileset to point to .java files (not .class) -->
