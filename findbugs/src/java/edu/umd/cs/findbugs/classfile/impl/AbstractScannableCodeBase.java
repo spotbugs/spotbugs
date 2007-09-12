@@ -41,8 +41,6 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	private ICodeBaseLocator codeBaseLocator;
-	private boolean checkedForSourceFiles;
-	private boolean containsSourceFiles;
 	private boolean isAppCodeBase;
 	private int howDiscovered;
 	private long lastModifiedTime;
@@ -64,21 +62,9 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
 	 */
-	public boolean containsSourceFiles() throws InterruptedException {
-		// MUSTFIX
-		if (true) return false;
-		if (!checkedForSourceFiles) {
-			ICodeBaseIterator i = iterator();
-			while (i.hasNext()) {
-				ICodeBaseEntry entry = i.next();
-				if (entry.getResourceName().endsWith(".java")) {
-					containsSourceFiles = true;
-					break;
-				}
-			}
-			checkedForSourceFiles = true;
-		}
-		return containsSourceFiles;
+	public boolean containsSourceFiles()  {
+		return false;
+
 	}
 
 	/* (non-Javadoc)
