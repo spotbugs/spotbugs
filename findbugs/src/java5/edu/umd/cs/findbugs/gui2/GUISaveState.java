@@ -161,7 +161,7 @@ public class GUISaveState{
 		previousComments=new LinkedList<String>();
 	}
 
-	public static GUISaveState getInstance()
+	public static synchronized GUISaveState getInstance()
 	{
 		if (instance==null)
 			instance=new GUISaveState();

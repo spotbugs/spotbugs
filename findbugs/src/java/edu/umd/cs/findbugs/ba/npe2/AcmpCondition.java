@@ -32,9 +32,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 @Deprecated
 public class AcmpCondition extends Condition {
-	//TODO: these fields are ignored. Why?
-	private Decision ifcmpDecision;
-	private Decision fallThroughDecision;
+
 
 	public AcmpCondition(Location location) {
 		super(location);

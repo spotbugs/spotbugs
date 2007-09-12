@@ -47,14 +47,11 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
 
 	private MethodGen methodGen;
-	private Method method;
 	private CFG cfg;
 	private ConstantPoolGen cpg;
 	private TypeDataflow typeDataflow;
 	private AnalysisContext analysisContext;
 	private boolean cfgModified;
-//	private ClassContext classContext;
-	private JavaClass javaClass;
 
 	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
 	static {
@@ -69,9 +66,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	public PruneUnconditionalExceptionThrowerEdges(/*ClassContext classContext,*/ JavaClass javaClass, Method method,
 			MethodGen methodGen, CFG cfg, ConstantPoolGen cpg, TypeDataflow typeDataflow, AnalysisContext analysisContext) {
 //		this.classContext = classContext;
-		this.javaClass = javaClass;
 		this.methodGen = methodGen;
-		this.method = method;
 		this.cfg = cfg;
 		this.cpg = cpg;
 		this.typeDataflow = typeDataflow;

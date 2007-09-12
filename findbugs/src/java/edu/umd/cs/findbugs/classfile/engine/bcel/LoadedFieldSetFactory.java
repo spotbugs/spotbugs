@@ -78,7 +78,6 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
 		InstructionList il = methodGen.getInstructionList();
 
 		LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
-		JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
 		ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
 
 		for (InstructionHandle handle = il.getStart(); handle != null; handle = handle.getNext()) {

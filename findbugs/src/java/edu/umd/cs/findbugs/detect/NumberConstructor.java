@@ -138,7 +138,6 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	  type = "DM_NUMBER_CTOR";
 	}
 
-	cls = cls.substring(cls.lastIndexOf('/')+1);
 	bugAccumulator.accumulateBug(
 			new BugInstance(this, type, prio)
 			  .addClass(this)

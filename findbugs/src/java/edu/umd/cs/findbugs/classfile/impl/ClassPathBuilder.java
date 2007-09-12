@@ -279,7 +279,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 */
 	private boolean probeCodeBaseForResource(DiscoveredCodeBase discoveredCodeBase, String resourceName) {
 		try {
-			ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource(resourceName);
+			discoveredCodeBase.getCodeBase().lookupResource(resourceName);
 			return true;
 		} catch (ResourceNotFoundException e) {
 			return false;

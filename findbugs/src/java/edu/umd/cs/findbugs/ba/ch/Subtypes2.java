@@ -309,7 +309,7 @@ public class Subtypes2 {
 			return true;
 		}
 		ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
-		ClassDescriptor possibleSuperclassClassDescriptor = BCELUtil.getClassDescriptor(possibleSupertype);
+		ClassDescriptor possibleSuperclassClassDescriptor  = BCELUtil.getClassDescriptor(possibleSupertype);
 		
 		// In principle, we should be able to answer no if the ObjectType objects
 		// are not equal and possibleSupertype is final.
@@ -317,14 +317,15 @@ public class Subtypes2 {
 		// (DynamicStringType, StaticStringType, etc.)---see FindRefComparison detector.
 		// These will end up resolving to the same ClassVertex as java.lang.String,
 		// which will Do The Right Thing.
-		/*
-	    if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
-	    	if (DEBUG_QUERIES) {
-	    		System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
-	    	}
-	    	return false;
-	    }
-		 */
+		if (false) {
+			ClassVertex possibleSuperclassClassVertex = resolveClassVertex(possibleSuperclassClassDescriptor);
+			if (possibleSuperclassClassVertex.isResolved() && possibleSuperclassClassVertex.getXClass().isFinal()) {
+				if (DEBUG_QUERIES) {
+					System.out.println("  ==> no, " + possibleSuperclassClassDescriptor + " is final");
+				}
+				return false;
+			}
+		}
 
 		// Get the supertype query results
 		SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(typeClassDescriptor);
@@ -734,8 +735,9 @@ public class Subtypes2 {
 			}
 
 			// Advance to direct superclass
-			if (traverseEdge(vertex, vertex.getXClass().getSuperclassDescriptor(), false, visitor)) {
-				addToWorkList(workList, cur, vertex.getXClass().getSuperclassDescriptor());
+			ClassDescriptor superclassDescriptor = vertex.getXClass().getSuperclassDescriptor();
+			if (superclassDescriptor != null && traverseEdge(vertex, superclassDescriptor, false, visitor)) {
+				addToWorkList(workList, cur, superclassDescriptor);
 			}
 			
 			// Advance to directly-implemented interfaces

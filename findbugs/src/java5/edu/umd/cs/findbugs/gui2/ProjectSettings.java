@@ -63,7 +63,7 @@ public class ProjectSettings implements Serializable
 		PreferencesFrame.getInstance().updateFilterPanel();
 		return instance;
 	}
-	public static ProjectSettings getInstance()
+	public static synchronized ProjectSettings getInstance()
 	{
 		if (instance == null)
 			instance= new ProjectSettings();

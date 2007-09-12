@@ -59,6 +59,10 @@ public abstract class AnalysisFactory <Analysis> implements IMethodAnalysisEngin
 		this.analysisClass= analysisClass;
 	}
 
+	@Override
+	public String toString() {
+		return analysisName + " : " + analysisClass.getName();
+	}
 	/* ----------------------------------------------------------------------
 	 * IAnalysisEngine methods
 	 * ---------------------------------------------------------------------- */
