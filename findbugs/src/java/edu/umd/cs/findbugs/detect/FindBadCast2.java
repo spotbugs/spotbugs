@@ -349,8 +349,7 @@ public class FindBadCast2 implements Detector {
 							&& veryAbstractCollectionClasses.contains(refName);
 
 					if (!operandTypeIsExact) {
-						rank = DeepSubtypeAnalysis.deepInstanceOf(refJavaClass,
-								castJavaClass);
+						rank = Analyze.deepInstanceOf(refJavaClass, castJavaClass);
 							if (castToConcreteCollection
 							&& rank > 0.6)
 						  rank = (rank + 0.6) /2;

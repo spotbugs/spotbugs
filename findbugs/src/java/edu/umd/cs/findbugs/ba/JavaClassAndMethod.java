@@ -61,7 +61,7 @@ public class JavaClassAndMethod {
 		for(Method m : javaClass.getMethods()) 
 			if (m.getName().equals(method.getName())
 					&& m.getSignature().equals(method.getSignature())
-					&& m.getAccessFlags() == method.getAccessFlags()) {
+					&& m.isStatic() == method.isStatic()) {
 				this.method = m;
 				return;
 			}

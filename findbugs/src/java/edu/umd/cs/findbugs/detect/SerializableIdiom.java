@@ -36,16 +36,15 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
-import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class SerializableIdiom extends OpcodeStackDetector
@@ -164,19 +163,11 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 		// Does this class indirectly implement Serializable?
 		if (!isSerializable) {
-			try {
-				if (Repository.instanceOf(obj, "java.io.Externalizable"))
+				if (Subtypes2.instanceOf(obj, "java.io.Externalizable"))
 					isExternalizable = true;
-				if (Repository.instanceOf(obj, "java.io.Serializable"))
+				if (Subtypes2.instanceOf(obj, "java.io.Serializable"))
 					isSerializable = true;
-/*
-			if (Repository.instanceOf(obj,"java.rmi.Remote")) {
-			isRemote = true;
-			}
-*/
-			} catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
-			}
+
 		}
 
 		hasPublicVoidConstructor = false;
@@ -186,7 +177,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			JavaClass superClass = obj.getSuperClass();
 			if (superClass != null) {
 				Method[] superClassMethods = superClass.getMethods();
-				superClassImplementsSerializable = Repository.instanceOf(superClass,
+				superClassImplementsSerializable = Subtypes2.instanceOf(superClass,
 						"java.io.Serializable");
 				superClassHasVoidConstructor = false;
 				for (Method m : superClassMethods) {
@@ -212,16 +203,14 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 
 		// Is this a GUI  or other class that is rarely serialized?
-		try {
+
 			isGUIClass = 
-			 Repository.instanceOf(obj, "java.lang.Throwable")
-			|| Repository.instanceOf(obj, "java.awt.Component")
-			|| Repository.implementationOf(obj, "java.awt.event.ActionListener")
-			|| Repository.implementationOf(obj, "java.util.EventListener")
+				Subtypes2.instanceOf(obj, "java.lang.Throwable")
+			|| Subtypes2.instanceOf(obj, "java.awt.Component")
+			|| Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
+			|| Subtypes2.instanceOf(obj, "java.util.EventListener")
 			;
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
-		}
+	
 
 		foundSynthetic = false;
 		foundSynchronizedMethods = false;

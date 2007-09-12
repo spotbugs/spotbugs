@@ -6,7 +6,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.detect.Analyze;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class DeepSubtypeAnalysis {
@@ -69,7 +71,7 @@ public class DeepSubtypeAnalysis {
 		JavaClass refJavaClass;
 		try {
 			refJavaClass = Repository.lookupClass(refName);
-			return deepInstanceOf(refJavaClass, remote);
+			return Analyze.deepInstanceOf(refJavaClass, remote);
 		} catch (ClassNotFoundException e) {
 			return 0.99;
 		}
@@ -107,16 +109,16 @@ public class DeepSubtypeAnalysis {
 
 		if (x.getClassName().equals("java.lang.Object"))
 			return 0.4;
-		double result = deepInstanceOf(x, serializable);
+		double result = Analyze.deepInstanceOf(x, serializable);
 		if (result >= 0.9)
 			return result;
-		result = Math.max(result, deepInstanceOf(x, collection));
+		result = Math.max(result, Analyze.deepInstanceOf(x, collection));
 		if (result >= 0.9)
 			return result;
-		result = Math.max(result, deepInstanceOf(x, map));
+		result = Math.max(result, Analyze.deepInstanceOf(x, map));
 		if (result >= 0.9)
 			return result;
-		result = Math.max(result, 0.5*deepInstanceOf(x, comparator));
+		result = Math.max(result, 0.5*Analyze.deepInstanceOf(x, comparator));
 		if (result >= 0.9)
 			return result;
 		return result;
@@ -136,10 +138,7 @@ public class DeepSubtypeAnalysis {
 
 	public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y)
 	throws ClassNotFoundException {
-		if (y.equals("java.lang.Object")) return 1.0;
-		if (x.equals("java.lang.Object")) return 0.4;
-		return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x),
-				AnalysisContext.currentAnalysisContext().lookupClass(y));
+		return Analyze.deepInstanceOf(x, y);
 	}
 
 	/**
@@ -151,63 +150,11 @@ public class DeepSubtypeAnalysis {
 	 *            Known type of object
 	 * @param y
 	 *            Type queried about
-	 * @return 0 - 1 value indicating probablility
+	 * @return 0 - 1 value indicating probability
 	 */
 	public static double deepInstanceOf(JavaClass x, JavaClass y)
 			throws ClassNotFoundException {
-		if (y.getClassName().equals("java.lang.Object")) return 1.0;
-		if (x.getClassName().equals("java.lang.Object")) 
-			return 0.4;
-		
-		if (x.equals(y))
-			return 1.0;
-		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
-		if (xIsSubtypeOfY)
-			return 1.0;
-		boolean yIsSubtypeOfX = Repository.instanceOf(y, x);
-		if (!yIsSubtypeOfX) {
-			if (x.isFinal() || y.isFinal())
-				return 0.0;
-			if (!x.isInterface() && !y.isInterface())
-				return 0.0;
-		}
-
-		Subtypes subtypes = AnalysisContext.currentAnalysisContext()
-				.getSubtypes();
-		subtypes.addClass(x);
-		subtypes.addClass(y);
-
-		Set<JavaClass> xSubtypes = subtypes.getTransitiveSubtypes(x);
-
-		Set<JavaClass> ySubtypes = subtypes.getTransitiveSubtypes(y);
-
-		boolean emptyIntersection = true;
-
-		boolean concreteClassesInXButNotY = false;
-		for(JavaClass s : xSubtypes) {
-			if (ySubtypes.contains(s)) emptyIntersection = false;
-			else if (!s.isInterface() && !s.isAbstract())
-				concreteClassesInXButNotY = true;
-		}
-
-
-		if (emptyIntersection) {
-			if (concreteClassesInXButNotY) {
-				if (x.isAbstract() || x.isInterface()) return 0.2;
-				return 0.1;
-			}
-			return 0.3;
-		}
-
-		// exist classes that are both X and Y
-
-		if (!concreteClassesInXButNotY) {
-			// only abstract/interfaces that are X but not Y
-			return 0.99;
-		}
-
-		// Concrete classes in X but not Y
-		return 0.7;
+		return Analyze.deepInstanceOf(x, y);
 
 	}
 }

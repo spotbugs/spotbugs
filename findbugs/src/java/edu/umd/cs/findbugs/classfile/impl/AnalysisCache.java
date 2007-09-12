@@ -329,7 +329,7 @@ public class AnalysisCache implements IAnalysisCache {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
 			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
-			if (false && analysisClass.equals(JavaClass.class))
+			if (analysisClass.equals(JavaClass.class))
 				descriptorMap = new MapCache<DescriptorType, Object>(5000);
 			else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) 
 				descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);

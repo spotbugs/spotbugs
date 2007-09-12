@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		implements StatelessDetector {
@@ -62,19 +63,15 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		accumulator.reportAccumulatedBugs();
 	}
 
-	private boolean isInputStream()  {
-		try {
-		if (lastCallClass.startsWith("[")) return false;
-		return (Repository.instanceOf(lastCallClass,
-		"java.io.InputStream")
-		|| Repository.implementationOf(lastCallClass,
-				"java.io.DataInput") || Repository
-		.instanceOf(lastCallClass, "java.io.Reader"))
-		&& !Repository.instanceOf(lastCallClass,
-				"java.io.ByteArrayInputStream");
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
+	private boolean isInputStream() {
+
+			if (lastCallClass.startsWith("["))
+				return false;
+			return (Subtypes2.instanceOf(lastCallClass, "java.io.InputStream")
+			        || Subtypes2.instanceOf(lastCallClass, "java.io.DataInput") 
+			        || Subtypes2.instanceOf(lastCallClass, "java.io.Reader"))
+			        && !Subtypes2.instanceOf(lastCallClass, "java.io.ByteArrayInputStream");
+		
 	}
 
 	private boolean isBufferedInputStream() {

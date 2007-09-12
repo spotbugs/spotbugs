@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.ExceptionSet;
 import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -130,7 +130,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 			} else {
 				if (exceptionSet.isSingleton("java.lang.CloneNotSupportedException") && cfg.getMethodName().endsWith(".clone()")){
 					String className = cfg.getMethodGen().getClassName();
-					if (Repository.implementationOf(className,"java.lang.Cloneable")) {
+					if (Subtypes2.instanceOf(className,"java.lang.Cloneable")) {
 						deletedEdgeSet.add(edge);
 						continue;
 					}

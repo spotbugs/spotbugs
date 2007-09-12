@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.detect.Analyze;
 
 /**
  * A forward dataflow analysis to determine the types of all values
@@ -602,8 +603,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 							(ReferenceType) checkedType);
 					if (!feasibleCheck && instanceOfType instanceof ObjectType 
 							&& checkedType instanceof ObjectType) {
-						double v = DeepSubtypeAnalysis.deepInstanceOf(((ObjectType)instanceOfType).getClassName(), 
-								((ObjectType)checkedType).getClassName());
+						double v = Analyze.deepInstanceOf(((ObjectType)instanceOfType).getClassName(), ((ObjectType)checkedType).getClassName());
 						if (v > 0.0) feasibleCheck = true;
 					}
 					tmpFact = modifyFrame(fact, tmpFact);

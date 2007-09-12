@@ -20,20 +20,41 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
+
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.Type;
 
 public class UnreadFields extends OpcodeStackDetector  {
 	private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
@@ -98,6 +119,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
+	ClassDescriptor externalizable = ClassDescriptor.createClassDescriptor("java/io/Externalizable");
+	ClassDescriptor serializable = ClassDescriptor.createClassDescriptor("java/io/Serializable");
+	ClassDescriptor remote = ClassDescriptor.createClassDescriptor("java/rmi/Remote");
+	
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -121,6 +146,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			if (superClass != null) hasNonAbstractSubClass.add(superClass);
 		}
 		classesScanned.add(getDottedClassName());	
+		boolean superClassIsObject = "java.lang.Object".equals(obj.getSuperclassName());
 		if (getSuperclassName().indexOf("$") >= 0
 				|| getSuperclassName().indexOf("+") >= 0 || withinAnonymousClass.matcher(getDottedClassName()).find()) {
 			// System.out.println("hicfsc: " + betterClassName);
@@ -139,14 +165,15 @@ public class UnreadFields extends OpcodeStackDetector  {
 			}
 		}
 
+		
 		// Does this class indirectly implement Serializable?
-		if (!isSerializable) {
+		if ((!superClassIsObject || interface_names.length > 0) && !isSerializable) {
 			try {
-				if (Repository.instanceOf(obj, "java.io.Externalizable"))
-					isSerializable = true;
-				if (Repository.instanceOf(obj, "java.io.Serializable"))
-					isSerializable = true;
-				if (Repository.instanceOf(obj, "java.rmi.Remote")) {
+				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+				ClassDescriptor desc = ClassDescriptor.createClassDescriptor(obj);
+				if (subtypes2.getSubtypes(serializable).contains(desc)
+						|| subtypes2.getSubtypes(externalizable).contains(desc)
+						|| subtypes2.getSubtypes(remote).contains(desc)) {
 					isSerializable = true;
 				}
 			} catch (ClassNotFoundException e) {

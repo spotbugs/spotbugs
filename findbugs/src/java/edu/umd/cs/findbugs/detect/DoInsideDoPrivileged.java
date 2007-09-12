@@ -22,11 +22,11 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 
 /**
  * @author pugh
@@ -39,13 +39,10 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 	boolean isDoPrivileged = false;
 	@Override
 	public void visit(JavaClass obj) {
-		try {
+
 			isDoPrivileged =
-				Repository.implementationOf(getClassName(),"java/security/PrivilegedAction")
-				|| Repository.implementationOf(getClassName(),"java/security/PrivilegedExceptionAction");
-		} catch (ClassNotFoundException e) {
-			isDoPrivileged = true;
-		}
+				Subtypes2.instanceOf(getClassName(),"java/security/PrivilegedAction")
+				|| Subtypes2.instanceOf(getClassName(),"java/security/PrivilegedExceptionAction");
 	}
 
 	@Override
@@ -71,7 +68,7 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 		if (seen == NEW) {
 			String classOfConstructedClass = getClassConstantOperand();
 			JavaClass constructedClass = Repository.lookupClass(classOfConstructedClass);
-			if (Repository.instanceOf(constructedClass,"java/lang/ClassLoader") 
+			if (Subtypes2.instanceOf(constructedClass,"java/lang/ClassLoader") 
 					&& !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod().isStatic()) )
 				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
 					NORMAL_PRIORITY)

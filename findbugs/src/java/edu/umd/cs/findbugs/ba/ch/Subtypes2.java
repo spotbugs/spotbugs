@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
@@ -45,6 +46,8 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
@@ -121,6 +124,29 @@ public class Subtypes2 {
 		return graph;
 	}
 
+	public static boolean instanceOf(@DottedClassName String dottedSubtype, @DottedClassName String dottedSupertype) {
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		ClassDescriptor subDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSubtype);
+		ClassDescriptor superDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSupertype);
+		try {
+	        return subtypes2.getSubtypes(subDescriptor).contains(superDescriptor);
+        } catch (ClassNotFoundException e) {
+	       AnalysisContext.reportMissingClass(e);
+	       return false;
+        }
+	}
+
+	public static boolean instanceOf(JavaClass subtype, @DottedClassName String dottedSupertype) {
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		ClassDescriptor subDescriptor = ClassDescriptor.createClassDescriptor(subtype);
+		ClassDescriptor superDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSupertype);
+		try {
+	        return subtypes2.getSubtypes(subDescriptor).contains(superDescriptor);
+        } catch (ClassNotFoundException e) {
+	       AnalysisContext.reportMissingClass(e);
+	       return false;
+        }
+	}
 	/**
 	 * Add an application class, and its transitive supertypes, to the inheritance graph.
 	 * 

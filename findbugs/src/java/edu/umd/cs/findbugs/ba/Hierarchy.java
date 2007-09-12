@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
@@ -306,17 +307,16 @@ public class Hierarchy {
 	 * @param cpg           the ConstantPoolGen used by the class the InvokeInstruction belongs to
 	 * @return the JavaClassAndMethod, or null if no matching method can be found
 	 */
-	public static JavaClassAndMethod findInvocationLeastUpperBound(
+	public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg)
 			throws ClassNotFoundException {
 		return findInvocationLeastUpperBound(inv, cpg, ANY_METHOD);
 	}
 
-	public static JavaClassAndMethod findInvocationLeastUpperBound(
+	public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
 			throws ClassNotFoundException {
-		JavaClassAndMethod result;
-
+		
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("Find prototype method for " +
 					SignatureConverter.convertMethodSignature(inv,cpg));
@@ -333,7 +333,7 @@ public class Hierarchy {
 		// Find the method
 		if (opcode == Constants.INVOKESPECIAL) {
 			// Non-virtual dispatch
-			result = findExactMethod(inv, cpg, methodChooser);
+			return  findExactMethod(inv, cpg, methodChooser);
 		} else {
 			String className = inv.getClassName(cpg);
 			String methodName = inv.getName(cpg);
@@ -349,33 +349,31 @@ public class Hierarchy {
 				className= "java.lang.Object";
 			}
 
-			if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKESTATIC) {
-				if (DEBUG_METHOD_LOOKUP) {
-					System.out.println("[invokevirtual or invokestatic]");
-				}
-				// Dispatch where the class hierarchy is searched
-				// Check superclasses
-				result = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
-				if (result == null) {
-					if (DEBUG_METHOD_LOOKUP) {
-						System.out.println("[not in class, checking superclasses...]");
-					}
-					JavaClass[] superClassList = Repository.getSuperClasses(className);
-					result = findMethod(superClassList, methodName, methodSig, methodChooser);
-				}
-			} else {
-				// Check superinterfaces
-				result = findMethod(Repository.lookupClass(className), methodName, methodSig, methodChooser);
-				if (result == null) {
-					JavaClass[] interfaceList = Repository.getInterfaces(className);
-					result = findMethod(interfaceList, methodName, methodSig, methodChooser);
-				}
-			}
+			JavaClass jClass = Repository.lookupClass(className);
+			return findInvocationLeastUpperBound(jClass, methodName, methodSig, methodChooser, opcode == Constants.INVOKEINTERFACE);
+			
 		}
-
-		return result;
 	}
 
+	public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(
+			JavaClass jClass, String methodName, String methodSig, JavaClassAndMethodChooser methodChooser,
+			boolean invokeInterface)
+			throws ClassNotFoundException {
+		JavaClassAndMethod result = findMethod(jClass, methodName, methodSig, methodChooser);
+		if (result != null) return result;
+		if (invokeInterface) 
+			for(JavaClass i : jClass.getInterfaces()) {
+				result = findInvocationLeastUpperBound(i, methodName, methodSig, methodChooser, invokeInterface);
+				if (result != null) return null;
+		}
+		else {
+			JavaClass sClass = jClass.getSuperClass();
+			if (sClass != null)
+				return findInvocationLeastUpperBound(sClass, methodName, methodSig, methodChooser, invokeInterface);
+		}
+		return null;
+		
+	}
 	/**
 	 * Find the declared exceptions for the method called
 	 * by given instruction.
@@ -415,17 +413,6 @@ public class Hierarchy {
 	public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
 		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
 	}
-
-	/**
-	 * Find a method in given class.
-	 *
-	 * @param javaClass  the class
-	 * @param methodName the name of the method
-	 * @param methodSig  the signature of the method
-	 * @param chooser    JavaClassAndMethodChooser to use to select a matching method
-	 *                   (assuming class, name, and signature already match)
-	 * @return the JavaClassAndMethod, or null if no such method exists in the class
-	 */
 	public static  @CheckForNull  JavaClassAndMethod findMethod(
 			JavaClass javaClass,
 			String methodName,
@@ -449,6 +436,35 @@ public class Hierarchy {
 			System.out.println("\t==> NOT FOUND");
 		}
 		return null;
+	}
+
+	/**
+	 * Find a method in given class.
+	 *
+	 * @param classDesc  the class descriptor
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
+	 * @param isStatic    are we looking for a static method?
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
+	 */
+	public static  @CheckForNull  XMethod findMethod(
+			ClassDescriptor classDesc,
+			String methodName,
+			String methodSig,
+			boolean isStatic) {
+		if (DEBUG_METHOD_LOOKUP) {
+			System.out.println("Check " + classDesc.getClassName());
+		}
+		
+        try {
+        	XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+	        return xClass.findMethod(methodName, methodSig, isStatic);
+        } catch (CheckedAnalysisException e) {
+	        AnalysisContext.logError("Error looking for " + classDesc+"."+methodName+methodSig, e);
+	        return null;
+        }
+		
+		
 	}
 
 	/**
@@ -737,14 +753,13 @@ public class Hierarchy {
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
 		JavaClass receiverClass = analysisContext.lookupClass(
 				receiverClassName);
+		ClassDescriptor receiverDesc = ClassDescriptor.createClassDescriptorFromDottedClassName(receiverClassName);
 
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
 		JavaClassAndMethod upperBound = findMethod(receiverClass, methodName, methodSig, CONCRETE_METHOD);
 		if (upperBound == null) {
-			// Try superclasses
-			JavaClass[] superClassList = receiverClass.getSuperClasses();
-			upperBound = findMethod(superClassList, methodName, methodSig, CONCRETE_METHOD);
+			upperBound = findInvocationLeastUpperBound(receiverClass, methodName, methodSig, CONCRETE_METHOD, false);
 		}
 		if (upperBound != null) {
 			if (DEBUG_METHOD_LOOKUP) {
@@ -756,21 +771,27 @@ public class Hierarchy {
 
 		// Is this a virtual call site?
 		boolean virtualCall =
-			   invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
+			   (invokeInstruction.getOpcode() == Constants.INVOKEVIRTUAL || invokeInstruction.getOpcode() == Constants.INVOKEINTERFACE)
+			   && (upperBound == null || !upperBound.getJavaClass().isFinal() && !upperBound.getMethod().isFinal())
 			&& !receiverTypeIsExact;
 
-		if (virtualCall && !receiverClassName.equals("java.lang.Object")) {
+		if (virtualCall) {
+			if (!receiverClassName.equals("java.lang.Object")) {
+
 			// This is a true virtual call: assume that any concrete
 			// subtype method may be called.
-			Set<JavaClass> subTypeSet = analysisContext.getSubtypes().getTransitiveSubtypes(receiverClass);
-			for (JavaClass subtype : subTypeSet) {
-				JavaClassAndMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, CONCRETE_METHOD);
-				if (concreteSubtypeMethod != null) {
-					result.add(concreteSubtypeMethod);
+			Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
+			for (ClassDescriptor subtype : subTypeSet) {
+				XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
+				if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Constants.ACC_ABSTRACT) == 0 ) {
+					result.add(new JavaClassAndMethod(concreteSubtypeMethod));
 				}
 			}
+			if (false && subTypeSet.size() > 500)
+				new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size() + " of which implement " + methodName+methodSig + " " + invokeInstruction).printStackTrace(System.out);
+			
+			}
 		}
-
 		return result;
 	}
 	
@@ -811,27 +832,6 @@ public class Hierarchy {
 		return null;
 	}
 
-/*
-	public static JavaClass findClassDefiningField(String className, String fieldName, String fieldSig)
-		throws ClassNotFoundException {
-
-		JavaClass jclass = Repository.lookupClass(className);
-
-		while (jclass != null) {
-			Field[] fieldList = jclass.getFields();
-			for (int i = 0; i < fieldList.length; ++i) {
-				Field field = fieldList[i];
-				if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
-					return jclass;
-				}
-			}
-
-			jclass = jclass.getSuperClass();
-		}
-
-		return null;
-	}
-*/
 
 	/**
 	 * Look up a field with given name and signature in given class,
@@ -849,31 +849,6 @@ public class Hierarchy {
 	public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic)
 			throws ClassNotFoundException {
 
-//		JavaClass classDefiningField = Repository.lookupClass(className);
-//
-//		Field field = null;
-//		loop:
-//			while (classDefiningField != null) {
-//				Field[] fieldList = classDefiningField.getFields();
-//				for (Field aFieldList : fieldList) {
-//					field = aFieldList;
-//					if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
-//						break loop;
-//					}
-//				}
-//
-//				classDefiningField = classDefiningField.getSuperClass();
-//			}
-//
-//		if (classDefiningField == null || field == null)
-//			return null;
-//		else {
-//			String realClassName = classDefiningField.getClassName();
-//			int accessFlags = field.getAccessFlags();
-//			return field.isStatic()
-//					? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
-//					: (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
-//		}
 		return XFactory.createXField(className, fieldName, fieldSig, isStatic);
 	}
 
