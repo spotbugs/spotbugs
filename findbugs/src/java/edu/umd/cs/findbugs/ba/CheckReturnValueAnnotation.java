@@ -43,8 +43,6 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_VERY_HIGH = new CheckReturnValueAnnotation(
 			"CheckReturnValueVeryHigh", 5, Detector.HIGH_PRIORITY-1);
 
-
-
 	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
 
@@ -71,9 +69,6 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 	private CheckReturnValueAnnotation(String s, int i, int p) {
 		super(s,i);
 		priority = p;
-
 	}
-
-
 
 }

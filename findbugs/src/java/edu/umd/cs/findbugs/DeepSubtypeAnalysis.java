@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -8,6 +7,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class DeepSubtypeAnalysis {
 	static private JavaClass serializable;
@@ -105,6 +105,8 @@ public class DeepSubtypeAnalysis {
 		if (storedException != null)
 			throw storedException;
 
+		if (x.getClassName().equals("java.lang.Object"))
+			return 0.4;
 		double result = deepInstanceOf(x, serializable);
 		if (result >= 0.9)
 			return result;
@@ -129,11 +131,13 @@ public class DeepSubtypeAnalysis {
 	 *            Known type of object
 	 * @param y
 	 *            Type queried about
-	 * @return 0 - 1 value indicating probablility
+	 * @return 0 - 1 value indicating probability
 	 */
 
-	public static double deepInstanceOf(String x, String y)
+	public static double deepInstanceOf(@DottedClassName String x, @DottedClassName String y)
 	throws ClassNotFoundException {
+		if (y.equals("java.lang.Object")) return 1.0;
+		if (x.equals("java.lang.Object")) return 0.4;
 		return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x),
 				AnalysisContext.currentAnalysisContext().lookupClass(y));
 	}
@@ -151,7 +155,10 @@ public class DeepSubtypeAnalysis {
 	 */
 	public static double deepInstanceOf(JavaClass x, JavaClass y)
 			throws ClassNotFoundException {
-
+		if (y.getClassName().equals("java.lang.Object")) return 1.0;
+		if (x.getClassName().equals("java.lang.Object")) 
+			return 0.4;
+		
 		if (x.equals(y))
 			return 1.0;
 		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);

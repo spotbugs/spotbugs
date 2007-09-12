@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -264,7 +265,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#lookupClass(java.lang.String)
 	 */
 	@Override
-	public JavaClass lookupClass(String className)
+	public JavaClass lookupClass(@DottedClassName String className)
 			throws ClassNotFoundException {
 		try {
 			if (className.length() == 0) 

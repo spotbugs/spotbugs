@@ -321,7 +321,7 @@ public abstract class AnalysisContext {
 	 * @return the JavaClass representing the class
 	 * @throws ClassNotFoundException (but not really)
 	 */
-	public abstract JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException;
+	public abstract JavaClass lookupClass(@NonNull @DottedClassName String className) throws ClassNotFoundException;
 
 	/**
 	 * Lookup a class.
