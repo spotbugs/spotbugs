@@ -368,6 +368,7 @@
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
 		</classpath>
+    <jvmarg value="-ea"/>
     <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
 	    <arg value="-html:fancy.xsl"/>
 	    <arg value="${sampleoutput.dir}/bcel.xml"/>
@@ -380,6 +381,7 @@
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
 		</classpath>
+    <jvmarg value="-ea"/>
     <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
 	    <arg value="-html:default.xsl"/>
 	    <arg value="${sampleoutput.dir}/bcel.xml"/>
@@ -392,6 +394,7 @@
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
 		</classpath>
+    <jvmarg value="-ea"/>
     <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
 	    <arg value="-html:plain.xsl"/>
 	    <arg value="${sampleoutput.dir}/bcel.xml"/>
@@ -404,6 +407,7 @@
 		<classpath>
            <pathelement location="${jar.dir}/findbugs.jar"/>
 		</classpath>
+    <jvmarg value="-ea"/>
     <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
 	    <arg value="-html:summary.xsl"/>
 	    <arg value="${sampleoutput.dir}/bcel.xml"/>
@@ -448,7 +452,8 @@
 		<delete dir="build/junit"/>
 		<mkdir dir="build/junit"/>	
 		<junit fork="yes">
-			<jvmarg value="-ea -Dfindbugs.home=."/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Dfindbugs.home=."/>
 			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
 			<classpath refid="tools.classpath"/>
 			<!-- junit needs fileset to point to .java files (not .class) -->
@@ -565,6 +570,7 @@
 			fork="true"
 			logError="true"
 			output="${bugdesc.output}">
+			<jvmarg value="-ea"/>
 			<jvmarg value="-Dfindbugs.home=."/>
 			<jvmarg value="-Dfindbugs.desc.unabridged=${bugdesc.unabridged}"/>
 			<classpath refid="tools.classpath"/>
