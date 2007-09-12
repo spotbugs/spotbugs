@@ -109,6 +109,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
 		boolean inheritedEqualsIsAbstract = false;
+		boolean ineritedEqualsFromAbstractClass = false;
 		XMethod inheritedEquals = null;
 		if (!hasEqualsObject) {
 			JavaClass we = Lookup.findSuperImplementor(obj, "equals",
@@ -116,6 +117,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			if (we == null) {
 				whereEqual = "java.lang.Object";
 			} else {
+				ineritedEqualsFromAbstractClass = we.isAbstract();
 				whereEqual = we.getClassName();
 				classThatDefinesEqualsIsAbstract = we.isAbstract();
 				Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
@@ -275,7 +277,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			bugReporter.reportBug(bug);
 		}
 		if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null 
-				&& !inheritedEqualsIsFinal && !inheritedEquals.getClassDescriptor().getSimpleName().startsWith("Abstract") && !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
+				&& !inheritedEqualsIsFinal
+				&& !ineritedEqualsFromAbstractClass
+				&& !inheritedEquals.getClassDescriptor().getSimpleName().startsWith("Abstract") 
+				&& !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
+			
 			BugInstance bug = new BugInstance(this,
 					"EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY)
 					.addClass(getDottedClassName()).addMethod(inheritedEquals);
