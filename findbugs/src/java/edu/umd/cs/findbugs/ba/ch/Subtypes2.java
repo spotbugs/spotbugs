@@ -129,7 +129,7 @@ public class Subtypes2 {
 		ClassDescriptor subDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSubtype);
 		ClassDescriptor superDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSupertype);
 		try {
-	        return subtypes2.getSubtypes(subDescriptor).contains(superDescriptor);
+	        return subtypes2.isSubtype(subDescriptor, superDescriptor);
         } catch (ClassNotFoundException e) {
 	       AnalysisContext.reportMissingClass(e);
 	       return false;
@@ -141,7 +141,7 @@ public class Subtypes2 {
 		ClassDescriptor subDescriptor = ClassDescriptor.createClassDescriptor(subtype);
 		ClassDescriptor superDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(dottedSupertype);
 		try {
-	        return subtypes2.getSubtypes(subDescriptor).contains(superDescriptor);
+	        return subtypes2.isSubtype(subDescriptor, superDescriptor);
         } catch (ClassNotFoundException e) {
 	       AnalysisContext.reportMissingClass(e);
 	       return false;
@@ -313,6 +313,10 @@ public class Subtypes2 {
 		return false;
 	}
 
+	public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
+		SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
+		return supertypeQueryResults.containsType(superDesc);
+	}
 	/**
 	 * Determine whether or not a given ObjectType is a subtype of another.
 	 * Throws ClassNotFoundException if the question cannot be answered
@@ -890,7 +894,7 @@ public class Subtypes2 {
 	 * @return SupertypeQueryResults for the class named by the ClassDescriptor
 	 * @throws ClassNotFoundException
 	 */
-	private SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+	public SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor) throws ClassNotFoundException {
 		SupertypeQueryResults supertypeQueryResults = supertypeSetMap.get(classDescriptor);
 		if (supertypeQueryResults == null) {
 			supertypeQueryResults = computeSupertypes(classDescriptor);
