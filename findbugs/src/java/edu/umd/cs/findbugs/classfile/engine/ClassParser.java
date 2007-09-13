@@ -85,6 +85,7 @@ public class ClassParser implements ClassParserInterface {
 	public void parse(ClassNameAndSuperclassInfo.Builder builder) throws InvalidClassFileFormatException {
 		try {
 			int magic = in.readInt();
+			if (magic != 0xcafebabe) throw new InvalidClassFileFormatException("Classfile header isn't 0xCAFEBABE", expectedClassDescriptor, codeBaseEntry);
 			int major_version = in.readUnsignedShort();
 			int minor_version = in.readUnsignedShort();
 			int constant_pool_count = in.readUnsignedShort();
@@ -128,6 +129,7 @@ public class ClassParser implements ClassParserInterface {
 			builder.setCodeBaseEntry(codeBaseEntry);
 			builder.setAccessFlags(access_flags);
 			builder.setReferencedClassDescriptors(referencedClassDescriptorList);
+			builder.setClassfileVersion(major_version, minor_version);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}

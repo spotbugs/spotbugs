@@ -53,6 +53,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		ICodeBaseEntry codeBaseEntry;
 
 		int accessFlags;
+		int majorVersion, minorVersion;
 		
 		Collection<ClassDescriptor> referencedClassDescriptorList;
 		Collection<ClassDescriptor>  calledClassDescriptorList = Collections.emptyList();
@@ -102,6 +103,10 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 			this.superclassDescriptor = superclassDescriptor;
 		}
 
+		public void setClassfileVersion(int majorVersion, int minorVersion) {
+			this.majorVersion = majorVersion;
+			this.minorVersion = minorVersion;
+		}
 		/**
 		 * @param referencedClassDescriptorList
 		 *            The referencedClassDescriptorList to set.
