@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.ba.Hierarchy.ANY_METHOD;
-import static edu.umd.cs.findbugs.ba.Hierarchy.CONCRETE_METHOD;
 import static edu.umd.cs.findbugs.ba.Hierarchy.DEBUG_METHOD_LOOKUP;
 import static edu.umd.cs.findbugs.ba.Hierarchy.INSTANCE_METHOD;
 import static edu.umd.cs.findbugs.ba.Hierarchy.STATIC_METHOD;
@@ -30,7 +28,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -38,8 +35,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
-import sun.reflect.generics.visitor.Reifier;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
