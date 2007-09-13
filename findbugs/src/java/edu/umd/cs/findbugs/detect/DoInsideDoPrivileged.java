@@ -41,8 +41,8 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 	public void visit(JavaClass obj) {
 
 			isDoPrivileged =
-				Subtypes2.instanceOf(getClassName(),"java/security/PrivilegedAction")
-				|| Subtypes2.instanceOf(getClassName(),"java/security/PrivilegedExceptionAction");
+				Subtypes2.instanceOf(getDottedClassName(),"java/security/PrivilegedAction")
+				|| Subtypes2.instanceOf(getDottedClassName(),"java/security/PrivilegedExceptionAction");
 	}
 
 	@Override
