@@ -679,8 +679,10 @@ public class Subtypes2 {
         return result;
 	}
 	public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2) throws ClassNotFoundException {
-		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(getSubtypes(classDescriptor1));
-		result.retainAll(getSubtypes(classDescriptor2));
+		Set<ClassDescriptor> subtypes1 = getSubtypes(classDescriptor1);
+		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(subtypes1);
+		Set<ClassDescriptor> subtypes2 = getSubtypes(classDescriptor2);
+		result.retainAll(subtypes2);
 		return result;
 	}
 	/**
