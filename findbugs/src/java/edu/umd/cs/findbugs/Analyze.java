@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -7,7 +8,6 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -193,7 +193,7 @@ public class Analyze {
 		}
 
 		// exist classes that are both X and Y
-		Set<ClassDescriptor> xButNotY =  subtypes2.getSubtypes(xDesc);
+		Set<ClassDescriptor> xButNotY =  new HashSet<ClassDescriptor>(subtypes2.getSubtypes(xDesc));
 		xButNotY.removeAll(transitiveCommonSubtypes);
 		for(ClassDescriptor c : xButNotY) {
 			XClass cx;
