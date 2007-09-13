@@ -358,15 +358,7 @@ public class FindBadCast2 implements Detector {
 							&& rank > 0.3)
 						  rank = (rank + 0.3) /2;
 					}
-					if (castName.equals("java.lang.Class") && refName.equals("java.lang.reflect.Type") && !downcast) {
-						String msg = "java.lang.Class and java.lang.reflect.Type are incompatible\n" + castJavaClass + "\n"+refJavaClass;
-						AnalysisContext.logError(msg);
-						BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(methodGen, sourceFile)
-						.addString(msg);
-						bugReporter.reportBug(bug);
-						downcast = true;
-						rank = 0.99;
-					}
+
 
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName
