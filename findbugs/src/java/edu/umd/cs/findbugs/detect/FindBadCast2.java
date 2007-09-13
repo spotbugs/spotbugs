@@ -24,6 +24,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugAccumulator;

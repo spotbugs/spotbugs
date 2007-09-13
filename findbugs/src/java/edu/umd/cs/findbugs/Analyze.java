@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.detect;
+package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
