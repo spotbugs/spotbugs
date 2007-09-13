@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 /**
  * @author David Hovemeyer
  */
+@Deprecated
 public class CompoundMethodChooser implements JavaClassAndMethodChooser {
 	JavaClassAndMethodChooser[] conjunctList;
 
@@ -36,5 +37,18 @@ public class CompoundMethodChooser implements JavaClassAndMethodChooser {
 		}
 		return true;
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser#choose(edu.umd.cs.findbugs.ba.XMethod)
+     */
+    public boolean choose(XMethod method) {
+    	for (JavaClassAndMethodChooser chooser : conjunctList) {
+			if (!chooser.choose(method))
+				return false;
+		}
+		return true;
+    }
+	
+	
 
 }

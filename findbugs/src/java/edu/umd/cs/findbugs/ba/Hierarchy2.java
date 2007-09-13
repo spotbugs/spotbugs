@@ -19,28 +19,37 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import static edu.umd.cs.findbugs.ba.Hierarchy.ANY_METHOD;
+import static edu.umd.cs.findbugs.ba.Hierarchy.CONCRETE_METHOD;
+import static edu.umd.cs.findbugs.ba.Hierarchy.DEBUG_METHOD_LOOKUP;
+import static edu.umd.cs.findbugs.ba.Hierarchy.INSTANCE_METHOD;
+import static edu.umd.cs.findbugs.ba.Hierarchy.STATIC_METHOD;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import sun.reflect.generics.visitor.Reifier;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Util;
-import static edu.umd.cs.findbugs.ba.Hierarchy.*;
 
 /**
  * Facade for class hierarchy queries.
@@ -73,10 +82,15 @@ public class Hierarchy2 {
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
 
-		JavaClass jclass = Repository.lookupClass(className);
-		return findMethod(jclass, methodName, methodSig, chooser);
-	}
+		XMethod result = findMethod(ClassDescriptor.createClassDescriptorFromDottedClassName(className), methodName, methodSig, inv instanceof INVOKESTATIC);
+	
+		return thisOrNothing(result, chooser);
+		}
 
+	private static  @CheckForNull XMethod thisOrNothing(XMethod m, JavaClassAndMethodChooser chooser) {
+		if (chooser.choose(m)) return m;
+		return null;
+	}
 	public static @CheckForNull XMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
 			throws ClassNotFoundException {
@@ -88,10 +102,10 @@ public class Hierarchy2 {
 
 		short opcode = inv.getOpcode();
 
-		if (methodChooser != ANY_METHOD) {
-			methodChooser = new CompoundMethodChooser(new JavaClassAndMethodChooser[]{
-					methodChooser, opcode == Constants.INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD
-			});
+		if (opcode == Constants.INVOKESTATIC) {
+			if (methodChooser == INSTANCE_METHOD) return null;
+		} else {
+			if (methodChooser == STATIC_METHOD) return null;
 		}
 
 		// Find the method
@@ -113,34 +127,49 @@ public class Hierarchy2 {
 				className= "java.lang.Object";
 			}
 
-			JavaClass jClass = Repository.lookupClass(className);
-			return findInvocationLeastUpperBound(jClass, methodName, methodSig, methodChooser, opcode == Constants.INVOKEINTERFACE);
+			try {
+	            return thisOrNothing(findInvocationLeastUpperBound(getXClassFromDottedClassName(className), methodName, methodSig, 
+	            		opcode == Constants.INVOKESTATIC, opcode == Constants.INVOKEINTERFACE), methodChooser);
+            } catch (CheckedAnalysisException e) {
+	            return null;
+            }
 			
 		}
 	}
 
 	public static @CheckForNull XMethod findInvocationLeastUpperBound(
-			JavaClass jClass, String methodName, String methodSig, JavaClassAndMethodChooser methodChooser,
+			ClassDescriptor classDesc, String methodName, String methodSig, 
+			boolean invokeStatic,
+			boolean invokeInterface) {
+		try {
+	        return findInvocationLeastUpperBound(
+	        		getXClass(classDesc), methodName, methodSig, invokeStatic, invokeInterface);
+        } catch (Exception e) {
+        	return null;
+        }
+	}
+
+	public static @CheckForNull XMethod findInvocationLeastUpperBound(
+			XClass jClass, String methodName, String methodSig, 
+			boolean invokeStatic,
 			boolean invokeInterface)
 			throws ClassNotFoundException {
-		XMethod result = findMethod(jClass, methodName, methodSig, methodChooser);
+		XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
 		if (result != null) return result;
 		if (invokeInterface) 
-			for(JavaClass i : jClass.getInterfaces()) {
-				result = findInvocationLeastUpperBound(i, methodName, methodSig, methodChooser, invokeInterface);
+			for(ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
+				result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
 				if (result != null) return null;
 		}
 		else {
-			JavaClass sClass = jClass.getSuperClass();
+			ClassDescriptor sClass = jClass.getSuperclassDescriptor();
 			if (sClass != null)
-				return findInvocationLeastUpperBound(sClass, methodName, methodSig, methodChooser, invokeInterface);
+				return findInvocationLeastUpperBound(sClass, methodName, methodSig, invokeStatic, invokeInterface);
 		}
 		return null;
 		
 	}
-	public static @CheckForNull XMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
-		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
-	}
+
 	public static @CheckForNull XMethod findMethod(ClassDescriptor classDescriptor, String methodName, String methodSig, boolean isStatic) {
 		try {
 	        return getXClass(classDescriptor).findMethod(methodName, methodSig, isStatic);
@@ -148,27 +177,16 @@ public class Hierarchy2 {
 	       return null;
         }
 	}
-	public static  @CheckForNull  XMethod findMethod(
-			JavaClass javaClass,
-			String methodName,
-			String methodSig,
-			JavaClassAndMethodChooser chooser) {
-		if (DEBUG_METHOD_LOOKUP) {
-			System.out.println("Check " + javaClass.getClassName());
-		}
-		/**
-		XMethod m = getXClass(javaClass).findMethod(methodName, methodSig, chooser.isStatic());
-		if (chooser.choose(m)) return m;
-		return null;
-		*/
-		throw new UnsupportedOperationException();
+
+	static XClass getXClass(@SlashedClassName String c) throws CheckedAnalysisException {
+		return getXClass(ClassDescriptor.createClassDescriptor(c));
+	}
+	static XClass getXClassFromDottedClassName(@DottedClassName String c) throws CheckedAnalysisException {
+		return getXClass(ClassDescriptor.createClassDescriptorFromDottedClassName(c));
 	}
 
 	static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
 		return Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
-	}
-	static XClass getXClass(JavaClass c) throws CheckedAnalysisException {
-		return getXClass(ClassDescriptor.createClassDescriptor(c));
 	}
 	/**
 	 * Resolve possible method call targets.
@@ -181,7 +199,7 @@ public class Hierarchy2 {
 	 * @throws DataflowAnalysisException 
 	 * @throws ClassNotFoundException 
 	 */
-	public static Set<XMethod> resolveMethodCallTargets(
+	public static @NonNull Set<XMethod> resolveMethodCallTargets(
 			InvokeInstruction invokeInstruction,
 			TypeFrame typeFrame,
 			ConstantPoolGen cpg) throws DataflowAnalysisException, ClassNotFoundException {
@@ -189,7 +207,7 @@ public class Hierarchy2 {
 		short opcode = invokeInstruction.getOpcode(); 
 
 		if (opcode == Constants.INVOKESTATIC) {
-			return Util.emptyOrNonnullSingleton(findInvocationLeastUpperBound(invokeInstruction, cpg, CONCRETE_METHOD));
+			return Util.emptyOrNonnullSingleton(findInvocationLeastUpperBound(invokeInstruction, cpg, STATIC_METHOD));
 		}
 
 		if (!typeFrame.isValid()) {
@@ -280,15 +298,18 @@ public class Hierarchy2 {
 
 		// Get the receiver class.
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		JavaClass receiverClass = analysisContext.lookupClass(
-				receiverClassName);
 		ClassDescriptor receiverDesc = ClassDescriptor.createClassDescriptorFromDottedClassName(receiverClassName);
-
+		XClass xClass;
+        try {
+	        xClass = getXClass(receiverDesc);
+        } catch (CheckedAnalysisException e) {
+	      return Collections.emptySet();
+        }
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
-		XMethod upperBound = findMethod(receiverClass, methodName, methodSig, CONCRETE_METHOD);
+		XMethod upperBound = findMethod(receiverDesc, methodName, methodSig, false);
 		if (upperBound == null) {
-			upperBound = findInvocationLeastUpperBound(receiverClass, methodName, methodSig, CONCRETE_METHOD, false);
+			upperBound = findInvocationLeastUpperBound(xClass, methodName, methodSig, false, false);
 		}
 		if (upperBound != null) {
 			if (DEBUG_METHOD_LOOKUP) {

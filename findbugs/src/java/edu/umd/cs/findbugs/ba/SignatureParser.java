@@ -166,6 +166,14 @@ public class SignatureParser {
 		return count;
 	}
 
+	public boolean hasReferenceParameters() {
+		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+			char c = i.next().charAt(0);
+			if (c == 'L' || c == '[') return true;
+		}
+		return false;
+	}
+
 	public String getParameter(int pos) {
 		int count = 0;
 		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {

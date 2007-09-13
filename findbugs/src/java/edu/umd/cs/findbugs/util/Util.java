@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
- * @author pugh
+ * @author William Pugh
  */
 public class Util {
 	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
@@ -51,7 +51,7 @@ public class Util {
 		if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
 	}
 
-	public static <T> Set<T> emptyOrNonnullSingleton(T t) {
+	public static <T>  Set<T> emptyOrNonnullSingleton(T t) {
 		if (t == null) return Collections.emptySet();
 		return Collections.singleton(t);
 	}

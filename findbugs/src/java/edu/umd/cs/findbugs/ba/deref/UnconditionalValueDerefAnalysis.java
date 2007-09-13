@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -244,7 +244,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 		SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
 		int numParams = sigParser.getNumParameters();
-		if (numParams == 0) return;
+		if (numParams == 0 || !sigParser.hasReferenceParameters()) return;
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		if (database == null) {
@@ -262,7 +262,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 
 		try {
-			Set<JavaClassAndMethod> targetSet = Hierarchy.resolveMethodCallTargets(
+			Set<XMethod> targetSet = Hierarchy2.resolveMethodCallTargets(
 					inv,
 					typeFrame,
 					methodGen.getConstantPool());
@@ -273,11 +273,11 @@ public class UnconditionalValueDerefAnalysis extends
 			if (DEBUG_CHECK_CALLS) System.out.println("target set size: " + targetSet.size());
 			// Compute the intersection of all properties
 			ParameterNullnessProperty derefParamSet = null;
-			for (JavaClassAndMethod target : targetSet) {
+			for (XMethod target : targetSet) {
 				if (DEBUG_CHECK_CALLS) 
 					System.out.print("Checking: " + target + ": ");
 
-				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toMethodDescriptor());
+				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.getMethodDescriptor());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
 					// assume it doesn't dereference anything

@@ -324,11 +324,11 @@ public class Hierarchy {
 
 		short opcode = inv.getOpcode();
 
-		if (methodChooser != ANY_METHOD) {
-			methodChooser = new CompoundMethodChooser(new JavaClassAndMethodChooser[]{
-					methodChooser, opcode == Constants.INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD
-			});
-		}
+		if (opcode == Constants.INVOKESTATIC) {
+				if (methodChooser == INSTANCE_METHOD) return null;
+			} else {
+				if (methodChooser == STATIC_METHOD) return null;
+			}
 
 		// Find the method
 		if (opcode == Constants.INVOKESPECIAL) {
@@ -522,6 +522,11 @@ public class Hierarchy {
 		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 			return true;
 		}
+
+		public boolean choose(XMethod method) {
+	        return true;
+        }
+
 	};
 
 
@@ -540,6 +545,9 @@ public class Hierarchy {
 			int accessFlags = method.getAccessFlags();
 			return accessFlagsAreConcrete(accessFlags);
 		}
+		public boolean choose(XMethod method) {
+	        return accessFlagsAreConcrete(method.getAccessFlags());
+        }
 	};
 
 	/**
@@ -549,6 +557,9 @@ public class Hierarchy {
 		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 			return javaClassAndMethod.getMethod().isStatic();
 		}
+		public boolean choose(XMethod method) {
+	        return method.isStatic();
+        }
 	};
 
 	/**
@@ -558,6 +569,10 @@ public class Hierarchy {
 		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 			return !javaClassAndMethod.getMethod().isStatic();
 		}
+
+		public boolean choose(XMethod method) {
+	        return !method.isStatic();
+        }
 	};
 
 	/**
