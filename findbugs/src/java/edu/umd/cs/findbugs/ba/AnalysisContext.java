@@ -45,8 +45,10 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
 import edu.umd.cs.findbugs.detect.UnreadFields;
@@ -362,20 +364,19 @@ public abstract class AnalysisContext {
 	 * @param className the name of the class
 	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
 	 */
-	public final String lookupSourceFile(@NonNull String className) {
-		if (className == null) 
+	public final String lookupSourceFile(@NonNull @DottedClassName String dottedClassName) {
+		if (dottedClassName == null) 
 			throw new IllegalArgumentException("className is null");
 		try {
-			JavaClass jc = this.lookupClass(className);
-			String name = jc.getSourceFileName();
+			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptorFromDottedClassName(dottedClassName));
+			String name = xClass.getSource();
 			if (name == null) {
-				System.out.println("No sourcefile for " + className);
 				return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 			}
 			return name;
-		} catch (ClassNotFoundException cnfe) {
-		  return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-		}
+		} catch (CheckedAnalysisException e) {
+			return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+        }
 	}
 
 	/**

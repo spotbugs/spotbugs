@@ -42,6 +42,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 
 	private final int accessFlags;
 	private final Collection<ClassDescriptor> referencedClassDescriptorList,calledClassDescriptorList;
+	private final int  majorVersion, minorVersion;
 
 	public static class Builder {
 		ClassDescriptor classDescriptor;
@@ -60,7 +61,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 
 		public ClassNameAndSuperclassInfo build() {
 			return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
-			        accessFlags,referencedClassDescriptorList, calledClassDescriptorList);
+			        accessFlags,referencedClassDescriptorList, calledClassDescriptorList, majorVersion, minorVersion);
 		}
 
 		/**
@@ -135,7 +136,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	 */
 	 ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
 	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, Collection<ClassDescriptor> referencedClassDescriptorList, 
-	        Collection<ClassDescriptor> calledClassDescriptorList) {
+	        Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
 		super(classDescriptor.getClassName());
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
@@ -145,6 +146,9 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		if (calledClassDescriptorList == null)
 			throw new NullPointerException("calledCBelassDescriptorList must not be null");
 		this.calledClassDescriptorList = calledClassDescriptorList;
+		this.majorVersion = majorVersion;
+		this.minorVersion = minorVersion;
+		
 	}
 
 	/**
@@ -153,6 +157,20 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	public int getAccessFlags() {
 		return accessFlags;
 	}
+
+	/**
+     * @return Returns the majorVersion.
+     */
+    public int getMajorVersion() {
+    	return majorVersion;
+    }
+
+	/**
+     * @return Returns the minorVersion.
+     */
+    public int getMinorVersion() {
+    	return minorVersion;
+    }
 
 	/**
 	 * @return Returns the classDescriptor.

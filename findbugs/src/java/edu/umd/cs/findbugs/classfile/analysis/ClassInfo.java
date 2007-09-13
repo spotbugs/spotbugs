@@ -55,6 +55,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 	/*final*/ Map<ClassDescriptor, AnnotationValue> classAnnotations;
 	final private String classSourceSignature;
+	final private String source;
 
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
@@ -66,15 +67,19 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		private ClassDescriptor immediateEnclosingClass;
 		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
 		private String classSourceSignature;
-
+		private String source;
 
 		public ClassInfo build() {
-			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, 
+			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
 					classAnnotations, fieldDescriptorList.toArray(new FieldDescriptor[0]), 
 					methodDescriptorList.toArray(new MethodDescriptor[0]), immediateEnclosingClass );
 		}
 
+		
+		public void setSource(String source) {
+			this.source = source;
+		}
 		/**
 		 * @return Returns the classDescriptor.
 		 */
@@ -143,12 +148,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 *            MethodDescriptors of methods defined in the class
 	 */
 	private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
-			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
+			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source, int majorVersion,  int minorVersion,
 			Collection<ClassDescriptor> referencedClassDescriptorList,
 			Collection<ClassDescriptor> calledClassDescriptors,
 			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldDescriptor[] fieldDescriptorList,
 			MethodDescriptor[] methodDescriptorList, ClassDescriptor immediateEnclosingClass) {
-		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors);
+		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors,   majorVersion,  minorVersion);
+		this.source = source;
 		this.classSourceSignature = classSourceSignature;
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
@@ -267,6 +273,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		else if (isAnnotation()) return ElementType.ANNOTATION_TYPE;
 		return ElementType.TYPE;
 		
+	}
+	
+	public @CheckForNull String getSource() {
+		return source;
 	}
 	
 	public @CheckForNull AnnotatedObject getContainingScope() {

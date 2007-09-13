@@ -75,6 +75,11 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	 */
 	public boolean isAbstract();
 
+	/**
+	 * 
+	 * @return the Source attribute
+	 */
+	public @CheckForNull String getSource();
 
 	public Collection<ClassDescriptor> getAnnotationDescriptors();
 

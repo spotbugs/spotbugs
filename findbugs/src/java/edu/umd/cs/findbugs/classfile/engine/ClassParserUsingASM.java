@@ -84,6 +84,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			
 			public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)  {
 				ClassParserUsingASM.this.slashedClassName = name;
+				cBuilder.setClassfileVersion(version>>>16, version & 0xffff);
 				cBuilder.setAccessFlags(access);
 				cBuilder.setClassDescriptor(ClassDescriptor.createClassDescriptor(name));
 				cBuilder.setInterfaceDescriptorList(ClassDescriptor.createClassDescriptor(interfaces));
@@ -233,7 +234,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			}
 
 			public void visitSource(String arg0, String arg1) {
-				// TODO Auto-generated method stub
+				if (cBuilder instanceof ClassInfo.Builder) {
+					((ClassInfo.Builder)cBuilder).setSource(arg0);
+				}
 
 			}}, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 		TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();

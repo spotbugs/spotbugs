@@ -59,7 +59,7 @@ import edu.umd.cs.findbugs.classfile.Global;
  * @author David Hovemeyer
  */
 public class Hierarchy {
-	private static final boolean DEBUG_METHOD_LOOKUP =
+	protected static final boolean DEBUG_METHOD_LOOKUP =
 		SystemProperties.getBoolean("hier.lookup.debug");
 
 	/**
