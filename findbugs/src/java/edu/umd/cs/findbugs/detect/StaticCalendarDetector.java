@@ -46,7 +46,10 @@ import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Detector for static fields of type {@link java.util.Calendar} or
@@ -82,12 +85,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	/**
 	 * {@link ObjectType} for {@link java.util.Calendar}
 	 */
-	private final ObjectType calendarType = ObjectTypeFactory.getInstance("java.util.Calendar");
+	private final ClassDescriptor calendarType = ClassDescriptor.createClassDescriptor("java/util/Calendar");
 
 	/**
 	 * {@link ObjectType} for {@link java.text.DateFormat}
 	 */
-	private final ObjectType dateFormatType = ObjectTypeFactory.getInstance("java.text.DateFormat");
+	private final ClassDescriptor dateFormatType = ClassDescriptor.createClassDescriptor("java/text/DateFormat");
 
 	/** Stores the current method */
 	private Method currentMethod = null;
@@ -108,7 +111,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		reporter = aReporter;
 		bugAccumulator = new BugAccumulator(reporter);
 	}
-
+	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 	private boolean sawDateClass;
 	/**
 	 * Remembers the class name and resets temporary fields.
@@ -141,25 +144,22 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visit(Field aField) {
-		super.visit(aField);
-		String tFieldSig = aField.getSignature();
-		if (aField.getType() instanceof ObjectType) {
-			String tBugType = null;
-			ObjectType tType = (ObjectType) aField.getType();
-			try {
-				if (tType.subclassOf(calendarType) && aField.isStatic()) {
-					tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
-				} else if (tType.subclassOf(dateFormatType) && aField.isStatic()) {
-					tBugType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
-				}
-				if (tBugType != null) {
-					reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(
-					        currentClass, aField.getName(), tFieldSig, true));
-				}
-			} catch (ClassNotFoundException e) {
-				AnalysisContext.reportMissingClass(e);
+		if (!aField.isStatic()) return;
+		ClassDescriptor classOfField = ClassDescriptor.fromFieldSignature(aField.getSignature());
+		String tBugType = null;
+		try {
+			if (subtypes2.isSubtype(classOfField, calendarType)) {
+				tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
+			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {
+				tBugType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
 			}
+			if (tBugType != null) {
+				reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(this));
+			}
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
 		}
+
 	}
 
 	/*
@@ -212,13 +212,13 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				// Ignore array classes
 				return;
 			}
+			ClassDescriptor cDesc = ClassDescriptor.createClassDescriptor(className);
 			
-			// determine type of the object the method is invoked on
-			ObjectType tType = ObjectTypeFactory.getInstance(className);
-
 			// if it is not compatible with Calendar or DateFormat, we are not
 			// interested anymore
-			if (!tType.subclassOf(calendarType) && !tType.subclassOf(dateFormatType)) {
+			boolean isCalendar = subtypes2.isSubtype(cDesc, calendarType);
+			boolean isDateFormat = subtypes2.isSubtype(cDesc, dateFormatType);
+			if (!isCalendar && !isDateFormat) {
 				return;
 			}
 
@@ -262,16 +262,16 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
 			// if we get here, we want to generate a report, depending on the
 			// type
-			String tBugType = null;
-			if (tType.subclassOf(calendarType)) {
+			String tBugType;
+			if (isCalendar) {
 				tBugType = "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE";
-			} else if (tType.subclassOf(dateFormatType)) {
+			} else if (isDateFormat) {
 				tBugType = "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE";
-			}
-			if (tBugType != null) {
-				bugAccumulator.accumulateBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
-				        .addOptionalField(field), this);
-			}
+			} else 
+				throw new IllegalStateException("Not possible");
+			bugAccumulator.accumulateBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
+					.addOptionalField(field), this);
+
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}

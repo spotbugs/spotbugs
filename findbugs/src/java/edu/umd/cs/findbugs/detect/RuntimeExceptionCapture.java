@@ -21,16 +21,44 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 ;
 
 /**
@@ -64,10 +92,10 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 	}
 
 	private static class ExceptionThrown {
-		public String exceptionClass;
+		public @DottedClassName String exceptionClass;
 		public int offset;
 
-		public ExceptionThrown(String exceptionClass, int offset) {
+		public ExceptionThrown(@DottedClassName String exceptionClass, int offset) {
 			this.exceptionClass = exceptionClass;
 			this.offset = offset;
 		}
@@ -203,26 +231,16 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 			case INVOKEVIRTUAL:
 			case INVOKESPECIAL:
 			case INVOKESTATIC:
-				String className = getDottedClassConstantOperand();
-				try {
-					if (!className.startsWith("[")) {
-						JavaClass clazz = Repository.lookupClass(className);
-						Method[] methods = clazz.getMethods();
-						for (Method method : methods) {
-							if (method.getName().equals(getNameConstantOperand())
-									&& method.getSignature().equals(getSigConstantOperand())) {
-								ExceptionTable et = method.getExceptionTable();
-								if (et != null) {
-									String[] names = et.getExceptionNames();
-									for (String name : names)
-										throwList.add(new ExceptionThrown(name, getPC()));
-								}
-								break;
-							}
-						}
-					}
-				} catch (ClassNotFoundException e) {
-					bugReporter.reportMissingClass(e);
+				String className = getClassConstantOperand();
+				if (!className.startsWith("[")) try {		
+					XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptor(className));
+					XMethod m = c.findMethod(getNameConstantOperand(), getSigConstantOperand(), seen == INVOKESTATIC);
+					String[] exceptions = m.getThrownExceptions();
+					if (exceptions != null) for (String name : exceptions)
+						throwList.add(new ExceptionThrown(ClassName.toDottedClassName(name), getPC()));
+				} catch (CheckedAnalysisException e) {
+					// TODO Auto-generated catch block
+					bugReporter.logError("Error looking up " + className, e);
 				}
 				break;
 			default:

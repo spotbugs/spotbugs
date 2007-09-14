@@ -166,6 +166,13 @@ public  class XFactory {
 	        return  new String[0];
         }
 
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.XMethod#isUnconditionalThrower()
+         */
+        public boolean isUnconditionalThrower() {
+	        return false;
+        }
+
 	}
 
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();

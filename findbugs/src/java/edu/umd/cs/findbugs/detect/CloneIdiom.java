@@ -163,7 +163,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		hasCloneMethod = true;
 		cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
 		cloneOnlyThrowsException = 
-			PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(XFactory.createXMethod(this), getThisClass(), obj);
+			PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(XFactory.createXMethod(this));
 		//ExceptionTable tbl = obj.getExceptionTable();
 		//throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}

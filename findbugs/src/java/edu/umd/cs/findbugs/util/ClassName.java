@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -32,6 +33,12 @@ public abstract class ClassName {
 	public static String toSignature(@SlashedClassName String className) {
 		if (className.charAt(0) == '[' || className.endsWith(";")) return className;
 		return "L" + className + ";";
+	}
+	
+	
+	public static @CheckForNull String fromFieldSignature(String signature) {
+		if (signature.charAt(0) != 'L') return null;
+		return signature.substring(1, signature.length()-1);
 	}
 	/**
 	 * Convert class name to slashed format.

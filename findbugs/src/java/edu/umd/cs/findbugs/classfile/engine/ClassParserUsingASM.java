@@ -35,6 +35,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -54,11 +55,25 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ClassParserUsingASM implements ClassParserInterface {
 
+	
+	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
+	static {
+		RETURN_OPCODE_SET.set(Constants.ARETURN);
+		RETURN_OPCODE_SET.set(Constants.IRETURN);
+		RETURN_OPCODE_SET.set(Constants.LRETURN);
+		RETURN_OPCODE_SET.set(Constants.DRETURN);
+		RETURN_OPCODE_SET.set(Constants.FRETURN);
+		RETURN_OPCODE_SET.set(Constants.RETURN);
+	}
+
+	
 	private final ClassReader  classReader;
 	private @SlashedClassName String slashedClassName;
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
 	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL };
+	
+	
 	
 
 	public ClassParserUsingASM(ClassReader classReader,
@@ -67,7 +82,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
 		this.classReader = classReader;
 		this.expectedClassDescriptor = expectedClassDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
-
 	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder)
@@ -156,8 +170,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					return new AbstractMethodVisitor(){
 
 						int variable;
+						boolean sawReturn = false;
 						State state = State.INITIAL;
 						
+						
+						@Override
+						public void visitInsn(int opcode) {
+							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
+							visitSomeInsn();
+						}
 						@Override
 						public void visitSomeInsn() {
 							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
@@ -207,9 +228,10 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						}
 
 						public void visitEnd() {
+							if (!sawReturn) mBuilder.setIsUnconditionalThrower();
+							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
-									mBuilder.build());
-
+									methodInfo);
 						}
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,

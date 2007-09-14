@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -27,6 +26,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author pugh
@@ -54,9 +54,8 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		try {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
-			String className = getDottedClassConstantOperand();
+			@DottedClassName String className = getDottedClassConstantOperand();
 			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
 				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED",
 						LOW_PRIORITY)
@@ -66,20 +65,17 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 							);
 		}
 		if (seen == NEW) {
-			String classOfConstructedClass = getClassConstantOperand();
-			JavaClass constructedClass = Repository.lookupClass(classOfConstructedClass);
-			if (Subtypes2.instanceOf(constructedClass,"java/lang/ClassLoader") 
+			@DottedClassName String classOfConstructedClass = getDottedClassConstantOperand();
+			if (Subtypes2.instanceOf(classOfConstructedClass,"java/lang/ClassLoader") 
 					&& !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod().isStatic()) )
 				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
 					NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addClass(constructedClass)
+						.addClass(classOfConstructedClass)
 						.addSourceLine(this)
 						);
 		}
-		} catch (ClassNotFoundException e) {
-			// ignore this
-		}
+
 
 	}
 
