@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 ;
@@ -236,20 +237,13 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 				if (!className.startsWith("[")) try {		
 					XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptor(className));
 					XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),  seen == INVOKESTATIC,  seen == INVOKEINTERFACE);
-					if (m == null) {
-						if (false) {c.findMethod(getNameConstantOperand(), getSigConstantOperand(), seen == INVOKESTATIC);
-						
-						String msg = "REC: Error looking up " + OPCODE_NAMES[seen] + " " + c +"."+getNameConstantOperand()+getSigConstantOperand() + " in " + c.getXMethods();
-						System.out.println(msg);
-						bugReporter.logError(msg);
-						}
-						break;
-					}
+					if (m == null) break;
 					String[] exceptions = m.getThrownExceptions();
 					if (exceptions != null) for (String name : exceptions)
 						throwList.add(new ExceptionThrown(ClassName.toDottedClassName(name), getPC()));
+				} catch (MissingClassException e) {
+					bugReporter.reportMissingClass(e.getClassDescriptor());
 				} catch (CheckedAnalysisException e) {
-					// TODO Auto-generated catch block
 					bugReporter.logError("Error looking up " + className, e);
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);

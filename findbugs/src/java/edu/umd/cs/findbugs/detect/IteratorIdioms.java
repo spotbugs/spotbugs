@@ -53,7 +53,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 			if (subtypes2.isSubtype(classContext.getClassDescriptor(), iteratorDescriptor))
 				super.visitClassContext(classContext);
 		} catch (ClassNotFoundException e) {
-			bugReporter.logError(classContext.getClassDescriptor().toString(), e);
+			bugReporter.reportMissingClass(e);
 		}
 	}
 

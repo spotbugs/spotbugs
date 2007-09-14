@@ -64,7 +64,6 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
@@ -73,7 +72,6 @@ import edu.umd.cs.findbugs.classfile.engine.bcel.NonExceptionPostdominatorsAnaly
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonImplicitExceptionPostDominatorsAnalysis;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedBytecodeCallback;
 import edu.umd.cs.findbugs.classfile.engine.bcel.UnpackedCode;
-import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.TopologicalSort;
@@ -890,6 +888,12 @@ public class ClassContext {
     	} catch (CFGBuilderException e) {
     		throw e;
     	} catch (CheckedAnalysisException e) {
+    		Throwable cause = e.getCause();
+    		if (cause instanceof CFGBuilderException) {
+    			throw (CFGBuilderException)cause;
+    		}
+    		System.out.println("Bad CAE: " + e.getClass().getName() + " for " + analysisClass.getName() + " of " + method);
+    		e.printStackTrace(System.out);
     		IllegalStateException ise = new IllegalStateException("should not happen");
     		ise.initCause(e);
     		throw ise;

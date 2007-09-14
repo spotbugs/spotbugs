@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup
@@ -49,6 +50,9 @@ public class Lookup
 
 		try {
 			return findSuperImplementor(clazz, name, signature, isStatic);
+		} catch (MissingClassException e) {
+			bugReporter.reportMissingClass(e.getClassDescriptor());
+			return clazz;
 		} catch (CheckedAnalysisException e) {
 			bugReporter.logError("Error finding " + clazz + "." + name + signature, e);
 			return clazz;
@@ -61,6 +65,9 @@ public class Lookup
 
 		try {
 			return findImplementor(clazz, name, signature, isStatic);
+		} catch (MissingClassException e) {
+			bugReporter.reportMissingClass(e.getClassDescriptor());
+			return clazz;
 		} catch (CheckedAnalysisException e) {
 			bugReporter.logError("Error finding " + clazz + "." + name + signature, e);
 			return clazz;

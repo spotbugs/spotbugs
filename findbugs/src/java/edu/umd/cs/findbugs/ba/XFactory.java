@@ -57,7 +57,6 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
-import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -391,8 +390,20 @@ public  class XFactory {
 	 * @return the created XMethod
 	 */
 	public  static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, boolean isStatic) {
-		XMethod m;
+		XMethod m = null;
 		XFactory xFactory = AnalysisContext.currentXFactory();
+		try {
+		ClassDescriptor desc = ClassDescriptor.createClassDescriptorFromDottedClassName(className);
+		ClassInfo c = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
+		m = c.findMethod(methodName, methodSig, isStatic);
+		if (m != null && m.isResolved()) return m;
+		} catch (RuntimeException e) {
+			assert true;
+		} catch (CheckedAnalysisException e) {
+	        assert true;
+        }
+		
+		
 		m = createXMethod(className, methodName, methodSig, isStatic ? Constants.ACC_STATIC : 0);
 		m = xFactory.resolve(m);
 		return m;

@@ -25,9 +25,11 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -80,15 +82,19 @@ public class AnalysisCache implements IAnalysisCache {
 			this.isNull = isNull;
 		}
 
-        public Object returnOrThrow() throws CheckedAnalysisException {
-        	if (isNull) {
-        		return null;
-        	} else if (runtimeException != null) {
-        		throw runtimeException;
-        	} else {
-        		throw checkedAnalysisException;
-        	}
-        }
+		public Object returnOrThrow() throws CheckedAnalysisException {
+			if (isNull) {
+				return null;
+			} else if (runtimeException != null) {
+				runtimeException.fillInStackTrace();
+				throw runtimeException;
+			} else if (checkedAnalysisException != null) {
+				checkedAnalysisException.fillInStackTrace();
+				throw checkedAnalysisException;
+			}
+		
+		throw new IllegalStateException("It has to be something");
+		}
 	}
 	
 	static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult(true);

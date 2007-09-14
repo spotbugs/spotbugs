@@ -791,6 +791,11 @@ public class SortedBugCollection implements BugCollection {
 			addMissingClass(AbstractBugReporter.getMissingClassName(e));
 			return;
 		}
+		if (exception instanceof edu.umd.cs.findbugs.classfile.MissingClassException) {
+			edu.umd.cs.findbugs.classfile.MissingClassException e = (edu.umd.cs.findbugs.classfile.MissingClassException) exception;
+			addMissingClass(AbstractBugReporter.getMissingClassName(e.toClassNotFoundException()));
+			return;
+		}
 		errorList.add(new AnalysisError(message, exception));
 	}
 
