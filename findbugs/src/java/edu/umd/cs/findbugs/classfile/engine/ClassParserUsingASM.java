@@ -152,6 +152,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				if (cBuilder instanceof ClassInfo.Builder) {
 					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
 					mBuilder.setSourceSignature(signature);
+					mBuilder.setThrownExceptions(exceptions);
 					return new AbstractMethodVisitor(){
 
 						int variable;

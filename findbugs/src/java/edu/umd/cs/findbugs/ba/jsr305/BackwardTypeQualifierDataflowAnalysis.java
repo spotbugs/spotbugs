@@ -30,6 +30,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -209,11 +210,17 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 	private void modelArguments(Location location) throws DataflowAnalysisException {
 		// Model arguments to called method
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+		XMethod calledMethod = XFactory.createXMethod(inv, cpg);
+		
+		SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
+		if (sigParser.getNumParameters() == 0) return;
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 
-		XMethod calledMethod = XFactory.createXMethod(inv, cpg);
-		SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
-
+		if (!vnaFrame.isValid()) {
+			// AnalysisContext.logError("bad vna frame  in " + xmethod + " at location " + location.getHandle().getPosition() + " calling " + calledMethod);
+			return;
+		}
+		
 		for (Iterator<String> j = sigParser.parameterSignatureIterator(); j.hasNext(); ) {
 			int param = 0;
 

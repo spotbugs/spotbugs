@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import java.lang.annotation.ElementType;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,6 +120,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		this.methodSourceSignature = methodSourceSignature;
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
+		if (false && exceptions != null && exceptions.length > 0)
+			System.out.println(this + " throws " + Arrays.asList(exceptions));
 	}
 
 	 public String [] getThrownExceptions() {
