@@ -154,6 +154,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		return checkFlag(Constants.ACC_NATIVE);
 	}
 
+	public boolean isAbstract() {
+		return checkFlag(Constants.ACC_ABSTRACT);
+	}
 	public boolean isSynchronized() {
 		return checkFlag(Constants.ACC_SYNCHRONIZED);
 	}

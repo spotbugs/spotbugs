@@ -100,6 +100,7 @@ public class ClassContext {
 	}
 
 	private final JavaClass jclass;
+	private final ClassInfo classInfo;
 	private final AnalysisContext analysisContext;
 	private final Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisObjectMap;
 
@@ -116,6 +117,11 @@ public class ClassContext {
 		this.jclass = jclass;
 		this.analysisContext = analysisContext;
 		this.methodAnalysisObjectMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
+		try {
+	        classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptor(jclass));
+        } catch (CheckedAnalysisException e) {
+	       throw new AssertionError("No ClassInfo for " + jclass);
+        }
 	}
 	
 	public Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
@@ -195,13 +201,13 @@ public class ClassContext {
 		return jclass;
 	}
 
+	public XClass getXClass() {
+		return classInfo;
+	}
 	public ClassDescriptor getClassDescriptor() {
-		return ClassDescriptor.createClassDescriptor(ClassName.toSlashedClassName(jclass.getClassName()));
+		return classInfo;
 	}
-	public XClass getXClass() throws CheckedAnalysisException {
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
-		return  analysisCache.getClassAnalysis(XClass.class, getClassDescriptor());
-	}
+
 	/**
 	 * Look up the Method represented by given MethodGen.
 	 * 

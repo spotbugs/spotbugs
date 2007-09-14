@@ -30,14 +30,19 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.PruneInfeasibleExceptionEdges;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, StatelessDetector {
 
+	private ClassDescriptor cloneDescriptor = ClassDescriptor.createClassDescriptor("java/lang/Cloneable");
+	
 	boolean /*isCloneable,*/ hasCloneMethod;
 	MethodAnnotation cloneMethodAnnotation;
 	boolean referencesCloneMethod;
@@ -54,14 +59,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		this.bugReporter = bugReporter;
 	}
 
-
-
 	public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
-	}
-
-
-	public void report() {
 	}
 
 	@Override
@@ -105,13 +104,15 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 			}
 		}
 
-		try {
-			//isCloneable = Repository.implementationOf(obj, "java.lang.Cloneable");
-			JavaClass superClass = obj.getSuperClass();
-			if (superClass != null && Repository.implementationOf(superClass, "java.lang.Cloneable"))
-				implementsCloneableDirectly = false;
-		} catch (ClassNotFoundException e) {
-			// ignore
+		if (implementsCloneableDirectly) {
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			try {
+	            if (subtypes2.isSubtype(ClassDescriptor.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor))
+	            	implementsCloneableDirectly = false;
+            } catch (ClassNotFoundException e) {
+	           bugReporter.reportMissingClass(e);
+            }
+
 		}
 		hasCloneMethod = false;
 		referencesCloneMethod = false;
@@ -136,13 +137,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 					.addMethod(cloneMethodAnnotation));
 		}
 
-		/*
-		if (!isCloneable && hasCloneMethod) {
-			if (throwsExceptions)
-			System.out.println("has public clone method that throws exceptions and class is not Cloneable: " + betterClassName) ;
-			else System.out.println("has public clone method but is not Cloneable: " + betterClassName) ;
-			}
-		*/
 	}
 
 	@Override
@@ -167,4 +161,12 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		//ExceptionTable tbl = obj.getExceptionTable();
 		//throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.Detector#report()
+     */
+    public void report() {
+	   // do nothing
+	    
+    }
 }

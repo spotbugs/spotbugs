@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -112,32 +113,30 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		boolean ineritedEqualsFromAbstractClass = false;
 		XMethod inheritedEquals = null;
 		if (!hasEqualsObject) {
-			JavaClass we = Lookup.findSuperImplementor(obj, "equals",
-					"(Ljava/lang/Object;)Z", bugReporter);
+			XClass we = Lookup.findImplementor(getXClass(), "equals",
+					"(Ljava/lang/Object;)Z", false, bugReporter);
 			if (we == null) {
 				whereEqual = "java.lang.Object";
 			} else {
 				ineritedEqualsFromAbstractClass = we.isAbstract();
-				whereEqual = we.getClassName();
-				classThatDefinesEqualsIsAbstract = we.isAbstract();
-				Method m = findMethod(we, "equals", "(Ljava/lang/Object;)Z");
-				if (m != null) {
-					inheritedEquals = XFactory.createXMethod(we, m);
-					inheritedEqualsIsFinal = m.isFinal();
-					inheritedEqualsIsAbstract = m.isAbstract();
+				whereEqual = we.getClassDescriptor().getDottedClassName();
+				inheritedEquals = we.findMethod("equals", "(Ljava/lang/Object;)Z", false);
+				if (inheritedEquals != null) {
+					inheritedEqualsIsFinal = inheritedEquals.isFinal();
+					inheritedEqualsIsAbstract = inheritedEquals.isAbstract();
 				}
 			}
 		}
 		boolean usesDefaultEquals = whereEqual.equals("java.lang.Object");
 		String whereHashCode = getDottedClassName();
 		if (!hasHashCode) {
-			JavaClass wh = Lookup.findSuperImplementor(obj, "hashCode", "()I",
+			XClass wh = Lookup.findSuperImplementor(getXClass(), "hashCode", "()I", false,
 					bugReporter);
 			if (wh == null) {
 				whereHashCode = "java.lang.Object";
 			} else {
-				whereHashCode = wh.getClassName();
-				Method m = findMethod(wh, "hashCode", "()I");
+				whereHashCode = wh.getClassDescriptor().getDottedClassName();
+				XMethod m = wh.findMethod("hashCode", "()I", false);
 				if (m != null && m.isFinal())
 					inheritedHashCodeIsFinal = true;
 			}

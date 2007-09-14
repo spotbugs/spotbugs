@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -126,7 +127,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	 * Create a class descriptor from a field signature
 	 * 
 	 */
-	public static ClassDescriptor fromFieldSignature(String signature) {
+	public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
 		int start = signature.indexOf('L');
 		if (start < 0) {
 			return null;

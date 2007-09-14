@@ -173,6 +173,13 @@ public  class XFactory {
 	        return false;
         }
 
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.XMethod#isAbstract()
+         */
+        public boolean isAbstract() {
+	        return false;
+        }
+
 	}
 
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();

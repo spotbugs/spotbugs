@@ -23,10 +23,65 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup
 		implements Constants2 {
+	
+	
+	private static Subtypes2 subtypes2() {
+		return AnalysisContext.currentAnalysisContext().getSubtypes2();
+	}
+
+	private static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
+		return Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+	}
+
+	public static XClass findSuperImplementor(XClass clazz, String name, String signature, boolean isStatic,
+	        BugReporter bugReporter) {
+
+		try {
+			return findSuperImplementor(clazz, name, signature, isStatic);
+		} catch (CheckedAnalysisException e) {
+			bugReporter.logError("Error finding " + clazz + "." + name + signature, e);
+			return clazz;
+		}
+
+	}
+
+	public static XClass findImplementor(XClass clazz, String name, String signature, boolean isStatic,
+	        BugReporter bugReporter) {
+
+		try {
+			return findImplementor(clazz, name, signature, isStatic);
+		} catch (CheckedAnalysisException e) {
+			bugReporter.logError("Error finding " + clazz + "." + name + signature, e);
+			return clazz;
+		}
+
+	}
+
+	public static XClass findSuperImplementor(XClass clazz, String name, String signature, boolean isStatic)
+	        throws CheckedAnalysisException {
+
+		return findImplementor(getXClass(clazz.getSuperclassDescriptor()), name, signature, isStatic);
+	}
+
+	public static XClass findImplementor(XClass clazz, String name, String signature, boolean isStatic)
+	        throws CheckedAnalysisException {
+		XMethod m = clazz.findMethod(name, signature, isStatic);
+		if (m != null)
+			return clazz;
+		return findSuperImplementor(clazz, name, signature, isStatic);
+	}
+	
 	public static JavaClass
 			findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {

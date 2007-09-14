@@ -20,37 +20,49 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public class InstantiateStaticClass extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 
-	Map<String,Boolean> isStaticClass = new HashMap<String,Boolean>();
+	Map<String, Boolean> isStaticClass = new HashMap<String, Boolean>();
 
 	public InstantiateStaticClass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		try {
-			if ((seen == INVOKESPECIAL)
-			&&  getNameConstantOperand().equals("<init>")
-			&&  getSigConstantOperand().equals("()V")) {
+			if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
 				String clsName = getClassConstantOperand();
 				if (clsName.equals("java/lang/Object"))
 					return;
 
-				//ignore superclass synthesized ctor calls
+				// ignore superclass synthesized ctor calls
 				if (getMethodName().equals("<init>") && (getPC() == 1))
 					return;
 
-				//ignore the typesafe enumerated constant pattern
+				// ignore the typesafe enumerated constant pattern
 				if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName)))
 					return;
 
@@ -58,61 +70,54 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 				if (b == null) {
 					b = Boolean.valueOf(isStaticOnlyClass(clsName));
 					isStaticClass.put(clsName, b);
-					}
+				}
 				if (b)
 
-				bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+					bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
+					        this).addSourceLine(this));
 			}
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
 
-   private boolean isStaticOnlyClass(String clsName) throws ClassNotFoundException {
-				   clsName = clsName.replace('/', '.');
-				JavaClass cls = Repository.lookupClass(clsName);
-				if (cls.getInterfaceNames().length > 0)
+	private boolean isStaticOnlyClass(@SlashedClassName
+	String clsName) throws ClassNotFoundException {
+
+		try {
+			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
+			        ClassDescriptor.createClassDescriptor(clsName));
+
+			if (xClass.getInterfaceDescriptorList().length > 0)
+				return false;
+			String superClassName = xClass.getSuperclassDescriptor().getClassName();
+			if (!superClassName.equals("java/lang/Object"))
+				return false;
+			int staticCount = 0;
+
+			List<? extends XMethod> methods = xClass.getXMethods();
+			for (XMethod m : methods) {
+				if (m.isStatic()) {
+					staticCount++;
+				} else if (!m.getName().equals("<init>") || !m.getSignature().equals("()V"))
 					return false;
-				String superClassName = cls.getSuperclassName();
-				if (!superClassName.equals("java.lang.Object"))
+			}
+
+			List<? extends XField> fields = xClass.getXFields();
+			for (XField f : fields) {
+				if (f.isStatic()) {
+					staticCount++;
+				} else if (!f.isPrivate())
 					return false;
+			}
 
-				Method[] methods = cls.getMethods();
-				int staticCount = 0;
-	   for (Method m : methods) {
-		   if (m.isStatic()) {
-			   staticCount++;
-			   continue;
-		   }
+			if (staticCount == 0)
+				return false;
+			return true;
 
-		   if (m.getName().equals("<init>")) {
-			   if (!m.getSignature().equals("()V"))
-				   return false;
-
-			   Code c = m.getCode();
-
-			   if (c.getCode().length > 5)
-				   return false;
-		   } else {
-			   return false;
-		   }
-	   }
-
-				Field[] fields = cls.getFields();
-	   for (Field f : fields) {
-		   if (f.isStatic()) {
-			   staticCount++;
-			   continue;
-		   }
-
-		   if (!f.isPrivate())
-			   return false;
-	   }
-
-				if (staticCount == 0) return false;
-				return true;
-				}
+		} catch (CheckedAnalysisException e) {
+			return false;
+		}
+	}
 
 }

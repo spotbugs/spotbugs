@@ -20,16 +20,26 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
-	private JavaClass iteratorClass;
+	private ClassDescriptor iteratorDescriptor = ClassDescriptor.createClassDescriptor("java/util/Iterator");
 	private BugReporter bugReporter;
+	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
+	
 	public IteratorIdioms(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -37,31 +47,16 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 
 
 	@Override
-		 public void visitClassContext(ClassContext classContext) {
-		findJavaUtilIterator();
+	public void visitClassContext(ClassContext classContext) {
 
-		if (iteratorClass == null)
-			return;
 		try {
-			JavaClass cls = classContext.getJavaClass();
-			if (cls.implementationOf(iteratorClass))
-				super.visitClassContext(classContext); 
-		}
-		catch (ClassNotFoundException cnfe) {
-			//Already logged
+			if (subtypes2.isSubtype(classContext.getClassDescriptor(), iteratorDescriptor))
+				super.visitClassContext(classContext);
+		} catch (ClassNotFoundException e) {
+			bugReporter.logError(classContext.getClassDescriptor().toString(), e);
 		}
 	}
 
-	private void findJavaUtilIterator() {
-		if (iteratorClass == null) {
-			try {
-				iteratorClass = Repository.lookupClass("java.util.Iterator");
-			} catch (ClassNotFoundException cnfe) {
-				iteratorClass = null;
-				bugReporter.reportMissingClass(cnfe);
-			}
-		}
-	}
 
 	boolean sawNoSuchElement;
 	boolean sawCall;

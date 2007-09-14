@@ -145,6 +145,8 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getClassAnalysis(Class<E> analysisClass,
 			ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+		if (classDescriptor == null)
+			throw new NullPointerException("classDescriptor is null");
 		// Get the descriptor->result map for this analysis class,
 		// creating if necessary
 		Map<ClassDescriptor, Object> descriptorMap =
@@ -218,6 +220,8 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getMethodAnalysis(Class<E> analysisClass,
 			MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+		if (methodDescriptor == null)
+			throw new NullPointerException("methodDescriptor is null");
 		ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 		Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
 

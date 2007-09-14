@@ -147,7 +147,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		if (!aField.isStatic()) return;
 		ClassDescriptor classOfField = ClassDescriptor.fromFieldSignature(aField.getSignature());
 		String tBugType = null;
-		try {
+		if (classOfField != null) try {
 			if (subtypes2.isSubtype(classOfField, calendarType)) {
 				tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
 			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {

@@ -314,6 +314,8 @@ public class Subtypes2 {
 	}
 
 	public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
+		assert subDesc != null;
+		assert superDesc != null;
 		SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
 		return supertypeQueryResults.containsType(superDesc);
 	}
