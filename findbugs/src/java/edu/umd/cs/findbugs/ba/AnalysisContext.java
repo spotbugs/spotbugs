@@ -186,14 +186,14 @@ public abstract class AnalysisContext {
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
+		if (e == null) throw new NullPointerException("argument is null");
 		String missing = AbstractBugReporter.getMissingClassName(e);
-		
 		if (missing.length() == 0) {
 			// AnalysisContext.logError("Empty missing class name", new RuntimeException(e));
 			return;
 		}
 		if (missing.charAt(0) == '[') return;
-		if (e == null) throw new NullPointerException("argument is null");
+
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
 		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;
