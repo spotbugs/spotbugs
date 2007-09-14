@@ -46,8 +46,9 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * @author pwilliam
+ * @author William Pugh
  */
+@Deprecated
 public class ClassParserUsingBCEL implements ClassParserInterface {
 
 	private final JavaClass javaClass;

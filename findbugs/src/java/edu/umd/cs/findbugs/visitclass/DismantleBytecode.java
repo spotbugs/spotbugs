@@ -41,7 +41,17 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.LineNumberTable;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 abstract public class DismantleBytecode extends AnnotationVisitor {
 
@@ -58,6 +68,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	private int sizePrevOpcodeBuffer;
 	private int defaultSwitchOffset;
 	private String classConstantOperand;
+	private ClassDescriptor referencedClass;
+	private XClass referencedXClass;
+	private MethodDescriptor referencedMethod;
+	private XMethod referencedXMethod;
+	private FieldDescriptor referencedField;
+	private XField referencedXField;
 	private String dottedClassConstantOperand;
 	private String nameConstantOperand;
 	private String sigConstantOperand;
@@ -146,6 +162,43 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	// Accessors
 
+	
+	public ClassDescriptor getClassDescriptorOperand() {
+		if (dottedClassConstantOperand == NOT_AVAILABLE)
+			throw new IllegalStateException("getClassDescriptorOperand called but value not available");
+
+		return referencedClass;
+	}
+
+	public @CheckForNull
+	XClass getXClassOperand() {
+		return referencedXClass;
+	}
+
+	public MethodDescriptor getMethodDescriptorOperand() {
+		if (nameConstantOperand == NOT_AVAILABLE)
+			throw new IllegalStateException("getMethodDescriptorOperand called but value not available");
+
+		return referencedMethod;
+	}
+
+	public @CheckForNull
+	XMethod getXMethodOperand() {
+		return referencedXMethod;
+	}
+
+	public FieldDescriptor getFieldDescriptorOperand() {
+		if (nameConstantOperand == NOT_AVAILABLE)
+			throw new IllegalStateException("getFieldDescriptorOperand called but value not available");
+
+		return referencedField;
+	}
+
+	public @CheckForNull
+	XField getXFieldOperand() {
+		return referencedXField;
+	}
+	
 	/** If the current opcode has a class operand, get the associated class constant, dot-formatted */
 	public String getDottedClassConstantOperand() {
 		if (dottedClassConstantOperand == NOT_AVAILABLE)
@@ -318,6 +371,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		isRegisterStore = false;
 		branchOffset = branchTarget = branchFallThrough = defaultSwitchOffset = INVALID_OFFSET;
 		switchOffsets = switchLabels = null;
+		referencedClass = null;
+		referencedXClass = null;
+		referencedMethod = null;
+		referencedXMethod = null;
+		referencedField = null;
+		referencedXField = null;
 	}
 
 	private static void sortByOffset(int[] switchOffsets, int[] switchLabels) {
@@ -503,6 +562,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 								ConstantClass clazz = (ConstantClass) constantRefOperand;
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
+								referencedClass = ClassDescriptor.createClassDescriptor(classConstantOperand);
+								try {
+	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
+                                } catch (CheckedAnalysisException e) {
+                                	referencedClass = null;
+                                }
 							}
 							else if (constantRefOperand instanceof ConstantInteger)
 								intConstant = ((ConstantInteger) constantRefOperand).getBytes();
@@ -673,6 +738,31 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 					refFieldIsStatic = false;
 					break;
 				}
+			
+				switch (opcode) {
+				case INVOKEINTERFACE:
+				case INVOKESPECIAL:
+				case INVOKESTATIC:
+				case INVOKEVIRTUAL:
+				{
+					boolean isStatic = opcode == INVOKESTATIC;
+					referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand, nameConstantOperand, isStatic);
+					if (referencedXClass != null) referencedXMethod = referencedXClass.findMethod(nameConstantOperand, nameConstantOperand, isStatic);
+					break;
+				}
+				case GETSTATIC:
+				case PUTSTATIC:
+				case GETFIELD:
+				case PUTFIELD:
+				{
+					boolean isStatic = opcode == GETSTATIC || opcode == PUTSTATIC;
+					referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand, nameConstantOperand, isStatic);
+					if (referencedXClass != null) referencedXField = referencedXClass.findField(nameConstantOperand, nameConstantOperand, isStatic);
+					break;
+				}
+				}
+				
+				
 				nextPC = i;
 				if (beforeOpcode(opcode))
 				  sawOpcode(opcode);

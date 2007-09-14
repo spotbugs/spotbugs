@@ -47,9 +47,9 @@ import edu.umd.cs.findbugs.util.Util;
  * @author David Hovemeyer
  */
 public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, AnnotatedObject {
-	private final FieldDescriptor[] fieldDescriptorList;
+	private final FieldInfo[] xFields;
 
-	private final MethodDescriptor[] methodDescriptorList;
+	private final MethodInfo[] xMethods;
 
 	private final ClassDescriptor immediateEnclosingClass;
 
@@ -59,9 +59,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
-		private List<FieldDescriptor>fieldDescriptorList = new LinkedList<FieldDescriptor>();
+		private List<FieldInfo>fieldDescriptorList = new LinkedList<FieldInfo>();
 
-		private List<MethodDescriptor> methodDescriptorList  = new LinkedList<MethodDescriptor>();
+		private List<MethodInfo> methodDescriptorList  = new LinkedList<MethodInfo>();
 
 
 		private ClassDescriptor immediateEnclosingClass;
@@ -72,8 +72,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		public ClassInfo build() {
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
-					classAnnotations, fieldDescriptorList.toArray(new FieldDescriptor[0]), 
-					methodDescriptorList.toArray(new MethodDescriptor[0]), immediateEnclosingClass );
+					classAnnotations, fieldDescriptorList.toArray(new FieldInfo[0]), 
+					methodDescriptorList.toArray(new MethodInfo[0]), immediateEnclosingClass );
 		}
 
 		
@@ -98,10 +98,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		 * @param fieldDescriptorList
 		 *            The fieldDescriptorList to set.
 		 */
-		public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
+		public void setFieldDescriptorList(FieldInfo [] fieldDescriptorList) {
 			this.fieldDescriptorList = Arrays.asList(fieldDescriptorList);
 		}
-		public void addFieldDescriptor(FieldDescriptor field) {
+		public void addFieldDescriptor(FieldInfo field) {
 			fieldDescriptorList.add(field);
 		}
 
@@ -109,10 +109,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		 * @param methodDescriptorList
 		 *            The methodDescriptorList to set.
 		 */
-		public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
+		public void setMethodDescriptorList(MethodInfo[] methodDescriptorList) {
 			this.methodDescriptorList = Arrays.asList(methodDescriptorList);
 		}
-		public void addMethodDescriptor(MethodDescriptor method) {
+		public void addMethodDescriptor(MethodInfo method) {
 			methodDescriptorList.add(method);
 		}
 
@@ -151,13 +151,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source, int majorVersion,  int minorVersion,
 			Collection<ClassDescriptor> referencedClassDescriptorList,
 			Collection<ClassDescriptor> calledClassDescriptors,
-			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldDescriptor[] fieldDescriptorList,
-			MethodDescriptor[] methodDescriptorList, ClassDescriptor immediateEnclosingClass) {
+			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldInfo[] fieldDescriptorList,
+			MethodInfo[] methodDescriptorList, ClassDescriptor immediateEnclosingClass) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors,   majorVersion,  minorVersion);
 		this.source = source;
 		this.classSourceSignature = classSourceSignature;
-		this.fieldDescriptorList = fieldDescriptorList;
-		this.methodDescriptorList = methodDescriptorList;
+		this.xFields = fieldDescriptorList;
+		this.xMethods = methodDescriptorList;
 		this.immediateEnclosingClass = immediateEnclosingClass;
 		this.classAnnotations = Util.immutableMap(classAnnotations);
 	}
@@ -165,31 +165,26 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	/**
 	 * @return Returns the fieldDescriptorList.
 	 */
-	public FieldDescriptor[] getFieldDescriptorList() {
-		return fieldDescriptorList;
+	public List<? extends XField> getXFields() {
+		return Arrays.asList(xFields);
 	}
 
 	/**
 	 * @return Returns the methodDescriptorList.
 	 */
-	public MethodDescriptor[] getMethodDescriptorList() {
-		return methodDescriptorList;
+	public List<? extends XMethod> getXMethods() {
+		return Arrays.asList(xMethods);
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String, java.lang.String, boolean)
 	 */
 	public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
-		for (MethodDescriptor mDesc : methodDescriptorList) {
-			if (mDesc instanceof MethodInfo) {
-				MethodInfo mInfo = (MethodInfo) mDesc;
+		for (MethodInfo mInfo : xMethods) 
 				if (mInfo.getName().equals(methodName)
 						&& mInfo.getSignature().equals(methodSig)
-						&& mInfo.isStatic() == isStatic) {
+						&& mInfo.isStatic() == isStatic) 
 					return mInfo;
-				}
-			}
-		}
 		return null;
 	}
 	
@@ -207,16 +202,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String, java.lang.String, boolean)
 	 */
 	public XField findField(String name, String signature, boolean isStatic) {
-		for (FieldDescriptor fDesc : fieldDescriptorList) {
-			if (fDesc instanceof FieldInfo) {
-				FieldInfo fInfo = (FieldInfo) fDesc;
+		for (FieldInfo fInfo : xFields) 
 				if (fInfo.getName().equals(name)
 						&& fInfo.getSignature().equals(signature)
-						&& fInfo.isStatic() == isStatic) {
+						&& fInfo.isStatic() == isStatic) 
 					return fInfo;
-				}
-			}
-		}
 		return null;
 	}
 

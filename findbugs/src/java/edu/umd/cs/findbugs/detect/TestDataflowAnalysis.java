@@ -93,22 +93,13 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 		
 		ClassInfo classInfo = analysisCache.getClassAnalysis(ClassInfo.class, classDescriptor);
 		
-		// Test dataflow analysis on each method
-		for (MethodDescriptor methodDescriptor : classInfo.getMethodDescriptorList()) {
-			if (methodName != null && !methodName.equals(methodDescriptor.getName())) {
+		// Test dataflow analysis on each method]
+		for(XMethod xMethod : classInfo.getXMethods()) {
+			if (methodName != null && !methodName.equals(xMethod.getName())) {
 				continue;
 			}
+			MethodDescriptor methodDescriptor = xMethod.getMethodDescriptor();
 			
-			Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
-			if (method.getCode() == null) {
-				continue;
-			}
-			
-			MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
-			if (methodGen == null) {
-				continue;
-			}
-
 			System.out.println("-----------------------------------------------------------------");
 			System.out.println("Method: " + SignatureConverter.convertMethodSignature(methodDescriptor));
 			System.out.println("-----------------------------------------------------------------");

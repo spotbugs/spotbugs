@@ -23,10 +23,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -38,12 +36,16 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
@@ -76,75 +78,69 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-		 public void visit(JavaClass obj) {
+	public void visit(JavaClass obj) {
 		classFields.clear();
 
 		Field[] fields = obj.getFields();
 		String fieldName;
-		for (Field field : fields) if (!field.isStatic() && !field.isPrivate()){
-			fieldName = field.getName();
-			classFields.put(fieldName, field);
-		}
+		for (Field field : fields)
+			if (!field.isStatic() && !field.isPrivate()) {
+				fieldName = field.getName();
+				classFields.put(fieldName, field);
+			}
 
 		// Walk up the super class chain, looking for name collisions
-		try {
-			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
-			for (JavaClass superClass : superClasses) {
-				fields = superClass.getFields();
-				for (Field fld : fields) {
-					if (!fld.isStatic()
-							&& (fld.isPublic() || fld.isProtected())) {
-						fieldName = fld.getName();
-						if (fieldName.length() == 1)
-							continue;
-						if (fieldName.equals("serialVersionUID"))
-							continue;
-						String superClassName = superClass.getClassName();
-						if (superClassName.startsWith("java.io") &&  
-								(superClassName.endsWith("InputStream")
-								&& fieldName.equals("in")
-								|| superClassName.endsWith("OutputStream")
-								&& fieldName.equals("out"))
-								) continue;
-						if (classFields.containsKey(fieldName)) {
-							Field maskingField = classFields.get(fieldName);
-							String mClassName = getDottedClassName();
-							FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(),
-									maskingField.getSignature(),
-									maskingField.isStatic());
-							int priority = NORMAL_PRIORITY;
-							if (maskingField.isStatic()
-									|| maskingField.isFinal())
-								priority++;
-							else if (fld.getSignature().charAt(0) == 'L'
-									&& !fld.getSignature().startsWith("Ljava/lang/")
-									|| fld.getSignature().charAt(0) == '[')
-								priority--;
-							if (!fld.getSignature().equals(maskingField.getSignature()))
-								priority+=2;
-							else if (fld.getAccessFlags()
-									!= maskingField.getAccessFlags())
-								priority++;
 
+		XClass c = getXClass();
+		while (true) {
+			ClassDescriptor s = c.getSuperclassDescriptor();
+			if (s.getClassName().equals("java/lang/Object"))
+				break;
+			try {
+				c = Global.getAnalysisCache().getClassAnalysis(XClass.class, s);
+			} catch (CheckedAnalysisException e) {
+				break;
+			}
+			XClass superClass = c;
+			for (XField fld : c.getXFields()) {
+				if (!fld.isStatic() && (fld.isPublic() || fld.isProtected())) {
+					fieldName = fld.getName();
+					if (fieldName.length() == 1)
+						continue;
+					if (fieldName.equals("serialVersionUID"))
+						continue;
+					String superClassName = s.getClassName();
+					if (superClassName.startsWith("java/io")
+					        && (superClassName.endsWith("InputStream") && fieldName.equals("in") || superClassName
+					                .endsWith("OutputStream")
+					                && fieldName.equals("out")))
+						continue;
+					if (classFields.containsKey(fieldName)) {
+						Field maskingField = classFields.get(fieldName);
+						String mClassName = getDottedClassName();
+						FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(), maskingField.getSignature(),
+						        maskingField.isStatic());
+						int priority = NORMAL_PRIORITY;
+						if (maskingField.isStatic() || maskingField.isFinal())
+							priority++;
+						else if (fld.getSignature().charAt(0) == 'L' && !fld.getSignature().startsWith("Ljava/lang/")
+						        || fld.getSignature().charAt(0) == '[')
+							priority--;
+						if (!fld.getSignature().equals(maskingField.getSignature()))
+							priority += 2;
+						else if (fld.getAccessFlags() != maskingField.getAccessFlags())
+							priority++;
 
-							FieldAnnotation maskedFieldAnnotation
-									= FieldAnnotation.fromBCELField(superClassName, fld);
-							BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD",
-									priority)
-									.addClass(this)
-									.addField(fa)
-									.describe("FIELD_MASKING")
-									.addField(maskedFieldAnnotation)
-									.describe("FIELD_MASKED");
-							rememberedBugs.add(new RememberedBug(bug, fa, maskedFieldAnnotation));
+						FieldAnnotation maskedFieldAnnotation = FieldAnnotation.fromFieldDescriptor(fld.getFieldDescriptor());
+						BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD", priority).addClass(this).addField(fa)
+						        .describe("FIELD_MASKING").addField(maskedFieldAnnotation).describe("FIELD_MASKED");
+						rememberedBugs.add(new RememberedBug(bug, fa, maskedFieldAnnotation));
 
-						}
 					}
 				}
 			}
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
 		}
+
 
 		super.visit(obj);
 	}

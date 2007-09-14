@@ -40,6 +40,17 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -61,6 +72,10 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	// Available when visiting a class
 	private ConstantPool constantPool;
 	private JavaClass thisClass;
+	private ClassInfo thisClassInfo;
+	private MethodInfo thisMethodInfo;
+	private FieldInfo thisFieldInfo;
+	
 	private String className = "none";
 	private String dottedClassName = "none";
 	private String packageName = "none";
@@ -177,7 +192,11 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		this.field = field;
 		try {
 			fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
-
+			thisFieldInfo = (FieldInfo) thisClassInfo.findField(getFieldName(), getFieldSig(), field.isStatic());
+			if (thisFieldInfo == null) {
+				throw new AssertionError("Can't get field info for " + getFullyQualifiedFieldName());
+			}
+			
 			fieldIsStatic = field.isStatic();
 			field.accept(this);
 			Attribute[] attributes = field.getAttributes();
@@ -186,6 +205,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		} finally {
 			visitingField = false;
 			this.field = null;
+			this.thisFieldInfo = null;
 		}
 	}
 
@@ -196,13 +216,17 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		try {
 			this.method = method;
 			methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
-
+			thisMethodInfo = (MethodInfo) thisClassInfo.findMethod(getMethodName(), getMethodSig(), method.isStatic());
+			if (thisMethodInfo == null)
+				throw new AssertionError("Can't get method info for " + getFullyQualifiedMethodName());
 			this.method.accept(this);
 			Attribute[] attributes = method.getAttributes();
 			for (Attribute attribute : attributes)
 				attribute.accept(this);
 		} finally {
 			visitingMethod = false;
+			this.method = null;
+			this.thisMethodInfo = null;
 		}
 	}
 
@@ -245,6 +269,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		sourceFile = obj.getSourceFileName();
 		superclassName = obj.getSuperclassName();
 		dottedSuperclassName = superclassName.replace('/', '.');
+		ClassDescriptor cDesc = ClassDescriptor.createClassDescriptor(className);
+		try {
+	        thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
+        } catch (CheckedAnalysisException e) {
+	       throw new AssertionError ("Can't find ClassInfo for " + cDesc);
+        }
 
 		super.visitJavaClass(obj);
 	}
@@ -267,6 +297,24 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	// Accessors
 
+	public XClass getXClass() {
+		return thisClassInfo;
+	}
+	public ClassDescriptor getClassDescriptor() {
+		return thisClassInfo;
+	}
+	public XMethod getXMethod() {
+		return thisMethodInfo;
+	}
+	public MethodDescriptor getMethodDescriptor() {
+		return thisMethodInfo;
+	}
+	public XField getXField() {
+		return thisFieldInfo;
+	}
+	public FieldDescriptor getFieldDescriptor() {
+		return thisFieldInfo;
+	}
 	/** Get the constant pool for the current or most recently visited class */
 	public ConstantPool getConstantPool() {
 		return constantPool;

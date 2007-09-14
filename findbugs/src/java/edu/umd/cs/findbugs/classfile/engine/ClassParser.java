@@ -139,37 +139,7 @@ public class ClassParser implements ClassParserInterface {
      * @see edu.umd.cs.findbugs.classfile.engine.ClassParserInterface#parse(edu.umd.cs.findbugs.classfile.analysis.ClassInfo.Builder)
      */
 	public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
-		parse((ClassNameAndSuperclassInfo.Builder) builder);
-
-		try {
-			int fields_count = in.readUnsignedShort();
-			if (fields_count < 0 ) {
-				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
-			}
-			FieldDescriptor[] fieldDescriptorList = new FieldDescriptor[fields_count];
-			for (int i = 0; i < fields_count; i++) {
-				fieldDescriptorList[i] = readField(builder.getClassDescriptor());
-			}
-
-			int methods_count = in.readUnsignedShort();
-			if (methods_count < 0) {
-				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
-			}
-			MethodDescriptor[] methodDescriptorList = new MethodDescriptor[methods_count];
-			for (int i = 0; i < methods_count; i++) {
-				methodDescriptorList[i] = readMethod(builder.getClassDescriptor());
-			}
-
-
-
-			builder.setFieldDescriptorList(fieldDescriptorList);
-			builder.setMethodDescriptorList(methodDescriptorList);
-
-			builder.setImmediateEnclosingClass(immediateEnclosingClass);
-		} catch (IOException e) {
-			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
-		}
-
+		throw new UnsupportedOperationException("Need to use a ClassParserUsingASM to build ClassInfo");
 	}
 
 	/**

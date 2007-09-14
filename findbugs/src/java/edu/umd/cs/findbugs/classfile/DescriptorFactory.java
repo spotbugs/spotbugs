@@ -65,6 +65,7 @@ public class DescriptorFactory {
 	 * @return ClassDescriptor for that class
 	 */
 	public ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
+		assert className.indexOf('.') == -1;
 		ClassDescriptor classDescriptor = classDescriptorMap.get(className);
 		if (classDescriptor == null) {
 			classDescriptor = new ClassDescriptor(className);
@@ -93,6 +94,7 @@ public class DescriptorFactory {
 	 * @return MethodDescriptor
 	 */
 	public MethodDescriptor getMethodDescriptor(@SlashedClassName String className, String name, String signature, boolean isStatic) {
+		if (className == null) throw new NullPointerException("className must be nonnull");
 		MethodDescriptor methodDescriptor = new MethodDescriptor(className, name, signature, isStatic);
 		MethodDescriptor existing = methodDescriptorMap.get(methodDescriptor);
 		if (existing == null) {

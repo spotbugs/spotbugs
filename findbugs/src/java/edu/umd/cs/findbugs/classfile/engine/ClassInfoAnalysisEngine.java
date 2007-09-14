@@ -64,20 +64,9 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 
 		
 		// Read the class info
-		ClassParserInterface parser;
-		
-		if (/*USE_ASM_CLASS_PARSER*/true) {
-			FBClassReader reader = analysisCache.getClassAnalysis(FBClassReader.class, descriptor);
-			parser = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
-		} else {
-			// Get InputStream reading from class data
-			// Get class data
 
-			DataInputStream classDataIn =
-				new DataInputStream(new ByteArrayInputStream(classData.getData()));
-
-			parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
-		}
+		FBClassReader reader = analysisCache.getClassAnalysis(FBClassReader.class, descriptor);
+		ClassParserInterface parser  = new ClassParserUsingASM(reader, descriptor, classData.getCodeBaseEntry());
 		
 		ClassInfo.Builder classInfoBuilder = new ClassInfo.Builder();
 		parser.parse(classInfoBuilder);

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
+import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -112,4 +113,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	 * @return XField, or null if there is no matching XField
 	 */
 	public XField findField(String name, String signature, boolean isStatic);
+	
+	public List<? extends XField> getXFields();
+	public List<? extends XMethod> getXMethods();
 }
