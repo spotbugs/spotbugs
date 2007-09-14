@@ -50,6 +50,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		final String className, methodName, methodSignature;
 
+		String [] exceptions;
 		String methodSourceSignature;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
@@ -65,6 +66,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		public void setSourceSignature(String methodSourceSignature) {
 			this.methodSourceSignature = methodSourceSignature;
+		}
+
+		public void setThrownExceptions(String [] exceptions) {
+			this.exceptions = exceptions;
 		}
 
 		public void addAnnotation(String name, AnnotationValue value) {
@@ -83,7 +88,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public MethodInfo build() {
-			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, methodAnnotations, 
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, exceptions, methodAnnotations, 
 				 methodParameterAnnotations);
 		}
 	}
@@ -91,6 +96,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	final int accessFlags;
 
 	final String methodSourceSignature;
+	
+	final String [] exceptions;
 
 	Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
@@ -104,14 +111,20 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isStatic
 	 */
 	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
-	        int accessFlags, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        int accessFlags, 
+	        String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
+		this.exceptions = exceptions;
 		this.methodSourceSignature = methodSourceSignature;
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
 	}
 
+	 public String [] getThrownExceptions() {
+		 return exceptions;
+	 }
+	 
 	public int getNumParams() {
 		return new SignatureParser(getSignature()).getNumParameters();
 	}

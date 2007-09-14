@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -338,6 +339,35 @@ public class Hierarchy2 {
 		}
 		return result;
 	}
+
+	/**
+     * Find the declared exceptions for the method called
+     * by given instruction.
+     *
+     * @param inv the InvokeInstruction
+     * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+     * @return array of ObjectTypes of thrown exceptions, or null
+     *         if we can't find the method implementation
+     */
+    public static @CheckForNull ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
+    		throws ClassNotFoundException {
+    	XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? Hierarchy.STATIC_METHOD : Hierarchy.INSTANCE_METHOD );
+    
+    	if (method == null)
+    		return null;
+    	String [] exceptions = method.getThrownExceptions();
+    	
+    	if (exceptions == null)
+    		return new ObjectType[0];
+    
+    	ObjectType[] result = new ObjectType[exceptions.length];
+    	for (int i = 0; i < exceptions.length; ++i) {
+    		result[i] = ObjectTypeFactory.getInstance(ClassName.toDottedClassName(exceptions[i]));
+    	}
+    	return result;
+    }
+	
+	
 }
 
 // vim:ts=4

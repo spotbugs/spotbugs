@@ -49,6 +49,11 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      */
     public MethodDescriptor getMethodDescriptor();
     
+    /**
+     * 
+     * @return the exceptions this method is declared to throw
+     */
+    public String[] getThrownExceptions();
 	/**
      * @return true if method's return type is a reference type, false otherwise
      */

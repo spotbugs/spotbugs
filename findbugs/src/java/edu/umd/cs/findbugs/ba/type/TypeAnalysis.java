@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
@@ -869,7 +870,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			ConstantPoolGen cpg = methodGen.getConstantPool();
 
 			InvokeInstruction inv = (InvokeInstruction) ins;
-			ObjectType[] declaredExceptionList = Hierarchy.findDeclaredExceptions(inv, cpg);
+			ObjectType[] declaredExceptionList = Hierarchy2.findDeclaredExceptions(inv, cpg);
 			if (declaredExceptionList == null) {
 				// Couldn't find declared exceptions,
 				// so conservatively assume it could thrown any checked exception.

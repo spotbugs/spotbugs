@@ -375,32 +375,19 @@ public class Hierarchy {
 		
 	}
 	/**
-	 * Find the declared exceptions for the method called
-	 * by given instruction.
-	 *
-	 * @param inv the InvokeInstruction
-	 * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @return array of ObjectTypes of thrown exceptions, or null
-	 *         if we can't find the list of declared exceptions
-	 */
-	public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
-			throws ClassNotFoundException {
-		JavaClassAndMethod method = findInvocationLeastUpperBound(inv, cpg);
-
-		if (method == null)
-			return null;
-
-		ExceptionTable exTable = method.getMethod().getExceptionTable();
-		if (exTable == null)
-			return new ObjectType[0];
-
-		String[] exNameList = exTable.getExceptionNames();
-		ObjectType[] result = new ObjectType[exNameList.length];
-		for (int i = 0; i < exNameList.length; ++i) {
-			result[i] = ObjectTypeFactory.getInstance(exNameList[i]);
-		}
-		return result;
-	}
+     * Find the declared exceptions for the method called
+     * by given instruction.
+     *
+     * @param inv the InvokeInstruction
+     * @param cpg the ConstantPoolGen used by the class the InvokeInstruction belongs to
+     * @return array of ObjectTypes of thrown exceptions, or null
+     *         if we can't find the list of declared exceptions
+     * @deprecated Use {@link Hierarchy2#findDeclaredExceptions(InvokeInstruction,ConstantPoolGen)} instead
+     */
+    public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
+    		throws ClassNotFoundException {
+                return Hierarchy2.findDeclaredExceptions(inv, cpg);
+            }
 
 	/**
 	 * Find a method in given class.
