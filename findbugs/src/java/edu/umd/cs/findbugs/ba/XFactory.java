@@ -158,6 +158,14 @@ public  class XFactory {
 	        }
 		}
 
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.XMethod#getThrownExceptions()
+         */
+        public String[] getThrownExceptions() {
+	       
+	        return  new String[0];
+        }
+
 	}
 
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
