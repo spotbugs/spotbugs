@@ -132,8 +132,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		if (start < 0) {
 			return null;
 		}
-		signature = signature.substring(start);
-		int end = signature.indexOf(';');
+		int end = signature.indexOf(';', start);
 		if (end < 0) {
 			return null;
 		}
