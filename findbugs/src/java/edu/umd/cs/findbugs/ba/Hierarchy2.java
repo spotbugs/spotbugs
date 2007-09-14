@@ -83,7 +83,8 @@ public class Hierarchy2 {
 		return thisOrNothing(result, chooser);
 		}
 
-	private static  @CheckForNull XMethod thisOrNothing(XMethod m, JavaClassAndMethodChooser chooser) {
+	private static  @CheckForNull XMethod thisOrNothing(@CheckForNull XMethod m, JavaClassAndMethodChooser chooser) {
+		if (m == null) return null;
 		if (chooser.choose(m)) return m;
 		return null;
 	}
