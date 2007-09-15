@@ -25,6 +25,11 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
@@ -54,7 +59,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		JavaClass jClass = classContext.getJavaClass();
 
 		try {
-			if (!isJunit3TestCase(jClass)) return;
+			if (!isJunit3TestCase(getXClass())) return;
 			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
 				if (!hasTestMethods(jClass)) {
 					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
@@ -69,14 +74,20 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
 	}
 
-	private boolean isJunit3TestCase(JavaClass jClass) throws ClassNotFoundException {
-		String sName = jClass.getSuperclassName();
-		if (sName == null) return false;
-		if (sName.equals("junit.framework.TestCase")) return true;
-		if (sName.equals("java.lang.Object")) return false;
+	private boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException {
+		ClassDescriptor  sDesc = jClass.getSuperclassDescriptor();
+		if (sDesc == null) return false;
+		String sName = sDesc.getClassName();
+		if (sName.equals("junit/framework/TestCase")) return true;
+		if (sName.equals("java/lang/Object")) return false;
 
 
-		JavaClass sClass = jClass.getSuperClass();
+		XClass sClass;
+        try {
+	        sClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, sDesc);
+        } catch (CheckedAnalysisException e) {
+	      return false;
+        }
 		return isJunit3TestCase(sClass);
 
 	}

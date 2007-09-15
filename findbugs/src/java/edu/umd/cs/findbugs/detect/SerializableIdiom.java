@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -41,11 +40,17 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class SerializableIdiom extends OpcodeStackDetector
 		{
@@ -174,24 +179,17 @@ public class SerializableIdiom extends OpcodeStackDetector
 		superClassHasVoidConstructor = true;
 		superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
 		try {
-			JavaClass superClass = obj.getSuperClass();
-			if (superClass != null) {
-				Method[] superClassMethods = superClass.getMethods();
-				superClassImplementsSerializable = Subtypes2.instanceOf(superClass,
-						"java.io.Serializable");
+			XClass superXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, getXClass().getSuperclassDescriptor());
+			if (superXClass != null) {
+				superClassImplementsSerializable 
+				= AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
+						ClassDescriptor.createClassDescriptor("java/io/Serializable"));
 				superClassHasVoidConstructor = false;
-				for (Method m : superClassMethods) {
-					/*
-											if (!m.isPrivate())
-											System.out.println("Supercase of " + className
-												+ " has an accessible method named " + m.getName()
-												+ " with sig " + m.getSignature());
-											*/
+				for (XMethod m : superXClass.getXMethods()) {
 					if (m.getName().equals("<init>")
 							&& m.getSignature().equals("()V")
 							&& !m.isPrivate()
 							) {
-						// System.out.println("  super has void constructor");
 						superClassHasVoidConstructor = true;
 						break;
 					}
@@ -199,7 +197,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
-		}
+		} catch (CheckedAnalysisException e) {
+	       bugReporter.logError("huh", e);
+        }
 
 
 		// Is this a GUI  or other class that is rarely serialized?
