@@ -82,13 +82,15 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		if (sName.equals("java/lang/Object")) return false;
 
 
-		XClass sClass;
+		
         try {
-	        sClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, sDesc);
+        	XClass sClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, sDesc);
+        	if (sClass == null) return false;
+    		return isJunit3TestCase(sClass);
         } catch (CheckedAnalysisException e) {
 	      return false;
         }
-		return isJunit3TestCase(sClass);
+
 
 	}
 	private boolean hasTestMethods(JavaClass jClass) {
