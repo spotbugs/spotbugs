@@ -57,9 +57,11 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 			return;
 
 		JavaClass jClass = classContext.getJavaClass();
-
+		XClass xClass = classContext.getXClass();
+		
 		try {
-			if (!isJunit3TestCase(getXClass())) return;
+
+			if (!isJunit3TestCase(xClass)) return;
 			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
 				if (!hasTestMethods(jClass)) {
 					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)

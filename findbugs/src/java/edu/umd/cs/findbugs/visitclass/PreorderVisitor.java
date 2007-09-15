@@ -298,6 +298,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	// Accessors
 
 	public XClass getXClass() {
+		if (thisClassInfo == null) throw new AssertionError("XClass information not set");
 		return thisClassInfo;
 	}
 	public ClassDescriptor getClassDescriptor() {
