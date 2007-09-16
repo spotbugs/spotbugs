@@ -123,6 +123,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (DEBUG) {
 				System.out.println("----------------------------------------------------------------------");
 				System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
+				MethodGen mg = cfg.getMethodGen();
+				System.out.println(mg.getClassName()+"." +mg.getName() + mg.getSignature());
 				System.out.println("----------------------------------------------------------------------");
 			}
 
@@ -170,7 +172,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (block == logicalEntryBlock()) {
 					analysis.makeFactTop(start);
 					analysis.initEntryFact(start);
-					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
+					if (DEBUG) debug(block, "Init entry fact ==> " + analysis.factToString(start) + "\n");
 					needToRecompute = true;
 				} else {
 					int lastCalculated = analysis.getLastUpdateTimestamp(start);
@@ -217,7 +219,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 								int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
 								System.out.println(" pred timestamp: " + predLastUpdated);
 								}
-							System.out.println("Fact: " + start);
+							System.out.println("Fact: " + analysis.factToString(start));
 						}
 						continue;
 					}
@@ -240,12 +242,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							if (DEBUG && !analysis.same(edgeFact, predFact)) {
 								debug(block, logicalPred, edge,
-										"Edge transfer " + predFact + " ==> " + edgeFact);
+										"Edge transfer " + analysis.factToString(predFact) + " ==> " + analysis.factToString(edgeFact));
 							}
 
 							// Merge the predecessor fact (possibly transformed by the edge transfer function)
 							// into the block's start fact.
-							if (DEBUG) debug(block, logicalPred, edge, "\n  Meet " + start + "\n   with " + edgeFact 
+							if (DEBUG) debug(block, logicalPred, edge, "\n  Meet " + analysis.factToString(start) + "\n   with " + analysis.factToString(edgeFact) 
 									+ "\n   pred last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
 
 
@@ -258,11 +260,11 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 							int pos = -1;
 							if (block.getFirstInstruction() != null)
 								pos = block.getFirstInstruction().getPosition();
-							if (DEBUG) System.out.println(" [" + pos +"]==> " + start +" @ " + timestamp + " \n");
+							if (DEBUG) System.out.println(" [" + pos +"]==> " + analysis.factToString(start) +" @ " + timestamp + " \n");
 						}
 					}
 				}
-				if (DEBUG) debug(block, "start fact is " + start + "\n");
+				if (DEBUG) debug(block, "start fact is " + analysis.factToString(start) + "\n");
 
 				// making a copy of result facts (so we can detect if it changed).
 				boolean resultWasTop = analysis.isTop(result);
@@ -287,12 +289,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						org.apache.bcel.generic.InstructionHandle handle = ii.next();
 						Fact tmpResult = analysis.createFact();
 						analysis.transfer(block, handle, start, tmpResult);
-						System.out.println("\t" + handle + " " + tmpResult);
+						System.out.println("\t" + handle + " " + analysis.factToString(tmpResult) );
 					}
 				}
 
 				// See if the result changed.
-				if (DEBUG) debug(block, "orig result is " + (origResult == null ? "TOP" : origResult) + "\n");
+				if (DEBUG) debug(block, "orig result is " + (origResult == null ? "TOP" : analysis.factToString(origResult) ) + "\n");
 				boolean thisResultChanged = false;
 				if (resultWasTop)
 					thisResultChanged = !analysis.isTop(result);
@@ -308,12 +310,21 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				} else
 					analysis.setLastUpdateTimestamp(result, originalResultTimestamp);
 
-				if (DEBUG) debug(block, "result is " + result + " @ timestamp " 
+				if (DEBUG) debug(block, "result is " + analysis.factToString(result) + " @ timestamp " 
 						+ analysis.getLastUpdateTimestamp(result) + "\n");
 			}
 
 			analysis.finishIteration();
 		} while (change);
+		
+		if (DEBUG) {
+				System.out.println("-- Quiescence achieved-------------------------------------------------");
+				System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
+				MethodGen mg = cfg.getMethodGen();
+				System.out.println(mg.getClassName()+"." +mg.getName() + mg.getSignature());
+				new RuntimeException("---------------------------------------------------------------------").printStackTrace(System.out);
+
+		}
 	}
 	/**
 	 * @param msg TODO

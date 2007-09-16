@@ -137,8 +137,22 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 		 public String factToString(BitSet fact) {
 		if (isTop(fact))
 			return "[TOP]";
-		else
-			return fact.toString();
+		StringBuilder buf = new StringBuilder("[ ");
+		boolean empty = true;
+		for(int i = 0; i < killedByStoreOffset; i++) {
+			boolean killedByStore = killedByStore(fact, i);
+			boolean storeAlive = isStoreAlive(fact, i);
+			if (!storeAlive && !killedByStore) continue;
+			if (!empty) buf.append(", ");
+			empty = false;
+			buf.append(i);
+			if (storeAlive)
+				buf.append("L");
+			if (killedByStore)
+				buf.append("k");
+		}
+		buf.append("]");
+		return buf.toString();
 	}
 
 	/**
