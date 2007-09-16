@@ -172,13 +172,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						int variable;
 						boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
-						boolean sawAnything = false;
+						boolean sawThrow = false;
 						State state = State.INITIAL;
 						
 						
 						@Override
 						public void visitInsn(int opcode) {
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
+							else if (opcode == Opcodes.ATHROW) sawThrow = true;
 							resetState();
 						}
 						
@@ -188,7 +189,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						@Override
 						public void visitSomeInsn() {
 							resetState();
-							sawAnything = true;
 						}
 						@Override
 						public void visitVarInsn(int opcode, int var) {
@@ -235,7 +235,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						}
 
 						public void visitEnd() {
-							if (sawAnything && !sawReturn) mBuilder.setIsUnconditionalThrower();
+							if (sawThrow && !sawReturn) mBuilder.setIsUnconditionalThrower();
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									methodInfo);
