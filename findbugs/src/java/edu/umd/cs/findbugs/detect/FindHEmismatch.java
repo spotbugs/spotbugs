@@ -106,11 +106,10 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		visibleOutsidePackage = obj.isPublic() || obj.isProtected();
 
 		String whereEqual = getDottedClassName();
-		boolean classThatDefinesEqualsIsAbstract = false;
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
 		boolean inheritedEqualsIsAbstract = false;
-		boolean ineritedEqualsFromAbstractClass = false;
+		boolean inheritedEqualsFromAbstractClass = false;
 		XMethod inheritedEquals = null;
 		if (!hasEqualsObject) {
 			XClass we = Lookup.findImplementor(getXClass(), "equals",
@@ -118,7 +117,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			if (we == null) {
 				whereEqual = "java.lang.Object";
 			} else {
-				ineritedEqualsFromAbstractClass = we.isAbstract();
+				inheritedEqualsFromAbstractClass = we.isAbstract();
 				whereEqual = we.getClassDescriptor().getDottedClassName();
 				inheritedEquals = we.findMethod("equals", "(Ljava/lang/Object;)Z", false);
 				if (inheritedEquals != null) {
@@ -267,7 +266,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		}
 		if (!hasHashCode && !hasEqualsObject && !hasEqualsSelf
 				&& !usesDefaultEquals && usesDefaultHashCode
-				&& !obj.isAbstract() && classThatDefinesEqualsIsAbstract) {
+				&& !obj.isAbstract() && inheritedEqualsFromAbstractClass) {
 			BugInstance bug = new BugInstance(this,
 					"HE_INHERITS_EQUALS_USE_HASHCODE", NORMAL_PRIORITY)
 					.addClass(getDottedClassName());
@@ -277,7 +276,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		}
 		if (!hasEqualsObject && !hasEqualsSelf && !usesDefaultEquals && !obj.isAbstract() && hasFields && inheritedEquals != null 
 				&& !inheritedEqualsIsFinal
-				&& !ineritedEqualsFromAbstractClass
+				&& !inheritedEqualsFromAbstractClass
 				&& !inheritedEquals.getClassDescriptor().getSimpleName().startsWith("Abstract") 
 				&& !inheritedEquals.getClassDescriptor().getClassName().equals("java/lang/Enum")) {
 			
