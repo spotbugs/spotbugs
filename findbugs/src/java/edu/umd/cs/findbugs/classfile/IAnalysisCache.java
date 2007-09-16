@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import javax.annotation.Nonnull;
+
 /**
  * The analysis cache performs analyses on classes and methods
  * and caches the results.
@@ -57,7 +59,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the class)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor)
+	public<E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor)
 		throws CheckedAnalysisException;
 
 	/**
@@ -68,7 +70,7 @@ public interface IAnalysisCache {
 	 * @param classDescriptor the class descriptor
 	 * @return a cached analysis result, or null if there is no cached analysis result
 	 */
-	public<E> E probeClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor);
+	public<E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor);
 
 	/**
 	 * Get an analysis of the given method.
@@ -79,7 +81,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the method)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor)
+	public<E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
 
 	/**
@@ -93,7 +95,7 @@ public interface IAnalysisCache {
 	 * @param methodDescriptor the descriptor of the method to analyze
      * @param analysisObject
      */
-    public<E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor, Object analysisObject);
+    public<E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, Object analysisObject);
 	
 	/**
 	 * Purge all analysis results for given method.
@@ -102,7 +104,7 @@ public interface IAnalysisCache {
 	 * 
 	 * @param methodDescriptor method whose analysis results should be purged
 	 */
-	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor);
+	public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor);
 
 	public void purgeAllMethodAnalysis();
 	/**
