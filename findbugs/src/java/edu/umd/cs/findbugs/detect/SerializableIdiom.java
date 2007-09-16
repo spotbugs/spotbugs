@@ -178,8 +178,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 		hasPublicVoidConstructor = false;
 		superClassHasVoidConstructor = true;
 		superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
-		try {
-			XClass superXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, getXClass().getSuperclassDescriptor());
+		ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
+		if (superclassDescriptor != null)
+			try {
+			XClass superXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, superclassDescriptor);
 			if (superXClass != null) {
 				superClassImplementsSerializable 
 				= AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
