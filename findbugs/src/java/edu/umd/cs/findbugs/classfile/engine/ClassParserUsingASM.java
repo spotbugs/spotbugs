@@ -162,26 +162,33 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 			}
 			
-			public MethodVisitor visitMethod(int access, final String methodName, final String methodDesc, String signature, String[] exceptions) {
+			public MethodVisitor visitMethod(final int access, final String methodName, final String methodDesc, String signature, String[] exceptions) {
 				if (cBuilder instanceof ClassInfo.Builder) {
 					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
 					mBuilder.setSourceSignature(signature);
 					mBuilder.setThrownExceptions(exceptions);
+					
 					return new AbstractMethodVisitor(){
 
 						int variable;
-						boolean sawReturn = false;
+						boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
+						boolean sawAnything = false;
 						State state = State.INITIAL;
 						
 						
 						@Override
 						public void visitInsn(int opcode) {
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
-							visitSomeInsn();
+							resetState();
+						}
+						
+						public void resetState() {
+							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
 						}
 						@Override
 						public void visitSomeInsn() {
-							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
+							resetState();
+							sawAnything = true;
 						}
 						@Override
 						public void visitVarInsn(int opcode, int var) {
@@ -228,7 +235,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						}
 
 						public void visitEnd() {
-							if (!sawReturn) mBuilder.setIsUnconditionalThrower();
+							if (sawAnything && !sawReturn) mBuilder.setIsUnconditionalThrower();
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									methodInfo);
