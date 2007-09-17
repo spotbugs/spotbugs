@@ -78,7 +78,9 @@ public class Lookup
 	public static XClass findSuperImplementor(XClass clazz, String name, String signature, boolean isStatic)
 	        throws CheckedAnalysisException {
 
-		return findImplementor(getXClass(clazz.getSuperclassDescriptor()), name, signature, isStatic);
+		ClassDescriptor superclassDescriptor = clazz.getSuperclassDescriptor();
+		if (superclassDescriptor == null) return clazz;
+		return findImplementor(getXClass(superclassDescriptor), name, signature, isStatic);
 	}
 
 	public static XClass findImplementor(XClass clazz, String name, String signature, boolean isStatic)

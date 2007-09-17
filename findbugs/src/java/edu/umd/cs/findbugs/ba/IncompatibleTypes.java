@@ -123,7 +123,9 @@ public class IncompatibleTypes {
 		 XMethod result = xClass.findMethod(name, sig, isStatic);
 		 if (result != null) return result;
 		 if (isStatic) throw  new CheckedAnalysisException();
-		 xClass = cache.getClassAnalysis(XClass.class, xClass.getSuperclassDescriptor());
+		 ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
+		 if (superclassDescriptor == null) throw new CheckedAnalysisException();
+		xClass = cache.getClassAnalysis(XClass.class, superclassDescriptor);
 		}
 		 
 	}

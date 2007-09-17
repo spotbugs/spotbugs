@@ -90,7 +90,9 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
 			if (xClass.getInterfaceDescriptorList().length > 0)
 				return false;
-			String superClassName = xClass.getSuperclassDescriptor().getClassName();
+			ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
+			if (superclassDescriptor == null) return false;
+			String superClassName = superclassDescriptor.getClassName();
 			if (!superClassName.equals("java/lang/Object"))
 				return false;
 			int staticCount = 0;
