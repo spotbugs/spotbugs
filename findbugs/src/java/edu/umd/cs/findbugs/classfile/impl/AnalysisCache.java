@@ -54,7 +54,7 @@ public class AnalysisCache implements IAnalysisCache {
 	/**
 	 * Maximum number of class analysis results to cache.
 	 */
-	private static final int MAX_CLASS_RESULTS_TO_CACHE = 500;
+	private static final int MAX_CLASS_RESULTS_TO_CACHE = 200;
 
 	// Fields
 	private IClassPath classPath;
