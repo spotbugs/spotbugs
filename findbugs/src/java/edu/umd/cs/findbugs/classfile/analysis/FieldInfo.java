@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -66,7 +67,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 		}
 
 		public void addAnnotation(String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
+			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
 			fieldAnnotations.put(annotationClass, value);
 		}
 

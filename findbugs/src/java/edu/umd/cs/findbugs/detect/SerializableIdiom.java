@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class SerializableIdiom extends OpcodeStackDetector
@@ -185,7 +186,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			if (superXClass != null) {
 				superClassImplementsSerializable 
 				= AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
-						ClassDescriptor.createClassDescriptor("java/io/Serializable"));
+						DescriptorFactory.createClassDescriptor("java/io/Serializable"));
 				superClassHasVoidConstructor = false;
 				for (XMethod m : superXClass.getXMethods()) {
 					if (m.getName().equals("<init>")

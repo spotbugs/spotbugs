@@ -55,7 +55,6 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
@@ -235,7 +234,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 			case INVOKESTATIC:
 				String className = getClassConstantOperand();
 				if (!className.startsWith("[")) try {		
-					XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptor(className));
+					XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptor(className));
 					XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),  seen == INVOKESTATIC,  seen == INVOKEINTERFACE);
 					if (m == null) break;
 					String[] exceptions = m.getThrownExceptions();

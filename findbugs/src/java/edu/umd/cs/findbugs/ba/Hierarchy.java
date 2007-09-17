@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
@@ -755,7 +756,7 @@ public class Hierarchy {
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
 		JavaClass receiverClass = analysisContext.lookupClass(
 				receiverClassName);
-		ClassDescriptor receiverDesc = ClassDescriptor.createClassDescriptorFromDottedClassName(receiverClassName);
+		ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);
 
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.

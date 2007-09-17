@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -91,7 +92,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			this.classSourceSignature = classSourceSignature;
 		}
 		public void addAnnotation(String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
+			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
 			classAnnotations.put(annotationClass, value);
 		}
 		/**
@@ -277,7 +278,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			if (getClassName().endsWith("/package-info") || getClassName().equals("package-info")) {
 				return null;
 			}
-			ClassDescriptor p = ClassDescriptor.createClassDescriptorFromDottedClassName(getPackageName() +"."+"package-info");
+			ClassDescriptor p = DescriptorFactory.createClassDescriptorFromDottedClassName(getPackageName() +"."+"package-info");
 			return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
 		} catch (CheckedAnalysisException e) {
 			return null;

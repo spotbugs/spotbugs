@@ -27,6 +27,7 @@ import java.util.Map;
 import org.objectweb.asm.AnnotationVisitor;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * The "raw" version of an annotation appearing in a class file.
@@ -53,7 +54,7 @@ public class AnnotationValue {
 	 * @param annotationClass JVM signature of the annotation class
 	 */
 	public AnnotationValue(String annotationClass) {
-		this.annotationClass  = ClassDescriptor.createClassDescriptorFromSignature(annotationClass);
+		this.annotationClass  = DescriptorFactory.createClassDescriptorFromSignature(annotationClass);
 	}
 
 	/**

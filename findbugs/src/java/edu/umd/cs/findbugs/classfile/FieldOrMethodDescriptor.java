@@ -56,7 +56,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		if (cachedClassDescriptor == null) {
-			cachedClassDescriptor =  ClassDescriptor.createClassDescriptor(slashedClassName);
+			cachedClassDescriptor =  DescriptorFactory.createClassDescriptor(slashedClassName);
 		}
 		return cachedClassDescriptor;
 	}

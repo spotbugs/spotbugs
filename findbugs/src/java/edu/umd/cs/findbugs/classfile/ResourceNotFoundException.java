@@ -68,7 +68,7 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
      * The message format is parseable by ClassNotFoundExceptionParser. 
      */
     public ClassNotFoundException toClassNotFoundException() {
-    	ClassDescriptor classDescriptor = ClassDescriptor.fromResourceName(resourceName);
+    	ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
     	return new ClassNotFoundException(
     			"ResourceNotFoundException while looking for class " +
     			classDescriptor.toDottedClassName() +

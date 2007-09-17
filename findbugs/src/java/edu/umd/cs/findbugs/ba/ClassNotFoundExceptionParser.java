@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -71,7 +72,7 @@ public class ClassNotFoundExceptionParser {
 		if (cause instanceof ResourceNotFoundException) {
 			String resourceName = ((ResourceNotFoundException) cause).getResourceName();
 			if (resourceName != null) {
-				ClassDescriptor classDesc = ClassDescriptor.fromResourceName(resourceName);
+				ClassDescriptor classDesc = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
 				return classDesc.toDottedClassName();
 			}
 		}

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
@@ -80,7 +81,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry imple
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() throws InvalidClassFileFormatException {
-		return ClassDescriptor.fromResourceName(getResourceName());
+		return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
 	}
 
 	/* (non-Javadoc)

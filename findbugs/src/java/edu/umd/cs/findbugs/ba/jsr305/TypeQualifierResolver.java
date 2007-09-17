@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -100,8 +101,8 @@ public class TypeQualifierResolver {
 				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
 				return;
 			}
-			ClassDescriptor typeQualifier = ClassDescriptor.createClassDescriptor("javax/annotation/meta/TypeQualifier");
-			ClassDescriptor typeQualifierNickname = ClassDescriptor
+			ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor("javax/annotation/meta/TypeQualifier");
+			ClassDescriptor typeQualifierNickname = DescriptorFactory
 			        .createClassDescriptor("javax/annotation/meta/TypeQualifierNickname");
 			if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
 				for (ClassDescriptor d : c.getAnnotationDescriptors())

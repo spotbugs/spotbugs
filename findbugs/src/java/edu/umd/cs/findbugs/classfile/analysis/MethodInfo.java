@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -76,12 +77,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public void addAnnotation(String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
+			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
 			methodAnnotations.put(annotationClass, value);
 		}
 
 		public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
-			ClassDescriptor annotationClass = ClassDescriptor.createClassDescriptorFromSignature(name);
+			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
 			Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(parameter);
 			if (map == null) {
 				map = new HashMap<ClassDescriptor, AnnotationValue>();

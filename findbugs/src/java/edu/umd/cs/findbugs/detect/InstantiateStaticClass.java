@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -86,7 +87,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
 		try {
 			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-			        ClassDescriptor.createClassDescriptor(clsName));
+			        DescriptorFactory.createClassDescriptor(clsName));
 
 			if (xClass.getInterfaceDescriptorList().length > 0)
 				return false;

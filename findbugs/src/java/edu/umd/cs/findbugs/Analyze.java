@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class Analyze {
@@ -160,8 +161,8 @@ public class Analyze {
 			return 1.0;
 		if (y.getClassName().equals("java.lang.Object")) return 1.0;
 		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-		ClassDescriptor xDesc = ClassDescriptor.createClassDescriptor(x);
-		ClassDescriptor yDesc = ClassDescriptor.createClassDescriptor(y);
+		ClassDescriptor xDesc = DescriptorFactory.createClassDescriptor(x);
+		ClassDescriptor yDesc = DescriptorFactory.createClassDescriptor(y);
 		
 		boolean xIsSubtypeOfY = Repository.instanceOf(x, y);
 		if (xIsSubtypeOfY)

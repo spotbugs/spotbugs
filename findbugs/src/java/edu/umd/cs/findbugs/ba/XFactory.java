@@ -393,7 +393,7 @@ public  class XFactory {
 		XMethod m = null;
 		XFactory xFactory = AnalysisContext.currentXFactory();
 		try {
-		ClassDescriptor desc = ClassDescriptor.createClassDescriptorFromDottedClassName(className);
+		ClassDescriptor desc = DescriptorFactory.createClassDescriptorFromDottedClassName(className);
 		ClassInfo c = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
 		m = c.findMethod(methodName, methodSig, isStatic);
 		if (m != null && m.isResolved()) return m;

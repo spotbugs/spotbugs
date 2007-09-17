@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -59,7 +60,7 @@ import edu.umd.cs.findbugs.util.Util;
 public class Hierarchy2 {
 
 	
-	public static final ClassDescriptor ObjectDescriptor =ClassDescriptor.createClassDescriptor("java/lang/Object");
+	public static final ClassDescriptor ObjectDescriptor =DescriptorFactory.createClassDescriptor("java/lang/Object");
 	/**
 	 * Look up the method referenced by given InvokeInstruction.
 	 * This method does <em>not</em> look for implementations in
@@ -78,7 +79,7 @@ public class Hierarchy2 {
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
 
-		XMethod result = findMethod(ClassDescriptor.createClassDescriptorFromDottedClassName(className), methodName, methodSig, inv instanceof INVOKESTATIC);
+		XMethod result = findMethod(DescriptorFactory.createClassDescriptorFromDottedClassName(className), methodName, methodSig, inv instanceof INVOKESTATIC);
 	
 		return thisOrNothing(result, chooser);
 		}
@@ -176,10 +177,10 @@ public class Hierarchy2 {
 	}
 
 	static XClass getXClass(@SlashedClassName String c) throws CheckedAnalysisException {
-		return getXClass(ClassDescriptor.createClassDescriptor(c));
+		return getXClass(DescriptorFactory.createClassDescriptor(c));
 	}
 	static XClass getXClassFromDottedClassName(@DottedClassName String c) throws CheckedAnalysisException {
-		return getXClass(ClassDescriptor.createClassDescriptorFromDottedClassName(c));
+		return getXClass(DescriptorFactory.createClassDescriptorFromDottedClassName(c));
 	}
 
 	static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
@@ -295,7 +296,7 @@ public class Hierarchy2 {
 
 		// Get the receiver class.
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		ClassDescriptor receiverDesc = ClassDescriptor.createClassDescriptorFromDottedClassName(receiverClassName);
+		ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);
 		XClass xClass;
         try {
 	        xClass = getXClass(receiverDesc);

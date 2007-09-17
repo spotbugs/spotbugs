@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
@@ -77,7 +78,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry impleme
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() {
-		return ClassDescriptor.fromResourceName(getResourceName());
+		return DescriptorFactory.createClassDescriptorFromResourceName(getResourceName());
 	}
 
 	/* (non-Javadoc)

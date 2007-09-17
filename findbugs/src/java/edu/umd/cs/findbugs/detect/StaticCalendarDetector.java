@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -85,12 +86,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	/**
 	 * {@link ObjectType} for {@link java.util.Calendar}
 	 */
-	private final ClassDescriptor calendarType = ClassDescriptor.createClassDescriptor("java/util/Calendar");
+	private final ClassDescriptor calendarType = DescriptorFactory.createClassDescriptor("java/util/Calendar");
 
 	/**
 	 * {@link ObjectType} for {@link java.text.DateFormat}
 	 */
-	private final ClassDescriptor dateFormatType = ClassDescriptor.createClassDescriptor("java/text/DateFormat");
+	private final ClassDescriptor dateFormatType = DescriptorFactory.createClassDescriptor("java/text/DateFormat");
 
 	/** Stores the current method */
 	private Method currentMethod = null;
@@ -145,7 +146,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	@Override
 	public void visit(Field aField) {
 		if (!aField.isStatic()) return;
-		ClassDescriptor classOfField = ClassDescriptor.fromFieldSignature(aField.getSignature());
+		ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
 		String tBugType = null;
 		if (classOfField != null) try {
 			if (subtypes2.isSubtype(classOfField, calendarType)) {
@@ -212,7 +213,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				// Ignore array classes
 				return;
 			}
-			ClassDescriptor cDesc = ClassDescriptor.createClassDescriptor(className);
+			ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
 			
 			// if it is not compatible with Calendar or DateFormat, we are not
 			// interested anymore

@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -119,9 +120,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
-	ClassDescriptor externalizable = ClassDescriptor.createClassDescriptor("java/io/Externalizable");
-	ClassDescriptor serializable = ClassDescriptor.createClassDescriptor("java/io/Serializable");
-	ClassDescriptor remote = ClassDescriptor.createClassDescriptor("java/rmi/Remote");
+	ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor("java/io/Externalizable");
+	ClassDescriptor serializable = DescriptorFactory.createClassDescriptor("java/io/Serializable");
+	ClassDescriptor remote = DescriptorFactory.createClassDescriptor("java/rmi/Remote");
 	
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -170,7 +171,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		if ((!superClassIsObject || interface_names.length > 0) && !isSerializable) {
 			try {
 				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-				ClassDescriptor desc = ClassDescriptor.createClassDescriptor(obj);
+				ClassDescriptor desc = DescriptorFactory.createClassDescriptor(obj);
 				if (subtypes2.getSubtypes(serializable).contains(desc)
 						|| subtypes2.getSubtypes(externalizable).contains(desc)
 						|| subtypes2.getSubtypes(remote).contains(desc)) {

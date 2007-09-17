@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
@@ -214,7 +215,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		codeBaseEntryLoop:
 			for (ICodeBaseIterator i = discoveredCodeBase.iterator(); i.hasNext(); ) {
 				ICodeBaseEntry entry = i.next();
-				if (!ClassDescriptor.isClassResource(entry.getResourceName())) {
+				if (!DescriptorFactory.isClassResource(entry.getResourceName())) {
 					continue;
 				}
 
@@ -510,7 +511,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 			if (!NO_PARSE_CLASS_NAMES
 					&& codeBase.isApplicationCodeBase()
-					&& ClassDescriptor.isClassResource(entry.getResourceName())) {
+					&& DescriptorFactory.isClassResource(entry.getResourceName())) {
 				parseClassName(entry);
 			}
 

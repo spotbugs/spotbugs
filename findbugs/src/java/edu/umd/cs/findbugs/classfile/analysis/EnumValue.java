@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * @author pwilliam
@@ -28,7 +29,7 @@ public class EnumValue {
 	public final ClassDescriptor desc;
 	public final String value;
 	public EnumValue(String desc, String value) {
-		this.desc = ClassDescriptor.createClassDescriptorFromSignature(desc);
+		this.desc = DescriptorFactory.createClassDescriptorFromSignature(desc);
 		this.value = value;
 	}
 	public String toString() {

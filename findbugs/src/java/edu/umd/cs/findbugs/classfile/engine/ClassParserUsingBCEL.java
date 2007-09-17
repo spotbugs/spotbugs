@@ -73,16 +73,16 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 
     	builder.setCodeBaseEntry(codeBaseEntry);
     	builder.setAccessFlags(javaClass.getAccessFlags());
-    	ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(javaClass.getClassName());
+    	ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getClassName());
     	if (expectedClassDescriptor != null && expectedClassDescriptor.equals(classDescriptor))
     		throw new InvalidClassFileFormatException("Expected " + expectedClassDescriptor, classDescriptor, codeBaseEntry);
     	builder.setClassDescriptor(classDescriptor);
 
-    	builder.setSuperclassDescriptor(ClassDescriptor.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
+    	builder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptorFromDottedClassName(javaClass.getSuperclassName()));
     	String [] allInterfaces = javaClass.getInterfaceNames();
     	ClassDescriptor[] allInterfaceDescriptiors = new ClassDescriptor[allInterfaces.length];
     	for(int i = 0; i < allInterfaces.length; i++) {
-    		allInterfaceDescriptiors[i] = ClassDescriptor.createClassDescriptorFromDottedClassName(allInterfaces[i]);
+    		allInterfaceDescriptiors[i] = DescriptorFactory.createClassDescriptorFromDottedClassName(allInterfaces[i]);
     	}
     	builder.setInterfaceDescriptorList(allInterfaceDescriptiors);
     }

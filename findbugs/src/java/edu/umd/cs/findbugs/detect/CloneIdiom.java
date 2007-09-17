@@ -37,11 +37,12 @@ import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, StatelessDetector {
 
-	private ClassDescriptor cloneDescriptor = ClassDescriptor.createClassDescriptor("java/lang/Cloneable");
+	private ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor("java/lang/Cloneable");
 	
 	boolean /*isCloneable,*/ hasCloneMethod;
 	MethodAnnotation cloneMethodAnnotation;
@@ -107,7 +108,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		if (implementsCloneableDirectly) {
 			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 			try {
-	            if (subtypes2.isSubtype(ClassDescriptor.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor))
+	            if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor))
 	            	implementsCloneableDirectly = false;
             } catch (ClassNotFoundException e) {
 	           bugReporter.reportMissingClass(e);

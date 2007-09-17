@@ -100,9 +100,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				ClassParserUsingASM.this.slashedClassName = name;
 				cBuilder.setClassfileVersion(version>>>16, version & 0xffff);
 				cBuilder.setAccessFlags(access);
-				cBuilder.setClassDescriptor(ClassDescriptor.createClassDescriptor(name));
-				cBuilder.setInterfaceDescriptorList(ClassDescriptor.createClassDescriptor(interfaces));
-				if (superName != null) cBuilder.setSuperclassDescriptor(ClassDescriptor.createClassDescriptor(superName));
+				cBuilder.setClassDescriptor(DescriptorFactory.createClassDescriptor(name));
+				cBuilder.setInterfaceDescriptorList(DescriptorFactory.createClassDescriptor(interfaces));
+				if (superName != null) cBuilder.setSuperclassDescriptor(DescriptorFactory.createClassDescriptor(superName));
 				if (cBuilder instanceof ClassInfo.Builder) {
 					((ClassInfo.Builder)cBuilder).setSourceSignature(signature);
 				}
@@ -154,7 +154,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			public void visitInnerClass(String name, String outerName, String innerName, int access) {
 				if (name.equals(slashedClassName)  && outerName != null) {
 					if (cBuilder instanceof ClassInfo.Builder) {
-						ClassDescriptor outerClassDescriptor = ClassDescriptor.createClassDescriptor(outerName);
+						ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
 						((ClassInfo.Builder)cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
 					}
 

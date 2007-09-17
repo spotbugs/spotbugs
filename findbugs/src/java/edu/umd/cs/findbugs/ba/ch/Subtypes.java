@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
@@ -69,7 +70,7 @@ public class Subtypes {
 	 */
 
 	public Set<JavaClass> getImmediateSubtypes(JavaClass c) {
-		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(c);
 		try {
 	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
         } catch (ClassNotFoundException e) {
@@ -113,7 +114,7 @@ public class Subtypes {
 	 * @return true if c has any subtypes/interfaces
 	 */
 	public boolean hasSubtypes(JavaClass c) {
-		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(c);
 		try {
 	        return !subtypes2().getDirectSubtypes(classDescriptor).isEmpty();
         } catch (ClassNotFoundException e) {
@@ -146,7 +147,7 @@ public class Subtypes {
 	 */
 	public Set<JavaClass> getTransitiveSubtypes(JavaClass c) {
 		assert !c.getClassName().equals("java.lang.Object");
-		ClassDescriptor classDescriptor = ClassDescriptor.createClassDescriptor(c);
+		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(c);
 		try {
 	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
         } catch (ClassNotFoundException e) {
@@ -170,8 +171,8 @@ public class Subtypes {
 	 * @return set of all common subtypes of <i>a</i> and <i>b</i>
 	 */
 	public Set<JavaClass> getTransitiveCommonSubtypes(JavaClass a, JavaClass b) {
-		ClassDescriptor aD = ClassDescriptor.createClassDescriptor(a);
-		ClassDescriptor bD = ClassDescriptor.createClassDescriptor(b);
+		ClassDescriptor aD = DescriptorFactory.createClassDescriptor(a);
+		ClassDescriptor bD = DescriptorFactory.createClassDescriptor(b);
 		try {
 	        return getJavaClasses(subtypes2().getTransitiveCommonSubtypes(aD, bD));
         } catch (ClassNotFoundException e) {
@@ -222,6 +223,6 @@ public class Subtypes {
 	 * @return true if it's an application class, false if not
 	 */
 	public boolean isApplicationClass(JavaClass javaClass) {
-		return subtypes2().isApplicationClass(ClassDescriptor.createClassDescriptor(javaClass));
+		return subtypes2().isApplicationClass(DescriptorFactory.createClassDescriptor(javaClass));
 	}
 }

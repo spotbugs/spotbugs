@@ -32,10 +32,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
-	private ClassDescriptor iteratorDescriptor = ClassDescriptor.createClassDescriptor("java/util/Iterator");
+	private ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor("java/util/Iterator");
 	private BugReporter bugReporter;
 	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 

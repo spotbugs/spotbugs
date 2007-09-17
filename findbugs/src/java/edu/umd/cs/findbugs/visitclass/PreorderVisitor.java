@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -269,7 +270,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		sourceFile = obj.getSourceFileName();
 		superclassName = obj.getSuperclassName();
 		dottedSuperclassName = superclassName.replace('/', '.');
-		ClassDescriptor cDesc = ClassDescriptor.createClassDescriptor(className);
+		ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
 		try {
 	        thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
         } catch (CheckedAnalysisException e) {

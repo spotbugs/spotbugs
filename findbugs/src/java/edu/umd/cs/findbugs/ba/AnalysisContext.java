@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -367,7 +368,7 @@ public abstract class AnalysisContext {
 		if (dottedClassName == null) 
 			throw new IllegalArgumentException("className is null");
 		try {
-			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, ClassDescriptor.createClassDescriptorFromDottedClassName(dottedClassName));
+			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName));
 			String name = xClass.getSource();
 			if (name == null) {
 				return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;

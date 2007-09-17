@@ -111,67 +111,65 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		return ClassName.extractSimpleName(ClassName.toDottedClassName(className));
 	}
 	/**
-	 * Create a class descriptor from a resource name.
-	 * 
-	 * @param resourceName the resource name
-	 * @return the class descriptor
-	 */
-	public static ClassDescriptor fromResourceName(String resourceName) {
-		if (!isClassResource(resourceName)) {
-			throw new IllegalArgumentException("Resource " + resourceName + " is not a class");
-		}
-		return createClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
-	}
+     * Create a class descriptor from a resource name.
+     * 
+     * @param resourceName the resource name
+     * @return the class descriptor
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromResourceName(String)} instead
+     */
+    public static ClassDescriptor fromResourceName(String resourceName) {
+        return DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
+    }
 	
 	/**
-	 * Create a class descriptor from a field signature
-	 * 
-	 */
-	public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
-		int start = signature.indexOf('L');
-		if (start < 0) {
-			return null;
-		}
-		int end = signature.indexOf(';', start);
-		if (end < 0) {
-			return null;
-		}
-		return createClassDescriptor(signature.substring(start+1, end));
-	}
+     * Create a class descriptor from a field signature
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)} instead
+     * 
+     */
+    public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
+        return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
+    }
 
 	/**
-	 * Determine whether or not the given resource name refers to a class.
-	 * 
-	 * @param resourceName the resource name
-	 * @return true if the resource is a class, false otherwise
-	 */
-	public static boolean isClassResource(String resourceName) {
-		// This could be more sophisticated.
-		return resourceName.endsWith(".class");
-	}
+     * Determine whether or not the given resource name refers to a class.
+     * 
+     * @param resourceName the resource name
+     * @return true if the resource is a class, false otherwise
+     * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
+     */
+    public static boolean isClassResource(String resourceName) {
+        return DescriptorFactory.isClassResource(resourceName);
+    }
 
-	public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
-		int first = 0;
-		while (signature.charAt(first) == '[') first++;
-		signature = signature.substring(first);
-		if (signature.endsWith(";"))
-			signature = signature.substring(1, signature.length()-1);
-		return createClassDescriptor(signature);
+	/**
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromSignature(String)} instead
+     */
+    public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
+        return DescriptorFactory.createClassDescriptorFromSignature(signature);
     }
-	public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
-		return DescriptorFactory.instance().getClassDescriptor(className);
+	/**
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)} instead
+     */
+    public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+        return DescriptorFactory.createClassDescriptor(className);
     }
-	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
-		ClassDescriptor[] result = new ClassDescriptor[classNames.length];
-		for(int i = 0; i < classNames.length; i++) 
-			result[i] = createClassDescriptor(classNames[i]);
-	    return result;
+	/**
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])} instead
+     */
+    public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
+        return DescriptorFactory.createClassDescriptor(classNames);
     }
-	public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
-	    return createClassDescriptor(dottedClassName.replace('.','/'));
+	/**
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)} instead
+     */
+    public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
+        return DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName);
     }
-	public static ClassDescriptor createClassDescriptor(JavaClass c) {
-	    return createClassDescriptorFromDottedClassName(c.getClassName());
+	/**
+     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(JavaClass)} instead
+     */
+    public static ClassDescriptor createClassDescriptor(JavaClass c) {
+        return DescriptorFactory.createClassDescriptor(c);
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

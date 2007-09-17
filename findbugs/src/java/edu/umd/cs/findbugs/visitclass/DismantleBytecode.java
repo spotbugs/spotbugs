@@ -562,7 +562,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 								ConstantClass clazz = (ConstantClass) constantRefOperand;
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
-								referencedClass = ClassDescriptor.createClassDescriptor(classConstantOperand);
+								referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
 								try {
 	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
                                 } catch (CheckedAnalysisException e) {

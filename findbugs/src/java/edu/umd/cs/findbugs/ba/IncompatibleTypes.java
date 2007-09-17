@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
@@ -133,8 +134,8 @@ public class IncompatibleTypes {
 			ObjectType lhsType, ObjectType rhsType) {
 		try {
 		// See if the types are related by inheritance.
-		ClassDescriptor lhsDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(lhsType.getClassName());
-		ClassDescriptor rhsDescriptor = ClassDescriptor.createClassDescriptorFromDottedClassName(rhsType.getClassName());
+		ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(lhsType.getClassName());
+		ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(rhsType.getClassName());
 		
 		IAnalysisCache cache = Global.getAnalysisCache();
 		XClass lhs = cache.getClassAnalysis(XClass.class, lhsDescriptor);

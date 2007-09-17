@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.bcp.*;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -142,7 +143,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			
 			//  GUI types should not be  accessed from multiple threads
 			
-			ClassDescriptor fieldType = ClassDescriptor.fromFieldSignature(xfield.getSignature());
+			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(xfield.getSignature());
 
 			while (fieldType != null) {
 					XClass fieldClass;

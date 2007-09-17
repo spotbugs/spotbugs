@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.classfile;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -122,4 +125,72 @@ public class DescriptorFactory {
 		}
 		return existing;
 	}
+
+	public static ClassDescriptor createClassDescriptor(JavaClass c) {
+        return DescriptorFactory.createClassDescriptorFromDottedClassName(c.getClassName());
+    }
+
+	/**
+     * Create a class descriptor from a resource name.
+     * 
+     * @param resourceName the resource name
+     * @return the class descriptor
+     */
+    public static ClassDescriptor createClassDescriptorFromResourceName(String resourceName) {
+    	if (!isClassResource(resourceName)) {
+    		throw new IllegalArgumentException("Resource " + resourceName + " is not a class");
+    	}
+    	return createClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
+    }
+
+	/**
+     * Create a class descriptor from a field signature
+     * 
+     */
+    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
+    	int start = signature.indexOf('L');
+    	if (start < 0) {
+    		return null;
+    	}
+    	int end = signature.indexOf(';', start);
+    	if (end < 0) {
+    		return null;
+    	}
+    	return createClassDescriptor(signature.substring(start+1, end));
+    }
+
+	/**
+     * Determine whether or not the given resource name refers to a class.
+     * 
+     * @param resourceName the resource name
+     * @return true if the resource is a class, false otherwise
+     */
+    public static boolean isClassResource(String resourceName) {
+    	// This could be more sophisticated.
+    	return resourceName.endsWith(".class");
+    }
+
+	public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
+    	int first = 0;
+    	while (signature.charAt(first) == '[') first++;
+    	signature = signature.substring(first);
+    	if (signature.endsWith(";"))
+    		signature = signature.substring(1, signature.length()-1);
+    	return createClassDescriptor(signature);
+    }
+
+	public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+    	return instance().getClassDescriptor(className);
+    }
+
+	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
+    	ClassDescriptor[] result = new ClassDescriptor[classNames.length];
+    	for(int i = 0; i < classNames.length; i++) 
+    		result[i] = createClassDescriptor(classNames[i]);
+        return result;
+    }
+
+	public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
+        return createClassDescriptor(dottedClassName.replace('.','/'));
+    }
 }
