@@ -35,12 +35,12 @@ public class RejarClassesForAnalysis {
 		long maxAge = Long.MIN_VALUE;
 		public String inputFileList;
 		RejarClassesForAnalysisCommandLine() {
-			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this");
+			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this)");
 			addOption("-inputFileList", "filename", "text file containing names of jar files");
 
 
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
-			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed e.g., edu.umd.cs.)");
+			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed (e.g., edu.umd.cs.)");
 		}
 
 		/* (non-Javadoc)
