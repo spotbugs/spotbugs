@@ -52,6 +52,9 @@ public class PriorityAdjustment {
 	/** Priority is at most low. */
 	public static final PriorityAdjustment AT_MOST_LOW = new PriorityAdjustment("AT_MOST_LOW");
 
+	/** Priority is at most medium. */
+	public static final PriorityAdjustment AT_MOST_MEDIUM = new PriorityAdjustment("AT_MOST_MEDIUM");
+
 	/** Lower the priority. */
 	public static final PriorityAdjustment LOWER_PRIORITY = new PriorityAdjustment("LOWER_PRIORITY");
 	/** Lower the priority a little*/

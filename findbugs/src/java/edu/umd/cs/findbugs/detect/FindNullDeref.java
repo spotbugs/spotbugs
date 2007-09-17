@@ -603,7 +603,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		boolean uncallable = false;
 		if (!AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(calledFrom) 
-				&& !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic())) {
+				&& calledFrom.isPrivate()) {
 			
 			propertySet
 			.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
@@ -636,7 +636,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			}}
 
 		decorateWarning(location, propertySet, warning);
-		if (uncallable) warning.lowerPriority();
 		bugReporter.reportBug(warning);
 	}
 
@@ -1256,10 +1255,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 
 
-		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
-		boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(calledFrom) 
-				&& !calledFrom.isPublic() && !(calledFrom.isProtected() && classContext.getJavaClass().isPublic());
-		if (uncallable) priority++;			
+		XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+		boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(xMethod) 
+				&& xMethod.isPrivate();
+		
 
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);

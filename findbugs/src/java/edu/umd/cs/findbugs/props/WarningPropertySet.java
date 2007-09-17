@@ -171,6 +171,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 		boolean atLeastMedium = false;
 		boolean falsePositive = false;
 		boolean atMostLow = false;
+		boolean atMostMedium = false;
 		int aLittleBitLower = 0;
 		int priority = basePriority;
 		if (!relaxedReporting) {
@@ -196,6 +197,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 				} else if (adj == PriorityAdjustment.AT_MOST_LOW) {
 					priority++;
 					atMostLow = true;
+				} else if (adj == PriorityAdjustment.AT_MOST_MEDIUM) {
+					atMostMedium = true;
 				} else if (adj == PriorityAdjustment.NO_ADJUSTMENT) {
 					assert true; // do nothing
 				} else
@@ -207,6 +210,9 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 				priority++;
 			else if (aLittleBitLower <= -2)
 				priority--;
+			if (atMostMedium)
+				priority = Math.max(Detector.NORMAL_PRIORITY, priority);
+			
 			if (atMostLow)
 				return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
 			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY)
