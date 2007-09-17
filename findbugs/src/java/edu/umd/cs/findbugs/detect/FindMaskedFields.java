@@ -94,7 +94,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		XClass c = getXClass();
 		while (true) {
 			ClassDescriptor s = c.getSuperclassDescriptor();
-			if (s != null && s.getClassName().equals("java/lang/Object"))
+			if (s == null || s.getClassName().equals("java/lang/Object"))
 				break;
 			try {
 				c = Global.getAnalysisCache().getClassAnalysis(XClass.class, s);

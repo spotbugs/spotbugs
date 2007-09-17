@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import javax.annotation.CheckForNull;
+
 /**
  * CheckedAnalysisException subtype to indicate that a required class
  * was missing.
@@ -34,7 +36,8 @@ public class MissingClassException extends ResourceNotFoundException {
 	 * @param classDescriptor missing class
 	 */
 	public MissingClassException(ClassDescriptor classDescriptor) {
-		this(classDescriptor, null);
+		super(classDescriptor.toResourceName());
+		this.classDescriptor= classDescriptor;
 	}
 
 	/**

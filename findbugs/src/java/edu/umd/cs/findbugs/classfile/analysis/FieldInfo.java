@@ -77,7 +77,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 
 	final int accessFlags;
 
-	final String fieldSourceSignature;
+	final @CheckForNull String fieldSourceSignature;
 	Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
 	final boolean isResolved;
@@ -95,7 +95,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
     		@SlashedClassName String className,
     		String fieldName,
     		String fieldSignature,
-    		String fieldSourceSignature,
+    		@CheckForNull String fieldSourceSignature,
     		int accessFlags,
     		Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
     		boolean isResolved) {
