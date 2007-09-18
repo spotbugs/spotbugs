@@ -112,7 +112,8 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	}
 
 	public void addResourceNameTranslation(String origResourceName, String newResourceName) {
-		resourceNameTranslationMap.put(origResourceName, newResourceName);
+		if (!origResourceName.equals(newResourceName))
+		  resourceNameTranslationMap.put(origResourceName, newResourceName);
 	}
 
 	public String translateResourceName(String resourceName) {

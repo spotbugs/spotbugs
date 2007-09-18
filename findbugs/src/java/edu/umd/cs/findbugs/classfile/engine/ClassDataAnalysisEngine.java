@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.RecomputableClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.classfile.impl.ZipInputStreamCodeBaseEntry;
 import edu.umd.cs.findbugs.io.IO;
 
 /**
@@ -57,30 +58,35 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
 			throw new MissingClassException(descriptor, e);
 		}
 
-		// Create a ByteArrayOutputStream to capture the class data
-		int length = codeBaseEntry.getNumBytes();
-		ByteArrayOutputStream byteSink;
-		if (length >= 0) {
-			byteSink = new ByteArrayOutputStream(length);
+		byte[] data;
+		if (codeBaseEntry instanceof ZipInputStreamCodeBaseEntry) {
+			data = ((ZipInputStreamCodeBaseEntry)codeBaseEntry).getBytes();
 		} else {
-			byteSink = new ByteArrayOutputStream();
-		}
-
-		// Read the class data into the byte array
-		InputStream in = null;
-		try {
-			in = codeBaseEntry.openResource();
-			IO.copy(in, byteSink);
-		} catch (IOException e) {
-			throw new MissingClassException(descriptor, e);
-		} finally {
-			if (in != null) {
-				IO.close(in);
+			// Create a ByteArrayOutputStream to capture the class data
+			int length = codeBaseEntry.getNumBytes();
+			ByteArrayOutputStream byteSink;
+			if (length >= 0) {
+				byteSink = new ByteArrayOutputStream(length);
+			} else {
+				byteSink = new ByteArrayOutputStream();
 			}
-		}
 
-		// Construct the resulting ClassData object and return it
-		byte[] data = byteSink.toByteArray();
+			// Read the class data into the byte array
+			InputStream in = null;
+			try {
+				in = codeBaseEntry.openResource();
+				IO.copy(in, byteSink);
+			} catch (IOException e) {
+				throw new MissingClassException(descriptor, e);
+			} finally {
+				if (in != null) {
+					IO.close(in);
+				}
+			}
+
+			// Construct the resulting ClassData object and return it
+			data = byteSink.toByteArray();
+		}
 		return new ClassData(descriptor, codeBaseEntry, data);
 	}
 

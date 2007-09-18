@@ -542,7 +542,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	private void parseClassName(ICodeBaseEntry entry) {
 		DataInputStream in = null;
 		try {
-			in = new DataInputStream(entry.openResource());
+			InputStream resourceIn = entry.openResource();
+			if (resourceIn == null)
+				throw new NullPointerException("Got null resource");
+			in = new DataInputStream(resourceIn);
 			ClassParserInterface parser = new ClassParser(in, null, entry);
 			ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 			parser.parse(builder);
