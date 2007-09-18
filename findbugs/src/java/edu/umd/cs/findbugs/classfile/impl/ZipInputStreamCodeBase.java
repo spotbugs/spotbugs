@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.io.IO;
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
+	final static boolean DEBUG = false;
 	final File file;
 	final Map<String, ZipInputStreamCodeBaseEntry> map = new HashMap<String, ZipInputStreamCodeBaseEntry>();
 	/**
@@ -57,12 +58,13 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 		setLastModifiedTime(file.lastModified());
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
 		ZipEntry ze;
+		if (DEBUG) 
 		System.out.println("Reading zip input stream " + file);
 		int count = 0;
 		 while ((ze = zis.getNextEntry()) != null) {
 			 if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
 				 count++;
-				 if (count % 10000 == 0) 
+				 if (DEBUG && count % 10000 == 0) 
 					 System.out.println("Reading # " + count + " : " + ze.getName());
 				 long sz = ze.getSize();
 				 
@@ -78,7 +80,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 			 zis.closeEntry();
 			 
 		 }
-			System.out.println("Done with zip input stream " + file);
+			if (DEBUG) System.out.println("Done with zip input stream " + file);
 
 	}
 

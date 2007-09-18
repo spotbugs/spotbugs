@@ -290,14 +290,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSyntheticElements()
-	 */
-	@Override
-	public SyntheticElements getSyntheticElements() {
-		throw new UnsupportedOperationException();
-	}
-	
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
 	 */
 	@Override

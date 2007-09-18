@@ -32,6 +32,10 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
@@ -49,8 +53,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
 	private Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
 
-	private Set<Object> syntheticElements = new HashSet<Object>();
-
+	
 	private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>();
 
 	private Subtypes subtypes;
@@ -71,14 +74,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
 	}
 	private final Set<AnnotationEnum> seen = new HashSet<AnnotationEnum>();
-	public void addSyntheticElement(Object o) {
-		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-			throw new IllegalStateException();
-		}
-		syntheticElements.add(o);
-		if (DEBUG)
-			System.out.println("Synthetic element: " + o);
-	}
+	
 
 	public void addDirectAnnotation(Object o, AnnotationEnum n) {
 		directAnnotations.put(o, n);
@@ -138,13 +134,13 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 				XMethod m;
 				if (o instanceof XMethod) {
 					m = (XMethod) o;
-					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
+					isSyntheticMethod = m.isSynthetic();
 					kind = Target.METHOD;
 					className = m.getClassName();
 				} else if (o instanceof XMethodParameter) {
 					m = ((XMethodParameter) o).getMethod();
 					// Don't 
-					isSyntheticMethod = isSyntheticElement(m);//syntheticElements.contains(m);
+					isSyntheticMethod = m.isSynthetic();
 					className = m.getClassName();
 					kind = Target.PARAMETER;
 					if (m.getName().equals("<init>")) {
@@ -206,11 +202,16 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 			// <init> method parameters for inner classes don't inherit default annotations
 			// since some of them are synthetic
 			if (isParameterToInitMethodofAnonymousInnerClass) return null;
-			if (isSyntheticMethod) return null;
-
+			
 			// synthetic elements should not inherit default annotations
-			if (isSyntheticElement(o)/*syntheticElements.contains(o)*/) return null;
-			if (isSyntheticElement(className)/*syntheticElements.contains(className)*/) return null;
+			if (isSyntheticMethod) return null;
+			try {
+			XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptorFromDottedClassName(className));
+			
+			if (c != null && c.isSynthetic()) return null;
+			}  catch (CheckedAnalysisException e) {
+	           assert true;
+            }
 
 
 			// look for default annotation
@@ -251,20 +252,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
 	}
 
-	/**
-	 * Determine if given XMethod/XField/class name (String) has
-	 * been marked as a synthetic element.
-	 * 
-     * @param o object to be tested to see if it represents a synthetic element
-     * @return true if the object represents a synthetic element, false otherwise
-     */
-    private boolean isSyntheticElement(Object o) {
-    	if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-    		return AnalysisContext.currentAnalysisContext().getSyntheticElements().isSynthetic(o);
-    	} else {
-    		return syntheticElements.contains(o);
-    	}
-    }
+	
 
 	private boolean classDefinesMethod(JavaClass c, XMethod m) {
 		for(Method definedMethod : c.getMethods()) 

@@ -746,8 +746,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 				case INVOKEVIRTUAL:
 				{
 					boolean isStatic = opcode == INVOKESTATIC;
-					referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand, nameConstantOperand, isStatic);
-					if (referencedXClass != null) referencedXMethod = referencedXClass.findMethod(nameConstantOperand, nameConstantOperand, isStatic);
+					referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, isStatic);
+					if (referencedXClass != null) referencedXMethod = referencedXClass.findMethod(nameConstantOperand, sigConstantOperand, isStatic);
 					break;
 				}
 				case GETSTATIC:
@@ -756,8 +756,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 				case PUTFIELD:
 				{
 					boolean isStatic = opcode == GETSTATIC || opcode == PUTSTATIC;
-					referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand, nameConstantOperand, isStatic);
-					if (referencedXClass != null) referencedXField = referencedXClass.findField(nameConstantOperand, nameConstantOperand, isStatic);
+					referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, isStatic);
+					if (referencedXClass != null) referencedXField = referencedXClass.findField(nameConstantOperand, sigConstantOperand, isStatic);
 					break;
 				}
 				}

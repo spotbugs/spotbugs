@@ -22,18 +22,11 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
-
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.SyntheticElements;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
@@ -73,59 +66,6 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		return className.substring(i + 1);
 	}
 
-	@Override public void visit(Synthetic a) {
-		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-			return;
-		}
-		if (database == null) {
-			return;
-		}
-		
-		if (visitingMethod()) {
-			database.addSyntheticElement(
-					XFactory.createXMethod(this));
-		} else if (visitingField()) {
-			database.addSyntheticElement(
-					XFactory.createXField(this));
-		} else {
-			database.addSyntheticElement(
-					getDottedClassName());
-		}
-	}
-	@Override public void visit(JavaClass obj) {
-		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-			return;
-		}
-		if (database == null) {
-			return;
-		}
-		if (obj.isSynthetic())
-			database.addSyntheticElement(
-					getDottedClassName());
-	}
-	@Override public void visit(Field f) {
-		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-			return;
-		}
-		if (database == null) {
-			return;
-		}
-		if (f.isSynthetic())
-			database.addSyntheticElement(
-					XFactory.createXField(this));
-	}
-
-	@Override public void visit(Method m) {
-		if (SyntheticElements.USE_SYNTHETIC_ELEMENTS_DB) {
-			return;
-		}
-		if (database == null) {
-			return;
-		}
-		if (m.isSynthetic())
-			database.addSyntheticElement(
-					XFactory.createXMethod(this));
-	}
 
 	@Override
 	public void visitAnnotation(String annotationClass,

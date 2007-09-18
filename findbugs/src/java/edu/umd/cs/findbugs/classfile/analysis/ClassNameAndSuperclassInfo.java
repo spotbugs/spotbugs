@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.objectweb.asm.Opcodes;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
@@ -244,5 +246,11 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	public boolean isAnnotation() {
 		return isFlagSet(IClassConstants.ACC_ANNOTATION);
 	}
+	public boolean isSynthetic() {
+		return isFlagSet(IClassConstants.ACC_SYNTHETIC);
+	}
+    public boolean isDeprecated() {
+    	return isFlagSet(Opcodes.ACC_DEPRECATED);
+    }
 
 }

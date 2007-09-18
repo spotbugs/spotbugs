@@ -22,12 +22,10 @@ package edu.umd.cs.findbugs;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -38,6 +36,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -51,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -694,7 +694,18 @@ public class FindBugs2 implements IFindBugsEngine {
 			classesPerPass[i] = i == 0 ? referencedClassSet.size() : appClassList.size();
 		}
 		progress.predictPassCount(classesPerPass);
-		
+		XFactory factory = AnalysisContext.currentXFactory();
+		for(ClassDescriptor desc : referencedClassSet) {
+
+            try {
+    			XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
+    			factory.intern(info);
+            } catch (CheckedAnalysisException e) {
+	           AnalysisContext.logError("Couldn't get class info for " + desc, e);
+            }
+
+			
+		}
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
 			

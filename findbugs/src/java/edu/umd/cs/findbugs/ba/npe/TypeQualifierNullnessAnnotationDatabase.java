@@ -218,12 +218,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			System.out.println("addFieldAnnotation: annotate " + cName + "." + mName + " with " + annotation);
 		}
 		
-		XField xfield;
-		
-		xfield = XFactory.createXField(cName, mName, mSig, isStatic);
-		if (xfield == null) {
+		XField xfield = XFactory.createXField(cName, mName, mSig, isStatic);
+		if (!(xfield instanceof FieldInfo)) {
 			if (DEBUG) {
-				System.out.println("  Field not found!");
+				System.out.println("  Field not found! " + cName +"." + mName + ":" + mSig + " " + isStatic + " " + annotation);
 			}
 			return;
 		}

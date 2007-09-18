@@ -45,9 +45,9 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
-			XMethod m = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(),
-					getSigConstantOperand(), (seen == INVOKESTATIC));
-			xFactory.addCalledMethod(m);
+		case INVOKEINTERFACE:
+			
+			xFactory.addCalledMethod(getMethodDescriptorOperand());
 
 			break;
 		default:

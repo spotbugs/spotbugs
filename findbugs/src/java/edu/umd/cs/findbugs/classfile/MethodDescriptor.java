@@ -39,6 +39,8 @@ public class MethodDescriptor
 	 */
 	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
 		super(className, methodName, methodSignature, isStatic);
+		assert methodSignature.charAt(0) == '(';
+		assert methodSignature.indexOf(')') > 0;
 	}
 
 	/* (non-Javadoc)

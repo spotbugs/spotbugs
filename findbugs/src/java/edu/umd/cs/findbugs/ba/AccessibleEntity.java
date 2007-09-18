@@ -59,7 +59,14 @@ public interface AccessibleEntity {
 	 */
 	public boolean isPrivate();
 
-
+	/**
+	 * Is the entity synthetic?
+	 */
+	public boolean isSynthetic();
+	/**
+	 * Is the entity deprecated?
+	 */
+	public boolean isDeprecated();
 	/**
 	 * Get the ClassDescriptor representing the class (if entity is a class)
 	 * or the class containing the entity (if a field or method).

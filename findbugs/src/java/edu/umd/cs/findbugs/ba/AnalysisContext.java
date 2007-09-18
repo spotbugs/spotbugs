@@ -632,10 +632,6 @@ public abstract class AnalysisContext {
 		currentXFactory.set(new XFactory());
 	}
 	
-	/**
-	 * Get the database which keeps track of synthetic fields/methods/classes.
-	 */
-	public abstract SyntheticElements getSyntheticElements();
 
 	/**
 	 * Get the Subtypes2 inheritance hierarchy database.

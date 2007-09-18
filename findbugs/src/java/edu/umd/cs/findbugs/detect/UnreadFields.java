@@ -532,6 +532,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 					&& seen == GETFIELD ) {
 				writtenFields.add(f);
 				writtenNonNullFields.add(f);
+				if (f == null) 
+					System.out.println("Added null 1");
 			}
 			if (DEBUG) System.out.println("get: " + f);
 			// readFields.add(f);
@@ -549,6 +551,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
 			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO )  {
 				writtenNonNullFields.add(f);
+				if (f == null) 
+					System.out.println("Added null 2");
 				if (DEBUG) System.out.println("put nn: " + f);
 			}
 			else if (DEBUG) System.out.println("put: " + f);

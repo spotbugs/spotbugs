@@ -28,6 +28,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
+import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -228,7 +229,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	public boolean isPrivate() {
 		return checkFlag(Constants.ACC_PRIVATE);
 	}
-
+    public boolean isDeprecated() {
+    	return checkFlag(Opcodes.ACC_DEPRECATED);
+    }
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -246,7 +249,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	public boolean isPublic() {
 		return checkFlag(Constants.ACC_PUBLIC);
 	}
-
+	
+    public boolean isSynthetic() {
+	    return checkFlag(Constants.ACC_SYNTHETIC);
+    }
 	/*
 	 * (non-Javadoc)
 	 * 

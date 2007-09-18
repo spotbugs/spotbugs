@@ -145,7 +145,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					XFactory xFactory = AnalysisContext.currentXFactory();
 					if (m3 == null && AnalysisContext.currentXFactory().isCalled(m))
 						propertySet.addProperty(NamingProperty.METHOD_IS_CALLED);
-					else if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2))
+					else if (m.isDeprecated() || m2.isDeprecated())
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
 
 					priority = propertySet.computePriority(priority);

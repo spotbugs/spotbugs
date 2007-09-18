@@ -64,7 +64,7 @@ public class DerefFinder {
 
 	public static boolean DEBUG = SystemProperties.getBoolean("deref.finder.debug");
 	public static UsagesRequiringNonNullValues getAnalysis(ClassContext classContext, Method method) {
-		XMethod thisMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+		XMethod thisMethod = classContext.getXClass().findMethod(method.getName(), method.getSignature(), method.isStatic());
 		if (DEBUG) System.out.println(thisMethod);
 		UsagesRequiringNonNullValues derefs = new UsagesRequiringNonNullValues();
 		try {

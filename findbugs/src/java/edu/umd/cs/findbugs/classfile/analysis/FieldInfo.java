@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
+import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -120,11 +121,12 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	    return checkFlag(Constants.ACC_NATIVE);
     }
 
-
     public boolean isSynchronized() {
     	return checkFlag(Constants.ACC_SYNCHRONIZED);
     }
-
+    public boolean isDeprecated() {
+    	return checkFlag(Opcodes.ACC_DEPRECATED);
+    }
     public @DottedClassName String getClassName() {
 	    return getClassDescriptor().toDottedClassName();
     }
@@ -209,6 +211,10 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	    return checkFlag(Constants.ACC_VOLATILE);
     }
 
+
+    public boolean isSynthetic() {
+	    return checkFlag(Constants.ACC_SYNTHETIC);
+    }
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return fieldAnnotations.keySet();
 	}

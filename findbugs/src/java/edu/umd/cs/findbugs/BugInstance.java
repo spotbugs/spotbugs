@@ -360,10 +360,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	public BugInstance lowerPriorityIfDeprecated() {
 		MethodAnnotation m = getPrimaryMethod();
-		if (m != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXMethod(m)))
+		if (m != null && AnalysisContext.currentXFactory().createXMethod(m).isDeprecated())
 				lowerPriority();
 		FieldAnnotation f = getPrimaryField();
-		if (f != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXField(f)))
+		if (f != null && AnalysisContext.currentXFactory().createXField(f).isDeprecated())
 			lowerPriority();
 		return this;
 	}

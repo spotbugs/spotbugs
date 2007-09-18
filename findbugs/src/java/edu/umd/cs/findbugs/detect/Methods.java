@@ -37,32 +37,12 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class Methods extends PreorderVisitor implements Detector,
 		NonReportingDetector {
 
-	private XFactory xFactory = AnalysisContext.currentXFactory();
-
-	XMethod m;
-	XField f;
+	
 	public Methods(BugReporter bugReporter) {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
-	}
-
-	@Override
-	public void visit(Method obj) {
-		m = XFactory.createXMethod(this);
-	}
-	@Override 
-	public void visit(Attribute a) {
-		if (a instanceof Deprecated) {
-			if (visitingMethod()) xFactory.deprecate(m);
-			else if (visitingField())xFactory.deprecate(f);
-		}
-	}
-
-	@Override
-	public void visit(Field obj) {
-		f = XFactory.createXField(this);
 	}
 
 	public void report() {

@@ -24,9 +24,12 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Factory for creating ClassDescriptors, MethodDescriptors, and FieldDescriptors.
@@ -107,6 +110,9 @@ public class DescriptorFactory {
 		return existing;
 	}
 
+	public MethodDescriptor getMethodDescriptor(MethodAnnotation ma) {
+		return getMethodDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
+	}
 	/**
 	 * Get a FieldDescriptor.
 	 * 
@@ -125,7 +131,9 @@ public class DescriptorFactory {
 		}
 		return existing;
 	}
-
+	public FieldDescriptor getFieldDescriptor(FieldAnnotation ma) {
+		return getFieldDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getFieldName(), ma.getFieldSignature(), ma.isStatic());
+	}
 	public static ClassDescriptor createClassDescriptor(JavaClass c) {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(c.getClassName());
     }
