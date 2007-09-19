@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.objectweb.asm.Opcodes;
 
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -130,6 +131,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
+		for(int i = 0; i < exceptions.length; i++) 
+			exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
 		this.methodSourceSignature = methodSourceSignature;
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
