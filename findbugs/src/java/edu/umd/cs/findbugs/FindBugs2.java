@@ -197,6 +197,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
 			profiler.end(this.getClass());
+			profiler.report();
 		}
 	}
 
@@ -685,6 +686,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
 		Profiler profiler = Profiler.getInstance();
+		profiler.start(this.getClass());
+		try {
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
 		if (executionPlan.getNumPasses() == 0)
 			throw new AssertionError("no analysis passes");
@@ -822,7 +825,10 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		// Flush any queued error reports
 		bugReporter.reportQueuedErrors();
-		profiler.report();
+		} finally {
+			profiler.end(this.getClass());
+		}
+	
 	}
 
 	/**
