@@ -233,11 +233,7 @@ public class AnalysisCache implements IAnalysisCache {
 
 		if (object == null) {
 			try {
-				if (false) {
-				System.out.println("ZZZ creating " + analysisClass.getSimpleName() + " for " + methodDescriptor);
-				System.out.println("ZZZ Currently have " + classContext.getObjectMap(analysisClass).keySet() 
-						+ " in " + hex(classContext.getObjectMap(analysisClass)) +"/" + hex(classContext)+"/"+hex(this));
-				} object = analyzeMethod(classContext, analysisClass, methodDescriptor);
+				object = analyzeMethod(classContext, analysisClass, methodDescriptor);
 				if (object == null) {
 					object = NULL_ANALYSIS_RESULT;
 				}
@@ -341,6 +337,8 @@ public class AnalysisCache implements IAnalysisCache {
 			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
 			if (analysisClass.equals(JavaClass.class))
 				descriptorMap = new MapCache<DescriptorType, Object>(5000);
+			else if (analysisClass.equals(ClassContext.class))
+				descriptorMap = new MapCache<DescriptorType, Object>(50);
 			else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) 
 				descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
 			else 
