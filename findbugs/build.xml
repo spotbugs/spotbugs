@@ -429,6 +429,7 @@
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
   </target>
+
   <target name="findbugscheck" depends="anttask,classes,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
@@ -445,7 +446,40 @@
     </findbugs>
   </target>
 
+	<!-- Download, install a plugin and run it on BCEL.  This is useful
+	     as a check for whether changes to FindBugs have broken its
+	     interface with plugins.  Note that the generated .xml file is
+	     kept in the ${sampleoutput.dir} for later perusal. -->
+	<target name="plugincheck" depends="anttask,classes">
+		<property name="findbugs.home" value="." />
+		<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+		<mkdir dir="${sampleoutput.dir}"/>
+		<!-- download the plugin -->
+		<echo message="curl ${plugincheck.jar} -o ${plugin.dir}/${plugincheck.jar}"/>
+		<!-- won't work everywhere, but I can't find an easy alternative -->
+		<exec executable="curl" failonerror="true">
+			<arg value="${plugincheck.url}"/>
+			<arg value="-o"/>
+			<arg value="${plugin.dir}/${plugincheck.jar}"/>
+		</exec>
+		<!-- run FindBugs w/ plugin on BCEL -->
+		<antcall target="runanttask"/>
+		<delete file="${plugin.dir}/${plugincheck.jar}"/>
+		<!-- keep warning file -->
+		<move file="${sampleoutput.dir}/bcel.xml" tofile="${sampleoutput.dir}/bcel.xml.${plugincheck.jar}"/>
+	</target>
 
+	<!-- Check for plugin fb-contrib-3.2.5.jar -->
+	<target name="plugincheck_fbcontrib" depends="">
+		<delete file="${plugin.dir}/fb-contrib-3.2.5.jar" quiet="true"/>
+		<antcall target="runanttask"/>
+		<move file="${sampleoutput.dir}/bcel.xml" tofile="${sampleoutput.dir}/bcel.xml.core"/>
+		<antcall target="plugincheck">
+			<param name="plugincheck.url" value="http://umn.dl.sourceforge.net/sourceforge/fb-contrib/fb-contrib-3.2.5.jar"/>
+			<param name="plugincheck.jar" value="fb-contrib-3.2.5.jar"/>
+		</antcall>
+	</target>
+	
 	<!-- Run JUnit test cases -->
 	<target name="runjunit" depends="junittests,jars">
 		<echo>Running JUnit test cases for FindBugs...</echo>
