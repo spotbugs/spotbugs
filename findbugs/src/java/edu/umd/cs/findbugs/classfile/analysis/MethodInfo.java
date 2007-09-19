@@ -111,7 +111,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	final String methodSourceSignature;
 	
-	final String [] exceptions;
+	final @CheckForNull String [] exceptions;
 
 	Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
@@ -127,11 +127,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 */
 	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
-		for(int i = 0; i < exceptions.length; i++) 
+		if (exceptions != null) 
+			for(int i = 0; i < exceptions.length; i++) 
 			exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
 		this.methodSourceSignature = methodSourceSignature;
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
@@ -141,7 +142,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 			System.out.println(this + " throws " + Arrays.asList(exceptions));
 	}
 
-	 public String [] getThrownExceptions() {
+	 public @CheckForNull String [] getThrownExceptions() {
 		 return exceptions;
 	 }
 	 public boolean isUnconditionalThrower() {
