@@ -390,13 +390,6 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		return subtypes2;
 	}
 
-	MapCache<String, String> stringCache = new MapCache<String, String>(2000);
-	public String canonicalizeString(String s) {
-		String result = stringCache.get(s);
-		if (result != null) return result;
-		stringCache.put(s,s);
-		return s;
-	}
-
+	
 	
 }

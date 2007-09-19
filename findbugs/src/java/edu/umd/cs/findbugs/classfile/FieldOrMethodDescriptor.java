@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -37,11 +38,10 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
 	public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
 		assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
-		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-		
-		this.slashedClassName = analysisContext.canonicalizeString(slashedClassName);
-		this.name = analysisContext.canonicalizeString(name);
-		this.signature = analysisContext.canonicalizeString(signature);
+			
+		this.slashedClassName = DescriptorFactory.canonicalizeString(slashedClassName);
+		this.name = DescriptorFactory.canonicalizeString(name);
+		this.signature = DescriptorFactory.canonicalizeString(signature);
 		this.isStatic = isStatic;
 	}
 

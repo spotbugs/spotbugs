@@ -250,12 +250,6 @@ public abstract class AnalysisContext {
 	}
 
 	/**
-	 * Given a String, return  semi-canonical String with identical contents.
-	 * This method intended so that Strings that occur very often can be shared.
-	 * It is not required to remember/canonicalize all strings.
-	 */
-	public abstract String canonicalizeString(String s);
-	/**
 	 * Get the SourceFinder, for finding source files.
 	 */
 	public abstract SourceFinder getSourceFinder();

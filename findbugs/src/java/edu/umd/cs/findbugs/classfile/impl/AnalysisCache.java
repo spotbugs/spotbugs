@@ -66,20 +66,26 @@ public class AnalysisCache implements IAnalysisCache {
 	private Map<Class<?>, Object> databaseMap;
 
 	static class AbnormalAnalysisResult {
-		CheckedAnalysisException checkedAnalysisException;
-		RuntimeException runtimeException;
-		boolean isNull;
+		final CheckedAnalysisException checkedAnalysisException;
+		final RuntimeException runtimeException;
+		final boolean isNull;
 		
 		AbnormalAnalysisResult(CheckedAnalysisException checkedAnalysisException) {
 			this.checkedAnalysisException = checkedAnalysisException;
+			this.runtimeException = null;
+			isNull = false;
 		}
 		
 		AbnormalAnalysisResult(RuntimeException runtimeException) {
 			this.runtimeException = runtimeException;
+			this.checkedAnalysisException = null;
+			isNull = false;
 		}
 		
-		AbnormalAnalysisResult(boolean isNull) {
-			this.isNull = isNull;
+		AbnormalAnalysisResult() {
+			this.isNull = true;
+			this.checkedAnalysisException = null;
+			this.runtimeException = null;
 		}
 
 		public Object returnOrThrow() throws CheckedAnalysisException {
@@ -97,7 +103,7 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 	}
 	
-	static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult(true);
+	static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult();
 
 	/**
 	 * Constructor.
