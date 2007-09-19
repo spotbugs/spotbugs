@@ -84,6 +84,7 @@ public class FBClassReader extends ClassReader {
         @Override
         public void visitLabel(Label label)
         {
+        	assert label instanceof MyLabel;
             MyLabel l = (MyLabel) label;
             ((FBMethodVisitor) mv).visitOffset(l.originalOffset);
             if (l.realLabel) {
