@@ -192,14 +192,15 @@ public class Subtypes {
 		for(Method m : c.getMethods())
 			XFactory.createXMethod(c, m);
 	}
+	@Deprecated
 	public void addNamedClass(String name) {
 
 	}
-
+	@Deprecated
 	public void addApplicationClass(JavaClass c) {
 
 	}
-
+	@Deprecated
 	public void addClass(JavaClass c) {
 		
 	}

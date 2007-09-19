@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -87,7 +88,7 @@ public abstract class TypeQualifierDataflowFactory
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
 			
 			DepthFirstSearch dfs = analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-			XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
+			XMethod xmethod = AnalysisContext.currentXFactory().createXMethod(methodDescriptor);
 			CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
 			ValueNumberDataflow vnaDataflow = analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
 			ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());

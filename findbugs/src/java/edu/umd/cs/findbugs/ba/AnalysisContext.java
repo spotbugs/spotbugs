@@ -195,7 +195,7 @@ public abstract class AnalysisContext {
 			return;
 		}
 		if (missing.charAt(0) == '[') return;
-
+		if (missing.endsWith("package-info")) return;
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
 		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;

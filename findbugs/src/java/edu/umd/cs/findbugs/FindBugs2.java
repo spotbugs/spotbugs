@@ -21,13 +21,13 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.bcel.classfile.ClassFormatException;
 
@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
@@ -83,7 +84,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private IClassPath classPath;
 	private IAnalysisCache analysisCache;
 	private List<ClassDescriptor> appClassList;
-	private Set<ClassDescriptor> referencedClassSet;
+	private Collection<ClassDescriptor> referencedClassSet;
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
 	private UserPreferences userPreferences;
@@ -486,8 +487,12 @@ public class FindBugs2 implements IFindBugsEngine {
 		builder.scanNestedArchives(scanNestedArchives);
 
 		builder.build(classPath, progress);
+		
+		
 
 		appClassList = builder.getAppClassList();
+		
+		if (DEBUG) System.out.println(appClassList.size() + " classes scanned");
 
 		// If any of the application codebases contain source code,
 		// add them to the source path.
@@ -511,7 +516,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void buildReferencedClassSet() throws CheckedAnalysisException, InterruptedException {
 		// XXX: should drive progress dialog (scanning phase)?
 
-		referencedClassSet = new TreeSet<ClassDescriptor>();
+		if (DEBUG)
+			System.out.println("Adding referenced classes");
 		Set<String> referencedPackageSet = new HashSet<String>();
 
 		LinkedList<ClassDescriptor> workList = new LinkedList<ClassDescriptor>();
@@ -521,7 +527,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>(appClassList);
 
 		Set<ClassDescriptor> badAppClassSet = new HashSet<ClassDescriptor>();
-
+		HashSet<ClassDescriptor> knownDescriptors = new HashSet<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+		int count = 0;
 		while (!workList.isEmpty()) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
@@ -532,18 +539,20 @@ public class FindBugs2 implements IFindBugsEngine {
 			}
 			seen.add(classDesc);
 
-			referencedClassSet.add(classDesc);
+
+			if (!knownDescriptors.contains(classDesc)) {
+				count++;
+				if (DEBUG && count % 5000 == 0) {
+					System.out.println("Adding referenced class " + classDesc);
+				}
+			}
+				
 			referencedPackageSet.add(classDesc.getPackageName());
 
 			// Get list of referenced classes and add them to set.
 			// Add superclasses and superinterfaces to worklist.
 			try {
 				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
-				Collection<ClassDescriptor> referencedClassDescriptorList = classNameAndInfo.getReferencedClassDescriptorList();
-				referencedClassSet.addAll(referencedClassDescriptorList);
-				for (ClassDescriptor ref : referencedClassDescriptorList) {
-					referencedPackageSet.add(ref.getPackageName());
-				}
 
 				if (classNameAndInfo.getSuperclassDescriptor() != null) {
 					workList.addLast(classNameAndInfo.getSuperclassDescriptor());
@@ -566,27 +575,36 @@ public class FindBugs2 implements IFindBugsEngine {
 				}
 			}
 		}
-		
 		// Delete any application classes that could not be read
 		appClassList.removeAll(badAppClassSet);
 		
+		for(ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) 
+			referencedPackageSet.add(d.getPackageName());
+		
 		// Based on referenced packages, add any resolvable package-info classes
 		// to the set of referenced classes.
+		if (DEBUG) {
+		referencedPackageSet.remove("");
+		System.out.println("Added " + count + " referenced classes");
+		System.out.println("Total of " + referencedPackageSet.size() + " packages");
+		}
 		for (String pkg : referencedPackageSet) {
 			ClassDescriptor pkgInfoDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(pkg + ".package-info");
 			if (false && DEBUG) {
 				System.out.println("Checking package " + pkg + " for package-info...");
 			}
 			try {
-				XClass xclass = analysisCache.getClassAnalysis(XClass.class, pkgInfoDesc);
+				analysisCache.getClassAnalysis(ClassData.class, pkgInfoDesc); // check that data is there
+				analysisCache.getClassAnalysis(XClass.class, pkgInfoDesc);
 				if (DEBUG) {
 					System.out.println("   Adding " + pkgInfoDesc + " to referenced classes");
 				}
-				referencedClassSet.add(pkgInfoDesc);
 			} catch (CheckedAnalysisException e) {
 				// Ignore
 			}
 		}
+		referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+		
 	}
 
 	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
@@ -737,7 +755,8 @@ public class FindBugs2 implements IFindBugsEngine {
 							if (classNameAndInfo instanceof ClassNameAndSuperclassInfo) {
 								return ((ClassNameAndSuperclassInfo)classNameAndInfo).getCalledClassDescriptorList();
 							}
-							return classNameAndInfo.getReferencedClassDescriptorList();
+							assert false;
+							return TigerSubstitutes.emptyList();
 						} catch  (CheckedAnalysisException e2) {
 							AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
 							return TigerSubstitutes.emptyList();

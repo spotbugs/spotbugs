@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -149,7 +150,7 @@ public class ClassParser implements ClassParserInterface {
 	 * @throws InvalidClassFileFormatException
 	 */
 	private Collection<ClassDescriptor> extractReferencedClasses() throws InvalidClassFileFormatException {
-		TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
+		Set<ClassDescriptor> referencedClassSet = new HashSet<ClassDescriptor>();
 		for (Constant constant : constantPool) {
 			if (constant == null) {
 				continue;
@@ -180,7 +181,7 @@ public class ClassParser implements ClassParserInterface {
 	 * @param referencedClassSet
 	 * @param signature
 	 */
-	public static void extractReferencedClassesFromSignature(TreeSet<ClassDescriptor> referencedClassSet, String signature) {
+	public static void extractReferencedClassesFromSignature(Set<ClassDescriptor> referencedClassSet, String signature) {
 		while (signature.length() > 0) {
 			int start = signature.indexOf('L');
 			if (start < 0) {

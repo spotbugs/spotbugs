@@ -39,32 +39,12 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 	 * @param maxCapacity - maximum number of entries in the map
 	 */
 	public MapCache(int maxCapacity) {
-		super(16, 0.75f, true);
+		super(4*maxCapacity/3, 0.75f, true);
 		this.maxCapacity = maxCapacity;
-		count = new int[maxCapacity];
-	}
-	int [] count;
-	@Override
-	public V get(Object k) { 
-		if (false) {
-		int age = count.length-1;
-		for(Map.Entry<K,V> e : entrySet()) {
-			if (e.getKey().equals(k)) {
-				count[age]++;
-				if (false && age > 20 && k instanceof JavaClass) {
 
-					System.out.println("Reusing value from " + age + " steps ago ");
-					System.out.println("Class " + ((JavaClass)k).getClassName());
-					new RuntimeException().printStackTrace(System.out);
-				}
-				break;
-			}
-			age--;
-
-		}
-		}
-		return super.get(k);
 	}
+
+
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
 		boolean result = size() > maxCapacity;
@@ -73,11 +53,6 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 		return result;
 	 }
 
-	public String getStatistics() {
-		StringBuffer b = new StringBuffer();
-		for(int c : count) 
-			b.append(c).append(" ");
-		return b.toString();
-	}
+
 
 }

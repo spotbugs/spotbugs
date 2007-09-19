@@ -25,11 +25,9 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -42,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.MapCache;
+import edu.umd.cs.findbugs.util.ProfilingMapCache;
 
 /**
  * Implementation of IAnalysisCache.

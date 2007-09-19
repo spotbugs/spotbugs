@@ -178,6 +178,8 @@ public abstract class FindBugsTestCase extends TestCase {
 				// object that knows whether or not the test code actually passed
 				// or failed.
 				detectorAdapter = JUnitDetectorAdapter.instance();
+			} catch(Throwable t) {
+				t.printStackTrace();
 			} finally {
 				if (tmpfile != null) {
 					tmpfile.delete();

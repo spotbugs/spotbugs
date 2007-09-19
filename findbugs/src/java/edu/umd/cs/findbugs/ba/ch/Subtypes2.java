@@ -59,7 +59,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 @DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
-	public static final boolean ENABLE_SUBTYPES2 = true; //SystemProperties.getBoolean("findbugs.subtypes2");
+	public static final boolean ENABLE_SUBTYPES2 = true; 
 	public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES =
 		true; //SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.subtypes2.debug");

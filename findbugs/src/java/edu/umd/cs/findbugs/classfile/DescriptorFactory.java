@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +74,9 @@ public class DescriptorFactory {
 		return factory;
 	}
 	
+	public Collection<ClassDescriptor> getAllClassDescriptors() {
+		return classDescriptorMap.values();
+	}
 	/**
 	 * Get a ClassDescriptor for a class name in VM (slashed) format.
 	 * 
@@ -81,6 +85,7 @@ public class DescriptorFactory {
 	 */
 	public ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
 		assert className.indexOf('.') == -1;
+		className = canonicalizeString(className);
 		ClassDescriptor classDescriptor = classDescriptorMap.get(className);
 		if (classDescriptor == null) {
 			classDescriptor = new ClassDescriptor(className);

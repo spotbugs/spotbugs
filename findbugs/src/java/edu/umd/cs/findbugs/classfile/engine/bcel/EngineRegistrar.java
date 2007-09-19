@@ -117,7 +117,6 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new DefinitelyNullSetDataflowFactory(),
 		new ReturnPathTypeDataflowFactory(),
 		new ForwardTypeQualifierDataflowFactoryFactory(),
-		new XMethodFactory(),
 		new BackwardTypeQualifierDataflowFactoryFactory(),
 		new OpcodeStack.JumpInfoFactory()
 	};

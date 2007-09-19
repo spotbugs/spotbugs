@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
@@ -39,9 +41,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * An AnalysisContext implementation that uses the
@@ -311,38 +313,19 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public void setAppClassList(List<ClassDescriptor> appClassCollection) throws CheckedAnalysisException {
 
 		// FIXME: we really should drive the progress callback here
+		HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
 
-		Subtypes subtypes = getSubtypes();
-
-		for (ClassDescriptor appClass : appClassCollection) {
-			try {
-				JavaClass jclass =
-					Global.getAnalysisCache().getClassAnalysis(JavaClass.class, appClass);
-				subtypes.addApplicationClass(jclass);
-			} catch (ClassFormatException e) {
-				Global.getAnalysisCache().getErrorLogger().logError(
-						"Error parsing application class " + appClass, e);
-			}
-			
-			if (Subtypes2.ENABLE_SUBTYPES2) {
-				// New Subtypes2 database - does not require JavaClass objects to be
-				// cached indefinitely
+		Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+		for (ClassDescriptor appClass : allClassDescriptors) {
 				XClass xclass = currentXFactory().getXClass(appClass);
-				assert xclass != null;
+
+				if (xclass == null) continue;
 				
 				// Add the application class to the database
-				getSubtypes2().addApplicationClass(xclass);
-				
-				// Add all referenced clases to the database
-				for (ClassDescriptor refClassDesc : xclass.getReferencedClassDescriptorList()) {
-					XClass refXClass = currentXFactory().getXClass(refClassDesc);
-					if (refXClass != null) {
-						getSubtypes2().addClass(refXClass);
-					} else {
-						getLookupFailureCallback().reportMissingClass(refClassDesc);
-					}
-				}
-			}
+				if (appSet.contains(appClass))  getSubtypes2().addApplicationClass(xclass);
+				else if (xclass instanceof ClassInfo)
+						getSubtypes2().addClass(xclass);
+					
 		}
 		
 		if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {

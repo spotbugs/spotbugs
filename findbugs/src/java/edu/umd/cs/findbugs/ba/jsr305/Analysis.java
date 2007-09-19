@@ -63,7 +63,7 @@ public class Analysis {
 		final IAnalysisCache analysisCache = Global.getAnalysisCache();
 		final HashSet<TypeQualifierValue> result = new HashSet<TypeQualifierValue>();
 
-		XMethod xmethod = analysisCache.getMethodAnalysis(XMethod.class, methodDescriptor);
+		XMethod xmethod = AnalysisContext.currentXFactory().createXMethod(methodDescriptor);
 
 		if (methodDescriptor.isStatic()) {
 			getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);

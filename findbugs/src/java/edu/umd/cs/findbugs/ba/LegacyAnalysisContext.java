@@ -238,12 +238,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	}
 
 	@Override
-	public String getClassContextStats() {
-		if (classContextCache == null) return null;
-		return hits + "/" + misses + ":" + classContextCache.getStatistics();
-	}
-
-	@Override
 	public SourceInfoMap getSourceInfoMap() {
 		return sourceInfoMap;
 	}
@@ -296,6 +290,14 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	public Subtypes2 getSubtypes2() {
 		throw new UnsupportedOperationException();
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getClassContextStats()
+     */
+    @Override
+    public String getClassContextStats() {
+	     return "";
+    }
 	
 
 }

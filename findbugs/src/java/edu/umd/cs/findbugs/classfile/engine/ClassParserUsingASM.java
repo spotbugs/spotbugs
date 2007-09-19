@@ -19,11 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
@@ -35,7 +33,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -46,7 +43,6 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
-import edu.umd.cs.findbugs.filter.MethodMatcher;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -269,7 +265,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				}
 
 			}}, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-		TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
+		HashSet<ClassDescriptor> referencedClassSet = new HashSet<ClassDescriptor>();
 
 		// collect class references
 

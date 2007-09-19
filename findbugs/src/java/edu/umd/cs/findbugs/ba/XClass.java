@@ -60,13 +60,6 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	public ClassDescriptor getImmediateEnclosingClass();
 
 	/**
-	 * Get ClassDescriptors of all classes referenced by the this class.
-	 * 
-	 * @return ClassDescriptors of all classes referenced by the this class
-	 */
-	public Collection<ClassDescriptor> getReferencedClassDescriptorList();
-
-	/**
 	 * @return true if the class is an interface, false otherwise
 	 */
 	public boolean isInterface();

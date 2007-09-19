@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.objectweb.asm.Opcodes;
 
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -43,7 +42,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	private final ICodeBaseEntry codeBaseEntry;
 
 	private final int accessFlags;
-	private final Collection<ClassDescriptor> referencedClassDescriptorList,calledClassDescriptorList;
+	private final Collection<ClassDescriptor> calledClassDescriptorList;
 	private final int  majorVersion, minorVersion;
 
 	public static class Builder {
@@ -115,10 +114,10 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		 *            The referencedClassDescriptorList to set.
 		 */
 		public void setReferencedClassDescriptors(Collection<ClassDescriptor> referencedClassDescriptorList) {
-			this.referencedClassDescriptorList = referencedClassDescriptorList;
+			this.referencedClassDescriptorList = new ArrayList<ClassDescriptor>(referencedClassDescriptorList);
 		}
 		public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
-			this.calledClassDescriptorList = calledClassDescriptorList;
+			this.calledClassDescriptorList = new ArrayList<ClassDescriptor>(calledClassDescriptorList);
 		}
 	}
 
@@ -144,7 +143,6 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
 		this.accessFlags = accessFlags;
-		this.referencedClassDescriptorList = referencedClassDescriptorList;
 		if (calledClassDescriptorList == null)
 			throw new NullPointerException("calledCBelassDescriptorList must not be null");
 		this.calledClassDescriptorList = calledClassDescriptorList;
@@ -194,12 +192,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	public ClassDescriptor[] getInterfaceDescriptorList() {
 		return interfaceDescriptorList;
 	}
-	/**
-	 * @return Returns the referenced class descriptor list.
-	 */
-	public Collection<ClassDescriptor> getReferencedClassDescriptorList() {
-		return referencedClassDescriptorList;
-	}
+	
 	/**
 	 * @return Returns the called class descriptor list.
 	 */

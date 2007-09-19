@@ -73,7 +73,8 @@ public class TopologicalSort {
 		}
 	}
 	
-	public static <E> int countBadEdges(List<E> elements, OutEdges<E> outEdges) {
+	public static <E> void countBadEdges(List<E> elements, OutEdges<E> outEdges) {
+		if (!DEBUG) return;
 		HashSet<E> seen = new HashSet<E>();
 		HashSet<E> all = new HashSet<E>(elements);
 		int result = 0;
@@ -85,8 +86,7 @@ public class TopologicalSort {
 			}
 			seen.add(e);
 		}
-		if (DEBUG) System.out.println(" bad edges are " + result + "/" + total);
-		return result;
+		System.out.println(" bad edges are " + result + "/" + total);
 	}
 
 	interface SortAlgorithm<E> {
