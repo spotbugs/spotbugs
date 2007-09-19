@@ -23,15 +23,6 @@
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
 	
-	<!--
-		NoteSyntheticElements must be run before any plugin that uses
-		AnnotationDatabases.
-	-->
-	<SplitPass>
-		<Earlier class="edu.umd.cs.findbugs.detect.NoteSyntheticElements"/>
-		<LaterSubtypes super="edu.umd.cs.findbugs.UseAnnotationDatabase" spanplugins="true"/>
-	</SplitPass>
-
 	<!-- NoteCheckReturnValue should happen in an earlier pass than BCPMethodReturnCheck. -->
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention"/>
@@ -110,10 +101,6 @@
 	        speed="fast"
 	        reports=""
 			hidden="true" /> 
-  <Detector class="edu.umd.cs.findbugs.detect.NoteSyntheticElements"
-            speed="fast"
-            reports=""
-            hidden="true"/>
 	      
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField"
 			speed="moderate"
@@ -889,7 +876,7 @@
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" category="STYLE" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />
+  <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="BAD_PRACTICE" />
   <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>
