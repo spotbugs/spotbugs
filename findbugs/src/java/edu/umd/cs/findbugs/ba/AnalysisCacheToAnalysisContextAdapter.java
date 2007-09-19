@@ -20,16 +20,13 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
-import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
@@ -44,6 +41,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * An AnalysisContext implementation that uses the
@@ -392,4 +390,13 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		return subtypes2;
 	}
 
+	MapCache<String, String> stringCache = new MapCache<String, String>(2000);
+	public String canonicalizeString(String s) {
+		String result = stringCache.get(s);
+		if (result != null) return result;
+		stringCache.put(s,s);
+		return s;
+	}
+
+	
 }

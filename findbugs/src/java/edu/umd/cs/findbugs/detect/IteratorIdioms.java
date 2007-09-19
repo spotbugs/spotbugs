@@ -38,8 +38,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 
 	private ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor("java/util/Iterator");
 	private BugReporter bugReporter;
-	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-
+	
 	
 	public IteratorIdioms(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -49,6 +48,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 
 	@Override
 	public void visitClassContext(ClassContext classContext) {
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
 		try {
 			if (subtypes2.isSubtype(classContext.getClassDescriptor(), iteratorDescriptor))
@@ -85,7 +85,6 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 				|| seen == INVOKEVIRTUAL
 				|| seen == INVOKEINTERFACE) {
 			sawCall = true;
-			// System.out.println("Saw call to " + nameConstant);
 			if (getNameConstantOperand().toLowerCase().indexOf("next")  >= 0 || getNameConstantOperand().toLowerCase().indexOf("previous") >= 0 )
 				sawNoSuchElement = true;
 		}

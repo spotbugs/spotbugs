@@ -132,6 +132,7 @@ public abstract class AnalysisContext {
 	private Map<Object,Object> analysisLocals;
 	private String databaseInputDir;
 	private String databaseOutputDir;
+	
 
 	protected AnalysisContext() {
 		this.boolPropertySet = new BitSet();
@@ -248,6 +249,12 @@ public abstract class AnalysisContext {
 		getSourceFinder().setSourceBaseList(sourcePath);
 	}
 
+	/**
+	 * Given a String, return  semi-canonical String with identical contents.
+	 * This method intended so that Strings that occur very often can be shared.
+	 * It is not required to remember/canonicalize all strings.
+	 */
+	public abstract String canonicalizeString(String s);
 	/**
 	 * Get the SourceFinder, for finding source files.
 	 */

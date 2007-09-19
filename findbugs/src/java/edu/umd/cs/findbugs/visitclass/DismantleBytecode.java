@@ -93,23 +93,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	private static final int INVALID_OFFSET = Integer.MIN_VALUE;
 	private static final String NOT_AVAILABLE = "none";
 
-	/*
-	protected static final int R_INT = 0;
-	protected static final int R_LONG = 1;
-	protected static final int R_FLOAT = 2;
-	protected static final int R_DOUBLE = 3;
-	protected static final int R_REF = 4;
-	protected int registerKind;
-	*/
-
-	private static HashMap<String, String> replaceSlashesWithDotsCache = new HashMap<String, String>();
-
-	synchronized static String replaceSlashesWithDots(String c) {
-		String result = replaceSlashesWithDotsCache.get(c);
-		if (result != null) return result;
-		result = c.replace('/', '.');
-		replaceSlashesWithDotsCache.put(c, result);
-		return result;
+	 static String replaceSlashesWithDots(String c) {
+		return c.replace('/', '.');
 	}
 
 	/**
