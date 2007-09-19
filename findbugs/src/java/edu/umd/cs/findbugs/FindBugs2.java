@@ -756,11 +756,12 @@ public class FindBugs2 implements IFindBugsEngine {
 				}
 			}
 			progress.startAnalysis(classCollection.size());
-
+			int count = 0;
 			Global.getAnalysisCache().purgeAllMethodAnalysis();
 			for (ClassDescriptor classDescriptor : classCollection) {
 				if (DEBUG) {
-					System.out.println("Class " + classDescriptor);
+					System.out.println(count +"/" + classCollection.size() + ": Class " + classDescriptor);
+					count++;
 				}
 
 				// Check to see if class is excluded by the class screener.
