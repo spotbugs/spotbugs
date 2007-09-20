@@ -22,13 +22,13 @@ package edu.umd.cs.findbugs;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -95,8 +95,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private int verbosityLevel = NORMAL;
 	private int priorityThreshold;
 	private boolean analysisUnderway, relaxed;
-	private HashSet<String> missingClassMessageSet = new HashSet<String>();
-	private LinkedList<String> missingClassMessageList = new LinkedList<String>();
+	private LinkedHashSet<String> missingClassMessageList = new LinkedHashSet<String>();
 	private Set<Error> errorSet = new HashSet<Error>();
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
@@ -193,17 +192,26 @@ public abstract class AbstractBugReporter implements BugReporter {
 		if (verbosityLevel == SILENT)
 			return;
 
-		logMissingClass(classDescriptor.toDottedClassName());
+		String dottedClassName = classDescriptor.toDottedClassName();
+		if (dottedClassName.charAt(0) == '[') return;
+		if (dottedClassName.endsWith("package-info")) return;
+		logMissingClass(dottedClassName);
 	}
 
 	/**
 	 * @param message
 	 */
 	private void logMissingClass(String message) {
-		if (!missingClassMessageSet.contains(message)) {
-			missingClassMessageSet.add(message);
-			missingClassMessageList.add(message);
+		
+		if (message == null || message.length() == 0) {
+			throw new AssertionError("Bad missing class" + message);
 		}
+	
+		if (message.charAt(0) == '[' || message.endsWith(".package-info")) {
+			return;
+		}
+		
+		missingClassMessageList.add(message);
 	}
 
 	/**
