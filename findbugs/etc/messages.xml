@@ -128,6 +128,13 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers">
+    <Details>
+<![CDATA[
+<p> Note the type qualifiers relevant to analyzing a method.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>
 <![CDATA[

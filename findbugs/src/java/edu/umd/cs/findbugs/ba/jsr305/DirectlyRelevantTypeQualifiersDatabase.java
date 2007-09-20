@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
@@ -31,10 +32,13 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
  * @author pugh
  */
 public class DirectlyRelevantTypeQualifiersDatabase extends DismantleBytecode {
-	protected Map<MethodDescriptor, Collection<TypeQualifierAnnotation>> qualifiers = new HashMap<MethodDescriptor, Collection<TypeQualifierAnnotation>> ();
+	protected Map<MethodDescriptor, Collection<TypeQualifierValue>> qualifiers = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>> ();
 	
-	public Collection<TypeQualifierAnnotation> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
-		Collection<TypeQualifierAnnotation> result = qualifiers.get(m);
+	protected DirectlyRelevantTypeQualifiersDatabase() {
+		AnalysisContext.currentAnalysisContext().setDirectlyRelevantTypeQualifiersDatabase(this);
+	}
+	public Collection<TypeQualifierValue> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
+		Collection<TypeQualifierValue> result = qualifiers.get(m);
 		if (result != null) return result;
 		return Collections.emptyList();
 	}

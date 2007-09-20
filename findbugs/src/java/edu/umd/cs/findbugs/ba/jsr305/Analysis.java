@@ -77,15 +77,7 @@ public class Analysis {
 				 */
 				@Override
 				protected boolean visitOverriddenMethod(XMethod xmethod) {
-					try {
-	                    getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
-                    } catch (CheckedAnalysisException e) {
-                    	if (DEBUG) {
-                    		System.out.println("**** Error getting relevant type qualifiers ****");
-                    		e.printStackTrace(System.out);
-                    	}
-                    	throw new AnalysisException("Error getting relevant type qualifiers for " + xmethod, e);
-                    }
+	                getDirectlyRelevantTypeQualifiers(xmethod, analysisCache, result);
 					return true;
 				}
 			};
@@ -107,53 +99,16 @@ public class Analysis {
 	}
 
 	private static void getDirectlyRelevantTypeQualifiers(XMethod xmethod, IAnalysisCache analysisCache,
-            HashSet<TypeQualifierValue> result) throws CheckedAnalysisException, CFGBuilderException {
-		try {
-		if (DEBUG) {
-			System.out.println("Accumulating relevant type qualifiers for " + xmethod);
-			System.out.println(  "Before=" + result);
-		}
-		
-	    ClassContext context = analysisCache.getClassAnalysis(ClassContext.class, xmethod.getMethodDescriptor().getClassDescriptor());
-		Method method = analysisCache.getMethodAnalysis(Method.class, xmethod.getMethodDescriptor());
-
-		Collection<TypeQualifierAnnotation> applicableApplicationsForMethod = TypeQualifierApplications.getApplicableApplications(xmethod);
-		addKnownTypeQualifiers(result, applicableApplicationsForMethod);
-		addKnownTypeQualifiersForParameters(result, xmethod);
-		
-		if (method.getCode() != null) {
-			CFG cfg = context.getCFG(method);
-			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-				Location location = i.next();
-				Instruction ins = location.getHandle().getInstruction();
-				if (ins instanceof FieldInstruction) {
-					XField f = XFactory.createXField((FieldInstruction)ins, context.getConstantPoolGen());
-					Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(f);
-					addKnownTypeQualifiers(result, applicableApplications);
-				}
-				else if (ins instanceof InvokeInstruction) {
-					XMethod m = XFactory.createXMethod((InvokeInstruction)ins, context.getConstantPoolGen());
-					Collection<TypeQualifierAnnotation> applicableApplications = TypeQualifierApplications.getApplicableApplications(m);
-					addKnownTypeQualifiers(result, applicableApplications);
-					addKnownTypeQualifiersForParameters(result, m);
-
-				}
-			}
-		}
-		
-		if (DEBUG) {
-			System.out.println("  After=" + result);
-		}
-		} catch (MethodUnprofitableException e) {
-			assert true; // ignore it
-		}
+            HashSet<TypeQualifierValue> result)  {
+		result.addAll(AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase().getDirectlyRelevantTypeQualifiers(xmethod.getMethodDescriptor()));
+	   
     }
 
 	/**
      * @param result
      * @param m
      */
-    private static void addKnownTypeQualifiersForParameters(HashSet<TypeQualifierValue> result, XMethod m) {
+    public static void addKnownTypeQualifiersForParameters(HashSet<TypeQualifierValue> result, XMethod m) {
 	    int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
 	    for(int p = 0; p < numParameters; p++)
 	    	addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m,p));
@@ -163,7 +118,7 @@ public class Analysis {
      * @param result
      * @param applicableApplications
      */
-    private static void addKnownTypeQualifiers(HashSet<TypeQualifierValue> result,
+    public static void addKnownTypeQualifiers(HashSet<TypeQualifierValue> result,
             Collection<TypeQualifierAnnotation> applicableApplications) {
 	    for(TypeQualifierAnnotation t : applicableApplications)
 	    	if (t.when != When.UNKNOWN)

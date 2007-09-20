@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -35,11 +33,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
@@ -60,13 +59,13 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 	}
 
 	
-	HashSet<TypeQualifierAnnotation> applicableApplications;
+	HashSet<TypeQualifierValue> applicableApplications;
 	@Override
     public void visitMethod(Method m) {
-		applicableApplications = new HashSet<TypeQualifierAnnotation>();
+		applicableApplications = new HashSet<TypeQualifierValue>();
 		super.visitMethod(m);
 		if (applicableApplications.size() > 0) {
-			qualifiers.put(getMethodDescriptor(), new ArrayList(applicableApplications));
+			qualifiers.put(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}
 		
 		
@@ -80,7 +79,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 		case INVOKESPECIAL:
 		{
 			XMethod m = XFactory.createReferencedXMethod(this);
-			applicableApplications.addAll(TypeQualifierApplications.getApplicableApplications(m));
+			Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
+			Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+			Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
+	
 			break;
 		}
 		case GETSTATIC:
@@ -90,7 +92,9 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 			{
 				XField f = XFactory.createReferencedXField(this);
 
-				applicableApplications.addAll(TypeQualifierApplications.getApplicableApplications(f));
+				Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
+				Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+				
 				
 			break;
 			}

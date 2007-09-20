@@ -26,10 +26,8 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -44,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -182,6 +181,16 @@ public abstract class AnalysisContext {
 	public void setUnreadFields(@NonNull UnreadFields unreadFields) {
 		if (this.unreadFields != null) throw new IllegalStateException("UnreadFields detector already set");
 		this.unreadFields = unreadFields;
+	}
+	
+	DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
+	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
+		if (directlyRelevantTypeQualifiersDatabase == null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  not set");
+		return directlyRelevantTypeQualifiersDatabase;
+	}
+	public void setDirectlyRelevantTypeQualifiersDatabase(@NonNull DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase) {
+		if (this.directlyRelevantTypeQualifiersDatabase != null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  already set");
+		this.directlyRelevantTypeQualifiersDatabase = directlyRelevantTypeQualifiersDatabase;
 	}
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback

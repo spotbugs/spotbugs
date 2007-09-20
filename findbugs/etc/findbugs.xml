@@ -29,6 +29,10 @@
 		<Later class="edu.umd.cs.findbugs.detect.DumbMethods"/>
 	</SplitPass>
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"/>
+		<Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
 		<Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
 	</SplitPass>
@@ -98,6 +102,11 @@
 	        reports=""
 			hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" 
+	        speed="fast"
+	        reports=""
+			hidden="true" /> 
+	      
+  <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" 
 	        speed="fast"
 	        reports=""
 			hidden="true" /> 

@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.Location;
 public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFrame> {
 	private MethodGen methodGen;
 	private ConstantFrameModelingVisitor visitor;
-
+	
 	public ConstantAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
 		super(dfs);
 		this.methodGen = methodGen;
@@ -58,7 +58,7 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		frame.clearStack();
 		int numSlots = frame.getNumSlots();
 		for (int i = 0; i < numSlots; ++i) {
-			frame.setValue(i, new Constant("parameter" + i));
+			frame.setValue(i, Constant.NOT_CONSTANT);
 		}
 	}
 
