@@ -658,7 +658,7 @@
             speed="fast"
             reports="GC_UNRELATED_TYPES" />
 
-       <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"  reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
+       <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"  reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.TestDataflowAnalysis"
 	speed="slow" reports="" disabled="true" hidden="true"/>
@@ -667,7 +667,7 @@
     speed="slow" reports="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED,TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED,TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK"/>
 
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
-       <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
+       <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
 

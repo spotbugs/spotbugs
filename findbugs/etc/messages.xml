@@ -6180,7 +6180,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 </BugPattern>
 
 
-<BugPattern type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE">
+<BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
 <ShortDescription>Static DateFormat</ShortDescription>
 <LongDescription>Found static field of type java.text.DateFormat in {1}</LongDescription>
 <Details>

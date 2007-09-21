@@ -152,7 +152,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			if (subtypes2.isSubtype(classOfField, calendarType)) {
 				tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
 			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {
-				tBugType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
+				tBugType = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE";
 			}
 			if (tBugType != null) {
 				reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(this));
