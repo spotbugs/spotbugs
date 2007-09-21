@@ -38,7 +38,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	boolean sawSuperFinalize;
 
 	@Override
-		 public void visit(Method obj) {
+	public void visit(Method obj) {
 		if (DEBUG) System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
 		if (getMethodName().equals("finalize")
 				&& getMethodSig().equals("()V")
@@ -48,7 +48,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	}
 
 	@Override
-		 public void visit(Code obj) {
+	public void visit(Code obj) {
 		sawSuperFinalize = false;
 		super.visit(obj);
 		if (!getMethodName().equals("finalize")
@@ -77,13 +77,17 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	}
 
 	@Override
-		 public void sawOpcode(int seen) {
-		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize"))
+	public void sawOpcode(int seen) {
+		if (seen == INVOKEVIRTUAL &&
+		    getNameConstantOperand().equals("finalize") &&
+		    getSigConstantOperand().equals("()V"))
+		{
 			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
 						getMethodName().equals("finalize") && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addCalledMethod(this)
 					.addSourceLine(this, getPC()));
+		}
 		if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize"))
 			sawSuperFinalize = true;
 	}
