@@ -6,6 +6,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Submitted By: Len Trigg
+ * Summary:
+ * 
+ * OS reports failure to close stream when the stream is
+ * assigned to a member array.
+ * 
+ * Test case attached that demonstrates the problem (and
+ * shows that the OS is not reported upon assignment to
+ * non-array member).
+ */
 public class Bug1356076 {
     PrintWriter[] mWriters = new PrintWriter[1];
     PrintWriter mWriter = null;

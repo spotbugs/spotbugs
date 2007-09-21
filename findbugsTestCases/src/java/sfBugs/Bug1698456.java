@@ -8,7 +8,30 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 /**
+ * Submitted by: Yvan Norsa
+ * Summary:
  * 
+ * The FindOpenStream class tries to detect the case where a resource is
+ * passed to an external method, for it could be closed there. But if the
+ * resource is passed to a method in an array, FindOpenStream does not
+ * consider it as potentially closed.
+ * 
+ * Example :
+ * Connection c = null;
+ * 
+ * try {
+ * c = this.openConnection();
+ * } catch (SQLException sqlEx) {
+ * // ...
+ * } finally {
+ * DB.closeConnection(new Connection[]{c});
+ * }
+ * 
+ * FindBugs (1.2.0-rc4) will indicate an ODR_OPEN_DATABASE_RESOURCE here.
+ * 
+ * But if you do
+ * DB.closeConnection(c);
+ * instead, it will be OK.
  *
  */
 public class Bug1698456 {
