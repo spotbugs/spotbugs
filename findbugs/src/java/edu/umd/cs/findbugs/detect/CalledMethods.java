@@ -26,8 +26,11 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * Detector to find private methods that are never called.
@@ -46,8 +49,10 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
 		case INVOKEINTERFACE:
-			
-			xFactory.addCalledMethod(getMethodDescriptorOperand());
+			ClassDescriptor c = getClassDescriptorOperand();
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			if (subtypes2.isApplicationClass(c))
+				xFactory.addCalledMethod(getMethodDescriptorOperand());
 
 			break;
 		default:

@@ -160,6 +160,7 @@ public class Subtypes2 {
 
 	
 	public boolean isApplicationClass(ClassDescriptor descriptor) {
+		assert descriptor != null;
         try {
 	        return resolveClassVertex(descriptor).isApplicationClass();
         } catch (ClassNotFoundException e) {

@@ -705,6 +705,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		int passCount = 0;
 		Profiler profiler = Profiler.getInstance();
 		profiler.start(this.getClass());
+		AnalysisContext.currentXFactory().canonicalizeAll();
 		try {
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
 		if (executionPlan.getNumPasses() == 0)
@@ -743,10 +744,11 @@ public class FindBugs2 implements IFindBugsEngine {
 			Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass)
 					? referencedClassSet 
 					: appClassList;
+			AnalysisContext.currentXFactory().canonicalizeAll();
 			if (DEBUG || LIST_ORDER) {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
+				XFactory.profile();
 			}
-			
 			if (!isNonReportingFirstPass) {
 				OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
 					public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
@@ -800,7 +802,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				for (Detector2 detector : detectorList) {
 					if (Thread.interrupted())
 						throw new InterruptedException();
-					if (DEBUG) {
+					if (false && DEBUG) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
 					try {

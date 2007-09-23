@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -124,6 +125,28 @@ public class DescriptorFactory {
 		return existing;
 	}
 
+	public void profile() {
+		int total = 0;
+		int keys = 0;
+		int values = 0;
+		int bad = 0;
+		for(Map.Entry<MethodDescriptor, MethodDescriptor> e : methodDescriptorMap.entrySet()) {
+			total++;
+			if (e.getKey() instanceof MethodInfo) keys++;
+			else if (total - keys < 10)
+				System.out.println(e.getKey());
+			if (e.getValue() instanceof MethodInfo) values++;
+		}
+		System.out.printf("Descriptor factory: %d/%d/%d\n", keys, values, total);
+		
+	}
+	public void canonicalize(MethodDescriptor m) {
+		MethodDescriptor existing = methodDescriptorMap.get(m);
+		if (m != existing) {
+			methodDescriptorMap.remove(m);
+			methodDescriptorMap.put(m, m);
+		}
+	}
 	public MethodDescriptor getMethodDescriptor(MethodAnnotation ma) {
 		return getMethodDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
 	}

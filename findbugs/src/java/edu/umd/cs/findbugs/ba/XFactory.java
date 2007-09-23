@@ -36,6 +36,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -71,6 +72,12 @@ public class XFactory {
 	private Set<String> calledMethodSignatures = new HashSet<String>();
 
 
+	public void canonicalizeAll() {
+		DescriptorFactory descriptorFactory = DescriptorFactory.instance();
+		for(XMethod m : methods.values())
+			if (m instanceof MethodDescriptor)
+				descriptorFactory.canonicalize((MethodDescriptor)m);
+	}
 	/**
 	 * Constructor.
 	 */
@@ -242,8 +249,24 @@ public class XFactory {
 		if (m != null)
 			return m;
 		m = xFactory.resolveXMethod(desc);
-		xFactory.methods.put(desc, m);
+		if (m instanceof MethodDescriptor)  {
+		  xFactory.methods.put((MethodDescriptor) m, m);
+		  DescriptorFactory.instance().canonicalize((MethodDescriptor) m);
+		} else 
+			xFactory.methods.put(desc, m);
 		return m;
+	}
+	
+	public static void profile() {
+		XFactory xFactory = AnalysisContext.currentXFactory();
+		int count = 0;
+		for(XMethod m : xFactory.methods.values()) {
+			if (m instanceof MethodInfo)
+				count++;
+		}
+		System.out.printf("XFactory cached methods: %d/%d\n", count, xFactory.methods.size());
+		DescriptorFactory.instance().profile();
+		
 	}
 
 	private XMethod resolveXMethod(MethodDescriptor originalDescriptor) {
