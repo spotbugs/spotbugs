@@ -24,7 +24,6 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -56,7 +55,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
-import org.apache.tools.ant.util.ClasspathUtils;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
