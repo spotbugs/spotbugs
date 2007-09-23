@@ -424,7 +424,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" 
             speed="slow"
-            reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_BAD_ARRAY_COMPARE" />
+            reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_BAD_ARRAY_COMPARE,EC_UNRELATED_TYPES_USING_POINTER_EQUALITY" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" 
             speed="moderate"
@@ -887,6 +887,7 @@
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="BAD_PRACTICE" />
   <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG" category="CORRECTNESS"/>
+  <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>

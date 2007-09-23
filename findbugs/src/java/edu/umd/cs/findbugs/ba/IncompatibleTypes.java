@@ -79,6 +79,11 @@ public class IncompatibleTypes {
 
 	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
 			Type lhsType, Type rhsType) {
+		return getPriorityForAssumingCompatible(lhsType, rhsType, false);
+	}
+	
+	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
+			Type lhsType, Type rhsType, boolean sameClass) {
 		if (!(lhsType instanceof ReferenceType))
 			return SEEMS_OK;
 		if (!(rhsType instanceof ReferenceType))
@@ -113,7 +118,7 @@ public class IncompatibleTypes {
 			return SEEMS_OK;
 
 		return getPriorityForAssumingCompatible((ObjectType) lhsType,
-				(ObjectType) rhsType);
+				(ObjectType) rhsType, sameClass);
 
 	}
 
@@ -131,7 +136,8 @@ public class IncompatibleTypes {
 		 
 	}
 	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
-			ObjectType lhsType, ObjectType rhsType) {
+			ObjectType lhsType, ObjectType rhsType, boolean sameClass) {
+		if (lhsType.equals(rhsType)) return SEEMS_OK;
 		try {
 		// See if the types are related by inheritance.
 		ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(lhsType.getClassName());
@@ -147,8 +153,12 @@ public class IncompatibleTypes {
 				// Look up the classes
 				XMethod lhsEquals = getInvokedMethod(lhs, "equals", "(Ljava/lang/Object;)Z", false);
 				XMethod rhsEquals = getInvokedMethod(rhs, "equals", "(Ljava/lang/Object;)Z", false);
-				if (lhsEquals.equals(rhsEquals) && !lhsEquals.getClassName().equals("java.lang.Object"))
-					return SEEMS_OK;
+				String lhsClassName = lhsEquals.getClassName();
+				if (!sameClass && lhsEquals.equals(rhsEquals)) {
+					if (lhsClassName.equals("java.lang.Object") || lhsClassName.equals("java.lang.Enum"))
+						return INCOMPATIBLE_CLASSES;
+					else return SEEMS_OK;
+				}
 				if (!lhs.isInterface() && !rhs.isInterface()) {
 					// Both are class types, and therefore there is no possible
 					// way

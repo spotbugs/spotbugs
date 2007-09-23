@@ -660,6 +660,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		Type rhsType = frame.getValue(numSlots - 2);
 
 		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
+			IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType, rhsType, true);
+			if (result != IncompatibleTypes.SEEMS_OK) {
+				String sourceFile = jclass.getSourceFileName();
+				
+				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addFoundAndExpectedType(rhsType.getSignature(), lhsType.getSignature())
+				.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+				);
+			}
 			String lhs = SignatureConverter.convert(lhsType.getSignature());
 			String rhs = SignatureConverter.convert(rhsType.getSignature());
 
