@@ -164,11 +164,17 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		if (nameConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getMethodDescriptorOperand called but value not available");
 
+		if (referencedMethod == null) {
+			referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC);
+		}
 		return referencedMethod;
 	}
 
 	public @CheckForNull
 	XMethod getXMethodOperand() {
+		if (referencedXClass != null && referencedXMethod == null) 
+			referencedXMethod = referencedXClass.findMethod(nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC);
+		
 		return referencedXMethod;
 	}
 
@@ -176,11 +182,16 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		if (nameConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getFieldDescriptorOperand called but value not available");
 
+		if (referencedField == null) {
+			referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, opcode == GETSTATIC || opcode == PUTSTATIC);
+		}
 		return referencedField;
 	}
 
 	public @CheckForNull
 	XField getXFieldOperand() {
+		if (referencedXClass != null && referencedXField == null) referencedXField = referencedXClass.findField(nameConstantOperand, sigConstantOperand, opcode == GETSTATIC || opcode == PUTSTATIC);
+		
 		return referencedXField;
 	}
 	
@@ -551,7 +562,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 								try {
 	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
                                 } catch (CheckedAnalysisException e) {
-                                	referencedClass = null;
+                                	referencedXClass = null;
                                 }
 							}
 							else if (constantRefOperand instanceof ConstantInteger)
@@ -572,6 +583,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 									= (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
+								referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
+								try {
+	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
+                                } catch (CheckedAnalysisException e) {
+                                	referencedXClass = null;
+                                }
 								ConstantNameAndType sig
 									= (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
 								nameConstantOperand = getStringFromIndex(sig.getNameIndex());
@@ -722,29 +739,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 				case PUTFIELD:
 					refFieldIsStatic = false;
 					break;
-				}
-			
-				switch (opcode) {
-				case INVOKEINTERFACE:
-				case INVOKESPECIAL:
-				case INVOKESTATIC:
-				case INVOKEVIRTUAL:
-				{
-					boolean isStatic = opcode == INVOKESTATIC;
-					referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, isStatic);
-					if (referencedXClass != null) referencedXMethod = referencedXClass.findMethod(nameConstantOperand, sigConstantOperand, isStatic);
-					break;
-				}
-				case GETSTATIC:
-				case PUTSTATIC:
-				case GETFIELD:
-				case PUTFIELD:
-				{
-					boolean isStatic = opcode == GETSTATIC || opcode == PUTSTATIC;
-					referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand, sigConstantOperand, isStatic);
-					if (referencedXClass != null) referencedXField = referencedXClass.findField(nameConstantOperand, sigConstantOperand, isStatic);
-					break;
-				}
 				}
 				
 				
