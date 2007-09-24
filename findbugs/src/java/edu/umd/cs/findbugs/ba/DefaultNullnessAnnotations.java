@@ -37,7 +37,7 @@ public class DefaultNullnessAnnotations {
 		
 		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
-		database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
+		database.addFieldAnnotation("java.lang.System", "http://sourceforge.net/tracker/index.php?func=detail&aid=1795838&group_id=96405&atid=614693err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
 
 		database.addMethodAnnotation("java.lang.Class", "newInstance", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
@@ -46,12 +46,12 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.lang.Object", "clone", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.lang.Object", "toString", "()Ljava/lang/String;", false, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.lang.Object", "getClass", "()Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
-		database.addMethodAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)Z", false, NullnessAnnotation.NONNULL);
-		database.addMethodAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;I)I", true, NullnessAnnotation.NONNULL);
-		database.addMethodAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true, NullnessAnnotation.NONNULL);
-
+		
 		database.addMethodParameterAnnotation("java.lang.Object", "equals", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;I)I", true, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true, 0, NullnessAnnotation.NONNULL);
 
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
