@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -95,6 +96,9 @@ public class XFactory {
 		}
 	}
 
+	public Collection<XField> allFields() {
+		return fields.values();
+	}
 	public void addCalledMethod(MethodDescriptor m) {
 		assert m.getClassDescriptor().getClassName().indexOf('.') == -1;
 		calledMethods.add(createXMethod(m));
@@ -180,7 +184,7 @@ public class XFactory {
 	}
 
 	public static String canonicalizeString(String s) {
-		return ConstantUtf8.getCachedInstance(s).getBytes();
+		return DescriptorFactory.canonicalizeString(s);
 	}
 
 	/**

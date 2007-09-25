@@ -20,12 +20,25 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-
-import java.util.*;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
 
@@ -51,13 +64,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	boolean emptyArrayOnTOS;
 	boolean inStaticInitializer;
 	String packageName;
-	Set<String> readAnywhere = new HashSet<String>();
-
-	Set<String> unsafeValue = new HashSet<String>();
-	Set<String> interfaces = new HashSet<String>();
-	Set<String> notFinal = new HashSet<String>();
-	Set<String> outsidePackage = new HashSet<String>();
-	Map<String, SourceLineAnnotation> firstFieldUse = new HashMap<String, SourceLineAnnotation>();
+	Set<XField> readAnywhere = new HashSet<XField>();
+	Set<XField> unsafeValue = new HashSet<XField>();
+	Set<XField> notFinal = new HashSet<XField>();
+	Set<XField> outsidePackage = new HashSet<XField>();
+	Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
 	private BugReporter bugReporter;
 
 	public MutableStaticFields(BugReporter bugReporter) {
@@ -70,9 +81,6 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		int flags = obj.getAccessFlags();
 		publicClass = (flags & ACC_PUBLIC) != 0
 				&& !getDottedClassName().startsWith("sun.");
-		if ((flags & ACC_INTERFACE) != 0) {
-			interfaces.add(getDottedClassName());
-			}
 
 		packageName = extractPackage(getClassName());
 	}
@@ -99,26 +107,27 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			boolean safeValue =
 					seen == GETSTATIC || emptyArrayOnTOS
 					|| !mutableSignature(getSigConstantOperand());
-			String name = (getClassConstantOperand() + "." + getNameConstantOperand())
-					.replace('/', '.');
-
+			
+			XField xField = getXFieldOperand();
+			if (xField == null) break;
+			if (!interesting(xField)) break;
 			if (seen == GETSTATIC)
-				readAnywhere.add(name);
+				readAnywhere.add(xField);
 
 			if (!samePackage)
-				outsidePackage.add(name);
+				outsidePackage.add(xField);
 
 			if (!initOnly)
-				notFinal.add(name);
+				notFinal.add(xField);
 
 			if (!safeValue)
-				unsafeValue.add(name);
+				unsafeValue.add(xField);
 
 			//Remove inStaticInitializer check to report all source lines of first use
 			//doing so, however adds quite a bit of memory bloat.
-			if (inStaticInitializer && !firstFieldUse.containsKey(name)) {
+			if (inStaticInitializer && !firstFieldUse.containsKey(xField)) {
 				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
-				firstFieldUse.put(name, sla);
+				firstFieldUse.put(xField, sla);
 			}
 			break;
 		case ANEWARRAY:
@@ -136,6 +145,16 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		emptyArrayOnTOS = false;
 	}
 
+	private boolean interesting(XField f) {
+		if (!f.isPublic() && !f.isProtected()) return false;
+		if (!f.isStatic()|| f.isSynthetic() || f.isVolatile()) return false;
+		boolean isHashtable = 
+			f.getSignature().equals("Ljava/util/Hashtable;");
+		boolean isArray = f.getSignature().charAt(0) == '[';
+		if (f.isFinal() && !(isArray || isHashtable)) return false;
+		return true;
+		
+	}
 	@Override
 		 public void visit(Field obj) {
 		super.visit(obj);
@@ -155,7 +174,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 		if (isFinal && !(isHashtable || isArray)) return;
 
-		seen.add(XFactory.createXField(this));
+		seen.add(getXField());
 
 	}
 
@@ -171,17 +190,22 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			String className = f.getClassName();
 			String fieldSig = f.getSignature();
 			String fieldName = f.getName();
-			String name = className + "." + fieldName;
 			boolean couldBeFinal = !isFinal
-					&& !notFinal.contains(name);
+					&& !notFinal.contains(f);
 			boolean isPublic = f.isPublic();
-			boolean couldBePackage = !outsidePackage.contains(name);
-			boolean movedOutofInterface = couldBePackage &&
-					interfaces.contains(className);
+			boolean couldBePackage = !outsidePackage.contains(f);
+			boolean movedOutofInterface = false;
+			
+            try {
+            	XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+            	movedOutofInterface = couldBePackage && xClass.isInterface();
+            } catch (CheckedAnalysisException e) {
+            	assert true;
+            }
 			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
-					&& unsafeValue.contains(name);
-			boolean isReadAnywhere = readAnywhere.contains(name);
+					&& unsafeValue.contains(f);
+			boolean isReadAnywhere = readAnywhere.contains(f);
 			if (false) 
 						  System.out.println(className + "."  + fieldName
 									  + " : " + fieldSig
@@ -222,7 +246,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			BugInstance bug = new BugInstance(this, bugType, priority)
 												.addClass(className)
 												.addField(f);
-			SourceLineAnnotation firstPC = firstFieldUse.get(className + "." + fieldName);
+			SourceLineAnnotation firstPC = firstFieldUse.get(f);
 			if (firstPC != null)
 				bug.addSourceLine(firstPC);
 			bugReporter.reportBug(bug);

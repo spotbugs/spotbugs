@@ -314,11 +314,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return SourceLineAnnotation describing visited instruction
 	 */
 	public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, Location location) {
+		return fromVisitedInstruction(methodDescriptor, location.getHandle().getPosition());
+	}
+	public static SourceLineAnnotation fromVisitedInstruction(MethodDescriptor methodDescriptor, int position) {
 		try {
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
 			JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, methodDescriptor.getClassDescriptor());
 			Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
-			return fromVisitedInstruction(jclass, method, location.getHandle().getPosition());
+			return fromVisitedInstruction(jclass, method, position);
 		} catch (CheckedAnalysisException e) {
 			return createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
 		}

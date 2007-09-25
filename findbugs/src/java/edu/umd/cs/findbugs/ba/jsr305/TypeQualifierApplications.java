@@ -62,30 +62,18 @@ public class TypeQualifierApplications {
 		new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
 
 	/**
-	 * Result from computing the "effective"
-	 * TypeQualifierAnnotation on some AnnotatedObject or method parameter.
-	 */
-	private static class EffectiveTypeQualifierAnnotation {
-		@CheckForNull TypeQualifierAnnotation typeQualifierAnnotation;
-
-		public EffectiveTypeQualifierAnnotation(TypeQualifierAnnotation typeQualifierAnnotation) {
-			this.typeQualifierAnnotation = typeQualifierAnnotation;
-		}
-	}
-
-	/**
 	 * Map of TypeQualifierValues to maps containing, for each AnnotatedObject,
 	 * the effective TypeQualifierAnnotation (if any) for that AnnotatedObject.
 	 */
-	private static Map<TypeQualifierValue, Map<AnnotatedObject, EffectiveTypeQualifierAnnotation>> effectiveObjectAnnotations =
-		new HashMap<TypeQualifierValue, Map<AnnotatedObject,EffectiveTypeQualifierAnnotation>>();
+	private static Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations =
+		new HashMap<TypeQualifierValue, Map<AnnotatedObject,TypeQualifierAnnotation>>();
 
 	/**
 	 * Map of TypeQualifierValues to maps containing, for each XMethod/parameter,
 	 * the effective TypeQualifierAnnotation (if any) for that XMethod/parameter.
 	 */
-	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>> effectiveParameterAnnotations =
-		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,EffectiveTypeQualifierAnnotation>>();
+	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
+		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,TypeQualifierAnnotation>>();
 
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -427,16 +415,18 @@ public class TypeQualifierApplications {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
 		}
 
-		Map<AnnotatedObject, EffectiveTypeQualifierAnnotation> map = effectiveObjectAnnotations.get(typeQualifierValue);
+		Map<AnnotatedObject, TypeQualifierAnnotation> map = effectiveObjectAnnotations.get(typeQualifierValue);
 		if (map == null) {
-			map = new HashMap<AnnotatedObject, EffectiveTypeQualifierAnnotation>();
+			map = new HashMap<AnnotatedObject, TypeQualifierAnnotation>();
 			effectiveObjectAnnotations.put(typeQualifierValue, map);
 		}
 
 		// Check cached answer
-		EffectiveTypeQualifierAnnotation result = map.get(o);
+		TypeQualifierAnnotation result;
 
-		if (result == null) {
+		if (map.containsKey(o)) {
+			result = map.get(o);
+		} else {
 			// Compute answer
 
 			TypeQualifierAnnotation tqa;
@@ -455,15 +445,15 @@ public class TypeQualifierApplications {
 			}
 
 			// Cache computed answer
-			result = new EffectiveTypeQualifierAnnotation(tqa);
+			result = tqa;
 			map.put(o, result);
 		}
 		if (DEBUG) {
-			System.out.println("  => Answer: " + result.typeQualifierAnnotation);
+			System.out.println("  => Answer: " + result);
 		}
 
 		// Return cached answer
-		return result.typeQualifierAnnotation;
+		return result;
 	}
 
 
@@ -566,18 +556,19 @@ public class TypeQualifierApplications {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
 		}
 
-		DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation> map =
+		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map =
 			effectiveParameterAnnotations.get(typeQualifierValue);
 		if (map == null) {
-			map = new DualKeyHashMap<XMethod, Integer, EffectiveTypeQualifierAnnotation>();
+			map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
 			effectiveParameterAnnotations.put(typeQualifierValue, map);
 		}
 
 		// Check cached answer
-		EffectiveTypeQualifierAnnotation result = map.get(xmethod, parameter);
-		if (result == null) {
+		TypeQualifierAnnotation result;
+		if (map.containsKey(xmethod, parameter) )
+			result = map.get(xmethod, parameter);
+		else {
 			// Compute answer
-
 			TypeQualifierAnnotation tqa;
 
 			// Check direct application
@@ -594,16 +585,16 @@ public class TypeQualifierApplications {
 			}
 
 			// Cache answer
-			result = new EffectiveTypeQualifierAnnotation(tqa);
+			result = tqa;
 			map.put(xmethod, parameter, result);
 		}
 
 		if (DEBUG) {
-			System.out.println("  => Answer: " + result.typeQualifierAnnotation);
+			System.out.println("  => Answer: " + result);
 		}
 
 		// Return cached answer
-		return result.typeQualifierAnnotation;
+		return result;
 	}
 
 	/**

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -105,6 +106,10 @@ public class DescriptorFactory {
 		return getClassDescriptor(dottedClassName.replace('.', '/'));
 	}
 
+	public MethodDescriptor getMethodDescriptor(JavaClass jClass, Method method) {
+		return getMethodDescriptor(ClassName.toSlashedClassName(jClass.getClassName()), method.getName(), method.getSignature(), method.isStatic());
+	}
+		
 	/**
 	 * Get a MethodDescriptor.
 	 * 

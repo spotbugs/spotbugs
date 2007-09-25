@@ -19,94 +19,79 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+import java.util.Set;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import java.util.*;
 import org.apache.bcel.classfile.Field;
 
-public class VolatileUsage extends BytecodeScanningDetector  {
-	  private BugReporter bugReporter;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XField;
+
+public class VolatileUsage extends BytecodeScanningDetector {
+	private BugReporter bugReporter;
 
 	public VolatileUsage(BugReporter bugReporter) {
-			this.bugReporter = bugReporter;
+		this.bugReporter = bugReporter;
 	}
 
 	@Override
-		 public void visitClassContext(ClassContext classContext) {
-				classContext.getJavaClass().accept(this);
+	public void visitClassContext(ClassContext classContext) {
+		classContext.getJavaClass().accept(this);
 	}
 
-static class FieldRecord {
-				String className;
-				String name;
-				String signature;
-				boolean isStatic;
-		}
+	Set<XField> initializationWrites = new HashSet<XField>();
 
-
-	Map<String,FieldRecord> fieldInfo = new HashMap<String,FieldRecord>();
-	Set<String> initializationWrites = new HashSet<String>();
-	Set<String> otherWrites = new HashSet<String>();
-
-
-	@Override
-		 public void visit(Field obj) {
-		super.visit(obj);
-		int flags = obj.getAccessFlags();
-		if ((flags & ACC_VOLATILE) == 0) return;
-		if (getFieldSig().charAt(0) == '[') {
-		   FieldRecord f = new FieldRecord();
-			f.className = getDottedClassName();
-			f.name = getFieldName();
-			f.signature = getFieldSig();
-			f.isStatic = !((flags & ACC_STATIC) == 0);
-			fieldInfo.put(getDottedClassName() + "." + getFieldName(),
-					f);
-		}
-	}
+	Set<XField> otherWrites = new HashSet<XField>();
 
 	@Override
 	public void sawOpcode(int seen) {
-				switch (seen) {
-				case PUTSTATIC:
-			{
-						String name = (getClassConstantOperand() 
-					+ "." + getNameConstantOperand())
-								.replace('/', '.');
+		switch (seen) {
+		case PUTSTATIC: {
+			XField f = getXFieldOperand();
+			if (!interesting(f))
+				return;
 			if (getMethodName().equals("<clinit>"))
-				initializationWrites.add(name);
-			else otherWrites.add(name);
+				initializationWrites.add(f);
+			else
+				otherWrites.add(f);
 			break;
-			}
-				case PUTFIELD:
-						{
-			String name = (getClassConstantOperand() 
-					+ "." + getNameConstantOperand())
-								.replace('/', '.');
-			if (getMethodName().equals("<init>"))
-				initializationWrites.add(name);
-			else otherWrites.add(name);
-			break;
-			}
 		}
-		}
+		case PUTFIELD: {
+			XField f = getXFieldOperand();
+			if (!interesting(f))
+				return;
 
+			if (getMethodName().equals("<init>"))
+				initializationWrites.add(f);
+			else
+				otherWrites.add(f);
+			break;
+		}
+		}
+	}
 
 	@Override
-		 public void report() {
+	public void report() {
 
-		for(Map.Entry<String, FieldRecord> r : fieldInfo.entrySet()) {	
-		   String name = r.getKey();
-		   FieldRecord f = r.getValue();
-		   int priority = LOW_PRIORITY;
-		   if (initializationWrites.contains(name) 
-			&& !otherWrites.contains(name))
-			 priority = NORMAL_PRIORITY;
-		   bugReporter.reportBug(
-			new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority)
-			 .addClass(f.className)
-			 .addField(f.className, f.name, f.signature, f.isStatic));
-		}
-		}
+		for (XField f : AnalysisContext.currentXFactory().allFields())
+			if (interesting(f)) {
+				int priority = LOW_PRIORITY;
+				if (initializationWrites.contains(f) && !otherWrites.contains(f))
+					priority = NORMAL_PRIORITY;
+				bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority).addClass(
+				        f.getClassDescriptor()).addField(f));
+			}
+	}
+
+	/**
+	 * @param f
+	 * @return
+	 */
+	private boolean interesting(XField f) {
+		return f != null && f.isVolatile() && f.getSignature().charAt(0) == '[';
+	}
 }

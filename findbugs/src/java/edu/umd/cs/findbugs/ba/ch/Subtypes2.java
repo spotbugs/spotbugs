@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Class for performing class hierarchy queries.
@@ -109,8 +110,8 @@ public class Subtypes2 {
 	public Subtypes2() {
 		this.graph = new InheritanceGraph();
 		this.classDescriptorToVertexMap = new HashMap<ClassDescriptor, ClassVertex>();
-		this.supertypeSetMap = new HashMap<ClassDescriptor, SupertypeQueryResults>();// XXX: use MapCache?
-		this.subtypeSetMap = new HashMap<ClassDescriptor, Set<ClassDescriptor>>();// XXX: use MapCache?
+		this.supertypeSetMap = new MapCache<ClassDescriptor, SupertypeQueryResults>(500);// XXX: use MapCache?
+		this.subtypeSetMap = new MapCache<ClassDescriptor, Set<ClassDescriptor>>(500);// XXX: use MapCache?
 		this.xclassSet = new HashSet<XClass>();
 		this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
 		this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");

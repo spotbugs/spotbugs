@@ -20,11 +20,13 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,6 +78,8 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 
 /**
@@ -149,6 +153,24 @@ public class FindInconsistentSync2 implements Detector {
 	private static final int WRITE_LOCKED = WRITE | LOCKED;
 	private static final int NULLCHECK_LOCKED = NULLCHECK | LOCKED;
 
+	private static class FieldAccess {
+		final MethodDescriptor methodDescriptor;
+		final int position;
+		FieldAccess(MethodDescriptor methodDescriptor, int position) {
+			this.methodDescriptor = methodDescriptor;
+			this.position = position;
+		}
+		SourceLineAnnotation asSourceLineAnnotation() {
+			return SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, position);
+		}
+		public static Collection<SourceLineAnnotation> asSourceLineAnnotation(Collection<FieldAccess> c) {
+			ArrayList<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>(c.size());
+			for(FieldAccess f : c)
+				result.add(f.asSourceLineAnnotation());
+			return result;
+		}
+		
+	}
 
 	/**
 	 * The access statistics for a field.
@@ -159,8 +181,8 @@ public class FindInconsistentSync2 implements Detector {
 		private int[] countList = new int[6];
 		private int numLocalLocks = 0;
 		private int numGetterMethodAccesses = 0;
-		private LinkedList<SourceLineAnnotation> unsyncAccessList = new LinkedList<SourceLineAnnotation>();
-		private LinkedList<SourceLineAnnotation> syncAccessList = new LinkedList<SourceLineAnnotation>();
+		private List<FieldAccess> unsyncAccessList = new ArrayList<FieldAccess>();
+		private List<FieldAccess> syncAccessList = new ArrayList<FieldAccess>();
 
 		public void addAccess(int kind) {
 			countList[kind]++;
@@ -186,21 +208,19 @@ public class FindInconsistentSync2 implements Detector {
 			return numGetterMethodAccesses;
 		}
 
-		public void addAccess(ClassContext classContext, Method method, InstructionHandle handle, boolean isLocked) {
+		public void addAccess(MethodDescriptor method, InstructionHandle handle, boolean isLocked) {
 			if (!SYNC_ACCESS && isLocked)
 				return;
 
-			SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition());
-			if (accessSourceLine != null)
-				(isLocked ? syncAccessList : unsyncAccessList).add(accessSourceLine);
+			(isLocked ? syncAccessList : unsyncAccessList).add(new FieldAccess(method, handle.getPosition()));
 		}
-
+		
 		public Iterator<SourceLineAnnotation> unsyncAccessIterator() {
-			return unsyncAccessList.iterator();
+			return FieldAccess.asSourceLineAnnotation(unsyncAccessList).iterator();
 		}
 
 		public Iterator<SourceLineAnnotation> syncAccessIterator() {
-			return syncAccessList.iterator();
+			return FieldAccess.asSourceLineAnnotation(syncAccessList).iterator();
 		}
 	}
 
@@ -450,7 +470,7 @@ public class FindInconsistentSync2 implements Detector {
 		LockChecker lockChecker = classContext.getLockChecker(method);
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 		boolean isGetterMethod = isGetterMethod(classContext, method);
-
+		MethodDescriptor methodDescriptor = DescriptorFactory.instance().getMethodDescriptor(classContext.getJavaClass(), method);
 		if (DEBUG)
 			System.out.println("**** Analyzing method " +
 					SignatureConverter.convertMethodSignature(methodGen));
@@ -583,7 +603,7 @@ public class FindInconsistentSync2 implements Detector {
 					if (isGetterMethod && !isLocked)
 						stats.addGetterMethodAccess();
 
-					stats.addAccess(classContext, method, handle, isLocked);
+					stats.addAccess(methodDescriptor, handle, isLocked);
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);

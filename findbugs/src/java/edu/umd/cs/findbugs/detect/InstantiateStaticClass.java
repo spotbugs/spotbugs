@@ -45,8 +45,6 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 public class InstantiateStaticClass extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 
-	Map<String, Boolean> isStaticClass = new HashMap<String, Boolean>();
-
 	public InstantiateStaticClass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -55,6 +53,8 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		try {
 			if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>") && getSigConstantOperand().equals("()V")) {
+				XClass xClass = getXClassOperand();
+				if (xClass == null) return;
 				String clsName = getClassConstantOperand();
 				if (clsName.equals("java/lang/Object"))
 					return;
@@ -67,13 +67,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 				if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName)))
 					return;
 
-				Boolean b = isStaticClass.get(clsName);
-				if (b == null) {
-					b = Boolean.valueOf(isStaticOnlyClass(clsName));
-					isStaticClass.put(clsName, b);
-				}
-				if (b)
-
+				if (isStaticOnlyClass(xClass))
 					bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY).addClassAndMethod(
 					        this).addSourceLine(this));
 			}
@@ -82,12 +76,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 		}
 	}
 
-	private boolean isStaticOnlyClass(@SlashedClassName
-	String clsName) throws ClassNotFoundException {
-
-		try {
-			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-			        DescriptorFactory.createClassDescriptor(clsName));
+	private boolean isStaticOnlyClass(XClass xClass) throws ClassNotFoundException {
 
 			if (xClass.getInterfaceDescriptorList().length > 0)
 				return false;
@@ -118,9 +107,6 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 				return false;
 			return true;
 
-		} catch (CheckedAnalysisException e) {
-			return false;
-		}
 	}
 
 }
