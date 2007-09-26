@@ -1,5 +1,11 @@
 package sfBugs;
 
+/**
+ * Don't report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR
+ * http://sourceforge.net/tracker/index.php?func=detail&aid=1678229&group_id=96405&atid=614693
+ * @author pugh
+ *
+ */
 public class Bug1678229 {
 
 	private static String staticDevice;

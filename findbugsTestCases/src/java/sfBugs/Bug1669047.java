@@ -8,8 +8,7 @@ public class Bug1669047 {
 		public @CheckForNull Object getSession();
 	}
 
-	@NonNull
-	private ISessionProvider fProvider;
+	private @NonNull ISessionProvider fProvider;
 
 	public Bug1669047(@NonNull ISessionProvider provider) {
 		fProvider = provider;

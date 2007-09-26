@@ -4,16 +4,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 interface A {
-	public void f(@NonNull
-	Object obj, @NonNull
-	Object obj2);
+	public void f(@NonNull Object obj, @NonNull Object obj2);
 }
 
 interface B extends A {
 	// relax constraint on second param
-	public void f(@NonNull
-	Object obj, @CheckForNull
-	Object obj2);
+	public void f(@NonNull Object obj, @CheckForNull Object obj2);
 }
 
 interface C extends A {
