@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -73,8 +74,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 	Map<XField,HashSet<ProgramPoint> >
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
 	Set<XField> nullTested = new HashSet<XField>();
-	Set<XField> staticFields = new HashSet<XField>();
-	Set<XField> declaredFields = new TreeSet<XField>();
 	Set<XField> containerFields = new TreeSet<XField>();
 	MultiMap<XField,String> unknownAnnotation = new MultiMap<XField,String>(LinkedList.class);
 	
@@ -99,7 +98,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 	
 	Set<XField> readFields = new HashSet<XField>();
 	Set<XField> constantFields = new HashSet<XField>();
-	Set<XField> finalFields = new HashSet<XField>();
 	Set<String> needsOuterObjectInConstructor = new HashSet<String>();
 	Set<String> innerClassCannotBeStatic = new HashSet<String>();
 	boolean hasNativeMethods;
@@ -196,7 +194,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 	@Override
 		 public void visitAfter(JavaClass obj) {
-		declaredFields.addAll(myFields);
 		if (hasNativeMethods) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
 			fieldsOfNativeClasses.addAll(myFields);
@@ -221,8 +218,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 				&& !getFieldName().equals("serialVersionUID")) {
 
 			myFields.add(f);
-			if (obj.isFinal()) finalFields.add(f);
-			if (obj.isStatic()) staticFields.add(f);
 			if (obj.getName().equals("_jspx_dependants"))
 				containerFields.add(f);
 		}
@@ -611,6 +606,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			for (XField f : assumedNonNull.keySet()) 
 				System.out.println("  " + f);
 		}
+		Set<XField> declaredFields = new HashSet<XField>(AnalysisContext.currentXFactory().allFields());
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(containerFields);
 		declaredFields.removeAll(reflectiveFields);
@@ -620,9 +616,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
-		notInitializedInConstructors.removeAll(staticFields);
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
-		// notInitializedInConstructors.removeAll(staticFields);
+		for(Iterator<XField> i = notInitializedInConstructors.iterator(); i.hasNext(); ) {
+			if (i.next().isStatic())
+				i.remove();
+		}
 
 		TreeSet<XField> readOnlyFields =
 				new TreeSet<XField>(declaredFields);
@@ -752,7 +750,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 							
 			} else {
 				if (f.isStatic()) priority++;
-				if (finalFields.contains(f)) priority++;
+				if (f.isFinal()) priority++;
 				if (fieldsOfSerializableOrNativeClassed.contains(f)) priority++;
 			}
 			if (!readOnlyFields.contains(f)) 
@@ -830,7 +828,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 				else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
 					int priority = NORMAL_PRIORITY;
 					if (f.isStatic()) priority++;
-					if (finalFields.contains(f)) priority++;
+					if (f.isFinal()) priority++;
 					bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "URF_UNREAD_FIELD", priority),f));
 				}
 			}

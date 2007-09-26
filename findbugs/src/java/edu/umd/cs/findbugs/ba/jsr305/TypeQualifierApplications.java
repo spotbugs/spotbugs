@@ -53,27 +53,46 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
 
-	/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
-	private static Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations =
-		new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
+	static class Data {
+		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
+		private  Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations =
+			new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 
-	/** Type qualifier annotations applied directly to method parameters. */
-	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
-		new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
+		/** Type qualifier annotations applied directly to method parameters. */
+		private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
+			new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
 
-	/**
-	 * Map of TypeQualifierValues to maps containing, for each AnnotatedObject,
-	 * the effective TypeQualifierAnnotation (if any) for that AnnotatedObject.
-	 */
-	private static Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations =
-		new HashMap<TypeQualifierValue, Map<AnnotatedObject,TypeQualifierAnnotation>>();
+		/**
+		 * Map of TypeQualifierValues to maps containing, for each AnnotatedObject,
+		 * the effective TypeQualifierAnnotation (if any) for that AnnotatedObject.
+		 */
+		private  Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations =
+			new HashMap<TypeQualifierValue, Map<AnnotatedObject,TypeQualifierAnnotation>>();
 
-	/**
-	 * Map of TypeQualifierValues to maps containing, for each XMethod/parameter,
-	 * the effective TypeQualifierAnnotation (if any) for that XMethod/parameter.
-	 */
-	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
-		new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,TypeQualifierAnnotation>>();
+		/**
+		 * Map of TypeQualifierValues to maps containing, for each XMethod/parameter,
+		 * the effective TypeQualifierAnnotation (if any) for that XMethod/parameter.
+		 */
+		private  Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
+			new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,TypeQualifierAnnotation>>();
+	}
+	
+	static Data data = new Data();
+	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> getEffectiveParameterAnnotations() {
+	    return data.effectiveParameterAnnotations;
+    }
+
+	private static Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> getEffectiveObjectAnnotations() {
+	    return data.effectiveObjectAnnotations;
+    }
+
+	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> getDirectParameterAnnotations() {
+	    return data.directParameterAnnotations;
+    }
+
+	private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
+	    return data.directObjectAnnotations;
+    }
 
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -83,12 +102,12 @@ public class TypeQualifierApplications {
 	 *         applied to this AnnotatedObject
 	 */
 	private static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
-		Collection<AnnotationValue> result = directObjectAnnotations.get(m);
+		Collection<AnnotationValue> result = getDirectObjectAnnotations().get(m);
 		if (result != null) return result;
 		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
 		if (result.size() == 0) result = Collections.emptyList();
-		directObjectAnnotations.put(m, result);
+		getDirectObjectAnnotations().put(m, result);
 		return result;
 	}
 
@@ -101,12 +120,12 @@ public class TypeQualifierApplications {
 	 *         applied to this parameter
 	 */
 	private static Collection<AnnotationValue> getDirectAnnotation(XMethod m, int parameter) {
-		Collection<AnnotationValue> result = directParameterAnnotations.get(m, parameter);
+		Collection<AnnotationValue> result = getDirectParameterAnnotations().get(m, parameter);
 		if (result != null) return result;
 		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(parameter));
 		if (result.size() == 0) result = Collections.emptyList();
-		directParameterAnnotations.put(m, parameter, result);
+		getDirectParameterAnnotations().put(m, parameter, result);
 		return result;
 	}
 
@@ -415,10 +434,10 @@ public class TypeQualifierApplications {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
 		}
 
-		Map<AnnotatedObject, TypeQualifierAnnotation> map = effectiveObjectAnnotations.get(typeQualifierValue);
+		Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().get(typeQualifierValue);
 		if (map == null) {
 			map = new HashMap<AnnotatedObject, TypeQualifierAnnotation>();
-			effectiveObjectAnnotations.put(typeQualifierValue, map);
+			getEffectiveObjectAnnotations().put(typeQualifierValue, map);
 		}
 
 		// Check cached answer
@@ -557,10 +576,10 @@ public class TypeQualifierApplications {
 		}
 
 		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map =
-			effectiveParameterAnnotations.get(typeQualifierValue);
+			getEffectiveParameterAnnotations().get(typeQualifierValue);
 		if (map == null) {
 			map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
-			effectiveParameterAnnotations.put(typeQualifierValue, map);
+			getEffectiveParameterAnnotations().put(typeQualifierValue, map);
 		}
 
 		// Check cached answer

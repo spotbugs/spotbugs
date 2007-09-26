@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
@@ -50,7 +51,7 @@ public abstract class ClassName {
 	 */
 	public static @SlashedClassName String toSlashedClassName(String className) {
 		if (className.indexOf('.') >= 0) {
-			return className.replace('.', '/');
+			return DescriptorFactory.canonicalizeString(className.replace('.', '/'));
 		}
 		return className;
 	}
@@ -65,7 +66,7 @@ public abstract class ClassName {
 	 */
 	public static String toDottedClassName(String className) {
 		if (className.indexOf('/') >= 0) {
-			className = className.replace('/', '.');
+			className = DescriptorFactory.canonicalizeString(className.replace('/', '.'));
 		}
 		return className;
 	}

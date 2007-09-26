@@ -134,7 +134,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		if (exceptions != null) 
 			for(int i = 0; i < exceptions.length; i++) 
 			exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
-		this.methodSourceSignature = methodSourceSignature;
+		this.methodSourceSignature = DescriptorFactory.canonicalizeString(methodSourceSignature);
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
 		if (isUnconditionalThrower) unconditionalThrowers.put(this, null);

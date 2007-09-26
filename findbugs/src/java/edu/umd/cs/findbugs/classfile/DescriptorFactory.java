@@ -53,8 +53,9 @@ public class DescriptorFactory {
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
 		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
-	MapCache<String, String> stringCache = new MapCache<String, String>(2000);
+	MapCache<String, String> stringCache = new MapCache<String, String>(10000);
 	public static String canonicalizeString(String s) {
+		if (s == null) return null;
 		DescriptorFactory instance = instance();
 		String result = instance.stringCache.get(s);
 		if (result != null) return result;

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -44,7 +45,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * @param className name of the class
 	 */
 	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
-		this.className = className;
+		this.className = DescriptorFactory.canonicalizeString(className);
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		if (context != null) this.sourceFileName = context.lookupSourceFile(className);
 		else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;

@@ -183,6 +183,7 @@ public class FindInconsistentSync2 implements Detector {
 		private int numGetterMethodAccesses = 0;
 		private List<FieldAccess> unsyncAccessList = new ArrayList<FieldAccess>();
 		private List<FieldAccess> syncAccessList = new ArrayList<FieldAccess>();
+		boolean interesting = true;
 
 		public void addAccess(int kind) {
 			countList[kind]++;
@@ -207,19 +208,31 @@ public class FindInconsistentSync2 implements Detector {
 		public int getNumGetterMethodAccesses() {
 			return numGetterMethodAccesses;
 		}
+		public boolean isInteresting() {
+			return interesting;
+		}
 
 		public void addAccess(MethodDescriptor method, InstructionHandle handle, boolean isLocked) {
+			if (!interesting) return;
 			if (!SYNC_ACCESS && isLocked)
 				return;
 
+			if (!isLocked && syncAccessList.size() == 0 && unsyncAccessList.size() > 10) {
+				interesting = false;
+				syncAccessList = null;
+				unsyncAccessList = null;
+				return;
+			}
 			(isLocked ? syncAccessList : unsyncAccessList).add(new FieldAccess(method, handle.getPosition()));
 		}
 		
 		public Iterator<SourceLineAnnotation> unsyncAccessIterator() {
+			if (!interesting) throw new IllegalStateException("Not interesting");
 			return FieldAccess.asSourceLineAnnotation(unsyncAccessList).iterator();
 		}
 
 		public Iterator<SourceLineAnnotation> syncAccessIterator() {
+			if (!interesting) throw new IllegalStateException("Not interesting");
 			return FieldAccess.asSourceLineAnnotation(syncAccessList).iterator();
 		}
 	}
@@ -298,6 +311,7 @@ public class FindInconsistentSync2 implements Detector {
 	public void report() {
 		for (XField xfield : statMap.keySet()) {
 			FieldStats stats = statMap.get(xfield);
+			if (!stats.interesting) continue;
 			JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext()
 								.getJCIPAnnotationDatabase();
 			boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
