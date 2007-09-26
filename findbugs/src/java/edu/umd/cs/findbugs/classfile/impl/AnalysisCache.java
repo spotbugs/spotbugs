@@ -53,12 +53,12 @@ public class AnalysisCache implements IAnalysisCache {
 	/**
      * 
      */
-    private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 500;
+    private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 5000;
 
 	/**
 	 * Maximum number of class analysis results to cache.
 	 */
-	private static final int MAX_CLASS_RESULTS_TO_CACHE = 50;
+	private static final int MAX_CLASS_RESULTS_TO_CACHE = 5000;
 
 	// Fields
 	private IClassPath classPath;
