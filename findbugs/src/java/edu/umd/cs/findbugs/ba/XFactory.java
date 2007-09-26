@@ -76,8 +76,12 @@ public class XFactory {
 	public void canonicalizeAll() {
 		DescriptorFactory descriptorFactory = DescriptorFactory.instance();
 		for(XMethod m : methods.values())
-			if (m instanceof MethodDescriptor)
+			if (m instanceof MethodDescriptor) {
 				descriptorFactory.canonicalize((MethodDescriptor)m);
+			}
+		for(XField f : fields.values())
+			if (f instanceof FieldDescriptor)
+				descriptorFactory.canonicalize((FieldDescriptor)f);
 	}
 	/**
 	 * Constructor.
