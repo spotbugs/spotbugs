@@ -65,6 +65,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
 	 */
 	public void overrideResourceName(String resourceName) {
+		assert false;
 		// FIXME: implement this
 	}
 
