@@ -152,6 +152,15 @@ public class DescriptorFactory {
 			methodDescriptorMap.remove(m);
 			methodDescriptorMap.put(m, m);
 		}
+		
+	}
+	public void canonicalize(FieldDescriptor m) {
+		FieldDescriptor existing = fieldDescriptorMap.get(m);
+		if (m != existing) {
+			fieldDescriptorMap.remove(m);
+			fieldDescriptorMap.put(m, m);
+		}
+		
 	}
 	public MethodDescriptor getMethodDescriptor(MethodAnnotation ma) {
 		return getMethodDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());

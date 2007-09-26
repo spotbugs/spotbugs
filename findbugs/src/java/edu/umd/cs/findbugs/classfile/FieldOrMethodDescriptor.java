@@ -33,7 +33,6 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	private final String name;
 	private final String signature;
 	private final boolean isStatic;
-	private ClassDescriptor cachedClassDescriptor;
 	private int cachedHashCode;
 
 	public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
@@ -56,10 +55,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	 * @return a ClassDescriptor for the method's class
 	 */
 	public ClassDescriptor getClassDescriptor() {
-		if (cachedClassDescriptor == null) {
-			cachedClassDescriptor =  DescriptorFactory.createClassDescriptor(slashedClassName);
-		}
-		return cachedClassDescriptor;
+		return DescriptorFactory.createClassDescriptor(slashedClassName);
 	}
 
 
