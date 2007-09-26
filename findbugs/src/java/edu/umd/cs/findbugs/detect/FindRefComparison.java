@@ -664,7 +664,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (result != IncompatibleTypes.SEEMS_OK) {
 				String sourceFile = jclass.getSourceFileName();
 				
-				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsType.getSignature(), lhsType.getSignature())
 				.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
