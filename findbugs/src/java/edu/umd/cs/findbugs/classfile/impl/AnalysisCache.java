@@ -51,6 +51,11 @@ import edu.umd.cs.findbugs.util.ProfilingMapCache;
  */
 public class AnalysisCache implements IAnalysisCache {
 	/**
+     * 
+     */
+    private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 5000;
+
+	/**
 	 * Maximum number of class analysis results to cache.
 	 */
 	private static final int MAX_CLASS_RESULTS_TO_CACHE = 200;
@@ -341,7 +346,7 @@ public class AnalysisCache implements IAnalysisCache {
 			// decide that analysis results should be retained indefinitely.
 			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
 			if (analysisClass.equals(JavaClass.class))
-				descriptorMap = new MapCache<DescriptorType, Object>(500);
+				descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
 			else if (analysisClass.equals(ClassContext.class))
 				descriptorMap = new MapCache<DescriptorType, Object>(10);
 			else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) 
