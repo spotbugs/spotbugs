@@ -16,6 +16,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  */
 public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	private final SingleFileCodeBase codeBase;
+	private String overriddenResourceName;
 
 	/**
 	 * Constructor.
@@ -37,6 +38,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
 	 */
 	public String getResourceName() {
+		if (overriddenResourceName != null) return overriddenResourceName;
 		return codeBase.getResourceName();
 	}
 
@@ -65,8 +67,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
 	 */
 	public void overrideResourceName(String resourceName) {
-		assert false;
-		// FIXME: implement this
+		overriddenResourceName = resourceName;
 	}
 
 	/* (non-Javadoc)
