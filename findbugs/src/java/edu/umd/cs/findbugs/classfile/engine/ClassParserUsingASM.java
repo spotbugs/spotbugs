@@ -264,7 +264,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					((ClassInfo.Builder)cBuilder).setSource(arg0);
 				}
 
-			}}, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+			}},  ClassReader.SKIP_FRAMES);
 		HashSet<ClassDescriptor> referencedClassSet = new HashSet<ClassDescriptor>();
 
 		// collect class references
