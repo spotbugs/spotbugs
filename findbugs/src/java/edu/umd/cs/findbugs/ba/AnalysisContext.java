@@ -325,6 +325,10 @@ public abstract class AnalysisContext {
 		}
 	}
 
+	public boolean isApplicationClass(ClassDescriptor desc) {
+		return getSubtypes2().isApplicationClass(desc);
+	}
+
 	/**
 	 * Lookup a class.
 	 * <em>Use this method instead of Repository.lookupClass().</em>

@@ -606,7 +606,13 @@ public class UnreadFields extends OpcodeStackDetector  {
 			for (XField f : assumedNonNull.keySet()) 
 				System.out.println("  " + f);
 		}
-		Set<XField> declaredFields = new HashSet<XField>(AnalysisContext.currentXFactory().allFields());
+		Set<XField> declaredFields = new HashSet<XField>();
+		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+
+		for(XField f : AnalysisContext.currentXFactory().allFields()) {
+			if (currentAnalysisContext.isApplicationClass(f.getClassDescriptor()))
+				declaredFields.add(f);
+		}
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(containerFields);
 		declaredFields.removeAll(reflectiveFields);
