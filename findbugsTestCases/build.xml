@@ -7,6 +7,11 @@
 <project name="findbugsTestCases" default="build">
 
 	<property file="build.properties" />
+	<property file="local.properties" />
+        <property name="jsr305.home" value="../JSR305-ri"/>
+	<property name="findbugs.home" value="../findbugs"/>
+	<property name="history.dir" value="history"/>
+	<property file="build.properties" />
 
 	<!-- 
 	        The local.properties properties file contains the location of findbugs.home 
@@ -16,9 +21,6 @@
 	        
 	-->
 	<property file="local.properties" />
-	<property name="findbugs.home" value="../findbugs"/>
-	<property name="history.dir" value="history"/>
-    <property name="jsr305.home" value="../JSR305-ri"/>
 
 	<target name="build" depends="classes,runfindbugs" />
 

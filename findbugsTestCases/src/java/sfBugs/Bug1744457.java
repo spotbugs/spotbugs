@@ -12,12 +12,12 @@ import java.util.List;
  * just prints the different objects and the second one concatenates the
  * objects.
  * 
- * Both the while loops are quite similar. There is an ‘if’ clause
- * which compares if the field ‘retrieve’ is not equal to null and not
+ * Both the while loops are quite similar. There is an if clause
+ * which compares if the field retrieve is not equal to null and not
  * equal to empty string. Findbugs detects a bug at line number 18(the if in
  * the first while loop).
- * “ES: Comparison of String objects using == or! =
- * (ES_COMPARING_STRINGS_WITH_EQ)”.
+ * ES: Comparison of String objects using == or! =
+ * (ES_COMPARING_STRINGS_WITH_EQ).
  * It does not report any bug or warnings for line number 27(the if
  * in the second while loop).
  * 
@@ -27,8 +27,8 @@ import java.util.List;
  * If the first while loop is commented out then Findbugs reports the bug
  * at line 27.
  * 
- * “ES: Comparison of String objects using == or! =
- * (ES_COMPARING_STRINGS_WITH_EQ)”.
+ * ES: Comparison of String objects using == or! =
+ * (ES_COMPARING_STRINGS_WITH_EQ).
  * 
  * In this case Findbugs could not detect the second occurrence of the same
  * bug if the first occurrence is fixed.
