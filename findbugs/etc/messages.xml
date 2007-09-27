@@ -164,6 +164,13 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ReflectiveClasses">
+    <Details>
+<![CDATA[
+<p> Try to determine which classes have constant references to their .class objects.  </p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.CalledMethods">
     <Details>
 <![CDATA[

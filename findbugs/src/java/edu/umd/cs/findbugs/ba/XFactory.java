@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class XFactory {
 	public static final boolean DEBUG_UNRESOLVED = SystemProperties.getBoolean("findbugs.xfactory.debugunresolved");
 
+	private Set<ClassDescriptor> reflectiveClasses = new HashSet<ClassDescriptor>();
 	private Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
 
 	private Map<FieldDescriptor, XField> fields = new HashMap<FieldDescriptor, XField>();
@@ -118,6 +119,15 @@ public class XFactory {
 		return calledMethods;
 	}
 
+	public Set<ClassDescriptor> getReflectiveClasses() {
+		return reflectiveClasses;
+	}
+	public boolean isReflectiveClass(ClassDescriptor c) {
+		return reflectiveClasses.contains(c);
+	}
+	public boolean addReflectiveClasses(ClassDescriptor c) {
+		return reflectiveClasses.add(c);
+	}
 	public boolean isCalledDirectlyOrIndirectly(XMethod m) {
 		if (isCalled(m))
 			return true;
