@@ -608,10 +608,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 		}
 		Set<XField> declaredFields = new HashSet<XField>();
 		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-		XFactory xFactory = currentAnalysisContext.currentXFactory();
+		XFactory xFactory = AnalysisContext.currentXFactory();
 		for(XField f : AnalysisContext.currentXFactory().allFields()) {
 			ClassDescriptor classDescriptor = f.getClassDescriptor();
-			if (currentAnalysisContext.isApplicationClass(classDescriptor) && !xFactory.isReflectiveClass(classDescriptor))
+			if (currentAnalysisContext.isApplicationClass(classDescriptor) && !xFactory.isReflectiveClass(classDescriptor)  && !f.isProtected() && !f.isPublic())
 				declaredFields.add(f);
 		}
 		// Don't report anything about ejb3Fields
