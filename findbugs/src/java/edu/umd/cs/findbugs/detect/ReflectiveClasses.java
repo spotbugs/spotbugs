@@ -19,17 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -45,7 +41,7 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements Detec
 
 	}
 
-	String constantString;
+	@CheckForNull String constantString;
 	@Override
 	public void sawString(String s) {
 		constantString = s;
@@ -57,7 +53,7 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements Detec
 	public void sawOpcode(int seen) {
 		if (seen == INVOKESTATIC) {
 			// System.out.println(getClassConstantOperand()+ "." + getNameConstantOperand());
-			if (getClassConstantOperand().equals("java/lang/Class") && getNameConstantOperand().equals("forName")) {
+			if (constantString != null && getClassConstantOperand().equals("java/lang/Class") && getNameConstantOperand().equals("forName")) {
 				process(ClassName.toSlashedClassName(constantString));
 		}
 			
