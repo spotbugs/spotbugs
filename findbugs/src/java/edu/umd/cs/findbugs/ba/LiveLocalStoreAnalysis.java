@@ -78,8 +78,8 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 
 	public void meetInto(BitSet fact, Edge edge, BitSet result) throws DataflowAnalysisException {
-		isFactValid(fact);
-		isFactValid(result);
+		verifyFact(fact);
+		verifyFact(result);
 
 		if (isTop(fact)) {
 			// Nothing to do, result stays the same
@@ -91,13 +91,13 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			result.or(fact);
 		}
 
-		isFactValid(result);
+		verifyFact(result);
 	}
 
 	@Override
 		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
 		throws DataflowAnalysisException {
-		isFactValid(fact);
+		if (!isFactValid(fact)) return;
 
 		Instruction ins = handle.getInstruction();
 
@@ -121,17 +121,24 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			fact.clear(local + killedByStoreOffset);
 		}
 
-		isFactValid(fact);
+		if (!isFactValid(fact)) throw new IllegalStateException("Fact become invalid");
 	}
 
 	@Override
 		 public boolean isFactValid(BitSet fact) {
-		if (VERIFY_INTEGRITY) {
+		verifyFact(fact);
+		return !isTop(fact);
+	}
+
+	/**
+     * @param fact
+     */
+    private void verifyFact(BitSet fact) {
+	    if (VERIFY_INTEGRITY) {
 			if (isTop(fact) && fact.nextSetBit(0) < topBit)
 				throw new IllegalStateException();
 		}
-		return !isTop(fact);
-	}
+    }
 
 	@Override
 		 public String factToString(BitSet fact) {
