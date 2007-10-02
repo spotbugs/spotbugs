@@ -306,11 +306,11 @@
 			<td align="right"><xsl:value-of select="@priority_1"/></td>
 			<td align="right">
 			    <xsl:choose>
-                    <xsl:when test= "number($kloc) &lt; 1.0">
-        			    <xsl:value-of select="format-number(0.0, $format)"/>
+                    <xsl:when test= "number($kloc) &gt; 0.0">
+        			    <xsl:value-of select="format-number(@priority_1 div $kloc, $format)"/>
                     </xsl:when>
                     <xsl:otherwise>
-        			    <xsl:value-of select="format-number(@priority_1 div $kloc, $format)"/>
+        			    <xsl:value-of select="format-number(0.0, $format)"/>
                     </xsl:otherwise>
 			    </xsl:choose>
 			</td>
@@ -320,11 +320,11 @@
 			<td align="right"><xsl:value-of select="@priority_2"/></td>
 			<td align="right">
 			    <xsl:choose>
-                    <xsl:when test= "number($kloc) &lt; 1.0">
-        			    <xsl:value-of select="format-number(0.0, $format)"/>
+                    <xsl:when test= "number($kloc) &gt; 0.0">
+        			    <xsl:value-of select="format-number(@priority_2 div $kloc, $format)"/>
                     </xsl:when>
                     <xsl:otherwise>
-        			    <xsl:value-of select="format-number(@priority_2 div $kloc, $format)"/>
+        			    <xsl:value-of select="format-number(0.0, $format)"/>
                     </xsl:otherwise>
 			    </xsl:choose>
 			</td>
@@ -337,11 +337,11 @@
 				<td align="right"><xsl:value-of select="@priority_3"/></td>
 				<td align="right">
                     <xsl:choose>
-                        <xsl:when test= "number($kloc) &lt; 1.0">
-        		            <xsl:value-of select="format-number(0.0, $format)"/>
+                        <xsl:when test= "number($kloc) &gt; 0.0">
+        			        <xsl:value-of select="format-number(@priority_3 div $kloc, $format)"/>
                         </xsl:when>
                         <xsl:otherwise>
-        			        <xsl:value-of select="format-number(@priority_3 div $kloc, $format)"/>
+        		            <xsl:value-of select="format-number(0.0, $format)"/>
                         </xsl:otherwise>
 			        </xsl:choose>
 				</td>
@@ -357,11 +357,11 @@
 			<td><b>Total Warnings</b></td>
 			<td align="right"><b><xsl:value-of select="@total_bugs"/></b></td>
             <xsl:choose>
-                <xsl:when test="number($kloc) &lt; 1.0">
-					<td align="right"><b><xsl:value-of select="format-number(0.0, $format)"/></b></td>
+                <xsl:when test="number($kloc) &gt; 0.0">
+  					<td align="right"><b><xsl:value-of select="format-number(@total_bugs div $kloc, $format)"/></b></td>
                 </xsl:when>
                 <xsl:otherwise>
-  					<td align="right"><b><xsl:value-of select="format-number(@total_bugs div $kloc, $format)"/></b></td>
+					<td align="right"><b><xsl:value-of select="format-number(0.0, $format)"/></b></td>
                 </xsl:otherwise>
 	        </xsl:choose>
 		</tr>
