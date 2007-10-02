@@ -362,11 +362,20 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else if (qName.equals("Or")) {
 	    	CompoundMatcher matcher = new OrMatcher();
 	    	pushCompoundMatcherAsChild(matcher);
-	    } else if (qName.equals("And") || qName.equals("Match")) {
-	    	AndMatcher matcher = new AndMatcher();
-	    	pushCompoundMatcherAsChild(matcher);
-	    }
-	    nextMatchedIsDisabled = false;
+        } else if (qName.equals("And") || qName.equals("Match")) {
+            AndMatcher matcher = new AndMatcher();
+            pushCompoundMatcherAsChild(matcher);
+            if (qName.equals("Match")) {
+                String classregex = attributes.getValue("classregex");
+                String classMatch = attributes.getValue("class");
+
+                if (classregex != null)
+                    addMatcher(new ClassMatcher("~" + classregex));
+                else if (classMatch != null)
+                    addMatcher(new ClassMatcher(classMatch));
+            }
+        }
+        nextMatchedIsDisabled = false;
     }
 
 
