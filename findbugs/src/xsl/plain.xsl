@@ -223,7 +223,7 @@
     <xsl:variable name="kloc" select="@total_size div 1000.0"/>
     <xsl:variable name="format" select="'#######0.00'"/>
 
-	<p><xsl:value-of select="@total_size"/> lines of code analysed,
+	<p><xsl:value-of select="@total_size"/> lines of code analyzed,
 	in <xsl:value-of select="@total_classes"/> classes, 
 	in <xsl:value-of select="@num_packages"/> packages.</p>
 	<table width="500" cellpadding="5" cellspacing="2">
