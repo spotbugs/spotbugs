@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.generic.AASTORE;
 import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -52,6 +54,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	// Automatically detect when resource instances escape:
 	//   - putfield, putstatic
 	//   - parameters to invoke, but subclasses may override
+	//   - aastore; (conservative, since the dest array may not itself escape)
 	//   - return (areturn)
 
 	private void handleFieldStore(FieldInstruction ins) {
@@ -67,10 +70,32 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
 		handleNormalInstruction(ins);
 	}
+	
+    @Override
+    public void visitPUTFIELD(PUTFIELD putfield) {
+        handleFieldStore(putfield);
+    }
 
+    private void handleArrayStore(ArrayInstruction ins) {
+        try {
+            // If the resource instance is stored in an array, then we consider
+            // it as having escaped.  This is conservative; ideally we would
+            // check whether this array is a field or gets passed out of the
+            // method.
+            ResourceValueFrame frame = getFrame();
+            ResourceValue topValue = frame.getTopValue();
+            if (topValue.equals(ResourceValue.instance())) {
+                frame.setStatus(ResourceValueFrame.ESCAPED);
+            }
+        } catch (DataflowAnalysisException e) {
+            throw new InvalidBytecodeException("Stack underflow", e);
+        }
+        handleNormalInstruction(ins);
+    }
+	
 	@Override
-		 public void visitPUTFIELD(PUTFIELD putfield) {
-		handleFieldStore(putfield);
+	public void visitAASTORE(AASTORE arr) {
+	    handleArrayStore(arr);
 	}
 
 	@Override
