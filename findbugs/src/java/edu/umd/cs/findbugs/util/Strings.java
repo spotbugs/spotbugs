@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.Arrays;
+
 /** A class for static String utility methods.
  * @author Brian Cole
  */
@@ -35,22 +37,7 @@ public class Strings {
 	 * @see java.lang.String#replace(CharSequence target, CharSequence replacement)
 	 */
 	public static String replace(String source, String find, String repl) {
-		/* JDK 1.5 uses a regex (with Pattern.LITERAL) to implement this. We could do
-		   that too, but why don't we just use StringBuffer (not 1.5's StringBuilder) */
-		int j = source.indexOf(find); // -1 if not found
-		if (j < 0) return source; // nothing to replace
-		final int findLen = find.length();
-		if (findLen <= 0) throw new IllegalArgumentException("unable to replace all occurrences of the empty String");
-		int anchor = 0;
-		StringBuffer sb = new StringBuffer(source.length()+repl.length()); // guess final length
-		while (j >= 0) {
-			sb.append(source.substring(anchor, j));
-			sb.append(repl);
-			anchor = j+findLen;
-			j = source.indexOf(find, anchor);
-		}
-		sb.append(source.substring(anchor));
-		return sb.toString();
+		return source.replace(find, repl);
 	}
 
 	/** This is intended to be equivalent to <code>Arrays.toString(a)</code>
@@ -62,15 +49,7 @@ public class Strings {
 	 * @see java.util.Arrays#deepToString(Object[])
 	 */
 	public static String toString(final Object[] a) {
-		if (a == null) return "null";
-		int max = a.length - 1;
-		StringBuffer sb = new StringBuffer("[");
-		for (int j=0; j <= max; j+=1) {
-			sb.append(String.valueOf(a[j]));
-			if (j < max) sb.append(','); // Arrays.toString() appends ", "
-		}
-		sb.append(']');
-		return sb.toString();
+		return Arrays.toString(a);
 	}
 
 	/**
