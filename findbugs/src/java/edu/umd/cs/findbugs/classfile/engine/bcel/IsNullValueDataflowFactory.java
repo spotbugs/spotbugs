@@ -76,18 +76,7 @@ public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataf
 		IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 		invDataflow.execute();
 		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-			TreeSet<Location> tree = new TreeSet<Location>();
-			for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
-				Location loc = locs.next();
-				tree.add(loc);
-			}
-			System.out.println("\n\nInv analysis for " + descriptor.getName() + " {");
-			for(Location loc : tree) {
-				System.out.println("\nBefore: " + invDataflow.getFactAtLocation(loc));
-				System.out.println("Location: " + loc);
-				System.out.println("After: " + invDataflow.getFactAfterLocation(loc));	
-			}
-			System.out.println("}\n");
+			invDataflow.dumpDataflow();
 		}
 		return invDataflow;
 

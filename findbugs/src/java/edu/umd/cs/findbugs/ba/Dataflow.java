@@ -111,12 +111,13 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		}
 
 		int timestamp = 0;
+		boolean firstTime = true;
 		do {
 			change = false;
 			++numIterations;
-			if (numIterations >= MAX_ITERS-3 && !DEBUG ) {
+			if (numIterations > MAX_ITERS && !DEBUG ) {
 				DEBUG = true;
-				reportAnalysis("Too many iterations analyzing");
+				reportAnalysis("Too many iterations");
 			}
 
 			
@@ -126,16 +127,16 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				MethodGen mg = cfg.getMethodGen();
 				System.out.println(mg.getClassName()+"." +mg.getName() + mg.getSignature());
 				System.out.println("----------------------------------------------------------------------");
+		
 			}
 
-			if (numIterations >= MAX_ITERS) {
+			if (numIterations >= MAX_ITERS+9) {
 				throw new AssertionError( "Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName());
 			}
 
 			analysis.startIteration();
 
-			if (DEBUG) {
-				if (blockOrder instanceof ReverseDFSOrder) {
+			if (DEBUG && firstTime && blockOrder instanceof ReverseDFSOrder) {
 					ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
 					System.out.println("Entry point is: " + logicalEntryBlock());
 					System.out.println("Basic block order: ");
@@ -144,9 +145,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 						BasicBlock block = i.next();
 						if (DEBUG) debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
-					}
 				}
 			}
+			if (DEBUG) 
+				dumpDataflow();
+				
+
 
 			// For each block in CFG...
 			Iterator<BasicBlock> i = blockOrder.blockIterator();
@@ -204,7 +208,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					if (predCount == 0) needToRecompute = true;
 
 					if (!needToRecompute) {
-						if (DEBUG) {
+						if (false && DEBUG) {
 							debug(block, "Skipping: predecessors haven't changed");
 							System.out.println(" curr timestamp: " + timestamp);
 							System.out.println(" last timestamp: " + lastCalculated);
@@ -322,7 +326,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
 				MethodGen mg = cfg.getMethodGen();
 				System.out.println(mg.getClassName()+"." +mg.getName() + mg.getSignature());
-				new RuntimeException("---------------------------------------------------------------------").printStackTrace(System.out);
+				new RuntimeException("Quiescence achieved----------------------------------------------------------------").printStackTrace(System.out);
 
 		}
 	}
@@ -444,6 +448,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private BasicBlock logicalEntryBlock() {
 		return isForwards ? cfg.getEntry() : cfg.getExit();
 	}
+	
+	public void dumpDataflow() {};
 }
 
 // vim:ts=4

@@ -53,8 +53,11 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 		return getAnalysis().getFactOnEdge(edge);
 	}
 
+	@Override
 	public void dumpDataflow() {
+		System.out.println(this.getClass().getName() + " analysis for " + getCFG().getMethodName() + " { ");
     	try {
+    		
     	for(Location loc : getCFG().orderedLocations()) {
     		System.out.println("\nBefore: " + getFactAtLocation(loc));
     		System.out.println("Location: " + loc);
@@ -64,5 +67,6 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
     		AnalysisContext.logError("error dumping dataflow analysis", e);
     		System.out.println(e);
     	}
+    	System.out.println("}");
     }
 }
