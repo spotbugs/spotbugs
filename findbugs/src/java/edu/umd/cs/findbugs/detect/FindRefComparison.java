@@ -833,11 +833,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				looksLikeTestCase = false;
 				priorityModifier = 0;
 			}
-			if (!looksLikeTestCase) bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
-			);
+			if (!looksLikeTestCase) {
+				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addFoundAndExpectedType(rhsSig, lhsSig)
+				.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+				);
+			}
 		}
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
