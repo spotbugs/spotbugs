@@ -360,7 +360,7 @@ public class UnconditionalValueDerefSet {
 			buf.append('{');
 			buf.append(i);
 			if (valueNumbersUnconditionallyDereferenced.get(i))
-			buf.append(':');
+				buf.append(':');
 			else buf.append('?');
 			TreeSet<Location> derefLocationSet = new TreeSet<Location>();
 			derefLocationSet.addAll(getDerefLocationSet(i));
@@ -373,16 +373,14 @@ public class UnconditionalValueDerefSet {
 				}
 				buf.append(
 						"(" +
-								location.getBasicBlock().getLabel() +
-								":" +
-								location.getHandle().getPosition() +
-								")");
+						location.getBasicBlock().getLabel() +
+						":" +
+						location.getHandle().getPosition() +
+				")");
 			}
 			buf.append('}');
 		}
 		buf.append(']');
-		buf.append(" # ");
-		buf.append(System.identityHashCode(this));
 		return buf.toString();
 	}
 

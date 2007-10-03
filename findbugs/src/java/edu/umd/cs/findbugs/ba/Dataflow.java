@@ -88,7 +88,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	}
 
 	// Maximum number of iterations before we assume there is a bug and give up.
-	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 100).intValue();
+	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 97).intValue();
 
 	private String getFullyQualifiedMethodName() {
 		String methodName;
@@ -105,7 +105,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	 */
 	public void execute() throws DataflowAnalysisException {
 		boolean change;
-
+		boolean debugWas = DEBUG;
 		if (DEBUG) {
 			reportAnalysis("Executing");
 		}
@@ -157,8 +157,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			while (i.hasNext()) {
 
 				BasicBlock block = i.next();
-				if (DEBUG) debug(block, "start\n");
-
+				
 				// Get start fact for block.
 				Fact start = analysis.getStartFact(block);
 				assert start != null;
@@ -197,11 +196,11 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 							predCount++;
 							if (predLastUpdated >= lastCalculated) {
 
-							needToRecompute = true;
-							if (DEBUG) {
-							System.out.println("Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = " + predLastUpdated + ", pred fact = " + predFact);
-							}
-							// break;
+								needToRecompute = true;
+								if (DEBUG) {
+									debug(block, "\n Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = " + predLastUpdated + ",\n   pred fact = " + predFact +"\n");
+								}
+							    break;
 							}
 						}
 					}
@@ -251,8 +250,14 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							// Merge the predecessor fact (possibly transformed by the edge transfer function)
 							// into the block's start fact.
-							if (DEBUG) debug(block, logicalPred, edge, "\n  Meet " + analysis.factToString(start) + "\n   with " + analysis.factToString(edgeFact) 
+							if (DEBUG) {
+								if (analysis.isTop(start))
+									debug(block, logicalPred, edge, "\n  First pred is " + analysis.factToString(edgeFact)  + "\n   last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
+								else
+								debug(block, logicalPred, edge, "\n  Meet " + analysis.factToString(start) + "\n   with " + analysis.factToString(edgeFact) 
+
 									+ "\n   pred last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
+							}
 
 
 							if (analysis instanceof UnconditionalValueDerefAnalysis) {
@@ -329,6 +334,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				new RuntimeException("Quiescence achieved----------------------------------------------------------------").printStackTrace(System.out);
 
 		}
+		DEBUG = debugWas;
 	}
 	/**
 	 * @param msg TODO
