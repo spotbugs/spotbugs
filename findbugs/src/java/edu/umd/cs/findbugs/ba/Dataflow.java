@@ -127,6 +127,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (this.getClass() == UnconditionalValueDerefDataflow.class) {
 					try {
 	                    ClassContext cc = Global.getAnalysisCache().getClassAnalysis( ClassContext.class, DescriptorFactory.createClassDescriptorFromDottedClassName(cfg.getMethodGen().getClassName()));
+	                    CFGPrinter printer = new CFGPrinter(cfg);
+	                    printer.setIsForwards(false);
+	                    printer.print(System.out);
 	                    cc.dumpSimpleDataflowInformation(cfg.getMethodGen().getMethod());
 					} catch (CheckedAnalysisException e) {
 	                   e.printStackTrace(System.out);
