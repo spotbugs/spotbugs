@@ -217,7 +217,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 								if (DEBUG) {
 									debug(block, "\n Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = " + predLastUpdated + ",\n   pred fact = " + predFact +"\n");
 								}
-							    break;
+							    // break;
 							}
 						}
 					}
