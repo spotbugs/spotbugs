@@ -344,6 +344,12 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		return firstInstruction == null;
 	}
 
+	public int pos() {
+		
+		if (isEmpty())
+			return getExceptionThrower().getPosition();
+		return firstInstruction.getPosition();
+	}
 	/**
 	 * Is this block an exception handler?
 	 */

@@ -76,7 +76,7 @@ public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataf
 		IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 		invDataflow.execute();
 		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-			invDataflow.dumpDataflow();
+			invDataflow.dumpDataflow(invAnalysis);
 		}
 		return invDataflow;
 

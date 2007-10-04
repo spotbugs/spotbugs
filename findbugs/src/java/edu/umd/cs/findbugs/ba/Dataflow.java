@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -29,7 +31,6 @@ import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
@@ -103,6 +104,35 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		else methodName = SignatureConverter.convertMethodSignature(methodGen);
 		return methodName;
 	}
+	static class ForwardProgramOrder implements Comparator<BasicBlock> {
+
+        public int compare(BasicBlock o1, BasicBlock o2) {
+        	try {
+        	int p1 = o1.getLabel();
+			int p2 = o2.getLabel();
+        	return p1 - p2;
+        	} catch (RuntimeException e) {
+        		if (false) {
+        			e.printStackTrace(System.out);
+
+        		try {
+        		int p1 = o1.pos();
+    			int p2 = o2.pos();
+        		} catch (RuntimeException e2) {}
+        		}
+        		return o1.getLabel() - o2.getLabel();
+        	}
+        }
+		
+	}
+	static class BackwardProgramOrder extends  ForwardProgramOrder {
+
+		@Override
+        public int compare(BasicBlock o1, BasicBlock o2) {
+        	return - super.compare(o1, o2);
+        }
+		
+	}
 	/**
 	 * Run the algorithm.
 	 * Afterwards, caller can use the getStartFact() and getResultFact() methods to
@@ -124,7 +154,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				DEBUG = true;
 				reportAnalysis("Too many iterations");
 				System.out.println(this.getClass().getName());
-				if (this.getClass() == UnconditionalValueDerefDataflow.class) {
+				if (this.getClass() == UnconditionalValueDerefDataflow.class || this.getClass() == LiveLocalStoreDataflow.class) {
 					try {
 	                    ClassContext cc = Global.getAnalysisCache().getClassAnalysis( ClassContext.class, DescriptorFactory.createClassDescriptorFromDottedClassName(cfg.getMethodGen().getClassName()));
 	                    CFGPrinter printer = new CFGPrinter(cfg);
@@ -152,7 +182,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			}
 
 			analysis.startIteration();
-
+			
 			if (DEBUG && firstTime && blockOrder instanceof ReverseDFSOrder) {
 					ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
 					System.out.println("Entry point is: " + logicalEntryBlock());
@@ -161,16 +191,30 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					while (i.hasNext()) {
 
 						BasicBlock block = i.next();
-						if (DEBUG) debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
+						debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
 				}
 			}
+			Iterator<BasicBlock> i = blockOrder.blockIterator();
+			if (numIterations > 3 && numIterations %2 == 0 && blockOrder instanceof ReverseDFSOrder) {
+				if (DEBUG) System.out.println("Trying program order");
+				TreeSet<BasicBlock> bb = new TreeSet<BasicBlock>(new BackwardProgramOrder());
+				Iterator<BasicBlock> j = blockOrder.blockIterator();
+				while (j.hasNext()) {
+					BasicBlock block = j.next();
+					bb.add(block);
+				}
+				if (DEBUG) for(BasicBlock block : bb) {
+					debug(block, "\n");
+				}
+				i = bb.iterator();
+			}
 			if (DEBUG) 
-				dumpDataflow();
+				dumpDataflow(analysis);
 				
 
 
 			// For each block in CFG...
-			Iterator<BasicBlock> i = blockOrder.blockIterator();
+
 			while (i.hasNext()) {
 
 				BasicBlock block = i.next();
@@ -472,7 +516,22 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		return isForwards ? cfg.getEntry() : cfg.getExit();
 	}
 	
-	public void dumpDataflow() {};
+	
+	public void dumpDataflow(AnalysisType analysis) {
+		System.out.println(this.getClass().getName() + " analysis for " + getCFG().getMethodName() + " { ");
+    	try {
+    		
+    	for(Location loc : getCFG().orderedLocations()) {
+    		System.out.println("\nBefore: " + analysis.factToString(getFactAtLocation(loc)));
+    		System.out.println("Location: " + loc);
+    		System.out.println("After: " + analysis.factToString(getFactAfterLocation(loc)));	
+    	}
+    	} catch (DataflowAnalysisException e) {
+    		AnalysisContext.logError("error dumping dataflow analysis", e);
+    		System.out.println(e);
+    	}
+    	System.out.println("}");
+    }
 }
 
 // vim:ts=4

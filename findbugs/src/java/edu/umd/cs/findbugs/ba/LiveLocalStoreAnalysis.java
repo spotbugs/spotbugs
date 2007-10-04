@@ -101,7 +101,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 
 		Instruction ins = handle.getInstruction();
 
-		if (ins instanceof StoreInstruction || ins instanceof IINC) {
+		if (ins instanceof StoreInstruction) {
 			// Local is stored: any live stores on paths leading
 			// to this instruction are now dead
 

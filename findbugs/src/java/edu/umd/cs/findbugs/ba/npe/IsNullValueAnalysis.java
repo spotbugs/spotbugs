@@ -241,7 +241,6 @@ public class IsNullValueAnalysis
 		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
 		if (!vnaFrameAfter.isValid()) {
 			assert false:  "Invalid VNA after location " + location;
-			// vnaDataflow.dumpDataflow();
 			return;
 		}
 		for (int i = start; i < fact.getNumSlots(); ++i) {
