@@ -786,6 +786,16 @@ public class ClassContext {
 		return getMethodAnalysis(ReturnPathTypeDataflow.class, method);
 	}
 
+	public  void dumpSimpleDataflowInformation(Method method) {
+		try {
+			dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), null, null);
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+
+		}
+	}
 	public  void dumpDataflowInformation(Method method) {
 		try {
 			dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
@@ -806,7 +816,7 @@ public class ClassContext {
 	 * @param typeDataflow TODO
 	 * @throws DataflowAnalysisException
 	 */
-	public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, UnconditionalValueDerefDataflow dataflow, TypeDataflow typeDataflow) throws DataflowAnalysisException {
+	public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, @CheckForNull UnconditionalValueDerefDataflow dataflow, @CheckForNull TypeDataflow typeDataflow) throws DataflowAnalysisException {
 		System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
 		TreeSet<Location> tree = new TreeSet<Location>();
 
@@ -815,13 +825,14 @@ public class ClassContext {
 			tree.add(loc);
 		}
 		for(Location loc : tree) {
-			UnconditionalValueDerefSet factAfterLocation = dataflow.getFactAfterLocation(loc);
-			System.out.println("\n Pre: " + factAfterLocation);
+			System.out.println();
+			if (dataflow != null)
+				System.out.println("\n Pre: " + dataflow.getFactAfterLocation(loc));
 			System.out.println("Vna: " + vnd.getFactAtLocation(loc));
 			System.out.println("inv: " + inv.getFactAtLocation(loc));
 			if (typeDataflow != null) System.out.println("type: " + typeDataflow.getFactAtLocation(loc));
 			System.out.println("Location: " + loc);
-			System.out.println("Post: " + dataflow.getFactAtLocation(loc));
+			if (dataflow != null) System.out.println("Post: " + dataflow.getFactAtLocation(loc));
 			System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
 			System.out.println("inv: " + inv.getFactAfterLocation(loc));
 			   if (typeDataflow != null)  System.out.println("type: " + typeDataflow.getFactAfterLocation(loc));

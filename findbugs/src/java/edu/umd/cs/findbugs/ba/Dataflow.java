@@ -26,7 +26,12 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Perform dataflow analysis on a method using a control flow graph.
@@ -118,6 +123,15 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (numIterations > MAX_ITERS && !DEBUG ) {
 				DEBUG = true;
 				reportAnalysis("Too many iterations");
+				System.out.println(this.getClass().getName());
+				if (this.getClass() == UnconditionalValueDerefDataflow.class) {
+					try {
+	                    ClassContext cc = Global.getAnalysisCache().getClassAnalysis( ClassContext.class, DescriptorFactory.createClassDescriptorFromDottedClassName(cfg.getMethodGen().getClassName()));
+	                    cc.dumpSimpleDataflowInformation(cfg.getMethodGen().getMethod());
+					} catch (CheckedAnalysisException e) {
+	                   e.printStackTrace(System.out);
+                    }
+				}
 			}
 
 			
