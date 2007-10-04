@@ -33,13 +33,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -58,6 +62,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -72,12 +77,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -321,10 +329,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 		Collection<String> filterFiles;
+		final Collection<String> filterFilesOther;
 		if (includeFilter) {
-			filterFiles = currentExtendedPreferences.getIncludeFilterFiles();
+			filterFiles      = currentExtendedPreferences.getIncludeFilterFiles();
+			filterFilesOther = currentExtendedPreferences.getExcludeFilterFiles();
 		} else {
-			filterFiles = currentExtendedPreferences.getExcludeFilterFiles();
+			filterFiles      = currentExtendedPreferences.getExcludeFilterFiles();
+			filterFilesOther = currentExtendedPreferences.getIncludeFilterFiles();
 		}
 
 		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
@@ -347,10 +358,55 @@ public class FindbugsPropertyPage extends PropertyPage {
 		addButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileSelectionDialog dialog = new FileSelectionDialog(addButton
-						.getShell(), title, ".xml");
+				FileSelectionDialog dialog =
+					new FileSelectionDialog(addButton.getShell(), title, ".xml");
 				dialog.setInput(project);
 				dialog.setAllowMultiple(true);
+				// The validator checks to see if the user's selection
+				// is valid given the type of the object selected (e.g.
+				// it can't be a folder) and the objects that have
+				// already been selected
+				dialog.setValidator(new ISelectionStatusValidator() {
+					public IStatus validate(Object[] selection) {
+						for(int i = 0; i < selection.length; i++) {
+							if(selection[i] instanceof IContainer) {
+								return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
+						                IStatus.ERROR, "Folder selected", null);
+							}
+							else if(selection[i] instanceof IFile) {
+								final Collection<String> fFiles;
+								final Collection<String> fOFiles;
+								if (includeFilter) {
+									fFiles  = currentExtendedPreferences.getIncludeFilterFiles();
+									fOFiles = currentExtendedPreferences.getExcludeFilterFiles();
+								} else {
+									fFiles  = currentExtendedPreferences.getExcludeFilterFiles();
+									fOFiles = currentExtendedPreferences.getIncludeFilterFiles();
+								}
+								IFile f = (IFile)selection[i];
+								String fn = f.getProjectRelativePath().toString();
+								if(fOFiles.contains(fn)) {
+									// File is already selected in the
+									// other filter
+									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
+							                IStatus.ERROR, "File " + fn +
+							                " already selected in " + 
+							                (includeFilter? "exclude" : "include") +
+							                " list", null);
+								}
+								else if(fFiles.contains(fn)) {
+									// File is already selected in this
+									// filter
+									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
+							                IStatus.ERROR, "File " + fn +
+							                " already selected for this filter", null);
+								}
+							}
+						}
+						return new Status(IStatus.OK, PlatformUI.PLUGIN_ID,
+				                IStatus.OK, "", null);
+					}
+				});
 				if (dialog.open() == ElementTreeSelectionDialog.OK) {
 					Object[] result = dialog.getResult();
 					for (int i = 0; i < result.length; i++) {
@@ -1253,5 +1309,4 @@ public class FindbugsPropertyPage extends PropertyPage {
 			return file.hashCode();
 		}
 	}
-
 }
