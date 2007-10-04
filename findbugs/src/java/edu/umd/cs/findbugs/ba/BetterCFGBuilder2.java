@@ -736,7 +736,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		if (ins instanceof ReturnInstruction) return false;
 		if (ins instanceof INSTANCEOF) return false;
 		// if (ins instanceof INVOKESTATIC) return false;
-		if (ins instanceof MONITORENTER) return false;
+		// if (ins instanceof MONITORENTER) return false;
 		if (ins instanceof MONITOREXIT) return false;
 		return true;
 
