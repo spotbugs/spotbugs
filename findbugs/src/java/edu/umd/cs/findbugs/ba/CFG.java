@@ -163,7 +163,12 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	public void setFlags(int flags) {
 		this.flags = flags;
 	}
-
+	public void setFlag(int flags) {
+		this.flags |= flags;
+	}
+	public void clearFlag(int flags) {
+		this.flags &= ~flags;
+	}
 	public int getFlags() {
 		return flags;
 	}

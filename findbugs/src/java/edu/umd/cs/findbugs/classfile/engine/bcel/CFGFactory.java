@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -40,6 +41,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilder;
 import edu.umd.cs.findbugs.ba.CFGBuilderFactory;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -51,7 +53,6 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -87,7 +88,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 		CFG cfg = cfgBuilder.getCFG();
 
 		// Mark as busy while we're pruning the CFG.
-		cfg.setFlags(cfg.getFlags() | CFG.BUSY);
+		cfg.setFlag( CFG.BUSY);
 
 		// Important: eagerly put the CFG in the analysis cache.
 		// Recursively performed analyses required to prune the CFG,
@@ -161,7 +162,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 				}
 			}
 		}
-		cfg.setFlags(cfg.getFlags() | CFG.PRUNED_FAILED_ASSERTION_EDGES);
+		cfg.setFlag(CFG.PRUNED_FAILED_ASSERTION_EDGES);
 
 		final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
 			AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
@@ -181,7 +182,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 			}
 		}
-		cfg.setFlags(cfg.getFlags() | CFG.PRUNED_INFEASIBLE_EXCEPTIONS);
+		cfg.setFlag( CFG.PRUNED_INFEASIBLE_EXCEPTIONS);
 
 		final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
 			!AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE);
@@ -208,15 +209,26 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 				// FIXME: should report the error
 			}
 		}
-		cfg.setFlags(cfg.getFlags() | CFG.PRUNED_UNCONDITIONAL_THROWERS);
+		cfg.setFlag( CFG.PRUNED_UNCONDITIONAL_THROWERS);
 
 		// Now we are done with the CFG refining process
-		cfg.setFlags(cfg.getFlags() | CFG.REFINED);
-		cfg.setFlags(cfg.getFlags() & ~(CFG.BUSY));
+		cfg.setFlag(CFG.REFINED);
+		cfg.clearFlag(CFG.BUSY);
 
 		// If the CFG changed as a result of pruning, purge all analysis results
 		// for the method.
 		if (changed) {
+			
+			DepthFirstSearch dfs = new DepthFirstSearch(cfg);
+			dfs.search();
+			Collection<BasicBlock> unreachable = dfs.unvisitedVertices();
+			if (!unreachable.isEmpty()) {
+				if (DEBUG_CFG) System.out.println("Unreachable blocks");
+				for(BasicBlock b : unreachable) {
+					if (DEBUG_CFG) System.out.println(" removing " + b);
+					cfg.removeVertex(b);
+				}
+			}
 			Global.getAnalysisCache().purgeMethodAnalyses(descriptor);
 		}
 

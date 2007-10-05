@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.graph;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -140,6 +141,16 @@ public abstract class AbstractDepthFirstSearch
 		return null;
 	}
 
+	public Collection<VertexType> unvisitedVertices() {
+		LinkedList<VertexType> result = new LinkedList<VertexType>();
+	
+		for (Iterator<VertexType> i = graph.vertexIterator(); i.hasNext(); ) {
+			VertexType v = i.next();
+			if (getColor(v) == WHITE)
+				result.add(v);
+		}
+		return result;
+	}
 	/**
 	 * Specify a VertexChooser object to be used to selected
 	 * which vertices are visited by the search.

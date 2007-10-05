@@ -157,7 +157,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (this.getClass() == UnconditionalValueDerefDataflow.class || this.getClass() == LiveLocalStoreDataflow.class) {
 					try {
 	                    ClassContext cc = Global.getAnalysisCache().getClassAnalysis( ClassContext.class, DescriptorFactory.createClassDescriptorFromDottedClassName(cfg.getMethodGen().getClassName()));
+	                    System.out.println("Forwards cfg");
 	                    CFGPrinter printer = new CFGPrinter(cfg);
+	                    printer.setIsForwards(true);
+	                    printer.print(System.out);
+	                    System.out.println("Backwards cfg");
+	                    printer = new CFGPrinter(cfg);
 	                    printer.setIsForwards(false);
 	                    printer.print(System.out);
 	                    cc.dumpSimpleDataflowInformation(cfg.getMethodGen().getMethod());
