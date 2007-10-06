@@ -72,7 +72,9 @@ public class IncompatibleTypes {
 			"Incompatible classes", Priorities.HIGH_PRIORITY);
 
 	public static final IncompatibleTypes UNRELATED_CLASS_AND_INTERFACE = new IncompatibleTypes(
-			"Unrelated class and interface", Priorities.HIGH_PRIORITY);
+			"Unrelated class and interface", Priorities.NORMAL_PRIORITY);
+	public static final IncompatibleTypes UNRELATED_FINAL_CLASS_AND_INTERFACE = new IncompatibleTypes(
+			"Unrelated final class and interface", Priorities.HIGH_PRIORITY);
 
 	public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes(
 			"Unrelated interfaces", Priorities.NORMAL_PRIORITY);
@@ -179,6 +181,8 @@ public class IncompatibleTypes {
 					if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
 						if (lhs.isInterface() && rhs.isInterface())
 							return UNRELATED_INTERFACES;
+						else if (lhs.isFinal() || rhs.isFinal())
+							return UNRELATED_FINAL_CLASS_AND_INTERFACE;
 						else
 							return UNRELATED_CLASS_AND_INTERFACE;
 					}
