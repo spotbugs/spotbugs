@@ -29,6 +29,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
@@ -595,9 +597,28 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 					.addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
 		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
 		
+		XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
+		if (calledMethod.getClassName().equals("java.lang.Integer")) {
+			int position = location.getHandle().getPosition();
+			ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
+			Code code = method.getCode();
+			int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/NumberFormatException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return;
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/IllegalArgumentException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return;
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/RuntimeException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return;
+
+		}
 		BugInstance warning = new BugInstance(this,bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method).addMethod(
-						XFactory.createXMethod(invokeInstruction, cpg))
+						calledMethod)
 				.describe("METHOD_CALLED").addSourceLine(classContext,
 						method,  location);
 
