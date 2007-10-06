@@ -763,8 +763,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		InstructionHandle handle = location.getHandle();
 		String sourceFile = jclass.getSourceFileName();
 
-		if (sourceFile.equals("PartialCompositeContext.java"))
-			System.out.println("Checking " + jclass.getClassName() +"." + method.getName());
 		TypeFrame frame = typeDataflow.getFactAtLocation(location);
 		if (frame.getStackDepth() < 2)
 			throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
