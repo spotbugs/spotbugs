@@ -763,6 +763,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		InstructionHandle handle = location.getHandle();
 		String sourceFile = jclass.getSourceFileName();
 
+		if (sourceFile.equals("PartialCompositeContext.java"))
+			System.out.println("Checking " + jclass.getClassName() +"." + method.getName());
 		TypeFrame frame = typeDataflow.getFactAtLocation(location);
 		if (frame.getStackDepth() < 2)
 			throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
@@ -777,11 +779,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
 			return;
 
-		boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
+		String methodName = method.getName();
+		boolean looksLikeTestCase = methodName.startsWith("test") && method.isPublic() 
+		&& method.getSignature().equals("()V")
 		|| testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
 		int priorityModifier = 0;
-		if (looksLikeTestCase) priorityModifier = 1;
-		if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
+		if (looksLikeTestCase) {
+			priorityModifier = 1;
 			try {
 				if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
 					priorityModifier=2;
@@ -841,7 +845,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				);
 			}
 		}
-		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE) 
+		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE 
+				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
