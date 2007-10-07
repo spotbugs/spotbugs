@@ -44,6 +44,8 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
 
+import sun.tools.tree.MethodExpression;
+
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -97,6 +99,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -497,6 +500,26 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 	}
 
+	private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
+		if (calledMethod.getClassName().equals("java.lang.Integer")) {
+			int position = location.getHandle().getPosition();
+			ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
+			Code code = method.getCode();
+			int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/NumberFormatException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return true;
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/IllegalArgumentException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return true;
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/RuntimeException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return true;
+		}
+		return false;
+	}
 	private void checkUnconditionallyDereferencedParam(Location location,
 			ConstantPoolGen cpg, TypeDataflow typeDataflow,
 			InvokeInstruction invokeInstruction, BitSet nullArgSet,
@@ -598,24 +621,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
 		
 		XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
-		if (calledMethod.getClassName().equals("java.lang.Integer")) {
-			int position = location.getHandle().getPosition();
-			ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
-			Code code = method.getCode();
-			int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/NumberFormatException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/IllegalArgumentException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/RuntimeException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return;
-
-		}
+		if (safeCallToPrimateParseMethod(calledMethod, location)) return;
 		BugInstance warning = new BugInstance(this,bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method).addMethod(
 						calledMethod)
@@ -1130,9 +1136,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set,
 	 *      java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
 	 */
-	public void foundGuaranteedNullDeref(@NonNull
-	Set<Location> assignedNullLocationSet, @NonNull
-	Set<Location> derefLocationSet, SortedSet<Location> doomedLocations,
+	public void foundGuaranteedNullDeref(
+			@NonNull Set<Location> assignedNullLocationSet, 
+			@NonNull Set<Location> derefLocationSet, 
+			SortedSet<Location> doomedLocations,
 			ValueNumberDataflow vna, ValueNumber refValue,
 			BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref,
 			boolean npeIfStatementCovered) {
@@ -1220,6 +1227,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		FieldAnnotation storedField = null;
 		MethodAnnotation invokedMethod = null;
+		XMethod invokedXMethod = null;
 		int parameterNumber = -1;
 		if (derefLocationSet.size() == 1) {
 			Location loc = derefLocationSet.iterator().next();
@@ -1259,6 +1267,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 					XMethodParameter nonNullParameter = pu.getNonNullParameter();
 					if (nonNullParameter != null) {
 						XMethodParameter mp = nonNullParameter ;
+						invokedXMethod = mp.getMethod();
 						invokedMethod =  MethodAnnotation.fromXMethod(mp.getMethod());
 						parameterNumber = mp.getParameterNumber();
 						bugType = "NP_NULL_PARAM_DEREF";
@@ -1279,7 +1288,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 		boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(xMethod) 
 				&& xMethod.isPrivate();
-		
+		if (invokedXMethod != null) for (Location derefLoc : derefLocationSet) 
+			if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc)) return;
 
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
