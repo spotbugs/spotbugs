@@ -250,7 +250,7 @@ public class BugLoader {
 	/**
 	 * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
 	 * @param p
-	 * @return the bugs from the reanalysis, or null if cancelled
+	 * @return the bugs from the reanalysis, or null if canceled
 	 */
 	public static @CheckForNull  BugCollection redoAnalysisKeepComments(@NonNull Project p)
 	{
@@ -261,7 +261,9 @@ public class BugLoader {
 		for (BugLeafNode node: oldSet)
 		{
 			BugInstance bug=node.getBug();
-			current.add(bug);
+			// Sourceforge bug 1800962 indicates 'current' can be null here
+			if(current != null)
+				current.add(bug);
 		}
 		Update update = new Update();
 
@@ -269,7 +271,10 @@ public class BugLoader {
 
 		new AnalyzingDialog(p,ac,true);
 
-		if (ac.finished)
+		if(current == null)
+			// Sourceforge bug 1800962 indicates 'current' can be null here
+			return ac.getBugCollection();
+		else if (ac.finished)
 			return update.mergeCollections(current, ac.getBugCollection(), true, false);
 		else
 			return null;
