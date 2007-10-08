@@ -319,6 +319,7 @@ These options are only accepted by the Graphical User Interface.
 
 <para>
 These options are only accepted by the Text User Interface.
+</para>
 
 <variablelist>
   <varlistentry>
@@ -511,10 +512,8 @@ These options are only accepted by the Text User Interface.
 -->
 
 </variablelist>
-</para>
 
 </sect2>
-
 </sect1>
 
 </chapter>
@@ -914,6 +913,7 @@ to get only the output you're interested in.
 See <xref linkend="commandLineOptions" /> in <xref linkend="installing" /> for a description of how to invoke the
 Command Line Interface.
 </para>
+
 
 </chapter>
 
@@ -2406,6 +2406,79 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 You can refer the JCIP annotation <ulink url="http://jcip.net/annotations/doc/index.html">
 API documentation</ulink> at <ulink url="http://jcip.net/">Java Concurrency in Practice</ulink>.
 </para>
+</chapter>
+
+<!--
+   **************************************************************************
+   Using rejarForAnalysis
+   **************************************************************************
+-->
+
+<chapter>
+<title>Using rejarForAnalysis</title>
+
+<para>
+If your project consists of many jarfiles or the jarfiles are scattered
+over many directories, you may wish to use the <command>rejarForAnalysis
+</command> script to make
+FindBugs invocation easier.  The script collects many jarfiles and combines them
+into a single, large jarfile that can then be easily passed to FindBugs for
+analysis.  This can be particularly useful in combination with the 'find' command
+on unix systems; e.g. <command>find . -name '*.jar' | xargs rejarForAnalysis
+</command>.
+</para>
+
+<para>
+The <command>rejarForAnalysis</command> script
+can also be used to split a very large project up into a set of jarfiles with
+the project classfiles evenly divided between them.  This is useful when running
+FindBugs on the entire project is not practical due to time or memory consumption.
+Instead of running FindBugs on the entire project, you may use <command>
+rejarForAnalysis</command> build one large, all-inclusive jarfile
+containing all classes, invoke <command>rejarForAnalysis</command>
+again to split the project into multiple jarfiles, then run FindBugs
+on each divided jarfiles in turn, specifying the the all-inclusive jarfile in
+the <command>-auxclasspath</command>.
+</para>
+
+<para>
+These are the options accepted by the <command>rejarForAnalysis</command> script:
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><command>-maxAge</command> <replaceable>days</replaceable></term>
+    <listitem>
+       <para>
+       Maximum age in days (ignore jar files older than this).
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-inputFileList</command> <replaceable>filename</replaceable></term>
+    <listitem>
+       <para>
+       Text file containing names of jar files.
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-maxClasses</command> <replaceable>num</replaceable></term>
+    <listitem>
+       <para>
+       Maximum number of classes per analysis*.jar file.
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-prefix</command> <replaceable>class name prefix</replaceable></term>
+    <listitem>
+       <para>
+       Prefix of class names that should be analyzed (e.g., edu.umd.cs.).
+       </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
 </chapter>
 
 <!--
