@@ -411,7 +411,9 @@ public class FindBugsTask extends Task {
 	 * Adds a reference to a sourcepath defined elsewhere.
 	 */
 	public void setAuxClasspathRef(Reference r) {
-		createAuxClasspath().setRefid(r);
+	    Path path = createAuxClasspath();
+	    path.setRefid(r);
+        path.toString(); // Evaluated for its side-effects (throwing a BuildException)
 	}
 
 	/**
@@ -554,7 +556,9 @@ public class FindBugsTask extends Task {
 	 * Adds a reference to a classpath defined elsewhere.
 	 */
 	public void setClasspathRef(Reference r) {
-		createClasspath().setRefid(r);
+		Path path = createClasspath();
+		path.setRefid(r);
+        path.toString(); // Evaluated for its side-effects (throwing a BuildException)
 	}
 
 	/**
