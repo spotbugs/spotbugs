@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.InnerClasses;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -59,7 +60,11 @@ public class Util {
 			}
 		return null;
 	}
-
+	 public static int getSizeOfSurroundingTryBlock(Method method, String vmNameOfExceptionClass, int pc) {
+		 return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
+	 }
+			
+		 
 	 public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code, String vmNameOfExceptionClass, int pc) {
 			int size = Integer.MAX_VALUE;
 			int tightStartPC = 0;

@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
  * Dataflow analysis to find values unconditionally dereferenced in the future.
@@ -413,15 +414,23 @@ public class UnconditionalValueDerefAnalysis extends
 		SignatureParser sigParser = new SignatureParser(called.getSignature());
 		int numParams = sigParser.getNumParameters();
 		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+		
 		if (!invFrame.isValid()) return;
 		for (int i = 0; i < numParams; i++) {
 			int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
 			int slot = invFrame.getStackLocation(offset);
 			IsNullValue value = invFrame.getValue(slot);
 			if (reportDereference(invFrame, slot) && database.parameterMustBeNonNull(called, i)) {
+				int catchSizeNPE = Util.getSizeOfSurroundingTryBlock(method,
+						"java/lang/NullPointerException", location.getHandle().getPosition());
+				int catchSizeNFE = Util.getSizeOfSurroundingTryBlock(method,
+						"java/lang/NumberFormatException", location.getHandle().getPosition());
+				if (catchSizeNPE == Integer.MAX_VALUE && (!called.getClassName().equals("java.lang.Integer")
+						 || catchSizeNFE == Integer.MAX_VALUE)) {
 				// Get the corresponding value number
 				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, sigParser);
 				fact.addDeref(vn, location);
+				}
 			}
 		}
 	}
