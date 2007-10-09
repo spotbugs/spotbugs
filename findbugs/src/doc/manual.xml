@@ -552,7 +552,7 @@ To compile &FindBugs; from source, you will need the following:
   </listitem>
   <listitem>
     <para>
-      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.5 or later
+      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.6.3 or later
     </para>
   </listitem>
 </itemizedlist>
