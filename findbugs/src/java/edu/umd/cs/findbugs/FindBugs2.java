@@ -561,6 +561,11 @@ public class FindBugs2 implements IFindBugsEngine {
 				for (ClassDescriptor ifaceDesc : classNameAndInfo.getInterfaceDescriptorList()) {
 					workList.addLast(ifaceDesc);
 				}
+			} catch (RuntimeException e) {
+				bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
+				if (appClassSet.contains(classDesc)) {
+					badAppClassSet.add(classDesc);
+				}
 			} catch (MissingClassException e) {
 				// Just log it as a missing class
 				bugReporter.reportMissingClass(e.getClassDescriptor());
@@ -577,6 +582,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		}
 		// Delete any application classes that could not be read
 		appClassList.removeAll(badAppClassSet);
+		DescriptorFactory.instance().purge(badAppClassSet);
 		
 		for(ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) 
 			referencedPackageSet.add(d.getPackageName());

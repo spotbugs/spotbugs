@@ -80,6 +80,11 @@ public class DescriptorFactory {
 	public Collection<ClassDescriptor> getAllClassDescriptors() {
 		return classDescriptorMap.values();
 	}
+	
+	public void purge(Collection<ClassDescriptor> unusable) {
+		for(ClassDescriptor c : unusable)
+		 classDescriptorMap.remove(c.getClassName());
+	}
 	/**
 	 * Get a ClassDescriptor for a class name in VM (slashed) format.
 	 * 
