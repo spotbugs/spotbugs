@@ -98,11 +98,16 @@ public class UnionResults {
 		Project project = new Project();
 		results.readXML(argv[argCount++], project);
 		for(int i = argCount; i < argv.length; i++) {
+			try {
 			SortedBugCollection more = new SortedBugCollection();
 			Project newProject = new Project();
 			more.readXML(argv[i], newProject);
 			project.add(newProject);
 			results = union(results, more);
+			} catch (Exception e) {
+					System.err.println("Trouble parsing " + argv[i]);
+					e.printStackTrace();
+			}
 		}
 
 		results.setWithMessages(commandLine.withMessages);
