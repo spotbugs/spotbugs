@@ -278,11 +278,10 @@ public class FindDeadLocalStores implements Detector {
 				// method?
 				boolean parameterThatIsDeadAtEntry = isParameter
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
-				if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
+				if (parameterThatIsDeadAtEntry && !storeLive && !complainedAbout.get(local)) {
 
-					// TODO: add warning properties?
 					pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
-							storeLive ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
+							HIGH_PRIORITY).addClassAndMethod(methodGen,
 									javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
 											javaClass.getSourceFileName(), location.getHandle());
 					complainedAbout.set(local);
