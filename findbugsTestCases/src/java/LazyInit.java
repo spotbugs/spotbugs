@@ -1,3 +1,5 @@
+import java.lang.reflect.Field;
+
 public class LazyInit {
 	static Object foo;
 
@@ -6,6 +8,18 @@ public class LazyInit {
 	
 	static String [] x,y;
 
+	static String [] fgInvokeOptions;
+    public static void getConstantMaps() {
+		if (fgInvokeOptions != null) {
+			return;
+		}
+		Field[] fields = LazyInit.class.getDeclaredFields();
+		fgInvokeOptions = new String[32];
+
+		for (int i = 0; i < fields.length; i++) {
+			fgInvokeOptions[i] = fields[i].getName();
+		}
+	}
 	public static String[] getX() {
 		if (x != null) {
 			x = new String[5];
