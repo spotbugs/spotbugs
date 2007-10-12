@@ -452,7 +452,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" 
             speed="moderate"
-            reports="LI_LAZY_INIT_STATIC" />
+            reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" 
             speed="moderate" 
@@ -920,6 +920,7 @@
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
          experimental="true" />  <!-- has never been generated? -->
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
   <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS" category="CORRECTNESS"/>

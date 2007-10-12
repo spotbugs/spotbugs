@@ -90,8 +90,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		// The pattern requires a get/put pair accessing the same field.
 		boolean hasGetStatic = bytecodeSet.get(Constants.GETSTATIC);
 		boolean hasPutStatic = bytecodeSet.get(Constants.PUTSTATIC);
-		if (!(hasGetStatic && hasPutStatic) &&
-				!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
+		if (!hasGetStatic || !hasPutStatic)
 			return false;
 
 		// If the method is synchronized, then we'll assume that
@@ -120,9 +119,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			XField xfield =
 					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig(), field.isStatic());
 			if (xfield == null) return;
-			if ((xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
-				return;
-
+			
 			// XXX: for now, ignore lazy initialization of instance fields
 			if (!xfield.isStatic())
 				return;
@@ -226,26 +223,33 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				return;
 			
 			boolean sawGetStaticAfterPutStatic = false;
-			BitSet postStore = domAnalysis.getAllDominatedBy(store.getBasicBlock());
-			for (BasicBlock block : cfg.getBlocks(postStore)) {
-				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
-					InstructionHandle handle = j.next();
-				
-					InstructionHandle nextHandle = handle.getNext();
-					Instruction ins = handle.getInstruction();
-					
-					if (ins instanceof GETSTATIC && (nextHandle == null 
-							|| !(nextHandle.getInstruction() instanceof ReturnInstruction))) {
-						XField field2 = XFactory.createXField((FieldInstruction) ins, methodGen.getConstantPool());
-						if (xfield.equals(field2)) sawGetStaticAfterPutStatic = true;
+			if (xfield.getSignature().startsWith("[") || xfield.getSignature().startsWith("L")) {
+
+				BitSet postStore = domAnalysis.getAllDominatedBy(store.getBasicBlock());
+				for (BasicBlock block : cfg.getBlocks(postStore)) {
+					for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
+						InstructionHandle handle = j.next();
+
+						InstructionHandle nextHandle = handle.getNext();
+						Instruction ins = handle.getInstruction();
+
+						if (ins instanceof GETSTATIC && potentialInitialization(nextHandle)) {
+							XField field2 = XFactory.createXField((FieldInstruction) ins, methodGen.getConstantPool());
+							if (xfield.equals(field2))
+								sawGetStaticAfterPutStatic = true;
+						}
 					}
-				}}
+				}
+			}
 
 			// Compute the priority:
 			//  - ignore lazy initialization of instance fields
 			//  - when it's done in a public method, emit a high priority warning
 			//  - protected or default access method, emit a medium priority warning
 			//  - otherwise, low priority
+			
+			if (!sawGetStaticAfterPutStatic && xfield.isVolatile())
+				return;
 			int priority = LOW_PRIORITY;
 			boolean isDefaultAccess =
 					(method.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
@@ -255,13 +259,14 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority = NORMAL_PRIORITY;
 			if (xfield.getSignature().startsWith("["))
 				priority--;
-			if (!sawGetStaticAfterPutStatic) priority++;
+			if (!sawGetStaticAfterPutStatic && priority < LOW_PRIORITY) 
+				priority = LOW_PRIORITY;
 
 			// Report the bug.
 			InstructionHandle start = match.getLabeledInstruction("start");
 			InstructionHandle end = match.getLabeledInstruction("end");
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(this, "LI_LAZY_INIT_STATIC", priority)
+			bugReporter.reportBug(new BugInstance(this, sawGetStaticAfterPutStatic ? "LI_LAZY_INIT_UPDATE_STATIC" : "LI_LAZY_INIT_STATIC", priority)
 					.addClassAndMethod(methodGen, sourceFile)
 					.addField(xfield).describe("FIELD_ON")
 					.addSourceLine(classContext, methodGen, sourceFile, start, end));
@@ -269,6 +274,17 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			bugReporter.reportMissingClass(e);
 		}
 	}
+	/**
+     * @param nextHandle
+     * @return
+     */
+    private boolean potentialInitialization(InstructionHandle nextHandle) {
+    	if (nextHandle == null) return true;
+	    Instruction instruction = nextHandle.getInstruction();
+	    if (instruction instanceof ReturnInstruction) return false;
+	    if (instruction instanceof IfInstruction) return false;
+		return true;
+    }
 
 }
 
