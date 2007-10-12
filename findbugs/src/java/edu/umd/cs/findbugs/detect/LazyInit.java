@@ -88,7 +88,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		// The pattern requires a get/put pair accessing the same field.
-		if (!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)) &&
+		boolean hasGetStatic = bytecodeSet.get(Constants.GETSTATIC);
+		boolean hasPutStatic = bytecodeSet.get(Constants.PUTSTATIC);
+		if (!(hasGetStatic && hasPutStatic) &&
 				!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
 			return false;
 
@@ -164,7 +166,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			// and the final field store.
 			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
 			PatternElementMatch store = match.getFirstLabeledMatch("end");
-
+			
 			// Get all blocks
 			//
 			//   (1) dominated by the wildcard instruction matching
@@ -216,11 +218,28 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 						lockSet.intersectWith(insLockSet);
 				}
 			}
+			
 			if (!(sawNEW || sawINVOKE))
 				return;
-			if (lockSet == null) throw new IllegalStateException();
+			if (lockSet == null) throw new IllegalStateException("lock set is null");
 			if (!lockSet.isEmpty())
 				return;
+			
+			boolean sawGetStaticAfterPutStatic = false;
+			BitSet postStore = domAnalysis.getAllDominatedBy(store.getBasicBlock());
+			for (BasicBlock block : cfg.getBlocks(postStore)) {
+				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
+					InstructionHandle handle = j.next();
+				
+					InstructionHandle nextHandle = handle.getNext();
+					Instruction ins = handle.getInstruction();
+					
+					if (ins instanceof GETSTATIC && (nextHandle == null 
+							|| !(nextHandle.getInstruction() instanceof ReturnInstruction))) {
+						XField field2 = XFactory.createXField((FieldInstruction) ins, methodGen.getConstantPool());
+						if (xfield.equals(field2)) sawGetStaticAfterPutStatic = true;
+					}
+				}}
 
 			// Compute the priority:
 			//  - ignore lazy initialization of instance fields
@@ -236,6 +255,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority = NORMAL_PRIORITY;
 			if (xfield.getSignature().startsWith("["))
 				priority--;
+			if (!sawGetStaticAfterPutStatic) priority++;
 
 			// Report the bug.
 			InstructionHandle start = match.getLabeledInstruction("start");
