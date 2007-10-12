@@ -27,7 +27,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckReturnValueAnnotation> {
 
-	 final int priority;
+	final int priority;
+	final String pattern;
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_UNKNOWN = new CheckReturnValueAnnotation(
 			"UnknownCheckReturnValue", 0, Detector.EXP_PRIORITY);
 
@@ -38,10 +39,16 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 			"CheckReturnValue", 2, Detector.NORMAL_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_LOW = new CheckReturnValueAnnotation(
 			"CheckReturnValueLow", 3, Detector.LOW_PRIORITY);
+
+	
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_IGNORE = new CheckReturnValueAnnotation(
 			"OkToIgnoreReturnValue", 4, Detector.IGNORE_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_VERY_HIGH = new CheckReturnValueAnnotation(
 			"CheckReturnValueVeryHigh", 5, Detector.HIGH_PRIORITY-1);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_LOW_BAD_PRACTICE = new CheckReturnValueAnnotation(
+			"CheckReturnValueLow", 6, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.LOW_PRIORITY);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE = new CheckReturnValueAnnotation(
+			"CheckReturnValueLow", 7, "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", Detector.NORMAL_PRIORITY);
 
 	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
@@ -66,8 +73,17 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 	public int getPriority() {
 		return priority;
 	}
+	public String getPattern() {
+		return pattern;
+	}
 	private CheckReturnValueAnnotation(String s, int i, int p) {
 		super(s,i);
+		pattern = "RV_RETURN_VALUE_IGNORED";
+		priority = p;
+	}
+	private CheckReturnValueAnnotation(String s, int i, String pattern, int p) {
+		super(s,i);
+		this.pattern = pattern;
 		priority = p;
 	}
 

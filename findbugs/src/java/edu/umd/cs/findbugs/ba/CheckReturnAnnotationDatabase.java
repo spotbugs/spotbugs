@@ -40,30 +40,30 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
 		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-		addMethodAnnotation("java.io.File","createNewFile", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-		addMethodAnnotation("java.io.File","delete", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.io.File","createNewFile", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+		addMethodAnnotation("java.io.File","delete", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
 		addMethodAnnotation("java.util.Enumeration","hasMoreElements", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.security.MessageDigest","digest", "([B)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
 		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock","readLock",   "()Ljava/util/concurrent/locks/Lock;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock","writeLock",  "()Ljava/util/concurrent/locks/Lock;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-		addMethodAnnotation("java.util.concurrent.locks.Condition",    "await",      "(JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.concurrent.locks.Condition",    "awaitUtil",  "(Ljava/util/Date;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.concurrent.locks.Condition",    "awaitNanos", "(J)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.concurrent.locks.Condition",    "await",      "(JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+		addMethodAnnotation("java.util.concurrent.locks.Condition",    "awaitUtil",  "(Ljava/util/Date;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+		addMethodAnnotation("java.util.concurrent.locks.Condition",    "awaitNanos", "(J)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
 		addMethodAnnotation("java.util.concurrent.Semaphore",          "tryAcquire", "(JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.Semaphore",          "tryAcquire", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "tryLock",    "(JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "newCondition","()Ljava/util/concurrent/locks/Condition;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "tryLock",     "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
 
 		addMethodAnnotation("java.util.ConcurrentLinkedQueue",         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.util.DelayQueue",                    "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-		addMethodAnnotation("java.util.LinkedBlockingQueue",           "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.util.LinkedBlockingQueue",           "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
 		addMethodAnnotation("java.util.LinkedList",                    "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-		addMethodAnnotation("java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-		addMethodAnnotation("java.util.ArrayBlockingQueue",            "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.SynchronousQueue",              "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
+		addMethodAnnotation("java.util.ArrayBlockingQueue",            "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
+		addMethodAnnotation("java.util.SynchronousQueue",              "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
 		addMethodAnnotation("java.util.PriorityQueue",                 "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.util.PriorityBlockingQueue",         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 

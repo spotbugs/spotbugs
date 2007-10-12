@@ -3840,6 +3840,20 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">
+    <ShortDescription>Method ignores return value</ShortDescription>
+    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <Details>
+<![CDATA[
+   <p> This method returns a value that is not checked. For
+example, the <code>File.delete()</code> method returns false
+if the file could not be successfully deleted (rather than 
+throwing an Exception).
+If you don't check the result, you won't notice if the method invocation
+signals unexpected behavior by returning an atypical return value.
+]]>
+    </Details>
+  </BugPattern>
 
 
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">

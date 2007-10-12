@@ -153,7 +153,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 											+ ";"))
 						priority++;
 					bugAccumulator.accumulateBug(new BugInstance(this,
-							"RV_RETURN_VALUE_IGNORED", priority)
+							annotation.getPattern(), priority)
 							.addClassAndMethod(this).addCalledMethod(this), this);
 				}
 
