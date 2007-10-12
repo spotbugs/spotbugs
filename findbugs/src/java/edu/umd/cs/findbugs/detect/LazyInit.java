@@ -55,8 +55,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 	static {
 		pattern
 				.add(new Load("f", "val").label("start"))
-				.add(new IfNull("val"))
-				.add(new Wild(1, 1).label("createObject"))
+				.add(new IfNull("val").label("test"))
+				.add(new Wild(1, 1).label("createObject").dominatedBy("test"))
 				.add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
 	}
 
@@ -131,20 +131,23 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			}
 
 			// Ignore non-reference fields
-			if (!xfield.getSignature().startsWith("[") && !xfield.getSignature().startsWith("L")) {
+			String signature = xfield.getSignature();
+			if (!signature.startsWith("[") && !signature.startsWith("L")) {
 				if (DEBUG) System.out.println("Ignoring non-reference field " + xfield.getName());
 				return;
 			}
 
 			//  Strings are (mostly) safe to pass by data race in 1.5
-			if (xfield.getSignature().equals("Ljava/lang/String;"))
+			if (signature.equals("Ljava/lang/String;"))
 				return;
 			
 			//  GUI types should not be  accessed from multiple threads
 			
-			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(xfield.getSignature());
+		
+			if (signature.charAt(0) == 'L') {
+				ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
 
-			while (fieldType != null) {
+				while (fieldType != null) {
 					XClass fieldClass;
                     try {
 	                    fieldClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, fieldType);
@@ -158,6 +161,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 					if (name.equals("java/lang/Object")) break;
 					fieldType = fieldClass.getSuperclassDescriptor();
 				}
+			}
 
 			// Get locations matching the beginning of the object creation,
 			// and the final field store.
@@ -178,10 +182,16 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			PostDominatorsAnalysis postDomAnalysis =
 					classContext.getNonExceptionPostDominatorsAnalysis(method);
 			BitSet extent = domAnalysis.getAllDominatedBy(createBegin.getBasicBlock());
-			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
+			BitSet postDom = postDomAnalysis.getAllDominatedBy(store.getBasicBlock());
 			//System.out.println("Extent: " + extent);
-			if (DEBUG) System.out.println("Object creation extent: " + extent);
-
+			if (DEBUG) {
+				System.out.println("test  dominates: " + extent);
+				System.out.println("Field store postdominates " + postDom);
+			}
+			extent.and(postDom);
+			if (DEBUG) {
+				System.out.println("extent: " + extent);
+			}
 			// Check all instructions in the object creation extent
 			//
 			//   (1) to determine the common lock set, and
@@ -201,10 +211,12 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 					// Keep track of whether we saw any instructions
 					// that might actually have created a new object.
 					Instruction ins = handle.getInstruction();
-					if (ins instanceof NEW)
+					if (DEBUG) System.out.println(location);
+					if (ins instanceof AllocationInstruction)
 						sawNEW = true;
 					else if (ins instanceof InvokeInstruction)
 						sawINVOKE = true;
+					else if (ins instanceof PUTSTATIC) break;
 
 					// Compute lock set intersection for all matched instructions.
 					LockSet insLockSet = lockDataflow.getFactAtLocation(location);
@@ -223,7 +235,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				return;
 			
 			boolean sawGetStaticAfterPutStatic = false;
-			if (xfield.getSignature().startsWith("[") || xfield.getSignature().startsWith("L")) {
+			check: if (signature.startsWith("[") || signature.startsWith("L")  ) {
 
 				BitSet postStore = domAnalysis.getAllDominatedBy(store.getBasicBlock());
 				for (BasicBlock block : cfg.getBlocks(postStore)) {
@@ -235,8 +247,10 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
 						if (ins instanceof GETSTATIC && potentialInitialization(nextHandle)) {
 							XField field2 = XFactory.createXField((FieldInstruction) ins, methodGen.getConstantPool());
-							if (xfield.equals(field2))
+							if (xfield.equals(field2)) {
 								sawGetStaticAfterPutStatic = true;
+								break check;
+							}
 						}
 					}
 				}
@@ -257,8 +271,10 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
 				priority = NORMAL_PRIORITY;
-			if (xfield.getSignature().startsWith("["))
+			if (signature.startsWith("[") || signature.startsWith("Ljava/util/"))
 				priority--;
+			if (!sawNEW) 
+				priority++;
 			if (!sawGetStaticAfterPutStatic && priority < LOW_PRIORITY) 
 				priority = LOW_PRIORITY;
 
