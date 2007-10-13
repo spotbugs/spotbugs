@@ -118,7 +118,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector implements UseAn
 												+ ";"))
 					priority++;
 				
-				String pattern = "RV_RETURN_VALUE_IGNORED";
+				String pattern = annotation.getPattern();
 				if (callSeen.getName().equals("<init>") 
 						&& callSeen.getClassName().endsWith("Exception"))
 					pattern = "RV_EXCEPTION_NOT_THROWN";
