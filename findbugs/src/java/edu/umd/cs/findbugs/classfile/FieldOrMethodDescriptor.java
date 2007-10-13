@@ -102,7 +102,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof FieldOrMethodDescriptor)) {
 			return false;
 		}

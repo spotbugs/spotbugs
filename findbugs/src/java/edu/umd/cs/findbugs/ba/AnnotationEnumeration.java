@@ -32,14 +32,14 @@ public class AnnotationEnumeration <E extends AnnotationEnumeration<E>> implemen
 		index = i;
 	}
 	@Override
-		 public boolean equals(Object o) {
+		 public final boolean equals(Object o) {
 		if (!(o instanceof AnnotationEnumeration<?>))
 			return false;
 		return index == ((AnnotationEnumeration<?>) o).getIndex();
 	}
 
 	@Override
-		 public int hashCode() {
+		 public final int hashCode() {
 		return index;
 	}
 

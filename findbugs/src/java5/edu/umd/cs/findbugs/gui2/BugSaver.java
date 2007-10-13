@@ -54,7 +54,6 @@ public class BugSaver {
 	public static void saveBugs(File out, BugCollection data, Project p)
 	{
 		try {
-			out.createNewFile();
 			saveBugs(new FileOutputStream(out),data,p);
 			lastPlaceSaved=out.getAbsolutePath();
 		} catch (IOException e) {

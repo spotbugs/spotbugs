@@ -404,8 +404,7 @@ public class XFactory {
 	public static XField getExactXField(String className, String name, String signature, boolean isStatic) {
 		FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className),
 		        name, signature, isStatic);
-		XFactory xFactory = AnalysisContext.currentXFactory();
-		return xFactory.getExactXField(fieldDesc);
+		return getExactXField(fieldDesc);
 	}
 
 	public static @Nonnull XField getExactXField(FieldDescriptor desc) {

@@ -182,12 +182,16 @@ public abstract class FindBugsTestCase extends TestCase {
 				t.printStackTrace();
 			} finally {
 				if (tmpfile != null) {
-					tmpfile.delete();
+					deleteAndLog(tmpfile);
 				}
-				tmpdir.delete();
+				deleteAndLog(tmpdir);
 			}
 		}
 
+		void deleteAndLog(File f) {
+			if (!f.delete())
+				System.err.println("Could not delete " + f);
+		}
 		/**
 	     * @param tmpdir
 		 * @throws IOException 

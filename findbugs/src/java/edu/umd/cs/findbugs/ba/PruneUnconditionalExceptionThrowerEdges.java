@@ -85,8 +85,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		if (DEBUG)
 			System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +
 					SignatureConverter.convertMethodSignature(methodGen));
-		Subtypes subtypes = AnalysisContext.currentAnalysisContext()
-		.getSubtypes();
+
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			BasicBlock basicBlock = i.next();
 			if (!basicBlock.isExceptionThrower())

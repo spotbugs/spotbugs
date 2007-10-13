@@ -30,4 +30,32 @@
     <BugCode name="Se"/>
     <Class name="~edu.umd.cs.findbugs.gui2.*"/>
   </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.ba.DFSEdgeTypes"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.ba.DepthFirstSearch"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.detect.IncompatMask"/>
+        <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.TigerSubstitutesTest$1"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.detect.TestingGround"/>
+        <Bug pattern="URF_UNREAD_FIELD"/>
+      </Match>
+      <Match>
+        <Class name="edu.umd.cs.findbugs.jaif.JAIFToken"/>
+        <Bug pattern="URF_UNREAD_FIELD"/>
+      </Match>
 </FindBugsFilter>

@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
@@ -114,6 +115,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	 */
 	public void close() {
 		delegateCodeBase.close();
-		tempFile.delete();
+		if (!tempFile.delete()) 
+			AnalysisContext.logError("Could not delete " + tempFile);
 	}
 }

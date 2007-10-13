@@ -430,7 +430,7 @@
     </findbugs>
   </target>
 
-  <target name="findbugscheck" depends="anttask,classes,jars">
+  <target name="findbugscheck" depends="anttask,classes,junittests,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <mkdir dir="${sampleoutput.dir}"/>
@@ -441,7 +441,7 @@
 			  projectName="FindBugs"
               outputFile="${sampleoutput.dir}/findbugs.xml" >
       <class location="${classes.dir}" />
-      <sourcePath path="src/java:src/java5"/>
+      <sourcePath path="src/java:src/java5:src/junit"/>
 	  <auxClasspath refid="tools.classpath"/>
     </findbugs>
   </target>

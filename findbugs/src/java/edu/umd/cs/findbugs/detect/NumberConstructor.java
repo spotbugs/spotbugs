@@ -56,8 +56,7 @@ public class NumberConstructor extends BytecodeScanningDetector {
   private final Map<String, XMethod> boxClasses = new HashMap<String, XMethod>();
   private final BugAccumulator bugAccumulator;
   private final BugReporter bugReporter;
-  private boolean constantArgument;
-
+  
   /**
    * Constructs a NC detector given the reporter to report bugs on
    * @param bugReporter the sync of bug reports
@@ -99,19 +98,8 @@ public class NumberConstructor extends BytecodeScanningDetector {
   }
   @Override
   public void sawOpcode(int seen) {
-	// detect if previous op was a constant number
-	if (seen == ICONST_0 || seen == LCONST_0 ||
-	seen == ICONST_1 || seen == LCONST_1 ||
-	seen == ICONST_2 || seen == ICONST_3 ||
-	seen == ICONST_4 || seen == ICONST_5 ||
-	seen == BIPUSH || seen == LDC) {
-	  constantArgument = true;
-	  return;
-	}
-
 	// only acts on constructor invoke
 	if (seen != INVOKESPECIAL) {
-	  constantArgument = false;
 	  return;
 	}
 
