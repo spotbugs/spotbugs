@@ -63,6 +63,7 @@ public @java.lang.Deprecated class FindBadCast extends OpcodeStackDetector imple
 	private int parameters;
 	@Override
 		 public void visit(Code obj) {
+		if (getMethod().isSynthetic()) return;
 		if (DEBUG)  {
 			System.out.println(getFullyQualifiedMethodName());
 			}

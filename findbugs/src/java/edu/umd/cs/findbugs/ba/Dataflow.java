@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -104,7 +105,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		else methodName = SignatureConverter.convertMethodSignature(methodGen);
 		return methodName;
 	}
-	static class ForwardProgramOrder implements Comparator<BasicBlock> {
+	static class ForwardProgramOrder implements Comparator<BasicBlock>, Serializable  {
 
         public int compare(BasicBlock o1, BasicBlock o2) {
         	try {

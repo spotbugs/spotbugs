@@ -120,6 +120,7 @@ public class FindBadCast2 implements Detector {
 	}
 
 	private boolean isSynthetic(Method m) {
+		if (m.isSynthetic()) return true;
 		Attribute[] attrs = m.getAttributes();
 		for (Attribute attr : attrs) {
 			if (attr instanceof Synthetic)
