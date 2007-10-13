@@ -77,6 +77,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 	}
 
 
+	BitSet reported = new BitSet();
 
 	@Override
 		 public ByteCodePattern getPattern() {
@@ -98,6 +99,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		if (method.isSynchronized())
 			return false;
 
+		reported.clear();
 		return true;
 	}
 
@@ -167,6 +169,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			// and the final field store.
 			PatternElementMatch createBegin = match.getFirstLabeledMatch("createObject");
 			PatternElementMatch store = match.getFirstLabeledMatch("end");
+			PatternElementMatch test = match.getFirstLabeledMatch("test");
+			InstructionHandle testInstructionHandle = test.getMatchedInstructionInstructionHandle();
+			if (reported.get(testInstructionHandle.getPosition())) return;
 			
 			// Get all blocks
 			//
@@ -205,7 +210,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			for (BasicBlock block : cfg.getBlocks(extent)) {
 				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
 					InstructionHandle handle = j.next();
-
+					if (handle.equals(store.getMatchedInstructionInstructionHandle())) break;
 					Location location = new Location(handle, block);
 
 					// Keep track of whether we saw any instructions
@@ -216,7 +221,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 						sawNEW = true;
 					else if (ins instanceof InvokeInstruction)
 						sawINVOKE = true;
-					else if (ins instanceof PUTSTATIC) break;
+	
 
 					// Compute lock set intersection for all matched instructions.
 					LockSet insLockSet = lockDataflow.getFactAtLocation(location);
@@ -286,6 +291,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 					.addClassAndMethod(methodGen, sourceFile)
 					.addField(xfield).describe("FIELD_ON")
 					.addSourceLine(classContext, methodGen, sourceFile, start, end));
+			reported.set(testInstructionHandle.getPosition());
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
