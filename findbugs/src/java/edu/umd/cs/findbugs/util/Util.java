@@ -47,6 +47,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class Util {
 	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
 
+	public static String repeat(String s, int number) {
+		StringBuilder b = new StringBuilder(s.length() * number);
+		for(int i = 0; i < number; i++)
+			b.append(s);
+		return b.toString();
+	}
 	public static void runLogAtShutdown(Runnable r) {
 		if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
 	}

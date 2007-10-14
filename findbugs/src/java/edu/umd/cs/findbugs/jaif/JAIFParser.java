@@ -34,7 +34,6 @@ import java.util.Locale;
 public class JAIFParser {
 	private JAIFScanner scanner;
 	private JAIFEvents callback;
-	private JAIFToken next;
 	
 	public JAIFParser(Reader reader, JAIFEvents callback) {
 		this.scanner = new JAIFScanner(reader);

@@ -28,6 +28,8 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.util.Util;
+
 /**
  * Utilities for adding support for generics. Most of these
  * methods can be applied to generic and non generic type 
@@ -74,12 +76,17 @@ public class GenericUtilities {
 		 {
 			@Override
 			public String asString(GenericObjectType obj) {
-				String result = obj.toPlainString();
-				result += "<";
+				StringBuffer b = new StringBuffer(obj.toPlainString());
+				b.append("<");
+				boolean first = true;
 				for (Type t : obj.parameters) {
-					result += GenericUtilities.getString(t) + ",";
+					if (!first)
+						b.append(",");
+					first = false;
+					b.append(GenericUtilities.getString(t));
 				}
-				return result.substring(0,result.length()-1) + ">";				
+				b.append(">");
+				return b.toString();				
 			}
 		},
 
@@ -130,9 +137,7 @@ public class GenericUtilities {
 		public static String asString(ArrayType atype) {
 			Type obj = atype.getBasicType();
 			String result = GenericUtilities.getString(obj);
-			for (int i=0; i<atype.getDimensions(); i++)
-				result += "[]";
-			return result;
+			return result + Util.repeat("[]", atype.getDimensions());
 		}
 	}
 

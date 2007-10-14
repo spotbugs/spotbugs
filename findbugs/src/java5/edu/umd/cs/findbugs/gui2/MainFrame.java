@@ -2130,7 +2130,6 @@ public class MainFrame extends FBFrame implements LogSync
 
 		BugSaver.saveBugs(f,bugCollection,curProject);
 		try {
-			filtersAndSuppressions.createNewFile();
 			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
 		} catch (IOException e) {
 			Debug.println(e);

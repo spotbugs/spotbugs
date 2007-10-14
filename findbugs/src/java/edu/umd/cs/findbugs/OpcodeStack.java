@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -1282,10 +1283,7 @@ public class OpcodeStack implements Constants2
 					signature = dbc.getClassConstantOperand();
 					if (!signature.startsWith("[")) {
 						dims = dbc.getIntConstant();
-						signature = "";
-						while ((dims--) > 0)
-							signature += "[";
-						signature += "L" + signature + ";";
+						signature = Util.repeat("[", dims) +"L" + signature + ";";
 					}
 					pushBySignature(signature);
 				 break;

@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * This is the .fas file stored when projects are saved
@@ -117,6 +118,13 @@ public class ProjectSettings implements Serializable
 		{
 			if (MainFrame.DEBUG) System.err.println("Error serializing Settings:");
 			Debug.println(e);
+		} finally {
+			try {
+	            out.close();
+            } catch (IOException e) {
+	           // nothing to do
+            	assert true;
+            }
 		}
 	}
 

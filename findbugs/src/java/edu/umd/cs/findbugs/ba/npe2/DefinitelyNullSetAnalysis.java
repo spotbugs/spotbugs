@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<DefinitelyNullSet> {
 	private ValueNumberDataflow vnaDataflow;
-	private CompactLocationNumbering compactLocationNumbering;
 	private Map<BasicBlock, Condition> conditionMap;
 
 	private static final BitSet IFNULL_OPCODE_SET = new BitSet();
@@ -83,7 +82,6 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 			CompactLocationNumbering compactLocationNumbering) {
 		super(dfs);
 		this.vnaDataflow = vnaDataflow;
-		this.compactLocationNumbering = compactLocationNumbering;
 		this.conditionMap = new HashMap<BasicBlock, Condition>();
 	}
 
