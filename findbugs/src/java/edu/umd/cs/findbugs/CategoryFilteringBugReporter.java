@@ -25,7 +25,9 @@ import java.util.Set;
  * Filter reported warnings by category.
  */
 public class CategoryFilteringBugReporter extends DelegatingBugReporter {
-	private Set<String> categorySet;
+    private static final boolean DEBUG = SystemProperties.getBoolean("cfbreporter.debug");
+
+    private Set<String> categorySet;
 
 	public CategoryFilteringBugReporter(BugReporter realBugReporter, Set<String> categorySet) {
 		super(realBugReporter);
@@ -36,7 +38,10 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
 	public void reportBug(BugInstance bugInstance) {
 		BugPattern bugPattern = bugInstance.getBugPattern();
 		String category = bugPattern.getCategory();
-		if (categorySet.contains(category))
+		if (categorySet.contains(category)) {
 			getDelegate().reportBug(bugInstance);
+		} else {
+		    if(DEBUG) System.out.println("CategoryFilteringBugReporter: filtered due to category " + category);
+		}
 	}
 }
