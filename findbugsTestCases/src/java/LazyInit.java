@@ -21,7 +21,7 @@ public class LazyInit {
 		}
 	}
 	public static String[] getX() {
-		if (x != null) {
+		if (x == null) {
 			x = new String[5];
 			for(int i = 0; i < x.length; i++)
 				x[i] = Integer.toString(i);
@@ -29,7 +29,7 @@ public class LazyInit {
 		return x;
 	}
 	public static  String[] getY() {
-		if (y != null) {
+		if (y == null) {
 			y = new String[] {"a", "b", "c", "d", "e"};
 		}
 		return y;
