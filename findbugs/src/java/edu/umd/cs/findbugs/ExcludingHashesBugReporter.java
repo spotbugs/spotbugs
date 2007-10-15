@@ -47,7 +47,8 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
     }
 	@Override
 	public void reportBug(BugInstance bugInstance) {
-		if (!excludedHashes.contains(bugInstance.getInstanceHash()))
+		String instanceHash = bugInstance.getInstanceHash();
+		if (!excludedHashes.contains(instanceHash))
 				getDelegate().reportBug(bugInstance);
 	}
 }

@@ -38,7 +38,7 @@ public class FilterBugReporter extends DelegatingBugReporter {
 		if (DEBUG) System.out.print("Match ==> ");
 		boolean match = filter.match(bugInstance);
 		if (DEBUG) System.out.println(match ? "YES" : "NO");
-		if ((include && match) || (!include && !match))
+		if (include == match)
 			getDelegate().reportBug(bugInstance);
 	}
 }

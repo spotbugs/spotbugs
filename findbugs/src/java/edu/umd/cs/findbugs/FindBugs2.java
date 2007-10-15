@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.classfile.ClassFormatException;
+import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -63,6 +64,7 @@ import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
+import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * FindBugs driver class.
@@ -91,6 +93,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String currentClassName;
 	private String releaseName;
 	private String projectName;
+	private SortedBugCollection baselineBugs;
 	private String sourceInfoFileName;
 	private AnalysisFeatureSetting[] analysisFeatureSettingList;
 	private boolean relaxedReportingMode;
@@ -154,6 +157,8 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		// The analysis cache object
 		createAnalysisCache();
+
+		
 
 		progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
 		profiler.start(this.getClass());
@@ -229,7 +234,12 @@ public class FindBugs2 implements IFindBugsEngine {
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		FindBugs.configureFilter(bugReporter, filterFileName, include);
 	}
-
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
+     */
+    public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException {
+    		FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
+    		}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
 	 */
@@ -851,6 +861,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		// Flush any queued bug reports
 		bugReporter.finish();
 
+		// if (baselineBugs != null) new Update().removeBaselineBugs(baselineBugs, bugReporter.);
 		// Flush any queued error reports
 		bugReporter.reportQueuedErrors();
 		} finally {
@@ -903,4 +914,6 @@ public class FindBugs2 implements IFindBugsEngine {
 		abridgedMessages = xmlWithAbridgedMessages;
 
 	}
+
+	
 }

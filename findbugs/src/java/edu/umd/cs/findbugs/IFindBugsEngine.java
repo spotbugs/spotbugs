@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -83,6 +85,16 @@ public interface IFindBugsEngine {
 	 */
 	public void addFilter(String filterFileName, boolean include)
 			throws IOException, FilterException;
+
+
+	/**
+	 * Provide baseline of bugs not to report
+	 *
+	 * @param filterFileName the name of the xml bug baseline file 
+	 * @throws DocumentException 
+	 */
+	public void excludeBaselineBugs(String baselineBugs)
+			throws IOException, DocumentException;
 
 	/**
 	 * Set the UserPreferences representing which Detectors

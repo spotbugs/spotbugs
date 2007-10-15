@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -73,6 +75,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private ClassScreener classScreener = new ClassScreener();
 	private String includeFilterFile = null;
 	private String excludeFilterFile = null;
+	private String excludeBugFile = null;
 	private boolean setExitCode = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
 	private PrintStream outputStream = null;
@@ -126,6 +129,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				"raise/lower priority of warnings for given visitor(s)");
 		addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
 		addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
+		addOption("-excludeBugs", "baseline bugs", "exclude bugs that are also reported in the baseline xml output");
 		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
 		addSwitchWithOptionalExtraPart("-nested", "true|false",
@@ -342,6 +346,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			if (excludeFilterFile != null) 
 				throw new IllegalArgumentException("Can specify one exclude filter file");
 			excludeFilterFile = argument;
+		} else if (option.equals("-excludeBugs")) {
+			if (excludeBugFile != null) 
+				throw new IllegalArgumentException("Can specify one exclude bug file");
+			excludeBugFile = argument;
 		} else if (option.equals("-include")) {
 			if (includeFilterFile != null) 
 				throw new IllegalArgumentException("Can specify one include filter file");
@@ -433,12 +441,19 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setProject(project);
 
 		findBugs.setUserPreferences(getUserPreferences());
-
+		if  (excludeBugFile != null)
+	        try {
+	            findBugs.excludeBaselineBugs(excludeBugFile);
+            } catch (DocumentException e) {
+	           throw new IOException("Unable to read " + excludeBugFile + ":" + e.getMessage());
+            }
 		if (includeFilterFile != null) 
 			findBugs.addFilter(includeFilterFile, true);
 		if (excludeFilterFile != null) 
 			findBugs.addFilter(excludeFilterFile, false);
 
+		
+		
 		findBugs.setClassScreener(classScreener);
 
 		findBugs.setRelaxedReportingMode(relaxedReportingMode);

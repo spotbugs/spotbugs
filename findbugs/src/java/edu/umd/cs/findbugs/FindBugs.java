@@ -46,6 +46,7 @@ import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
+import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AbstractClassMember;
@@ -599,7 +600,12 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		configureFilter(bugReporter, filterFileName, include);
 	}
-
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
+	 */
+    public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException {
+		FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
+		}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
 	 */
@@ -1570,7 +1576,12 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
 		bugReporter.setDelegate(filterBugReporter);
 	}
-
+	public static void configureBaselineFilter(DelegatingBugReporter bugReporter, String baselineFileName)
+	throws IOException, DocumentException  {
+		BugReporter origBugReporter = bugReporter.getDelegate();
+		BugReporter filterBugReporter = new ExcludingHashesBugReporter(origBugReporter, baselineFileName);
+		bugReporter.setDelegate(filterBugReporter);
+	}
 	/**
 	 * Configure the BugCollection (if the BugReporter being used
 	 * is constructing one).
