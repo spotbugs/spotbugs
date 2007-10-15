@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * required of all BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
+    private static final boolean DEBUG = SystemProperties.getBoolean("abreporter.debug");
 	private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
 
 	private static class Error {
@@ -121,10 +122,19 @@ public abstract class AbstractBugReporter implements BugReporter {
 			analysisUnderway = true;
 		}
 		ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
-		if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName()))
-				return;
-		if (bugInstance.getPriority() <= priorityThreshold || relaxed)
+		if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName())) {
+		    if(DEBUG) System.out.println("AbstractBugReporter: Filtering due to non-primary class");
+			return;
+		}
+		if (bugInstance.getPriority() <= priorityThreshold || relaxed) {
 			doReportBug(bugInstance);
+		} else {
+            if(DEBUG) {
+                System.out.println(
+                    "AbstractBugReporter: Filtering due to priorityThreshold " +
+                    bugInstance.getPriority() + " > " + priorityThreshold);
+            }
+		}
 	}
 
 	public static String getMissingClassName(ClassNotFoundException ex) {
