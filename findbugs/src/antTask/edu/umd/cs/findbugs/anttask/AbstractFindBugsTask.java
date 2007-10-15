@@ -35,7 +35,7 @@ import org.apache.tools.ant.types.Reference;
  * 
  * @author David Hovemeyer
  */
-public class AbstractFindBugsTask extends Task {
+public abstract class AbstractFindBugsTask extends Task {
 	public static final String FINDBUGS_JAR = "findbugs.jar";
 	public static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
@@ -54,11 +54,14 @@ public class AbstractFindBugsTask extends Task {
 		public String getValue() { return value; }
 	}
 
+	private String mainClass;
 	private boolean debug = false;
 	private File homeDir = null;
 	private String jvm = "";
 	private String jvmargs = "";
 	private long timeout = DEFAULT_TIMEOUT;
+	private boolean failOnError = false;
+	private String errorProperty = null;
 	private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
 	private Path classpath = null;
 	private Path pluginList = null;
@@ -68,8 +71,8 @@ public class AbstractFindBugsTask extends Task {
 	/**
 	 * Constructor.
 	 */
-	protected AbstractFindBugsTask() {
-		
+	protected AbstractFindBugsTask(String mainClass) {
+		this.mainClass = mainClass;
 	}
 
 	/**
@@ -113,6 +116,21 @@ public class AbstractFindBugsTask extends Task {
 	 */
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
+	}
+
+	/**
+	 * Set the failOnError flag
+	 */
+	public void setFailOnError(boolean flag) {
+		this.failOnError = flag;
+	}
+
+	/**
+	 * Tells this task to set the property with the
+	 * given name to "true" when there were errors.
+	 */
+	public void setErrorProperty(String name) {
+		this.errorProperty = name;
 	}
 
 	/**
@@ -182,6 +200,22 @@ public class AbstractFindBugsTask extends Task {
 		createPluginList().setRefid(r);
 	}
 
+	@Override
+	public void execute() throws BuildException {
+		checkParameters();
+		try {
+			execFindbugs();
+		} catch (BuildException e) {
+			log("Oops: " + e.getMessage());
+			if (errorProperty != null) {
+				getProject().setProperty(errorProperty, "true");
+			}
+			if (failOnError) {
+				throw e;
+			}
+		}
+	}
+
 	/**
 	 * Check that all required attributes have been set.
 	 */
@@ -242,8 +276,11 @@ public class AbstractFindBugsTask extends Task {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
 
-			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
-										 File.separator + FINDBUGS_JAR ) );
+//			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
+//										 File.separator + FINDBUGS_JAR ) );
+			findbugsEngine.setClasspath(new Path(getProject(), homeDir + File.separator + "lib" + 
+										 File.separator + FINDBUGS_JAR));
+			findbugsEngine.setClassname(mainClass);
 
 			addArg("-home");
 			addArg(homeDir.getPath());
@@ -253,7 +290,10 @@ public class AbstractFindBugsTask extends Task {
 			// FindBugs installed using a non-standard directory layout.
 
 			findbugsEngine.setClasspath(classpath);
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugs2");
+
+			// Set the main class to be whatever the subclass's constructor
+			// specified.
+			findbugsEngine.setClassname(mainClass);
 
 			addArg("-pluginList");
 			addArg(pluginList.toString());
@@ -274,4 +314,31 @@ public class AbstractFindBugsTask extends Task {
 	protected void addArg(String arg) {
 		findbugsEngine.createArg().setValue(arg);
 	}
+
+	/**
+	 * Create a new JVM to do the work.
+	 *
+	 * @since Ant 1.5
+	 */
+	private void execFindbugs() throws BuildException {
+		
+		createFindbugsEngine();
+		configureFindbugsEngine();
+
+		beforeExecuteJavaProcess();
+
+		if (getDebug()) {
+			log(getFindbugsEngine().getCommandLine().describeCommand());    
+		}
+
+		int rc = getFindbugsEngine().executeJava();
+
+		afterExecuteJavaProcess(rc);
+	}
+	
+	protected abstract void configureFindbugsEngine();
+	
+	protected abstract void beforeExecuteJavaProcess();
+	
+	protected abstract void afterExecuteJavaProcess(int rc);
 }

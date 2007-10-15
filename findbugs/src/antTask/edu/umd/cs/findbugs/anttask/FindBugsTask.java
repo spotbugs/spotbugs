@@ -131,8 +131,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private boolean sorted = true;
 	private boolean timestampNow = true;
 	private boolean quietErrors = false;
-	private boolean failOnError = false;
-	private String errorProperty = null;
+//	private boolean failOnError = false;
+//	private String errorProperty = null;
 	private String warningsProperty = null;
 	private String projectName = null;
 	private boolean workHard = false;
@@ -162,6 +162,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private String onlyAnalyze = null;
 
 //	private Java findbugsEngine = null;
+	
+	public FindBugsTask() {
+		super("edu.umd.cs.findbugs.FindBugs2");
+	}
 
 	//define the inner class to store class locations
 	public static class ClassLocation {
@@ -262,21 +266,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	 */
 	public void setQuietErrors(boolean flag) {
 		this.quietErrors = flag;
-	}
-
-	/**
-	 * Set the failOnError flag
-	 */
-	public void setFailOnError(boolean flag) {
-		this.failOnError = flag;
-	}
-
-	/**
-	 * Tells this task to set the property with the
-	 * given name to "true" when there were errors.
-	 */
-	public void setErrorProperty(String name) {
-		this.errorProperty = name;
 	}
 
 	/**
@@ -472,21 +461,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		this.onlyAnalyze = filter;
 	}
 
-	@Override
-	public void execute() throws BuildException {
-		checkParameters();
-		try {
-			execFindbugs();
-		} catch (BuildException e) {
-			if (errorProperty != null) {
-				getProject().setProperty(errorProperty, "true");
-			}
-			if (failOnError) {
-				throw e;
-			}
-		}
-	}
-
 	/**
 	 * Check that all required attributes have been set
 	 */
@@ -533,25 +507,21 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
 			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
 		}
-	} 
-
-	/**
-	 * Create a new JVM to do the work.
-	 *
-	 * @since Ant 1.5
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#beforeExecuteJavaProcess()
 	 */
-	protected void execFindbugs() throws BuildException {
-		createFindbugsEngine();
-		configureFindbugsEngine();
-
+	@Override
+	protected void beforeExecuteJavaProcess() {
 		log("Running FindBugs...");
-
-		if (getDebug()) {
-			log(getFindbugsEngine().getCommandLine().describeCommand());    
-		}
-
-		int rc = getFindbugsEngine().executeJava();
-
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#afterExecuteJavaProcess(int)
+	 */
+	@Override
+	protected void afterExecuteJavaProcess(int rc) {
 		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
 			throw new BuildException("Execution of findbugs failed.");
 		}
@@ -664,7 +634,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
 			}
 		}
     } 
-
 }
 
 // vim:ts=4
