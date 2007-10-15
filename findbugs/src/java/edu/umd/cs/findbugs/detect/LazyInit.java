@@ -72,7 +72,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		}
 	}
 	@Override
-		 public BugReporter getBugReporter() {
+	public BugReporter getBugReporter() {
 		return bugReporter;
 	}
 
@@ -80,12 +80,12 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 	BitSet reported = new BitSet();
 
 	@Override
-		 public ByteCodePattern getPattern() {
+	public ByteCodePattern getPattern() {
 		return pattern;
 	}
 
 	@Override
-		 public boolean prescreen(Method method, ClassContext classContext) {
+	public boolean prescreen(Method method, ClassContext classContext) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		// The pattern requires a get/put pair accessing the same field.
@@ -104,7 +104,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 	}
 
 	@Override
-		 public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
 			throws CFGBuilderException, DataflowAnalysisException {
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -296,6 +296,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			bugReporter.reportMissingClass(e);
 		}
 	}
+
 	/**
      * @param nextHandle
      * @return
