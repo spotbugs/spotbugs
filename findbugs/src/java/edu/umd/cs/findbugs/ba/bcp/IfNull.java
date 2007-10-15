@@ -37,7 +37,7 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
 	}
 
 	@Override
-		 public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 							 ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be IFNULL or IFNONNULL.
@@ -52,7 +52,7 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
 	}
 
 	@Override
-		 public boolean acceptBranch(Edge edge, InstructionHandle source) {
+	public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		boolean isIfNull = (source.getInstruction() instanceof IFNULL);
 		return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
 	}
