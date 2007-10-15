@@ -26,6 +26,8 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 
 /**
+ * Ant task to create/update a bug history database.
+ * 
  * @author David Hovemeyer
  */
 public class ComputeBugHistoryTask extends AbstractFindBugsTask {
@@ -141,6 +143,14 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 		}
 		if (withMessages) {
 			addArg("-withMessages");
+		}
+		
+		if (outputFile.exists()) {
+			addArg(outputFile.getPath());
+		}
+		
+		for (DataFile dataFile : dataFileList) {
+			addArg(dataFile.getName());
 		}
 	}
 

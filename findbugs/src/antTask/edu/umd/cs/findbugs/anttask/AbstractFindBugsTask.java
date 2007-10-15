@@ -261,8 +261,9 @@ public abstract class AbstractFindBugsTask extends Task {
 			findbugsEngine.setJvm( jvm );
 		findbugsEngine.setTimeout( timeout  );
 
-		if ( debug )
+		if ( debug ) {
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";
+		}
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		// Add JVM arguments for system properties
@@ -275,15 +276,15 @@ public abstract class AbstractFindBugsTask extends Task {
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
-
-//			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
-//										 File.separator + FINDBUGS_JAR ) );
+			
+			log("executing using home dir [" + homeDir + "]");
+			
 			findbugsEngine.setClasspath(new Path(getProject(), homeDir + File.separator + "lib" + 
 										 File.separator + FINDBUGS_JAR));
-			findbugsEngine.setClassname(mainClass);
 
-			addArg("-home");
-			addArg(homeDir.getPath());
+			//addArg("-home");
+			//addArg(homeDir.getPath());
+			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
 		} else {
 			// Use an explicitly specified classpath and list of plugin Jars
 			// to initialize.  This is useful for other tools which may have
@@ -298,6 +299,8 @@ public abstract class AbstractFindBugsTask extends Task {
 			addArg("-pluginList");
 			addArg(pluginList.toString());
 		}
+
+		findbugsEngine.setClassname(mainClass);
 	}
 
 	/**
