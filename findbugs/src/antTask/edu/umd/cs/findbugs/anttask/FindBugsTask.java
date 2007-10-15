@@ -74,6 +74,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>adjustExperimental (boolean default false)
  * <li>auxAnalyzepath     (class, jar, zip files or directories containing classes to analyze)
  * <li>auxClasspath       (classpath or classpathRef)
+ * <li>baselineBugs		  (xml file containing baseline bugs)
  * <li>class              (class, jar, zip or directory containing classes to analyze)
  * <li>classpath          (classpath for running FindBugs)
  * <li>conserveSpace      (boolean - default false)</li>
@@ -139,6 +140,8 @@ public class FindBugsTask extends Task {
 	private boolean adjustExperimental = false;
 	private File homeDir = null;
 	private File projectFile = null;
+	private File baselineBugs = null;
+	
 	private File excludeFile = null;
 	private File includeFile = null;
 	private Path auxClasspath = null;
@@ -366,7 +369,12 @@ public class FindBugsTask extends Task {
 	public void setIncludeFilter(File filterFile) {
 		this.includeFile = filterFile;
 	}
-
+	/**
+	 * Set the exclude filter file 
+	 */
+	public void setBaselineBugs(File baselineBugs) {
+		this.baselineBugs = baselineBugs;
+	}
 	/**
 	 * Set the project file 
 	 */
@@ -769,6 +777,10 @@ public class FindBugsTask extends Task {
 		if ( projectFile != null ) {
 			addArg("-project");
 			addArg(projectFile.getPath());
+		}
+		if ( baselineBugs != null) {
+			addArg("-excludeBugs");
+			addArg(baselineBugs.getPath());
 		}
 		if ( excludeFile != null ) {
 			addArg("-exclude");
