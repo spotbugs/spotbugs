@@ -120,12 +120,12 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @ant.task category="utility"
  */
 
-public class FindBugsTask extends Task {
+public class FindBugsTask extends AbstractFindBugsTask {
 
-	private static final String FINDBUGS_JAR = "findbugs.jar";
-	private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
+//	private static final String FINDBUGS_JAR = "findbugs.jar";
+//	private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
-	private boolean debug = false;
+//	private boolean debug = false;
 	private String effort;
 	private boolean conserveSpace = false;
 	private boolean sorted = true;
@@ -138,7 +138,7 @@ public class FindBugsTask extends Task {
 	private boolean workHard = false;
 	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
-	private File homeDir = null;
+//	private File homeDir = null;
 	private File projectFile = null;
 	private File baselineBugs = null;
 	
@@ -149,20 +149,19 @@ public class FindBugsTask extends Task {
 	private Path sourcePath = null;
 	private String outputFormat = "xml";
 	private String reportLevel = null;
-	private String jvm = "";
-	private String jvmargs = "";
+//	private String jvm = "";
+//	private String jvmargs = "";
 	private String visitors = null;
 	private String omitVisitors = null;
 	private String outputFileName = null;
 	private String stylesheet = null;
 	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
-	private long timeout = DEFAULT_TIMEOUT;
-	private Path classpath = null;
-	private Path pluginList = null;
-		private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
-		private String onlyAnalyze = null;
+//	private long timeout = DEFAULT_TIMEOUT;
+//	private Path classpath = null;
+//	private Path pluginList = null;
+	private String onlyAnalyze = null;
 
-	private Java findbugsEngine = null;
+//	private Java findbugsEngine = null;
 
 	//define the inner class to store class locations
 	public static class ClassLocation {
@@ -181,35 +180,6 @@ public class FindBugsTask extends Task {
 		   return classLocation!=null?classLocation.toString():"";
 		}
 
-	}
-
-	// A System property to set when FindBugs is run
-	public static class SystemProperty {
-		private String name;
-		private String value;
-
-		public SystemProperty() {
-		}
-
-		public void setName(String name) { this.name = name; }
-		public void setValue(String value) { this.value = value; }
-
-		public String getName() { return name; }
-		public String getValue() { return value; }
-	}
-
-	/**
-	 * Set any specific jvm args
-	 */
-	public void setJvmargs(String args) {
-		this.jvmargs = args;
-	}
-
-	/**
-	 *  Set the command used to start the VM 
-	 */
-	public void setJvm(String jvm) {
-		this.jvm = jvm;
 	}
 
 	/**
@@ -251,13 +221,6 @@ public class FindBugsTask extends Task {
 	 */
 	public void setOmitVisitors(String commaSeperatedString) {
 		this.omitVisitors = commaSeperatedString;
-	}
-
-	/**
-	 * Set the home directory into which findbugs was installed
-	 */
-	public void setHome(File homeDir) {
-		this.homeDir = homeDir;
 	}
 
 	/**
@@ -323,13 +286,6 @@ public class FindBugsTask extends Task {
 	public void setWarningsProperty(String name) {
 		this.warningsProperty = name;
 	}    
-
-	/**
-	 * Set the debug flag
-	 */
-	public void setDebug(boolean flag) {
-		this.debug = flag;
-	}
 
 	/**
 	 * Set effort level.
@@ -509,19 +465,11 @@ public class FindBugsTask extends Task {
 			this.outputFileName = outputFileName;
 	}
 
-		/**
-		 * Set the packages or classes to analyze
-		 */
-		public void setOnlyAnalyze(String filter) {
-				this.onlyAnalyze = filter;
-		}
-
 	/**
-	 * Set timeout in milliseconds.
-	 * @param timeout the timeout
+	 * Set the packages or classes to analyze
 	 */
-	public void setTimeout(long timeout) {
-		this.timeout = timeout;
+	public void setOnlyAnalyze(String filter) {
+		this.onlyAnalyze = filter;
 	}
 
 	@Override
@@ -540,98 +488,11 @@ public class FindBugsTask extends Task {
 	}
 
 	/**
-	 * the classpath to use.
-	 */
-	public void setClasspath(Path src) {
-		if (classpath == null) {
-			classpath = src;
-		} else {
-			classpath.append(src);
-		}
-	}
-
-	/**
-	 * Path to use for classpath.
-	 */
-	public Path createClasspath() {
-		if (classpath == null) {
-			classpath = new Path(getProject());
-		}
-		return classpath.createPath();
-	}
-
-	/**
-	 * Adds a reference to a classpath defined elsewhere.
-	 */
-	public void setClasspathRef(Reference r) {
-		Path path = createClasspath();
-		path.setRefid(r);
-        path.toString(); // Evaluated for its side-effects (throwing a BuildException)
-	}
-
-	/**
-	 * the plugin list to use.
-	 */
-	public void setPluginList(Path src) {
-		if (pluginList == null) {
-			pluginList = src;
-		} else {
-			pluginList.append(src);
-		}
-	}
-
-	/**
-	 * Path to use for plugin list.
-	 */
-	public Path createPluginList() {
-		if (pluginList == null) {
-			pluginList = new Path(getProject());
-		}
-		return pluginList.createPath();
-	}
-
-	/**
-	 * Adds a reference to a plugin list defined elsewhere.
-	 */
-	public void setPluginListRef(Reference r) {
-		createPluginList().setRefid(r);
-	}
-
-	/**
-	 * Create a SystemProperty (to handle &lt;systemProperty&gt; elements).
-	 */
-	public SystemProperty createSystemProperty() {
-		SystemProperty systemProperty = new SystemProperty();
-		systemPropertyList.add(systemProperty);
-		return systemProperty;
-	}
-
-	/**
 	 * Check that all required attributes have been set
-	 *
-	 * @since Ant 1.5
 	 */
-	private void checkParameters() {
-		if ( homeDir == null && (classpath == null || pluginList == null) ) {
-			throw new BuildException( "either home attribute or " +
-									  "classpath and pluginList attributes " +
-									  " must be defined for task <"
-										+ getTaskName() + "/>",
-									  getLocation() );
-		}
-
-		if (pluginList != null) {
-			// Make sure that all plugins are actually Jar files.
-			String[] pluginFileList = pluginList.list();
-			for (String pluginFile : pluginFileList) {
-				if (!pluginFile.endsWith(".jar")) {
-					throw new BuildException("plugin file " + pluginFile + " is not a Jar file " +
-							"in task <" + getTaskName() + "/>",
-							getLocation());
-				}
-			}
-		}
-
+	protected void checkParameters() {
+		super.checkParameters();
+		
 		if ( projectFile == null && classLocations.size() == 0 && auxAnalyzepath == null) {
 			throw new BuildException( "either projectfile, <class/> or <auxAnalyzepath/> child " +
 									  "elements must be defined for task <"
@@ -669,72 +530,45 @@ public class FindBugsTask extends Task {
 				getLocation());
 		}
 
-		for (SystemProperty aSystemPropertyList : systemPropertyList) {
-			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
-			if (systemProperty.getName() == null || systemProperty.getValue() == null)
-				throw new BuildException("systemProperty elements must have name and value attributes");
-		}
-
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
 			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
 		}
 	} 
 
 	/**
-	 * Add an argument to the JVM used to execute FindBugs.
-	 * @param arg the argument
-	 */
-	private void addArg(String arg) {
-		findbugsEngine.createArg().setValue(arg);
-	}
-
-	/**
 	 * Create a new JVM to do the work.
 	 *
 	 * @since Ant 1.5
 	 */
-	private void execFindbugs() throws BuildException {
-		findbugsEngine = (Java) getProject().createTask("java");
+	protected void execFindbugs() throws BuildException {
+		createFindbugsEngine();
+		configureFindbugsEngine();
 
-		findbugsEngine.setTaskName( getTaskName() );
-		findbugsEngine.setFork( true );
-		if (jvm.length()>0)
-			findbugsEngine.setJvm( jvm );
-		findbugsEngine.setTimeout( timeout  );
+		log("Running FindBugs...");
 
-		if ( debug )
-			jvmargs = jvmargs + " -Dfindbugs.debug=true";
-		findbugsEngine.createJvmarg().setLine( jvmargs ); 
-
-		// Add JVM arguments for system properties
-		for (SystemProperty aSystemPropertyList : systemPropertyList) {
-			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
-			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
-			findbugsEngine.createJvmarg().setValue(jvmArg);
+		if (getDebug()) {
+			log(getFindbugsEngine().getCommandLine().describeCommand());    
 		}
 
-		if (homeDir != null) {
-			// Use findbugs.home to locate findbugs.jar and the standard
-			// plugins.  This is the usual means of initialization.
+		int rc = getFindbugsEngine().executeJava();
 
-			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
-										 File.separator + FINDBUGS_JAR ) );
-
-			addArg("-home");
-			addArg(homeDir.getPath());
-		} else {
-			// Use an explicitly specified classpath and list of plugin Jars
-			// to initialize.  This is useful for other tools which may have
-			// FindBugs installed using a non-standard directory layout.
-
-			findbugsEngine.setClasspath(classpath);
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugs2");
-
-			addArg("-pluginList");
-			addArg(pluginList.toString());
+		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
+			throw new BuildException("Execution of findbugs failed.");
+		}
+		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
+			log("Classes needed for analysis were missing");
+		}
+		if (warningsProperty != null && (rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
+			getProject().setProperty(warningsProperty, "true");
 		}
 
-		if (projectName != null) {
+		if (outputFileName != null) {
+			log("Output saved to " + outputFileName);
+		}
+	}
+
+	protected void configureFindbugsEngine() {
+	    if (projectName != null) {
 			addArg("-projectName");
 			addArg(projectName);
 		}
@@ -829,30 +663,7 @@ public class FindBugsTask extends Task {
 				addArg(result[x]);
 			}
 		}
-
-		log("Running FindBugs...");
-
-				if (debug) {
-						log(findbugsEngine.getCommandLine().describeCommand());    
-				}
-
-
-		int rc = findbugsEngine.executeJava();
-
-		if ((rc & ExitCodes.ERROR_FLAG) != 0) {
-			throw new BuildException("Execution of findbugs failed.");
-		}
-		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
-			log("Classes needed for analysis were missing");
-		}
-		if (warningsProperty != null && (rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
-			getProject().setProperty(warningsProperty, "true");
-		}
-
-		if (outputFileName != null) {
-			log("Output saved to " + outputFileName);
-		}
-	} 
+    } 
 
 }
 
