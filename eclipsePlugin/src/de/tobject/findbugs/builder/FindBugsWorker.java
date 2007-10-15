@@ -67,7 +67,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
-import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
@@ -84,7 +83,6 @@ public class FindBugsWorker {
 
 	private IProgressMonitor monitor;
 	private UserPreferences userPrefs;
-	private ExtendedPreferences extendedPrefs;
 	private IProject project;
 
 	/**
@@ -99,7 +97,6 @@ public class FindBugsWorker {
 		this.monitor = monitor;
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
-			extendedPrefs = FindbugsPlugin.getExtendedPreferences(project);
 		}
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
@@ -420,9 +417,9 @@ public class FindBugsWorker {
 
 	private void configureExtended(IFindBugsEngine findBugs) {
 		// configure extended preferences
-		findBugs.setAnalysisFeatureSettings(extendedPrefs.getAnalysisFeatureSettings());
+		findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
 
-		 for(String fileName : extendedPrefs.getIncludeFilterFiles()) {
+		 for(String fileName : userPrefs.getIncludeFilterFiles()) {
 			IFile file = project.getFile(fileName);
 			// TODO: some error reporting here to indicate that a filter no longer exists
 			if (file.exists()) {
@@ -437,7 +434,7 @@ public class FindBugsWorker {
 			}
 		}
 
-		for(String fileName : extendedPrefs.getExcludeFilterFiles()) {
+		for(String fileName : userPrefs.getExcludeFilterFiles()) {
 			IFile file = project.getFile(fileName);
 			// TODO: some error reporting here to indicate that a filter no longer exists
 			if (file.exists()) {
@@ -448,6 +445,19 @@ public class FindBugsWorker {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
 				} catch (IOException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
+				}
+			}
+		}
+		for(String fileName : userPrefs.getExcludeBugsFiles()) {
+			IFile file = project.getFile(fileName);
+			if (file.exists()) {
+				String filterName = file.getLocation().toOSString();
+				try {
+				findBugs.excludeBaselineBugs(filterName);
+				} catch (DocumentException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while loading excluded bugs \"" + filterName + "\".");
+				} catch (IOException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while reading excluded bugs \"" + filterName + "\".");
 				}
 			}
 		}

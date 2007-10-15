@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +37,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -62,7 +62,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -77,9 +76,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -101,7 +97,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 
 /**
@@ -135,8 +130,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private Button restoreDefaultsButton;
 
 	private ComboViewer effortViewer;
-	private ExtendedPreferences origExtendedPreferences;
-	private ExtendedPreferences currentExtendedPreferences;
 	private EffortPlaceHolder[] effortLevels;
 	protected static boolean DEBUG;
 
@@ -162,10 +155,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		collectUserPreferences();
 
-		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
-		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Composite composite = new Composite(tabFolder, SWT.NONE);
+		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
 
@@ -175,7 +165,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		chkEnableFindBugs.setSelection(initialEnabled);
 
 		Composite prioGroup = new Composite(composite, SWT.NONE);
-		GridLayout prioLayout = new GridLayout(3, false);
+		GridLayout prioLayout = new GridLayout(2, false);
 		prioGroup.setLayout(prioLayout);
 
 		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
@@ -198,6 +188,22 @@ public class FindbugsPropertyPage extends PropertyPage {
 				currentUserPreferences.getFilterSettings().setMinPriority(data);
 			}
 		});
+		// effort
+		Label effortLabel = new Label(prioGroup, SWT.NULL);
+		effortLabel.setText(getMessage("property.effort"));
+		effortLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN
+				| SWT.READ_ONLY);
+		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
+		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
+		effortLevels = new EffortPlaceHolder[] {
+				new EffortPlaceHolder(getMessage("property.effortmin"),
+						UserPreferences.EFFORT_MIN),
+				new EffortPlaceHolder(getMessage("property.effortdefault"),
+						UserPreferences.EFFORT_DEFAULT),
+				new EffortPlaceHolder(getMessage("property.effortmax"),
+						UserPreferences.EFFORT_MAX) };
+		effortViewer.add(effortLevels);
 
 		/*
 		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
@@ -217,23 +223,30 @@ public class FindbugsPropertyPage extends PropertyPage {
 		activeCategoriesLabel.setText(getMessage("property.enableCategory"));
 		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		buildBugCategoryList(categoryGroup, project);
-
-		//addSeparator(composite);
-
-		buildLabel(composite, "property.selectPattern"); // ok without getMessage()
-		Table availableRulesTable =
-			buildAvailableRulesTableViewer(composite, project);
-		GridData tableLayoutData = new GridData();
-		tableLayoutData.grabExcessHorizontalSpace = true;
-		tableLayoutData.grabExcessVerticalSpace = true;
-		tableLayoutData.horizontalAlignment = GridData.FILL;
-		tableLayoutData.verticalAlignment = GridData.FILL;
-		tableLayoutData.heightHint = 50;
-		tableLayoutData.widthHint = 590;
-		availableRulesTable.setLayoutData(tableLayoutData);
-
-		addSeparator(composite);
-
+		
+				
+		String effort = currentUserPreferences.getEffort();
+		for (int i = 0; i < effortLevels.length; i++) {
+			if (effortLevels[i].getEffortLevel().equals(effort)) {
+				effortViewer.setSelection(new StructuredSelection(
+						effortLevels[i]), true);
+			}
+		}
+		effortViewer
+				.addSelectionChangedListener(new ISelectionChangedListener() {
+		
+					public void selectionChanged(SelectionChangedEvent event) {
+						EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
+								.getSelection()).getFirstElement();
+						currentUserPreferences.setEffort(placeHolder
+								.getEffortLevel());
+					}
+				});
+		
+		createFilterTable(composite, FilterKind.INCLUDE);
+		createFilterTable(composite, FilterKind.EXCLUDE);
+		createFilterTable(composite, FilterKind.EXCLUDE_BUGS);
+		
 		restoreDefaultsButton = new Button(composite, SWT.NONE);
 		restoreDefaultsButton.setText(getMessage("property.restoreSettings"));
 		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -247,64 +260,59 @@ public class FindbugsPropertyPage extends PropertyPage {
 			}
 		});
 
-		TabItem generalTab = new TabItem(tabFolder, SWT.NONE);
-		generalTab.setText(getMessage("property.tabgeneral"));
-		generalTab.setControl(composite);
-		TabItem extendedTab = new TabItem(tabFolder, SWT.NONE);
-		extendedTab.setText(getMessage("property.tabextended"));
-		extendedTab.setControl(createExtendedComposite(tabFolder));
-
 		return composite;
 	}
 
-	private Composite createExtendedComposite(Composite parent) {
-		collectExtendedPreferences();
-		Composite extendedComposite = new Composite(parent, SWT.NONE);
-		extendedComposite.setLayout(new GridLayout(2, false));
-
-		// effort
-		Label effortLabel = new Label(extendedComposite, SWT.NULL);
-		effortLabel.setText(getMessage("property.effort"));
-		effortLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false,
-				false));
-		effortViewer = new ComboViewer(extendedComposite, SWT.DROP_DOWN
-				| SWT.READ_ONLY);
-		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
-		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		effortLevels = new EffortPlaceHolder[] {
-				new EffortPlaceHolder(getMessage("property.effortmin"),
-						ExtendedPreferences.EFFORT_MIN),
-				new EffortPlaceHolder(getMessage("property.effortdefault"),
-						ExtendedPreferences.EFFORT_DEFAULT),
-				new EffortPlaceHolder(getMessage("property.effortmax"),
-						ExtendedPreferences.EFFORT_MAX) };
-		effortViewer.add(effortLevels);
-
-		String effort = currentExtendedPreferences.getEffort();
-		for (int i = 0; i < effortLevels.length; i++) {
-			if (effortLevels[i].getEffortLevel().equals(effort)) {
-				effortViewer.setSelection(new StructuredSelection(
-						effortLevels[i]), true);
+	enum FilterKind {
+		INCLUDE("property.includefilter") {
+			Collection<String> selectedFiles(UserPreferences u) {
+				return u.getIncludeFilterFiles();
 			}
+
+			Collection<String> excludedFiles(UserPreferences u) {
+				return u.getExcludeFilterFiles();
+			}
+			void setFiles(UserPreferences u, Collection<String> files) {
+				u.setIncludeFilterFiles(files);
+			}
+		},
+		EXCLUDE("property.excludefilter") {
+			Collection<String> selectedFiles(UserPreferences u) {
+				return u.getExcludeFilterFiles();
+			}
+
+			Collection<String> excludedFiles(UserPreferences u) {
+				return u.getIncludeFilterFiles();
+			}
+			void setFiles(UserPreferences u, Collection<String> files) {
+				u.setExcludeFilterFiles(files);
+			}
+		},
+		EXCLUDE_BUGS("property.excludebugs") {
+			Collection<String> selectedFiles(UserPreferences u) {
+				return u.getExcludeBugsFiles();
+			}
+
+			Collection<String> excludedFiles(UserPreferences u) {
+				return Collections.emptyList();
+			}
+			void setFiles(UserPreferences u, Collection<String> files) {
+				u.setExcludeBugsFiles(files);
+			}
+		};
+		final String propertyName;
+
+		FilterKind(String propertyName) {
+			this.propertyName = propertyName;
 		}
-		effortViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
 
-					public void selectionChanged(SelectionChangedEvent event) {
-						EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
-								.getSelection()).getFirstElement();
-						currentExtendedPreferences.setEffort(placeHolder
-								.getEffortLevel());
-					}
-				});
+		abstract Collection<String> selectedFiles(UserPreferences u);
 
-		createFilterTable(extendedComposite, true);
-		createFilterTable(extendedComposite, false);
-
-		return extendedComposite;
+		abstract Collection<String> excludedFiles(UserPreferences u);
+		abstract void setFiles(UserPreferences u, Collection<String> files);
 	}
 
-	private void createFilterTable(Composite parent, final boolean includeFilter) {
+	private void createFilterTable(Composite parent, final FilterKind kind) {
 		Composite tableComposite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 0;
@@ -313,12 +321,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true, 2, 1));
 		Label titleLabel = new Label(tableComposite, SWT.NULL);
-		final String title;
-		if (includeFilter) {
-			title = getMessage("property.includefilter");
-		} else {
-			title = getMessage("property.excludefilter");
-		}
+		final String title = getMessage(kind.propertyName);
+		
 		titleLabel.setText(title);
 		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true,
 				false, 2, 1));
@@ -328,15 +332,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		viewer.setLabelProvider(new WorkbenchLabelProvider());
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		Collection<String> filterFiles;
-		final Collection<String> filterFilesOther;
-		if (includeFilter) {
-			filterFiles      = currentExtendedPreferences.getIncludeFilterFiles();
-			filterFilesOther = currentExtendedPreferences.getExcludeFilterFiles();
-		} else {
-			filterFiles      = currentExtendedPreferences.getExcludeFilterFiles();
-			filterFilesOther = currentExtendedPreferences.getIncludeFilterFiles();
-		}
+		Collection<String> filterFiles = kind.selectedFiles(currentUserPreferences);
+		final Collection<String> filterFilesOther = kind.excludedFiles(currentUserPreferences);
 
 		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
 		if (filterFiles != null) {
@@ -346,12 +343,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		viewer.add(filters.toArray());
 		final Button addButton = new Button(tableComposite, SWT.PUSH);
-		String addButtonLabel;
-		if (includeFilter) {
-			addButtonLabel = getMessage("property.includefilteraddbutton");
-		} else {
-			addButtonLabel = getMessage("property.excludefilteraddbutton");
-		}
+		String addButtonLabel = getMessage(kind.propertyName +"addbutton");
+
 		addButton.setText(addButtonLabel);
 		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
 				false));
@@ -374,15 +367,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 						                IStatus.ERROR, "Folder selected", null);
 							}
 							else if(selection[i] instanceof IFile) {
-								final Collection<String> fFiles;
-								final Collection<String> fOFiles;
-								if (includeFilter) {
-									fFiles  = currentExtendedPreferences.getIncludeFilterFiles();
-									fOFiles = currentExtendedPreferences.getExcludeFilterFiles();
-								} else {
-									fFiles  = currentExtendedPreferences.getExcludeFilterFiles();
-									fOFiles = currentExtendedPreferences.getIncludeFilterFiles();
-								}
+								final Collection<String> fFiles = kind.selectedFiles(currentUserPreferences);
+								final Collection<String> fOFiles  = kind.excludedFiles(currentUserPreferences);
+							
 								IFile f = (IFile)selection[i];
 								String fn = f.getProjectRelativePath().toString();
 								if(fOFiles.contains(fn)) {
@@ -390,9 +377,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 									// other filter
 									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
 							                IStatus.ERROR, "File " + fn +
-							                " already selected in " + 
-							                (includeFilter? "exclude" : "include") +
-							                " list", null);
+							                " already selected in a conflicting list", null);
 								}
 								else if(fFiles.contains(fn)) {
 									// File is already selected in this
@@ -415,25 +400,15 @@ public class FindbugsPropertyPage extends PropertyPage {
 						viewer.add(holder);
 					}
 
-					if (includeFilter) {
-						currentExtendedPreferences
-								.setIncludeFilterFiles(filesToStrings(filters));
-					} else {
-						currentExtendedPreferences
-								.setExcludeFilterFiles(filesToStrings(filters));
-					}
+					kind.setFiles(currentUserPreferences, filesToStrings(filters));
+					
 				}
 			}
 		});
 		final Button removeButton = new Button(tableComposite, SWT.PUSH);
 		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
 				true));
-		String removeButtonLabel;
-		if (includeFilter) {
-			removeButtonLabel = getMessage("property.includefilterremovebutton");
-		} else {
-			removeButtonLabel = getMessage("property.excludefilterremovebutton");
-		}
+		String removeButtonLabel = getMessage(kind.propertyName +"removebutton");
 
 		removeButton.setText(removeButtonLabel);
 		removeButton.setEnabled(false);
@@ -448,13 +423,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 					filters.remove(holder);
 					viewer.remove(holder);
 				}
-				if (includeFilter) {
-					currentExtendedPreferences
-							.setIncludeFilterFiles(filesToStrings(filters));
-				} else {
-					currentExtendedPreferences
-							.setExcludeFilterFiles(filesToStrings(filters));
-				}
+				kind.setFiles(currentUserPreferences, filesToStrings(filters));
+				
 			}
 		});
 
@@ -484,21 +454,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
 		}
 		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
-	}
-
-	private void collectExtendedPreferences() {
-		// Get current extended preferences for project
-		try {
-			origExtendedPreferences = FindbugsPlugin
-					.getExtendedPreferences(project);
-		} catch (CoreException e) {
-			// Use default settings
-			FindbugsPlugin.getDefault().logException(e,
-					"Could not get user preferences for project");
-			origExtendedPreferences = new ExtendedPreferences();
-		}
-		currentExtendedPreferences = (ExtendedPreferences) origExtendedPreferences
-				.clone();
 	}
 
 	/**
@@ -829,24 +784,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 					System.out.println("Filter setting for project changed!");
 				}
 				filterOptionsChanged = true;
-			}
-		}
-		if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
-			try {
-				// If user prefs do not exist save them to be sure a base prefs
-				// file exists.
-				if (!FindbugsPlugin.getUserPreferencesFile(project).exists()) {
-					FindbugsPlugin.saveUserPreferences(project,
-							currentUserPreferences);
-				}
-				FindbugsPlugin.saveExtendedPreferences(project,
-						currentExtendedPreferences);
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not store FindBugs preferences for project");
-			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not store FindBugs preferences for project");
 			}
 
 			// If already enabled (and still enabled) trigger a Findbugs rebuild here
