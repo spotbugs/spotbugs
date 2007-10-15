@@ -348,7 +348,7 @@ public class Update {
 
 		DetectorFactoryCollection.instance();
 		UpdateCommandLine commandLine = new UpdateCommandLine();
-		int argCount = commandLine.parse(args, 2, Integer.MAX_VALUE, USAGE);
+		int argCount = commandLine.parse(args, 1, Integer.MAX_VALUE, USAGE);
 
 		if (commandLine.outputFilename == null)
 			verbose = false;
@@ -371,8 +371,22 @@ public class Update {
 
 		if (commandLine.overrideRevisionNames
 				|| origCollection.getReleaseName() == null
-				|| origCollection.getReleaseName().length() == 0)
+				|| origCollection.getReleaseName().length() == 0) {
+			
+			if (commonPrefix >= firstPathParts.length) {
+				// This should only happen if either
+				//
+				//   (1) there is only one input file, or
+				//   (2) all of the input files have the same name
+				//
+				// In either case, make the release name the same
+				// as the file part of the input file(s).
+				commonPrefix = firstPathParts.length - 1;
+			}
+			
 			origCollection.setReleaseName(firstPathParts[commonPrefix]);
+		}
+		
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
 					&& bug.getFirstVersion() > bug.getLastVersion())
