@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -29,12 +30,15 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
@@ -112,6 +116,7 @@ public class Filter {
 		public boolean seriousSpecified = false;
 
 		private Matcher includeFilter, excludeFilter;
+		HashSet<String> excludedInstanceHashes = new HashSet<String>();
 		String designationString;
 		String designationKey;
 		String categoryString;
@@ -123,6 +128,7 @@ public class Filter {
 			addSwitch("-not", "reverse (all) switches for the filter");
 			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for switch source is available");
 			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
+			addOption("-excludeBugs", "baseline bug collection", "exclude bugs already contained in the baseline bug collection");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
 
@@ -233,10 +239,11 @@ public class Filter {
 			if (not) return !result;
 			return result;
 		}
-				boolean evaluate(BugInstance bug) {
+		boolean evaluate(BugInstance bug) {
 
 			if (includeFilter != null && !includeFilter.match(bug)) return false;
 			if (excludeFilter != null && excludeFilter.match(bug)) return false;
+			if (excludedInstanceHashes.contains(bug.getInstanceHash())) return false;
 			if (annotation != null && bug.getAnnotationText().indexOf(annotation) == -1)
 				return false;
 			if (bug.getPriority() > priority)
@@ -374,7 +381,13 @@ public class Filter {
 					bugPattern = Pattern.compile(argument);
 			else if (option.equals("-annotation"))
 				annotation = argument;
-			else if (option.equals("-include")) {
+			else if (option.equals("-excludeBugs")) {
+				try {
+					ExcludingHashesBugReporter.addToExcludedInstanceHashes(excludedInstanceHashes, argument);
+				} catch (DocumentException e) {
+					throw new IllegalArgumentException("Error processing include file: " + argument, e);
+				}
+			} else if (option.equals("-include")) {
 				try {
 					includeFilter = new edu.umd.cs.findbugs.filter.Filter(argument);
 				} catch (FilterException e) {
