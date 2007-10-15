@@ -277,13 +277,11 @@ public abstract class AbstractFindBugsTask extends Task {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
 			
-			log("executing using home dir [" + homeDir + "]");
+			//log("executing using home dir [" + homeDir + "]");
 			
 			findbugsEngine.setClasspath(new Path(getProject(), homeDir + File.separator + "lib" + 
 										 File.separator + FINDBUGS_JAR));
 
-			//addArg("-home");
-			//addArg(homeDir.getPath());
 			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
 		} else {
 			// Use an explicitly specified classpath and list of plugin Jars
