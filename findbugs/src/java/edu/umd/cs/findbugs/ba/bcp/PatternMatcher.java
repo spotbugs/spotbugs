@@ -139,6 +139,9 @@ public class PatternMatcher implements DFSEdgeTypes {
 			throws DataflowAnalysisException {
 		work(new State(basicBlock, instructionIterator, pattern.getFirst()));
 	}
+	
+	// For debugging - number the paths through the CFG
+	private int nextPath = 0;
 
 	/**
 	 * Object representing the current state of the
@@ -153,6 +156,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 		private PatternElementMatch currentMatch;
 		private BindingSet bindingSet;
 		private boolean canFork;
+		private final int parentPath;
+		private final int path;
 
 		/**
 		 * Constructor.
@@ -165,13 +170,14 @@ public class PatternMatcher implements DFSEdgeTypes {
 		 */
 		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
 					 PatternElement patternElement) {
-			this(basicBlock, instructionIterator, patternElement, 0, null, null, true);
+			this(null, basicBlock, instructionIterator, patternElement, 0, null, null, true);
 		}
 
 		/**
 		 * Constructor.
 		 */
-		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
+		public State(State parent,
+					BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
 					 PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
 					 @Nullable BindingSet bindingSet, boolean canFork) {
 			this.basicBlock = basicBlock;
@@ -181,13 +187,15 @@ public class PatternMatcher implements DFSEdgeTypes {
 			this.currentMatch = currentMatch;
 			this.bindingSet = bindingSet;
 			this.canFork = canFork;
+			this.parentPath = (parent != null) ? parent.path : -1;
+			this.path = nextPath++;
 		}
 
 		/**
 		 * Make an exact copy of this object.
 		 */
 		public State duplicate() {
-			return new State(basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
+			return new State(this, basicBlock, instructionIterator, patternElement, matchCount, currentMatch, bindingSet, canFork);
 		}
 
 		/**
@@ -241,7 +249,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 			// Create state to advance to matching next pattern element
 			// at current basic block and instruction.
-			State advance = new State(basicBlock, instructionIterator.duplicate(), patternElement.getNext(),
+			State advance = new State(this, basicBlock, instructionIterator.duplicate(), patternElement.getNext(),
 					0, currentMatch, bindingSet, true);
 
 			// Now that this state has forked from this element
@@ -313,7 +321,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 					!matchResult.getPatternElement().acceptBranch(edge, getLastMatchedInstruction()))
 				return null;
 
-			return new State(edge.getTarget(), edge.getTarget().instructionIterator(),
+			return new State(this, edge.getTarget(), edge.getTarget().instructionIterator(),
 					patternElement, matchCount, currentMatch, bindingSet, canFork);
 		}
 
@@ -372,10 +380,14 @@ public class PatternMatcher implements DFSEdgeTypes {
 
 			// Try to match the instruction against the pattern element.
 			boolean debug = DEBUG && (!(patternElement instanceof Wild) || SHOW_WILD);
-			if (debug)
-				System.out.println("Match " + patternElement +
+			if (debug) {
+				if (parentPath >= 0) {
+					System.out.print(parentPath + "->");
+				}
+				System.out.println(path + ": Match " + patternElement +
 						" against " + location.getHandle() + " " +
 						(bindingSet != null ? bindingSet.toString() : "[]") + "...");
+			}
 			MatchResult matchResult = patternElement.match(location.getHandle(),
 					cpg, before, after, bindingSet);
 			if (debug)
