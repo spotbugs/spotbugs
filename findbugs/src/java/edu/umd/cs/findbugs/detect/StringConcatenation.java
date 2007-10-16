@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
