@@ -184,8 +184,10 @@ public class DetectorFactoryCollection {
 		if (pluginList != null)
 			return;
 		String homeDir = FindBugs.getHome();
-		if (homeDir == null)
+		if (homeDir == null) {
+			System.err.println("Error: FindBugs home directory is not set");
 			return;
+		}
 
 		File pluginDir = new File(homeDir + File.separator + "plugin");
 		File[] contentList = pluginDir.listFiles();
