@@ -24,6 +24,9 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 
 /**
+ * Ant task to invoke the FilterBugs program in the
+ * workflow package (a.k.a. the filterBugs script.) 
+ * 
  * @author David Hovemeyer
  */
 public class FilterBugsTask extends AbstractFindBugsTask {
