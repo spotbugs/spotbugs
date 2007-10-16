@@ -59,7 +59,7 @@ public class TypeQualifierApplications {
 			new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 
 		/** Type qualifier annotations applied directly to method parameters. */
-		private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
+		private DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
 			new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
 
 		/**
