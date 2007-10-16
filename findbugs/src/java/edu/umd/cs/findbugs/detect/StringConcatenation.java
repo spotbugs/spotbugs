@@ -21,6 +21,11 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
@@ -59,12 +64,16 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 	}
 
 
+	// Keep track of which registers where clobbered at which PC, on
+	// a per-method basis
+    private Map<Integer,Integer> clobberedRegisters = new HashMap<Integer,Integer>();
 
 	@Override
-		 public void visit(Method obj) {
+	public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
 		reset();
+		clobberedRegisters = new HashMap<Integer,Integer>();
 		reportedThisMethod = false;
 		super.visit(obj);
 	}
@@ -102,7 +111,35 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 	public void sawOpcode(int seen) {
 		if (reportedThisMethod) return;
 		int oldState = state;
-		if (DEBUG) System.out.println("Opcode: " + OPCODE_NAMES[seen]);
+		if (DEBUG) {
+		    System.out.print("Opcode: ");
+		    printOpCode(seen);
+		}
+		
+		// Keep track of registers that are clobbered and at what PC,
+		// not including stores due to string concatenations
+		int storeTo = -1;
+		switch(seen) {
+		case ASTORE_0:
+	        storeTo = 0;
+	        break;
+        case ASTORE_1:
+            storeTo = 1;
+            break;
+        case ASTORE_2:
+            storeTo = 2;
+            break;
+        case ASTORE_3:
+            storeTo = 3;
+            break;
+        case ASTORE:
+            storeTo = getRegisterOperand();
+            break;
+		}
+		if(storeTo >= 0 && state != CONSTRUCTED_STRING_ON_STACK) {
+		    clobberedRegisters.put(storeTo, getPC());
+		}
+		
 		switch (state) {
 		case SEEN_NOTHING:
 			if ((seen == NEW)
@@ -169,6 +206,25 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			if (DismantleBytecode.isBranch(seen)
 					&& (getPC() - getBranchTarget()) < 300
 					&& getBranchTarget() <= createPC) {
+			    
+			    // Next check: was the destination register clobbered
+			    // elsewhere in this loop?
+			    boolean clobberedInLoop = false;
+			    for(int reg : clobberedRegisters.keySet()) {
+			        if(reg != stringSource) {
+			            continue;
+			        }
+			        int pc = clobberedRegisters.get(reg);
+			        if(pc >= getBranchTarget()) {
+			            clobberedInLoop = true;
+			            break;
+			        }
+			    }
+			    if(clobberedInLoop) {
+			        reset();
+			        break;
+			    }
+			    
 				bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this, createPC));
