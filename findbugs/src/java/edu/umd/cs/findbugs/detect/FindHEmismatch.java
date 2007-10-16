@@ -66,6 +66,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 	boolean equalsMethodIsInstanceOfEquals = false;
 
 	boolean hasCompareToObject = false;
+	boolean hasCompareToBridgeMethod = false;
 
 	boolean hasEqualsSelf = false;
 
@@ -205,7 +206,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			else bug.addMethod(compareToObjectMethod);
 			bugReporter.reportBug(bug);
 		}
-		if (!hasCompareToObject && hasCompareToSelf) {
+		if (!hasCompareToObject && !hasCompareToBridgeMethod && hasCompareToSelf) {
 			if (!extendsObject)
 				bugReporter.reportBug(new BugInstance(this,
 						"CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(
@@ -293,6 +294,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		hasFields = false;
 		hasHashCode = false;
 		hasCompareToObject = false;
+		hasCompareToBridgeMethod = false;
 		hasCompareToSelf = false;
 		hasEqualsObject = false;
 		hasEqualsSelf = false;
@@ -364,8 +366,10 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				if (equalsMethod == null)
 					equalsMethod = MethodAnnotation.fromVisitedMethod(this);
 			}
-		} else if (name.equals("compareTo")) {
+		} else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic() ) {
 			MethodAnnotation tmp  = MethodAnnotation.fromVisitedMethod(this);
+			if (obj.isSynthetic())
+				hasCompareToBridgeMethod = true;
 			if (sig.equals("(Ljava/lang/Object;)I")) {
 				hasCompareToObject = true;
 				compareToObjectMethod = compareToMethod = tmp;

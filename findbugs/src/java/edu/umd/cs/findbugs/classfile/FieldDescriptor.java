@@ -40,13 +40,5 @@ public class FieldDescriptor
 	public FieldDescriptor(@SlashedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
 		super(className, fieldName, fieldSignature, isStatic);
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(FieldDescriptor o) {
-		return super.compareTo(o);
-	}
-
 	
 }
