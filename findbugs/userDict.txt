@@ -9,6 +9,11 @@ codebases
 decorator
 servlet
 writeup
+servlets
+invokevirtual
+subtype
+invokespecial
+orchestrates
 subtypes
 nullness
 subtype
