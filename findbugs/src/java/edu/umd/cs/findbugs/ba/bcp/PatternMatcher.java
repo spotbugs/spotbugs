@@ -176,7 +176,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		/**
 		 * Constructor.
 		 */
-		public State(State parent,
+		public State(@Nullable State parent,
 					BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
 					 PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
 					 @Nullable BindingSet bindingSet, boolean canFork) {
