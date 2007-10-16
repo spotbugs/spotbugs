@@ -17,7 +17,7 @@
 						<xs:attribute name="projectName" type="xs:string" use="optional" />
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="BugInstance" maxOccurs="unbounded">
+				<xs:element name="BugInstance" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:annotation>
 							<xs:documentation>Each BugInstance can have a sequence of annotations</xs:documentation>
