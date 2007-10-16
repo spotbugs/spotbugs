@@ -32,27 +32,6 @@ import org.apache.tools.ant.BuildException;
  */
 public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 	
-	public static class DataFile {
-		String name;
-
-		public DataFile() {
-		}
-
-		/**
-		 * @param name The name to set.
-		 */
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		/**
-		 * @return Returns the name.
-		 */
-		public String getName() {
-			return name;
-		}
-	}
-
 	private File outputFile;
 	private boolean overrideRevisionNames;
 	private boolean noPackageMoves;
