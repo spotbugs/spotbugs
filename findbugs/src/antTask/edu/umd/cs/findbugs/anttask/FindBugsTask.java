@@ -122,23 +122,16 @@ import edu.umd.cs.findbugs.ExitCodes;
 
 public class FindBugsTask extends AbstractFindBugsTask {
 
-//	private static final String FINDBUGS_JAR = "findbugs.jar";
-//	private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
-
-//	private boolean debug = false;
 	private String effort;
 	private boolean conserveSpace = false;
 	private boolean sorted = true;
 	private boolean timestampNow = true;
 	private boolean quietErrors = false;
-//	private boolean failOnError = false;
-//	private String errorProperty = null;
 	private String warningsProperty = null;
 	private String projectName = null;
 	private boolean workHard = false;
 	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
-//	private File homeDir = null;
 	private File projectFile = null;
 	private File baselineBugs = null;
 	
@@ -149,19 +142,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private Path sourcePath = null;
 	private String outputFormat = "xml";
 	private String reportLevel = null;
-//	private String jvm = "";
-//	private String jvmargs = "";
 	private String visitors = null;
 	private String omitVisitors = null;
 	private String outputFileName = null;
 	private String stylesheet = null;
 	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
-//	private long timeout = DEFAULT_TIMEOUT;
-//	private Path classpath = null;
-//	private Path pluginList = null;
 	private String onlyAnalyze = null;
-
-//	private Java findbugsEngine = null;
 	
 	public FindBugsTask() {
 		super("edu.umd.cs.findbugs.FindBugs2");
@@ -617,10 +603,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		if ( relaxed ) {
 			addArg("-relaxed");
 		}
-				if ( onlyAnalyze != null ) {
-						addArg("-onlyAnalyze");
-						addArg(onlyAnalyze);
-				}
+		if ( onlyAnalyze != null ) {
+			addArg("-onlyAnalyze");
+			addArg(onlyAnalyze);
+		}
 
 		addArg("-exitcode");
 		for (ClassLocation classLocation : classLocations) {
