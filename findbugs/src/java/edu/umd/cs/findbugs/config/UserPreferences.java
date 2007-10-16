@@ -34,13 +34,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -48,6 +51,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 
 /**
  * User Preferences outside of any one Project.
@@ -57,14 +61,42 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class UserPreferences implements Cloneable {
 	private static final String PREF_FILE_NAME = ".Findbugs_prefs";
+
 	private static final int MAX_RECENT_FILES = 9;
+
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
+
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
+
 	private static final String FILTER_SETTINGS2_KEY = "filter_settings_neg";
+
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
+
 	private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
+
 	private ProjectFilterSettings filterSettings;
+
 	private static UserPreferences preferencesSingleton = new UserPreferences();
+
+	public static final String EFFORT_MIN = "min";
+
+	public static final String EFFORT_DEFAULT = "default";
+
+	public static final String EFFORT_MAX = "max";
+
+	private static final String EFFORT_KEY = "effort";
+
+	private static final String INCLUDE_FILTER_KEY = "includefilter";
+
+	private static final String EXCLUDE_FILTER_KEY = "excludefilter";
+	private static final String EXCLUDE_BUGS_KEY = "excludebugs";
+
+	private String effort = EFFORT_DEFAULT;
+
+	private Collection<String> includeFilterFiles = TigerSubstitutes.emptySet();
+
+	private Collection<String> excludeFilterFiles = TigerSubstitutes.emptySet();
+	private Collection<String> excludeBugsFiles = TigerSubstitutes.emptySet();
 
 	private UserPreferences() {
 		this.filterSettings = ProjectFilterSettings.createDefault();
@@ -136,10 +168,10 @@ public class UserPreferences implements Cloneable {
 				recentProjectsList.add(projectName);
 		}
 
-		for(Map.Entry<?,?> e :  props.entrySet()) {
+		for (Map.Entry<?, ?> e : props.entrySet()) {
 
 			String key = (String) e.getKey();
-			if(!key.startsWith("detector") || key.startsWith("detector_")){
+			if (!key.startsWith("detector") || key.startsWith("detector_")) {
 				// it is not a detector enablement property
 				continue;
 			}
@@ -172,7 +204,10 @@ public class UserPreferences implements Cloneable {
 			// populate the hidden bug categories in the project filter settings
 			ProjectFilterSettings.hiddenFromEncodedString(filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
 		}
-
+		effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
+		includeFilterFiles = readFilters(props, INCLUDE_FILTER_KEY);
+		excludeFilterFiles = readFilters(props, EXCLUDE_FILTER_KEY);
+		excludeBugsFiles = readFilters(props, EXCLUDE_BUGS_KEY);
 
 	}
 
@@ -182,10 +217,11 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void write() {
 		try {
-			File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME); 
+			File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
 			write(new FileOutputStream(prefFile));
 		} catch (IOException e) {
-			if (FindBugs.DEBUG) e.printStackTrace(); // Ignore
+			if (FindBugs.DEBUG)
+				e.printStackTrace(); // Ignore
 		}
 	}
 
@@ -220,7 +256,11 @@ public class UserPreferences implements Cloneable {
 		// This will allow the properties file to work with older versions
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
-
+		props.setProperty(EFFORT_KEY, effort);
+		writeFilters(props, INCLUDE_FILTER_KEY, includeFilterFiles);
+		writeFilters(props, EXCLUDE_FILTER_KEY, excludeFilterFiles);
+		writeFilters(props, EXCLUDE_BUGS_KEY, excludeBugsFiles);
+		
 		OutputStream prefStream = null;
 		try {
 			prefStream = new BufferedOutputStream(out);
@@ -234,7 +274,6 @@ public class UserPreferences implements Cloneable {
 			}
 		}
 	}
-
 
 	/**
 	 * Get List of recent project filenames.
@@ -268,7 +307,8 @@ public class UserPreferences implements Cloneable {
 		Iterator<String> it = recentProjectsList.iterator();
 		while (it.hasNext()) {
 			//LinkedList, so remove() via iterator is faster than remove(index).
-			if (projectName.equals(it.next())) it.remove();
+			if (projectName.equals(it.next()))
+				it.remove();
 		}
 	}
 
@@ -280,7 +320,7 @@ public class UserPreferences implements Cloneable {
 	 *                false if it should be Disabled
 	 */
 	public void enableDetector(DetectorFactory factory, boolean enable) {
-		detectorEnablementMap.put(factory.getShortName(), enable );
+		detectorEnablementMap.put(factory.getShortName(), enable);
 	}
 
 	/**
@@ -296,7 +336,7 @@ public class UserPreferences implements Cloneable {
 			// No explicit preference has been specified for this detector,
 			// so use the default enablement specified by the
 			// DetectorFactory.
-			enabled = factory.isDefaultEnabled() ;
+			enabled = factory.isDefaultEnabled();
 			detectorEnablementMap.put(detectorName, enabled);
 		}
 		return enabled;
@@ -314,8 +354,7 @@ public class UserPreferences implements Cloneable {
 		DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
 		for (Iterator<DetectorFactory> i = factoryCollection.factoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
-			detectorEnablementMap.put(
-					factory.getShortName(), enable );
+			detectorEnablementMap.put(factory.getShortName(), enable);
 		}
 	}
 
@@ -366,28 +405,25 @@ public class UserPreferences implements Cloneable {
 	}
 
 	@Override
-		 public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 
 		UserPreferences other = (UserPreferences) obj;
 
-		return recentProjectsList.equals(other.recentProjectsList)
-			&& detectorEnablementMap.equals(other.detectorEnablementMap)
-			&& filterSettings.equals(other.filterSettings);
+		return recentProjectsList.equals(other.recentProjectsList) && detectorEnablementMap.equals(other.detectorEnablementMap)
+		        && filterSettings.equals(other.filterSettings) && effort.equals(other.effort)
+		        && includeFilterFiles.equals(other.includeFilterFiles) && excludeFilterFiles.equals(other.excludeFilterFiles);
 	}
 
-
 	@Override
-		 public int hashCode() {
-		return recentProjectsList.hashCode()
-			+ detectorEnablementMap.hashCode()
-			+ filterSettings.hashCode();
+	public int hashCode() {
+		return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
+		        + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode();
 	}
 
-
 	@Override
-		 public Object clone() {
+	public Object clone() {
 		try {
 			UserPreferences dup = (UserPreferences) super.clone();
 
@@ -403,6 +439,124 @@ public class UserPreferences implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
 		}
+	}
+
+	public String getEffort() {
+		return effort;
+	}
+
+	public void setEffort(String effort) {
+		if (!EFFORT_MIN.equals(effort) && !EFFORT_DEFAULT.equals(effort) && !EFFORT_MAX.equals(effort)) {
+			throw new IllegalArgumentException("Effort \"" + effort + "\" is not a valid effort value.");
+		}
+		this.effort = effort;
+
+	}
+
+	public Collection<String> getIncludeFilterFiles() {
+		return includeFilterFiles;
+	}
+
+	public void setIncludeFilterFiles(Collection<String> includeFilterFiles) {
+		if (includeFilterFiles == null) {
+			throw new IllegalArgumentException("includeFilterFiles may not be null.");
+		}
+		this.includeFilterFiles = includeFilterFiles;
+	}
+	
+	public Collection<String> getExcludeBugsFiles() {
+		return excludeBugsFiles;
+	}
+
+	public void setExcludeBugsFiles(Collection<String> excludeBugsFiles) {
+		if (excludeBugsFiles == null) {
+			throw new IllegalArgumentException("excludeBugsFiles may not be null.");
+		}
+		this.excludeBugsFiles = excludeBugsFiles;
+	}
+	public void setExcludeFilterFiles(Collection<String> excludeFilterFiles) {
+		if (excludeFilterFiles == null) {
+			throw new IllegalArgumentException("excludeFilterFiles may not be null.");
+		}
+		this.excludeFilterFiles = excludeFilterFiles;
+	}
+
+	public Collection<String> getExcludeFilterFiles() {
+		return excludeFilterFiles;
+	}
+
+	/**
+	 * Helper method to read array of strings out of the properties file, using
+	 * a Findbugs style format.
+	 * 
+	 * @param props
+	 *            The properties file to read the array from.
+	 * @param keyPrefix
+	 *            The key prefix of the array.
+	 * @return The array of Strings, or an empty array if no values exist.
+	 */
+	private Set<String> readFilters(Properties props, String keyPrefix) {
+		Set<String> filters = new LinkedHashSet<String>();
+		int counter = 0;
+		boolean keyFound = true;
+		while (keyFound) {
+			String property = props.getProperty(keyPrefix + counter);
+			if (property != null) {
+				filters.add(property);
+				counter++;
+			} else {
+				keyFound = false;
+			}
+		}
+
+		return filters;
+	}
+
+	/**
+	 * Helper method to write array of strings out of the properties file, using
+	 * a Findbugs style format.
+	 * 
+	 * @param props
+	 *            The properties file to write the array to.
+	 * @param keyPrefix
+	 *            The key prefix of the array.
+	 * @param filters
+	 *            The filters array to write to the properties.
+	 */
+	private void writeFilters(Properties props, String keyPrefix, Collection<String> filters) {
+		int counter = 0;
+		for (String s : filters) {
+			props.setProperty(keyPrefix + counter, s);
+			counter++;
+		}
+		// remove obsolete keys from the properties file
+		boolean keyFound = true;
+		while (keyFound) {
+			String key = keyPrefix + counter;
+			String property = props.getProperty(key);
+			if (property == null) {
+				keyFound = false;
+			} else {
+				props.remove(key);
+			}
+		}
+	}
+
+
+	/**
+	 * Returns the effort level as an array of feature settings as expected by
+	 * FindBugs.
+	 * 
+	 * @return The array of feature settings corresponding to the current effort
+	 *         setting.
+	 */
+	public AnalysisFeatureSetting[] getAnalysisFeatureSettings() {
+		if (effort.equals(EFFORT_DEFAULT)) {
+			return FindBugs.DEFAULT_EFFORT;
+		} else if (effort.equals(EFFORT_MIN)) {
+			return FindBugs.MIN_EFFORT;
+		}
+		return FindBugs.MAX_EFFORT;
 	}
 }
 
