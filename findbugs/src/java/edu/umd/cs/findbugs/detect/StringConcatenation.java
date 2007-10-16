@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 import org.apache.bcel.classfile.Method;
 
@@ -98,7 +99,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 	}
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		if (reportedThisMethod) return;
 		int oldState = state;
 		if (DEBUG) System.out.println("Opcode: " + OPCODE_NAMES[seen]);
@@ -161,9 +162,13 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			break;
 
 		case POSSIBLE_CASE:
-			if (seen == GOTO
+		    // Note: the bottom of a loop is not necessarily a goto; 
+		    // one sourceforge bug (Bug1811106) pointed out that for
+		    // do/while loops, it may be a if_icmpge.  I generalized
+		    // it to any branch.
+			if (DismantleBytecode.isBranch(seen)
 					&& (getPC() - getBranchTarget()) < 300
-					&& getBranchTarget() < createPC) {
+					&& getBranchTarget() <= createPC) {
 				bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this, createPC));
@@ -175,6 +180,13 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 					getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				state = SEEN_NEW;
 				createPC = getPC();
+			} else {
+			    if(DismantleBytecode.isBranch(seen) && DEBUG) {
+			        System.out.println("Rejecting branch:");
+	                System.out.println("  spread: " + (getPC() - getBranchTarget()));
+                    System.out.println("  getBranchTarget(): " + getBranchTarget());
+                    System.out.println("  createPC: " + createPC);
+			    }
 			}
 			break;
 		}
