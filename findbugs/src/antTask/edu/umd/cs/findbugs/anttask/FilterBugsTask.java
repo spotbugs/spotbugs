@@ -58,6 +58,8 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 
 	public FilterBugsTask() {
     	super("edu.umd.cs.findbugs.workflow.Filter");
+    	
+    	setFailOnError(true);
     }
 	
 	public DataFile createDataFile() {
@@ -272,6 +274,9 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 	 */
 	@Override
 	protected void afterExecuteJavaProcess(int rc) {
+		if (rc != 0) {
+			throw new BuildException("execution of " + getTaskName() + " failed");
+		}
 	}
 
 }

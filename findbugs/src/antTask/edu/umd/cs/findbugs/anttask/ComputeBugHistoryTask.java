@@ -44,6 +44,8 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 	public ComputeBugHistoryTask() {
 		super("edu.umd.cs.findbugs.workflow.Update");
 		dataFileList = new LinkedList<DataFile>();
+		
+		setFailOnError(true);
 	}
 	
 	public void setOutput(File arg) {
@@ -148,6 +150,8 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 	protected void afterExecuteJavaProcess(int rc) {
 		if (rc == 0) {
 			log("History database written to " + outputFile.getPath());
+		} else {
+			throw new BuildException("execution of " + getTaskName() + " failed");
 		}
 	}
 }

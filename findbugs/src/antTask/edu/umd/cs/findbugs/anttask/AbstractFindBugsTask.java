@@ -206,7 +206,7 @@ public abstract class AbstractFindBugsTask extends Task {
 		try {
 			execFindbugs();
 		} catch (BuildException e) {
-			log("Oops: " + e.getMessage());
+			//log("Oops: " + e.getMessage());
 			if (errorProperty != null) {
 				getProject().setProperty(errorProperty, "true");
 			}
