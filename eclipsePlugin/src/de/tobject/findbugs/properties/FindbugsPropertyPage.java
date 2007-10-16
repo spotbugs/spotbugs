@@ -333,8 +333,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 		Collection<String> filterFiles = kind.selectedFiles(currentUserPreferences);
-		final Collection<String> filterFilesOther = kind.excludedFiles(currentUserPreferences);
-
+		
 		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
 		if (filterFiles != null) {
 			for (String s : filterFiles) {
