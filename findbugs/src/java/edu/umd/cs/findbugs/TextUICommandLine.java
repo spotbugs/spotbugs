@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -73,9 +75,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String stylesheet = null;
 	private boolean quiet = false;
 	private ClassScreener classScreener = new ClassScreener();
-	private String includeFilterFile = null;
-	private String excludeFilterFile = null;
-	private String excludeBugFile = null;
+	private List<String> includeFilterFile = new LinkedList<String>();
+	private List<String> excludeFilterFile = new LinkedList<String>();
+	private List<String> excludeBugFile = new LinkedList<String>();
 	private boolean setExitCode = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
 	private PrintStream outputStream = null;
@@ -343,17 +345,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
 					classScreener.addAllowedClass(item);
 			}
 		} else if (option.equals("-exclude")) {
-			if (excludeFilterFile != null) 
-				throw new IllegalArgumentException("Can specify one exclude filter file");
-			excludeFilterFile = argument;
+			excludeFilterFile.add(argument);
 		} else if (option.equals("-excludeBugs")) {
-			if (excludeBugFile != null) 
-				throw new IllegalArgumentException("Can specify one exclude bug file");
-			excludeBugFile = argument;
+			excludeBugFile.add(argument);
 		} else if (option.equals("-include")) {
-			if (includeFilterFile != null) 
-				throw new IllegalArgumentException("Can specify one include filter file");
-			includeFilterFile = argument;
+			includeFilterFile.add(argument);
 		} else if (option.equals("-auxclasspath")) {
 			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
 			while (tok.hasMoreTokens())
@@ -441,16 +437,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setProject(project);
 
 		findBugs.setUserPreferences(getUserPreferences());
-		if  (excludeBugFile != null)
+		for(String s : excludeBugFile) 
 	        try {
-	            findBugs.excludeBaselineBugs(excludeBugFile);
+	            findBugs.excludeBaselineBugs(s);
             } catch (DocumentException e) {
 	           throw new IOException("Unable to read " + excludeBugFile + ":" + e.getMessage());
             }
-		if (includeFilterFile != null) 
-			findBugs.addFilter(includeFilterFile, true);
-		if (excludeFilterFile != null) 
-			findBugs.addFilter(excludeFilterFile, false);
+        for(String s : includeFilterFile) 
+			findBugs.addFilter(s, true);
+        for(String s : excludeFilterFile) 
+			findBugs.addFilter(s, false);
 
 		
 		

@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -115,7 +117,8 @@ public class Filter {
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
 
-		private Matcher includeFilter, excludeFilter;
+		private List<Matcher> includeFilter = new LinkedList<Matcher>();
+		private List<Matcher> excludeFilter = new LinkedList<Matcher>();
 		HashSet<String> excludedInstanceHashes = new HashSet<String>();
 		String designationString;
 		String designationKey;
@@ -241,8 +244,10 @@ public class Filter {
 		}
 		boolean evaluate(BugInstance bug) {
 
-			if (includeFilter != null && !includeFilter.match(bug)) return false;
-			if (excludeFilter != null && excludeFilter.match(bug)) return false;
+			for(Matcher m : includeFilter)
+				if (!m.match(bug)) return false;
+			for(Matcher m : excludeFilter)
+				if (m.match(bug)) return false;
 			if (excludedInstanceHashes.contains(bug.getInstanceHash())) return false;
 			if (annotation != null && bug.getAnnotationText().indexOf(annotation) == -1)
 				return false;
@@ -389,13 +394,13 @@ public class Filter {
 				}
 			} else if (option.equals("-include")) {
 				try {
-					includeFilter = new edu.umd.cs.findbugs.filter.Filter(argument);
+					includeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
 				} catch (FilterException e) {
 					throw new IllegalArgumentException("Error processing include file: " + argument, e);
 				}
 			} else if (option.equals("-exclude")) {
 				try {
-					excludeFilter = new edu.umd.cs.findbugs.filter.Filter(argument);
+					excludeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
 				} catch (FilterException e) {
 					throw new IllegalArgumentException("Error processing include file: " + argument, e);
 				}
