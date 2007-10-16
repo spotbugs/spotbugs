@@ -152,20 +152,27 @@ public class Update {
 		}
 		return result;
 	}
+	
+	public void removeBaselineBugs(BugCollection baselineCollection,
+			BugCollection bugCollection) {
+
+		matchBugs(baselineCollection, bugCollection);
+		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
+				baselineCollection, bugCollection);
+		matchBugs(versionInsensitiveBugComparator, baselineCollection,
+				bugCollection);
+		for (Iterator<BugInstance> i  = bugCollection.getCollection().iterator(); i.hasNext(); ) {
+			BugInstance bug = i.next();
+			if (matchedOldBugs.contains(bug)) i.remove();
+		}
+			
+	
+	}
+
 	public BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection, boolean copyDeadBugs, boolean incrementalAnalysis) {
 
-		if (false) {
-		System.out.println("merging");
-		System.out.println("Bugs in old collection:");
-		System.out.println(origCollection.getProjectStats());
-		for(BugInstance bug : origCollection.getCollection()) 
-			System.out.println(bug.getMessage());
-		System.out.println("Bugs in new collection:");
-		System.out.println(newCollection.getProjectStats());
-		for(BugInstance bug : newCollection.getCollection()) 
-			System.out.println(bug.getMessage());
-		}
+		
 		mapFromNewToOldBug.clear();
 
 		matchedOldBugs.clear();
@@ -182,19 +189,16 @@ public class Update {
 			AppVersion appVersion = i.next();
 			resultCollection.addAppVersion((AppVersion) appVersion.clone());
 		}
-		// why not do: AppVersion origCollectionVersion =
-		// origCollection.getCurrentAppVersion();
-		AppVersion origCollectionVersion = new AppVersion(lastSequence);
-		origCollectionVersion.setTimestamp(origCollection
-				.getCurrentAppVersion().getTimestamp());
-		origCollectionVersion.setReleaseName(origCollection
-				.getCurrentAppVersion().getReleaseName());
-		origCollectionVersion.setNumClasses(origCollection.getProjectStats()
+		AppVersion origCollectionVersion = origCollection.getCurrentAppVersion();
+		AppVersion origCollectionVersionClone = new AppVersion(lastSequence);
+		origCollectionVersionClone.setTimestamp(origCollectionVersion.getTimestamp());
+		origCollectionVersionClone.setReleaseName(origCollectionVersion.getReleaseName());
+		origCollectionVersionClone.setNumClasses(origCollection.getProjectStats()
 				.getNumClasses());
-		origCollectionVersion.setCodeSize(origCollection.getProjectStats()
+		origCollectionVersionClone.setCodeSize(origCollection.getProjectStats()
 				.getCodeSize());
 
-		resultCollection.addAppVersion(origCollectionVersion);
+		resultCollection.addAppVersion(origCollectionVersionClone);
 
 		// We assign a sequence number to the new collection as one greater than
 		// the original collection.
@@ -211,27 +215,7 @@ public class Update {
 					resultCollection.add(newBug, false);
 				}
 
-		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
-				origCollection, newCollection);
-		matchBugs(versionInsensitiveBugComparator, origCollection,
-				newCollection);
-		if (!preciseMatch) {
-			matchBugs(fuzzyBugPatternMatcher, origCollection, newCollection);
-		}
-		if (!noPackageMoves) {
-			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
-			MovedClassMap movedClassMap = new MovedClassMap(
-								origCollection, newCollection).execute();
-			if (!movedClassMap.isEmpty()) {
-				movedBugComparator.setClassNameRewriter(movedClassMap);
-				movedBugComparator.setComparePriorities(precisePriorityMatch);
-				matchBugs(movedBugComparator, origCollection, newCollection);
-				if (!preciseMatch) {
-					movedBugComparator.setExactBugPatternMatch(false);
-					matchBugs(movedBugComparator, origCollection, newCollection);
-				}
-			}
-		}
+		matchBugs(origCollection, newCollection);
 
 		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
@@ -331,6 +315,38 @@ public class Update {
 		return resultCollection;
 
 	}
+
+	/**
+     * @param origCollection
+     * @param newCollection
+     */
+    private void matchBugs(BugCollection origCollection, BugCollection newCollection) {
+	    matchBugs(SortedBugCollection.BugInstanceComparator.instance,
+				origCollection, newCollection);
+	    
+		mapFromNewToOldBug.clear();
+		matchedOldBugs.clear();
+		
+		matchBugs(versionInsensitiveBugComparator, origCollection,
+				newCollection);
+		if (!preciseMatch) {
+			matchBugs(fuzzyBugPatternMatcher, origCollection, newCollection);
+		}
+		if (!noPackageMoves) {
+			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
+			MovedClassMap movedClassMap = new MovedClassMap(
+								origCollection, newCollection).execute();
+			if (!movedClassMap.isEmpty()) {
+				movedBugComparator.setClassNameRewriter(movedClassMap);
+				movedBugComparator.setComparePriorities(precisePriorityMatch);
+				matchBugs(movedBugComparator, origCollection, newCollection);
+				if (!preciseMatch) {
+					movedBugComparator.setExactBugPatternMatch(false);
+					matchBugs(movedBugComparator, origCollection, newCollection);
+				}
+			}
+		}
+    }
 
 	boolean verbose = true;
 
