@@ -57,6 +57,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 	private String category;
 	private String designation;
 	private String withMessages;
+	private String excludeBugs;
 	private DataFile inputFile;
 
 	public FilterBugsTask() {
@@ -177,6 +178,10 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     	this.withMessages = arg;
     }
     
+    public void setExcludeBugs(String arg) {
+    	this.excludeBugs = arg;
+    }
+    
     private void checkBoolean(String attrVal, String attrName) {
     	if (attrVal == null) {
     		return;
@@ -258,6 +263,10 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 		addOption("-category", category);
 		addOption("-designation", designation);
 		addBoolOption("-withMessages", withMessages);
+		if (excludeBugs != null) {
+			addArg("-excludeBugs");
+			addArg(excludeBugs);
+		}
 		
 		addArg(inputFile.getName());
 		
