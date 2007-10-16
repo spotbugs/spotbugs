@@ -19,10 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.InheritanceGraphVisitor;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * Accumulate relevant return type annotations

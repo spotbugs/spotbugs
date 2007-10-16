@@ -49,7 +49,6 @@ import org.apache.bcel.util.ClassPath;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-import edu.umd.cs.findbugs.ba.AbstractClassMember;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;

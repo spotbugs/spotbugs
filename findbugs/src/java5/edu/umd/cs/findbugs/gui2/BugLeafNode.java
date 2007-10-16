@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 

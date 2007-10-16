@@ -19,15 +19,26 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.security.MessageDigest;
-import java.util.zip.*;
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
-import edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis.RejarClassesForAnalysisCommandLine;
 
 /**
  * @author William Pugh

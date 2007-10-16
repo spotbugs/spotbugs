@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Set;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -34,7 +33,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
 
 public class IncompatibleTypes {
 	final int priority;

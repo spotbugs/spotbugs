@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -27,15 +26,12 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * This is the .fas file stored when projects are saved

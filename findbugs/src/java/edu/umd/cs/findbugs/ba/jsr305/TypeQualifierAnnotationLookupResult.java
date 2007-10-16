@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 
 /**

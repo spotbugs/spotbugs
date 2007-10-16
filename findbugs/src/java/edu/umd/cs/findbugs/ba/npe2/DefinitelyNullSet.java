@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba.npe2;
 
 import java.util.BitSet;
 
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**

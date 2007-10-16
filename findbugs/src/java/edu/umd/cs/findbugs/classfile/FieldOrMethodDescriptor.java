@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**

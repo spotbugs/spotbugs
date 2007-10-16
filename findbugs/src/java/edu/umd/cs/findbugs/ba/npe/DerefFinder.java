@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Method;

@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.NoSuchElementException;
 
 /**
  * Iterator over the resources in an IScannableCodeBase.

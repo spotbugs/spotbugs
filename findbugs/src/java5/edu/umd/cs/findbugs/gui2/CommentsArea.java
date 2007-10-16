@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JComboBox;
@@ -43,7 +42,6 @@ import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 

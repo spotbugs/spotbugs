@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author pugh

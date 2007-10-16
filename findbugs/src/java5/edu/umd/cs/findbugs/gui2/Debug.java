@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.BugInstance;
 
 /**
  * For debugging purposes only... Make sure DEBUG is set to false before you release a new version.

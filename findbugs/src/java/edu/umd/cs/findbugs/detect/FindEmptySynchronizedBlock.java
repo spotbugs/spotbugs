@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs.detect;
 
 
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class FindEmptySynchronizedBlock 
 	extends BytecodeScanningDetector  {

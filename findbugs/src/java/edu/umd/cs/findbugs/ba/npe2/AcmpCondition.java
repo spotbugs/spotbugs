@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
-import org.apache.bcel.Constants;
-
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;

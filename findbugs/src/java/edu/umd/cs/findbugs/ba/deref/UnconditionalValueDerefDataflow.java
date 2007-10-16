@@ -21,9 +21,6 @@ package edu.umd.cs.findbugs.ba.deref;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * Dataflow to find value numbers unconditionally dereferenced.

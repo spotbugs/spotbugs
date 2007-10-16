@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;

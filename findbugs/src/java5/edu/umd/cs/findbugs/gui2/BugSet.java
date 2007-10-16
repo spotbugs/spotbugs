@@ -19,26 +19,20 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.TigerSubstitutes;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
-import edu.umd.cs.findbugs.gui2.SortableStringComparator;
 
 /**
  * BugSet is what we use instead of SortedBugCollections.  BugSet is somewhat poorly named, in that its actually a HashList of bugs, 

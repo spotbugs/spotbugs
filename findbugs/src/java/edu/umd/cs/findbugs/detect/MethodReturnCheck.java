@@ -18,11 +18,25 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
 import java.util.BitSet;
+
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.UseAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Look for calls to methods where the return value is erroneously ignored. This

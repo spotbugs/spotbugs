@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
 import java.util.Set;
 import java.util.SortedSet;
 

@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 import java.util.BitSet;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKESTATIC;

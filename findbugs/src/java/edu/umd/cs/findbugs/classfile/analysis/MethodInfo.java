@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.objectweb.asm.Opcodes;
 
-import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SignatureParser;

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ConstantPoolGen;

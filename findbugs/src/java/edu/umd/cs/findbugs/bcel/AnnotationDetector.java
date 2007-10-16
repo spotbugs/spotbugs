@@ -24,8 +24,6 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * Base class for Detectors which want to perform a preorder traversal of the classfile

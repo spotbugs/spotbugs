@@ -1,7 +1,5 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import java.util.BitSet;
-
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
 
 /**

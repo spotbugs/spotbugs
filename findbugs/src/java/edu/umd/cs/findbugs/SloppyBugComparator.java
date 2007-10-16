@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.Serializable;
-
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
 import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;

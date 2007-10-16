@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import javax.annotation.CheckForNull;
 
 /**
  * Exception to indicate that a resource was not found.

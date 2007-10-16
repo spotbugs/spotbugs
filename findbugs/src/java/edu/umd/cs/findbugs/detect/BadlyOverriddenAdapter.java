@@ -29,7 +29,6 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 	private BugReporter bugReporter;

@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.util;
 
 import java.util.Map;
 
-import org.apache.bcel.classfile.JavaClass;
-
 /**
  * @author pugh
  */

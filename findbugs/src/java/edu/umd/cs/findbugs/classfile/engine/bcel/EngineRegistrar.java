@@ -19,43 +19,19 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnnotationRetentionDatabase;
-import edu.umd.cs.findbugs.ba.BlockTypeDataflow;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
-import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
 import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
-import edu.umd.cs.findbugs.ba.LockChecker;
-import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.ReturnPathDataflow;
-import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
-import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
-import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
-import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
-import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
-import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
-import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
-import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;

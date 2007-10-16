@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.RuntimeException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;

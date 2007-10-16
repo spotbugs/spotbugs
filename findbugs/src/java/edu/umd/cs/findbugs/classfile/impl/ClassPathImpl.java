@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;

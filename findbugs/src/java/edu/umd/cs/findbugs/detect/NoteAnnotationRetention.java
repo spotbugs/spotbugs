@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;

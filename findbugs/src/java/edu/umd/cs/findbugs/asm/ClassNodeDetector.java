@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.asm;
 
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugReporter;

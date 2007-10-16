@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.Location;
 
 /**
  * Dataflow class for ReturnPathTypeAnalysis.

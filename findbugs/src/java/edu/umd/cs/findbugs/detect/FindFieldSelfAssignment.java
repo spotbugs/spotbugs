@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XField;
 
 public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;

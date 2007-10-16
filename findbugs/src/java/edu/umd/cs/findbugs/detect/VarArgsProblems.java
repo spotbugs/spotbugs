@@ -20,10 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-
 import java.util.regex.Pattern;
+
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.TypeAnnotation;
 
 /* Look for sequences of the form:
  *   ICONST_1

@@ -20,14 +20,11 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
 
 /**
  * @author pugh

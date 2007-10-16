@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.util.Iterator;
 
 /**
  * A scannable code base: in addition to looking up a named resource,

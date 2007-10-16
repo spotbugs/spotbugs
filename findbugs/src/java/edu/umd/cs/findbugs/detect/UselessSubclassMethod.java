@@ -20,12 +20,23 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import java.util.*;
-import org.apache.bcel.*;
-import org.apache.bcel.classfile.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements StatelessDetector {
 

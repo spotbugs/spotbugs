@@ -19,30 +19,10 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import org.dom4j.DocumentException;
-
-import com.apple.eawt.Application;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.gui.FindBugsFrame;
 
 /**
  * This is where it all begins

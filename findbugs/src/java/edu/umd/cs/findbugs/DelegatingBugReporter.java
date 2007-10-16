@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;

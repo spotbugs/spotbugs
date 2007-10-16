@@ -22,11 +22,18 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
-
-import org.apache.bcel.classfile.*;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 

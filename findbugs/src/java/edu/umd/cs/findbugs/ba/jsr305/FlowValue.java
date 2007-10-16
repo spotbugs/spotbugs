@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import javax.annotation.meta.When;
 
+import com.sun.tools.javac.util.Bits;
+
 /**
  * Flow value type for type qualifier dataflow analysis.
  * 

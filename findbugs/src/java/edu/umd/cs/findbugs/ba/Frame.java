@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import static edu.umd.cs.findbugs.ba.Debug.VERIFY_INTEGRITY;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -26,14 +28,11 @@ import java.util.Collections;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.StackConsumer;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import static edu.umd.cs.findbugs.ba.Debug.*;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value. A

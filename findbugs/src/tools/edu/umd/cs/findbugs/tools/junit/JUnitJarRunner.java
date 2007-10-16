@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.tools.junit;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;

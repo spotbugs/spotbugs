@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**

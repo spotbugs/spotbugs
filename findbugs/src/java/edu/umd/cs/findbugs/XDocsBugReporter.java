@@ -23,8 +23,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;

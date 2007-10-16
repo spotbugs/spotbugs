@@ -20,8 +20,12 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector
 {

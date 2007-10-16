@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
-import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;

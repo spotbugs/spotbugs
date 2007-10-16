@@ -23,8 +23,6 @@ import java.io.Writer;
 
 import org.apache.bcel.Constants;
 
-import edu.umd.cs.findbugs.ba.InstanceMethod;
-import edu.umd.cs.findbugs.ba.StaticMethod;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;

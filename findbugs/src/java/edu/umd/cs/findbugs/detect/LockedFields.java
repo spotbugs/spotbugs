@@ -20,10 +20,21 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import java.util.*;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.IntAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 
 public class LockedFields extends BytecodeScanningDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("lockedfields.debug");

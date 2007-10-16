@@ -19,17 +19,11 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
-import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Abstract base class for implementations of IScannableCodeBase.

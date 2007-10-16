@@ -19,19 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Deprecated;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Method;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Methods extends PreorderVisitor implements Detector,

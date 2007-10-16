@@ -23,8 +23,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.bcel.generic.InstructionHandle;
-
 /**
  * A useful starting point for defining a dataflow analysis.
  * Handles access and caching of start and result facts for

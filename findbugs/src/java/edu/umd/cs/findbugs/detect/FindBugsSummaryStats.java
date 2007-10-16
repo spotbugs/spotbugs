@@ -20,12 +20,22 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.io.PrintStream;
 import java.util.BitSet;
-import org.apache.bcel.classfile.*;
+
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BugReporterObserver;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class FindBugsSummaryStats extends PreorderVisitor
 		implements Detector, BugReporterObserver {

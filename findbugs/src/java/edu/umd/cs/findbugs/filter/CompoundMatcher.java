@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.filter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
 

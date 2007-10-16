@@ -20,10 +20,8 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;

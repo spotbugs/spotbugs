@@ -20,17 +20,14 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
  * Save bugs here, uses SortedBugCollection.writeXML()

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;

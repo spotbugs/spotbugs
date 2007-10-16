@@ -20,9 +20,13 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.Hierarchy;
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 
 public class FindRunInvocations extends BytecodeScanningDetector implements StatelessDetector {
 

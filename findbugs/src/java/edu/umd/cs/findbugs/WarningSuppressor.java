@@ -4,7 +4,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 abstract public class WarningSuppressor implements Matcher {

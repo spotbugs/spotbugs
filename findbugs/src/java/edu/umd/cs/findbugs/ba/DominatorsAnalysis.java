@@ -20,10 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
-import java.util.Iterator;
 
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;

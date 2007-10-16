@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.HashMap;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;

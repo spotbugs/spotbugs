@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Parse the detail message in a ClassNotFoundException

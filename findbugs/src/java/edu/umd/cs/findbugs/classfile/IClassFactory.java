@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.io.IOException;
 
 /**
  * @author David Hovemeyer

@@ -53,7 +53,6 @@ import java.util.jar.Manifest;
 import org.dom4j.DocumentException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 

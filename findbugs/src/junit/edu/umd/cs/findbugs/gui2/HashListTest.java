@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import junit.framework.TestCase;

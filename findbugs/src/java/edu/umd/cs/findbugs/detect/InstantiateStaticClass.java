@@ -20,15 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -36,11 +28,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public class InstantiateStaticClass extends BytecodeScanningDetector {
 	private BugReporter bugReporter;

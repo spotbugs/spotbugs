@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;

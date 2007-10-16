@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
-import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**

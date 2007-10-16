@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XMethod;

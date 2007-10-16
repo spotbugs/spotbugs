@@ -20,11 +20,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import java.util.*;
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindFloatEquality extends OpcodeStackDetector implements StatelessDetector 
 {

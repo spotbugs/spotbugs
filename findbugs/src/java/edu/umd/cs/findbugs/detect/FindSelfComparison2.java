@@ -1,6 +1,28 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Constants.*;
+import static org.apache.bcel.Constants.DCMPG;
+import static org.apache.bcel.Constants.DCMPL;
+import static org.apache.bcel.Constants.FCMPG;
+import static org.apache.bcel.Constants.FCMPL;
+import static org.apache.bcel.Constants.IAND;
+import static org.apache.bcel.Constants.IF_ACMPEQ;
+import static org.apache.bcel.Constants.IF_ACMPNE;
+import static org.apache.bcel.Constants.IF_ICMPEQ;
+import static org.apache.bcel.Constants.IF_ICMPGE;
+import static org.apache.bcel.Constants.IF_ICMPGT;
+import static org.apache.bcel.Constants.IF_ICMPLE;
+import static org.apache.bcel.Constants.IF_ICMPLT;
+import static org.apache.bcel.Constants.IF_ICMPNE;
+import static org.apache.bcel.Constants.INVOKEINTERFACE;
+import static org.apache.bcel.Constants.INVOKEVIRTUAL;
+import static org.apache.bcel.Constants.IOR;
+import static org.apache.bcel.Constants.ISUB;
+import static org.apache.bcel.Constants.IXOR;
+import static org.apache.bcel.Constants.LAND;
+import static org.apache.bcel.Constants.LCMP;
+import static org.apache.bcel.Constants.LOR;
+import static org.apache.bcel.Constants.LSUB;
+import static org.apache.bcel.Constants.LXOR;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -16,7 +38,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -26,12 +47,11 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 
 public class FindSelfComparison2 implements Detector {
 

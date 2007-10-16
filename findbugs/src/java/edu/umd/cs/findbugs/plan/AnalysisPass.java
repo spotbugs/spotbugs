@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.FindBugs2;
 
 /**
  * An analysis pass in the overall ExecutionPlan.

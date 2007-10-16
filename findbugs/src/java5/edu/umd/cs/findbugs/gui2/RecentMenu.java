@@ -20,12 +20,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 
 /**

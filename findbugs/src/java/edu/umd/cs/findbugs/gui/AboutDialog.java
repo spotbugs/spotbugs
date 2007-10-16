@@ -28,7 +28,6 @@ package edu.umd.cs.findbugs.gui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
@@ -37,7 +36,6 @@ import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 
 import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Util;

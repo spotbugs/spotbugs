@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Build a classpath.

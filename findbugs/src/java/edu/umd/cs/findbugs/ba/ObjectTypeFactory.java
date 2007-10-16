@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 
 
 /**

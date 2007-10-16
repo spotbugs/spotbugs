@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**

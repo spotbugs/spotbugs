@@ -1,11 +1,9 @@
 package net.jcip.annotations;
-import java.lang.annotation.*;
-/*
- * Copyright (c) 2005 Brian Goetz
- * Released under the Creative Commons Attribution License
- *   (http://creativecommons.org/licenses/by/2.5)
- * Official home: http://www.jcip.net
- */
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * ThreadSafe

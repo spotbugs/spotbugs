@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import edu.umd.cs.findbugs.BugInstance;
-
 /**
  * Matches a string against a set of predefined values.
  * 

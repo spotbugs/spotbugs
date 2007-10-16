@@ -18,13 +18,8 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;

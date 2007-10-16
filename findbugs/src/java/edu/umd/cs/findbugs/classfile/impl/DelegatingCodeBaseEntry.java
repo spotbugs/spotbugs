@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.IOException;
 import java.io.InputStream;
 
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;

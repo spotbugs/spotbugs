@@ -24,7 +24,6 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 public class BadUseOfReturnValue extends BytecodeScanningDetector {
 

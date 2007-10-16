@@ -20,12 +20,18 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public @java.lang.Deprecated class FindBadCast extends OpcodeStackDetector implements  StatelessDetector {
 

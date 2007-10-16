@@ -20,10 +20,14 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 

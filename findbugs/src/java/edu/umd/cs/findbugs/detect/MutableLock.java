@@ -20,12 +20,17 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class MutableLock extends BytecodeScanningDetector implements  StatelessDetector {
 	Set<String> setFields = new HashSet<String>();

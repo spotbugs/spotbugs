@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import edu.umd.cs.findbugs.ba.BytecodeScanner;
 import edu.umd.cs.findbugs.ba.MethodBytecodeSet;
-import edu.umd.cs.findbugs.ba.BytecodeScanner.Callback;
 
 
 public class UnpackedBytecodeCallback implements BytecodeScanner.Callback {

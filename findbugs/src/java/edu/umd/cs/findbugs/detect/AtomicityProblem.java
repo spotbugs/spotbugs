@@ -19,26 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
  *	if we get from a ConcurrentHashMap and assign to a variable...

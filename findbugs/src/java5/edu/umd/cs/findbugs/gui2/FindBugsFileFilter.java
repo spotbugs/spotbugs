@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import javax.swing.filechooser.*;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * @author pugh

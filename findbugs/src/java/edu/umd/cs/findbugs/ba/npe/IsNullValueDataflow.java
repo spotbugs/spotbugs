@@ -23,7 +23,6 @@ import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.Location;
 
 public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNullValueAnalysis> {
 	public IsNullValueDataflow(CFG cfg, IsNullValueAnalysis analysis) {

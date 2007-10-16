@@ -21,10 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
 
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.ClassName;
 
 abstract class InstanceField extends AbstractField {
 

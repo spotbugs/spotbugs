@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import javax.annotation.CheckForNull;
 
 /**
  * CheckedAnalysisException subtype to indicate that a required class

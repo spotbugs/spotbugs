@@ -22,7 +22,6 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public abstract class AbstractClassMember implements ClassMember {

@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import org.apache.bcel.classfile.*;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;

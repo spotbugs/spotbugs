@@ -19,17 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
-
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plan.ExecutionPlan;
 
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Abstract base class for TestCase classes that need to

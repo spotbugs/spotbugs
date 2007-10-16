@@ -23,11 +23,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 /**
  * All Dialogs are FBDialogs so font size will work.

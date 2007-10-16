@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.asm;
 
 import org.objectweb.asm.MethodAdapter;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.EmptyVisitor;
 
 /**

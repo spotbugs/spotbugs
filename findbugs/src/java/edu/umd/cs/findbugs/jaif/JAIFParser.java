@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.jaif;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.io.Reader;
 import java.util.Locale;
 

@@ -19,15 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
-import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
 
 /**

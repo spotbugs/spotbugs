@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**

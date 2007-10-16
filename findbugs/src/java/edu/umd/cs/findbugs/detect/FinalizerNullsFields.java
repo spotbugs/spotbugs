@@ -22,11 +22,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.Method;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class FinalizerNullsFields extends BytecodeScanningDetector {
 

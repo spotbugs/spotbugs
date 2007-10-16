@@ -19,15 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import static edu.umd.cs.findbugs.ba.Debug.VERIFY_INTEGRITY;
-
 import java.util.BitSet;
 
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Frame;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
  * A specialization of {@link Frame} for determining the types

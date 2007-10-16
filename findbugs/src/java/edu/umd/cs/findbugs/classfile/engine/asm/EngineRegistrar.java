@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.classfile.engine.asm;
 
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;

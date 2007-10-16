@@ -40,7 +40,6 @@ import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.MapCache;
-import edu.umd.cs.findbugs.util.ProfilingMapCache;
 
 /**
  * Implementation of IAnalysisCache.

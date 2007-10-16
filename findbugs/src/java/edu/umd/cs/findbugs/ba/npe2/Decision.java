@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
-import edu.umd.cs.findbugs.ba.Edge;
 
 /**
  * @author David Hovemeyer

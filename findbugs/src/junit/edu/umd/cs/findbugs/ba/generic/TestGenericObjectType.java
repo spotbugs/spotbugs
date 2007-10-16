@@ -24,7 +24,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 

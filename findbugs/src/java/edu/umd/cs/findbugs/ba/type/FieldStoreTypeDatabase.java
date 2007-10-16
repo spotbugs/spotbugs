@@ -27,7 +27,6 @@ import java.util.StringTokenizer;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;

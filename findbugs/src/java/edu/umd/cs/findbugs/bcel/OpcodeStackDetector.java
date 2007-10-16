@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import org.apache.bcel.classfile.Code;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
  * Base class for Detectors that want to scan the bytecode

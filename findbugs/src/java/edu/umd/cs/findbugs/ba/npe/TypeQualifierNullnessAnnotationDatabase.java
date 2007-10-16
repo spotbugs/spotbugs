@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.lang.annotation.ElementType;
-
 import javax.annotation.meta.When;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -48,7 +46,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;

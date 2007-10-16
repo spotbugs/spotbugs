@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.List;
-import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.GarbageCollectorMXBean;
+import java.util.List;
 
 /**
 * Class to maintain a snapshot of a processes's time and memory usage.

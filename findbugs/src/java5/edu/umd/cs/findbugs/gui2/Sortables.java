@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,7 +30,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /**

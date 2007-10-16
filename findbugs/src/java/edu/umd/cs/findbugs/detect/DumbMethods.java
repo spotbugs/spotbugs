@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -40,7 +38,6 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.OpcodeStack;

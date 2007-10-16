@@ -20,19 +20,55 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.ba.bcp.*;
+import java.util.BitSet;
+import java.util.Iterator;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.AllocationInstruction;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IfInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReturnInstruction;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ByteCodePatternDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.LockDataflow;
+import edu.umd.cs.findbugs.ba.LockSet;
+import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.bcp.Binding;
+import edu.umd.cs.findbugs.ba.bcp.BindingSet;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
+import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
+import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.bcp.IfNull;
+import edu.umd.cs.findbugs.ba.bcp.Load;
+import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
+import edu.umd.cs.findbugs.ba.bcp.Store;
+import edu.umd.cs.findbugs.ba.bcp.Wild;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.util.ClassName;
-
-import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
 
 /*
  * Look for lazy initialization of fields which

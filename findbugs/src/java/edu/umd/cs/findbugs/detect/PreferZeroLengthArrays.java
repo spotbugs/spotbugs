@@ -20,9 +20,16 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class PreferZeroLengthArrays extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean nullOnTOS = false;

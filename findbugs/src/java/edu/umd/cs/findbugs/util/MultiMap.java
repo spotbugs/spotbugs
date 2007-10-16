@@ -18,7 +18,9 @@
  */
 
 package edu.umd.cs.findbugs.util;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.TigerSubstitutes;
 /**

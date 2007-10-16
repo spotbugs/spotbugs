@@ -18,8 +18,12 @@
  */
 package edu.umd.cs.findbugs.props;
 
-import edu.umd.cs.findbugs.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 
 /**
  * A Set of WarningProperty objects, each with an optional attribute Object. A

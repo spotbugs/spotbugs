@@ -20,10 +20,18 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ResourceValue;
+import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 
 /**
  * A visitor to model the effect of instructions on the status

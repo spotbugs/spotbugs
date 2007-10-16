@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.io.DataInputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.Field;
@@ -43,7 +41,6 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * @author William Pugh

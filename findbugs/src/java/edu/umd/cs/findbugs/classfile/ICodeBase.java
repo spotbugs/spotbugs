@@ -19,11 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.io.Closeable;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  * Interface for a basic code base in which we can look up resources

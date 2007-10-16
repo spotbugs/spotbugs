@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Set;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -28,7 +26,6 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 

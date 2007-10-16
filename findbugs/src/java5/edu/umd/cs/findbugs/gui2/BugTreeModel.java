@@ -19,13 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -39,14 +33,10 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /*

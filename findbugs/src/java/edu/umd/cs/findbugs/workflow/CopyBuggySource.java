@@ -25,13 +25,11 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.apache.bcel.generic.GETSTATIC;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;

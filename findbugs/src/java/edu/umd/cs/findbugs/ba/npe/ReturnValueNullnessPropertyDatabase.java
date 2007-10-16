@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
-import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
 /**
  * Method property database storing which methods return values guaranteed to be nonnull

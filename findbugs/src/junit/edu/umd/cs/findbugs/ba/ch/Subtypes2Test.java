@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import java.io.IOException;
-
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
@@ -31,8 +29,6 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.FindRefComparison;
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 /**
  * Tests for Subtypes2.

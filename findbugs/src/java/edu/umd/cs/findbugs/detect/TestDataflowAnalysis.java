@@ -21,9 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;

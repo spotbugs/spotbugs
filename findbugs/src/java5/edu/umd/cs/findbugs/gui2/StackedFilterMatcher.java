@@ -26,7 +26,6 @@ import java.util.List;
 import javax.swing.event.TreeModelEvent;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 
 /**

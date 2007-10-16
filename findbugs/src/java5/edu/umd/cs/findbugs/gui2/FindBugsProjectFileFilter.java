@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
 
-import javax.swing.filechooser.FileFilter;
-
 public final class FindBugsProjectFileFilter extends FindBugsFileFilter {
 
 	public static final  FindBugsProjectFileFilter INSTANCE = new FindBugsProjectFileFilter();

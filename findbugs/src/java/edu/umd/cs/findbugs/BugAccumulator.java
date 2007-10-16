@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.util.MultiMap;

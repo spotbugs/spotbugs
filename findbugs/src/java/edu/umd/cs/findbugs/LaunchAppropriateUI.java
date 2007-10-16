@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.awt.GraphicsEnvironment;
-import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**

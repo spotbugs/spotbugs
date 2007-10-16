@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import java.util.Iterator;
-import java.util.TreeSet;
-
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.AssertionMethods;
@@ -29,7 +26,6 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;

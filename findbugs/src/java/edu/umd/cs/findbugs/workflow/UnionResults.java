@@ -21,16 +21,13 @@ package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Set;
 
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
-import edu.umd.cs.findbugs.workflow.Filter.FilterCommandLine;
 
 /**
  * Compute the union of two sets of bug results,
