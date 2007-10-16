@@ -323,6 +323,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		return prevOpcode[pos];
 	}
 
+	public boolean isWideOpcode() {
+		return opcodeIsWide;
+	}
 	/**
 	 * Return whether or not given opcode is a branch instruction.
 	 * 

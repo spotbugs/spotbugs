@@ -93,7 +93,6 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String currentClassName;
 	private String releaseName;
 	private String projectName;
-	private SortedBugCollection baselineBugs;
 	private String sourceInfoFileName;
 	private AnalysisFeatureSetting[] analysisFeatureSettingList;
 	private boolean relaxedReportingMode;
