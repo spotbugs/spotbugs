@@ -42,6 +42,8 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public abstract class CommandLine {
 	private List<String> optionList;
+	private Set<String> unlistedOptions;
+	
 	private Set<String> requiresArgumentSet;
 	private Map<String, String> optionDescriptionMap;
 	private Map<String, String> optionExtraPartSynopsisMap;
@@ -111,6 +113,13 @@ public abstract class CommandLine {
 			maxWidth = width;
 	}
 
+	/**
+	 * Don't list this option when printing Usage information
+	 * @param option
+	 */
+	public void makeOptionUnlisted(String option) {
+		unlistedOptions.add(option);
+	}
 	/**
 	 * Expand option files in given command line.
 	 * Any token beginning with "@" is assumed to be an option file.
@@ -267,6 +276,7 @@ public abstract class CommandLine {
 	public void printUsage(OutputStream os) {
 		PrintStream out = new PrintStream(os);
 		for (String option : optionList) {
+			if (unlistedOptions.contains(option)) continue;
 			out.print("  ");
 
 			StringBuffer buf = new StringBuffer();

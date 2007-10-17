@@ -123,6 +123,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-projectName", "project name", "Descriptive name of project");
 
 		addOption("-outputFile", "filename", "Save output in named file");
+		addOption("-output", "filename", "Save output in named file");
+		makeOptionUnlisted("-outputFile");
 		addOption("-visitors", "v1[,v2...]", "run only named visitors");
 		addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 		addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
