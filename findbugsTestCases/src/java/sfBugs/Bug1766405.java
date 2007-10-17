@@ -19,7 +19,7 @@ import java.util.Vector;
  * 
  */
 public class Bug1766405 {
-    //// grep -A 1 SBSC_USE_STRINGBUFFER_CONCATENATION | grep Bug1766405 
+    // Should not warn
     public void blah() throws IOException {
         List<Vector> baz = new ArrayList<Vector>();
         Vector<String> vecRow = new Vector<String>();
@@ -38,6 +38,69 @@ public class Bug1766405 {
                     + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
                     + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>"
                     + "</TR>";
+            bw.write(strHtml);
+        }
+    }
+
+    // Should warn
+    public void blah2() throws IOException {
+        List<Vector> baz = new ArrayList<Vector>();
+        Vector<String> vecRow = new Vector<String>();
+        vecRow.add("blah");
+        BufferedWriter bw = new BufferedWriter(new StringWriter());
+        String foo = "foo";
+        String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
+        for (int j = 0; j < baz.size(); j++) {
+            Vector row = (Vector) baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0)
+                    + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+                    + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>"
+                    + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
+                    + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>"
+                    + "</TR>";
+            bw.write(strHtml);
+        }
+    }
+    
+    // Should warn
+    public void blah3() throws IOException {
+        List<Vector> baz = new ArrayList<Vector>();
+        Vector<String> vecRow = new Vector<String>();
+        vecRow.add("blah");
+        BufferedWriter bw = new BufferedWriter(new StringWriter());
+        String foo = "foo";
+        String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
+        for (int j = 0; j < baz.size(); j++) {
+            Vector row = (Vector) baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0)
+                    + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+                    + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>"
+                    + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
+                    + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>"
+                    + "</TR>";
+            strHtml = strHtml + "blah";
+            bw.write(strHtml);
+        }
+    }
+
+    // Should not warn
+    public void blah4() throws IOException {
+        List<Vector> baz = new ArrayList<Vector>();
+        Vector<String> vecRow = new Vector<String>();
+        vecRow.add("blah");
+        BufferedWriter bw = new BufferedWriter(new StringWriter());
+        String foo = "foo";
+        String strHtml = "<TR>" + "<TD CLASS='Cellule'>" + foo + "</TD>";
+        for (int j = 0; j < baz.size(); j++) {
+            Vector row = (Vector) baz.get(j);
+            strHtml += "<TD><INPUT TYPE='CHECKBOX'>" + (String) vecRow.get(0)
+                    + "</TD>" + "<TD>" + row.get(1) + "</TD>" + "<TD>"
+                    + row.get(2) + "</TD>" + "<TD>" + row.get(3) + "</TD>"
+                    + "<TD>" + row.get(4) + "</TD>" + "<TD>" + row.get(5)
+                    + "</TD>" + "<TD ALIGN=RIGHT>" + row.get(6) + "</TD>"
+                    + "</TR>";
+            System.out.println(strHtml);
+            strHtml = "blah";
             bw.write(strHtml);
         }
     }
