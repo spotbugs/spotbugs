@@ -2118,9 +2118,10 @@ public class MainFrame extends FBFrame implements LogSync
 
 		}
 
-		dir.mkdir();
-		//updateDesignationDisplay(); - Don't think we need this anymore - Kristin
-
+		if (!dir.mkdir()) {
+			return SaveReturn.SAVE_IO_EXCEPTION;
+		}
+		
 		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
 		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
 

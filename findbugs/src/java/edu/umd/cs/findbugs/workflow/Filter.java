@@ -116,7 +116,6 @@ public class Filter {
 		private List<Matcher> includeFilter = new LinkedList<Matcher>();
 		private List<Matcher> excludeFilter = new LinkedList<Matcher>();
 		HashSet<String> excludedInstanceHashes = new HashSet<String>();
-		Set<String> designationStrings = new HashSet<String>();
 		Set<String> designationKey = new HashSet<String>();
 		String categoryString;
 		String categoryKey;

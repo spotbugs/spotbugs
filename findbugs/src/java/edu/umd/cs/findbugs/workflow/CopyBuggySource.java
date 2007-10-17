@@ -103,7 +103,7 @@ public class CopyBuggySource {
 						continue;
 					}
 					File parent = file.getParentFile();
-					parent.mkdirs();
+					if (parent.mkdirs()) {
 					InputStream in = null;
 					OutputStream out = null;
 					try {
@@ -123,6 +123,7 @@ public class CopyBuggySource {
 						close(in);
 						close(out);
 					}
+					} else SYstem.out.println("Unable to create directory for " + parent);
 				}
 			}
 		}

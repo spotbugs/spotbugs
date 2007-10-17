@@ -41,7 +41,4 @@ public class FieldDescriptor
 		super(className, fieldName, fieldSignature, isStatic);
 	}
 	
-    protected int compareTo(FieldDescriptor o) {
-        return super.compareTo(o);
-    }
 }
