@@ -108,20 +108,16 @@ public class Filter {
 		public boolean removedCode = false;
 		public boolean removedCodeSpecified = false;
 
-		public boolean classified = false;
-		public boolean classifiedSpecified = false;
-
+		
 
 		public boolean withMessagesSpecified = false;
 		public boolean withMessages = false;
-		public boolean serious = false;
-		public boolean seriousSpecified = false;
-
+		
 		private List<Matcher> includeFilter = new LinkedList<Matcher>();
 		private List<Matcher> excludeFilter = new LinkedList<Matcher>();
 		HashSet<String> excludedInstanceHashes = new HashSet<String>();
-		String designationString;
-		String designationKey;
+		Set<String> designationStrings = new HashSet<String>();
+		Set<String> designationKey = new HashSet<String>();
 		String categoryString;
 		String categoryKey;
 		int priority = 3;
@@ -135,12 +131,8 @@ public class Filter {
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
 
-			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
-			addSwitchWithOptionalExtraPart("-classified", "truth", "allow only classified warnings");
+			addOption("-annotation", "text", "allow only warnings containing this text in a user annotation");
 			addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
-
-			addSwitchWithOptionalExtraPart("-serious", "truth", "allow only warnings classified as serious");
-
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
 			addOption("-before", "when", "allow only warnings that first occurred before this version");
 			addOption("-first", "when", "allow only warnings that first occurred in this version");
@@ -164,7 +156,7 @@ public class Filter {
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
-			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX)");
+			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
 			addSwitch("-hashChanged", "recomputed instance hash is different than stored instance hash");
 			
 		}
@@ -293,7 +285,7 @@ public class Filter {
 			BugPattern thisBugPattern = bug.getBugPattern();
 			if (categoryKey != null && thisBugPattern != null && !categoryKey.equals(thisBugPattern.getCategory()))
 				return false;
-			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
+			if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey()))
 				return false;
 
 			if (withSourceSpecified) {
@@ -305,25 +297,24 @@ public class Filter {
 					return false;
 			}
 
-			if (classifiedSpecified && classified != isClassified(bug)) {
-				return false;
-			}
-
-			if (seriousSpecified) {
-				Set<String> words = bug.getTextAnnotationWords();
-				boolean thisOneIsSerious = words.contains("BUG")
-				&& !(words.contains("NOT_BUG") || words.contains("HARMLESS"));
-				if (serious != thisOneIsSerious) return false;
-			}
-
 			return true;
 		}
 
-		private boolean isClassified(BugInstance bug) {
-			Set<String> words = bug.getTextAnnotationWords();
-			return words.contains("BUG") || words.contains("NOT_BUG");
-		}
 
+	    private void addDesignationKey(String argument) {
+	    	I18N i18n = I18N.instance();
+			
+		    for(String x : argument.split("[,|]")) {
+				for (String designationKey : i18n.getUserDesignationKeys()) {
+					if (designationKey.equals(x) 
+							|| i18n.getUserDesignation(designationKey).equals(x)) {
+						this.designationKey.add(designationKey);
+						break;
+					}
+
+				}
+			}
+	    }
 		private boolean bugLiveAt(BugInstance bug, long now) {
 			if (now < bug.getFirstVersion())
 				return false;
@@ -379,7 +370,7 @@ public class Filter {
 			else if (option.equals("-category"))
 				categoryString = argument;
 			else if (option.equals("-designation"))
-				designationString = argument;
+				addDesignationKey(argument);
 			else if (option.equals("-class"))
 					className = Pattern.compile(argument);
 			else if (option.equals("-bugPattern"))
@@ -453,16 +444,6 @@ public class Filter {
 					}
 		}
 
-		if (commandLine.designationString != null) {
-			for (String designationKey : i18n.getUserDesignationKeys()) {
-				if (designationKey.startsWith(commandLine.designationString) 
-						|| i18n.getUserDesignation(designationKey).startsWith(commandLine.designationString)) {
-					commandLine.designationKey = designationKey;
-					break;
-				}
-
-			}
-		}
 		
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
 
@@ -511,6 +492,7 @@ public class Filter {
 		}
 
 	}
+
 
 }
 
