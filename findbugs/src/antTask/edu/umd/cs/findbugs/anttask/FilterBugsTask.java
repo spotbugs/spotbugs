@@ -95,15 +95,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     public void setAnnotation(String arg) {
     	this.annotation = arg;
     }
-    
-    public void setClassified(String arg) {
-    	this.classified = arg;
-    }
-    
-    public void setSerious(String arg) {
-    	this.serious = arg;
-    }
-    
+        
     public void setAfter(String arg) {
     	this.after = arg;
     }
