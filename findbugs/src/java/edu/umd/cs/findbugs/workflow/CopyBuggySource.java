@@ -123,7 +123,7 @@ public class CopyBuggySource {
 						close(in);
 						close(out);
 					}
-					} else SYstem.out.println("Unable to create directory for " + parent);
+					} else System.out.println("Unable to create directory for " + parent);
 				}
 			}
 		}
