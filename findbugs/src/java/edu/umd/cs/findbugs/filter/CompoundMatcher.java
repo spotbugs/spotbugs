@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
@@ -55,6 +57,9 @@ public abstract class CompoundMatcher implements Matcher {
 		children.clear();
 	}
 
+	public Collection<Matcher> getChildren() {
+		return Collections.unmodifiableCollection(children);
+	}
 	public Iterator<Matcher> childIterator() {
 		return children.iterator();
 	}

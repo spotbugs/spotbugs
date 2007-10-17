@@ -49,6 +49,9 @@ public class NameMatch {
     public int hashCode() {
 		return spec.hashCode();
 	}
+	public boolean isUniversal() {
+		return spec.equals("~.*");
+	}
 	@Override
     public boolean equals(Object o) {
 		if (!(o instanceof NameMatch)) return false;

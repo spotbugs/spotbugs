@@ -34,7 +34,7 @@ public class ClassMatcher implements Matcher {
 
 	@Override
 	public String toString() {
-		return "class=\"" + className.getValue() +"\"";
+		return "Class(class=\"" + className.getValue() +"\")";
 	}
 
 	public ClassMatcher(String className) {

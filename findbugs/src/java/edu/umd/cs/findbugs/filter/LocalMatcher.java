@@ -38,6 +38,9 @@ public class LocalMatcher implements Matcher {
 		this.name = new NameMatch(name);
 	}
 
+	public String toString() {
+		return "Local(name="+name+")";
+	}
 	public boolean match(BugInstance bugInstance) {
 		LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
 		if(localAnnotation == null) {

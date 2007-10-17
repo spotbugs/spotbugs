@@ -41,6 +41,7 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	public LastVersionMatcher(long version, RelationalOp relOp) {
 		super(version,relOp);
 	}
+
 	public boolean match(BugInstance bugInstance) {
 		return relOp.check(bugInstance.getLastVersion(), version);
 	}
@@ -52,8 +53,8 @@ public class LastVersionMatcher extends VersionMatcher implements Matcher {
 	
 	@Override
     public String toString() {
-		if (version == -1 && relOp == RelationalOp.EQ) return "active bugs";
-		else if (version == -1 && relOp == RelationalOp.NEQ) return "dead bugs";
-		return "lastVersion " + relOp + " " + version;
+		if (version == -1 && relOp == RelationalOp.EQ) return "ActiveBugs()";
+		else if (version == -1 && relOp == RelationalOp.NEQ) return "DeadBugs()";
+		return "LastVersion(version " + relOp + version +")";
 	}
 }

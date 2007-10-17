@@ -52,6 +52,9 @@ public class DesignationMatcher implements Matcher {
 		return designations.match(bugInstance.getUserDesignationKey());
 	}
 
+	public String toString() {
+		return "Designations(designations=" + designations +")";
+	}
 	@Override
     public int hashCode() {
 		return designations.hashCode();

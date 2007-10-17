@@ -34,7 +34,7 @@ public class PriorityMatcher implements Matcher {
 
 	@Override
     public String toString() {
-		return "priority=="+priority;
+		return "Priority(priority="+priority+")";
 	}
 	/**
 	 * Constructor.

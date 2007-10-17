@@ -56,6 +56,7 @@ public class AndMatcher extends CompoundMatcher {
 	}
 	@Override
     public String toString() {
+		if (numberChildren() == 1) return super.toString();
 		return "And(" + super.toString() +")";
 	}
 

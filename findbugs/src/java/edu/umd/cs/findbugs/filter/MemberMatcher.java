@@ -52,6 +52,23 @@ public class MemberMatcher {
 	}
 
 	@Override
+    public String toString() {
+		StringBuffer  buf = new StringBuffer();
+		if (!name.isUniversal()) {
+			buf.append("name=\"");
+			buf.append(name.getSpec());
+			buf.append("\"");
+		}
+		if (signature != null) {
+			if (buf.length() > 0)
+				buf.append(" ");
+		buf.append("signature=\"");
+		buf.append(signature);
+		buf.append("\"");
+		}
+		return buf.toString();
+	}
+	@Override
 	public int hashCode() {
 		return name.hashCode() + Util.nullSafeHashcode(signature);
 	}

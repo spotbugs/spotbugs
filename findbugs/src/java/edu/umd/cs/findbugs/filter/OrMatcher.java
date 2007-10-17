@@ -51,6 +51,7 @@ public class OrMatcher extends CompoundMatcher {
 	}
 	@Override
 	public String toString() {
+		if (numberChildren() == 1) return super.toString();
 		return "Or(" + super.toString() +")";
 	}
 

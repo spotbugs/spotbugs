@@ -38,6 +38,9 @@ public class FirstVersionMatcher extends VersionMatcher implements Matcher {
 	public FirstVersionMatcher(long version, RelationalOp relOp) {
 		super(version,relOp);
 }
+	public String toString() {
+		return "FirstVersion(version" + relOp + version +")";
+	}
 	public boolean match(BugInstance bugInstance) {
 		return  relOp.check(bugInstance.getFirstVersion(), version);
 	}

@@ -229,6 +229,8 @@ public class MainFrame extends FBFrame implements LogSync
 
 	private SaveType saveType = SaveType.NOT_KNOWN;
 	FBFileChooser saveOpenFileChooser;
+	FBFileChooser filterOpenFileChooser;
+	
 	@CheckForNull private File saveFile = null;
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
@@ -617,9 +619,11 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem openMenuItem = newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
 		recentMenu = newJMenu("menu.recent", "Recent");
 		recentMenuCache=new RecentMenu(recentMenu);
-		JMenuItem saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);;
+		JMenuItem saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
 		redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
-
+		JMenuItem importFilter = newJMenuItem("menu.importFilter_item", "Import filter...");
+		JMenuItem exportFilter = newJMenuItem("menu.exportFilter_item", "Export filter...");
+		
 		JMenuItem exitMenuItem = null;
 		if (!MAC_OS_X) {
 			exitMenuItem = newJMenuItem("menu.exit", "Exit", KeyEvent.VK_X);
@@ -681,7 +685,16 @@ public class MainFrame extends FBFrame implements LogSync
 				saveAs();
 			}
 		});
-
+		exportFilter.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				exportFilter();
+			}
+		});
+		importFilter.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				importFilter();
+			}
+		});
 		saveMenuItem.setEnabled(false);
 		attachAcceleratorKey(saveMenuItem, KeyEvent.VK_S);
 		saveMenuItem.addActionListener(new ActionListener(){
@@ -690,14 +703,15 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 
-
-
 		fileMenu.add(newProjectMenuItem);
 		fileMenu.add(reconfigMenuItem);
 		fileMenu.addSeparator();
 
 		fileMenu.add(openMenuItem);
 		fileMenu.add(recentMenu);
+		fileMenu.addSeparator();
+		fileMenu.add(importFilter);
+		fileMenu.add(exportFilter);
 		fileMenu.addSeparator();
 		fileMenu.add(saveAsMenuItem);
 		fileMenu.add(saveMenuItem);
@@ -860,6 +874,51 @@ public class MainFrame extends FBFrame implements LogSync
 			newProject=false;
 		}		
 	}
+	/**
+	 * This method is for when the user wants to open a file.
+	 */
+	private void importFilter() {
+		boolean loading = true;
+		filterOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.importFilter_ttl",
+		        "Import and merge filter..."));
+
+		boolean retry = true;
+		boolean alreadyExists = true;
+		File f = null;
+		while (retry) {
+			retry = false;
+
+			int value = filterOpenFileChooser.showOpenDialog(MainFrame.this);
+
+			if (value != JFileChooser.APPROVE_OPTION)
+				return;
+
+			f = filterOpenFileChooser.getSelectedFile();
+
+			if (!f.exists()) {
+				JOptionPane.showMessageDialog(filterOpenFileChooser, "No such file", "Invalid File", JOptionPane.WARNING_MESSAGE);
+				retry = true;
+				continue;
+			}
+			Filter filter;
+			try {
+				filter = Filter.parseFilter(f.getPath());
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(filterOpenFileChooser, "Could not load filter.");
+				retry = true;
+				continue;
+			}
+			projectChanged = true;
+			if (curProject.getSuppressionFilter() == null) {
+				curProject.setSuppressionFilter(filter);
+			} else {
+				for (Matcher m : filter.getChildren())
+					curProject.getSuppressionFilter().addChild(m);
+			}
+			PreferencesFrame.getInstance().updateFilterPanel();
+		}
+
+	}
 
 	/**
 	 * This method is for when the user wants to open a file.
@@ -979,6 +1038,57 @@ public class MainFrame extends FBFrame implements LogSync
     		
     	
     }
+    
+	private boolean exportFilter() {
+		if (curProject==null || curProject.getSuppressionFilter() == null)
+		{
+			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_filter", "There is no filter"));
+			return false;
+		}
+		
+		filterOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.exportFilter_ttl", "Export filter..."));
+
+		boolean retry = true;
+		boolean alreadyExists = true;
+		File f = null;
+		while(retry){
+			retry = false;
+
+			int value=filterOpenFileChooser.showSaveDialog(MainFrame.this);
+
+			if (value!=JFileChooser.APPROVE_OPTION) return false;
+
+
+			f = filterOpenFileChooser.getSelectedFile();
+
+			alreadyExists = f.exists();
+			if(alreadyExists){
+				int response = JOptionPane.showConfirmDialog(filterOpenFileChooser, 
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.file_exists_lbl", "This file already exists.\nReplace it?"),
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+				
+				if(response == JOptionPane.OK_OPTION)
+					retry = false;
+				if(response == JOptionPane.CANCEL_OPTION){
+					retry = true;
+					continue;
+				}
+
+			}
+
+			Filter suppressionFilter = curProject.getSuppressionFilter();
+			try {
+			suppressionFilter.writeAsXML(new FileOutputStream(f));
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	
 	private boolean saveAs(){
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
@@ -1698,6 +1808,7 @@ public class MainFrame extends FBFrame implements LogSync
 			setVisible(true);
 
 			//Initializes save and open filechooser. - Kristin
+			
 			saveOpenFileChooser = new FBFileChooser();
 			saveOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			saveOpenFileChooser.setAcceptAllFileFilterUsed(false);
@@ -1706,7 +1817,10 @@ public class MainFrame extends FBFrame implements LogSync
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBPFileFilter.INSTANCE);
 			saveOpenFileChooser.addChoosableFileFilter(FindBugsFBAFileFilter.INSTANCE);
 			saveOpenFileChooser.setFileFilter(FindBugsAnalysisFileFilter.INSTANCE);
-
+			filterOpenFileChooser = new FBFileChooser();
+			filterOpenFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			filterOpenFileChooser.setFileFilter(FindBugsFilterFileFilter.INSTANCE);
+			
 			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
 			JToolTip tempToolTip = tableheader.createToolTip();
 			UIManager.put( "ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));

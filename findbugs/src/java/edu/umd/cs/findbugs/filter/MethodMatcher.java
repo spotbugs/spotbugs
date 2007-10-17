@@ -46,6 +46,10 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
 			return false;
 		return true;
 	}
+	
+	public String toString() {
+		return "Method(" + super.toString() + ")";
+	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
 		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature);
 		if (disabled) attributes.addAttribute("disabled", "true");
