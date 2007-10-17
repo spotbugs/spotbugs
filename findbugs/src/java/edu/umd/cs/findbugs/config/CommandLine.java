@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public abstract class CommandLine {
 	private List<String> optionList;
-	private Set<String> unlistedOptions;
+	private Set<String> unlistedOptions = new HashSet<String>();
 	
 	private Set<String> requiresArgumentSet;
 	private Map<String, String> optionDescriptionMap;
