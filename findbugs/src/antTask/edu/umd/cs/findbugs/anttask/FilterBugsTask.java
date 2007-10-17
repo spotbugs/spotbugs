@@ -37,8 +37,6 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 	private String exclude;
 	private String include;
 	private String annotation;
-	private String classified;
-	private String serious;
 	private String after;
 	private String before;
 	private String first;
@@ -208,8 +206,6 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     	}
     	
     	checkBoolean(withSource, "withSource");
-    	checkBoolean(classified, "classified");
-    	checkBoolean(serious, "serious");
     	checkBoolean(active, "active");
     	checkBoolean(introducedByChange, "introducedByChange");
     	checkBoolean(removedByChange, "removedByChange");
@@ -243,8 +239,6 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 		addOption("-exclude", exclude);
 		addOption("-include", include);
 		addOption("-annotation", annotation);
-		addBoolOption("-classified", classified);
-		addBoolOption("-serious", serious);
 		addOption("-after", after);
 		addOption("-before", before);
 		addOption("-first", first);
