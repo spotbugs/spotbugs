@@ -43,8 +43,13 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	@Override
-		 public void visit(Code obj) {
+	public void visit(Code obj) {
 		found.clear();
+		// Solution to sourceforge bug 1765925; returning null is the
+		// convention used by java.io.File.listFiles()
+		if(getMethodName().equals("listFiles")) {
+		    return;
+		}
 		String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
 		if (returnType.startsWith("[")) {
 			nullOnTOS = false;
@@ -62,7 +67,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case ACONST_NULL:
