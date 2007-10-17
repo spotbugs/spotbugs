@@ -68,7 +68,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		private String classSourceSignature;
 		private String source;
 
-		public ClassInfo build() {
+		@Override
+        public ClassInfo build() {
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
 					classAnnotations, fieldDescriptorList.toArray(new FieldInfo[0]), 
@@ -221,7 +222,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 * 
 	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
 	 */
-	public String getPackageName() {
+	@Override
+    public String getPackageName() {
 		String dottedClassName = getClassDescriptor().toDottedClassName();
 		int lastDot = dottedClassName.lastIndexOf('.');
 		if (lastDot < 0) {

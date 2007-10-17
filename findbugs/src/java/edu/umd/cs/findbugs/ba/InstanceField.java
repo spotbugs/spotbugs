@@ -32,7 +32,8 @@ abstract class InstanceField extends AbstractField {
 				fieldName.startsWith("this$") ? (Constants.ACC_FINAL | accessFlags) : accessFlags);
 	}
 
-	public boolean isStatic() {
+	@Override
+    public boolean isStatic() {
 		return false;
 	}
 }

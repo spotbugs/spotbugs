@@ -26,7 +26,8 @@ public abstract class InstanceMethod extends AbstractMethod {
 		super(className, methodName, methodSig, accessFlags);
 	}
 
-	public boolean isStatic() {
+	@Override
+    public boolean isStatic() {
 		return false;
 	}
 

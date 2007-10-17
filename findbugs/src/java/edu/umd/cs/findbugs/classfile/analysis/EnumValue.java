@@ -32,7 +32,8 @@ public class EnumValue {
 		this.desc = DescriptorFactory.createClassDescriptorFromSignature(desc);
 		this.value = value;
 	}
-	public String toString() {
+	@Override
+    public String toString() {
 		return desc.getDottedClassName() + "." + value;
 	}
 	

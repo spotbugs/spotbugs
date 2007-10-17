@@ -49,7 +49,8 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 	 * @return the fact that is true on the edge
 	 * @throws DataflowAnalysisException 
 	 */
-	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+	@Override
+    public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
 		return getAnalysis().getFactOnEdge(edge);
 	}
 

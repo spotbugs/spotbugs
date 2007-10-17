@@ -66,7 +66,8 @@ public class MethodFactory extends AnalysisFactory<Method> {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
-	public void registerWith(IAnalysisCache analysisCache) {
+	@Override
+    public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerMethodAnalysisEngine(Method.class, this);
 	}
 

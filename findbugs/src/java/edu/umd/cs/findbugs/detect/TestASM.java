@@ -56,12 +56,14 @@ public class TestASM extends ClassNodeDetector {
 		 new AbstractFBMethodVisitor() {
 			int prevOpcode;
 			int prevPC;
-			public void visitInsn(int opcode) {
+			@Override
+            public void visitInsn(int opcode) {
 				prevOpcode = opcode;
 				prevPC = getPC();
 			}
 		
-			 public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
+			 @Override
+            public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
 				 if (prevPC+1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math") && invokedName.equals("ceil") && invokedDesc.equals("(D)D"))
 					 System.out.println(owner + "." + invokedName + ":" + invokedDesc);
 				 BugInstance bug0 = new BugInstance("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);

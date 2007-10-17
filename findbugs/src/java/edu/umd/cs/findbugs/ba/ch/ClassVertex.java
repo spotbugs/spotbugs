@@ -41,14 +41,17 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 	private int flags;
 	private ClassVertex directSuperclass;
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return classDescriptor.toString();
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (!(o instanceof ClassVertex)) return false;
 		return classDescriptor.equals(((ClassVertex)o).classDescriptor);
 	}
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return classDescriptor.hashCode();
 	}
 	private ClassVertex(ClassDescriptor classDescriptor, XClass xclass) {

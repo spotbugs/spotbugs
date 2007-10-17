@@ -448,7 +448,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	/**
 	 * Check that all required attributes have been set
 	 */
-	protected void checkParameters() {
+	@Override
+    protected void checkParameters() {
 		super.checkParameters();
 		
 		if ( projectFile == null && classLocations.size() == 0 && auxAnalyzepath == null) {
@@ -521,7 +522,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		}
 	}
 
-	protected void configureFindbugsEngine() {
+	@Override
+    protected void configureFindbugsEngine() {
 	    if (projectName != null) {
 			addArg("-projectName");
 			addArg(projectName);

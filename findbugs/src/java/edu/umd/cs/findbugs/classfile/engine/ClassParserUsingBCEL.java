@@ -94,13 +94,16 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 			final List<MethodDescriptor> methodDescriptorList =  new LinkedList<MethodDescriptor>();
 			final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
 			javaClass.accept(new AnnotationVisitor() {
-				public void visit(Method obj) {
+				@Override
+                public void visit(Method obj) {
 					methodDescriptorList.add(parseMethod(obj));
 				}
-				public void visit(Field obj) {
+				@Override
+                public void visit(Field obj) {
 					fieldDescriptorList.add(parseField(obj));
 				}
-				public void visit(ConstantClass obj) {
+				@Override
+                public void visit(ConstantClass obj) {
 					@SlashedClassName String className = obj.getBytes(javaClass.getConstantPool());
 					if (className.indexOf('[') >= 0) {
 						ClassParser.extractReferencedClassesFromSignature(referencedClassSet, className);
@@ -109,7 +112,8 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 					}
 				}
 
-				public void visit(ConstantNameAndType obj) {
+				@Override
+                public void visit(ConstantNameAndType obj) {
 					String signature = obj.getSignature(javaClass.getConstantPool());
 					ClassParser.extractReferencedClassesFromSignature(referencedClassSet, signature);
 				}

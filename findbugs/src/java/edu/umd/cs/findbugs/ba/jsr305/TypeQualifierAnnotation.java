@@ -146,15 +146,18 @@ public class TypeQualifierAnnotation {
 		return result;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return typeQualifier.hashCode() * 37 + when.hashCode();
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (!(o instanceof TypeQualifierAnnotation)) return false;
 		TypeQualifierAnnotation other = (TypeQualifierAnnotation) o;
 		return typeQualifier.equals(other.typeQualifier) && when.equals(other.when);
 	}
-	public String toString() {
+	@Override
+    public String toString() {
 		return typeQualifier + ":" + when;
 	}
 	

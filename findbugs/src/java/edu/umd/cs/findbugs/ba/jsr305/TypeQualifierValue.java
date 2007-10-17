@@ -125,13 +125,15 @@ public class TypeQualifierValue {
 		return isStrict;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int result = typeQualifier.hashCode();
 		if (value != null) result += 37*value.hashCode();
 		return result;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (!(o instanceof TypeQualifierValue)) return false;
 		TypeQualifierValue other = (TypeQualifierValue) o;
 		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);

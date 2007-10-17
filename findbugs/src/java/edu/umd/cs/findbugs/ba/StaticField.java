@@ -29,7 +29,8 @@ abstract class StaticField extends AbstractField {
 		super(className, fieldName, fieldSig, accessFlags | Constants.ACC_STATIC);
 	}
 
-	public boolean isStatic() {
+	@Override
+    public boolean isStatic() {
 		return true;
 	}
 }

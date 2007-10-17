@@ -26,7 +26,8 @@ public abstract class StaticMethod extends AbstractMethod {
 		super(className, methodName, methodSig, accessFlags);
 	}
 
-	public boolean isStatic() {
+	@Override
+    public boolean isStatic() {
 		return true;
 	}
 

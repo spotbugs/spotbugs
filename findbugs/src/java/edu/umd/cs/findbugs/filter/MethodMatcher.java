@@ -47,7 +47,8 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
 		return true;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Method(" + super.toString() + ")";
 	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {

@@ -33,7 +33,8 @@ public class ProfilingMapCache<K,V> extends MapCache<K,V> {
 		this.name = name;
 		count = new int[maxCapacity];
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
+			@Override
+            public void run() {
 				System.out.println("Profile for map cache " + ProfilingMapCache.this.name);
 				for(int i = 0; i < count.length; i++)
 					System.out.printf("%4d %5d\n", i, count[i]);
@@ -41,7 +42,8 @@ public class ProfilingMapCache<K,V> extends MapCache<K,V> {
 		});
 	}
 	int [] count;
-	public V get(Object k) { 
+	@Override
+    public V get(Object k) { 
 
 		int age = count.length-1;
 		for(Map.Entry<K,V> e : entrySet()) {

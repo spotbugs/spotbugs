@@ -77,7 +77,8 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
-	public void edgeTransfer(Edge edge, ReturnPathType fact) {
+	@Override
+    public void edgeTransfer(Edge edge, ReturnPathType fact) {
 		// The edges leading into the exit block create the "seed" values
 		// for the analysis.  The exception edges create values indicating
 		// that a normal (non-exception) return is not possible,
@@ -91,7 +92,8 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
 	 */
-	public void finishIteration() {
+	@Override
+    public void finishIteration() {
 		// nothing to do
 	}
 
@@ -105,7 +107,8 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#getLastUpdateTimestamp(java.lang.Object)
 	 */
-	public int getLastUpdateTimestamp(ReturnPathType fact) {
+	@Override
+    public int getLastUpdateTimestamp(ReturnPathType fact) {
 		return 0;
 	}
 
@@ -178,14 +181,16 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#setLastUpdateTimestamp(java.lang.Object, int)
 	 */
-	public void setLastUpdateTimestamp(ReturnPathType fact, int timestamp) {
+	@Override
+    public void setLastUpdateTimestamp(ReturnPathType fact, int timestamp) {
 		// ignore
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
 	 */
-	public void startIteration() {
+	@Override
+    public void startIteration() {
 		// nothing to do
 	}
 

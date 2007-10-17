@@ -199,7 +199,8 @@ public class GenericObjectType extends ObjectType {
 		return getTypeCategory().asString(this);
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return getTypeCategory().asString(this);
 	}
 

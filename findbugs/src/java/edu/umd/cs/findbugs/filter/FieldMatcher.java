@@ -38,7 +38,8 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
 	public FieldMatcher(String name, String type) {
 		super(name, SignatureUtil.createFieldSignature(type));
 	}
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Method(" + super.toString() + ")";
 	}
 	public boolean match(BugInstance bugInstance) {
