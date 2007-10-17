@@ -86,6 +86,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.util.InetAddress", "getByName", "(Ljava/lang/String;)Ljava/util/InetAddress;", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
 		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 
