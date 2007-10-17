@@ -1078,7 +1078,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 			Filter suppressionFilter = curProject.getSuppressionFilter();
 			try {
-			suppressionFilter.writeAsXML(new FileOutputStream(f));
+			suppressionFilter.writeEnabledMatchersAsXML(new FileOutputStream(f));
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
 				return false;
