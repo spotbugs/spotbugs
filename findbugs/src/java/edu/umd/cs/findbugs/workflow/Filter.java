@@ -117,8 +117,8 @@ public class Filter {
 		private List<Matcher> excludeFilter = new LinkedList<Matcher>();
 		HashSet<String> excludedInstanceHashes = new HashSet<String>();
 		Set<String> designationKey = new HashSet<String>();
-		String categoryString;
-		String categoryKey;
+		Set<String> categoryKey = new HashSet<String>();
+		
 		int priority = 3;
 
 		FilterCommandLine() {
@@ -282,7 +282,7 @@ public class Filter {
 					return false;
 
 			BugPattern thisBugPattern = bug.getBugPattern();
-			if (categoryKey != null && thisBugPattern != null && !categoryKey.equals(thisBugPattern.getCategory()))
+			if (!categoryKey.isEmpty() && thisBugPattern != null && !categoryKey.contains(thisBugPattern.getCategory()))
 				return false;
 			if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey()))
 				return false;
@@ -311,6 +311,18 @@ public class Filter {
 						break;
 					}
 
+				}
+			}
+	    }
+	    private void addCategoryKey(String argument) {
+	    	I18N i18n = I18N.instance();
+			
+		    for(String x : argument.split("[,|]")) {
+				for (BugCategory category : i18n.getBugCategoryObjects()) {
+					if (category.getAbbrev().equals(x) || category.getCategory().equals(x)) {
+						this.categoryKey.add(category.getCategory());
+						break;
+					}
 				}
 			}
 	    }
@@ -367,7 +379,7 @@ public class Filter {
 				absentAsString = argument;
 
 			else if (option.equals("-category"))
-				categoryString = argument;
+				addCategoryKey(argument);
 			else if (option.equals("-designation"))
 				addDesignationKey(argument);
 			else if (option.equals("-class"))
@@ -426,22 +438,6 @@ public class Filter {
 			origCollection.readXML(args[argCount++], project);
 		boolean verbose = argCount < args.length;
 		I18N i18n = I18N.instance();
-		if (commandLine.categoryString != null) {
-			for (BugCategory bugCategory : i18n
-					.getBugCategoryObjects())
-				if (bugCategory.getAbbrev().equals(commandLine.categoryString)) {
-					commandLine.categoryKey = bugCategory.getCategory();
-					break;
-				}
-			if (commandLine.categoryKey == null)
-				for (BugCategory bugCategory : i18n
-						.getBugCategoryObjects())
-					if (bugCategory.getAbbrev().startsWith(
-							commandLine.categoryString)) {
-						commandLine.categoryKey = bugCategory.getCategory();
-						break;
-					}
-		}
 
 		
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
