@@ -42,5 +42,11 @@ public class MethodDescriptor
 		assert methodSignature.indexOf(')') > 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(MethodDescriptor o) {
+		return super.compareTo(o);
+	}
 
 }
