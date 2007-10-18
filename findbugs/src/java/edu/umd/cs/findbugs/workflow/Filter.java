@@ -437,9 +437,6 @@ public class Filter {
 		else
 			origCollection.readXML(args[argCount++], project);
 		boolean verbose = argCount < args.length;
-		I18N i18n = I18N.instance();
-
-		
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
 
 		int passed = 0;
