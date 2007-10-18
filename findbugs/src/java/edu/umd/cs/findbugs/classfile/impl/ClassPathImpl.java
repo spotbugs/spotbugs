@@ -47,6 +47,19 @@ public class ClassPathImpl implements IClassPath {
 		this.codeBaseEntryMap = new HashMap<String, ICodeBaseEntry>();
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		for(IScannableCodeBase cb : appCodeBaseList) {
+			buf.append(cb);
+			buf.append(" ");
+		}
+		for(ICodeBase cb : auxCodeBaseList) {
+			buf.append("*");
+			buf.append(cb);
+			buf.append(" ");
+		}
+		return buf.toString();
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs.classfile.ICodeBase)
 	 */

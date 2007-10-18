@@ -60,6 +60,9 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		this.lastModifiedTime = new File(fileName).lastModified();
 	}
 
+	public String toString() {
+		return fileName;
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
 	 */
