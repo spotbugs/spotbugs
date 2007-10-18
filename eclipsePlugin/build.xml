@@ -226,7 +226,7 @@
 	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
 		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
 		<copy todir="${fbeclipse.dir}">
-			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,jsr305.jar,bcel.jar,annotations.jar,asm-3.0.jar,asm-tree-3.0.jar,asm-commons-3.0.jar"/>
+			<fileset dir="${findbugs.dir}/lib" includes="findbugs.jar,findbugs-ant.jar,jsr305.jar,bcel.jar,annotations.jar,asm-3.0.jar,asm-tree-3.0.jar,asm-commons-3.0.jar"/>
 		</copy>
 		<copy todir="${fbeclipse.dir}/plugin">
 			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
