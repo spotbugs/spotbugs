@@ -276,12 +276,15 @@ public abstract class AbstractFindBugsTask extends Task {
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
-			
+			File findbugsLib = new File(homeDir, "lib");
+			File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
+			File findBugsFindBugs =  new File(homeDir, "findbugs.jar");
 			//log("executing using home dir [" + homeDir + "]");
-			
-			findbugsEngine.setClasspath(new Path(getProject(), homeDir + File.separator + "lib" + 
-										 File.separator + FINDBUGS_JAR));
-
+			if (findbugsLibFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
+			else if (findBugsFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
+			else throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
 			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
 		} else {
 			// Use an explicitly specified classpath and list of plugin Jars
@@ -290,14 +293,11 @@ public abstract class AbstractFindBugsTask extends Task {
 
 			findbugsEngine.setClasspath(classpath);
 
-			// Set the main class to be whatever the subclass's constructor
-			// specified.
-			findbugsEngine.setClassname(mainClass);
-
 			addArg("-pluginList");
 			addArg(pluginList.toString());
 		}
-
+		// Set the main class to be whatever the subclass's constructor
+		// specified.
 		findbugsEngine.setClassname(mainClass);
 	}
 
@@ -323,6 +323,7 @@ public abstract class AbstractFindBugsTask extends Task {
 	 */
 	private void execFindbugs() throws BuildException {
 		
+		System.out.println("Executing findbugs from ant task");
 		createFindbugsEngine();
 		configureFindbugsEngine();
 
