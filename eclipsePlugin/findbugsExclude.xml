@@ -14,6 +14,16 @@
     <Bug pattern="MS_PKGPROTECT"/>
   </Match>
   <Match>
+    <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+  </Match>
+  <Match>
+    <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED,NM_CLASS_NOT_EXCEPT
+ION,EI_EXPOSE_REP,EI_EXPOSE_REP2,MS_PKGPROTECT,MS_MUTABLE_ARRAY"/>
+  </Match>
+  <Match>
+    <Bug category="MALICIOUS_CODE"/>
+  </Match>
+  <Match>
     <Bug pattern="SE_NO_SERIALVERSIONID"/>
     <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
