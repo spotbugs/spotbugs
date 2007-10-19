@@ -60,7 +60,8 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		this.lastModifiedTime = new File(fileName).lastModified();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return fileName;
 	}
 	/* (non-Javadoc)

@@ -47,7 +47,8 @@ public class ClassPathImpl implements IClassPath {
 		this.codeBaseEntryMap = new HashMap<String, ICodeBaseEntry>();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for(IScannableCodeBase cb : appCodeBaseList) {
 			buf.append(cb);
