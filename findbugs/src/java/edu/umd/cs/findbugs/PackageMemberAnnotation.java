@@ -45,6 +45,10 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * @param className name of the class
 	 */
 	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
+		if (className.indexOf('/') >= 0) {
+			assert false: "classname " + className + " should be dotted";
+			className = className.replace('/', '.');
+		}
 		this.className = DescriptorFactory.canonicalizeString(className);
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		if (context != null) this.sourceFileName = context.lookupSourceFile(className);

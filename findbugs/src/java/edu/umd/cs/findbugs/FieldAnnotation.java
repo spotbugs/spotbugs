@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -63,7 +64,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param fieldName the name of the field
 	 * @param fieldSig  the type signature of the field
 	 */
-	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
+	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
 		super(className, DEFAULT_ROLE);
 		if (fieldSig.indexOf(".") >= 0) {
 			assert false : "signatures should not be dotted: " + fieldSig;
@@ -81,7 +82,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param fieldSig  the type signature of the field
 	 * @param accessFlags accessFlags for the field
 	 */
-	public FieldAnnotation(String className, String fieldName, String fieldSig, int accessFlags) {
+	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
 		this(className, fieldName, fieldSig, (accessFlags & Constants.ACC_STATIC) != 0);
 	}
 	/**
@@ -131,7 +132,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 */
 	public static FieldAnnotation fromFieldDescriptor(FieldDescriptor fieldDescriptor) {
 		return new FieldAnnotation(
-				fieldDescriptor.getSlashedClassName(),
+				fieldDescriptor.getClassDescriptor().getDottedClassName(),
 				fieldDescriptor.getName(),
 				fieldDescriptor.getSignature(),
 				fieldDescriptor.isStatic());
