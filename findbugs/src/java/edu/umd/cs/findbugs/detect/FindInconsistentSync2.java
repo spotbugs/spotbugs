@@ -265,7 +265,8 @@ public class FindInconsistentSync2 implements Detector {
 		};
 
 		Set<Method> lockedMethodSet;
-		Set<Method> publicReachableMethods;
+		//Set<Method> publicReachableMethods;
+		Set<Method> allMethods = new HashSet<Method>(Arrays.asList(javaClass.getMethods()));
 
 		try {
 			selfCalls.execute();
@@ -277,7 +278,7 @@ public class FindInconsistentSync2 implements Detector {
 			Set<CallSite> obviouslyLockedSites = findObviouslyLockedCallSites(classContext, selfCalls);
 			lockedMethodSet = findNotUnlockedMethods(classContext, selfCalls, obviouslyLockedSites);
 			lockedMethodSet.retainAll(findLockedMethods(classContext, selfCalls, obviouslyLockedSites));
-			publicReachableMethods = findPublicReachableMethods(classContext, selfCalls);
+			//publicReachableMethods = findPublicReachableMethods(classContext, selfCalls);
 		} catch (CFGBuilderException e) {
 			bugReporter.logError("Error finding locked call sites", e);
 			return;
@@ -286,7 +287,7 @@ public class FindInconsistentSync2 implements Detector {
 			return;
 		}
 
-		for (Method method : publicReachableMethods) {
+		for (Method method : allMethods) {
 			if (classContext.getMethodGen(method) == null)
 				continue;
 
@@ -336,7 +337,7 @@ public class FindInconsistentSync2 implements Detector {
 			int biasedLocked = numReadLocked + (int) (WRITE_BIAS * (numWriteLocked + numNullCheckLocked + extra) );
 			int unlocked = numReadUnlocked + numWriteUnlocked + numNullCheckUnlocked;
 			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * (numWriteUnlocked));
-			int writes = numWriteLocked + numWriteUnlocked;
+			//int writes = numWriteLocked + numWriteUnlocked;
 
 			if (unlocked == 0) {
 				continue;
@@ -558,7 +559,7 @@ public class FindInconsistentSync2 implements Detector {
 				boolean isExplicitlyLocked = lockSet.getLockCount(instance.getNumber()) > 0;
 				boolean isAccessedThroughThis = thisValue != null && thisValue.equals(instance);
 				boolean isLocked = isExplicitlyLocked
-						|| (lockedMethodSet.contains(method) && isAccessedThroughThis)
+						|| ((isConstructor(method.getName()) || lockedMethodSet.contains(method)) && isAccessedThroughThis)
 						|| lockSet.containsReturnValue(vnaDataflow.getAnalysis().getFactory());
 
 				// Adjust the field so its class name is the same
@@ -602,14 +603,21 @@ public class FindInconsistentSync2 implements Detector {
 				kind |= isLocked ? LOCKED : UNLOCKED;
 				kind |= isWrite ? WRITE : isNullCheck ? NULLCHECK : READ;
 
-				if (isLocked || !isConstructor(method.getName())) {
+				//if (isLocked || !isConstructor(method.getName())) {
 					if (DEBUG)
 						System.out.println("IS2:\t" +
 								SignatureConverter.convertMethodSignature(methodGen) +
 								"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
 
 					FieldStats stats = getStats(xfield);
-					stats.addAccess(kind);
+					
+					// Don't count a contructor's synchronized access
+					// toward the field statistics because it's
+					// trivially true and doesn't really represent the
+					// programmer's intention 
+					if(!(isLocked && isConstructor(method.getName()))) {
+					    stats.addAccess(kind);
+					}
 
 					if (isExplicitlyLocked && isLocal)
 						stats.addLocalLock();
@@ -618,7 +626,7 @@ public class FindInconsistentSync2 implements Detector {
 						stats.addGetterMethodAccess();
 
 					stats.addAccess(methodDescriptor, handle, isLocked);
-				}
+				//}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
@@ -794,12 +802,10 @@ public class FindInconsistentSync2 implements Detector {
 				CallGraphEdge edge = i.next();
 				CallSite callSite = edge.getCallSite();
 
-				// Ignore obviously locked edges
-				// If the calling method is locked, ignore the edge
 				if (obviouslyLockedSites.contains(callSite)
 						|| lockedMethodSet.contains(callSite.getMethod())) {
-					// Calling method is unlocked, so the called method
-					// is also unlocked.
+					// Calling method is locked, so the called method
+					// is also locked.
 					CallGraphNode target = edge.getTarget();
 					if (lockedMethodSet.add(target.getMethod()))
 						change = true;
@@ -823,6 +829,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * Find methods that do not appear to be reachable from public methods.
 	 * Such methods will not be analyzed.
 	 */
+	/*
 	private Set<Method> findPublicReachableMethods(ClassContext classContext, SelfCalls selfCalls)
 			throws CFGBuilderException, DataflowAnalysisException {
 
@@ -873,6 +880,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		return publicReachableMethodSet;
 	}
+	*/
 
 	/**
 	 * Find all self-call sites that are obviously locked.
