@@ -24,6 +24,11 @@
             name="*">
       </export>
    </library>
+   <library name="findbugs-ant.jar">
+      <export
+            name="*">
+      </export>
+   </library>
    </runtime>
 
    <requires>

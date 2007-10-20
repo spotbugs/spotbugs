@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="findbugs-ant.jar"/>
 	<classpathentry kind="lib" path="bcel.jar"/>
 	<classpathentry kind="lib" path="dom4j-full.jar"/>
 	<classpathentry kind="lib" path="asm-commons-3.0.jar"/>
