@@ -121,31 +121,31 @@ import edu.umd.cs.findbugs.ExitCodes;
 public class FindBugsTask extends AbstractFindBugsTask {
 
 	private String effort;
-	private boolean conserveSpace = false;
+	private boolean conserveSpace;
 	private boolean sorted = true;
 	private boolean timestampNow = true;
-	private boolean quietErrors = false;
-	private String warningsProperty = null;
-	private String projectName = null;
-	private boolean workHard = false;
-	private boolean relaxed = false;
-	private boolean adjustExperimental = false;
-	private File projectFile = null;
-	private File baselineBugs = null;
+	private boolean quietErrors;
+	private String warningsProperty ;
+	private String projectName ;
+	private boolean workHard;
+	private boolean relaxed;
+	private boolean adjustExperimental;
+	private File projectFile ;
+	private File baselineBugs ;
 	
-	private File excludeFile = null;
-	private File includeFile = null;
-	private Path auxClasspath = null;
-	private Path auxAnalyzepath = null;
-	private Path sourcePath = null;
+	private File excludeFile ;
+	private File includeFile ;
+	private Path auxClasspath ;
+	private Path auxAnalyzepath ;
+	private Path sourcePath ;
 	private String outputFormat = "xml";
-	private String reportLevel = null;
-	private String visitors = null;
-	private String omitVisitors = null;
-	private String outputFileName = null;
-	private String stylesheet = null;
+	private String reportLevel ;
+	private String visitors ;
+	private String omitVisitors ;
+	private String outputFileName ;
+	private String stylesheet ;
 	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
-	private String onlyAnalyze = null;
+	private String onlyAnalyze ;
 	
 	public FindBugsTask() {
 		super("edu.umd.cs.findbugs.FindBugs2");
