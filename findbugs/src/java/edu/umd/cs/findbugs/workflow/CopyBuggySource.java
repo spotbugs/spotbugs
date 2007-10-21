@@ -103,7 +103,7 @@ public class CopyBuggySource {
 						continue;
 					}
 					File parent = file.getParentFile();
-					if (parent.mkdirs()) {
+					if (parent.isDirectory() || parent.mkdirs()) {
 					InputStream in = null;
 					OutputStream out = null;
 					try {
