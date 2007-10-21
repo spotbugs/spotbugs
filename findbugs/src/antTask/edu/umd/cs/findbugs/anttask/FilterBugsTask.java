@@ -75,6 +75,11 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 	public void setOutput(File output) {
 		this.outputFile = output;
 	}
+	
+	public void setInput(String input) {
+		this.inputFile = new DataFile();
+		this.inputFile.name = input;
+	}
     
     public void setNot(String arg) {
     	this.not = arg;
