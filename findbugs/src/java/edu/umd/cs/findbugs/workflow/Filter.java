@@ -162,7 +162,8 @@ public class Filter {
 
 		static long getVersionNum(Map<String, AppVersion> versions, 
 				SortedMap<Long, AppVersion> timeStamps , String val, 
-				boolean roundToLaterVersion, long numVersions) {
+				boolean roundToLaterVersion, long currentSeqNum) {
+			long numVersions = currentSeqNum+1;
 			if (val == null) return -1;
 			if (val.equals("last") || val.equals("lastVersion")) return numVersions -1;
 
