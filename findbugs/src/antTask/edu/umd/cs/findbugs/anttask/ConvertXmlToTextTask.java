@@ -42,6 +42,34 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 		setFailOnError(true);
 	}
 	
+	/**
+     * @param longBugCodes The longBugCodes to set.
+     */
+    public void setLongBugCodes(boolean longBugCodes) {
+	    this.longBugCodes = longBugCodes;
+    }
+    
+    /**
+     * @param input The input to set.
+     */
+    public void setInput(String input) {
+	    this.input = input;
+    }
+    
+    /**
+     * @param output The output to set.
+     */
+    public void setOutput(String output) {
+	    this.output = output;
+    }
+    
+    /**
+     * @param format The format to set.
+     */
+    public void setFormat(String format) {
+	    this.format = format;
+    }
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.anttask.AbstractFindBugsTask#checkParameters()
 	 */
