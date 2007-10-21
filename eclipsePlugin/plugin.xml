@@ -462,13 +462,4 @@
 		 <viewShortcut id="org.eclipse.ui.views.ProgressView"/>
 	  </perspectiveExtension>
    </extension>
-    <extension point="org.eclipse.ant.core.antProperties">
-      <antProperty name="findbugs.home"
-           class="de.tobject.findbugs.AntPropertyValueProvider"/>
-   </extension> 
-   <extension point="org.eclipse.ant.core.antTasks">
-      <antTask name="findbugs" headless="true" class="edu.umd.cs.findbugs.anttask.FindBugsTask" library="findbugs-ant.jar"/>
-      <antTask name="filterbugs" headless="true" class="edu.umd.cs.findbugs.anttask.FilterBugsTask" library="findbugs-ant.jar"/>
-       <antTask name="computebughistory" headless="true" class="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask" library="findbugs-ant.jar"/>
-   </extension> 
 </plugin>
