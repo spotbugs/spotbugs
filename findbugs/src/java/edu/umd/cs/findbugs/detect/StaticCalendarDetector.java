@@ -144,6 +144,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	@Override
 	public void visit(Field aField) {
 		if (!aField.isStatic()) return;
+		if (!aField.isPublic() && !aField.isProtected()) return;
 		ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
 		String tBugType = null;
 		if (classOfField != null) try {
@@ -152,7 +153,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {
 				tBugType = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE";
 			}
-			if (tBugType != null) {
+		if (tBugType != null) {
 				reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(this));
 			}
 		} catch (ClassNotFoundException e) {
