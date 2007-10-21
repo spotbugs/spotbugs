@@ -257,6 +257,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			}
 			if (!foundJSR305Annotations) {
 				foundJSR305Annotations = probeCodeBaseForResource(discoveredCodeBase, "javax/annotation/meta/TypeQualifier.class");
+				if (DEBUG) System.out.println("foundJSR305Annotations: " + foundJSR305Annotations);
 			}
 		}
 
@@ -340,9 +341,17 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 		String findbugsHome = FindBugs.getHome();
 		if (findbugsHome != null) {
-			ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(
-					findbugsHome + File.separator + "lib" + File.separator + jarFileName);
-			workList.add(new WorkListItem(codeBaseLocator, false, ICodeBase.IN_SYSTEM_CLASSPATH));
+			File base = new File(findbugsHome);
+			File loc1 = new File(new File(base, "lib"), jarFileName);
+			File loc2 = new File(base, jarFileName);
+			File loc = null;
+			if (loc1.exists()) loc = loc1;
+			else if (loc2.exists()) loc = loc2;
+			if (loc != null) {
+				ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(
+					loc.getPath());
+				workList.add(new WorkListItem(codeBaseLocator, false, ICodeBase.IN_SYSTEM_CLASSPATH));
+			}
 		}
 
 		return workList;
