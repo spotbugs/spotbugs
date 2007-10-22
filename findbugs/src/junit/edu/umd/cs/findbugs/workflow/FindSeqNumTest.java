@@ -37,10 +37,16 @@ public class FindSeqNumTest extends TestCase {
 		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "0", true, 3));
 	}
 	public void testminusOne() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
+		assertEquals(3,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
 	}
 	public void testminusTwo() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-2", true, 3));
+	}
+	public void testLast() {
+		assertEquals(3,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "last", true, 3));
+	}
+	public void testlastVersion() {
+		assertEquals(3,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "lastVersion", true, 3));
 	}
 	public void test1() {
 		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "1", true, 3));
