@@ -229,18 +229,20 @@ public class ValueNumberFrameModelingVisitor
 
 	@Override
 	public void visitGETFIELD(GETFIELD obj) {
-		if (doRedundantLoadElimination()) {
-
-			try {
-				XField xfield = Hierarchy.findXField(obj, getCPG());
-				if (xfield != null) {
+		try {
+			XField xfield = Hierarchy.findXField(obj, getCPG());
+			if (xfield != null) {
+				if (xfield.isVolatile()) getFrame().killAllLoads();
+				
+				if (doRedundantLoadElimination()) {
 					loadInstanceField(xfield, obj);
 					return;
 				}
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
 			}
+		} catch (ClassNotFoundException e) {
+			lookupFailureCallback.reportMissingClass(e);
 		}
+
 		handleNormalInstruction(obj);
 	}
 
@@ -281,18 +283,19 @@ public class ValueNumberFrameModelingVisitor
 			frame.pushValue(value);
 			return;
 		}
-		if (doRedundantLoadElimination()) {
-			try {
-				XField xfield = Hierarchy.findXField(obj, getCPG());
-				if (xfield != null) {
+		try {
+			XField xfield = Hierarchy.findXField(obj, getCPG());
+			if (xfield != null) {
+				if (xfield.isVolatile()) getFrame().killAllLoads();
+				if (doRedundantLoadElimination()) {
 					loadStaticField(xfield, obj);
 					return;
 				}
-			} catch (ClassNotFoundException e) {
-				lookupFailureCallback.reportMissingClass(e);
-			}
-		}
 
+			}
+		} catch (ClassNotFoundException e) {
+			lookupFailureCallback.reportMissingClass(e);
+		}
 		handleNormalInstruction(obj);
 	}
 
