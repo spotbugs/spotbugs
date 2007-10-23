@@ -56,6 +56,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
@@ -779,6 +780,9 @@ public class Project implements XMLWriteable {
 	static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		writeXML(xmlOutput, null);
+	}
+		public void writeXML(XMLOutput xmlOutput, @CheckForNull Object destination) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
 		if (getProjectName() != null)
 			attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
@@ -787,9 +791,9 @@ public class Project implements XMLWriteable {
 				attributeList
 				);
 
-		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
-		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
-		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
+		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, makeRelative(fileList, destination));
+		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, makeRelative(auxClasspathEntryList, destination));
+		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, makeRelative(srcDirList, destination));
 
 		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
@@ -799,6 +803,24 @@ public class Project implements XMLWriteable {
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 
+	List<String> makeRelative(List<String> files, @CheckForNull Object destination) {
+		if (destination == null) return files;
+		if (currentWorkingDirectory == null) return files;
+		if (destination instanceof File) {
+			File where = (File)destination;
+			if (where.getParentFile().equals(currentWorkingDirectory)) {
+				List<String> result = new ArrayList<String>(files.size());
+				String root = where.getParent();
+				for(String s : files) {
+					if (s.startsWith(root))
+						result.add(s.substring(root.length()));
+					else result.add(s);
+				}
+				return result;
+			}
+		}
+		return files;
+	}
 	/**
 	 * Parse one line in the [Options] section.
 	 *
@@ -927,8 +949,9 @@ public class Project implements XMLWriteable {
 		if (hasProtocol) return fileName;
 
 		if (new File(fileName).isAbsolute()) return fileName;
-		return new File(currentWorkingDirectory, fileName).getAbsolutePath();
-
+		File relativeToCurrent = new File(currentWorkingDirectory, fileName);
+		if (relativeToCurrent.exists()) return relativeToCurrent.toString();
+		return fileName;
 	}
 
 	/**

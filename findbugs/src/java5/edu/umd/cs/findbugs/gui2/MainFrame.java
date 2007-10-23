@@ -1858,11 +1858,12 @@ public class MainFrame extends FBFrame implements LogSync
 			if (loadFromURL != null) {
 				InputStream in;
 				try {
-					in = new URL(loadFromURL).openConnection().getInputStream();
+					URL url = new URL(loadFromURL);
+					in = url.openConnection().getInputStream();
 					if (loadFromURL.endsWith(".gz"))
 						in = new GZIPInputStream(in);
 					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
-					loadAnalysisFromInputStream(in);
+					loadAnalysisFromInputStream(in, url);
 				} catch (MalformedURLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -2320,7 +2321,7 @@ public class MainFrame extends FBFrame implements LogSync
 		prepareForFileLoad(f, saveType);
 		try {
 			FileInputStream in = new FileInputStream(f);
-			loadAnalysisFromInputStream(in);
+			loadAnalysisFromInputStream(in, f);
 
 			return true;
 		} catch (IOException e) {
@@ -2348,13 +2349,14 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param file
 	 * @return
 	 */
-	private void loadAnalysisFromInputStream(final InputStream in) {
+	private void loadAnalysisFromInputStream(final InputStream in, final Object source) {
 
 		Runnable runnable = new Runnable(){
 			public void run()
 			{
 
 				final Project project = new Project();
+				if (source instanceof File) project.setCurrentWorkingDirectory(((File)source).getParentFile());
 				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {

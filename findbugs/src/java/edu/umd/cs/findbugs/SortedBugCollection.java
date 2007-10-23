@@ -173,6 +173,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void readXML(File file, Project project)
 			throws IOException, DocumentException {
+		project.setCurrentWorkingDirectory(file.getParentFile());
 		InputStream in = new BufferedInputStream(new FileInputStream(file));
 		if (file.getName().endsWith(".gz"))
 			in = new GZIPInputStream(in);
