@@ -58,7 +58,7 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 						&& getNameConstantOperand().equals("round")) {
 			bugAccumulator.accumulateBug(new BugInstance(this, 
 					"ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND", 
-					HIGH_PRIORITY)
+					NORMAL_PRIORITY)
 			.addClassAndMethod(this), this);
 			pendingIdivCastToDivBugLocation = null;
 		}
