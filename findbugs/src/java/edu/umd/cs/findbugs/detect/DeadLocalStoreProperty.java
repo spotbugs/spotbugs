@@ -16,6 +16,9 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** Store is killed by a subsequent store. */
 	public static final DeadLocalStoreProperty KILLED_BY_SUBSEQUENT_STORE = new DeadLocalStoreProperty(
 			"KILLED_BY_SUBSEQUENT_STORE", PriorityAdjustment.LOWER_PRIORITY);
+	/** Store of database operation */
+	public static final DeadLocalStoreProperty STORE_OF_DATABASE_VALUE = new DeadLocalStoreProperty(
+			"STORE_OF_DATABASE_VALUE", PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL);
 
 	/** Dead store is of a defense programming constant value. */
 	public static final DeadLocalStoreProperty DEFENSIVE_CONSTANT_OPCODE = new DeadLocalStoreProperty(
