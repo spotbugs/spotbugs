@@ -293,7 +293,7 @@ public class FindDeadLocalStores implements Detector {
 				TypeFrame typeFrame = typeDataflow.getAnalysis().getFactAtLocation(location);
 				Type typeOfValue = null;
 				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) {
-					typeOfValue = TypeFrame.getTopType();
+					typeOfValue = typeFrame.getTopValue();
 				}
 
 				boolean storeOfNull = false;
@@ -422,7 +422,11 @@ public class FindDeadLocalStores implements Detector {
 						&& localLoadCount[local] == 0) {
 					// TODO: why is this significant?
 					propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
-
+				}
+				if (!storeOfNull && typeOfValue != null) {
+					String signatureOfValue = typeOfValue.getSignature();
+					if (signatureOfValue.startsWith("Ljava/sql/") || signatureOfValue.startsWith("Ljavax/sql/"))
+						propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_DATABASE_VALUE);
 				}
 
 				if (parameterThatIsDeadAtEntry) {
