@@ -2660,7 +2660,7 @@ To specify input files, nest them inside with a
 
 <programlisting>
 <![CDATA[
-<computeBugHistory home="${findbugs.home} ...>
+<computeBugHistory home="${findbugs.home}" ...>
     <datafile name="analyze1.xml"/>
     <datafile name="analyze2.xml"/>
 </computeBugHistory>
@@ -2723,7 +2723,7 @@ the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
 
 <programlisting>
 <![CDATA[
-<filterBugs home="${findbugs.home} ...>
+<filterBugs home="${findbugs.home}" ...>
     <datafile name="analyze.xml"/>
 </filterBugs>
 ]]>
@@ -2775,52 +2775,65 @@ the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
 			<title>mineBugHistory</title>
 <para>This command generates a table containing counts of the numbers of warnings
 in each version of a multiversion bug database.</para>
-<para>The options are:</para>
 
-			<variablelist>
-				<varlistentry>
-					<term><option>-formatDates</option></term>
-					<listitem>
-						<para>
-							render dates in textual form
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term><option>-noTabs</option></term>
-					<listitem>
-						<para>
-							delimit columns with groups of spaces instead of tabs.
-							This can be easier to read from a shell with a fixed-width font.
-						</para>
-						<para>
-							Because numeric columns are right-justified, spaces may precede the
-							first column value. This option also causes <option>-formatDates</option>
-							to render dates in terser format without embedded whitespace.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
-					<term><option>-summary</option></term>
-					<listitem>
-						<para>
-							Output will be only a terse summary of changes over the last ten entries.
-							(The output format is subject to change.)
-						</para>
-					</listitem>
-				</varlistentry>
-				<!--
-				<varlistentry>
-					<term><option></option></term>
-					<listitem>
-						<para>
-							
-						</para>
-					</listitem>
-				</varlistentry>
-				-->
-			</variablelist>
-<para>The table is a tab-separated (barring <option>-noTabs</option>) table with the following columns:</para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>mineBugHistory</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="mineBugHistory" classname="edu.umd.cs.findbugs.anttask.MineBugHistoryTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify an input file either use the <literal>input</literal>
+attribute or nest it inside the ant call with a
+<literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<mineBugHistory home="${findbugs.home}" ...>
+    <datafile name="analyze.xml"/>
+</mineBugHistory>
+]]>
+</programlisting>
+
+		<table id="mineBugHistoryOptionsTable">
+			<title>Options for mineBugHistory command</title>
+			<tgroup cols="3" align="left">
+  				<thead>
+    				<row>
+      					<entry>Command-line option</entry>
+      					<entry>Ant attribute</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  				</thead>
+  				<tbody>
+<row><entry></entry>               <entry>input="&lt;file&gt;"</entry>             <entry>use file as input</entry></row>
+<row><entry></entry>               <entry>output="&lt;file&gt;"</entry>            <entry>write output to file</entry></row>
+<row><entry>-formatDates</entry>   <entry>formatDates="[true|false]"</entry>       <entry>render dates in textual form</entry></row>
+<row><entry>-noTabs</entry>        <entry>noTabs="[true|false]"</entry>            <entry>delimit columns with groups of spaces instead of tabs (see below)</entry></row>
+<row><entry>-summary</entry>       <entry>summary="[true|false]"</entry>           <entry>output terse summary of changes over the last ten entries</entry></row>
+				</tbody>
+			</tgroup>
+		</table>
+
+		<para>
+		The <option>-noTabs</option> output can be easier to read from a shell
+		with a fixed-width font.
+		Because numeric columns are right-justified, spaces may precede the
+		first column value. This option also causes <option>-formatDates</option>
+		to render dates in terser format without embedded whitespace.
+		</para>
+
+		<para>The table is a tab-separated (barring <option>-noTabs</option>)
+		table with the following columns:</para>
 
 		<table id="mineBugHistoryColumns">
 			<title>Columns in mineBugHistory output</title>
@@ -2935,20 +2948,54 @@ build file:
 				This command sets meta-information in a specified warning collection.
 				It takes the following options:
 			</para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>setBugDatabaseInfo</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify an input file either use the <literal>input</literal>
+attribute or nest it inside the ant call with a
+<literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<setBugDatabaseInfo home="${findbugs.home}" ...>
+    <datafile name="analyze.xml"/>
+</setBugDatabaseInfo>
+]]>
+</programlisting>
+
 		<table id="setBugDatabaseInfoOptions">
 			<title>setBugDatabaseInfo Options</title>
-			<tgroup cols="2" align="left">
+			<tgroup cols="3" align="left">
   				<thead>
     				<row>
-      					<entry>Option</entry>
+      					<entry>Command-line option</entry>
+      					<entry>Ant attribute</entry>
       					<entry>Meaning</entry>
     				</row>
   				</thead>
   				<tbody>
-					  <row><entry>-name <replaceable>name</replaceable></entry><entry>set name for (last) revision</entry></row>
-					  <row><entry>-timestamp <replaceable>when</replaceable></entry><entry>set timestamp for (last) revision</entry></row>
-					  <row><entry>-source <replaceable>directory</replaceable></entry><entry>add specified directory to the source search path</entry></row>
-					  <row><entry>-findSource <replaceable>directory</replaceable></entry><entry>find and add all relevant source directions contained within specified directory</entry></row>
+					  <row><entry></entry>                              <entry>input="&lt;file&gt;"</entry>           <entry>use file as input</entry></row>
+					  <row><entry></entry>                              <entry>output="&lt;file&gt;"</entry>          <entry>write output to file</entry></row>
+					  <row><entry>-name &lt;name&gt;</entry>            <entry>name="&lt;name&gt;"</entry>            <entry>set name for (last) revision</entry></row>
+					  <row><entry>-timestamp &lt;when&gt;</entry>       <entry>timestamp="&lt;when&gt;"</entry>       <entry>set timestamp for (last) revision</entry></row>
+					  <row><entry>-source &lt;directory&gt;</entry>     <entry>source="&lt;directory&gt;"</entry>     <entry>add specified directory to the source search path</entry></row>
+					  <row><entry>-findSource &lt;directory&gt;</entry> <entry>findSource="&lt;directory&gt;"</entry> <entry>find and add all relevant source directions contained within specified directory</entry></row>
+					  <row><entry>-suppress &lt;filter file&gt;</entry> <entry>suppress="&lt;filter file&gt;"</entry> <entry>suppress warnings matched by this file (replaces previous suppressions)</entry></row>
+					  <row><entry>-withMessages</entry>                 <entry>withMessages="[true|false]"</entry>    <entry>add textual messages to XML</entry></row>
+					  <row><entry>-resetSource</entry>                  <entry>resetSource="[true|false]"</entry>     <entry>remove all source search paths</entry></row>
 			 	</tbody>
 				</tgroup>
 			</table>
@@ -3162,45 +3209,47 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
          <sect1 id="antexemple">
             <title>Ant exemple</title>
 <para>
-Here is a complete ant script exemple for both running findbugs and generating an HTML report of bugs history using fancy-hist.xsl.
+Here is a complete ant script example for both running findbugs and running a chain of data-mining tools afterward:
 </para>
 <screen>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;project basedir="." default="findbugs" name="findbugs"&gt;
+<![CDATA[
+<project name="analyze_asm_util" default="findbugs">
+   <!-- findbugs task definition -->
+   <property name="findbugs.home" value="/Users/ben/Documents/workspace/findbugs/findbugs" />
+   <property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" />
 
-   &lt;property name="findbugs.home" value="d:/dev/findbugs" /&gt;
-   &lt;property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" /&gt;
+	<path id="findbugs.lib">
+      <fileset dir="${findbugs.home}/lib">
+         <include name="findbugs-ant.jar"/>
+      </fileset>
+   </path>
+   
+   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
 
+   <taskdef name="computeBugHistory" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
 
-   &lt;!-- findbugs task definition --&gt;
-   &lt;path id="findbugs.lib"&gt;
-      &lt;fileset dir="${findbugs.home}/lib"&gt;
-         &lt;include name="findbugs-ant.jar"/&gt;
-      &lt;/fileset&gt;
-   &lt;/path&gt;
-   &lt;taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"&gt;
-      &lt;classpath refid="findbugs.lib" /&gt;
-   &lt;/taskdef&gt;
+   <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
 
-   &lt;!-- run findbugs against --&gt;
-   &lt;target name="findbugs"&gt;
+   <taskdef name="mineBugHistory" classname="edu.umd.cs.findbugs.anttask.MineBugHistoryTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
 
-      &lt;!-- use current date &amp; time as release name --&gt;
-      &lt;tstamp&gt;
-         &lt;format property="release" pattern="yyyy-MM-dd_HH.mm.ss"/&gt;
-      &lt;/tstamp&gt;
+   <!-- findbugs task definition -->
+   <target name="findbugs">
+      <antcall target="analyze" />
+      <antcall target="mine" />
+   </target>
 
-      &lt;mkdir dir="temp" /&gt;
-
-      &lt;antcall target="analyze" /&gt;
-      &lt;antcall target="mine" /&gt;
-   &lt;/target&gt;
-
-
-   &lt;!-- analyze task --&gt;
-   &lt;target name="analyze"&gt;
-      &lt;!-- run findbugs against itself --&gt;
-      &lt;findbugs home="${findbugs.home}"
+   <!-- analyze task -->
+   <target name="analyze">
+      <!-- run findbugs against asm-util -->
+      <findbugs home="${findbugs.home}"
                 output="xml:withMessages"
                 timeout="90000000"
                 reportLevel="experimental"
@@ -3209,102 +3258,70 @@ Here is a complete ant script exemple for both running findbugs and generating a
                 adjustExperimental="true"
                 jvmargs="${jvmargs}"
                 failOnError="true"
-                outputFile="temp/findbugs-${release}.xml"
+                outputFile="out.xml"
                 projectName="Findbugs"
-                debug="false"
-                &gt;
-         &lt;class location="${findbugs.home}/lib/findbugs-ant.jar" /&gt;
-         &lt;class location="${findbugs.home}/lib/findbugs.jar" /&gt;
-         &lt;class location="${findbugs.home}/lib/findbugsGUI.jar" /&gt;
-         &lt;class location="${findbugs.home}/plugin/coreplugin.jar" /&gt;
-         &lt;auxClasspath&gt;
-            &lt;fileset file="${findbugs.home}/lib/AppleJavaExtensions.jar"/&gt;
-            &lt;fileset file="${findbugs.home}/lib/bcel.jar"/&gt;
-            &lt;fileset file="${findbugs.home}/lib/dom4j-full.jar"/&gt;
-            &lt;fileset file="${findbugs.home}/lib/junit.jar"/&gt;
-            &lt;fileset file="${ant.home}/lib/ant.jar"/&gt;
-         &lt;/auxClasspath&gt;
-      &lt;/findbugs&gt;
+                debug="false">
+         <class location="asm-util-3.0.jar" />
+      </findbugs>
+   </target>
 
-      &lt;!-- generate a non historized report --&gt;
-      &lt;xslt destdir="."
-         in="temp/findbugs-${release}.xml"
-         out="findbugs-${release}.html"
-         style="./fancy.xsl"
-         /&gt;
-   &lt;/target&gt;
+   <target name="mine">
 
-   &lt;target name="mine"&gt;
+      <!-- Set info to the latest analysis -->
+      <setBugDatabaseInfo home="${findbugs.home}"
+      	                  withMessages="true"
+      	                  name="asm-util-3.0.jar"
+      	                  input="out.xml"
+      	                  output="out-rel.xml"/>
 
-      &lt;!-- Set release info to the latest analysis --&gt;
-      &lt;java classname="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo" fork="true"&gt;
-         &lt;jvmarg line="${jvmargs}"/&gt;
-         &lt;arg line="-withMessages -name ${release} temp/findbugs-${release}.xml temp/findbugs-${release}-rel.xml"/&gt;
-         &lt;classpath&gt;
-            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
-         &lt;/classpath&gt;
-      &lt;/java&gt;
+      <!-- Checking if history file already exists (findbugs-hist.xml) -->
+      <condition property="mining.historyfile.available">
+         <available file="out-hist.xml"/>
+      </condition>
+      <condition property="mining.historyfile.notavailable">
+         <not>
+            <available file="out-hist.xml"/>
+         </not>
+      </condition>
 
-      &lt;!-- Checking if history file already exists (findbugs-hist.xml) --&gt;
-      &lt;condition property="mining.historyfile.available"&gt;
-         &lt;available file="findbugs-hist.xml"/&gt;
-      &lt;/condition&gt;
-      &lt;condition property="mining.historyfile.notavailable"&gt;
-         &lt;not&gt;
-            &lt;available file="findbugs-hist.xml"/&gt;
-         &lt;/not&gt;
-      &lt;/condition&gt;
+      <!-- this target is executed if the history file do not exist (first run) -->
+      <antcall target="history-init">
+        <param name="data.file" value="out-rel.xml" />
+        <param name="hist.file" value="out-hist.xml" />
+      </antcall>
+      <!-- else this one is executed -->
+      <antcall target="history">
+        <param name="data.file"         value="out-rel.xml" />
+        <param name="hist.file"         value="out-hist.xml" />
+        <param name="hist.summary.file" value="out-hist.txt" />
+      </antcall>
+   </target>
 
-      &lt;!-- this target is executed if the history file do not exist (first run) --&gt;
-      &lt;antcall target="history-init"&gt;
-        &lt;param name="data.file"           value="temp/findbugs-${release}-rel.xml" /&gt;
-        &lt;param name="hist.file"           value="findbugs-hist.xml" /&gt;
-      &lt;/antcall&gt;
-      &lt;!-- else this one is executed --&gt;
-      &lt;antcall target="history"&gt;
-        &lt;param name="data.file"           value="temp/findbugs-${release}-rel.xml" /&gt;
-        &lt;param name="hist.file"           value="findbugs-hist.xml" /&gt;
-        &lt;param name="hist.summary.file"   value="findbugs-hist.txt" /&gt;
-      &lt;/antcall&gt;
-   &lt;/target&gt;
+   <!-- Initializing history file -->
+   <target name="history-init" if="mining.historyfile.notavailable">
+      <copy file="${data.file}" tofile="${hist.file}" />
+   </target>
 
-   &lt;!-- Initializing history file --&gt;
-   &lt;target name="history-init" if="mining.historyfile.notavailable"&gt;
-      &lt;copy file="${data.file}" tofile="${hist.file}" /&gt;
-   &lt;/target&gt;
+   <!-- Computing bug history -->
+   <target name="history" if="mining.historyfile.available">
+      <!-- Merging ${data.file} into ${hist.file} -->
+      <computeBugHistory home="${findbugs.home}"
+      	                 withMessages="true"
+      	                 output="${hist.file}">
+      	  <dataFile name="${hist.file}"/>
+      	  <dataFile name="${data.file}"/>
+      </computeBugHistory>
 
-   &lt;!-- Computing bug history --&gt;
-   &lt;target name="history" if="mining.historyfile.available"&gt;
-      &lt;!-- Merging ${data.file} into ${hist.file} --&gt;
-      &lt;java classname="edu.umd.cs.findbugs.workflow.Update" fork="true"&gt;
-         &lt;jvmarg line="${jvmargs}"/&gt;
-         &lt;arg line="-withMessages -output ${hist.file} ${hist.file} ${data.file}"/&gt;
-         &lt;classpath&gt;
-            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
-         &lt;/classpath&gt;
-      &lt;/java&gt;
+      <!-- Compute history into ${hist.summary.file} -->
+      <mineBugHistory home="${findbugs.home}"
+      	              formatDates="true"
+                      noTabs="true"
+      	              input="${hist.file}"
+      	              output="${hist.summary.file}"/>
+   </target>
 
-      &lt;!-- Compute history into ${hist.summary.file} --&gt;
-      &lt;java classname="edu.umd.cs.findbugs.workflow.MineBugHistory" fork="true"&gt;
-         &lt;jvmarg line="${jvmargs}"/&gt;
-         &lt;arg line="-formatDates -noTabs ${hist.file} ${hist.summary.file}"/&gt;
-         &lt;classpath&gt;
-            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
-         &lt;/classpath&gt;
-      &lt;/java&gt;
-
-      &lt;!-- Generate HTML report --&gt;
-      &lt;xslt destdir="."
-         in="${hist.file}"
-         out="${hist.file}.html"
-         &gt;
-         &lt;style&gt;
-            &lt;zipentry zipfile='d:/dev/findbugs/lib/findbugs.jar' name='fancy-hist.xsl' /&gt;
-         &lt;/style&gt;
-      &lt;/xslt&gt;
-   &lt;/target&gt;
-
-&lt;/project&gt;
+</project>
+]]>
 </screen>
          </sect1>
 </chapter>
