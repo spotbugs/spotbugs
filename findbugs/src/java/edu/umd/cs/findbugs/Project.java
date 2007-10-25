@@ -791,9 +791,9 @@ public class Project implements XMLWriteable {
 				attributeList
 				);
 
-		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, makeRelative(fileList, destination));
-		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, makeRelative(auxClasspathEntryList, destination));
-		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, makeRelative(srcDirList, destination));
+		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
+		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
+		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
 		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
