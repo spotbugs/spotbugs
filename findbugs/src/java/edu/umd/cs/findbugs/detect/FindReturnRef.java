@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.HashSet;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -27,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindReturnRef extends BytecodeScanningDetector {
 	boolean check = false;
@@ -35,6 +38,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	boolean publicClass = false;
 	boolean staticMethod = false;
 	boolean dangerousToStoreIntoField = false;
+	boolean emptyArrayOnTOS;
 	String nameOnStack;
 	String classNameOnStack;
 	String sigOnStack;
@@ -42,6 +46,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	//int r;
 	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
+	HashSet<XField> emptyArray = new HashSet<XField>();
 	private BugReporter bugReporter;
 	//private LocalVariableTable variableNames;
 
@@ -58,7 +63,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	@Override
 		 public void visit(Method obj) {
 		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
-		if (!check) return;
+		
 		dangerousToStoreIntoField = false;
 		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		//variableNames = obj.getLocalVariableTable();
@@ -83,20 +88,23 @@ public class FindReturnRef extends BytecodeScanningDetector {
 
 	@Override
 		 public void visit(Code obj) {
-		if (check) super.visit(obj);
+		super.visit(obj);
 	}
 
 	@Override
 		 public void sawOpcode(int seen) {
-		assert check;
-		/*
-		System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	"
-				+ thisOnTOS
-				+ "	"
-				+ fieldOnTOS
-				);
-		*/
-
+		
+		if (seen == PUTFIELD || seen == PUTSTATIC) {
+			XField f = getXFieldOperand();
+			if (f.isFinal())
+				emptyArray.add(f);
+			
+				
+		}
+		emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY) && getPrevOpcode(-1) == ICONST_0;
+		
+		if (!check) return;
+		
 		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
@@ -184,7 +192,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		}
 
 
-		if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+		if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()) && !emptyArray.contains(getXFieldOperand())) {
 			fieldOnTOS = true;
 			thisOnTOS = false;
 			nameOnStack = getNameConstantOperand();
@@ -194,7 +202,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 			// System.out.println("Saw getfield");
 			return;
 		}
-		if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
+		if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()) && !emptyArray.contains(getXFieldOperand())) {
 			fieldOnTOS = true;
 			thisOnTOS = false;
 			nameOnStack = getNameConstantOperand();
