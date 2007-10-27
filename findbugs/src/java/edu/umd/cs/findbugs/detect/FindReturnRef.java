@@ -101,7 +101,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 			
 				
 		}
-		emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY) && getPrevOpcode(-1) == ICONST_0;
+		emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY) && getPrevOpcode(1) == ICONST_0;
 		
 		if (!check) return;
 		

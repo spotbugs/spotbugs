@@ -315,6 +315,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	 * @param offset 0 for current opcode, 1 for one before that, etc.
 	 */
 	public int getPrevOpcode(int offset) {
+		if (offset < 0) throw new IllegalArgumentException("offset ("+offset+") must be nonnegative");
 		if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer)
 			return NOP;
 		int pos = currentPosInPrevOpcodeBuffer - offset;
