@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.anttask;
 
 import org.apache.tools.ant.BuildException;
 
-import sun.security.provider.certpath.Builder;
-
 /**
  * Ant task to generate HTML or plain text from a
  * saved XML analysis results file.
