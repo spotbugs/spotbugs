@@ -29,7 +29,12 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class FindReturnRef extends BytecodeScanningDetector {
 	boolean check = false;
@@ -94,9 +99,9 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	@Override
 		 public void sawOpcode(int seen) {
 		
-		if (seen == PUTFIELD || seen == PUTSTATIC) {
+		if (emptyArrayOnTOS && (seen == PUTFIELD || seen == PUTSTATIC)) {
 			XField f = getXFieldOperand();
-			if (f.isFinal())
+			if (f != null && f.isFinal())
 				emptyArray.add(f);
 			
 				
