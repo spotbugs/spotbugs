@@ -23,8 +23,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
-import edu.umd.cs.findbugs.util
-.Util;
+import edu.umd.cs.findbugs.util.Util;
 /**
  * A control decision which resulted in information being gained
  * about whether a particular value is null or non-null

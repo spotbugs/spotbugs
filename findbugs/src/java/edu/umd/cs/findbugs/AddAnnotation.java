@@ -19,11 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import java.io.IOException;
 import java.util.Iterator;
 
 import org.dom4j.DocumentException;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * Add an annotation string to every BugInstance in a BugCollection.

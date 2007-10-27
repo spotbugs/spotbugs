@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
  * Test cases for ReturnPathType class.

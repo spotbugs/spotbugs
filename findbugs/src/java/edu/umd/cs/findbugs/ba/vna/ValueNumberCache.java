@@ -24,9 +24,8 @@ import java.util.HashMap;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.util.Strings;
-
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * A cache mapping instructions and input values to the output values they

@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Generic interface for bug reporter objects.

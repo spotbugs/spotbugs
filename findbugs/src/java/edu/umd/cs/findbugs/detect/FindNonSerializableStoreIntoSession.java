@@ -13,9 +13,9 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;

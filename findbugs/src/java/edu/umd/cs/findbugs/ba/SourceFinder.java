@@ -31,8 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;

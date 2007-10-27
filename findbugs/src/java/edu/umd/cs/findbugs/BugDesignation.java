@@ -22,11 +22,11 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
-import edu.umd.cs.findbugs.xml.XMLWriteable;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * class to hold the user annotation and user designation for a BugInstance
