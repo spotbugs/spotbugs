@@ -54,9 +54,6 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 				|| sig.charAt(0) == '[';
 	}
 
-
-
-
 	LinkedList<XField> seen = new LinkedList<XField>();
 	boolean publicClass;
 	boolean zeroOnTOS;
