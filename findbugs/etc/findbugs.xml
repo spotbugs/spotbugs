@@ -448,7 +448,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask" 
             speed="fast"
-            reports="BIT_AND,BIT_AND_ZZ,BIT_IOR" />
+            reports="BIT_AND,BIT_AND_ZZ,BIT_IOR,BIT_SIGNED_CHECK,BIT_SIGNED_CHECK_HIGH_BIT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" 
             speed="moderate"
@@ -907,6 +907,8 @@
   <BugPattern abbrev="INT" type="INT_BAD_REM_BY_1"    category="CORRECTNESS" />
   <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON"    category="STYLE" />
   <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE"    category="CORRECTNESS" />
+  <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK"    category="BAD_PRACTICE" />
+  <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK_HIGH_BIT"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />

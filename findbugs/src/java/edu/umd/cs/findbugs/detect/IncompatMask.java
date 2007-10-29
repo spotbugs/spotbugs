@@ -37,6 +37,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 	int state;
 	long arg0, arg1;
 	int bitop;
+	boolean isLong;
 
 	private BugReporter bugReporter;
 
@@ -126,17 +127,38 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case IAND:
 		case LAND:
 			bitop = IAND;
+			isLong = seen == LAND;
 			checkState(1);
 			return;
 		case IOR:
 		case LOR:
 			bitop = IOR;
+			isLong = seen == LOR;
 			checkState(1);
 			return;
 
 		case LCMP:
+		    isLong = true;
 			return; /* Ignore. An 'if' opcode will follow */
 
+			
+		case IFLE:
+		case IFLT:
+		case IFGT:
+		case IFGE: 
+		if (state == 3){
+			boolean highbit = !isLong && (arg0 & 0x80000000) != 0;
+			BugInstance bug;
+			if (highbit)
+				bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY : NORMAL_PRIORITY);
+			else
+				bug = new BugInstance(this, "BIT_SIGNED_CHECK", NORMAL_PRIORITY);
+			bugReporter.reportBug(bug.addClassAndMethod(this).addSourceLine(this));
+		}
+		state = 0;
+		return;
+		
+		
 		case IFEQ:
 		case IFNE:
 			/* special case: if arg1 is 0 it will not be pushed */
