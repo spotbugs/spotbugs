@@ -105,7 +105,7 @@ public class JavaScanner {
 				buf.append(c);
 				if (couldBeKeyword) {
 					if (!Character.isLowerCase(c)
-							|| buf.length() >= MAX_KEYWORD_LENGTH)
+							|| buf.length() > MAX_KEYWORD_LENGTH)
 						couldBeKeyword = false;
 				}
 				c = iterator.next();
