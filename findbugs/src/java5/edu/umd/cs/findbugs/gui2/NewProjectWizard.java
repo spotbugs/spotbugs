@@ -70,13 +70,13 @@ public class NewProjectWizard extends FBDialog
 		public boolean accept(File f)
 		{
 			String fileName = f.getName().toLowerCase(); 
-			return f.isDirectory() || fileName.endsWith(".jar") || fileName.endsWith(".ear") || fileName.endsWith(".war") || fileName.endsWith(".zip") || fileName.endsWith(".sar");
+			return f.isDirectory() || fileName.endsWith(".jar") || fileName.endsWith(".ear") || fileName.endsWith(".war") || fileName.endsWith(".zip") || fileName.endsWith(".sar") || fileName.endsWith(".class");
 		}
 
 		@Override
 		public String getDescription()
 		{
-			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.[jwes]ar, *.zip)");
+			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.class, *.[jwes]ar, *.zip)");
 		}
 	};
 
