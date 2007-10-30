@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -94,6 +95,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		switch (seen) {
 		case GETSTATIC:
 		case PUTSTATIC:
+
+			XField xField = getXFieldOperand();
+			if (xField == null) break;
+			if (!interesting(xField)) break;
+			
 			boolean samePackage =
 					packageName.equals(extractPackage(getClassConstantOperand()));
 			boolean initOnly =
@@ -101,12 +107,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 					getClassName().equals(getClassConstantOperand())
 					&& inStaticInitializer;
 			boolean safeValue =
-					seen == GETSTATIC || emptyArrayOnTOS
+					seen == GETSTATIC || emptyArrayOnTOS || AnalysisContext.currentXFactory().isEmptyArrayField(xField)
 					|| !mutableSignature(getSigConstantOperand());
 			
-			XField xField = getXFieldOperand();
-			if (xField == null) break;
-			if (!interesting(xField)) break;
 			if (seen == GETSTATIC)
 				readAnywhere.add(xField);
 

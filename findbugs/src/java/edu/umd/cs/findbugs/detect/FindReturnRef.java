@@ -29,7 +29,9 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -43,7 +45,6 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	boolean publicClass = false;
 	boolean staticMethod = false;
 	boolean dangerousToStoreIntoField = false;
-	boolean emptyArrayOnTOS;
 	String nameOnStack;
 	String classNameOnStack;
 	String sigOnStack;
@@ -51,7 +52,6 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	//int r;
 	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
-	HashSet<XField> emptyArray = new HashSet<XField>();
 	private BugReporter bugReporter;
 	//private LocalVariableTable variableNames;
 
@@ -68,7 +68,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	@Override
 		 public void visit(Method obj) {
 		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
-		
+		if (!check) return;
 		dangerousToStoreIntoField = false;
 		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		//variableNames = obj.getLocalVariableTable();
@@ -93,21 +93,12 @@ public class FindReturnRef extends BytecodeScanningDetector {
 
 	@Override
 		 public void visit(Code obj) {
-		super.visit(obj);
+		if (check) super.visit(obj);
 	}
 
 	@Override
 		 public void sawOpcode(int seen) {
-		
-		if (emptyArrayOnTOS && (seen == PUTFIELD || seen == PUTSTATIC)) {
-			XField f = getXFieldOperand();
-			if (f != null && f.isFinal())
-				emptyArray.add(f);
-			
 				
-		}
-		emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY) && getPrevOpcode(1) == ICONST_0;
-		
 		if (!check) return;
 		
 		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
@@ -125,17 +116,6 @@ public class FindReturnRef extends BytecodeScanningDetector {
 					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 							true)
 					.addSourceLine(this));
-			/*
-			System.out.println("Store of parameter "
-					+ r +"/" + parameterCount
-					+ " into field of type " + sigConstant
-					+ " in " + betterMethodName);
-				bugReporter.reportBug(new BugInstance("EI_EXPOSE_REP2", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addField(betterClassConstant, nameConstant, betterSigConstant,
-							false)
-					.addSourceLine(this));
-		`	*/
 		}
 		dangerousToStoreIntoField = false;
 		int reg = -1; // this value should never be seen
@@ -197,23 +177,26 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		}
 
 
-		if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()) && !emptyArray.contains(getXFieldOperand())) {
+
+		if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()) 
+				&& !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
 			fieldOnTOS = true;
 			thisOnTOS = false;
 			nameOnStack = getNameConstantOperand();
 			classNameOnStack = getDottedClassConstantOperand();
 			sigOnStack = getSigConstantOperand();
 			fieldIsStatic = false;
-			// System.out.println("Saw getfield");
 			return;
 		}
-		if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()) && !emptyArray.contains(getXFieldOperand())) {
+		if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()) 
+				&& !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())){
 			fieldOnTOS = true;
 			thisOnTOS = false;
 			nameOnStack = getNameConstantOperand();
 			classNameOnStack = getDottedClassConstantOperand();
 			sigOnStack = getSigConstantOperand();
 			fieldIsStatic = true;
+		
 			return;
 		}
 		thisOnTOS = false;
@@ -235,6 +218,4 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		fieldOnTOS = false;
 		thisOnTOS = false;
 	}
-
-
 }	

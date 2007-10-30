@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
@@ -32,7 +35,10 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * Detector to find private methods that are never called.
  */
 public class CalledMethods extends BytecodeScanningDetector implements Detector, NonReportingDetector {
-
+	boolean emptyArrayOnTOS;
+	HashSet<XField> emptyArray = new HashSet<XField>();
+	HashSet<XField> nonEmptyArray = new HashSet<XField>();
+	
 	XFactory xFactory = AnalysisContext.currentXFactory();
 	public CalledMethods(BugReporter bugReporter) {
 
@@ -40,6 +46,25 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 
 	@Override
 	public void sawOpcode(int seen) {
+		
+		
+		if ((seen == PUTFIELD || seen == PUTSTATIC)) {
+			XField f = getXFieldOperand();
+			if (f != null) {
+				if (f.isFinal() || !f.isProtected() && !f.isPublic())
+					if (emptyArrayOnTOS) emptyArray.add(f);
+					else nonEmptyArray.add(f);
+			}
+			
+				
+		}
+		emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY || seen == MULTIANEWARRAY && getIntConstant() == 1) && getPrevOpcode(1) == ICONST_0;
+
+		if (seen == GETSTATIC || seen == GETFIELD) {
+			XField f = getXFieldOperand();
+			if (emptyArray.contains(f) && !nonEmptyArray.contains(f) && f.isFinal())
+				emptyArrayOnTOS = true;
+		}
 		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
@@ -54,6 +79,13 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 		default:
 			break;
 		}
+	}
+	
+	@Override public void report() {
+		emptyArray.removeAll(nonEmptyArray);
+		for(XField f : emptyArray)
+			xFactory.addEmptyArrayField(f);
+		emptyArray.clear();
 	}
 
 }
