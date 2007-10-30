@@ -68,6 +68,7 @@ public class XFactory {
 	private Map<FieldDescriptor, XField> fields = new HashMap<FieldDescriptor, XField>();
 
 	private Set<XMethod> calledMethods = new HashSet<XMethod>();
+	private Set<XField> emptyArrays = new HashSet<XField>();
 
 	private Set<String> calledMethodSignatures = new HashSet<String>();
 
@@ -106,7 +107,12 @@ public class XFactory {
 		assert m.getClassDescriptor().getClassName().indexOf('.') == -1;
 		calledMethods.add(createXMethod(m));
 	}
-
+	public void addEmptyArrayField(XField f) {
+		emptyArrays.add(f);
+	}
+	public boolean isEmptyArrayField(XField f) {
+		return emptyArrays.contains(f);
+	}
 	public boolean isCalled(XMethod m) {
 		if (m.getName().equals("<clinit>"))
 			return true;
