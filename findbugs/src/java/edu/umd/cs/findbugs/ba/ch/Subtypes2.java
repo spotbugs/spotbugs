@@ -711,6 +711,9 @@ public class Subtypes2 {
 			this.seen = new HashSet<ClassDescriptor>();
 		}
 		
+		public String toString() {
+			return next.toString() + ":" + seen;
+		}
 		public ClassVertex getNext() {
 			return next;
 		}

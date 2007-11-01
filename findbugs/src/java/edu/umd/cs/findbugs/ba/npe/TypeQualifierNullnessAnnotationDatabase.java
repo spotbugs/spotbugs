@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -262,7 +263,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodParameterAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
-	public void addMethodParameterAnnotation(String cName, String mName, String sig, boolean isStatic, int param,
+	public void addMethodParameterAnnotation(@DottedClassName String cName, String mName, String sig, boolean isStatic, int param,
 			NullnessAnnotation annotation) {
 		if (DEBUG) {
 			System.out.println("addMethodParameterAnnotation: annotate " + cName + "." + mName + " param " + param + " with " + annotation);
@@ -279,6 +280,11 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
 			return;
 		}
+		if (!xmethod.getClassName().equals(cName)) {
+			if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
+			return;
+		}
+			
 		// Get JSR-305 nullness annotation type
 		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
 		
