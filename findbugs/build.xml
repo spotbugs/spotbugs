@@ -69,6 +69,15 @@
 		<pathelement location="${classes.dir}"/>
 		<path refid="findbugs.classpath"/>
 	</path>
+
+	<!-- Need these jars for ant target 'srcdist', which uses
+             subversion.  Grab them at:
+             http://subclipse.tigris.org/files/documents/906/32898/svnant-1.0.0.zip -->
+	<path id="svn.classpath">
+	    <pathelement location="${jar.dir}/svnant.jar"/>
+	    <pathelement location="${jar.dir}/svnClientAdapter.jar"/>
+	</path>
+	<taskdef resource="svntask.properties" classpathref="svn.classpath"/>
 	
 	<patternset id="codebase.data.pats">
 		<include name="**/*.properties"/>
@@ -779,11 +788,13 @@
 		<mkdir dir="${build.dir}/src"/>
 		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
 
-		<cvs cvsRoot="wpugh@findbugs.cvs.sourceforge.net:/cvsroot/findbugs"
-			cvsRsh="ssh"
-			dest="${build.dir}/src"
-			command="export -r HEAD -d findbugs-${release.number} findbugs"/>
-		
+                <svn username="guest" password="" javahl="false">
+                    <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
+                    <export srcUrl="http://findbugs.googlecode.com/svn/trunk/findbugs"
+                            revision="HEAD"
+                            destPath="${build.dir}/src/findbugs-${release.number}"/>
+                </svn>
+
 		<zip destfile="${build.dir}/findbugs-${release.number}-source.zip" compress="true">
 			<zipfileset dir="${build.dir}/src" includes="findbugs-${release.number}/**"/>
 			<zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
