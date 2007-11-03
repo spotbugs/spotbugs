@@ -51,6 +51,15 @@
 		<pathelement location="${bin.dir}"/>
 	</path>
 
+        <!-- Need these jars for ant target 'srcdist', which uses
+             subversion.  Grab them at:
+             http://subclipse.tigris.org/files/documents/906/32898/svnant-1.0.0.zip -->
+        <path id="svn.classpath">
+            <pathelement location="svnant.jar"/>
+            <pathelement location="svnClientAdapter.jar"/>
+        </path>
+        <taskdef resource="svntask.properties" classpathref="svn.classpath"/>
+
 	<target name="init">
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${bin.dir}"/>
@@ -151,11 +160,13 @@
                 <mkdir dir="${dist.dir}/src"/>
                 <delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
 
-                <cvs cvsRoot="wpugh@findbugs.cvs.sourceforge.net:/cvsroot/findbugs"
-                        cvsRsh="ssh"
-                        dest="${dist.dir}/src"
-                        command="export -r HEAD -d eclipsePlugin-${plugin.version} eclipsePlugin"/>
-
+                <svn username="guest" password="" javahl="false">
+                    <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
+                    <export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
+                            revision="HEAD"
+                            destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
+                </svn>
+		
                 <zip destfile="${dist.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
                         <zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
                 </zip>
