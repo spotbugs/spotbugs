@@ -136,6 +136,8 @@
 			</fileset>
 			<fileset dir="${fbeclipse.dir}">
 				  <include name="*.jar"/>
+				  <exclude name="svnant.jar"/>
+				  <exclude name="svnClientAdapter.jar"/>
 				  <include name="*.png"/>
 				  <include name="about.*"/>
 			</fileset>
