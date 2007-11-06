@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public interface AnnotatedObject {
 	public Collection<ClassDescriptor> getAnnotationDescriptors();
 	
+	public ClassDescriptor getClassDescriptor();
 	public  @Nullable AnnotationValue getAnnotation(ClassDescriptor desc);
 	public Collection<AnnotationValue> getAnnotations();
 	

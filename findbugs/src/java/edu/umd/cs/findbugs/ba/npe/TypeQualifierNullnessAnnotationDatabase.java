@@ -148,7 +148,10 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 			throw new IllegalArgumentException("Unknown NullnessAnnotation: " + n);
 		}
 	}
-
+	private static final ClassDescriptor PARAMETERS_ARE_NONNULL_BY_DEFAULT =
+		DescriptorFactory.instance().getClassDescriptor("javax/annotation/ParametersAreNonnullByDefault");
+	private static final ClassDescriptor RETURN_VALUES_ARE_NONNULL_BY_DEFAULT =
+		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/ReturnValuesAreNonnullByDefault");
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
@@ -158,11 +161,11 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		}
 		
 		ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(c);
-		XClass xclass;
+		ClassInfo xclass;
 		
 		// Get the XClass (really a ClassInfo object)
 		try {
-			xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+			xclass = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
 		} catch (MissingClassException e) {
 //			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor());
 			return;
@@ -170,7 +173,13 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 //			AnalysisContext.logError("Error adding built-in nullness annotation", e);
 			return;
 		}
-		
+		if (n == NullnessAnnotation.NONNULL && target == AnnotationDatabase.Target.PARAMETER) {
+			xclass.addAnnotation(new AnnotationValue(PARAMETERS_ARE_NONNULL_BY_DEFAULT));
+			return;
+		} else if (n == NullnessAnnotation.NONNULL && target == AnnotationDatabase.Target.METHOD) {
+			xclass.addAnnotation(new AnnotationValue(RETURN_VALUES_ARE_NONNULL_BY_DEFAULT));
+			return;
+		}
 		// Get the default annotation type
 		ClassDescriptor defaultAnnotationType;
 		if (target == AnnotationDatabase.Target.ANY) {
@@ -199,7 +208,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		}
 		
 		// Destructively add the annotation to the ClassInfo object
-		((ClassInfo)xclass).addAnnotation(annotationValue);
+		xclass.addAnnotation(annotationValue);
 	}
 
 //	/* (non-Javadoc)

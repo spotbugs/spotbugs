@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
+@javax.annotation.ParametersAreNonnullByDefault
 @DefaultAnnotationForParameters(NonNull.class)
 public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
 		implements EdgeTypes {

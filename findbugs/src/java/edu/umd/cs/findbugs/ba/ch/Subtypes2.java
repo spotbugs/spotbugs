@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * 
  * @author David Hovemeyer
  */
+@javax.annotation.ParametersAreNonnullByDefault
 @DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
 	public static final boolean ENABLE_SUBTYPES2 = true; 
@@ -711,7 +712,8 @@ public class Subtypes2 {
 			this.seen = new HashSet<ClassDescriptor>();
 		}
 		
-		public String toString() {
+		@Override
+        public String toString() {
 			return next.toString() + ":" + seen;
 		}
 		public ClassVertex getNext() {
