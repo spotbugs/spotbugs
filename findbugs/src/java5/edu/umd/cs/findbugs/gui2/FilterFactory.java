@@ -132,11 +132,7 @@ public class FilterFactory {
 		case LASTVERSION:
 			return new LastVersionMatcher(value,RelationalOp.EQ);
 		case PACKAGE:
-			String p = value;
-			int lastDot = p.lastIndexOf('.');
-			if (lastDot > 0)
-				p = p.substring(0, lastDot);
-			return new ClassMatcher("~" + p + "\\.[^.]+");
+			return new ClassMatcher("~" + value + "\\.[^.]+");
 		case PRIORITY:
 			return new PriorityMatcher(value);
 			
