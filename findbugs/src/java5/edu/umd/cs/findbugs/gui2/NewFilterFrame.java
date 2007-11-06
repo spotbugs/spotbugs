@@ -55,18 +55,22 @@ public class NewFilterFrame extends FBDialog
 
 	private JList list = new JList();
 
-	private static NewFilterFrame instance;
+	private static NewFilterFrame instance = null;
 	
 	public static void open()
 	{
-	    instance = new NewFilterFrame();
-		instance.setVisible(true);
-		instance.toFront();
+		if(instance == null) {
+		    instance = new NewFilterFrame();
+			instance.setVisible(true);
+			instance.toFront();
+		}
 	}
 	public static void close()
 	{
-		instance.dispose();
-		instance = null;
+		if(instance != null) {
+			instance.dispose();
+			instance = null;
+		}
 	}
 
 	private NewFilterFrame()
