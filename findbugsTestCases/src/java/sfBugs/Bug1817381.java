@@ -17,6 +17,7 @@ public class Bug1817381 {
 			return false;
 		}
 
+		// Findbugs reports 
 		return a.equals(b);
 	}
 
