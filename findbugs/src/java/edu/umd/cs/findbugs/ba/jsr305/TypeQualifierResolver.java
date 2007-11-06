@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -30,6 +31,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 
 /**
  * Resolve annotations into type qualifiers.
@@ -37,6 +39,13 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
  * @author William Pugh
  */
 public class TypeQualifierResolver {
+	static ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor("javax/annotation/meta/TypeQualifier");
+	static ClassDescriptor typeQualifierNickname = DescriptorFactory
+	        .createClassDescriptor("javax/annotation/meta/TypeQualifierNickname");
+	static ClassDescriptor typeQualifierDefault = DescriptorFactory
+    .createClassDescriptor("javax/annotation/meta/TypeQualifierDefault");
+	static ClassDescriptor elementTypeDescriptor = DescriptorFactory
+    .createClassDescriptor("java/lang/annotation/ElementType");
 
 	/**
 	 * Resolve an AnnotationValue into a list of AnnotationValues
@@ -48,8 +57,7 @@ public class TypeQualifierResolver {
 	 */
 	public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
 		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
-		resolveTypeQualifierNicknames(value, result, onStack);
+		resolveTypeQualifierNicknames(value, result, new LinkedList<ClassDescriptor>());
 		return result;
 	}
 
@@ -61,10 +69,9 @@ public class TypeQualifierResolver {
 	 * @param values Collection of AnnotationValues used to annotate an AnnotatedObject or method parameter
 	 * @return Collection of resolved type qualifier AnnotationValues
 	 */
-	public static Collection<AnnotationValue> resolveTypeQualifiers(Collection<AnnotationValue> values) {
+	public static Collection<AnnotationValue> resolveTypeQualifierDefaults(Collection<AnnotationValue> values, ElementType elementType) {
 		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
-		for(AnnotationValue value : values) resolveTypeQualifierNicknames(value, result, onStack);
+		for(AnnotationValue value : values) resolveTypeQualifierDefaults(value, elementType, result);
 		return result;
 	}
 	
@@ -86,9 +93,16 @@ public class TypeQualifierResolver {
 		}
 		try {
 			onStack.add(value.getAnnotationClass());
-			XClass c;
+			
 			try {
-				c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+				XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+				if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
+					for (ClassDescriptor d : c.getAnnotationDescriptors())
+						if (!c.equals(typeQualifierNickname))
+							resolveTypeQualifierNicknames(c.getAnnotation(d), result, onStack);
+				} else if (c.getAnnotationDescriptors().contains(typeQualifier)) {
+					result.add(value);
+				}
 			} catch (MissingClassException e) {
 				// Hmm....this is a tough call.
 				// We probably don't want to bug users about
@@ -100,22 +114,74 @@ public class TypeQualifierResolver {
 				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
 				return;
 			}
-			ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor("javax/annotation/meta/TypeQualifier");
-			ClassDescriptor typeQualifierNickname = DescriptorFactory
-			        .createClassDescriptor("javax/annotation/meta/TypeQualifierNickname");
-			if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
-				for (ClassDescriptor d : c.getAnnotationDescriptors())
-					if (!c.equals(typeQualifierNickname))
-						resolveTypeQualifierNicknames(c.getAnnotation(d), result, onStack);
-			} else if (c.getAnnotationDescriptors().contains(typeQualifier)) {
-				result.add(value);
-			}
+			
 		} finally {
 			onStack.removeLast();
 		}
 
 	}
 
+	
+	/**
+	 * Resolve collection of AnnotationValues (which have been used to
+	 * annotate an AnnotatedObject or method parameter)
+	 * into collection of resolved type qualifier AnnotationValues. 
+	 * 
+	 * @param values Collection of AnnotationValues used to annotate an AnnotatedObject or method parameter
+	 * @return Collection of resolved type qualifier AnnotationValues
+	 */
+	public static Collection<AnnotationValue> resolveTypeQualifiers(Collection<AnnotationValue> values) {
+		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
+		LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
+		for(AnnotationValue value : values) resolveTypeQualifierNicknames(value, result, onStack);
+		return result;
+	}
+	
+	
+	/**
+	 * Resolve an annotation into AnnotationValues representing any type qualifier(s)
+	 * the annotation resolves to.  Detects annotations which are directly
+	 * marked as TypeQualifier annotations, and also resolves the use of TypeQualifierNickname
+	 * annotations.
+	 * 
+	 * @param value   AnnotationValue representing the use of an annotation
+	 * @param result  LinkedList containing resolved type qualifier AnnotationValues
+	 * @param onStack stack of annotations being processed; used to detect cycles in type qualifier nicknames
+	 */
+	private static void resolveTypeQualifierDefaults(AnnotationValue value, ElementType defaultFor, LinkedList<AnnotationValue> result) {
+
+		try {
+			XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+			AnnotationValue defaultAnnotation = c.getAnnotation(typeQualifierDefault);
+			if (defaultAnnotation == null)
+				return;
+			for(Object o :  (Object[]) defaultAnnotation.getValue("value")) 
+				if (o instanceof EnumValue) {
+					EnumValue e = (EnumValue) o;
+					if (e.desc.equals(elementTypeDescriptor) && e.value.equals(defaultFor.name())) {
+						for (ClassDescriptor d : c.getAnnotationDescriptors())
+							if (!d.equals(typeQualifierDefault))
+								resolveTypeQualifierNicknames(c.getAnnotation(d), result, new LinkedList<ClassDescriptor>());
+						break;
+					}
+				}
+
+		} catch (MissingClassException e) {
+			// Hmm....this is a tough call.
+			// We probably don't want to bug users about
+			// annotations that are used in their code but aren't available
+			// at analysis time.
+			//				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
+
+		} catch (ClassCastException e) {
+			AnalysisContext.logError("ClassCastException " + value.getAnnotationClass(), e);
+
+		}
+
+
+	}
 
 
 }

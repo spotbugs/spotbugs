@@ -325,7 +325,10 @@ public class TypeQualifierApplications {
 	 */
 	private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
 		TypeQualifierAnnotation result;
-
+		Collection<AnnotationValue> values =  TypeQualifierResolver.resolveTypeQualifierDefaults(o.getAnnotations(), elementType);
+		TypeQualifierAnnotation tqa = extractAnnotation(values, typeQualifierValue);
+		if (tqa != null) return tqa;
+		
 		if ((result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
 			return result;
 		}
@@ -353,7 +356,6 @@ public class TypeQualifierApplications {
 		if (DEBUG) {
 			System.out.println("Checking for " + defaultAnnotation + " containing " + typeQualifierValue + " on " + o);
 		}
-
 		// - check to see if default annotation is present; if not, return null
 		AnnotationValue annotationValue = o.getAnnotation(defaultAnnotation);
 		if (annotationValue == null) {
@@ -401,20 +403,25 @@ public class TypeQualifierApplications {
 			// resolving it.
 			AnnotationValue annotation = new AnnotationValue(typeDesc);
 			Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotation);
-			for (AnnotationValue typeQualifier : resolvedTypeQualifiers) {
-				TypeQualifierAnnotation tqa = constructTypeQualifierAnnotation(typeQualifier);
-				if (tqa.typeQualifier.equals(typeQualifierValue)) {
-					if (DEBUG) {
-						System.out.println("  ===> Found match " + tqa);
-					}
-					return tqa; 
-				}
-			}
+			TypeQualifierAnnotation tqa = extractAnnotation(resolvedTypeQualifiers, typeQualifierValue);
+			if (tqa != null) return tqa;
+			
 		}
 
 		return null;
 	}
-
+	private static TypeQualifierAnnotation extractAnnotation(Collection<AnnotationValue> resolvedTypeQualifiers, TypeQualifierValue typeQualifierValue) {
+		for (AnnotationValue typeQualifier : resolvedTypeQualifiers) {
+			TypeQualifierAnnotation tqa = constructTypeQualifierAnnotation(typeQualifier);
+			if (tqa.typeQualifier.equals(typeQualifierValue)) {
+				if (DEBUG) {
+					System.out.println("  ===> Found match " + tqa);
+				}
+				return tqa; 
+			}
+		}
+		return null;
+	}
 	/**
 	 * Get the effective TypeQualifierAnnotation on given
 	 * AnnotatedObject.  Takes into account inherited and
