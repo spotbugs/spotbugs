@@ -12,11 +12,14 @@ public class ICAST {
 		s=(short)(q>>>16);
 		q=(byte)(q>>>16);
 		x=x>>>37;
-		x=x<<37;
+		x=x<<36;
+		x = q+s+x;
+		x = x >> 38;
 
 		double y=(double)x;
 		y=Math.ceil(y);
 		double z=Math.ceil((double)x);	
+		System.out.println(x+q+s+x+y+z);
 	}
 
 	public int roundUp(int a, int b) {

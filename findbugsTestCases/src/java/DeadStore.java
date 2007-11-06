@@ -1,4 +1,9 @@
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 
 public class DeadStore {
 
@@ -12,6 +17,12 @@ public class DeadStore {
 		args = new String[0];
 	}
 
+	
+	public void testDatabaseStore(Connection c) throws SQLException {
+		Statement s = c.prepareStatement("select something from other");
+		Map m = Collections.emptyMap();
+		
+	}
 	public void storeOfNull() {
 		for(int i = 0; i < 10; i++) {
 			HashSet<Integer> set = new HashSet<Integer>();
