@@ -64,7 +64,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 	@Override
     public void visit(Code m) {
 		applicableApplications = new HashSet<TypeQualifierValue>();
+		XMethod xMethod = getXMethod();
+		updateApplicableAnnotations(xMethod);
 		super.visit(m);
+		
 		if (applicableApplications.size() > 0) {
 			qualifiers.put(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}
@@ -80,9 +83,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 		case INVOKESPECIAL:
 		{
 			XMethod m = XFactory.createReferencedXMethod(this);
-			Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
-			Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
-			Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
+			updateApplicableAnnotations(m);
 	
 			break;
 		}
@@ -102,6 +103,15 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 			
 		}
 	}
+
+	/**
+     * @param m
+     */
+    private void updateApplicableAnnotations(XMethod m) {
+	    Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
+	    Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+	    Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
+    }
 	public void report() {
 	}
 }
