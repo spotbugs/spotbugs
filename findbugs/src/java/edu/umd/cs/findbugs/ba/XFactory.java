@@ -110,7 +110,7 @@ public class XFactory {
 	public void addEmptyArrayField(XField f) {
 		emptyArrays.add(f);
 	}
-	public boolean isEmptyArrayField(XField f) {
+	public boolean isEmptyArrayField(@CheckForNull XField f) {
 		return emptyArrays.contains(f);
 	}
 	public boolean isCalled(XMethod m) {
