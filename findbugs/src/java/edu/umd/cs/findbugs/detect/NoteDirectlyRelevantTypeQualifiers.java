@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -61,9 +62,9 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 	
 	HashSet<TypeQualifierValue> applicableApplications;
 	@Override
-    public void visitMethod(Method m) {
+    public void visit(Code m) {
 		applicableApplications = new HashSet<TypeQualifierValue>();
-		super.visitMethod(m);
+		super.visit(m);
 		if (applicableApplications.size() > 0) {
 			qualifiers.put(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}

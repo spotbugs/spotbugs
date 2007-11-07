@@ -39,7 +39,8 @@ public class DirectlyRelevantTypeQualifiersDatabase extends DismantleBytecode {
 	}
 	public Collection<TypeQualifierValue> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
 		Collection<TypeQualifierValue> result = qualifiers.get(m);
-		if (result != null) return result;
+		if (result != null) 
+			return result;
 		return Collections.emptyList();
 	}
 }
