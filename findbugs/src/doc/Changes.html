@@ -15,9 +15,110 @@
 				<td align="left" valign="top">
 
 					<h1>
-						FindBugs Change Log, Version 1.2.1
+						FindBugs Change Log, Version 1.3.0
 					</h1>
 
+					<p> Changes since version 1.2.1</p>
+					<ul>
+					<li>New Detectors</li>
+					<ul>
+					  <li>edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers</li>
+					  <li>edu.umd.cs.findbugs.detect.ReflectiveClasses</li>
+					  <li>edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant</li>
+					  <ul>
+					    <li>DL_SYNCHRONIZATION_ON_SHARED_CONSTANT
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical</li>
+					  <ul>
+					    <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC 
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.CheckTypeQualifiers</li>
+					  <ul>
+					    <li>TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED</li>
+					    <li>TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED</li>
+					    <li>TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK</li>
+					    <li>TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK</li>
+					  </ul>
+					</ul>
+					<li>New Reports (existing detectors)</li>
+					<ul>
+					  <li>edu.umd.cs.findbugs.detect.FindHEmismatch</li>
+					  <ul>
+					    <li>EQ_DOESNT_OVERRIDE_EQUALS </li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.Naming
+					  <ul>
+					    <li>NM_WRONG_PACKAGE</li>
+					    <li>NM_WRONG_PACKAGE_INTENTIONAL</li>
+					    <li>NM_SAME_SIMPLE_NAME_AS_SUPERCLASS</li>
+					    <li>NM_SAME_SIMPLE_NAME_AS_INTERFACE</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.FindRefComparison</li>
+					  <ul>
+					    <li>EC_UNRELATED_TYPES_USING_POINTER_EQUALITY</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.IncompatMask</li>
+					  <ul>
+					    <li>BIT_SIGNED_CHECK</li>
+					    <li>BIT_SIGNED_CHECK_HIGH_BIT</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.LazyInit</li>
+					  <ul>
+					    <li>LI_LAZY_INIT_UPDATE_STATIC</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.FindDeadLocalStores</li>
+					  <ul>
+					    <li>DLS_DEAD_STORE_OF_CLASS_LITERAL</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.MethodReturnCheck</li>
+					  <ul>
+					    <li>RV_RETURN_VALUE_IGNORED_BAD_PRACTICE</li>
+					    <li>RV_EXCEPTION_NOT_THROWN</li>
+					  </ul>
+					</ul>
+					<li>Changes to Existing Reports</li>
+					<ul>
+					  <li>NS_NON_SHORT_CIRCUIT: BAD_PRACTICE -> STYLE</li>
+					  <li>NS_DANGEROUS_NON_SHORT_CIRCUIT: CORRECTNESS -> STYLE</li>
+					  <li>RC_REF_COMPARISON: CORRECTNESS -> BAD_PRACTICE</li>
+					</ul>
+					<li>GUI Changes</li>
+					<ul>
+					  <li>Added importing and exporting of bug filters</li>
+					  <li>Better handling of failed analysis runs</li>
+					  <li>Added "-look" parameter for selecting look-and-feel</li>
+					  <li>Fixed incorrect package filtering</li>
+					  <li>Fixed issue where "synchronized" was not syntax-highlighted</li>
+					</ul>
+					<li>Ant-task Changes</li>
+					<ul>
+					  <li>Refactored common ant-task code to AbstractFindBugsTask</li>
+					  <li>Added tasks for computeBugHistory, convertXmlToText, filterBugs, mineBugHistory, setBugDatabaseInfo</li>
+					</ul>
+					<li>Manual</li>
+					<ul>
+					  <li>Updates to GUI section, including new screenshots</li>
+					  <li>Added description of rejarForAnalysis</li>
+					  <li>Revamp of data-mining section</li>
+					</ul>
+					<li>Other Major</li>
+					<ul>
+					  <li>Internal restructuring for lower memory overhead</li>
+					</ul>
+					<li>Other Minor</li>
+					<ul>
+					  <li>Fixed typo: was STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE now STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE</li>
+					  <li>-outputFile parameter became -output</li>
+					  <li>More sensitivity and specificity inLazyInit detector</li>
+					  <li>More sensitivity and specificity in Naming detector</li>
+					  <li>More sensitivity and specificity in UnreadFields detector</li>
+					  <li>More sensitivity in FindNullDeref detector</li>
+					  <li>More sensitivity in FindBadCast2 detector</li>
+					  <li>More specificity in FindReturnRef detector</li>
+					  <li>Many other tweaks and bugfixes</li>
+					</ul>
+					</ul>
+					
 					<p> Changes since version 1.2.0</p>
 					<ul>
 					<li>Bug fixes:
