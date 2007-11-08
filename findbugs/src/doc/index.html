@@ -168,40 +168,112 @@
 					<h1>
 						<a name="changes">Change history</a>
 					</h1>
-				<p> The current version of FindBugs is s @VERSION@. Changes since version 1.2.1:</p>
-				
+					<p> The current version of FindBugs is s @VERSION@. Changes since version 1.2.1:</p>
 					<ul>
-					<li>Bug fixes:
+					<li>New Detectors</li>
 					<ul>
-					<li>Fix bugs in incremental analysis within Eclipse plugin</li>
-					<li>Fix some analysis errors
-					<li>Fix some threading bugs in GUI2
-					<li>Report version as version when it was compiled, not when it was run
-					<li>Copy analysis time stamp when filtering or transforming analysis files.
+					  <li>edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers</li>
+					  <li>edu.umd.cs.findbugs.detect.ReflectiveClasses</li>
+					  <li>edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant</li>
+					  <ul>
+					    <li>DL_SYNCHRONIZATION_ON_SHARED_CONSTANT
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical</li>
+					  <ul>
+					    <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC 
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.CheckTypeQualifiers</li>
+					  <ul>
+					    <li>TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED</li>
+					    <li>TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED</li>
+					    <li>TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK</li>
+					    <li>TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK</li>
+					  </ul>
 					</ul>
-				<li>Enabled StaticCalendarDetector
-					</li>
-					<li>Reworked GUI2 to use standard FindBugs filters
-					</li>
+					<li>New Reports (existing detectors)</li>
 					<ul>
-					<li>Allow a suppression filter to be stored in a project and persisted to the XML representation of a project.
-					</li>
+					  <li>edu.umd.cs.findbugs.detect.FindHEmismatch</li>
+					  <ul>
+					    <li>EQ_DOESNT_OVERRIDE_EQUALS </li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.Naming
+					  <ul>
+					    <li>NM_WRONG_PACKAGE</li>
+					    <li>NM_WRONG_PACKAGE_INTENTIONAL</li>
+					    <li>NM_SAME_SIMPLE_NAME_AS_SUPERCLASS</li>
+					    <li>NM_SAME_SIMPLE_NAME_AS_INTERFACE</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.FindRefComparison</li>
+					  <ul>
+					    <li>EC_UNRELATED_TYPES_USING_POINTER_EQUALITY</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.IncompatMask</li>
+					  <ul>
+					    <li>BIT_SIGNED_CHECK</li>
+					    <li>BIT_SIGNED_CHECK_HIGH_BIT</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.LazyInit</li>
+					  <ul>
+					    <li>LI_LAZY_INIT_UPDATE_STATIC</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.FindDeadLocalStores</li>
+					  <ul>
+					    <li>DLS_DEAD_STORE_OF_CLASS_LITERAL</li>
+					  </ul>
+					  <li>edu.umd.cs.findbugs.detect.MethodReturnCheck</li>
+					  <ul>
+					    <li>RV_RETURN_VALUE_IGNORED_BAD_PRACTICE</li>
+					    <li>RV_EXCEPTION_NOT_THROWN</li>
+					  </ul>
+					</ul>
+					<li>Changes to Existing Reports</li>
+					<ul>
+					  <li>NS_NON_SHORT_CIRCUIT: BAD_PRACTICE -> STYLE</li>
+					  <li>NS_DANGEROUS_NON_SHORT_CIRCUIT: CORRECTNESS -> STYLE</li>
+					  <li>RC_REF_COMPARISON: CORRECTNESS -> BAD_PRACTICE</li>
+					</ul>
+					<li>GUI Changes</li>
+					<ul>
+					  <li>Added importing and exporting of bug filters</li>
+					  <li>Better handling of failed analysis runs</li>
+					  <li>Added "-look" parameter for selecting look-and-feel</li>
+					  <li>Fixed incorrect package filtering</li>
+					  <li>Fixed issue where "synchronized" was not syntax-highlighted</li>
+					</ul>
+					<li>Ant-task Changes</li>
+					<ul>
+					  <li>Refactored common ant-task code to AbstractFindBugsTask</li>
+					  <li>Added tasks for computeBugHistory, convertXmlToText, filterBugs, mineBugHistory, setBugDatabaseInfo</li>
+					</ul>
+					<li>Manual</li>
+					<ul>
+					  <li>Updates to GUI section, including new screenshots</li>
+					  <li>Added description of rejarForAnalysis</li>
+					  <li>Revamp of data-mining section</li>
+					</ul>
+					<li>Other Major</li>
+					<ul>
+					  <li>Internal restructuring for lower memory overhead</li>
+					</ul>
+					<li>Other Minor</li>
+					<ul>
+					  <li>Fixed typo: was STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE now STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE</li>
+					  <li>-outputFile parameter became -output</li>
+					  <li>More sensitivity and specificity inLazyInit detector</li>
+					  <li>More sensitivity and specificity in Naming detector</li>
+					  <li>More sensitivity and specificity in UnreadFields detector</li>
+					  <li>More sensitivity in FindNullDeref detector</li>
+					  <li>More sensitivity in FindBadCast2 detector</li>
+					  <li>More specificity in FindReturnRef detector</li>
+					  <li>Many other tweaks and bugfixes</li>
+					</ul>
 					</ul>
 					
-					<li>Move away from old GUI2 save format (a directory containing an xml file and another file containing serialized filters).
-					</li>
-					<li>Supprt/recommend use of two new file extensions/formats:
-					<dl><dt>.fba - FindBugs Analysis File</dt>
-					<dd>Exactly the same as an existing bug collection file stored in XML format, but using a distinct file extension
-					to make it easier to figure out which xml files contain FindBugs results.</dd>
-					<dt>.fbp - FindBugs Project File</dt><dd>Contains just the information needed to run FindBugs and display the results (e.g., the files to be analyzed, the auxilary class path and the location of source files)</dl>
-					</dd></li>
-					</ul>
-			
 					<p>
 						<a href="Changes.html">Older versions...</a>
 					</p>
-	<h1>
+					
+					<h1>
 						<a name="talks">Talks about FindBugs</a>
 					</h1>
 					<ul>
