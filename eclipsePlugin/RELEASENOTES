@@ -1,3 +1,8 @@
+Release 1.3.0 - FindBugs team
+- User may configure filters based on "baseline" bug instances in an xml file
+- Merged "extended" preferences pane with the main preferences pane
+- Include/Exclude filter-file selector now sanity-checks selection
+
 Release 1.2.2 - major code cleanup and refactoring by Andrei Loskutov
 - fixed non-Eclipse-like behavoir of view selection/activation/opening (work in progress)
 - bud tree view monitors resource changes now
