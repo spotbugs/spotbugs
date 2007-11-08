@@ -27,6 +27,7 @@
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="anttasksrc.dir" value="src/antTask"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
+	<property name="patch.dir" value="src/patches"/>
 	<property name="xslsrc.dir" value="src/xsl"/>
 	<property name="junitsrc.dir" value="src/junit"/>
 	<property name="docsrc.dir" value="src/doc"/>
@@ -845,6 +846,20 @@
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
         sourcepath="src/java5" splitindex="true" use="true" version="true"/>
 		</target>
+
+	<!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
+	<target name="patchbcel">
+	    <delete dir="${build.dir}/bcel-5.2-src"/>
+	    <delete file="${build.dir}/bcel-5.2-src.zip"/>
+	    <get src="http://www.apache.org/dist/jakarta/bcel/source/bcel-5.2-src.zip"
+	         dest="${build.dir}/bcel-5.2-src.zip"
+		 verbose="on"/>
+	    <unzip src="${build.dir}/bcel-5.2-src.zip" dest="${build.dir}/bcel-5.2-src"/>
+	    <delete file="${build.dir}/bcel-5.2-src/bcel-5.2/build.xml"/>
+	    <patch patchfile="${patch.dir}/bcel.diff" dir="${build.dir}/bcel-5.2-src/bcel-5.2" strip="7"/>
+	    <ant dir="${build.dir}/bcel-5.2-src/bcel-5.2" inheritAll="false"/>
+	    <copy file="${build.dir}/bcel-5.2-src/bcel-5.2/bcel.jar" tofile="${jar.dir}/bcel.jar"/>
+	</target>
 
 	<!--
 		Rebuild jar305.jar.
