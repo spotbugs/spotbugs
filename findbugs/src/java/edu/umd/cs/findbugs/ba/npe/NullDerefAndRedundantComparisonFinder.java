@@ -479,7 +479,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
 			ValueNumber valueNumber = entry.getKey();
 			IsNullValue isNullValue = entry.getValue();
-			if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
+			if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && (isNullValue.isReturnValue() || isNullValue.isFieldValue()) ) && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
+				
 			   noteUnconditionallyDereferencedNullValue(
 						thisLocation,
 						knownNullAndDoomedAt,

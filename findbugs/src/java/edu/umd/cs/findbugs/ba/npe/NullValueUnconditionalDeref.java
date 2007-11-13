@@ -12,6 +12,7 @@ import edu.umd.cs.findbugs.ba.Location;
  */
 public class NullValueUnconditionalDeref {
 	private boolean alwaysOnExceptionPath;
+	private boolean alwaysFieldValue;
 	private boolean alwaysMethodReturnValue;
 	private Set<Location> derefLocationSet;
 	private Set<IsNullValue> values = new HashSet<IsNullValue>();
@@ -19,6 +20,7 @@ public class NullValueUnconditionalDeref {
 	public NullValueUnconditionalDeref() {
 		this.alwaysOnExceptionPath = true;
 		this.alwaysMethodReturnValue = true;
+		this.alwaysFieldValue = true;
 		this.derefLocationSet = new HashSet<Location>();
 	}
 
@@ -30,6 +32,8 @@ public class NullValueUnconditionalDeref {
 		if (!isNullValue.isException()) { 
 			alwaysOnExceptionPath = false;
 		}
+		if (!isNullValue.isFieldValue())
+			alwaysFieldValue = false;
 		if (!isNullValue.isReturnValue()) { 
 			alwaysMethodReturnValue = false;
 		}
@@ -51,9 +55,15 @@ public class NullValueUnconditionalDeref {
 		return alwaysOnExceptionPath;
 	}
 	/**
-	 * @return Returns the alwaysOnExceptionPath.
+	 * @return Returns the alwaysMethodReturnValue.
 	 */
 	public boolean isMethodReturnValue() {
 		return alwaysMethodReturnValue;
+	}
+	/**
+	 * @return Returns the alwaysFieldValue.
+	 */
+	public boolean isFieldValue() {
+		return alwaysFieldValue;
 	}
 }
