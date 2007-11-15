@@ -5977,7 +5977,7 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 
   <BugPattern type="DMI_INVOKING_TOSTRING_ON_ARRAY">
     <ShortDescription>Invocation of toString on an array</ShortDescription>
-    <LongDescription>Invocation of toString on an array in {1}</LongDescription>
+    <LongDescription>Invocation of toString on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
