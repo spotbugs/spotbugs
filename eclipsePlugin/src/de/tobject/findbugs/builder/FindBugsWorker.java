@@ -97,11 +97,9 @@ public class FindBugsWorker {
 		this.monitor = monitor;
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
-		}
-		catch (CoreException e) {
+		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
 		}
-
 	}
 
 	/**
@@ -225,9 +223,9 @@ public class FindBugsWorker {
 			findBugsProject.addAuxClasspathEntry(classPathEntries[i]);
 		}
 
-		IFindBugsEngine findBugs;
+		final IFindBugsEngine findBugs;
 
-		FindBugs2 engine = new FindBugs2();
+		final FindBugs2 engine = new FindBugs2();
 		engine.setBugReporter(bugReporter);
 		engine.setProject(findBugsProject);
 		engine.setProgressCallback(bugReporter);
@@ -238,32 +236,64 @@ public class FindBugsWorker {
 		findBugs.setUserPreferences(this.userPrefs);
 		configureExtended(findBugs);
 
-		try {
-			// Perform the analysis! (note: This is not thread-safe.)
-			findBugs.execute();
-
-			// Merge new results into existing results.
-			updateBugCollection(findBugsProject, bugReporter, incremental);
-
-			// Redisplay markers (this makes sure version information can get in)
-			Iterator<IFile> it = files.iterator();
-			if(it.hasNext()){
-				IResource res = it.next();
-				MarkerUtil.redisplayMarkersWithoutProgressDialog(res.getProject());
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					findBugs.execute();
+				} catch (InterruptedException e) {
+					if (DEBUG) {
+						FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
+					}
+					Thread.currentThread().interrupt();
+					// @see IncrementalProjectBuilder.build
+					//throw new OperationCanceledException("FindBugs operation cancelled by user");
+				} catch (IOException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+				}
 			}
-		}
-		catch (InterruptedException e) {
+		};
+
+		/*
+		 * see bug 1828973: https://sourceforge.net/tracker/?func=detail&atid=614693&aid=1828973&group_id=96405
+		 * FindBugs2 engine stores the analysis caches etc in the ThreadLocal and
+		 * InheritableThreadLocal fileds, which are assumed to be garbage collected
+		 * together with the execution thread on the execution finish.
+		 * Unfortunately, Eclipse uses thread pools for jobs, which means, that the
+		 * execution threads would stay forever and the analysis cache would never be released...
+		 * To avoid the OutOfMemory error, we have to run execution in the new thread
+		 * which would be destroyed after the execution (also releasing memory occupied
+		 * by all created ThreadLocal* fields).
+		 */
+		Thread t = new Thread(r);
+		// Perform the analysis! (note: This is not thread-safe.)
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
 			if (DEBUG) {
 				FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
 			}
 			// @see IncrementalProjectBuilder.build
 			//throw new OperationCanceledException("FindBugs operation cancelled by user");
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+		}
+
+		try {
+			// Merge new results into existing results.
+			updateBugCollection(findBugsProject, bugReporter, incremental);
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+		} catch (DocumentException e) {
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+		}
+
+		// Redisplay markers (this makes sure version information can get in)
+		Iterator<IFile> it = files.iterator();
+		if(it.hasNext()){
+			IResource res = it.next();
+			MarkerUtil.redisplayMarkersWithoutProgressDialog(res.getProject());
 		}
 	}
+
 	/**
 	 * Add the output .class files to the FindBugs project in the directories
 	 * that match the corresponding patterns in the <code>Map</code> outputFiles.
@@ -425,7 +455,7 @@ public class FindBugsWorker {
 			if (file.exists()) {
 				String filterName = file.getLocation().toOSString();
 				try {
-				findBugs.addFilter(filterName, true);
+					findBugs.addFilter(filterName, true);
 				} catch (RuntimeException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
 				} catch (IOException e) {
@@ -440,7 +470,7 @@ public class FindBugsWorker {
 			if (file.exists()) {
 				String filterName = file.getLocation().toOSString();
 				try {
-				findBugs.addFilter(filterName, false);
+					findBugs.addFilter(filterName, false);
 				} catch (FilterException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
 				} catch (IOException e) {
@@ -453,7 +483,7 @@ public class FindBugsWorker {
 			if (file.exists()) {
 				String filterName = file.getLocation().toOSString();
 				try {
-				findBugs.excludeBaselineBugs(filterName);
+					findBugs.excludeBaselineBugs(filterName);
 				} catch (DocumentException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading excluded bugs \"" + filterName + "\".");
 				} catch (IOException e) {
