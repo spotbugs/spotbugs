@@ -28,6 +28,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements   StatelessDetector {
 	private BugReporter bugReporter;
@@ -60,13 +64,44 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 
 
 	@Override
-		 public void visit(Method obj) {
+	public void visit(Method obj) {
 		state = SAW_NOTHING;
 		loadedRegister = -1;
 		mapRegister = -1;
 		keySetRegister = -1;
 		iteratorRegister = -1;
 		keyRegister = -1;
+	}
+	
+	/**
+	 * Determine from the class descriptor for a variable whether that variable
+	 * implements java.util.Map. 
+	 * @param d class descriptor for variable we want to check implements Map
+	 * @return true iff the descriptor corresponds to an implementor of Map
+	 */
+	private static boolean implementsMap(ClassDescriptor d) {
+        while(d != null) {
+            try {
+                // True if variable is itself declared as a Map
+                if("java.util.Map".equals(d.getDottedClassName())) {
+                    return true;
+                }
+                XClass classNameAndInfo =
+                    Global.getAnalysisCache().
+                        getClassAnalysis(XClass.class, d);
+                ClassDescriptor is[] =
+                    classNameAndInfo.getInterfaceDescriptorList();
+                d = classNameAndInfo.getSuperclassDescriptor();
+                for(ClassDescriptor i : is) {
+                    if("java.util.Map".equals(i.getDottedClassName())) {
+                        return true;
+                    }
+                }
+            } catch (CheckedAnalysisException e) {
+                d = null;
+            }
+        }
+        return false;
 	}
 
 	@Override
@@ -80,9 +115,12 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 			break;
 
 			case SAW_MAP_LOAD1:
+			    // Doesn't check to see if the target object is a Map
 				if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL))
 				&&  ("keySet".equals(getNameConstantOperand()))
-				&&  ("()Ljava/util/Set;".equals(getSigConstantOperand()))) {
+				&&  ("()Ljava/util/Set;".equals(getSigConstantOperand()))
+				// Following check solves sourceforge bug 1830576
+				&&  implementsMap(getClassDescriptorOperand())) {
 					mapRegister = loadedRegister;
 					state = SAW_KEYSET;
 				}
