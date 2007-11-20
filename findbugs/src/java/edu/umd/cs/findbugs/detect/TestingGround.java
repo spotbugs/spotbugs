@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class TestingGround implements Detector {
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
+
+public class TestingGround extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
 
@@ -31,13 +34,26 @@ public class TestingGround implements Detector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visitClassContext(ClassContext classContext) {	
-		System.out.println("---- " + classContext.getClassDescriptor());
-	    classContext.getMethodsInCallOrder();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
+	 */
+	@Override
+	public void sawOpcode(int seen) {
+		if (seen != INVOKESTATIC) {
+			return;
+		}
+		String calledClassName = getClassConstantOperand();
+		String calledMethodName = getNameConstantOperand();
+		String calledMethodSig = getSigConstantOperand();
+		if (calledClassName.equals("java/lang/System") && calledMethodName.equals("gc") && calledMethodSig.equals("()V")) {
+			emitWarning();
+		}
 	}
 
-
-	public void report() {
-    }
-
+	private void emitWarning() {
+		System.out.println("Warn about " + getMethodName()); // TODO
 	}
+
+}
