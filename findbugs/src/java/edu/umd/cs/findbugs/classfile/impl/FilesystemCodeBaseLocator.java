@@ -34,7 +34,12 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	private final String pathName;
 
 	public FilesystemCodeBaseLocator(String pathName) {
-		this.pathName = pathName;
+		try {
+	        pathName = new File(pathName).getCanonicalPath();
+        } catch (IOException e) {
+	      assert true;
+        }
+        this.pathName = pathName;
 	}
 
 	/**
