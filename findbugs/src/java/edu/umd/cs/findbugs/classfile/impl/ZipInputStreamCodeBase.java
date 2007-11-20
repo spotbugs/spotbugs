@@ -62,7 +62,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 		System.out.println("Reading zip input stream " + file);
 		int count = 0;
 		 while ((ze = zis.getNextEntry()) != null) {
-			 if (!ze.isDirectory() && ze.getName().endsWith(".class")) {
+			 if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
 				 count++;
 				 if (DEBUG && count % 10000 == 0) 
 					 System.out.println("Reading # " + count + " : " + ze.getName());
