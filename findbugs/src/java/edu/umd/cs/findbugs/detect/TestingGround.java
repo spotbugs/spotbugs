@@ -34,6 +34,14 @@ public class TestingGround extends OpcodeStackDetector {
 		this.bugReporter = bugReporter;
 	}
 
+	@Override
+	public void visit(Code code) {
+		boolean interesting = true;
+		if (interesting)  {
+			// initialize any variables we want to initialize for the method
+			super.visit(code); // make callbacks to sawOpcode for all opcodes
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
