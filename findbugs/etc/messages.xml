@@ -3841,11 +3841,12 @@ dateString = dateString.trim();
     </Details>
   </BugPattern>
   <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE">
-    <ShortDescription>Method ignores return value</ShortDescription>
-    <LongDescription>{1} ignores return value of {2}</LongDescription>
+    <ShortDescription>Method ignores exceptional return value</ShortDescription>
+    <LongDescription>{1} ignores exceptional return value of {2}</LongDescription>
     <Details>
 <![CDATA[
-   <p> This method returns a value that is not checked. For
+   <p> This method returns a value that is not checked. The return value should be checked
+since it can indication an unusual or unexpected function execution. For
 example, the <code>File.delete()</code> method returns false
 if the file could not be successfully deleted (rather than 
 throwing an Exception).

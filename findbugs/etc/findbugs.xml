@@ -866,7 +866,7 @@
   <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE" />
-  <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="CORRECTNESS" />
+  <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS" />
