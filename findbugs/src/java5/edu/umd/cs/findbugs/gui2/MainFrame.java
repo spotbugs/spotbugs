@@ -1250,6 +1250,7 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	private void save(){
+		assert saveFile != null;
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		
@@ -2192,7 +2193,6 @@ public class MainFrame extends FBFrame implements LogSync
 		tableheader.setReorderingAllowed(b);
 	}
 
-	
 	private void setSaveMenu() {
 		saveMenuItem.setEnabled(projectChanged && saveFile != null && getSaveType() != SaveType.FBP_FILE && saveFile.exists());
 	}
