@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.filter;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Matches a String value against a predefined specification.
@@ -40,26 +41,29 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class NameMatch {
 
-	private String spec;
+	private @CheckForNull String spec;
 	private @CheckForNull String exact;
 
 	private @CheckForNull Pattern pattern;
 
 	@Override
     public int hashCode() {
+		if (spec == null) return 0;
 		return spec.hashCode();
 	}
 	public boolean isUniversal() {
+		if (spec == null) return true;
 		return spec.equals("~.*");
 	}
 	@Override
     public boolean equals(Object o) {
 		if (!(o instanceof NameMatch)) return false;
-		return spec.equals(((NameMatch)o).spec);
+		return Util.nullSafeEquals(spec, ((NameMatch)o).spec);
 	}
 	public String getValue() {
 		if (exact != null) return exact;
-		return pattern.toString();
+		if (pattern != null) return pattern.toString();
+		return "~.*";
 	}
 	public NameMatch(String matchSpec) {
 		spec = matchSpec;

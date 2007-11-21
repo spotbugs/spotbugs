@@ -56,7 +56,7 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
 	}
 	
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature);
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute("signature",signature);
 		if (disabled) attributes.addAttribute("disabled", "true");
 		xmlOutput.openCloseTag("Field", attributes);
 	}
