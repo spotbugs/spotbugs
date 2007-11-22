@@ -197,9 +197,10 @@ public class FindBugs2 implements IFindBugsEngine {
 			ioe.initCause(e);
 			throw ioe;
 		} finally {
-			// Make sure the codebases on the classpath are closed
 			AnalysisContext.removeCurrentAnalysisContext();
 			Global.removeAnalysisCacheForCurrentThread();
+			DescriptorFactory.clearInstance();
+			// Make sure the codebases on the classpath are closed
 			classPath.close();
 			profiler.end(this.getClass());
 			profiler.report();

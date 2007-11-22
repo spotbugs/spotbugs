@@ -42,8 +42,14 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class DescriptorFactory {
-	private static AnalysisLocal<DescriptorFactory> instance = 
-		new AnalysisLocal<DescriptorFactory>();
+	private static ThreadLocal<DescriptorFactory> instance = 
+		new ThreadLocal<DescriptorFactory>() {
+		@Override
+        protected
+		DescriptorFactory initialValue() {
+			return  new DescriptorFactory();
+		}
+	};
 	
 	private Map<String, ClassDescriptor> classDescriptorMap;
 	private Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
@@ -70,12 +76,11 @@ public class DescriptorFactory {
 	 * @return the singleton instance of the DescriptorFactory
 	 */
 	public static DescriptorFactory instance() {
-		DescriptorFactory factory = instance.get();
-		if (factory == null) {
-			factory = new DescriptorFactory();
-			instance.set(factory);
-		}
-		return factory;
+		return instance.get();
+	}
+	
+	public static void clearInstance() {
+		instance.remove();
 	}
 	
 	public Collection<ClassDescriptor> getAllClassDescriptors() {
