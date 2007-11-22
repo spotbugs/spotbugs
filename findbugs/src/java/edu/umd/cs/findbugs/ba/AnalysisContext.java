@@ -24,10 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -35,6 +34,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -100,8 +100,8 @@ public abstract class AnalysisContext {
 		}
 	};
 
-	private static InheritableThreadLocal<XFactory> currentXFactory
-	= new InheritableThreadLocal<XFactory>() {
+	private static AnalysisLocal<XFactory> currentXFactory
+	= new AnalysisLocal<XFactory>() {
 		@Override
 		public XFactory initialValue() {
 			throw new IllegalStateException("currentXFactory should be set by AnalysisContext.setCurrentAnalysisContext");
@@ -128,14 +128,18 @@ public abstract class AnalysisContext {
 
 	// Instance fields
 	private BitSet boolPropertySet;
-	private Map<Object,Object> analysisLocals;
 	private String databaseInputDir;
 	private String databaseOutputDir;
 	
 
 	protected AnalysisContext() {
 		this.boolPropertySet = new BitSet();
-		this.analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
+	}
+	
+	private void clear() {
+		boolPropertySet = null;
+		databaseInputDir = null;
+		databaseOutputDir = null;
 	}
 
 	/**
@@ -627,12 +631,7 @@ public abstract class AnalysisContext {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnalyisLocals()
-	 */
-	public final Map<Object, Object> getAnalysisLocals() {
-		return analysisLocals;
-	}
+	
 
 	public abstract InnerClassAccessMap getInnerClassAccessMap();
 
@@ -644,6 +643,13 @@ public abstract class AnalysisContext {
 	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
 		currentAnalysisContext.set(analysisContext);
 		currentXFactory.set(new XFactory());
+	}
+	
+	public static void removeCurrentAnalysisContext() {
+		AnalysisContext context = currentAnalysisContext();
+		if (context != null)
+			context.clear();
+		currentAnalysisContext.remove();
 	}
 	
 

@@ -19,7 +19,7 @@
 package edu.umd.cs.findbugs;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class AnalysisLocal<T> {
 	protected T initialValue() {
@@ -27,7 +27,7 @@ public class AnalysisLocal<T> {
 	}
 
 	protected Map <AnalysisLocal<T>, T> getMap() {
-		Map<?,?> m = AnalysisContext.currentAnalysisContext().getAnalysisLocals();
+		Map<?,?> m = Global.getAnalysisCache().getAnalysisLocals();
 		return (Map<AnalysisLocal<T>, T>) m;
 	}
 

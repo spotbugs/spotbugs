@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -149,4 +151,9 @@ public interface IAnalysisCache {
 	 * @return the error logger
 	 */
 	public IErrorLogger getErrorLogger();
+
+	/**
+     * @return
+     */
+    public Map<?, ?> getAnalysisLocals();
 }

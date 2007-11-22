@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
+
 /**
  * Static methods for accessing objects that are global
  * to an analysis session.  Hopefully, this will be
@@ -29,6 +31,15 @@ package edu.umd.cs.findbugs.classfile;
 public abstract class Global {
 	private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal =
 		new InheritableThreadLocal<IAnalysisCache>();
+
+	/**
+	 * Remove the analysis cache for the current thread.
+	 * This should be called after all analysis is complete
+	 * 
+	 */
+	public static void removeAnalysisCacheForCurrentThread() {
+		analysisCacheThreadLocal.remove();
+	}
 
 	/**
 	 * Set the analysis cache for the current thread.

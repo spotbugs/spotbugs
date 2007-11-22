@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bcel.classfile.JavaClass;
 
@@ -68,6 +70,13 @@ public class AnalysisCache implements IAnalysisCache {
 	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
 
+	private Map<?,?> analysisLocals = Collections.synchronizedMap(new HashMap());
+
+
+	public final Map<?, ?> getAnalysisLocals() {
+		return analysisLocals;
+	}
+	
 	static class AbnormalAnalysisResult {
 		final CheckedAnalysisException checkedAnalysisException;
 		final RuntimeException runtimeException;

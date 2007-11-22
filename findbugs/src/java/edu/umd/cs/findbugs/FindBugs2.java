@@ -198,6 +198,8 @@ public class FindBugs2 implements IFindBugsEngine {
 			throw ioe;
 		} finally {
 			// Make sure the codebases on the classpath are closed
+			AnalysisContext.removeCurrentAnalysisContext();
+			Global.removeAnalysisCacheForCurrentThread();
 			classPath.close();
 			profiler.end(this.getClass());
 			profiler.report();
@@ -627,6 +629,11 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		}
 
+	 
+	 public static void clearAnalysisContext() {
+		 AnalysisContext.setCurrentAnalysisContext(null);
+
+	 }
 	/**
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
 	 * layer over the AnalysisCache.
