@@ -1250,7 +1250,8 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	private void save(){
-		assert saveFile != null;
+		File sFile = saveFile;
+		assert sFile != null;
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		
@@ -1258,16 +1259,16 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		switch(getSaveType()){
 		case PROJECT:
-			result = saveProject(saveFile);
+			result = saveProject(sFile);
 			break;
 		case XML_ANALYSIS:
-			result = saveAnalysis(saveFile);
+			result = saveAnalysis(sFile);
 			break;
 		case FBA_FILE:
-			result = saveFBAFile(saveFile);
+			result = saveFBAFile(sFile);
 			break;
 		case FBP_FILE:
-			result = saveFBPFile(saveFile);
+			result = saveFBPFile(sFile);
 			break;
 		}
 

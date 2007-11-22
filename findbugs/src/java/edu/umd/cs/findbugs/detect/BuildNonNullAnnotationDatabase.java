@@ -53,7 +53,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	}
 	
-	private @CheckForNull NullnessAnnotationDatabase database;
+	private NullnessAnnotationDatabase database;
 
 	public BuildNonNullAnnotationDatabase(@CheckForNull NullnessAnnotationDatabase database) {
 		this.database = database;

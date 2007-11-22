@@ -39,7 +39,7 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements Detec
 
 	}
 
-	@CheckForNull String constantString;
+    String constantString;
 	@Override
 	public void sawString(String s) {
 		constantString = s;
