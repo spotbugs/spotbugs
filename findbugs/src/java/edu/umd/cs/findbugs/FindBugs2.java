@@ -632,7 +632,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	 
 	 public static void clearAnalysisContext() {
-		 AnalysisContext.setCurrentAnalysisContext(null);
+		 AnalysisContext.removeCurrentAnalysisContext();
 
 	 }
 	/**
