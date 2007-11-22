@@ -2195,7 +2195,8 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	private void setSaveMenu() {
-		saveMenuItem.setEnabled(projectChanged && saveFile != null && getSaveType() != SaveType.FBP_FILE && saveFile.exists());
+		File s = saveFile;
+		saveMenuItem.setEnabled(projectChanged && s != null && getSaveType() != SaveType.FBP_FILE && s.exists());
 	}
 	/**
 	 * Called when something in the project is changed and the change needs to be saved.

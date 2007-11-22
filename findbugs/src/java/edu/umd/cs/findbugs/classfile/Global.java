@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 
 /**
  * Static methods for accessing objects that are global

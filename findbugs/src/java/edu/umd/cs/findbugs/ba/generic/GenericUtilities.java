@@ -117,7 +117,9 @@ public class GenericUtilities {
 		 {
 			@Override
 			public String asString(GenericObjectType obj) {				
-				return "? extends " + GenericUtilities.getString(obj.extension);
+				Type extension = obj.extension;
+				assert extension != null;
+				return "? extends " + GenericUtilities.getString(extension);
 			}
 		},
 
@@ -127,8 +129,10 @@ public class GenericUtilities {
 		 WILDCARD_SUPER 
 		 {
 			@Override
-			public String asString(GenericObjectType obj) {				
-				return "? super " + GenericUtilities.getString(obj.extension);
+			public String asString(GenericObjectType obj) {	
+				Type extension = obj.extension;
+				assert extension != null;
+				return "? super " + GenericUtilities.getString(extension);
 			}
 		};
 
