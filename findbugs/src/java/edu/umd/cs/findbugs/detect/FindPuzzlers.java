@@ -23,9 +23,6 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import sun.security.action.GetLongAction;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
