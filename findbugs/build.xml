@@ -449,6 +449,7 @@
 			  jvmargs="-ea -Xmx600m"
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
+    		  timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugs.xml" >
       <class location="${classes.dir}" />
       <sourcePath path="src/java:src/java5:src/junit"/>
