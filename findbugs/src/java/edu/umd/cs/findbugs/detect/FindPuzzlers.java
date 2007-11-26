@@ -20,11 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
@@ -341,17 +345,26 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			String signature = item.getSignature();
 			if (signature != null && signature.startsWith("[")) {
-				String name = "anonymous array";
+				String name = null;
 				int reg = item.getRegisterNumber();
+				Collection<BugAnnotation> as = new ArrayList<BugAnnotation>();
 				if(reg != -1) {
 					LocalVariableAnnotation lva =
 						LocalVariableAnnotation.getLocalVariableAnnotation(
 							getMethod(), reg, getPC(), getPC()-1);
 					name = "array " + lva.getName() + "[]";
+					as.add(lva);
 				}
-				bugAccumulator.accumulateBug(new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addString(name), this);
+				if(name != null) {
+					bugAccumulator.accumulateBug(
+							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addAnnotations(as), this);
+				} else {
+					bugAccumulator.accumulateBug(
+							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY", NORMAL_PRIORITY)
+					.addClassAndMethod(this), this);
+				}
 			}
 		}
 
