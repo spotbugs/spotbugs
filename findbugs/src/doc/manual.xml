@@ -74,7 +74,7 @@ as information about the &FindBugs; mailing lists.</para>
 <sect1>
 <title>Requirements</title>
 <para> To use &FindBugs;, you need a runtime environment compatible with
-<ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.4.0 or later.
+<ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.5 or later.
 &FindBugs; is platform independent, and is known to run on GNU/Linux, Windows, and
 MacOS X platforms.</para>
 
@@ -1363,7 +1363,7 @@ to the plugin.
 
 <para>
 To use the &FindBugs; Plugin for Eclipse, you need Eclipse 3.0.1 or later,
-and JRE/JDK 1.4.0 or later.
+and JRE/JDK 1.5 or later.
 </para>
 
 </sect1>
@@ -1699,7 +1699,7 @@ at pattern beginning and/or end to perform substring matching.
 </para>
 
 <para>
-See <ulink url="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html"><literal>java.util.regex.Pattern</literal></ulink> 
+See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html"><literal>java.util.regex.Pattern</literal></ulink> 
 documentation for pattern syntax.
 </para>
 </sect1>
