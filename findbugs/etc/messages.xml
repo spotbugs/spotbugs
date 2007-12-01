@@ -2228,7 +2228,7 @@ Don't do it.
 define an equals method itself. Thus, equality on instances of this class will
 ignore the identity of the subclass and the added fields. Be sure this is what is intended,
 and that you don't need to override the equals method. Even if you don't need to override
-the equals method, consider overriding it anyone to document the fact
+the equals method, consider overriding it anyway to document the fact
 that the equals method for the subclass just return the result of
 invoking super.equals(o).
 ]]>
@@ -2847,8 +2847,8 @@ private static String LOCK = "LOCK";
 ...
 </pre>
 </p>
-<p>Such constants an interned and shared across all other classes loaded by the JVM. Thus, this could
-is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
+<p>Such constants are interned and shared across all other classes loaded by the JVM. Thus, this could
+be locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
 ]]>
@@ -5725,6 +5725,21 @@ If the object is, indeed, non-serializable, an error will result.
 <p>
 This code passes a primitive array to a function that takes a variable number of object arguments.
 This creates an array of length one to hold the primitive array and passes it to the function.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
+    <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
+    <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+A format-string method with a variable number of arguments is called,
+but the number of arguments passed does not match with the number of
+% placeholders in the format string.  This is probably not what the
+author intended, and can result in a runtime error.
 </p>
 ]]>
     </Details>

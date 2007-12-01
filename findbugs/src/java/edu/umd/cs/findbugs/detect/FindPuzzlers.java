@@ -20,20 +20,19 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugAccumulator;
-import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -43,6 +42,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindPuzzlers extends OpcodeStackDetector {
 
+	private static final boolean VAMISMATCH_DEBUG = SystemProperties.getBoolean("vamismatch.debug");
 
 	final BugReporter bugReporter;
 	final BugAccumulator bugAccumulator;
@@ -81,6 +81,16 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	int prevOpCode;
 	XMethod previousMethodInvocation;
 	boolean isTigerOrHigher;
+	
+	private static final int FS_STATE_NONE = 0;
+    private static final int FS_STATE_SAW_STR_LOAD = 1;
+    private static final int FS_STATE_SAW_CONST_PUSH = 2;
+    private static final int FS_STATE_SAW_NEWARRAY = 3;
+	
+	private int prevConst   = -1;
+	private int fsState     = FS_STATE_NONE;
+	private int fsAAStores  = 0;
+	private String fsFmtStr = null;
 
 	@Override
 	public void visit(JavaClass obj) {
@@ -341,7 +351,6 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						&& getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuffer;") && getClassConstantOperand().equals("java/lang/StringBuffer")
 				)
 		) {
-			String classConstants = getClassConstantOperand();
 			OpcodeStack.Item item = stack.getStackItem(0);
 			String signature = item.getSignature();
 			if (signature != null && signature.startsWith("[")) {
@@ -441,6 +450,151 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			previousMethodInvocation = XFactory.createReferencedXMethod(this);
 		else previousMethodInvocation = null;
 		prevOpCode = seen;
+
+		// Check for PrintStream.printf, PrintStream.format, String.format,
+		// Formatter.format
+
+        if(fsState == FS_STATE_NONE) {
+            if(seen == LDC) {
+                Constant c = getConstantRefOperand();
+                if (c instanceof ConstantString) {
+                    fsFmtStr = getStringConstantOperand();
+                    if(VAMISMATCH_DEBUG) {
+                        System.out.println("Format str: " + fsFmtStr);
+                    }
+                    fsState = FS_STATE_SAW_STR_LOAD;
+                }
+            }
+        }
+        else if(fsState == FS_STATE_SAW_STR_LOAD) {
+            if(seen == ICONST_0) {
+                prevConst = 0; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == ICONST_1) {
+                prevConst = 1; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == ICONST_2) {
+                prevConst = 2; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == ICONST_3) {
+                prevConst = 3; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == ICONST_4) {
+                prevConst = 4; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == ICONST_5) {
+                prevConst = 5; fsState = FS_STATE_SAW_CONST_PUSH;
+            } else if(seen == BIPUSH) {
+                prevConst = getIntConstant();
+                fsState = FS_STATE_SAW_CONST_PUSH;
+            } else {
+                prevConst = -1;
+                fsState = FS_STATE_NONE;
+            }
+        }
+        else if(fsState == FS_STATE_SAW_CONST_PUSH) {
+            if(seen == ANEWARRAY) {
+            	if(VAMISMATCH_DEBUG) {
+                    System.out.println("New array with const: " + prevConst);
+            	}
+                fsState = FS_STATE_SAW_NEWARRAY;
+                fsAAStores = 0;
+            } else {
+                fsState = FS_STATE_NONE;
+            }
+        }
+        else if(fsState == FS_STATE_SAW_NEWARRAY) {
+            if(seen == AASTORE) {
+                fsAAStores++;
+            	if(VAMISMATCH_DEBUG) {
+            		System.out.println("Saw an AASTORE; new count: " + fsAAStores);
+            	}
+                if(fsAAStores > prevConst) {
+                    // Stored too many array elements!
+                	if(VAMISMATCH_DEBUG) {
+                		System.out.println("Oops, " + fsAAStores + " is too many");
+                	}
+                    fsState = FS_STATE_NONE;
+                }
+            }
+            else if(
+               fsAAStores == prevConst &&
+               (seen == INVOKESPECIAL ||
+                seen == INVOKEVIRTUAL ||
+                seen == INVOKESTATIC))
+            {
+                String cl = getClassConstantOperand();
+                String nm = getNameConstantOperand();
+                XMethod xm = XFactory.createReferencedXMethod(this);
+                int flags = xm.getAccessFlags();
+                if((flags & ACC_TRANSIENT) != 0) {
+                	if(VAMISMATCH_DEBUG) {
+                		System.out.println("Found VARARGS method: " + cl + "." + nm);
+                	}
+                    if("java/util/Formatter".equals(cl) && "format".equals(nm) ||
+                       "java/lang/String".equals(cl)    && "format".equals(nm) ||
+                       "java/io/PrintStream".equals(cl) && "format".equals(nm) ||
+                       "java/io/PrintStream".equals(cl) && "printf".equals(nm))
+                    {
+                        // Get the format string if possible
+                        int pcts = 0;
+                        for(int i = 0; i < fsFmtStr.length(); i++) {
+                            if(fsFmtStr.charAt(i) == '%') {
+                                if(i < fsFmtStr.length()-1 &&
+                                   // If next char is '%', then it's just
+                                   // an escaped percent.  If next char is
+                                   // 'n', then it's just the platform-
+                                   // specific line separator.  In neither
+                                   // case is an argument consumed.
+                                   (fsFmtStr.charAt(i+1) == '%' ||
+				    fsFmtStr.charAt(i+1) == 'n'))
+                                {
+                                    i++; continue;
+                                }
+                                pcts++;
+                            }
+                        }
+                        if(pcts != prevConst) {
+                        	// Bug!
+            				bugReporter.reportBug(
+            					new BugInstance(this, "VA_FORMAT_STRING_ARG_MISMATCH", NORMAL_PRIORITY)
+            					.addClassAndMethod(this)
+            					.addCalledMethod(this)
+            					.addString(fsFmtStr)
+            					.addInt(pcts)
+            					.addInt(prevConst)
+            				);
+                        	if(VAMISMATCH_DEBUG) {
+	                            System.out.println(
+	                                "WARNING: # percent signs (" + pcts +
+	                                ") doesn't match vararg array size: " +
+	                                prevConst);
+                        	}
+                        } else {
+                        	// OK
+                        	if(VAMISMATCH_DEBUG) {
+                        		System.out.println("# percent signs (" + pcts +
+                                    ") matchs vararg array size: " + prevConst);
+                        	}
+                        }
+                    }
+                    else {
+                    	// OK
+                    	if(VAMISMATCH_DEBUG) {
+                    		System.out.println("Not a VARARGS I'm familiar with");
+                    	}
+                    }
+                }
+                else {
+                    if("java/util/Formatter".equals(cl) && "format".equals(nm) ||
+                       "java/lang/String".equals(cl)    && "format".equals(nm) ||
+                       "java/io/PrintStream".equals(cl) && "format".equals(nm) ||
+                       "java/io/PrintStream".equals(cl) && "printf".equals(nm))
+                    {
+                    	// OK
+                    	if(VAMISMATCH_DEBUG) {
+                    		System.out.println("Oops: " + cl + "." + nm + " not a VARARGS");
+                    	}
+                    }
+                }
+                fsState = FS_STATE_NONE;
+            }
+        }
 	}
 	boolean implementsRunnable(JavaClass obj) {
 		if (obj.getSuperclassName().equals("java.lang.Thread")) return true;
