@@ -1485,6 +1485,21 @@ another package.</p>
     </Details>
   </BugPattern>
 
+
+  <BugPattern type="NP_BOOLEAN_RETURN_NULL">
+  	<ShortDescription>Method that returns a Boolean object may return null</ShortDescription>
+  	<LongDescription>Method that returns a Boolean object may return null instead of an explicit Boolean object of type 'false'</LongDescription>
+  	<Details>
+  	 <![CDATA[
+  	 <p>
+  	 Neglecting an explicit false return when returning a Boolean object
+  	 from a method may cause a null pointer exception.
+  	 </p>
+  	 ]]>
+  	 </Details>
+  	 </BugPattern>
+
+
    <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
      <ShortDescription>Synchronize and null check on the same field.</ShortDescription>
      <LongDescription>In {1} the field {2.givenClass} is synchronized on and then checked if null.</LongDescription>

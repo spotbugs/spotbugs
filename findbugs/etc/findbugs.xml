@@ -117,6 +117,10 @@
 			speed="moderate"
 			reports="NP_SYNC_AND_NULL_CHECK_FIELD" 
 			hidden="false"/>
+
+<Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull"  
+  			reports="NP_BOOLEAN_RETURN_NULL"
+  			hidden="false" />
 	       
   <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"
                 speed="fast"
@@ -680,7 +684,8 @@
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
 
 	<BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS" />
-
+<BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE" />
+  
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>
 
