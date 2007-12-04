@@ -2897,7 +2897,7 @@ String s = buf.toString();
   <LongDescription>Les appels à equals sur un tableau sont équivalents à ==</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette méthode invoque la méthode <code>equals(Object o)</code> d'un tableau. Comme les tableaux ne surchargent pas la méthode <code>equals()</code> de <code>Object</code>, cet appel revient à comparer les adresses. Pour comparer les contenus de tableaux, utilisez <code>java.util.Array.equals(Object[], Object[])</code>.</p>
+<p>Cette méthode invoque la méthode <code>equals(Object o)</code> d'un tableau. Comme les tableaux ne surchargent pas la méthode <code>equals()</code> de <code>Object</code>, cet appel revient à comparer les adresses. Pour comparer les contenus de tableaux, utilisez <code>java.util.Arrays.equals(Object[], Object[])</code>.</p>
 ]]>
   </Details>
  </BugPattern>
