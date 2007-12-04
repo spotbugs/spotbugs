@@ -66,6 +66,7 @@ public class Update {
 
 	boolean preciseMatch = false;
 	boolean precisePriorityMatch = false;
+	int mostRecent = -1;
 
 	class UpdateCommandLine extends CommandLine {
 		boolean overrideRevisionNames = false;
@@ -89,6 +90,7 @@ public class Update {
 					"don't generate any outout to standard out unless there is an error");
 			addSwitch("-withMessages",
 					"Add bug description");
+			addOption("-onlyMostRecent", "number", "only use the last # input files");
 
 		}
 
@@ -127,8 +129,10 @@ public class Update {
 				throws IOException {
 			if (option.equals("-output"))
 				outputFilename = argument;
-			else
-				throw new IllegalArgumentException("Can't handle option "
+			else if (option.equals("-onlyMostRecent")) {
+				mostRecent = Integer.parseInt(argument);
+			}
+			else throw new IllegalArgumentException("Can't handle option "
 						+ option);
 
 		}
@@ -375,6 +379,9 @@ public class Update {
 					firstPathParts, getFilePathParts(args[i])));
 		}
 
+		if (mostRecent > 0) {
+			argCount = Math.max(argCount, args.length - mostRecent);
+		}
 		String origFilename = args[argCount++];
 		Project project = new Project();
 		BugCollection origCollection;
