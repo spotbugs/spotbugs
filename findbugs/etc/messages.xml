@@ -245,6 +245,16 @@ by other detectors.</p>
    </Details>
   </Detector>
 
+
+  <Detector class="edu.umd.cs.findbugs.detect.BooleanReturnNull">
+    <Details>
+<![CDATA[
+<p> Looks for methods with Boolean return type that return explicit null values.</p>
+
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
