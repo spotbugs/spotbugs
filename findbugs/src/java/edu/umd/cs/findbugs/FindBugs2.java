@@ -188,7 +188,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			createExecutionPlan();
 
 			if (appClassList.size() == 0)
-				throw new IOException("No classes found to analyze in " + classPath);
+				throw new NoClassesFoundToAnalyzeException(classPath);
 			
 			// Analyze the application
 			analyzeApplication();
