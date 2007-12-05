@@ -31,7 +31,7 @@ import org.apache.bcel.classfile.*;
  * @author alison
  */
 public class BooleanReturnNull extends OpcodeStackDetector {
-	
+
 	BugReporter bugReporter;
 
 	public BooleanReturnNull(BugReporter bugReporter) {
@@ -48,23 +48,19 @@ public class BooleanReturnNull extends OpcodeStackDetector {
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
 	 */
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen != ARETURN) {
-			return;
-		}
-		else{
-			if(getPrevOpcode(1) == ACONST_NULL )
-				bugReporter.reportBug(new BugInstance(this, "BooleanReturnNull", NORMAL_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this));
-		}
+		if (seen == ARETURN && getPrevOpcode(1) == ACONST_NULL)
+			bugReporter.reportBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL", NORMAL_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this));
+
 
 	}
-	
+
 
 }
