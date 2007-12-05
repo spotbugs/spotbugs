@@ -5741,6 +5741,20 @@ If the object is, indeed, non-serializable, an error will result.
     </Details>
   </BugPattern>
 
+  <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
+    <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
+    <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+A format-string method with a variable number of arguments is called,
+but the number of arguments passed does not match with the number of
+% placeholders in the format string.  This is probably not what the
+author intended.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
 
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
