@@ -8,7 +8,6 @@
 
 	<property file="build.properties" />
 	<property file="local.properties" />
-        <property name="jsr305.home" value="../JSR305-ri"/>
 	<property name="findbugs.home" value="../findbugs"/>
 	<property name="history.dir" value="history"/>
 	<property file="build.properties" />
@@ -32,7 +31,7 @@
 			<classpath>
 				<pathelement location="build/classes"/>
 				<pathelement location="${findbugs.home}/lib/annotations.jar" />
-				<pathelement location="${jsr305.home}/build/classes"/>
+				<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
 				<pathelement location="${junit.home}/junit.jar"/>
 				<pathelement location="lib/j2ee.jar"/>
 			</classpath>
