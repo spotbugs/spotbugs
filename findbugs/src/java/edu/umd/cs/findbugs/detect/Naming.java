@@ -287,7 +287,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	 * @param d class descriptor we want to check
 	 * @return true iff the descriptor ultimately inherits from Throwable
 	 */
-	private static boolean inheritsFromThrowable(ClassDescriptor d) {
+	private static boolean mightInheritFromThrowable(ClassDescriptor d) {
         while(d != null) {
             try {
                 // True if variable is itself declared as a Map
@@ -299,7 +299,7 @@ public class Naming extends PreorderVisitor implements Detector {
                         getClassAnalysis(XClass.class, d);
                 d = classNameAndInfo.getSuperclassDescriptor();
             } catch (CheckedAnalysisException e) {
-                d = null;
+               return true; // don't know
             }
         }
         return false;
@@ -320,7 +320,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			        : LOW_PRIORITY).addClass(this));
 		if (name.endsWith("Exception")) {
 			// Does it ultimately inherit from Throwable?
-			if(!inheritsFromThrowable(DescriptorFactory.createClassDescriptor(obj))) {
+			if(!mightInheritFromThrowable(DescriptorFactory.createClassDescriptor(obj))) {
 				// It doens't, so the name is misleading
 				bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
 			}
