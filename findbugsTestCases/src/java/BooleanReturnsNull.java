@@ -12,7 +12,7 @@ public class BooleanReturnsNull {
 		else if(n < 1){
 			return new Boolean(false);
 		}
-		else
+		else {
 			return null;
 		}
 			
