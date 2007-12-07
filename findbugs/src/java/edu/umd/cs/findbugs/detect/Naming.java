@@ -40,8 +40,13 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
@@ -275,6 +280,31 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 		super.visitJavaClass(obj);
 	}
+	
+	/**
+	 * Determine whether the class descriptor ultimately inherits from
+	 * java.lang.Throwable
+	 * @param d class descriptor we want to check
+	 * @return true iff the descriptor ultimately inherits from Throwable
+	 */
+	private static boolean inheritsFromThrowable(ClassDescriptor d) {
+        while(d != null) {
+            try {
+                // True if variable is itself declared as a Map
+                if("java.lang.Throwable".equals(d.getDottedClassName())) {
+                    return true;
+                }
+                XClass classNameAndInfo =
+                    Global.getAnalysisCache().
+                        getClassAnalysis(XClass.class, d);
+                d = classNameAndInfo.getSuperclassDescriptor();
+            } catch (CheckedAnalysisException e) {
+                d = null;
+            }
+        }
+        return false;
+	}
+
 
 	@Override
 	public void visit(JavaClass obj) {
@@ -288,9 +318,12 @@ public class Naming extends PreorderVisitor implements Detector {
 		        && baseClassName.indexOf("_") == -1)
 			bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", classIsPublicOrProtected ? NORMAL_PRIORITY
 			        : LOW_PRIORITY).addClass(this));
-		if (name.endsWith("Exception") && (!obj.getSuperclassName().endsWith("Exception"))
-		        && (!obj.getSuperclassName().endsWith("Error")) && (!obj.getSuperclassName().endsWith("Throwable"))) {
-			bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
+		if (name.endsWith("Exception")) {
+			// Does it ultimately inherit from Throwable?
+			if(!inheritsFromThrowable(DescriptorFactory.createClassDescriptor(obj))) {
+				// It doens't, so the name is misleading
+				bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
+			}
 		}
 
 		super.visit(obj);
