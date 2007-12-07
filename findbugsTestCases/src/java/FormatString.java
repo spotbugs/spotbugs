@@ -10,6 +10,7 @@ public class FormatString {
         System.out.println(f.format("%d %s %f %d %f %d", 8, "boy", 7.7, 9, 9.9, 10, 11)); // warning!
         System.out.println(f.format("%d %%%%%s %% %f %d %%%f %%%d", 8, "boy", 7.7, 9, 9.9, 10)); // no warning
         System.out.println(String.format("%d %n", 1)); // no warning (%n does not consume an argument)
+        System.out.println(String.format("%d %n", 1, 2)); // warning!
         varargsMethod((Object[])args);
     }
     
