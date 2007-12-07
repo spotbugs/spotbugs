@@ -283,15 +283,14 @@ public class Naming extends PreorderVisitor implements Detector {
 	
 	/**
 	 * Determine whether the class descriptor ultimately inherits from
-	 * java.lang.Throwable
+	 * java.lang.Exception
 	 * @param d class descriptor we want to check
-	 * @return true iff the descriptor ultimately inherits from Throwable
+	 * @return true iff the descriptor ultimately inherits from Exception
 	 */
-	private static boolean mightInheritFromThrowable(ClassDescriptor d) {
+	private static boolean mightInheritFromException(ClassDescriptor d) {
         while(d != null) {
             try {
-                // True if variable is itself declared as a Map
-                if("java.lang.Throwable".equals(d.getDottedClassName())) {
+                if("java.lang.Exception".equals(d.getDottedClassName())) {
                     return true;
                 }
                 XClass classNameAndInfo =
@@ -320,7 +319,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			        : LOW_PRIORITY).addClass(this));
 		if (name.endsWith("Exception")) {
 			// Does it ultimately inherit from Throwable?
-			if(!mightInheritFromThrowable(DescriptorFactory.createClassDescriptor(obj))) {
+			if(!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
 				// It doens't, so the name is misleading
 				bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
 			}
