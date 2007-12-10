@@ -105,9 +105,12 @@ public class DumbMethodInvocations implements Detector {
 					if (!operandValue.isConstantString())
 						continue;
 					String v = operandValue.getConstantString();
-					if (isAbsoluteFileName(v))
+					if (isAbsoluteFileName(v) && !v.startsWith("/etc/")) {
+						int priority = NORMAL_PRIORITY;
+						if (v.startsWith("/tmp")) priority = LOW_PRIORITY;
+						else if (v.indexOf("/home") >= 0) priority = HIGH_PRIORITY;
 						bugReporter.reportBug(new BugInstance(this,
-								"DMI_HARDCODED_ABSOLUTE_FILENAME", v.startsWith("/tmp") ? LOW_PRIORITY  : NORMAL_PRIORITY)
+								"DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
 								.addClassAndMethod(methodGen, sourceFile)
 								.addString(v).describe("FILE_NAME")
 								.addSourceLine(
@@ -115,6 +118,7 @@ public class DumbMethodInvocations implements Detector {
 												.fromVisitedInstruction(classContext, methodGen,
 														sourceFile, location
 																.getHandle())));
+					}
 
 				}
 
