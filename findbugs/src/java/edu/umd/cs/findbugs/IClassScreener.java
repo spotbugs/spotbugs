@@ -27,6 +27,10 @@ package edu.umd.cs.findbugs;
 public interface IClassScreener {
 
 	/**
+	 * Does the class screener always return true?
+	 */
+	public boolean vacuous();
+	/**
 	 * Return whether or not the name of the given file matches.
 	 */
 	public boolean matches(String fileName);

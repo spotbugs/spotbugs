@@ -146,6 +146,13 @@ public class ClassScreener implements IClassScreener {
 		}
 		return false;
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IClassScreener#vacuous()
+     */
+    public boolean vacuous() {
+		return patternList.isEmpty();
+    }
 }
 
 // vim:ts=4

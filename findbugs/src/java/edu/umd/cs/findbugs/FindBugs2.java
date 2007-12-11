@@ -56,7 +56,9 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -117,6 +119,10 @@ public class FindBugs2 implements IFindBugsEngine {
 			public boolean matches(String fileName) {
 				return true;
 			}
+
+			public boolean vacuous() {
+	            return true;
+            }
 		};
 
 		// By default, we do not want to scan nested archives
@@ -187,6 +193,21 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Create the execution plan (which passes/detectors to execute)
 			createExecutionPlan();
 
+			if (!classScreener.vacuous()) {
+			final BugReporter origBugReporter = bugReporter.getDelegate();
+			BugReporter filterBugReporter = new  DelegatingBugReporter(origBugReporter) {
+				
+				@Override
+				public void reportBug(BugInstance bugInstance) {
+					String className = bugInstance.getPrimaryClass().getClassName();
+					String resourceName = className.replace('.','/')+".class";
+					if (classScreener.matches(resourceName))
+						this.getDelegate().reportBug(bugInstance);
+				}
+			};
+			bugReporter.setDelegate(filterBugReporter);
+			}
+			
 			if (appClassList.size() == 0)
 				throw new NoClassesFoundToAnalyzeException(classPath);
 			
