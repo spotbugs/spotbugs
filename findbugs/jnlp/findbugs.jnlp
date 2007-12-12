@@ -16,11 +16,12 @@
       <all-permissions/> 
   </security> 
   <resources> 
-    <j2se version="1.4+" initial-heap-size="300m" max-heap-size="800m"/>
+    <j2se version="1.5+" initial-heap-size="300m" max-heap-size="800m"/>
     <jar href="findbugs.jar"/> 
     <jar href="findbugsGUI.jar"/> 
     <jar href="bcel.jar"/> 
     <jar href="asm-3.0.jar"/>
+    <jar href="asm-commons-3.0.jar"/>
     <jar href="asm-tree-3.0.jar"/>
     <jar href="dom4j-full.jar"/> 
     <jar href="plugin/coreplugin.jar"/>

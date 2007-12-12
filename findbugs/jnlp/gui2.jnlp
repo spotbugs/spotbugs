@@ -21,6 +21,7 @@
     <jar href="findbugs.jar"/> 
     <jar href="bcel.jar"/> 
     <jar href="asm-3.0.jar"/>
+    <jar href="asm-commons-3.0.jar"/>
     <jar href="asm-tree-3.0.jar"/>
     <jar href="dom4j-full.jar"/> 
     <jar href="plugin/coreplugin.jar"/>
