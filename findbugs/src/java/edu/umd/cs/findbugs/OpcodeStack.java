@@ -114,6 +114,7 @@ public class OpcodeStack implements Constants2
 		public static final int MATH_ABS = 11;
 		public static final int MASKED_NON_NEGATIVE = 12;
 		public static final int NASTY_FLOAT_MATH = 13;
+		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
 
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -226,6 +227,10 @@ public class OpcodeStack implements Constants2
 			case  MASKED_NON_NEGATIVE:
 				buf.append(", masked_non_negative");
 				break;
+			case  FILE_OPENED_IN_APPEND_MODE:
+				buf.append(", file opened in append mode");
+				break;
+			
 			case 0 :
 				break;
 			default:
@@ -1624,7 +1629,33 @@ public class OpcodeStack implements Constants2
 				}
 			 }
 		 }
-
+		 if (seen == INVOKESPECIAL && clsName.equals("java/io/FileOutputStream") && methodName.equals("<init>") 
+					&& (signature.equals("(Ljava/io/File;Z)V") || signature.equals("(Ljava/lang/String;Z)V"))) {
+			 	OpcodeStack.Item item = getStackItem(0);
+				Object value = item.getConstant();
+				if ( value instanceof Integer && ((Integer)value).intValue() == 1) {
+					pop(3);
+					Item top = getStackItem(0);
+					if (top.signature.equals("Ljava/io/FileOutputStream;")) {
+						top.setSpecialKind(Item.FILE_OPENED_IN_APPEND_MODE);
+						top.source = XFactory.createReferencedXMethod(dbc);
+						}
+					return;
+				}
+		 }
+		 if (seen == INVOKESPECIAL && clsName.equals("java/io/BufferedOutputStream") && methodName.equals("<init>") 
+					&& signature.equals("(Ljava/io/OutputStream;)V")) {
+			 	OpcodeStack.Item item = getStackItem(0);
+	
+				if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE && getStackItem(2).signature.equals("Ljava/io/BufferedOutputStream;")) {
+				
+					pop(2);
+					Item top = getStackItem(0);
+					top.setSpecialKind(Item.FILE_OPENED_IN_APPEND_MODE);
+					top.source = XFactory.createReferencedXMethod(dbc);
+					return;
+				}
+		 }
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
 		 if (appenderValue != null && getStackDepth() > 0) {
