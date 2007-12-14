@@ -663,7 +663,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
-  
+  <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" 
+            speed="fast"
+            reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" />
   <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="TESTING" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
@@ -691,7 +693,7 @@
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="BAD_PRACTICE"/>
   <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" />
-
+  <BugPattern abbrev="IO" type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" category="CORRECTNESS" />
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_FINALIZER_ONLY_NULLS_FIELDS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="FI" type="FI_FINALIZER_NULLS_FIELDS" category="BAD_PRACTICE"/>
