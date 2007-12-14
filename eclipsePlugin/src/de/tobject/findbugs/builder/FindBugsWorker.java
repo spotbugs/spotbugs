@@ -21,8 +21,10 @@
 package de.tobject.findbugs.builder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +53,9 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.SWT;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -110,6 +115,13 @@ public class FindBugsWorker {
 	 * @throws CoreException
 	 */
 	public void work(Collection<IFile> files, boolean incremental) throws CoreException {
+		work2(files, incremental, false, null);
+	}
+	
+	public void loadXml(Collection<IFile> files, boolean incremental, String fileName) throws CoreException {
+		work2(files, incremental, true, fileName);
+	}
+	public void work2(Collection<IFile> files, boolean incremental, final boolean loadXml, final String xmlFileName) throws CoreException {
 		if (files == null) {
 			FindbugsPlugin.getDefault().logError("No files to build");
 			return;
@@ -125,7 +137,7 @@ public class FindBugsWorker {
 
 		Set<IPath> outLocations = createOutputLocations();
 
-		Project findBugsProject = new Project();
+		final Project findBugsProject = new Project();
 		Iterator<IFile> iter = files.iterator();
 		Map<File, String> outputFiles = new HashMap<File, String>();
 		while (iter.hasNext()) {
@@ -214,7 +226,7 @@ public class FindBugsWorker {
 		// clear the map for GC
 		outputFiles.clear();
 
-		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
+		final Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
 		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
 
 		String[] classPathEntries = createClassPathEntries();
@@ -235,11 +247,36 @@ public class FindBugsWorker {
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
 		configureExtended(findBugs);
+		
+		
 
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					findBugs.execute();
+					if(loadXml){
+						System.out.println("Loading XML...");
+						if(!(xmlFileName.equals("")))
+						{
+							try
+							{
+									FileInputStream input = new FileInputStream(xmlFileName);
+									bugReporter.reportBugsFromXml(input, findBugsProject);
+							}
+							catch(FileNotFoundException e)
+							{
+								FindbugsPlugin.getDefault().logException(e, "XML file not found: " + xmlFileName);
+							}
+							catch(DocumentException e)
+							{
+								FindbugsPlugin.getDefault().logException(e, "Invalid XML file: " + xmlFileName);
+							}
+						}
+					}
+					else
+					{
+						System.out.println("Finding bugs");
+						findBugs.execute();
+					}
 				} catch (InterruptedException e) {
 					if (DEBUG) {
 						FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
@@ -267,7 +304,7 @@ public class FindBugsWorker {
 		Thread t = new Thread(r);
 		// Perform the analysis! (note: This is not thread-safe.)
 		t.start();
-		try {
+		try{
 			t.join();
 		} catch (InterruptedException e) {
 			if (DEBUG) {

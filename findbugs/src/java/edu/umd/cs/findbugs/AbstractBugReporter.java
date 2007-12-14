@@ -27,11 +27,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.Iterator;
+import java.io.InputStream;
+import java.io.IOException;
+
+import edu.umd.cs.findbugs.gui2.BugLoader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
+import org.dom4j.DocumentException;
 
 /**
  * An abstract class which provides much of the functionality
@@ -135,6 +142,13 @@ public abstract class AbstractBugReporter implements BugReporter {
                     bugInstance.getPriority() + " > " + priorityThreshold);
             }
 		}
+	}
+	
+	public final void reportBugsFromXml(InputStream in, Project theProject) throws IOException, DocumentException
+	{
+		SortedBugCollection theCollection = new SortedBugCollection();
+		theCollection.readXML(in, theProject);
+		for(BugInstance bug: theCollection.getCollection()) doReportBug(bug);			
 	}
 
 	public static String getMissingClassName(ClassNotFoundException ex) {

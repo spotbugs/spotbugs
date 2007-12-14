@@ -207,6 +207,12 @@
 			   label="&amp;Find Bugs"
 			   menubarPath="findbugs/additions"
 			   tooltip="%menu.findBugsPopup"/>
+   <action
+         class="de.tobject.findbugs.actions.LoadXmlAction"
+         id="de.tobject.findbugs.loadXml"
+         label="Load XML"
+         menubarPath="findbugs/additions">
+   </action>
 	  </objectContribution>
 	  <!-- Special case context menu for simple projects that have java natures -->
 	  <objectContribution
