@@ -18,3 +18,4 @@ subtypes
 nullness
 subtype
 superclasses
+interprocedural
