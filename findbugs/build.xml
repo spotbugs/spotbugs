@@ -112,43 +112,15 @@
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
-		<echo level="info" message="compiling Priorities"/>
-		<javac srcdir="${src.dir}"
-						includes="${pkg.base}/Priorities.java"
-						destdir="${classes.dir}"
-						source="1.5"
-						target="1.5"
-						deprecation="off"
-						debug="on">
-					<classpath refid="findbugs.classpath"/>
-				</javac>
-		<echo level="info" message="compiling annotations"/>
-		<javac srcdir="${src5.dir}"
-						includes="${pkg.base}/annotations/** ${pkg.base}/internalAnnotations/** net/jcip/annotations/**"
-						destdir="${classes.dir}"
-						source="1.5"
-						target="1.5"
-						deprecation="off"
-						debug="on">
-					<classpath refid="findbugs.classpath"/>
-				</javac>
 		<echo level="info" message="compiling findbugs"/>
-		<javac srcdir="${src.dir}"
-				destdir="${classes.dir}"
-				source="1.5"
-				target="1.5"
-				deprecation="off"
-				debug="on">
-			<classpath refid="findbugs.classpath"/>
-		</javac>
-		<echo level="info" message="compiling gui2"/>
-		<javac srcdir="${src5.dir}"
-						includes="${pkg.base}/gui2/** ${pkg.base}/sourceviewer/**"
+		<javac 
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
 						deprecation="off"
 						debug="on">
+					<src path="${src.dir}"/>
+					<src path="${src5.dir}"/>
 					<classpath refid="findbugs.classpath"/>
 				</javac>
         <native2ascii   encoding="Cp1252"
