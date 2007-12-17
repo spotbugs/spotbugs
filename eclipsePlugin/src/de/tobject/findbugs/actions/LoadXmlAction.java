@@ -51,15 +51,7 @@ import de.tobject.findbugs.builder.FindBugsWorker;
 
 
 
-/**
- * Run FindBugs on the currently selected element(s) in the package explorer.
- *
- * @author Peter Friese
- * @author Phil Crosby
- * @author Andrei Loskutov
- * @version 1.1
- * @since 25.09.2003
- */
+
 public class LoadXmlAction implements IObjectActionDelegate {
 
 	/** lock to force no more than one findBugs.execute() task at a time. see

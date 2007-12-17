@@ -195,11 +195,17 @@
 			   label="Find Bugs"
 			   path="additions"/>
 		 <action
+        	 class="de.tobject.findbugs.actions.LoadXmlAction"
+       		  id="de.tobject.findbugs.loadXml"
+         		label="Load XML"
+         		menubarPath="findbugs/additions"/>
+		 <action
 			   class="de.tobject.findbugs.actions.ClearMarkersAction"
 			   id="de.tobject.findbugs.removeMarkers"
 			   label="%menu.clearMarkers"
 			   menubarPath="findbugs/additions"
 			   tooltip="%menu.clearMarkersPopup"/>
+		
 		 <action
 			   class="de.tobject.findbugs.actions.FindBugsAction"
 			   icon="icons/runFindbugs.png"
@@ -207,12 +213,6 @@
 			   label="&amp;Find Bugs"
 			   menubarPath="findbugs/additions"
 			   tooltip="%menu.findBugsPopup"/>
-   <action
-         class="de.tobject.findbugs.actions.LoadXmlAction"
-         id="de.tobject.findbugs.loadXml"
-         label="Load XML"
-         menubarPath="findbugs/additions">
-   </action>
 	  </objectContribution>
 	  <!-- Special case context menu for simple projects that have java natures -->
 	  <objectContribution
@@ -363,6 +363,11 @@
 			   id="findbugs"
 			   label="Find Bugs"
 			   path="additions"/>
+		<action
+        	 class="de.tobject.findbugs.actions.LoadXmlAction"
+        	 id="de.tobject.findbugs.loadXml"
+        	 label="Load XML"
+        	 menubarPath="findbugs/additions"/>
 		 <action
 			   class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
 			   id="de.tobject.findbugs.removeMarkers"
