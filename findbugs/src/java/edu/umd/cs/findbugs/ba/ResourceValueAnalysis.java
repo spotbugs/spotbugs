@@ -142,11 +142,22 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 					InstructionHandle ihPrev     = ih == null     ? null : ih.getPrev();
 					// Get next-topmost that pushed next-topmost
 					InstructionHandle ihPrevPrev = ihPrev == null ? null : ihPrev.getPrev();
+					int prevPush = 0;
+					if(ihPrev != null) {
+						try {
+							prevPush = ihPrev.getInstruction().produceStack(null);
+						} catch(NullPointerException e) { /* do nothing */ }
+					}
+					int prevPrevPush = 0;
+					if(ihPrevPrev != null) {
+						try {
+							prevPrevPush = ihPrevPrev.getInstruction().produceStack(null);
+						} catch(NullPointerException e) { /* do nothing */ }
+					}
 					// If instructions exist and both push one word onto the
 					// stack and the next-topmost pushes null...
 					if(ihPrev != null && ihPrevPrev != null &&
-					   ihPrev.getInstruction().produceStack(null) == 1 &&
-					   ihPrevPrev.getInstruction().produceStack(null) == 1 &&
+					   prevPush == 1 && prevPrevPush == 1 &&
 					   ihPrevPrev.getInstruction().getOpcode() == Constants.ACONST_NULL)
 					{
 						// Topmost item on stack is being compared with null
