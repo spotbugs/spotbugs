@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.IF_ACMPEQ;
+import org.apache.bcel.generic.IF_ACMPNE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -129,7 +132,35 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 			InstructionHandle lastInSourceHandle = source.getLastInstruction();
 			if (lastInSourceHandle != null) {
 				Instruction lastInSource = lastInSourceHandle.getInstruction();
-				if (lastInSource instanceof IFNULL || lastInSource instanceof IFNONNULL) {
+				boolean isNullCheck = false;
+				boolean isNonNullCheck = false;
+				// This check catches null == X, null != X
+				if (lastInSource instanceof IF_ACMPEQ || lastInSource instanceof IF_ACMPNE) {
+					Location l = new Location(lastInSourceHandle, source);
+					InstructionHandle ih         = l.getHandle();
+					// Get instruction that pushed topmost
+					InstructionHandle ihPrev     = ih == null     ? null : ih.getPrev();
+					// Get next-topmost that pushed next-topmost
+					InstructionHandle ihPrevPrev = ihPrev == null ? null : ihPrev.getPrev();
+					// If instructions exist and both push one word onto the
+					// stack and the next-topmost pushes null...
+					if(ihPrev != null && ihPrevPrev != null &&
+					   ihPrev.getInstruction().produceStack(null) == 1 &&
+					   ihPrevPrev.getInstruction().produceStack(null) == 1 &&
+					   ihPrevPrev.getInstruction().getOpcode() == Constants.ACONST_NULL)
+					{
+						// Topmost item on stack is being compared with null
+						// (the null itself is next-topmost on the stack)
+						isNullCheck = lastInSource instanceof IF_ACMPEQ;
+						isNonNullCheck = lastInSource instanceof IF_ACMPNE;
+					}
+				}
+				// This check catches X == null, X != null
+				else if (lastInSource instanceof IFNULL || lastInSource instanceof IFNONNULL) {
+					isNullCheck = lastInSource instanceof IFNULL;
+					isNonNullCheck = lastInSource instanceof IFNONNULL;
+				}
+				if(isNullCheck || isNonNullCheck) {
 					// Get the frame at the if statement
 					ResourceValueFrame startFrame = getStartFact(source);
 					if (startFrame.isValid()) {
@@ -139,8 +170,8 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 						ResourceValue topValue = frameAtIf.getValue(frameAtIf.getNumSlots() - 1);
 
 						if (topValue.isInstance()) {
-							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
-									(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
+							if ((isNullCheck && edgeType == IFCMP_EDGE) ||
+								(isNonNullCheck && edgeType == FALL_THROUGH_EDGE)) {
 								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
 								tmpFact = modifyFrame(fact, tmpFact);
 								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
