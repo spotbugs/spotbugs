@@ -3098,8 +3098,8 @@ opportunities to accidently define methods that do not override methods in their
   </BugPattern>
 
   <BugPattern type="NM_METHOD_NAMING_CONVENTION">
-    <ShortDescription>Method names should start with an lower case letter</ShortDescription>
-    <LongDescription>The method name {1} doesn't start with an lower case letter</LongDescription>
+    <ShortDescription>Method names should start with a lower case letter</ShortDescription>
+    <LongDescription>The method name {1} doesn't start with a lower case letter</LongDescription>
     <Details>
 <![CDATA[
   <p>
@@ -3110,8 +3110,8 @@ Methods should be verbs, in mixed case with the first letter lowercase, with the
   </BugPattern>
 
   <BugPattern type="NM_FIELD_NAMING_CONVENTION">
-    <ShortDescription>Field names should start with an lower case letter</ShortDescription>
-    <LongDescription>The field name {1} doesn't start with an lower case letter</LongDescription>
+    <ShortDescription>Field names should start with a lower case letter</ShortDescription>
+    <LongDescription>The field name {1} doesn't start with a lower case letter</LongDescription>
     <Details>
 <![CDATA[
   <p>
