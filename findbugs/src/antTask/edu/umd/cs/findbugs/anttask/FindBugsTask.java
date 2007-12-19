@@ -589,8 +589,18 @@ public class FindBugsTask extends AbstractFindBugsTask {
 			addArg(omitVisitors);
 		}
 		if ( auxClasspath != null ) {
-			addArg("-auxclasspath");
-			addArg(auxClasspath.toString());
+			try {
+				// Try to dereference the auxClasspath.
+				// If it throws an exception, we know it
+				// has an invalid path entry, so we complain
+				// and tolerate it.
+				String unreadReference = auxClasspath.toString();
+				addArg("-auxclasspath");
+				addArg(auxClasspath.toString());
+			}
+			catch (Throwable t) {
+				log("Warning: auxClasspath "+t+" not found.");
+			}
 		}
 		if ( sourcePath != null) {
 			addArg("-sourcepath");
