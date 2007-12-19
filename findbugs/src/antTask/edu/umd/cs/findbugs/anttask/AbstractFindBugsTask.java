@@ -253,8 +253,8 @@ public abstract class AbstractFindBugsTask extends Task {
 	 * going to execute).
 	 */
 	protected void createFindbugsEngine() {
-		findbugsEngine = (Java) getProject().createTask("java");
-
+		findbugsEngine = new Java();
+		findbugsEngine.setProject( getProject() );
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
 		if (jvm.length()>0)
