@@ -15,8 +15,62 @@
 				<td align="left" valign="top">
 
 					<h1>
-						FindBugs Change Log, Version 1.3.0
+						FindBugs Change Log, Version 1.3.1
 					</h1>
+
+					<p> Changes since version 1.3.0</p>
+					<ul>
+					<li>New Reports</li>
+					  <ul>
+					    <li>VA_FORMAT_STRING_ARG_MISMATCH:
+					        A format-string method with a variable number of arguments is called,
+                            but the number of arguments passed does not match with the number of
+                            % placeholders in the format string.  This is probably not what the
+                            author intended.
+                        <li>IO_APPENDING_TO_OBJECT_OUTPUT_STREAM:
+                            This code opens a file in append mode and that wraps the result in an object output stream. 
+                            This won't allow you to append to an existing object output stream stored in a file. If you want to be
+                            able to append to an object output stream, you need to keep the object output stream open.
+                            The only situation in which opening a file in append mode and the writing an object output stream
+                            could work is if on reading the file you plan to open it in random access mode and seek to the byte offset
+                            where the append started.
+                        <li>NP_BOOLEAN_RETURN_NULL:
+                            A method that returns either Boolean.TRUE, Boolean.FALSE or null is an accident waiting to happen.
+                            This method can be invoked as though it returned a value of type boolean, and
+                            the compiler will insert automatic unboxing of the Boolean value. If a null value is returned,
+                            this will result in a NullPointerException.
+					  </ul>
+					<li>Changes to Existing Reports</li>
+					<ul>
+					  <li>RV_DONT_JUST_NULL_CHECK_READLINE: CORRECTNESS -> STYLE</li>
+					  <li>DMI_INVOKING_TOSTRING_ON_ARRAY: Long description mentions array name whenever possible</li>
+					</ul>
+					<li>Fixes:</li>
+					<ul>
+					<li>Updated manual to mention that Java 1.5 is now a requirement for running FindBugs
+					<li>Applied patch 1840206 fixing issue "Ant task does not work when presetdef is used" - thanks to phejl 
+					<li>Applied patch 1778690 fixing issue "Ant task: tolerate but complain about invalid auxClasspath" - thanks to David Schmidt
+					<li>Applied patch 1852125 adding a Chinese-language GUI bundle props file - thanks to fifi
+					<li>Applied patch 1845903 adding ability to load XML results with the Eclipse plugin - thanks to Alex Mont
+					<li>Fixed issue 1844671 - "FP for "reversed" null check in catch for stream close"
+					<li>Fixed issue 1836050 - "-onlyAnalyze broken"
+					<li>Fixed issue 1853011 - "Typo: Field names should start with aN lower case letter"
+					<li>Fixed issue 1844181 - "JNLP file does not contain all necessary JARs"
+					<li>Fixed issue 1840245 - "xxxException class does not derive from Exception"
+					<li>Fixed issue 1840277 - "[M D EC] Typo in bug documentation"
+					<li>Fixed issue 1782447 - "OutOfMemoryError if i activate Findbugs on my project"
+					<li>Fixed issue 1830576 - "[regression] keySet/entrySet false positive"
+					</ul>
+					<li>Other:</li>
+					<ul>
+					<li>New bug code: "IO" (for IO_APPENDING_TO_OBJECT_OUTPUT_STREAM)</li>
+					<li>Added "-onlyMostRecent" option for computeBugHistory script/ant task
+					<li>More explicit language in RV_RETURN_VALUE_IGNORED_BAD_PRACTICE messages
+					<li>Modified ResourceValueAnalysis to correctly identify null == X or null != X as a null check (for issue 1844671)
+					<li>Modified DMI_HARDCODED_ABSOLUTE_FILENAME logic in DumbMethodInvocations to ignore files from /etc or /dev and increase priority of files from /home
+					<li>build.xml "classes" target now builds all sources in one step
+					</ul>
+					</ul>
 
 					<p> Changes since version 1.2.1</p>
 					<ul>
