@@ -78,9 +78,6 @@
 	    <pathelement location="${jar.dir}/svnant.jar"/>
 	    <pathelement location="${jar.dir}/svnClientAdapter.jar"/>
 	</path>
-	<!--
-	<taskdef resource="svntask.properties" classpathref="svn.classpath"/>
-	-->
 	
 	<patternset id="codebase.data.pats">
 		<include name="**/*.properties"/>
@@ -763,6 +760,7 @@
 	<target name="srcdist" depends="docs" description="Source distribution">
 		<mkdir dir="${build.dir}/src"/>
 		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
+		<taskdef resource="svntask.properties" classpathref="svn.classpath"/>
 
                 <svn username="guest" password="" javahl="false">
                     <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
