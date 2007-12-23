@@ -647,9 +647,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 
 		Map<String, Integer> count = new HashMap<String, Integer>();
 		Bag<String> nullOnlyFieldNames = new Bag<String>();
+		Bag<ClassDescriptor> classContainingNullOnlyFields = new Bag<ClassDescriptor>();
 		
 		for (XField f : nullOnlyFields) {
 			nullOnlyFieldNames.add(f.getName());
+			classContainingNullOnlyFields.add(f.getClassDescriptor());
 			int increment = 3;
 			Collection<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
 			if (assumedNonNullAt != null)
@@ -676,6 +678,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 			if (myMaxCount > 15)
 				assumeReflective.add(f);
 			if (nullOnlyFieldNames.getCount(f.getName()) > 8)
+				assumeReflective.add(f);
+			else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 4)
 				assumeReflective.add(f);
 		}
 				
