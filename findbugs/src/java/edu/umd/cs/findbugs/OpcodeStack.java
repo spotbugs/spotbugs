@@ -44,6 +44,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import sun.security.action.GetBooleanAction;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -1304,6 +1306,13 @@ public class OpcodeStack implements Constants2
 					 push(new Item("")); // push return address on stack
 					 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 					 pop();
+					 if (dbc.getBranchOffset() < 0) {
+						 // OK, backwards JSRs are weird; reset the stack.
+						 int stackSize = stack.size();
+						 stack.clear();
+						 for(int i = 0; i < stackSize; i++)
+							 stack.add(new Item());
+					 }
 					 setTop(false);
 				 break;
 
