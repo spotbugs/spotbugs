@@ -679,8 +679,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 				assumeReflective.add(f);
 			else if (nullOnlyFieldNames.getCount(f.getName()) > 8)
 				assumeReflective.add(f);
-			else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 3)
+			else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 4)
 				assumeReflective.add(f);
+			else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 2 && f.getName().length() == 1)
+				assumeReflective.add(f);
+				
 		}
 				
 		readOnlyFields.removeAll(assumeReflective);
