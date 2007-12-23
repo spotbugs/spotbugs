@@ -78,7 +78,9 @@
 	    <pathelement location="${jar.dir}/svnant.jar"/>
 	    <pathelement location="${jar.dir}/svnClientAdapter.jar"/>
 	</path>
+	<!--
 	<taskdef resource="svntask.properties" classpathref="svn.classpath"/>
+	-->
 	
 	<patternset id="codebase.data.pats">
 		<include name="**/*.properties"/>
