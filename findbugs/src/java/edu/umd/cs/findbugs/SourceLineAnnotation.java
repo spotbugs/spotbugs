@@ -77,6 +77,16 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private boolean synthetic;
 
 	/**
+     * 
+     */
+    public static final String DESCRIPTION_LAST_CHANGE = "SOURCE_LINE_LAST_CHANGE";
+
+	/**
+     * 
+     */
+    public static final String DESCRIPTION_LOOP_BOTTOM = "SOURCE_LINE_LOOP_BOTTOM	";
+
+	/**
 	 * Constructor.
 	 *
 	 * @param className     the class to which the line number(s) refer

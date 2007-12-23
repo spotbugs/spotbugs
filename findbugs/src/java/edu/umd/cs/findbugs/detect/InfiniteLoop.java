@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -71,6 +73,15 @@ public class InfiniteLoop extends OpcodeStackDetector {
 		public String toString() {
 			return from + " -> " + to;
 		}
+		public int hashCode() {
+			return from * 37 + to;
+		}
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (this.getClass() != o.getClass()) return false;
+			Jump that = (Jump) o;
+			return this.from == that.from && this.to == that.to;
+		}
 	}
 	static class BackwardsBranch extends Jump {
 		final List<Integer> invariantRegisters = new LinkedList<Integer>();
@@ -82,7 +93,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
 				if (stack.getLastUpdate(i) < to) 
 					invariantRegisters.add(i);
 			}
-
+		public int hashCode() {
+			return 37*super.hashCode() + 17*invariantRegisters.hashCode() + numLastUpdates;
+		}
+		public boolean equals(Object o) {
+			if (!super.equals(o)) return false;
+			BackwardsBranch that = (BackwardsBranch) o;
+			return this.invariantRegisters.equals(that.invariantRegisters) && this.numLastUpdates == that.numLastUpdates;
+		}
 		}
 	static class ForwardConditionalBranch  extends Jump {
 		final OpcodeStack.Item item0, item1;
@@ -91,14 +109,22 @@ public class InfiniteLoop extends OpcodeStackDetector {
 			this.item0 = item0;
 			this.item1 = item1;
 		}
+		public int hashCode() {
+			return 37*super.hashCode() + 17*item0.hashCode() + item1.hashCode();
+		}
+		public boolean equals(Object o) {
+			if (!super.equals(o)) return false;
+			ForwardConditionalBranch that = (ForwardConditionalBranch) o;
+			return this.item0.equals(that.item0) && this.item1.equals(that.item1);
+		}
 
 	}
 	BugReporter bugReporter;
 
-	LinkedList<Jump> backwardReach = new LinkedList<Jump>();
-	LinkedList<BackwardsBranch> backwardBranches = new LinkedList<BackwardsBranch>();
+	HashSet<Jump> backwardReach = new HashSet<Jump>();
+	HashSet<BackwardsBranch> backwardBranches = new HashSet<BackwardsBranch>();
 
-	LinkedList<ForwardConditionalBranch> forwardConditionalBranches = new LinkedList<ForwardConditionalBranch>();
+	HashSet<ForwardConditionalBranch> forwardConditionalBranches = new HashSet<ForwardConditionalBranch>();
 
 	LinkedList<Jump> forwardJumps = new LinkedList<Jump>();
 	void purgeForwardJumps(int before) {
@@ -139,34 +165,35 @@ public class InfiniteLoop extends OpcodeStackDetector {
 		super.visit(obj);
 		backwardBranchLoop: for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
+			int myBackwardsReach = getBackwardsReach(bb.to);
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
-				if (getBackwardsReach(bb.to) < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
+				if (myBackwardsReach < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
-			int backwardsReach = getBackwardsReach(bb.to);
 			for(Jump fj : forwardJumps) 
-				if (fcb.from != fj.from && backwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) 
+				if (fcb.from != fj.from && myBackwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
-						this, fcb.from);
+						this, fcb.from).addSourceLine(
+								this, bb.from).describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
 				int reg0 = fcb.item0.getRegisterNumber();
 				boolean reg0Invariant = true;
 				if (reg0 >= 0) {
-					reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
+					reg0Invariant = !isRegModified(reg0, myBackwardsReach, bb.from);
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
-					.addSourceLine(this, constantSince(fcb.item0)).describe("SOURCE_LINE_LAST_CHANGE");
+					.addSourceLine(this, constantSince(fcb.item0)).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
 				}
 				int reg1 = fcb.item1.getRegisterNumber();
 				if (reg1 >= 0 && reg1 != reg0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
-										.addSourceLine(this, constantSince(fcb.item1)).describe("SOURCE_LINE_LAST_CHANGE");
+										.addSourceLine(this, constantSince(fcb.item1)).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
 				  boolean reg1Invariant = true;
 				if (reg1 >= 0) 
-					reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
+					reg1Invariant = !isRegModified(reg1, myBackwardsReach, bb.from);
 				if (reg0Invariant && reg1Invariant)
 					bugReporter.reportBug(bug);
 			}
