@@ -43,7 +43,6 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Figure out where and how type qualifier annotations are applied.

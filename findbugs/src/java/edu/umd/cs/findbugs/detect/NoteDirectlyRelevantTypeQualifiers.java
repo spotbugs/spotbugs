@@ -25,7 +25,6 @@ import java.util.HashSet;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;

@@ -20,8 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import java.util.HashSet;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -30,13 +28,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.Global;
 
 public class FindReturnRef extends BytecodeScanningDetector {
 	boolean check = false;

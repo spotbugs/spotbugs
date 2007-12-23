@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
