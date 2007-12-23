@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -645,7 +646,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 		writeOnlyFields.removeAll(readFields);
 
 		Map<String, Integer> count = new HashMap<String, Integer>();
+		Bag<String> nullOnlyFieldNames = new Bag<String>();
+		
 		for (XField f : nullOnlyFields) {
+			nullOnlyFieldNames.add(f.getName());
 			int increment = 3;
 			Collection<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
 			if (assumedNonNullAt != null)
@@ -659,6 +663,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		}
 		Map<XField, Integer> maxCount = new HashMap<XField, Integer>();
 		
+		
 		LinkedList<XField> assumeReflective = new LinkedList<XField>();
 		for (XField f : nullOnlyFields) {
 			int myMaxCount = 0;
@@ -669,6 +674,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 			if (myMaxCount > 0)
 				maxCount.put(f, myMaxCount);
 			if (myMaxCount > 15)
+				assumeReflective.add(f);
+			if (nullOnlyFieldNames.getCount(f.getName()) > 8)
 				assumeReflective.add(f);
 		}
 				
