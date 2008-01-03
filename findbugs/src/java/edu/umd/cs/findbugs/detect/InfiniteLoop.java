@@ -73,10 +73,12 @@ public class InfiniteLoop extends OpcodeStackDetector {
 		public String toString() {
 			return from + " -> " + to;
 		}
-		public int hashCode() {
+		@Override
+        public int hashCode() {
 			return from * 37 + to;
 		}
-		public boolean equals(Object o) {
+		@Override
+        public boolean equals(Object o) {
 			if (o == null) return false;
 			if (this.getClass() != o.getClass()) return false;
 			Jump that = (Jump) o;
@@ -93,10 +95,12 @@ public class InfiniteLoop extends OpcodeStackDetector {
 				if (stack.getLastUpdate(i) < to) 
 					invariantRegisters.add(i);
 			}
-		public int hashCode() {
+		@Override
+        public int hashCode() {
 			return 37*super.hashCode() + 17*invariantRegisters.hashCode() + numLastUpdates;
 		}
-		public boolean equals(Object o) {
+		@Override
+        public boolean equals(Object o) {
 			if (!super.equals(o)) return false;
 			BackwardsBranch that = (BackwardsBranch) o;
 			return this.invariantRegisters.equals(that.invariantRegisters) && this.numLastUpdates == that.numLastUpdates;
@@ -109,10 +113,12 @@ public class InfiniteLoop extends OpcodeStackDetector {
 			this.item0 = item0;
 			this.item1 = item1;
 		}
-		public int hashCode() {
+		@Override
+        public int hashCode() {
 			return 37*super.hashCode() + 17*item0.hashCode() + item1.hashCode();
 		}
-		public boolean equals(Object o) {
+		@Override
+        public boolean equals(Object o) {
 			if (!super.equals(o)) return false;
 			ForwardConditionalBranch that = (ForwardConditionalBranch) o;
 			return this.item0.equals(that.item0) && this.item1.equals(that.item1);
