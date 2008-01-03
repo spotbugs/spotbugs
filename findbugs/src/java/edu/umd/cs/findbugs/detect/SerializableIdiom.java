@@ -74,6 +74,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 	private HashMap<String, XField> transientFields = new HashMap<String, XField>();
 	private HashMap<String, Integer> transientFieldsUpdates = new HashMap<String, Integer>();
 	private HashSet<String> transientFieldsSetInConstructor = new HashSet<String>();
+	private HashSet<String> transientFieldsSetToDefaultValueInConstructor = new HashSet<String>();
 
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
@@ -151,6 +152,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 		transientFields.clear();
 		transientFieldsUpdates.clear();
 		transientFieldsSetInConstructor.clear();
+		transientFieldsSetToDefaultValueInConstructor.clear();
 		//isRemote = false;
 
 		// Does this class directly implement Serializable?
@@ -244,6 +246,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 					else {
 						if (isGUIClass) priority++;
 						if (e.getValue() < 3) 
+							priority++;
+						if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
 							priority++;
 					}
 					try {
@@ -390,7 +394,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 						isPutOfDefaultValue = true;
 				}
 
-				if (!isPutOfDefaultValue) {
+				if (isPutOfDefaultValue) {
+					String nameOfField = getNameConstantOperand();
+					if (getMethodName().equals("<init>")) transientFieldsSetToDefaultValueInConstructor.add(nameOfField);
+				} else {
 					String nameOfField = getNameConstantOperand();
 					if (transientFieldsUpdates.containsKey(nameOfField) ) {
 						if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
