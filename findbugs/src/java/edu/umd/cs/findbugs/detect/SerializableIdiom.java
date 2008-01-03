@@ -92,13 +92,6 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 	public SerializableIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		//try {
-			//serializable = Repository.lookupClass("java.io.Serializable");
-			//collection = Repository.lookupClass("java.util.Collection");
-			//map = Repository.lookupClass("java.util.Map");
-			//} catch (ClassNotFoundException e) {
-				// can't do anything
-				//}
 	}
 
 	@Override
@@ -209,12 +202,12 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 		// Is this a GUI  or other class that is rarely serialized?
 
-			isGUIClass = 
-				Subtypes2.instanceOf(obj, "java.lang.Throwable")
-			|| Subtypes2.instanceOf(obj, "java.awt.Component")
-			|| Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
-			|| Subtypes2.instanceOf(obj, "java.util.EventListener")
-			;
+			isGUIClass = !directlyImplementsExternalizable && !implementsSerializableDirectly && 
+				(Subtypes2.instanceOf(obj, "java.lang.Throwable")
+						|| Subtypes2.instanceOf(obj, "java.awt.Component")
+						|| Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
+						|| Subtypes2.instanceOf(obj, "java.util.EventListener"))
+					;
 	
 
 		foundSynthetic = false;
@@ -267,13 +260,15 @@ public class SerializableIdiom extends OpcodeStackDetector
 		}
 		if (isSerializable && !isExternalizable
 				&& !superClassHasVoidConstructor
-				&& !superClassImplementsSerializable)
-			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR",
-					implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
-						( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
+				&& !superClassImplementsSerializable) {
+			int priority = implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
+				( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY);
+			if (isGUIClass) priority++;
+			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority)
 					.addClass(getThisClass().getClassName()));
+		}
 		// Downgrade class-level warnings if it's a GUI class.
-		int priority = false && isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
+		int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
 		if (obj.getClassName().endsWith("_Stub")) priority++;
 
 		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
@@ -477,6 +472,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 						if (isAnonymousInnerClass) priority+=2;
 						else priority+=1;
 					}
+					if (isGUIClass) priority++;
 					if (false)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
@@ -492,7 +488,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 							.addClass(getThisClass().getClassName())
 							.addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
-				} else if (false && obj.getName().equals("this$0"))
+				} else if (!isGUIClass && obj.getName().equals("this$0"))
 					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
 					.addClass(getThisClass().getClassName()));
