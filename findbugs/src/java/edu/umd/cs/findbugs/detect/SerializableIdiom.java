@@ -213,12 +213,13 @@ public class SerializableIdiom extends OpcodeStackDetector
 					;
 				if (!isGUIClass) {
 					JavaClass o = obj;
-					while (o != null) {
+					while (true) {
 						try {
 	                        o = o.getSuperClass();
                         } catch (ClassNotFoundException e) {
 	                       break;
                         }
+                        if (o == null) break;
 						if (o.getClassName().startsWith("java.awt") 
 								|| o.getClassName().startsWith("javax.swing")) {
 							isGUIClass = true;
