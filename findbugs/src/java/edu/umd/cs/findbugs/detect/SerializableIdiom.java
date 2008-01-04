@@ -203,7 +203,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 		// Is this a GUI  or other class that is rarely serialized?
 
 			isGUIClass = false;
-			if (!directlyImplementsExternalizable && !implementsSerializableDirectly) {
+			if (true || !directlyImplementsExternalizable && !implementsSerializableDirectly) {
 				isGUIClass =
 				(Subtypes2.instanceOf(obj, "java.lang.Throwable")
 						|| Subtypes2.instanceOf(obj, "java.awt.Component")
@@ -213,19 +213,18 @@ public class SerializableIdiom extends OpcodeStackDetector
 					;
 				if (!isGUIClass) {
 					JavaClass o = obj;
-					while (true) {
-						try {
-	                        o = o.getSuperClass();
-                        } catch (ClassNotFoundException e) {
-	                       break;
-                        }
-                        if (o == null) break;
+					while (o != null) {
 						if (o.getClassName().startsWith("java.awt") 
 								|| o.getClassName().startsWith("javax.swing")) {
 							isGUIClass = true;
 							break;
 						}
-						}
+						try {
+	                        o = o.getSuperClass();
+                        } catch (ClassNotFoundException e) {
+	                       break;
+                        }
+					}
 					
 				}
 			}
