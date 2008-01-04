@@ -302,6 +302,8 @@ public class FindDeadLocalStores implements Detector {
 					Instruction prevIns = prevInsHandle.getInstruction();
 					boolean foundDeadClassInitialization = false;
 					String initializationOf = null;
+					if (prevIns instanceof ConstantPushInstruction) 
+						continue; // not an interesting dead store
 					if (prevIns instanceof GETSTATIC) {
 							GETSTATIC getStatic = (GETSTATIC)prevIns;
 							ConstantPoolGen cpg = methodGen.getConstantPool();
