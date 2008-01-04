@@ -205,6 +205,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			isGUIClass = !directlyImplementsExternalizable && !implementsSerializableDirectly && 
 				(Subtypes2.instanceOf(obj, "java.lang.Throwable")
 						|| Subtypes2.instanceOf(obj, "java.awt.Component")
+						|| Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
 						|| Subtypes2.instanceOf(obj, "java.awt.event.ActionListener")
 						|| Subtypes2.instanceOf(obj, "java.util.EventListener"))
 					;
