@@ -304,7 +304,7 @@ public class FindDeadLocalStores implements Detector {
 					String initializationOf = null;
 					if (prevIns instanceof ConstantPushInstruction) 
 						continue; // not an interesting dead store
-					if (prevIns instanceof GETSTATIC) {
+					else if (prevIns instanceof GETSTATIC) {
 							GETSTATIC getStatic = (GETSTATIC)prevIns;
 							ConstantPoolGen cpg = methodGen.getConstantPool();
 							foundDeadClassInitialization =  getStatic.getFieldName(cpg).startsWith("class$")
@@ -327,7 +327,8 @@ public class FindDeadLocalStores implements Detector {
 							ConstantClass v = (ConstantClass) ldc.getValue(methodGen.getConstantPool());
 							initializationOf = ClassName.toSignature(v.getBytes(javaClass.getConstantPool()));
 							foundDeadClassInitialization = true;
-						}
+						} else
+							continue; // not an interesting DLS
 						
 					}
 					if (foundDeadClassInitialization) {
