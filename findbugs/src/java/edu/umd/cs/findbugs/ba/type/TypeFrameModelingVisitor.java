@@ -423,8 +423,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     
 	@Override
 	public void visitCHECKCAST(CHECKCAST obj) {
-		consumeStack(obj);
-		pushValue(obj.getType(getCPG()));
+		
+        try {
+        	Type t = getFrame().popValue();
+	        if (t instanceof NullType)
+				pushValue(t);
+			else pushValue(obj.getType(getCPG()));
+        } catch (DataflowAnalysisException e) {
+        	throw new InvalidBytecodeException("Stack underflow for " + obj + ": " + e.getMessage());
+        }
 	}
 
 	@Override
