@@ -22,66 +22,33 @@ package de.tobject.findbugs.properties;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
-import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -91,13 +58,8 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.ProjectUtilities;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 
 /**
  * Project properties page for setting FindBugs properties.
@@ -111,37 +73,32 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
  */
 public class FindbugsPropertyPage extends PropertyPage {
 
-	private static final String COLUMN_PROPS_DESCRIPTION = "description"; //$NON-NLS-1$
-	private static final String COLUMN_PROPS_NAME = "name"; //$NON-NLS-1$
-	private static final String COLUMN_PROPS_BUG_ABBREV = "bug codes"; //$NON-NLS-1$
 	private boolean initialEnabled;
-	private Button chkEnableFindBugs;
-	private Combo minPriorityCombo;
-	/*
-	private Button chkDisplayFalseWarnings;
-	*/
-	private Button[] chkEnableBugCategoryList;
-	private String[] bugCategoryList;
 	private UserPreferences origUserPreferences;
 	private UserPreferences currentUserPreferences;
 	private IProject project;
-	protected CheckboxTableViewer availableFactoriesTableViewer;
-	protected Map<DetectorFactory, String> factoriesToBugAbbrev;
-	private Button restoreDefaultsButton;
 
+	private Button chkEnableFindBugs;
+	private Button restoreDefaultsButton;
 	private ComboViewer effortViewer;
-	private EffortPlaceHolder[] effortLevels;
-	protected static boolean DEBUG;
+	private EffortPlaceHolder defaultEffortLevel;
+	private TabFolder tabFolder;
+	private DetectorConfigurationTab detectorTab;
+	private FilterFilesTab filterFilesTab;
+	private ReportConfigurationTab reportConfigurationTab;
+	private Map<DetectorFactory, Boolean> visibleDetectors;
 
 	/**
 	 * Constructor for FindbugsPropertyPage.
 	 */
 	public FindbugsPropertyPage() {
 		super();
+		visibleDetectors = new HashMap<DetectorFactory, Boolean>();
 	}
 
-	/**
-	 * @see PreferencePage#createContents(Composite)
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	protected Control createContents(Composite parent) {
@@ -155,98 +112,34 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		collectUserPreferences();
 
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		composite.setLayout(layout);
+		createGlobalElements(parent);
 
-		chkEnableFindBugs = new Button(composite, SWT.CHECK);
-		chkEnableFindBugs.setText(getMessage("property.runAuto"));
-		initialEnabled = isEnabled();
-		chkEnableFindBugs.setSelection(initialEnabled);
+		createConfigurationTabFolder(parent);
 
-		Composite prioGroup = new Composite(composite, SWT.NONE);
-		GridLayout prioLayout = new GridLayout(2, false);
-		prioGroup.setLayout(prioLayout);
+		createDefaultsButton(parent);
 
-		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
-		minPrioLabel.setText(getMessage("property.minPriority"));
-		minPrioLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		return parent;
+	}
 
-		minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
-		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
-		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
-		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
-		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
-		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				String data = minPriorityCombo.getText();
-				if(DEBUG) {
-					System.out.println("Minimum priority changed to " + data + "!");
-				}
-				currentUserPreferences.getFilterSettings().setMinPriority(data);
-			}
-		});
-		// effort
-		Label effortLabel = new Label(prioGroup, SWT.NULL);
-		effortLabel.setText(getMessage("property.effort"));
-		effortLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN
-				| SWT.READ_ONLY);
-		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
-		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		effortLevels = new EffortPlaceHolder[] {
-				new EffortPlaceHolder(getMessage("property.effortmin"),
-						UserPreferences.EFFORT_MIN),
-				new EffortPlaceHolder(getMessage("property.effortdefault"),
-						UserPreferences.EFFORT_DEFAULT),
-				new EffortPlaceHolder(getMessage("property.effortmax"),
-						UserPreferences.EFFORT_MAX) };
-		effortViewer.add(effortLevels);
+	/**
+	 * @param composite
+	 */
+	private void createConfigurationTabFolder(Composite composite) {
+		tabFolder = new TabFolder(composite, SWT.TOP);
+		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL | GridData.GRAB_VERTICAL);
+		layoutData.verticalIndent = -5;
+		tabFolder.setLayoutData(layoutData);
 
-		/*
-		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
-		chkDisplayFalseWarnings.setText("Display false warnings");
-		GridData chkDisplayFalseWarningsLayoutData =
-			new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
-		chkDisplayFalseWarningsLayoutData.horizontalIndent = 15;
-		chkDisplayFalseWarnings.setLayoutData(chkDisplayFalseWarningsLayoutData);
-		chkDisplayFalseWarnings.setSelection(
-				origUserPreferences.getFilterSettings().displayFalseWarnings());
-		*/
+		detectorTab = new DetectorConfigurationTab(tabFolder, this, SWT.NONE);
+		reportConfigurationTab = new ReportConfigurationTab(tabFolder, this, SWT.NONE);
+		filterFilesTab = new FilterFilesTab(tabFolder, this, SWT.NONE);
+	}
 
-		Composite categoryGroup = new Composite(composite, SWT.NONE);
-		categoryGroup.setLayout(new GridLayout(2, true));
-
-		Label activeCategoriesLabel = new Label(categoryGroup, SWT.NONE);
-		activeCategoriesLabel.setText(getMessage("property.enableCategory"));
-		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-		buildBugCategoryList(categoryGroup, project);
-		
-				
-		String effort = currentUserPreferences.getEffort();
-		for (int i = 0; i < effortLevels.length; i++) {
-			if (effortLevels[i].getEffortLevel().equals(effort)) {
-				effortViewer.setSelection(new StructuredSelection(
-						effortLevels[i]), true);
-			}
-		}
-		effortViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-		
-					public void selectionChanged(SelectionChangedEvent event) {
-						EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
-								.getSelection()).getFirstElement();
-						currentUserPreferences.setEffort(placeHolder
-								.getEffortLevel());
-					}
-				});
-		
-		createFilterTable(composite, FilterKind.INCLUDE);
-		createFilterTable(composite, FilterKind.EXCLUDE);
-		createFilterTable(composite, FilterKind.EXCLUDE_BUGS);
-		
+	/**
+	 * @param composite
+	 */
+	private void createDefaultsButton(Composite composite) {
 		restoreDefaultsButton = new Button(composite, SWT.NONE);
 		restoreDefaultsButton.setText(getMessage("property.restoreSettings"));
 		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -259,188 +152,73 @@ public class FindbugsPropertyPage extends PropertyPage {
 				restoreDefaultSettings();
 			}
 		});
-
-		return composite;
 	}
 
-	enum FilterKind {
-		INCLUDE("property.includefilter") {
-			Collection<String> selectedFiles(UserPreferences u) {
-				return u.getIncludeFilterFiles();
-			}
 
-			Collection<String> excludedFiles(UserPreferences u) {
-				return u.getExcludeFilterFiles();
-			}
-			void setFiles(UserPreferences u, Collection<String> files) {
-				u.setIncludeFilterFiles(files);
-			}
-		},
-		EXCLUDE("property.excludefilter") {
-			Collection<String> selectedFiles(UserPreferences u) {
-				return u.getExcludeFilterFiles();
-			}
-
-			Collection<String> excludedFiles(UserPreferences u) {
-				return u.getIncludeFilterFiles();
-			}
-			void setFiles(UserPreferences u, Collection<String> files) {
-				u.setExcludeFilterFiles(files);
-			}
-		},
-		EXCLUDE_BUGS("property.excludebugs") {
-			Collection<String> selectedFiles(UserPreferences u) {
-				return u.getExcludeBugsFiles();
-			}
-
-			Collection<String> excludedFiles(UserPreferences u) {
-				return Collections.emptyList();
-			}
-			void setFiles(UserPreferences u, Collection<String> files) {
-				u.setExcludeBugsFiles(files);
-			}
-		};
-		final String propertyName;
-
-		FilterKind(String propertyName) {
-			this.propertyName = propertyName;
-		}
-
-		abstract Collection<String> selectedFiles(UserPreferences u);
-
-		abstract Collection<String> excludedFiles(UserPreferences u);
-		abstract void setFiles(UserPreferences u, Collection<String> files);
-	}
-
-	private void createFilterTable(Composite parent, final FilterKind kind) {
-		Composite tableComposite = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout(2, false);
+	/**
+	 * @param parent
+	 */
+	private void createGlobalElements(Composite parent) {
+		Composite globalGroup = new Composite(parent, SWT.TOP);
+		GridLayout layout = new GridLayout(2,false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
-		tableComposite.setLayout(layout);
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true, 2, 1));
-		Label titleLabel = new Label(tableComposite, SWT.NULL);
-		final String title = getMessage(kind.propertyName);
-		
-		titleLabel.setText(title);
-		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true,
-				false, 2, 1));
-		final TableViewer viewer = new TableViewer(tableComposite, SWT.MULTI
-				| SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new BaseWorkbenchContentProvider());
-		viewer.setLabelProvider(new WorkbenchLabelProvider());
-		viewer.getControl().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		Collection<String> filterFiles = kind.selectedFiles(currentUserPreferences);
-		
-		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
-		if (filterFiles != null) {
-			for (String s : filterFiles) {
-				filters.add(new FilePlaceHolder(project.getFile(s)));
+		globalGroup.setLayout(layout);
+		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.GRAB_HORIZONTAL);
+		layoutData.verticalIndent = -2;
+
+		globalGroup.setLayoutData(layoutData);
+
+
+		initialEnabled = isEnabled();
+
+		chkEnableFindBugs = new Button(globalGroup, SWT.CHECK);
+		chkEnableFindBugs.setText(getMessage("property.runAuto"));
+		chkEnableFindBugs.setSelection(initialEnabled);
+		chkEnableFindBugs.setToolTipText("Enable / disable FindBugs project builder (disabled by default)");
+
+		Composite prioGroup = new Composite(globalGroup, SWT.NONE);
+		GridLayout prioLayout = new GridLayout(2, false);
+		prioGroup.setLayout(prioLayout);
+		layoutData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.GRAB_HORIZONTAL);
+		layoutData.horizontalIndent = -5;
+		layoutData.verticalIndent = -5;
+		prioGroup.setLayoutData(layoutData);
+
+		// effort
+		Label effortLabel = new Label(prioGroup, SWT.NULL);
+		effortLabel.setText(getMessage("property.effort"));
+		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN
+				| SWT.READ_ONLY);
+		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
+		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
+		defaultEffortLevel = new EffortPlaceHolder(getMessage("property.effortdefault"),
+				UserPreferences.EFFORT_DEFAULT);
+		EffortPlaceHolder[] effortLevels = new EffortPlaceHolder[] {
+				new EffortPlaceHolder(getMessage("property.effortmin"),
+						UserPreferences.EFFORT_MIN),
+				defaultEffortLevel,
+				new EffortPlaceHolder(getMessage("property.effortmax"),
+						UserPreferences.EFFORT_MAX) };
+		effortViewer.add(effortLevels);
+
+		String effort = currentUserPreferences.getEffort();
+		for (int i = 0; i < effortLevels.length; i++) {
+			if (effortLevels[i].getEffortLevel().equals(effort)) {
+				effortViewer.setSelection(new StructuredSelection(effortLevels[i]), true);
 			}
 		}
-		viewer.add(filters.toArray());
-		final Button addButton = new Button(tableComposite, SWT.PUSH);
-		String addButtonLabel = getMessage(kind.propertyName +"addbutton");
-
-		addButton.setText(addButtonLabel);
-		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
-				false));
-		addButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileSelectionDialog dialog =
-					new FileSelectionDialog(addButton.getShell(), title, ".xml");
-				dialog.setInput(project);
-				dialog.setAllowMultiple(true);
-				// The validator checks to see if the user's selection
-				// is valid given the type of the object selected (e.g.
-				// it can't be a folder) and the objects that have
-				// already been selected
-				dialog.setValidator(new ISelectionStatusValidator() {
-					public IStatus validate(Object[] selection) {
-						for(int i = 0; i < selection.length; i++) {
-							if(selection[i] instanceof IContainer) {
-								return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-						                IStatus.ERROR, "Folder selected", null);
-							}
-							else if(selection[i] instanceof IFile) {
-								final Collection<String> fFiles = kind.selectedFiles(currentUserPreferences);
-								final Collection<String> fOFiles  = kind.excludedFiles(currentUserPreferences);
-							
-								IFile f = (IFile)selection[i];
-								String fn = f.getProjectRelativePath().toString();
-								if(fOFiles.contains(fn)) {
-									// File is already selected in the
-									// other filter
-									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-							                IStatus.ERROR, "File " + fn +
-							                " already selected in a conflicting list", null);
-								}
-								else if(fFiles.contains(fn)) {
-									// File is already selected in this
-									// filter
-									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-							                IStatus.ERROR, "File " + fn +
-							                " already selected for this filter", null);
-								}
-							}
-						}
-						return new Status(IStatus.OK, PlatformUI.PLUGIN_ID,
-				                IStatus.OK, "", null);
-					}
-				});
-				if (dialog.open() == ElementTreeSelectionDialog.OK) {
-					Object[] result = dialog.getResult();
-					for (int i = 0; i < result.length; i++) {
-						FilePlaceHolder holder = new FilePlaceHolder((IFile) result[i]);
-						filters.add(holder);
-						viewer.add(holder);
-					}
-
-					kind.setFiles(currentUserPreferences, filesToStrings(filters));
-					
-				}
-			}
-		});
-		final Button removeButton = new Button(tableComposite, SWT.PUSH);
-		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
-				true));
-		String removeButtonLabel = getMessage(kind.propertyName +"removebutton");
-
-		removeButton.setText(removeButtonLabel);
-		removeButton.setEnabled(false);
-		removeButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Iterator selectionIter = ((IStructuredSelection) viewer
-						.getSelection()).iterator();
-				while (selectionIter.hasNext()) {
-					Object element = selectionIter.next();
-					FilePlaceHolder holder = (FilePlaceHolder) element;
-					filters.remove(holder);
-					viewer.remove(holder);
-				}
-				kind.setFiles(currentUserPreferences, filesToStrings(filters));
-				
-			}
-		});
-
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				removeButton.setEnabled(!event.getSelection().isEmpty());
+				EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
+						.getSelection()).getFirstElement();
+				currentUserPreferences.setEffort(placeHolder.getEffortLevel());
 			}
 		});
-	}
-
-	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
-		Set<String>result = new LinkedHashSet<String>();
-		for (FilePlaceHolder holder : filters) {
-			result.add(holder.getFile().getProjectRelativePath().toString());
-		}
-
-		return result;
+		effortLabel.setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
+		effortViewer.getCombo().setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
 	}
 
 	private void collectUserPreferences() {
@@ -461,291 +239,16 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * to confirm by clicking the "OK" button.
 	 */
 	private void restoreDefaultSettings() {
+		visibleDetectors.clear();
+
 		// By default, don't run FindBugs automatically
 		chkEnableFindBugs.setSelection(false);
 
-		// Use the default minimum priority (which is medium)
-		minPriorityCombo.setText(ProjectFilterSettings.DEFAULT_PRIORITY);
+		effortViewer.setSelection(new StructuredSelection(defaultEffortLevel), true);
 
-		// By default, all bug categories are enabled
-		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
-			chkEnableBugCategoryList[i].setSelection(true);
-		}
-
-		// Enable only those detectors that are enabled by default
-		TableItem[] itemList =
-			availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < itemList.length; i++) {
-			TableItem item = itemList[i];
-			DetectorFactory factory = (DetectorFactory) item.getData();
-			item.setChecked(factory.isDefaultEnabled());
-		}
-	}
-
-	/**
-	 * Add a horizontal separator to given panel.
-	 *
-	 * @param composite the panel
-	 */
-	private void addSeparator(Composite composite) {
-		Label separator =
-			new Label(composite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.HORIZONTAL);
-		GridData data = new GridData();
-		data.horizontalAlignment = GridData.FILL;
-		data.grabExcessHorizontalSpace = true;
-		separator.setLayoutData(data);
-	}
-
-	/**
-	 * Build list of bug categories to be enabled or disabled.
-	 * Populates chkEnableBugCategoryList and bugCategoryList fields.
-	 *
-	 * @param categoryGroup control checkboxes should be added to
-	 * @param project       the project being configured
-	 */
-	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
-		DetectorFactoryCollection.instance(); // ensure detectors loaded
-
-		List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
-		List<Button> checkBoxList = new LinkedList<Button>();
-		for (Iterator<String> i = bugCategoryList.iterator(); i.hasNext(); ) {
-			String category = i.next();
-			Button checkBox = new Button(categoryGroup, SWT.CHECK);
-			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
-			checkBox.setSelection(origUserPreferences.getFilterSettings().containsCategory(category));
-
-			GridData layoutData = new GridData();
-			layoutData.horizontalIndent = 15;
-			checkBox.setLayoutData(layoutData);
-
-			// Every time a checkbox is clicked, rebuild the detector factory table
-			// to show only relevant entries
-
-			checkBox.addListener(SWT.Selection,
-				new Listener(){
-					public void handleEvent(Event e){
-						if(DEBUG) {
-							System.out.println("Category preferences changed!");
-						}
-						syncSelectedCategories();
-						populateAvailableRulesTable(project);
-					}
-				}
-			);
-
-
-			checkBoxList.add(checkBox);
-		}
-
-		this.chkEnableBugCategoryList = checkBoxList.toArray(new Button[checkBoxList.size()]);
-		this.bugCategoryList =  bugCategoryList.toArray(new String[bugCategoryList.size()]);
-	}
-
-	/**
-	 * Synchronize selected bug category checkboxes with the current user preferences.
-	 */
-	private void syncSelectedCategories() {
-		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
-			Button checkBox = chkEnableBugCategoryList[i];
-			String category = bugCategoryList[i];
-			if (checkBox.getSelection()) {
-				currentUserPreferences.getFilterSettings().addCategory(category);
-			} else {
-				currentUserPreferences.getFilterSettings().removeCategory(category);
-			}
-		}
-	}
-
-	/**
-	 * Build rule table viewer
-	 */
-	private Table buildAvailableRulesTableViewer(
-		Composite parent,
-		IProject project) {
-		final BugPatternTableSorter sorter = new BugPatternTableSorter(this);
-
-		int tableStyle =
-			SWT.BORDER
-				| SWT.H_SCROLL
-				| SWT.V_SCROLL
-				| SWT.SINGLE
-				| SWT.FULL_SELECTION
-				| SWT.CHECK;
-		availableFactoriesTableViewer =
-			CheckboxTableViewer.newCheckList(parent, tableStyle);
-		availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
-
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				if(DEBUG) {
-					System.out.println("Detector selection changed!");
-				}
-				syncUserPreferencesWithTable();
-			}
-		});
-
-		int currentColumnIdx = -1;
-		Table factoriesTable = availableFactoriesTableViewer.getTable();
-
-		TableColumn bugsAbbrevColumn = new TableColumn(factoriesTable, SWT.LEFT);
-		bugsAbbrevColumn.setResizable(true);
-		bugsAbbrevColumn.setText(getMessage("property.bugCodes"));
-		bugsAbbrevColumn.setWidth(100);
-		addColumnSelectionListener(sorter, bugsAbbrevColumn, ++currentColumnIdx);
-
-		TableColumn factoryNameColumn = new TableColumn(factoriesTable, SWT.LEFT);
-		factoryNameColumn.setResizable(true);
-		factoryNameColumn.setText(getMessage("property.detectorName"));
-		factoryNameColumn.setWidth(200);
-		addColumnSelectionListener(sorter, factoryNameColumn, ++currentColumnIdx);
-
-
-		TableColumn bugsDescriptionColumn =
-			new TableColumn(factoriesTable, SWT.FILL);
-		bugsDescriptionColumn.setResizable(true);
-		bugsDescriptionColumn.setText(getMessage("property.detectorDescription"));
-		bugsDescriptionColumn.setWidth(280);
-
-		factoriesTable.setLinesVisible(true);
-		factoriesTable.setHeaderVisible(true);
-
-		availableFactoriesTableViewer.setContentProvider(
-			new DetectorFactoriesContentProvider());
-		availableFactoriesTableViewer.setLabelProvider(
-			new DetectorFactoryLabelProvider(this));
-		availableFactoriesTableViewer.setColumnProperties(
-			new String[] {
-				COLUMN_PROPS_BUG_ABBREV,
-				COLUMN_PROPS_NAME,
-				COLUMN_PROPS_DESCRIPTION });
-
-		availableFactoriesTableViewer.setSorter(sorter);
-
-		populateAvailableRulesTable(project);
-		factoriesTable.setEnabled(true);
-
-		return factoriesTable;
-	}
-
-	/**
-	 * @param sorter
-	 * @param column
-	 */
-	private void addColumnSelectionListener(
-		final BugPatternTableSorter sorter,
-		TableColumn column,
-		final int columnIdx) {
-		column.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				sorter.setSortColumnIndex(columnIdx);
-				availableFactoriesTableViewer.refresh();
-			}
-		});
-	}
-
-	/**
-	 * Return whether or not given DetectorFactory reports bug patterns
-	 * in one of the currently-enabled set of bug categories.
-	 *
-	 * @param factory the DetectorFactory
-	 * @return true if the factory reports bug patterns in one of the
-	 *         currently-enabled bug categories, false if not
-	 */
-	private boolean reportsInEnabledCategory(DetectorFactory factory) {
-		for (Iterator<BugPattern> i = factory.getReportedBugPatterns().iterator(); i.hasNext();) {
-			BugPattern pattern =  i.next();
-			if (currentUserPreferences.getFilterSettings().containsCategory(pattern.getCategory())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Populate the rule table
-	 */
-	private void populateAvailableRulesTable(IProject project) {
-		List<DetectorFactory> allAvailableList = new ArrayList<DetectorFactory>();
-		factoriesToBugAbbrev = new HashMap<DetectorFactory, String>();
-		Iterator<DetectorFactory> iterator =
-			DetectorFactoryCollection.instance().factoryIterator();
-		while (iterator.hasNext()) {
-			DetectorFactory factory = iterator.next();
-
-			// Only configure non-hidden factories
-			if (factory.isHidden()) {
-				if(DEBUG) {
-					System.out.println("Factory " + factory.getFullName() + " is hidden");
-				}
-				continue;
-			}
-
-			// Only add items for detectors which report in currently-enabled categories
-			if (!reportsInEnabledCategory(factory)) {
-				continue;
-			}
-
-			allAvailableList.add(factory);
-			addBugsAbbreviation(factory);
-		}
-
-		availableFactoriesTableViewer.setInput(allAvailableList);
-		TableItem[] itemList =
-			availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < itemList.length; i++) {
-			DetectorFactory rule = (DetectorFactory) itemList[i].getData();
-			//set enabled if defined in configuration
-			if (currentUserPreferences.isDetectorEnabled(rule)) {
-				itemList[i].setChecked(true);
-			}
-		}
-	}
-
-	/**
-	 * @param factory
-	 */
-	protected void addBugsAbbreviation(DetectorFactory factory) {
-		factoriesToBugAbbrev.put(factory, createBugsAbbreviation(factory));
-	}
-
-	protected String getBugsAbbreviation(DetectorFactory factory) {
-		String abbr =  factoriesToBugAbbrev.get(factory);
-		if (abbr == null) {
-			abbr = createBugsAbbreviation(factory);
-		}
-		if (abbr == null) {
-			abbr = ""; //$NON-NLS-1$
-		}
-		return abbr;
-	}
-
-	protected String createBugsAbbreviation(DetectorFactory factory) {
-		StringBuffer sb = new StringBuffer();
-		Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-		LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
-		for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
-			BugPattern pattern = iter.next();
-			String abbr = pattern.getAbbrev();
-			abbrs.add(abbr);
-		}
-		for (Iterator<String> iter = abbrs.iterator(); iter.hasNext();) {
-			String element = iter.next();
-			sb.append(element);
-			if (iter.hasNext()) {
-				sb.append("|"); //$NON-NLS-1$
-			}
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Build a label
-	 */
-	private Label buildLabel(Composite parent, String msgKey) {
-		Label label = new Label(parent, SWT.NONE);
-		String message = getMessage(msgKey);
-		label.setText(message == null ? msgKey : message);
-		return label;
+		getDetectorTab().restoreDefaultSettings();
+		reportConfigurationTab.restoreDefaultSettings();
+		filterFilesTab.restoreDefaultSettings();
 	}
 
 	/**
@@ -754,59 +257,41 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	@Override
 	public boolean performOk() {
-		boolean selection = this.chkEnableFindBugs.getSelection();
-		boolean result = true;
+		boolean builderEnabled = chkEnableFindBugs.getSelection();
 
-		// Keep of track of whether we need to update
-		// which warning markers are shown.
-		boolean filterOptionsChanged = false;
+		// Update whether or not FindBugs is run automatically.
+		if (!initialEnabled && builderEnabled) {
+			addNature();
+		} else if (initialEnabled && !builderEnabled) {
+			removeNature();
+		}
 
 		// Have user preferences for project changed?
-		// If so, write them to the user preferences file.
+		// If so, write them to the user preferences file & re-run builder
 		if (!currentUserPreferences.equals(origUserPreferences)) {
-			if(DEBUG) {
-				System.out.println("User preferences for project changed!");
-			}
 			try {
 				FindbugsPlugin.saveUserPreferences(project, currentUserPreferences);
 			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not store FindBugs preferences for project");
 			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
-			}
-
-			// Have filter settings changed?
-			// If so, we need to redisplay warnings.
-			if (!currentUserPreferences.getFilterSettings().equals(
-					origUserPreferences.getFilterSettings())) {
-				if(DEBUG) {
-					System.out.println("Filter setting for project changed!");
-				}
-				filterOptionsChanged = true;
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not store FindBugs preferences for project");
 			}
 
 			// If already enabled (and still enabled) trigger a Findbugs rebuild here
-			if (this.initialEnabled && selection) {
+			if (builderEnabled) {
 				runFindbugsBuilder();
 			}
 		}
 
-		// Update whether or not FindBugs is run automatically.
-		if (!this.initialEnabled && selection == true) {
-			result = addNature();
-		}
-		else if (this.initialEnabled && selection == false) {
-			result = removeNature();
-		}
-
-		if (result && filterOptionsChanged) {
-			if(DEBUG) {
-				System.out.println("Redisplaying markers!");
-			}
+		// if filter settings changed, and builder is not enabled, manually trigger update
+		if (!builderEnabled
+				&& !currentUserPreferences.getFilterSettings().equals(
+						origUserPreferences.getFilterSettings())) {
 			MarkerUtil.redisplayMarkers(project, getShell());
 		}
-
-		return result;
+		return true;
 	}
 
 	/**
@@ -817,17 +302,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 *   assigned to the project, <code>false</code> otherwise.
 	 */
 	private boolean isEnabled() {
-		boolean result = false;
-
 		try {
-			if (this.project.hasNature(FindbugsPlugin.NATURE_ID)) {
-				result = true;
-			}
+			return project.hasNature(FindbugsPlugin.NATURE_ID);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e,
+			"Error while testing FindBugs nature for project " + project);
 		}
-		catch (CoreException e) {
-			System.err.println("Exception: " + e); //$NON-NLS-1$
-		}
-		return result;
+		return false;
 	}
 
 	protected IProject getProject() {
@@ -835,28 +316,29 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	private void runFindbugsBuilder() {
-		ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
+		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 		try {
-			monitor.run(true, true, new IRunnableWithProgress() {
+			dialog.run(true, true, new IRunnableWithProgress() {
 
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				public void run(IProgressMonitor monitor) {
 					try {
-						getProject().build(IncrementalProjectBuilder.CLEAN_BUILD, FindbugsPlugin.BUILDER_ID, null, monitor);
+						getProject().build(IncrementalProjectBuilder.CLEAN_BUILD,
+								FindbugsPlugin.BUILDER_ID, null, monitor);
 					} catch (OperationCanceledException e) {
 						// Do nothing when operation cancelled.
-					}catch (CoreException e) {
+					} catch (CoreException e) {
 						FindbugsPlugin.getDefault().logException(e,
-						"Error while runnning FindBugs builder for project");
+								"Error while runnning FindBugs builder for project");
 					}
 				}
 
 			});
 		} catch (InvocationTargetException e) {
 			FindbugsPlugin.getDefault().logException(e,
-			"Error while runnning FindBugs builder for project");
+					"Error while runnning FindBugs builder for project");
 		} catch (InterruptedException e) {
 			FindbugsPlugin.getDefault().logException(e,
-			"Findbugs builder was interrupted");
+					"Findbugs builder was interrupted");
 		}
 	}
 
@@ -867,19 +349,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 *   be added successfully, <code>false</code> otherwise.
 	 */
 	private boolean addNature() {
-		boolean result = true;
 		try {
 			NatureWorker worker = new NatureWorker(true);
 			ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
 			monitor.run(true, true, worker);
+			return true;
+		} catch (InvocationTargetException e) {
+			FindbugsPlugin.getDefault().logException(e, "'Add nature' failed");
+		} catch (InterruptedException e) {
+			FindbugsPlugin.getDefault().logException(e, "'Add nature' interrupted");
 		}
-		catch (InvocationTargetException e) {
-			System.err.println("Exception: " + e); //$NON-NLS-1$
-		}
-		catch (InterruptedException e) {
-			System.err.println("Exception: " + e); //$NON-NLS-1$
-		}
-		return result;
+		return false;
 	}
 
 	/**
@@ -888,24 +368,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 *   be added successfully, <code>false</code> otherwise.
 	 */
 	private boolean removeNature() {
-		boolean result = true;
 		try {
-//			MarkerUtil.removeMarkers(project);
-
 			NatureWorker worker = new NatureWorker(false);
 			ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
 			monitor.run(true, true, worker);
+			return true;
+		} catch (InvocationTargetException e) {
+			FindbugsPlugin.getDefault().logException(e, "'Remove nature' failed");
+		} catch (InterruptedException e) {
+			FindbugsPlugin.getDefault().logException(e, "'Remove nature' interrupted");
 		}
-		catch (InvocationTargetException e) {
-			System.err.println("Exception: " + e); //$NON-NLS-1$
-		}
-		catch (InterruptedException e) {
-			System.err.println("Exception: " + e); //$NON-NLS-1$
-		}
-//		catch (CoreException e) {
-//			System.err.println("Exception: " + e); //$NON-NLS-1$
-//		}
-		return result;
+		return false;
 	}
 
 	private final class NatureWorker implements IRunnableWithProgress {
@@ -922,14 +395,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 			try {
 				if (add) {
 					ProjectUtilities.addFindBugsNature(project, monitor);
-				}
-				else {
+				} else {
 					ProjectUtilities.removeFindBugsNature(project, monitor);
 				}
-			}
-			catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e, "Core exception on property page");
-				System.err.println("Exception: " + e); //$NON-NLS-1$
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Core exception in NatureWorker");
 			}
 		}
 	}
@@ -944,216 +415,30 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	/**
-	 * Disables all unchecked detector factories and enables checked factory detectors, leaving
-	 * those not in the table unmodified.
-	 * @param userPrefs the UserPreferences to adjust to match the UI table
+	 * @return the currentUserPreferences
 	 */
-	protected void syncUserPreferencesWithTable(){
-		TableItem[] itemList =
-			availableFactoriesTableViewer.getTable().getItems();
-		for (int i = 0; i < itemList.length; i++) {
-			DetectorFactory factory = (DetectorFactory) itemList[i].getData();
-
-			//set enabled if defined in configuration
-			currentUserPreferences.enableDetector(factory, itemList[i].getChecked());
-		}
+	UserPreferences getCurrentUserPreferences() {
+		return currentUserPreferences;
+	}
+	/**
+	 * @return the origUserPreferences
+	 */
+	UserPreferences getOriginalUserPreferences() {
+		return origUserPreferences;
 	}
 
 	/**
-	 * @author Andrei
+	 * @return detectors, which markers will be shown in Eclipse
 	 */
-	private static final class BugPatternTableSorter
-		extends ViewerSorter
-		implements Comparator<DetectorFactory> {
-		private int sortColumnIndex;
-		private int lastSortColumnIdx;
-		boolean revertOrder;
-		private FindbugsPropertyPage page;
-
-		BugPatternTableSorter(FindbugsPropertyPage page) {
-			this.page = page;
-		}
-
-		@Override
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			return compare((DetectorFactory)e1, (DetectorFactory)e2);
-		}
-
-		/**
-		 * @param e1
-		 * @param e2
-		 * @return
-		 */
-		public int compare(DetectorFactory factory1, DetectorFactory factory2) {
-			int result = 0;
-			String s1, s2;
-			switch (getSortColumnIndex()) {
-				case 0 :
-					s1 = page.getBugsAbbreviation(factory1);
-					s2 = page.getBugsAbbreviation(factory2);
-					break;
-				case 1 :
-				default :
-					s1 = "" + factory1.getShortName(); //$NON-NLS-1$
-					s2 = factory2.getShortName();
-					break;
-
-			}
-
-			result = s1.compareTo(s2);
-
-			// second sort if elements are equals - on opposite criteria
-			if (result == 0) {
-				switch (getSortColumnIndex()) {
-					case 0 :
-						s1 = "" + factory1.getShortName(); //$NON-NLS-1$
-						s2 = factory2.getShortName();
-						break;
-					case 1 :
-					default :
-						s1 = page.getBugsAbbreviation(factory1);
-						s2 = page.getBugsAbbreviation(factory2);
-						break;
-				}
-				result = s1.compareTo(s2);
-			}
-			else if (revertOrder) {
-				// same column selected twice - revert first order
-				result = -result;
-			}
-			return result;
-		}
-
-		@Override
-		public boolean isSorterProperty(Object element, String property) {
-			return property.equals(COLUMN_PROPS_NAME)
-				|| property.equals(COLUMN_PROPS_BUG_ABBREV);
-		}
-
-		/**
-		 * @param sortColumnIndex The sortColumnIndex to set.
-		 */
-		public void setSortColumnIndex(int sortColumnIndex) {
-			this.lastSortColumnIdx = this.sortColumnIndex;
-			this.sortColumnIndex = sortColumnIndex;
-			revertOrder = !revertOrder && lastSortColumnIdx == sortColumnIndex;
-		}
-
-		/**
-		 * @return Returns the sortColumnIndex.
-		 */
-		public int getSortColumnIndex() {
-			return sortColumnIndex;
-		}
+	Map<DetectorFactory, Boolean> getVisibleDetectors() {
+		return visibleDetectors;
 	}
 
 	/**
-	 * @author Andrei
+	 * @return the detectorTab
 	 */
-	private static final class DetectorFactoryLabelProvider
-		implements ITableLabelProvider {
-		private FindbugsPropertyPage page;
-		DetectorFactoryLabelProvider(FindbugsPropertyPage page) {
-			this.page = page;
-		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-		 */
-		public void addListener(ILabelProviderListener listener) {
-			// ignored
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-		 */
-		public void dispose() {
-			// ignored
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-		 */
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-		 */
-		public void removeListener(ILabelProviderListener listener) {
-			// ignored
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-		 */
-		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO ignored - but if we have images for different detectors ...
-			return null;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-		 */
-		public String getColumnText(Object element, int columnIndex) {
-
-			if (!(element instanceof DetectorFactory)) {
-				return null;
-			}
-			DetectorFactory factory = (DetectorFactory) element;
-
-			switch (columnIndex) {
-				case 0 :
-					return page.getBugsAbbreviation(factory);
-				case 1 :
-					return factory.getShortName();
-				case 2 :
-					StringBuffer sb = new StringBuffer();
-					Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-					for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
-						BugPattern pattern = iter.next();
-						sb.append(pattern.getShortDescription());
-						if (iter.hasNext()) {
-							sb.append(" | "); //$NON-NLS-1$
-						}
-					}
-					return sb.toString();
-				default :
-					return null;
-			}
-		}
-
-	}
-	/**
-	 * @author Andrei
-	 */
-	private static final class DetectorFactoriesContentProvider
-		implements IStructuredContentProvider {
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-		 */
-		public void dispose() {
-			// ignored
-		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-		 */
-		public void inputChanged(
-			Viewer viewer,
-			Object oldInput,
-			Object newInput) {
-			// ignored
-		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-		 */
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof List) {
-				List list = (List) inputElement;
-				return list.toArray();
-			}
-			return null;
-		}
+	DetectorConfigurationTab getDetectorTab() {
+		return detectorTab;
 	}
 
 	/**
@@ -1186,63 +471,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 				return this;
 			}
 			return null;
-		}
-	}
-
-	private static final class FilePlaceHolder extends WorkbenchAdapter
-			implements IAdaptable {
-
-		private final IFile file;
-
-		public FilePlaceHolder(IFile file) {
-			this.file = file;
-		}
-
-		@Override
-		public String getLabel(Object object) {
-			return file.getProjectRelativePath().toString();
-		}
-
-		@Override
-		public ImageDescriptor getImageDescriptor(Object object) {
-			IWorkbenchAdapter adapter = (IWorkbenchAdapter) file
-					.getAdapter(IWorkbenchAdapter.class);
-			if (adapter != null) {
-				return adapter.getImageDescriptor(file);
-			}
-
-			return super.getImageDescriptor(object);
-		}
-
-		public Object getAdapter(Class adapter) {
-			if (adapter.equals(IWorkbenchAdapter.class)) {
-				return this;
-			}
-			return null;
-		}
-
-		public IFile getFile() {
-			return file;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-			if (obj == this) {
-				return true;
-			}
-			if (obj instanceof FilePlaceHolder) {
-				return file.equals(((FilePlaceHolder) obj).file);
-			}
-
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return file.hashCode();
 		}
 	}
 }
