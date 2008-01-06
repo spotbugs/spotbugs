@@ -38,11 +38,17 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.AbstractFilesCollector;
@@ -52,7 +58,7 @@ import de.tobject.findbugs.builder.FindBugsWorker;
 
 
 
-public class LoadXmlAction implements IObjectActionDelegate {
+public class LoadXmlAction implements IObjectActionDelegate, IEditorActionDelegate {
 
 	/** lock to force no more than one findBugs.execute() task at a time. see
 	  * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/runtime_jobs_locks.htm
@@ -63,6 +69,9 @@ public class LoadXmlAction implements IObjectActionDelegate {
 
 	/** The current selection. */
 	protected ISelection selection;
+
+	/** true if this action is used from editor */
+	private boolean usedInEditor;
 
 	/*
 	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
@@ -79,7 +88,9 @@ public class LoadXmlAction implements IObjectActionDelegate {
 	 */
 	public final void selectionChanged(final IAction action,
 			final ISelection newSelection) {
-		this.selection = newSelection;
+		if(!usedInEditor) {
+			this.selection = newSelection;
+		}
 	}
 
 	/*
@@ -91,7 +102,9 @@ public class LoadXmlAction implements IObjectActionDelegate {
 				//Get the file name from a file dialog
 				FileDialog theDialog = new FileDialog(new Shell(), SWT.APPLICATION_MODAL|SWT.OPEN);
 				String theFileName = theDialog.open();
-				if(theFileName == null) return;
+				if(theFileName == null) {
+					return;
+				}
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 				for (Iterator iter = structuredSelection.iterator(); iter
 						.hasNext();) {
@@ -171,5 +184,22 @@ public class LoadXmlAction implements IObjectActionDelegate {
 
 		runFindBugs.setUser(true);
 		runFindBugs.schedule();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction, org.eclipse.ui.IEditorPart)
+	 */
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		usedInEditor = true;
+		if(targetEditor instanceof AbstractDecoratedTextEditor) {
+			AbstractDecoratedTextEditor editor = (AbstractDecoratedTextEditor) targetEditor;
+			IEditorInput input = editor.getEditorInput();
+			if(input  instanceof IFileEditorInput) {
+				IFileEditorInput editorInput = (IFileEditorInput) input;
+				selection = new StructuredSelection(editorInput.getFile());
+			}
+		} else {
+			selection = null;
+		}
 	}
 }
