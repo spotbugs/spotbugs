@@ -7,20 +7,32 @@ public class TestFieldAnnotations {
 	@NonNull Object x;
 	@CheckForNull Object y;
 
-	void f() {
+	void bug0() {
 		x = y;
 	}
-	void g() {
+	void fp1() {
 		y = x;
 	}
-	void h() {
+	void dodgy0() {
 		if (x == null) System.out.println("Huh?");
 	}
 
-	void i() {
+	void fp2() {
 		if (y != null) {
 			System.out.println(y.hashCode());
 		}
+	}
+	
+	void noop() {}
+	
+	int fp3() {
+		if (y == null) return 0;
+		return y.hashCode();
+	}
+	int fp4() {
+		if (y == null) return 0;
+		noop();
+		return y.hashCode();
 	}
 
 }
