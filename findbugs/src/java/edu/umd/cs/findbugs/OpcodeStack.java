@@ -239,9 +239,15 @@ public class OpcodeStack implements Constants2
 
 			}
 			if (constValue != UNKNOWN) {
-				buf.append(", ");
-				buf.append(constValue);
+				if (constValue instanceof String) {
+					buf.append(", \"");
+					buf.append(constValue);
+					buf.append("\"");
+				} else {
+					buf.append(", ");
+					buf.append(constValue);
 				}
+			}
 			if (source instanceof XField) {
 				buf.append(", ");
 				if (fieldLoadedFromRegister != -1)
@@ -1607,6 +1613,7 @@ public class OpcodeStack implements Constants2
 		 String methodName = dbc.getNameConstantOperand();
 		 String signature = dbc.getSigConstantOperand();
 		 String appenderValue = null;
+		 boolean sawUnknownAppend = false;
 		 Item sbItem = null;
 
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
@@ -1622,21 +1629,33 @@ public class OpcodeStack implements Constants2
 			 } else if ("toString".equals(methodName) && getStackDepth() >= 1) {
 				 Item i = getStackItem(0);
 				 appenderValue = (String)i.getConstant();
-			 } else if ("append".equals(methodName) && signature.indexOf("II)")  == -1 && getStackDepth() >= 2) {
-				 sbItem = getStackItem(1);
-				 Item i = getStackItem(0);
-				 Object sbVal = sbItem.getConstant();
-				 Object sVal = i.getConstant();
-				 if ((sbVal != null) && (sVal != null)) {
-					 appenderValue = sbVal + sVal.toString();
-				 } else if (sbItem.registerNumber >= 0) {
-					OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
-					if (item != null)
-						item.constValue = null;
-				}
+			 } else if ("append".equals(methodName)) { 
+				 if (signature.indexOf("II)")  == -1 && getStackDepth() >= 2) {
+					 sbItem = getStackItem(1);
+					 Item i = getStackItem(0);
+					 Object sbVal = sbItem.getConstant();
+					 Object sVal = i.getConstant();
+					 if ((sbVal != null) && (sVal != null)) {
+						 appenderValue = sbVal + sVal.toString();
+					 } else if (sbItem.registerNumber >= 0) {
+						 OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
+						 if (item != null)
+							 item.constValue = null;
+					 }
+				 } else if (signature.startsWith("([CII)")) {
+					 sawUnknownAppend = true;
+					 sbItem = getStackItem(3);
+					 if (sbItem.registerNumber >= 0) {
+						 OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
+						 if (item != null)
+							 item.constValue = null;
+					 }
+				 } else {
+					 sawUnknownAppend = true;
+				 }
 			 }
 		 }
-		 if (seen == INVOKESPECIAL && clsName.equals("java/io/FileOutputStream") && methodName.equals("<init>") 
+		 else if (seen == INVOKESPECIAL && clsName.equals("java/io/FileOutputStream") && methodName.equals("<init>") 
 					&& (signature.equals("(Ljava/io/File;Z)V") || signature.equals("(Ljava/lang/String;Z)V"))) {
 			 	OpcodeStack.Item item = getStackItem(0);
 				Object value = item.getConstant();
@@ -1650,7 +1669,7 @@ public class OpcodeStack implements Constants2
 					return;
 				}
 		 }
-		 if (seen == INVOKESPECIAL && clsName.equals("java/io/BufferedOutputStream") && methodName.equals("<init>") 
+		 else if (seen == INVOKESPECIAL && clsName.equals("java/io/BufferedOutputStream") && methodName.equals("<init>") 
 					&& signature.equals("(Ljava/io/OutputStream;)V")) {
 			 	OpcodeStack.Item item = getStackItem(0);
 	
@@ -1665,7 +1684,8 @@ public class OpcodeStack implements Constants2
 		 }
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
-		 if (appenderValue != null && getStackDepth() > 0) {
+
+		 if ((sawUnknownAppend || appenderValue != null) && getStackDepth() > 0) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
 			 if (sbItem != null) {
