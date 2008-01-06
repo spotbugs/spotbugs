@@ -22,9 +22,9 @@ package de.tobject.findbugs.builder;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,9 +53,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.SWT;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -117,7 +114,7 @@ public class FindBugsWorker {
 	public void work(Collection<IFile> files, boolean incremental) throws CoreException {
 		work2(files, incremental, false, null);
 	}
-	
+
 	public void loadXml(Collection<IFile> files, boolean incremental, String fileName) throws CoreException {
 		work2(files, incremental, true, fileName);
 	}
@@ -247,34 +244,32 @@ public class FindBugsWorker {
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
 		configureExtended(findBugs);
-		
-		
+
+
 
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
 					if(loadXml){
-						System.out.println("Loading XML...");
-						if(!(xmlFileName.equals("")))
-						{
-							try
-							{
-									FileInputStream input = new FileInputStream(xmlFileName);
-									bugReporter.reportBugsFromXml(input, findBugsProject);
-							}
-							catch(FileNotFoundException e)
-							{
-								FindbugsPlugin.getDefault().logException(e, "XML file not found: " + xmlFileName);
-							}
-							catch(DocumentException e)
-							{
-								FindbugsPlugin.getDefault().logException(e, "Invalid XML file: " + xmlFileName);
+						if (DEBUG) {
+							System.out.println("Loading XML...");
+						}
+						if (!(xmlFileName.equals(""))) {
+							try {
+								FileInputStream input = new FileInputStream(xmlFileName);
+								bugReporter.reportBugsFromXml(input, findBugsProject);
+							} catch (FileNotFoundException e) {
+								FindbugsPlugin.getDefault().logException(e,
+										"XML file not found: " + xmlFileName);
+							} catch (DocumentException e) {
+								FindbugsPlugin.getDefault().logException(e,
+										"Invalid XML file: " + xmlFileName);
 							}
 						}
-					}
-					else
-					{
-						System.out.println("Finding bugs");
+					} else {
+						if (DEBUG) {
+							System.out.println("Finding bugs");
+						}
 						findBugs.execute();
 					}
 				} catch (InterruptedException e) {
