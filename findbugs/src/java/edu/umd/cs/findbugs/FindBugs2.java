@@ -215,6 +215,16 @@ public class FindBugs2 implements IFindBugsEngine {
 			IOException ioe = new IOException("IOException while scanning codebases");
 			ioe.initCause(e);
 			throw ioe;
+		} catch (OutOfMemoryError e) {
+			System.err.println("Out of memory");
+			System.err.println("Total memory: " + Runtime.getRuntime().maxMemory() / 1000000 + "M");
+			System.err.println(" free memory: " + Runtime.getRuntime().freeMemory() / 1000000 + "M");
+			
+			for(String s : project.getFileList()) 
+				System.err.println("Analyzed: " + s);
+			for(String s : project.getAuxClasspathEntryList()) 
+				System.err.println("     Aux: " + s);
+			throw e;
 		} finally {
 			AnalysisContext.removeCurrentAnalysisContext();
 			Global.removeAnalysisCacheForCurrentThread();
