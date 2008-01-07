@@ -1948,7 +1948,7 @@ as expected.
      <Match>
        <Class name="com.foobar.MyClass" />
        <Method name="someMethod" />
-       <Bug code="DLS_DEAD_LOCAL_STORE" />
+       <Bug pattern="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
 </FindBugsFilter&gt;
