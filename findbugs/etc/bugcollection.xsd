@@ -223,6 +223,7 @@
 						<xs:attribute name="cpu_seconds" type="xs:float" use="optional" /> <!-- could move to xs:duration -->
 						<xs:attribute name="clock_seconds" type="xs:float" use="optional" />
 						<xs:attribute name="peak_mbytes" type="xs:float" use="optional" />
+						<xs:attribute name="alloc_mbytes" type="xs:float" use="optional" />
 						<xs:attribute name="gc_seconds" type="xs:float" use="optional" />
 						<xs:attribute name="priority_1" type="xs:unsignedInt" use="optional" />
 						<xs:attribute name="priority_2" type="xs:unsignedInt" use="optional" />
