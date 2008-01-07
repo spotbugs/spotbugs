@@ -426,9 +426,10 @@ public class FindDeadLocalStores implements Detector {
 					// TODO: why is this significant?
 					propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
 				}
-				if (!storeOfNull && typeOfValue != null) {
+				if (!storeOfNull && typeOfValue != null && !propertySet.containsProperty(DeadLocalStoreProperty.EXCEPTION_HANDLER)) {
 					String signatureOfValue = typeOfValue.getSignature();
-					if (signatureOfValue.startsWith("Ljava/sql/") || signatureOfValue.startsWith("Ljavax/sql/"))
+					if ((signatureOfValue.startsWith("Ljava/sql/") || signatureOfValue.startsWith("Ljavax/sql/")) 
+							&& !signatureOfValue.endsWith("Exception"))
 						propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_DATABASE_VALUE);
 				}
 
