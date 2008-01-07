@@ -114,7 +114,8 @@ public class MineBugHistoryTask extends AbstractFindBugsTask {
         addBoolOption("-summary", summary);
 		addArg(inputFile.getName());
 		if(outputFile != null) {
-	        addArg(outputFile.getName());
+			// Don't use .getName() because it discards path
+	        addArg(outputFile.getAbsolutePath());
 		}
 	}
 
