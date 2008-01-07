@@ -181,9 +181,10 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 		if (!relaxedReporting) {
 			for (T warningProperty : map.keySet()) {
 				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
-				if (adj == PriorityAdjustment.FALSE_POSITIVE)
+				if (adj == PriorityAdjustment.FALSE_POSITIVE) {
 					falsePositive = true;
-				else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
+					atMostLow = true;
+				} else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
 					aLittleBitLower++;
 				else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY)
 					aLittleBitLower--;
