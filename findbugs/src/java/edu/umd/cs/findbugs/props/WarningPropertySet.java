@@ -218,13 +218,13 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 			if (atMostMedium)
 				priority = Math.max(Detector.NORMAL_PRIORITY, priority);
 			
-			if (atMostLow)
+			if (falsePositive && !atLeastMedium)
+				return Detector.EXP_PRIORITY + 1;
+			else if (atMostLow)
 				return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
 			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY)
 				priority = Detector.NORMAL_PRIORITY;
-			else if (falsePositive && !atLeastMedium)
-				return Detector.EXP_PRIORITY + 1;
-
+	
 			if (priority < Detector.HIGH_PRIORITY)
 				priority = Detector.HIGH_PRIORITY;
 			else if (priority > Detector.EXP_PRIORITY)
