@@ -29,6 +29,7 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -169,6 +170,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						int variable;
 						boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
 						boolean sawThrow = false;
+						boolean sawSystemExit = false;
+						boolean sawBranch = false;
 						State state = State.INITIAL;
 						
 						
@@ -221,6 +224,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 							if (opcode == Opcodes.INVOKEINTERFACE) return;
+							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit"))
+								sawSystemExit = true;
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
 							if (desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
 							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
@@ -229,9 +234,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							// System.out.println("Added call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner);
 							state = State.AFTER_METHOD_CALL;
 						}
+						@Override
+						public void visitJumpInsn(int opcode, Label label) {
+							sawBranch = true;
+							super.visitJumpInsn(opcode, label);
 
+						}
 						public void visitEnd() {
-							if (sawThrow && !sawReturn) mBuilder.setIsUnconditionalThrower();
+							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) mBuilder.setIsUnconditionalThrower();
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									methodInfo);

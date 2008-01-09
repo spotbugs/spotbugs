@@ -133,6 +133,7 @@ public class AssertionMethods implements Constants {
 									|| methodName.equals("logTerminal")
 									|| methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
+									|| methodNameLC.equals("exit")
 									|| methodNameLC.startsWith("fail")
 									|| methodNameLC.startsWith("fatal")
 									|| methodNameLC.indexOf("assert") >= 0
