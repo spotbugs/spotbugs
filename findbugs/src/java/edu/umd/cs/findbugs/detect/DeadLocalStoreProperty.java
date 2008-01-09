@@ -13,6 +13,10 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 		super(name, priorityAdjustment);
 	}
 
+	/** A store that seemed to have been cloned (an inlined finally block or JSR? */
+	public static final DeadLocalStoreProperty CLONED_STORE = new DeadLocalStoreProperty(
+			"CLONED_STORE", PriorityAdjustment.FALSE_POSITIVE);
+	
 	/** Store is killed by a subsequent store. */
 	public static final DeadLocalStoreProperty KILLED_BY_SUBSEQUENT_STORE = new DeadLocalStoreProperty(
 			"KILLED_BY_SUBSEQUENT_STORE", PriorityAdjustment.LOWER_PRIORITY);
