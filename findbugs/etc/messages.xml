@@ -3885,6 +3885,7 @@ if the file could not be successfully deleted (rather than
 throwing an Exception).
 If you don't check the result, you won't notice if the method invocation
 signals unexpected behavior by returning an atypical return value.
+</p>
 ]]>
     </Details>
   </BugPattern>
