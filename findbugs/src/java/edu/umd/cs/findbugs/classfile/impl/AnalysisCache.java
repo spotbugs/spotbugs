@@ -103,10 +103,10 @@ public class AnalysisCache implements IAnalysisCache {
 			if (isNull) {
 				return null;
 			} else if (runtimeException != null) {
-				runtimeException.fillInStackTrace();
+				// runtimeException.fillInStackTrace();
 				throw runtimeException;
 			} else if (checkedAnalysisException != null) {
-				checkedAnalysisException.fillInStackTrace();
+				// checkedAnalysisException.fillInStackTrace();
 				throw checkedAnalysisException;
 			}
 		
@@ -201,9 +201,13 @@ public class AnalysisCache implements IAnalysisCache {
 				}
 			} catch (CheckedAnalysisException e) {
 				// Exception - make note
+				if (e.getStackTrace() == null) 
+					e.fillInStackTrace();
 				analysisResult = new AbnormalAnalysisResult(e);
 			} catch (RuntimeException e) {
 				// Exception - make note
+				if (e.getStackTrace() == null) 
+					e.fillInStackTrace();
 				analysisResult = new AbnormalAnalysisResult(e);
 			} finally {
 				profiler.end(engine.getClass());
