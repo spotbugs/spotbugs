@@ -563,10 +563,19 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 
 		ValueNumber instanceOfValueNumber = check.getValueNumber();
+		ValueNumberFrame vnaFrame = valueNumberDataflow.getStartFact(edge.getTarget());
+		if (!vnaFrame.isValid())
+			return tmpFact;
+
+		Type instanceOfType = check.getType();
+		if (!(instanceOfType instanceof ReferenceType || instanceOfType instanceof NullType))
+			return tmpFact;
 
 		short branchOpcode = edge.getSource().getLastInstruction().getInstruction().getOpcode();
 
 		int edgeType = edge.getType();
+		int numSlots = Math.min(fact.getNumSlots(), vnaFrame.getNumSlots());
+		
 		if (    (edgeType == EdgeTypes.IFCMP_EDGE &&
 						(branchOpcode == Constants.IFNE || branchOpcode == Constants.IFGT || branchOpcode == Constants.IFNULL))
 
@@ -576,15 +585,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			//System.out.println("Successful check on edge " + edge);
 
 			// Successful instanceof check.
-			ValueNumberFrame vnaFrame = valueNumberDataflow.getStartFact(edge.getTarget());
-			if (!vnaFrame.isValid())
-				return tmpFact;
-
-			Type instanceOfType = check.getType();
-			if (!(instanceOfType instanceof ReferenceType || instanceOfType instanceof NullType))
-				return tmpFact;
-
-			int numSlots = Math.min(fact.getNumSlots(), vnaFrame.getNumSlots());
+		
 			for (int i = 0; i < numSlots; ++i) {
 				if (!vnaFrame.getValue(i).equals(instanceOfValueNumber))
 					continue;
@@ -608,6 +609,26 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					}
 					tmpFact = modifyFrame(fact, tmpFact);
 					tmpFact.setValue(i, feasibleCheck ? instanceOfType : TopType.instance());
+				} catch (ClassNotFoundException e) {
+					lookupFailureCallback.reportMissingClass(e);
+					throw new MissingClassException(e);
+				}
+			}
+		} else {
+			for (int i = 0; i < numSlots; ++i) {
+				if (!vnaFrame.getValue(i).equals(instanceOfValueNumber))
+					continue;
+
+				Type checkedType = fact.getValue(i);
+				if (!(checkedType instanceof ReferenceType))
+					continue;
+				try {
+					boolean guaranteed =  Hierarchy.isSubtype(
+							(ReferenceType) checkedType,
+							(ReferenceType) instanceOfType);
+					if (!guaranteed) continue;
+					tmpFact = modifyFrame(fact, tmpFact);
+					tmpFact.setValue(i,  TopType.instance());
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					throw new MissingClassException(e);
