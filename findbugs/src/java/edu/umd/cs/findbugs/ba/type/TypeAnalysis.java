@@ -614,7 +614,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					throw new MissingClassException(e);
 				}
 			}
-		} else {
+		} else if (!instanceOfType.equals(NullType.instance())) {
+			
 			for (int i = 0; i < numSlots; ++i) {
 				if (!vnaFrame.getValue(i).equals(instanceOfValueNumber))
 					continue;
