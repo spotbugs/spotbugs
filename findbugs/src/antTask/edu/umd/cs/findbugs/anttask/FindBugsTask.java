@@ -483,11 +483,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
 									  getLocation() );
 		}
 
-		if ( excludeFile != null && includeFile != null ) {
-			throw new BuildException("only one of excludeFile and includeFile " +
-				" attributes may be used in task <" + getTaskName() + "/>",
-				getLocation());
-		}
+		// FindBugs allows both, so there's no apparent reason for this check
+		//if ( excludeFile != null && includeFile != null ) {
+		//	throw new BuildException("only one of excludeFile and includeFile " +
+		//		" attributes may be used in task <" + getTaskName() + "/>",
+		//		getLocation());
+		//}
 
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
 			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
