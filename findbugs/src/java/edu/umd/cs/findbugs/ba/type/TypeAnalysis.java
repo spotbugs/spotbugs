@@ -629,7 +629,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 							(ReferenceType) instanceOfType);
 					if (!guaranteed) continue;
 					tmpFact = modifyFrame(fact, tmpFact);
-					tmpFact.setValue(i,  TopType.instance());
+					tmpFact.setTop();
+					return tmpFact;
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					throw new MissingClassException(e);
