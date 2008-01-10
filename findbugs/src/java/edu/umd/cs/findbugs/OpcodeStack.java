@@ -112,7 +112,7 @@ public class OpcodeStack implements Constants2
 		public static final int HASHCODE_INT_REMAINDER = 9;
 		public static final int FILE_SEPARATOR_STRING = 10;
 		public static final int MATH_ABS = 11;
-		public static final int MASKED_NON_NEGATIVE = 12;
+		public static final int NON_NEGATIVE = 12;
 		public static final int NASTY_FLOAT_MATH = 13;
 		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
 
@@ -224,8 +224,8 @@ public class OpcodeStack implements Constants2
 			case  MATH_ABS:
 				buf.append(", Math.abs");
 				break;
-			case  MASKED_NON_NEGATIVE:
-				buf.append(", masked_non_negative");
+			case  NON_NEGATIVE:
+				buf.append(", non_negative");
 				break;
 			case  FILE_OPENED_IN_APPEND_MODE:
 				buf.append(", file opened in append mode");
@@ -405,7 +405,7 @@ public class OpcodeStack implements Constants2
 		 }
 
 		public boolean isNonNegative() {
-			if (specialKind == MASKED_NON_NEGATIVE) return true;
+			if (specialKind == NON_NEGATIVE) return true;
 			if (constValue instanceof Number) {
 				double value = ((Number) constValue).doubleValue();
 				return value >= 0;
@@ -489,7 +489,7 @@ public class OpcodeStack implements Constants2
 		}
 
 		public boolean valueCouldBeNegative() {
-			return (getSpecialKind() == Item.RANDOM_INT 
+			return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT 
 					|| getSpecialKind() == Item.SIGNED_BYTE 
 					|| getSpecialKind() == Item.HASHCODE_INT 
 					|| getSpecialKind() == Item.RANDOM_INT_REMAINDER || getSpecialKind() == Item.HASHCODE_INT_REMAINDER);
@@ -1034,8 +1034,12 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case ARRAYLENGTH:
+				 {
 					 pop();
-					 push(new Item("I"));
+					 Item v =  new Item("I");
+					 v.setSpecialKind(Item.NON_NEGATIVE);
+					 push(v);
+				 }
 				 break;
 
 				 case BALOAD:
@@ -1200,7 +1204,7 @@ public class OpcodeStack implements Constants2
 					 } else {
 						it = new Item("I");
 					 }
-					it.setSpecialKind(Item.MASKED_NON_NEGATIVE);
+					it.setSpecialKind(Item.NON_NEGATIVE);
 					push(it);
 				 break;
 
@@ -2041,7 +2045,7 @@ public void initialize() {
 				else if ((value & 0xff) == 0)
 					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 				else if (value >= 0)
-					newValue.specialKind = Item.MASKED_NON_NEGATIVE;
+					newValue.specialKind = Item.NON_NEGATIVE;
 			} else if (rhs.getConstant() != null && seen == IAND) {
 				int value = (Integer) rhs.getConstant();
 				if (value == 0)
@@ -2049,7 +2053,7 @@ public void initialize() {
 				else if ((value & 0xff) == 0)
 					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 				else if (value >= 0)
-					newValue.specialKind = Item.MASKED_NON_NEGATIVE;
+					newValue.specialKind = Item.NON_NEGATIVE;
 			}
 		} catch (RuntimeException e) {
 			 // ignore it

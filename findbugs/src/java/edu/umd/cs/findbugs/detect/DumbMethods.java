@@ -390,7 +390,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 								.addInt(v1).describe(IntAnnotation.INT_VALUE)
 								.addSourceLine(this));
 				}
-			}	else       if (item0.getSpecialKind() == OpcodeStack.Item.MASKED_NON_NEGATIVE
+			}	else       if (item0.getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE
 					&& constant1 instanceof Number) {
 				int v1 = ((Number)constant1).intValue();
 				if (v1 < 0)  bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE", HIGH_PRIORITY)

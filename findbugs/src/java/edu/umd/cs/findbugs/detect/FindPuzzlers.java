@@ -326,7 +326,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 		case 1:
 			if (seen == IREM) {
 				OpcodeStack.Item item = stack.getStackItem(1);
-				if (item.getSpecialKind() != OpcodeStack.Item.MATH_ABS)
+				if (!item.isNonNegative() && item.getSpecialKind() != OpcodeStack.Item.MATH_ABS)
 					badlyComputingOddState++;
 				else  badlyComputingOddState = 0;
 			}
