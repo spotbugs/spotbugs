@@ -373,19 +373,26 @@ public class FindBugsWorker {
 	 * @return absolute path in the local file system for the classpath entry.
 	 * @throws JavaModelException if the default location is not specified.
 	 */
-	private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot, IClasspathEntry cpe) throws JavaModelException {
+	private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot,
+			IClasspathEntry cpe) throws JavaModelException {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
-
-
+		IPath wkspLocation = root.getLocation();
 		IPath outLocation = cpe.getOutputLocation();
 		// check if it uses the default location
 		IJavaProject proj = pkgRoot.getJavaProject();
 		if (outLocation == null) {
 			outLocation = proj.getOutputLocation();
 		}
-		IResource resource = root.findMember(outLocation);
-		return resource.getLocation();
+		if (outLocation == null) {
+			throw new JavaModelException(new Exception(
+					"Could not get the absolute path in the local file system for: "
+							+ cpe.getPath().toString()), 1);
+		}
+		if (wkspLocation.matchingFirstSegments(outLocation) == 0) {
+			outLocation = wkspLocation.append(outLocation);
+		}
+		return outLocation;
 	}
 
 	/**
