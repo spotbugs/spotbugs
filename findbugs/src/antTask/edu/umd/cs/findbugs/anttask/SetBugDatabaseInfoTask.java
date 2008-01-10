@@ -150,7 +150,8 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 		}
 		addArg(inputFile.getName());
 		if(outputFile != null) {
-	        addArg(outputFile.getName());
+			// Don't use .getName() because it discards path
+	        addArg(outputFile.getAbsolutePath());
 		}
 	}
 
