@@ -25,12 +25,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -59,8 +57,6 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
@@ -223,7 +219,7 @@ public class FindBugsWorker {
 		// clear the map for GC
 		outputFiles.clear();
 
-		final Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
+		final Reporter bugReporter = new Reporter(this.project, this.monitor);
 		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
 
 		String[] classPathEntries = createClassPathEntries();
@@ -420,68 +416,6 @@ public class FindBugsWorker {
 	{
 		Update update = new Update();
 		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false, incremental));
-	}
-
-	/**
-	 * Update the original bug collection to include the information in
-	 * the new bug collection, preserving the history and classification
-	 * of each warning.
-	 *
-	 * @param bugReporter      Reporter used to collect the new warnings
-	 * @param oldBugCollection original warnings
-	 * @param newBugCollection new warnings
-	 */
-
-	private void updateBugCollectionIncrementally(
-			Reporter bugReporter,
-			SortedBugCollection oldBugCollection,
-			SortedBugCollection newBugCollection) {
-		throw new UnsupportedOperationException();
-//		UpdateBugCollection updater = new UpdateBugCollection(oldBugCollection, newBugCollection);
-//		updater.setUpdatedClassNameSet(bugReporter.getAnalyzedClassNames());
-//		updater.execute();
-	}
-
-	/**
-	 * Update the original bug collection destructively.
-	 * Each warning in the set of analyzed classes is replaced with
-	 * warnings from the new bug collection.  Past history is discarded.
-	 *
-	 * @param bugReporter      Reporter used to collect the new warnings
-	 * @param oldBugCollection original warnings
-	 * @param newBugCollection new warnings
-	 */
-	private void updateBugCollectionDestructively(
-			Reporter bugReporter,
-			SortedBugCollection oldBugCollection,
-			SortedBugCollection newBugCollection) {
-		// FIXME we do this destructively for now: should do incrementally
-
-		// Algorithm:
-		// Remove all old warnings for classes which were just analyzed.
-		// Then add all new warnings.
-		List<BugInstance> toRemove = new ArrayList<BugInstance>();
-
-		if (oldBugCollection != null) {
-			Set<String> analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
-			for (Iterator<BugInstance> i = oldBugCollection.iterator(); i.hasNext(); ) {
-				BugInstance oldWarning = i.next();
-				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
-				if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
-					toRemove.add(oldWarning); // i.remove() would remove only from the bugSet
-				}
-			}
-
-			for (BugInstance removeMe : toRemove) {
-				oldBugCollection.remove(removeMe); // removes from both bugSet and uniqueIdToBugInstanceMap
-			}
-		} else {
-			oldBugCollection = new SortedBugCollection();
-		}
-		for (Iterator<BugInstance> i = newBugCollection.iterator(); i.hasNext(); ) {
-			BugInstance newWarning = i.next();
-			oldBugCollection.add(newWarning);
-		}
 	}
 
 	private void configureExtended(IFindBugsEngine findBugs) {

@@ -20,10 +20,6 @@
 
 package de.tobject.findbugs.reporter;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.bcel.classfile.JavaClass;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,10 +34,8 @@ import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FindBugsProgress;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -58,49 +52,35 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	/** Controls debugging for the reporter */
-	public static boolean DEBUG = false;
+	public static boolean DEBUG;
 
-	private static final int MAX_CLASS_NAME_LENGTH = 35;
+	private final IProject project;
 
-	private IProject project;
-	private Project findBugsProject;
-
-	/** determines how often the progress monitor gets updated */
-	private static int MONITOR_INTERVAL = 1;
-	private IProgressMonitor monitor;
+	private final IProgressMonitor monitor;
 
 	/** Persistent store of reported warnings. */
-	private SortedBugCollection bugCollection;
-
-	/** Set of names of analyzed classes. */
-	private Set<String> analyzedClassNameSet;
+	private final SortedBugCollection bugCollection;
 
 	/** Current user preferences for the project. */
 	private UserPreferences userPrefs;
 
-	private boolean workStarted;
-	int filesNumber;
-	int expectedWork;
 	int pass = -1;
-	int filteredBugCount = 0;
-	int workCount = 0;
+
+	int filteredBugCount;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param project         the project whose classes are being analyzed for bugs
 	 * @param monitor         progress monitor
-	 * @param findBugsProject the FindBugs Project object
 	 */
-	public Reporter(IProject project, IProgressMonitor monitor, Project findBugsProject) {
+	public Reporter(IProject project, IProgressMonitor monitor) {
 		if (!Util.isJavaProject(project)) {
 			throw new IllegalArgumentException("Not a Java project");
 		}
 		this.monitor = monitor;
 		this.project = project;
-		this.findBugsProject = findBugsProject;
-		this.project = project;
 		this.bugCollection = new SortedBugCollection();
-		this.analyzedClassNameSet = new HashSet<String>();
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 		} catch (CoreException e) {
@@ -132,6 +112,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		if (DEBUG) {
 			System.out.println("Finish: Found " + filteredBugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
+		monitor.done();
 	}
 
 	/**
@@ -145,24 +126,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	/**
-	 * Returns the current project.
-	 *
-	 * @return The current project.
-	 */
-	public IProject getProject() {
-		return project;
-	}
-
-	/**
-	 * Get set containing full names of analyzed classes.
-	 *
-	 * @return Set containing names of all analyzed classes
-	 */
-	public Set<String> getAnalyzedClassNames() {
-		return analyzedClassNameSet;
-	}
-
-	/**
 	 * Returns the current project cast into a Java project.
 	 *
 	 * @return The current project as a Java project.
@@ -172,93 +135,40 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	public void observeClass(ClassDescriptor classDescriptor) {
-		JavaClass clazz;
-		try {
-			clazz = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor);
-		} catch (ClassNotFoundException e) {
-			// This should not happen
-			return;
-		}
-
-		if (DEBUG) {
-			System.out.println("Observing class: " + clazz.getClassName()); //$NON-NLS-1$
-		}
-			// Keep track of classes analyzed
-		analyzedClassNameSet.add(clazz.getClassName());
-		if (filesNumber < analyzedClassNameSet.size()) {
-			filesNumber = analyzedClassNameSet.size();
-		}
-
-		// Update progress monitor
-		if (monitor == null) {
-			return;
-		}
-		if (!workStarted) {
-			workStarted = true;
-			filesNumber = findBugsProject.getFileCount();
-			if (!(monitor instanceof SubProgressMonitor)) {
-				monitor.beginTask("Performing bug checking...", expectedWork);
-			}
-		}
 		if (monitor.isCanceled()) {
 			// causes break in FindBugs main loop
 			Thread.currentThread().interrupt();
 		}
 
-		if (pass <= 0) {
-			monitor.setTaskName(
-					"Prescanning... (found "
-					+ filteredBugCount
-					+ ", checking "
-					+ getAbbreviatedClassName(clazz)
-					+ ")");
-		} else 	if (pass == 1) {
-			monitor.setTaskName(
-					"Checking... (found "
-					+ filteredBugCount
-					+ ", checking "
-					+ getAbbreviatedClassName(clazz)
-					+ ")");
-		} else 	if (pass == 2) {
-			monitor.setTaskName(
-					"Checking... (3rd pass) (found "
-					+ filteredBugCount
-					+ ", checking "
-					+ getAbbreviatedClassName(clazz)
-					+ ")");
-		}
 		int work = pass == 0 ? 1 : 2;
-		monitor.worked( work);
-		workCount+= work;
-	}
+		String className = classDescriptor.getDottedClassName();
 
-	/**
-	 * Returns an abreviated version of the class name.
-	 *
-	 * @param clazz A Java class.
-	 * @return
-	 */
-	private String getAbbreviatedClassName(JavaClass clazz) {
-		String name = clazz.getClassName();
-		if (name.length() > MAX_CLASS_NAME_LENGTH) {
-			int startCutIdx = name.length() - MAX_CLASS_NAME_LENGTH;
-			int pointIdx = name.indexOf(".", startCutIdx); //$NON-NLS-1$
-			if (pointIdx > startCutIdx) {
-				startCutIdx = pointIdx;
-			}
-			name = ".." + name.substring(startCutIdx); //$NON-NLS-1$
+		if (DEBUG) {
+			System.out.println("Observing class: " + className); //$NON-NLS-1$
 		}
-		return name;
+
+		// Update progress monitor
+		if (pass <= 0) {
+			monitor.setTaskName("Prescanning... (found " + filteredBugCount
+					+ ", checking " + className + ")");
+		} else {
+			monitor.setTaskName("Checking... (pass #" + pass + ") (found "
+					+ filteredBugCount + ", checking " + className + ")");
+		}
+		monitor.worked(work);
 	}
 
 	@Override
 	public void reportAnalysisError(AnalysisError error) {
-		FindbugsPlugin.getDefault().logWarning("FindBugs analysis error: " + error.getMessage());
+		FindbugsPlugin.getDefault().logWarning(
+				"FindBugs analysis error: " + error.getMessage());
 	}
 
 	@Override
 	public void reportMissingClass(String missingClass) {
-		FindbugsPlugin.getDefault().logWarning("FindBugs could not find a class that would be useful in analyzing your code: " + missingClass);
+		FindbugsPlugin.getDefault().logWarning(
+				"FindBugs could not find a class that would be useful in analyzing your code: "
+						+ missingClass);
 	}
 
 	public BugReporter getRealBugReporter() {
@@ -286,10 +196,13 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	public void predictPassCount(int[] classesPerPass) {
+		int expectedWork = 0;
 		for(int count : classesPerPass) {
 			expectedWork += 2*count;
 		}
 		expectedWork -= classesPerPass[0];
-
+		if (!(monitor instanceof SubProgressMonitor)) {
+			monitor.beginTask("Performing bug checking...", expectedWork);
+		}
 	}
 }
