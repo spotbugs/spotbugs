@@ -56,7 +56,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -109,9 +109,10 @@ public final class MarkerUtil {
 		}
 		String className = null;
 		String packageName = null;
-		if (bug.getPrimaryClass() != null) {
-			className = bug.getPrimaryClass().getClassName();
-			packageName = bug.getPrimaryClass().getPackageName();
+		ClassAnnotation primaryClass = bug.getPrimaryClass();
+		if (primaryClass != null) {
+			className = primaryClass.getClassName();
+			packageName = primaryClass.getPackageName();
 		}
 		if (Reporter.DEBUG) {
 			System.out.println("BUG in class: " //$NON-NLS-1$
@@ -511,9 +512,6 @@ public final class MarkerUtil {
 	 * @return true if the warning should be displayed, false if not
 	 */
 	public static boolean displayWarning(BugInstance bugInstance, ProjectFilterSettings filterSettings) {
-		// Detector plugins need to be loaded for category filtering to work!
-		DetectorFactoryCollection.instance();
-
 		return filterSettings.displayWarning(bugInstance);
 	}
 

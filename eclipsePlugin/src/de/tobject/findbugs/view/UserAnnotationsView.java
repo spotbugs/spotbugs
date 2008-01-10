@@ -48,7 +48,6 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -263,8 +262,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 				FindBugsMarker.FIRST_VERSION, "-2"));
 		String firstVersionText = "Bug present since: "
 				+ convertTimestamp(theTimestamp);
-		DetectorFactoryCollection.instance().ensureLoaded(); // fix
-																// bug#1530195
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		if (pattern == null) {
 			return;

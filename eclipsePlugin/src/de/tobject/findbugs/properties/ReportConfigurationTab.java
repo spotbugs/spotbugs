@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -125,8 +124,6 @@ public class ReportConfigurationTab extends Composite {
 	 * @param project       the project being configured
 	 */
 	private void createBugCategoriesGroup(Composite parent, final IProject project) {
-		DetectorFactoryCollection.instance(); // ensure detectors loaded
-
 		Group checkBoxGroup = new Group(parent, SWT.SHADOW_ETCHED_OUT);
 		checkBoxGroup.setText(getMessage("property.categoriesGroup"));
 		checkBoxGroup.setLayout(new GridLayout(1, true));

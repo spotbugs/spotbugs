@@ -65,7 +65,6 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -156,7 +155,7 @@ public class DetailsView extends AbstractFindbugsView {
 			});
 
 			try {
-				Class<IInformationPresenterExtension> presenterClass 
+				Class<IInformationPresenterExtension> presenterClass
 				= (Class<IInformationPresenterExtension>) Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
 				presenter = presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
 			} catch (Exception e2) {
@@ -349,8 +348,6 @@ public class DetailsView extends AbstractFindbugsView {
 		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
 		String priorityTypeString = marker.getAttribute(
 				FindBugsMarker.PRIORITY_TYPE, "");
-		DetectorFactoryCollection.instance().ensureLoaded(); // fix
-																// bug#1530195
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
 		detailsView.setContent(pattern, bug, priorityTypeString, marker);
