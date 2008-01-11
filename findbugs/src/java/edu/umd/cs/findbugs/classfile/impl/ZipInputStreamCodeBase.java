@@ -123,9 +123,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 		}
 	}
 
-	static int entryCount = 0;
 	ZipInputStreamCodeBaseEntry build(ZipInputStream zis, ZipEntry ze) throws IOException {
-		System.out.println("Building entry# " + (entryCount++) + " for " + ze.getName());
 		long sz = ze.getSize();
 		ByteArrayOutputStream out;
 		if (sz < 0 || sz > Integer.MAX_VALUE)
