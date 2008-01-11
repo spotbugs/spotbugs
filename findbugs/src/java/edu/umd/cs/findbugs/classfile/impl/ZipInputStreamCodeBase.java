@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
-	final static boolean DEBUG = true;
+	final static boolean DEBUG = false;
 
 	final File file;
 
