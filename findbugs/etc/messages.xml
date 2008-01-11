@@ -3986,8 +3986,28 @@ be an exception path, since the default case is often infeasible.</p>
     <LongDescription>Possible null pointer dereference of {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> A reference value dereferenced here might be null at runtime.&nbsp;
-This may lead to a <code>NullPointerException</code> when the code is executed.</p>
+<p> There is a branch of statement that, <em>if executed,/em>  guarantees that
+a null value will be dereferenced, which
+would generate a <code>NullPointerException</code> when the code is executed.
+Of course, the problem might be that the branch or statement is infeasible and that
+the null pointer exception can't ever be executed; deciding that is beyond the ability of FindBugs.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE">
+    <ShortDescription>Possible null pointer dereference on path that might be infeasible</ShortDescription>
+    <LongDescription>Possible null pointer dereference of {2.givenClass} on path that might be infeasible in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> There is a branch of statement that, <em>if executed,/em>  guarantees that
+a null value will be dereferenced, which
+would generate a <code>NullPointerException</code> when the code is executed.
+Of course, the problem might be that the branch or statement is infeasible and that
+the null pointer exception can't ever be executed; deciding that is beyond the ability of FindBugs.
+Due to the fact that this value had been previously tested for nullness, this is a definite possiblity.
+</p>
 ]]>
     </Details>
   </BugPattern>

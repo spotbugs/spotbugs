@@ -36,6 +36,8 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionTargeter;
@@ -496,7 +498,34 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			bugReporter.reportBug(warning);
 		}
 	}
-
+	private boolean hasManyPreceedingNullTests(int pc) {
+		int ifNullTests = 0;
+		int ifNonnullTests = 0;
+		BitSet seen = new BitSet();
+		try {
+	        for (Iterator<Location> i = classContext.getCFG(method)
+	        		.locationIterator(); i.hasNext();) {
+	        	Location loc = i.next();
+	        	int pc2 = loc.getHandle().getPosition();
+	        	if (pc2 >= pc || pc2 < pc-30) continue;
+	        	Instruction ins = loc.getHandle().getInstruction();
+	        	if (ins instanceof IFNONNULL && !seen.get(pc2)) {
+	        		ifNonnullTests++;
+	        		seen.set(pc2);
+	        	}
+	        	else if (ins instanceof IFNULL && !seen.get(pc2)) {
+	        		ifNullTests++;
+	        		seen.set(pc2);
+	        	}
+	        }
+	        boolean result = ifNullTests + ifNonnullTests > 2;
+			
+	        // System.out.println("Preceeding null tests " + ifNullTests + " " + ifNonnullTests + " " + result);
+			return result;
+        } catch (CFGBuilderException e) {
+	        return false;
+        }
+	}
 	private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
 		if (calledMethod.getClassName().equals("java.lang.Integer")) {
 			int position = location.getHandle().getPosition();
@@ -1287,7 +1316,17 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				&& xMethod.isPrivate();
 		if (invokedXMethod != null) for (Location derefLoc : derefLocationSet) 
 			if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc)) return;
-
+		boolean hasManyNullTests = true;
+		for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
+			if (!hasManyPreceedingNullTests(sourceLineAnnotation.getStartBytecode()))
+					hasManyNullTests = false;
+		}
+		if (hasManyNullTests) {
+			if (bugType.equals("NP_NULL_ON_SOME_PATH"))
+					bugType = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE";
+			else priority++;
+		}
+			
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
 		if (invokedMethod != null)
@@ -1301,9 +1340,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		for (Location loc : derefLocationSet)
 			bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
 
-		for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
+		for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
 			bugInstance.add(sourceLineAnnotation).describe(
 			"SOURCE_LINE_KNOWN_NULL");
+		}
 
 
 		// If all deref locations are doomed
