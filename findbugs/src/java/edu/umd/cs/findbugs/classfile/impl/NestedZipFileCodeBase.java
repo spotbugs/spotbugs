@@ -46,7 +46,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	private ICodeBase parentCodeBase;
 	private String resourceName;
 	private File tempFile;
-	private ZipFileCodeBase delegateCodeBase;
+	private AbstractScannableCodeBase delegateCodeBase;
 
 	/**
 	 * Constructor.
@@ -74,7 +74,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 			outputStream.flush();
 
 			// Create the delegate to read from the temporary file
-			delegateCodeBase = new ZipFileCodeBase(codeBaseLocator, tempFile);
+			delegateCodeBase = ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, tempFile);
 		} finally {
 			if (inputStream != null) {
 				IO.close(inputStream);

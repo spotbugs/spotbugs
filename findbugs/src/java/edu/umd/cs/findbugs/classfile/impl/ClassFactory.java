@@ -93,7 +93,7 @@ public class ClassFactory implements IClassFactory {
 		} else if (fileName.endsWith(".class")) {
 			return new SingleFileCodeBase(codeBaseLocator, fileName);
 		} else {
-			return new ZipInputStreamCodeBase(codeBaseLocator, file);
+		    return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
 		}
 	}
 

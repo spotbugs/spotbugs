@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,6 +34,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Implementation of ICodeBase to read from a zip file or jar file.
@@ -40,9 +42,14 @@ import edu.umd.cs.findbugs.io.IO;
  * @author David Hovemeyer
  */
 public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
-	final static boolean DEBUG = false;
+	final static boolean DEBUG = true;
+
 	final File file;
-	final Map<String, ZipInputStreamCodeBaseEntry> map = new HashMap<String, ZipInputStreamCodeBaseEntry>();
+
+	final MapCache<String, ZipInputStreamCodeBaseEntry> map = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
+
+	final HashSet<String> entries = new HashSet<String>();
+
 	/**
 	 * Constructor.
 	 * 
@@ -58,29 +65,20 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 		setLastModifiedTime(file.lastModified());
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
 		ZipEntry ze;
-		if (DEBUG) 
-		System.out.println("Reading zip input stream " + file);
+		if (DEBUG)
+			System.out.println("Reading zip input stream " + file);
 		int count = 0;
-		 while ((ze = zis.getNextEntry()) != null) {
-			 if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
-				 count++;
-				 if (DEBUG && count % 10000 == 0) 
-					 System.out.println("Reading # " + count + " : " + ze.getName());
-				 long sz = ze.getSize();
-				 
-				 ByteArrayOutputStream out;
-				 if (sz < 0 || sz > Integer.MAX_VALUE) out = new ByteArrayOutputStream();
-				 else out = new ByteArrayOutputStream((int)sz);
-				 IO.copy(zis, out);
-				 byte[] bytes = out.toByteArray();
-				 setLastModifiedTime(ze.getTime());
-				 ZipInputStreamCodeBaseEntry z = new ZipInputStreamCodeBaseEntry(this, ze, bytes);
-				 map.put(ze.getName(), z);
-			 }
-			 zis.closeEntry();
-			 
-		 }
-			if (DEBUG) System.out.println("Done with zip input stream " + file);
+		while ((ze = zis.getNextEntry()) != null) {
+			if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
+				entries.add(ze.getName());
+				if (ze.getName().equals("META-INF/MANIFEST.MF")) 
+					map.put(ze.getName(), build(zis, ze));
+			}
+			zis.closeEntry();
+
+		}
+		if (DEBUG)
+			System.out.println("Done with zip input stream " + file);
 
 	}
 
@@ -88,28 +86,108 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+
 		// Translate resource name, in case a resource name
 		// has been overridden and the resource is being accessed
 		// using the overridden name.
 		resourceName = translateResourceName(resourceName);
-		ZipInputStreamCodeBaseEntry z = map.get(resourceName);
-		if (z == null) throw new ResourceNotFoundException(resourceName);
-		return z;
+		if (!entries.contains(resourceName))
+			throw new ResourceNotFoundException(resourceName);
+
+		try {
+			ZipInputStreamCodeBaseEntry z = map.get(resourceName);
+			if (z != null)
+				return z;
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
+			ZipEntry ze;
+			boolean found = false;
+			int countDown = 20;
+			while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
+				if (ze.getName().equals(resourceName))
+					found = true;
+				if (found) {
+					countDown--;
+					if (map.containsKey(ze.getName()))
+						continue;
+					z = build(zis, ze);
+					map.put(ze.getName(), z);
+				}
+				zis.closeEntry();
+			}
+			z = map.get(resourceName);
+			if (z == null)
+				throw new AssertionError("Could not find " + resourceName);
+			return z;
+		} catch (IOException e) {
+			throw new ResourceNotFoundException(resourceName);
+		}
+	}
+
+	static int entryCount = 0;
+	ZipInputStreamCodeBaseEntry build(ZipInputStream zis, ZipEntry ze) throws IOException {
+		System.out.println("Building entry# " + (entryCount++) + " for " + ze.getName());
+		long sz = ze.getSize();
+		ByteArrayOutputStream out;
+		if (sz < 0 || sz > Integer.MAX_VALUE)
+			out = new ByteArrayOutputStream();
+		else
+			out = new ByteArrayOutputStream((int) sz);
+		IO.copy(zis, out);
+		byte[] bytes = out.toByteArray();
+		setLastModifiedTime(ze.getTime());
+		return new ZipInputStreamCodeBaseEntry(this, ze, bytes);
+	}
+
+	class MyIterator implements ICodeBaseIterator {
+		ZipInputStream zis;
+
+		ZipEntry ze;
+
+		MyIterator() {
+			try {
+				zis = new ZipInputStream(new FileInputStream(file));
+				ze = zis.getNextEntry();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		private void getNextEntry() throws IOException {
+			ze = zis.getNextEntry();
+			if (ze == null)
+				zis.close();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
+		 */
+		public boolean hasNext() throws InterruptedException {
+			if (Thread.interrupted())
+				throw new InterruptedException();
+
+			return ze != null;
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
+		 */
+		public ICodeBaseEntry next() throws InterruptedException {
+			try {
+				if (Thread.interrupted())
+					throw new InterruptedException();
+				ZipInputStreamCodeBaseEntry z = build(zis, ze);
+				zis.closeEntry();
+				getNextEntry();
+				return z;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 	}
 
 	public ICodeBaseIterator iterator() {
-		
-		return new ICodeBaseIterator() {
-			java.util.Iterator<ZipInputStreamCodeBaseEntry> i = map.values().iterator();
-			public boolean hasNext()  {
-	            return i.hasNext();
-            }
-
-			public ICodeBaseEntry next()  {
-	            return i.next();
-            } };
-			
-
+		return new MyIterator();
 	}
 
 	/* (non-Javadoc)
@@ -123,7 +201,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
 	public void close() {
-		
+
 	}
 
 	/* (non-Javadoc)
