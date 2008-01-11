@@ -598,17 +598,29 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				// Only refine the type if the cast is feasible: i.e., a downcast.
 				// Otherwise, just set it to TOP.
 				try {
+					boolean guaranteed = instanceOfType instanceof ReferenceType
+						&& Hierarchy.isSubtype(
+								(ReferenceType) checkedType,
+								(ReferenceType) instanceOfType);
+					if (guaranteed) continue;
+					
 					boolean feasibleCheck = instanceOfType.equals(NullType.instance()) 
 						|| Hierarchy.isSubtype(
 							(ReferenceType) instanceOfType,
 							(ReferenceType) checkedType);
+					
 					if (!feasibleCheck && instanceOfType instanceof ObjectType 
 							&& checkedType instanceof ObjectType) {
 						double v = Analyze.deepInstanceOf(((ObjectType)instanceOfType).getClassName(), ((ObjectType)checkedType).getClassName());
 						if (v > 0.0) feasibleCheck = true;
 					}
 					tmpFact = modifyFrame(fact, tmpFact);
-					tmpFact.setValue(i, feasibleCheck ? instanceOfType : TopType.instance());
+					if (feasibleCheck) {
+						tmpFact.setValue(i,  instanceOfType);
+					} else {
+						tmpFact.setTop();
+						return tmpFact;
+					}
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
 					throw new MissingClassException(e);
