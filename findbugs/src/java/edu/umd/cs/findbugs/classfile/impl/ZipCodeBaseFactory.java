@@ -34,6 +34,10 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 public class ZipCodeBaseFactory {
 
 	public static AbstractScannableCodeBase makeZipCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
+		long size = file.length();
+		long estimatedEntries = size / 2000;
+		if (estimatedEntries < 20000)
+			return new ZipFileCodeBase(codeBaseLocator, file);
 		int zipEntries = 0;
 		ZipInputStream in = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
 		for(ZipEntry e; (e = in.getNextEntry()) != null; ) 
