@@ -20,14 +20,14 @@
 		 <export name="*"/>
 	  </library>
    <library name="asm-commons-3.0.jar">
-      <export
-            name="*">
-      </export>
+	  <export
+			name="*">
+	  </export>
    </library>
    <library name="findbugs-ant.jar">
-      <export
-            name="*">
-      </export>
+	  <export
+			name="*">
+	  </export>
    </library>
    </runtime>
 
@@ -49,7 +49,6 @@
    <extension
 		 point="org.eclipse.ui.propertyPages">
 	  <page
-			objectClass="org.eclipse.jdt.core.IJavaProject"
 			name="FindBugs"
 			class="de.tobject.findbugs.properties.FindbugsPropertyPage"
 			id="de.tobject.findbugs.properties.findbugsPropertyPage">
@@ -57,16 +56,11 @@
 			   name="nature"
 			   value="org.eclipse.jdt.core.javanature">
 		 </filter>
-	  </page>
-	  <page
-			objectClass="org.eclipse.core.resources.IProject"
-			name="FindBugs"
-			class="de.tobject.findbugs.properties.FindbugsPropertyPage"
-			id="de.tobject.findbugs.properties.findbugsPropertyPage">
-		 <filter
-			   name="nature"
-			   value="org.eclipse.jdt.core.javanature">
-		 </filter>
+		   <enabledWhen>
+        <adapt
+              type="org.eclipse.core.resources.IProject">
+        </adapt>
+		   </enabledWhen>
 	  </page>
    </extension>
    <extension
@@ -195,17 +189,17 @@
 			   label="Find Bugs"
 			   path="additions"/>
 		 <action
-        	 class="de.tobject.findbugs.actions.LoadXmlAction"
-       		  id="de.tobject.findbugs.loadXml"
-         		label="Load XML"
-         		menubarPath="findbugs/additions"/>
+			 class="de.tobject.findbugs.actions.LoadXmlAction"
+				 id="de.tobject.findbugs.loadXml"
+				 label="Load XML"
+				 menubarPath="findbugs/additions"/>
 		 <action
 			   class="de.tobject.findbugs.actions.ClearMarkersAction"
 			   id="de.tobject.findbugs.removeMarkers"
 			   label="%menu.clearMarkers"
 			   menubarPath="findbugs/additions"
 			   tooltip="%menu.clearMarkersPopup"/>
-		
+
 		 <action
 			   class="de.tobject.findbugs.actions.FindBugsAction"
 			   icon="icons/runFindbugs.png"
@@ -364,10 +358,10 @@
 			   label="Find Bugs"
 			   path="additions"/>
 		<action
-        	 class="de.tobject.findbugs.actions.LoadXmlAction"
-        	 id="de.tobject.findbugs.loadXml"
-        	 label="Load XML"
-        	 menubarPath="findbugs/additions"/>
+			 class="de.tobject.findbugs.actions.LoadXmlAction"
+			 id="de.tobject.findbugs.loadXml"
+			 label="Load XML"
+			 menubarPath="findbugs/additions"/>
 		 <action
 			   class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
 			   id="de.tobject.findbugs.removeMarkers"
