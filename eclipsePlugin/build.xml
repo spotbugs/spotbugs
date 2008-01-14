@@ -14,12 +14,12 @@
 
 	<property file="build.properties" />
 
-<!-- 
-	The local.properties properties file contains the location of eclipsePlugin.dir 
+<!--
+	The local.properties properties file contains the location of eclipsePlugin.dir
 
 	This value is likely to be different for each checkout of the plugin,
 	so the local.properties file is not managed by cvs
-	
+
 -->
 	<property file="local.properties" />
 
@@ -31,7 +31,7 @@
 	<property name="dist.dir" value="dist"/>
 	<property name="tools.dir" value="tools"/>
 	<!-- the binaries/classes, built by eclipse. -->
-	<property name="bin.dir" value="bin" />
+	<property name="bin.dir" value="bin_build" />
 	<property name="site.dir" value="${bin.dir}/site" />
 
 	<path id="plugin.classpath">
@@ -45,19 +45,19 @@
 		<fileset file="asm-tree-3.0.jar"/>
 		<fileset file="asm-commons-3.0.jar"/>
 	</path>
-	
+
 	<path id="tools.classpath">
 		<pathelement location="dom4j-full.jar"/>
 		<pathelement location="${bin.dir}"/>
 	</path>
 
-        <!-- Need these jars for ant target 'srcdist', which uses
-             subversion.  Grab them at:
+		<!-- Need these jars for ant target 'srcdist', which uses
+			 subversion.  Grab them at:
              http://subclipse.tigris.org/files/documents/906/32898/svnant-1.0.0.zip -->
-        <path id="svn.classpath">
-            <pathelement location="svnant.jar"/>
-            <pathelement location="svnClientAdapter.jar"/>
-        </path>
+		<path id="svn.classpath">
+			<pathelement location="svnant.jar"/>
+			<pathelement location="svnClientAdapter.jar"/>
+		</path>
         <taskdef resource="svntask.properties" classpathref="svn.classpath"/>
 
 	<target name="init">
@@ -66,26 +66,22 @@
 	</target>
 
 	<target name="clean" depends="init" description="Clean up temporary files">
-		<delete>
-			<fileset dir="${dist.dir}" includes="**"/>
-		</delete>
-		<delete>
-			<fileset dir="${bin.dir}" excludes=".cvsignore" includes="**" />
-		</delete>
+		<delete dir="${dist.dir}" />
+		<delete dir="${bin.dir}" />
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${bin.dir}"/>
 	</target>
 
 	<target name="classes" depends="init,fbjars" description="Compile java source files">
-        <mkdir dir="${bin.dir}"/>
-        <!-- Compile Java source files. -->
-        <javac srcdir="${src.dir}"
+		<mkdir dir="${bin.dir}"/>
+		<!-- Compile Java source files. -->
+		<javac srcdir="${src.dir}"
 		  destdir="${bin.dir}"
-                source="1.5"
-                target="jsr14"
-                debug="on">
-            <classpath refid="plugin.classpath"/>
-        </javac>
+				source="1.5"
+				target="jsr14"
+				debug="on">
+			<classpath refid="plugin.classpath"/>
+		</javac>
 		<!-- Compile build tools. -->
 		<javac srcdir="${buildtools.dir}"
 			destdir="${bin.dir}"
@@ -93,7 +89,7 @@
 			target="jsr14"
 			debug="on">
 			<classpath refid="tools.classpath"/>
-		        <classpath refid="plugin.classpath"/>
+				<classpath refid="plugin.classpath"/>
 		</javac>
 		<!-- Copy the .properties files from the source directory. -->
 		<copy todir="${bin.dir}">
@@ -103,7 +99,7 @@
 		</copy>
 	</target>
 
-	
+
 	<target name="version" depends="clean,classes" description="Extract the plugin id and version">
 		<!-- Extract the plugin id and version from plugin.xml. -->
 		<java
@@ -114,10 +110,10 @@
 			output="${bin.dir}/plugininfo.properties">
 			<classpath refid="tools.classpath"/>
 			<classpath refid="plugin.classpath"/>
-			<arg value="plugin.xml"/>
-			<arg value="${dist.dir}/plugin.xml"/>
+			<arg value="META-INF/MANIFEST.MF"/>
+			<arg value="${dist.dir}/META-INF/MANIFEST.MF"/>
 		</java>
-		
+
 		<!-- Read plugin id and plugin version properties. -->
 		<property file="${bin.dir}/plugininfo.properties"/>
 	</target>
@@ -141,7 +137,7 @@
 				  <include name="*.png"/>
 				  <include name="about.*"/>
 			</fileset>
-			  
+
 		</copy>
 		<copy todir="${dist.dir}/plugin">
 			<fileset dir="plugin" />
@@ -149,30 +145,30 @@
 		<copy todir="${dist.dir}/icons">
 			<fileset dir="icons" />
 		</copy>
-		
-		
+
+
 		<!-- Create plugin zipfile. -->
 		<zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
 			<zipfileset prefix="${plugin.id}_${plugin.version}" dir="${dist.dir}" includes="**"/>
 		</zip>
 	</target>
-       <!-- Build source distribution. -->
-        <target name="srcdist" depends="clean,classes,version">
+	   <!-- Build source distribution. -->
+		<target name="srcdist" depends="clean,classes,version">
 		<property file="${bin.dir}/plugininfo.properties"/>
-                <mkdir dir="${dist.dir}/src"/>
-                <delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
+				<mkdir dir="${dist.dir}/src"/>
+				<delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
 
-                <svn username="guest" password="" javahl="false">
-                    <!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
-                    <export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
-                            revision="HEAD"
-                            destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
-                </svn>
-		
-                <zip destfile="${dist.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
-                        <zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
-                </zip>
-        </target>
+				<svn username="guest" password="" javahl="false">
+					<!-- Use 'export' rather than 'checkout' to exclude the .svn stuff -->
+					<export srcUrl="http://findbugs.googlecode.com/svn/trunk/eclipsePlugin"
+							revision="HEAD"
+							destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
+				</svn>
+
+				<zip destfile="${dist.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
+						<zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
+				</zip>
+		</target>
 
 	<target name="site" depends="dist" description="create files for eclipse auto-update site">
 		<filterset id="sitevars">
@@ -192,7 +188,7 @@
 		<zip destfile="${site.dir}/plugins/${plugin.id}_${plugin.version}.jar">
 			<fileset dir="${dist.dir}" includes="**"/>
 		</zip>
-		
+
 		<!-- feature.jar -->
 		<copy file="${fbeclipse.dir}/plugin_feature.xml" toFile="${site.dir}/feature.xml">
 		  <filterset refid="sitevars"/>

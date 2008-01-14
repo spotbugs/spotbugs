@@ -1,52 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="edu.umd.cs.findbugs.plugin.eclipse"
-   name="FindBugs Plug-in"
-   version="1.3.2.qualifier"
-   provider-name="FindBugs Project"
-   class="de.tobject.findbugs.FindbugsPlugin">
+<plugin>
 
-   <runtime>
-	  <library name="findbugs-plugin.jar"/>
-	  <library name="jsr305.jar"/>
-	  <library name="bcel.jar"/>
-	  <library name="dom4j-full.jar"/>
-	  <library name="findbugs.jar"/>
-	  <library name="asm-tree-3.0.jar">
-		 <export name="*"/>
-	  </library>
-	  <library name="asm-3.0.jar">
-		 <export name="*"/>
-	  </library>
-   <library name="asm-commons-3.0.jar">
-	  <export
-			name="*">
-	  </export>
-   </library>
-   <library name="findbugs-ant.jar">
-	  <export
-			name="*">
-	  </export>
-   </library>
-   </runtime>
-
-   <requires>
-	  <import plugin="org.eclipse.ui.workbench.texteditor"/>
-	  <import plugin="org.eclipse.ui"/>
-	  <import plugin="org.eclipse.ant.core"/>
-	  <import plugin="org.eclipse.core.runtime"/>
-	  <import plugin="org.eclipse.core.resources"/>
-	  <import plugin="org.eclipse.ui.ide"/>
-	  <import plugin="org.eclipse.ui.editors"/>
-	  <import plugin="org.eclipse.jdt.core"/>
-	  <import plugin="org.eclipse.jdt.ui"/>
-	  <import plugin="org.eclipse.jface.text"/>
-	  <import plugin="org.eclipse.jdt.launching"/>
-	  <import plugin="org.eclipse.jdt"/>
-   </requires>
-
-   <extension
+     <extension
 		 point="org.eclipse.ui.propertyPages">
 	  <page
 			name="FindBugs"

@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="dom4j-full.jar"/>
 	<classpathentry kind="lib" path="asm-commons-3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="src" path="buildtools"/>
 	<classpathentry kind="lib" path="asm-3.0.jar"/>
