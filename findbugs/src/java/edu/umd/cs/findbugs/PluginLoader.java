@@ -327,7 +327,7 @@ public class PluginLoader {
 			String detailText = getChildText(messageNode, "Details");
 			int cweid = 0;
 			try {
-				cweid = Integer.parseInt(getChildText(messageNode, "@cweid"));
+				cweid = Integer.parseInt(messageNode.valueOf("@cweid"));
 			} catch (RuntimeException e) {
 				assert true; // ignore
 			}
@@ -362,7 +362,7 @@ public class PluginLoader {
 				Node fbNode = findOptionalMessageNode(messageCollectionList, query);
 				int cweid = 0;
 				if (fbNode != null) try {
-					cweid = Integer.parseInt(getChildText(fbNode, "@cweid"));
+					cweid = Integer.parseInt(fbNode.valueOf("@cweid"));
 				} catch (RuntimeException e) {
 					assert true; // ignore
 				}

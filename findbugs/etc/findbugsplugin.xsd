@@ -49,7 +49,7 @@
 		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
 	</xsd:complexType>
 	
-	<xsd:complexType name="BugCode">
+	<xsd:complexType name="BugCodeType">
 		<xsd:attribute name="abbrev" type="IdentifierType"/>
 		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
 	</xsd:complexType>
@@ -109,6 +109,7 @@
 				maxOccurs="1"/>
 			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
 			<xsd:element name="EngineRegistrar" type="EngineRegistrarType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BugCode" type="BugCodeType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="pluginid" type="xsd:string"/>
