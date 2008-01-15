@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -323,10 +325,16 @@ public class PluginLoader {
 			String shortDesc = getChildText(messageNode, "ShortDescription");
 			String longDesc = getChildText(messageNode, "LongDescription");
 			String detailText = getChildText(messageNode, "Details");
+			int cweid = 0;
+			try {
+				cweid = Integer.parseInt(getChildText(messageNode, "@cweid"));
+			} catch (RuntimeException e) {
+				assert true; // ignore
+			}
 
 			BugPattern bugPattern = new BugPattern(type, abbrev, category,
 					Boolean.valueOf(experimental).booleanValue(),
-					shortDesc, longDesc, detailText);
+					shortDesc, longDesc, detailText, cweid);
 			plugin.addBugPattern(bugPattern);
 			boolean unknownCategory = (null == i18n.getBugCategory(category));
 			if (unknownCategory) {
@@ -349,7 +357,16 @@ public class PluginLoader {
 				if (definedBugCodes.contains(abbrev))
 					continue;
 				String description = bugCodeNode.getText();
-				BugCode bugCode = new BugCode(abbrev, description);
+				
+				String query = "/FindbugsPlugin/BugCode[@abbrev='" + abbrev + "']";
+				Node fbNode = findOptionalMessageNode(messageCollectionList, query);
+				int cweid = 0;
+				if (fbNode != null) try {
+					cweid = Integer.parseInt(getChildText(fbNode, "@cweid"));
+				} catch (RuntimeException e) {
+					assert true; // ignore
+				}
+				BugCode bugCode = new BugCode(abbrev, description, cweid);
 				plugin.addBugCode(bugCode);
 				definedBugCodes.add(abbrev);
 			}
@@ -465,6 +482,14 @@ public class PluginLoader {
 		throw new PluginException(missingMsg);
 	}
 
+	private static @CheckForNull Node findOptionalMessageNode(List<Document> messageCollectionList, String xpath) throws PluginException {
+		for (Document document : messageCollectionList) {
+			Node node = document.selectSingleNode(xpath);
+			if (node != null)
+				return node;
+		}
+		return null;
+	}
 	private static String getChildText(Node node, String childName) throws PluginException {
 		Node child = node.selectSingleNode(childName);
 		if (child == null)

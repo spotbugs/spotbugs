@@ -38,6 +38,7 @@ public class BugPattern implements Comparable<BugPattern> {
 	final private String longDescription;
 	final private String detailText;
 	 private String detailHTML;
+	 final int cweid;
 
 	/**
 	 * Constructor.
@@ -53,6 +54,23 @@ public class BugPattern implements Comparable<BugPattern> {
 	 */
 	public BugPattern(String type, String abbrev, String category, boolean experimental,
 					  String shortDescription, String longDescription, String detailText) {
+		this(type, abbrev, category, experimental, shortDescription, longDescription, detailText, 0);
+	}
+	/**
+	 * Constructor.
+	 *
+	 * @param type             the type (species) of BugInstance
+	 * @param abbrev           the abbreviation or "bug code"; see {@link BugCode}
+	 * @param category         the category
+	 * @param experimental     true if the bug pattern is experimental
+	 * @param shortDescription short one-line description of the bug species
+	 * @param longDescription  longer one-line description; may contain placeholders
+	 *                         for use by {@link FindBugsMessageFormat} to format BugAnnotations
+	 * @param detailText       HTML text containing a full description of the bug species
+	 */
+	public BugPattern(String type, String abbrev, String category, boolean experimental,
+					  String shortDescription, String longDescription, String detailText, int cweid) {
+
 		this.type = type;
 		this.abbrev = abbrev;
 		this.category = category;
@@ -60,6 +78,7 @@ public class BugPattern implements Comparable<BugPattern> {
 		this.shortDescription = shortDescription;
 		this.longDescription = longDescription;
 		this.detailText = detailText;
+		this.cweid = cweid;
 	}
 
 	 static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN",
@@ -162,7 +181,12 @@ public class BugPattern implements Comparable<BugPattern> {
 		BugPattern other = (BugPattern) o;
 		return type.equals(other.type);
 	}
-
+	/**
+     * @return Returns the cweid.
+     */
+    public int getCWEid() {
+	    return cweid;
+    }
 }
 
 // vim:ts=4

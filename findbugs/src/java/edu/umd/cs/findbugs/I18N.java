@@ -193,6 +193,22 @@ public class I18N {
 	 * @param shortBugType the short bug type code
 	 * @return the description of that short bug type code means
 	 */
+	public BugCode getBugCode(String shortBugType) {
+		BugCode bugCode = bugCodeMap.get(shortBugType);
+		if (bugCode == null)
+			throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);
+		return bugCode;
+	}
+	/**
+	 * Get a description for given "bug type".
+	 * FIXME: this is referred to elsewhere as the "bug code" or "bug abbrev".
+	 * Should make the terminology consistent everywhere.
+	 * In this case, the bug type refers to the short prefix code prepended to
+	 * the long and short bug messages.
+	 *
+	 * @param shortBugType the short bug type code
+	 * @return the description of that short bug type code means
+	 */
 	public @NonNull String getBugTypeDescription(String shortBugType) {
 		BugCode bugCode = bugCodeMap.get(shortBugType);
 		if (bugCode == null)

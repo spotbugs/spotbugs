@@ -680,13 +680,20 @@
   <Detector class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"
     speed="slow" reports="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED,TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED,TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK"/>
 
+<!-- Bug Codes -->
+
+ <BugCode abbrev="NP" cweid="476"/>
+ 
+ <!-- Bug patterns -->
+ 
+ 
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
-
+ 
 	<BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS" />
-<BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE" />
+   <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE" />
   
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>

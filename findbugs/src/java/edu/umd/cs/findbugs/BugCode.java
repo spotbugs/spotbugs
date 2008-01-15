@@ -30,6 +30,7 @@ package edu.umd.cs.findbugs;
  */
 public class BugCode {
 	private final String abbrev;
+	private final int cweid;
 	private final String description;
 
 	/**
@@ -42,8 +43,13 @@ public class BugCode {
 	public BugCode(String abbrev, String description) {
 		this.abbrev = abbrev;
 		this.description = description;
+		this.cweid = 0;
 	}
-
+	public BugCode(String abbrev, String description, int cweid) {
+		this.abbrev = abbrev;
+		this.description = description;
+		this.cweid = cweid;
+	}
 	/**
 	 * Get the abbreviation for this bug code.
 	 */
@@ -65,6 +71,12 @@ public class BugCode {
 	public String toString() {
 		return "BugCode[" + abbrev + "]";
 	}
+	/**
+     * @return Returns the cweid.
+     */
+    public int getCWEid() {
+	    return cweid;
+    }
 }
 
 // vim:ts=4

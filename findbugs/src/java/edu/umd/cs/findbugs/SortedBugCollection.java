@@ -473,7 +473,9 @@ public class SortedBugCollection implements BugCollection {
 			attributeList.addAttribute("type", bugType);
 			attributeList.addAttribute("abbrev", bugPattern.getAbbrev());
 			attributeList.addAttribute("category", bugPattern.getCategory());
-
+			if (bugPattern.getCWEid() != 0) {
+				attributeList.addAttribute("cweid", Integer.toString(bugPattern.getCWEid()));
+			}
 			xmlOutput.openTag("BugPattern", attributeList);
 
 			xmlOutput.openTag("ShortDescription");
@@ -499,14 +501,17 @@ public class SortedBugCollection implements BugCollection {
 			}
 		}
 		// Emit element describing each reported bug code
-		for (String bugCode : bugCodeSet) {
-			String bugCodeDescription = I18N.instance().getBugTypeDescription(bugCode);
+		for (String bugCodeAbbrev : bugCodeSet) {
+			BugCode bugCode = I18N.instance().getBugCode(bugCodeAbbrev);
+			String bugCodeDescription = bugCode.getDescription();
 			if (bugCodeDescription == null)
 				continue;
 
 			XMLAttributeList attributeList = new XMLAttributeList();
-			attributeList.addAttribute("abbrev", bugCode);
-
+			attributeList.addAttribute("abbrev", bugCodeAbbrev);
+			if (bugCode.getCWEid() != 0) {
+				attributeList.addAttribute("cweid", Integer.toString(bugCode.getCWEid()));
+			}
 			xmlOutput.openTag("BugCode", attributeList);
 
 			xmlOutput.openTag("Description");
