@@ -168,6 +168,7 @@
 						<xs:attribute name="type" type="xs:string" use="required" />
 						<xs:attribute name="abbrev" type="xs:string" use="required" />
 						<xs:attribute name="category" type="xs:string" use="required" />
+						<xs:attribute name="cweid" type="xs:positiveInteger" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="BugCode" minOccurs="0" maxOccurs="unbounded">
@@ -176,6 +177,7 @@
 							<xs:element name="Description" type="xs:string" />
 						</xs:sequence>
 						<xs:attribute name="abbrev" type="xs:string" use="required" />
+						<xs:attribute name="cweid" type="xs:positiveInteger" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="Errors">

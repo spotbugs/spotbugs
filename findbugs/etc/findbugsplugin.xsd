@@ -46,8 +46,14 @@
 		<xsd:attribute name="type" type="xsd:ID"/>
 		<xsd:attribute name="category" type="IdentifierType"/>
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
+		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
 	</xsd:complexType>
-
+	
+	<xsd:complexType name="BugCode">
+		<xsd:attribute name="abbrev" type="IdentifierType"/>
+		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
+	</xsd:complexType>
+	
 	<xsd:simpleType name="DetectorCategoryType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="reporting"/>
