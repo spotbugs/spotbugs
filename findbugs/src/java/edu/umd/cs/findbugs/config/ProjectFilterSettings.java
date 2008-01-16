@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.I18N;
  * Includes support for encoding these settings as a String,
  * which can easily be stored as a persistent project property
  * in Eclipse.
- * 
+ *
  * @see BugInstance
  * @author David Hovemeyer
  */
@@ -63,10 +64,10 @@ public class ProjectFilterSettings implements Cloneable {
 	/** Map of priority level names to their numeric values.  */
 	private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
 	static {
-		priorityNameToValueMap.put(HIGH_PRIORITY, (Integer)(Detector.HIGH_PRIORITY));
-		priorityNameToValueMap.put(MEDIUM_PRIORITY, (Integer)(Detector.NORMAL_PRIORITY));
-		priorityNameToValueMap.put(LOW_PRIORITY, (Integer)(Detector.LOW_PRIORITY));
-		priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Integer)(Detector.EXP_PRIORITY));
+		priorityNameToValueMap.put(HIGH_PRIORITY, (Detector.HIGH_PRIORITY));
+		priorityNameToValueMap.put(MEDIUM_PRIORITY, (Detector.NORMAL_PRIORITY));
+		priorityNameToValueMap.put(LOW_PRIORITY, (Detector.LOW_PRIORITY));
+		priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Detector.EXP_PRIORITY));
 	}
 
 	/**
@@ -93,7 +94,8 @@ public class ProjectFilterSettings implements Cloneable {
 		DetectorFactoryCollection.instance(); // ensure detectors loaded
 
 		// initially all known bug categories are active
-		this.activeBugCategorySet = new HashSet<String>( I18N.instance().getBugCategories() );
+		// using SortedSet to allow better revision control on saved sorted properties
+		this.activeBugCategorySet = new TreeSet<String>( I18N.instance().getBugCategories() );
 		this.hiddenBugCategorySet = new HashSet<String>();
 		setMinPriority(DEFAULT_PRIORITY);
 		this.displayFalseWarnings = false;
@@ -103,7 +105,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 * Factory method to create a default ProjectFilterSettings object.
 	 * Uses the default warning priority threshold, and enables
 	 * all bug categories.
-	 * 
+	 *
 	 * @return a default ProjectFilterSettings object
 	 */
 	public static ProjectFilterSettings createDefault() {
@@ -117,7 +119,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Create ProjectFilterSettings from an encoded string.
-	 * 
+	 *
 	 * @param s the encoded string
 	 * @return the ProjectFilterSettings
 	 */
@@ -134,8 +136,9 @@ public class ProjectFilterSettings implements Cloneable {
 				minPriority = s;
 				s = "";
 			}
-			if (priorityNameToValueMap.get(minPriority) == null)
+			if (priorityNameToValueMap.get(minPriority) == null) {
 				minPriority = DEFAULT_PRIORITY;
+			}
 			result.setMinPriority(minPriority);
 		}
 
@@ -187,7 +190,7 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * set the hidden bug categories on the specifed ProjectFilterSettings
 	 * from an encoded string
-	 * 
+	 *
 	 * @param result the ProjectFilterSettings from which to remove bug categories
 	 * @param s the encoded string
 	 * @see ProjectFilterSettings#hiddenFromEncodedString(ProjectFilterSettings, String)
@@ -215,29 +218,32 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * Return whether or not a warning should be displayed,
 	 * according to the project filter settings.
-	 * 
+	 *
 	 * @param bugInstance the warning
 	 * @return true if the warning should be displayed, false if not
 	 */
 	public boolean displayWarning(BugInstance bugInstance) {
 
 		int priority = bugInstance.getPriority();
-		if (priority > getMinPriorityAsInt())
+		if (priority > getMinPriorityAsInt()) {
 			return false;
+		}
 
 		BugPattern bugPattern = bugInstance.getBugPattern();
 
 		// HACK: it is conceivable that the detector plugin which generated
 		// this warning is not available any more, in which case we can't
 		// find out the category.  Let the warning be visible in this case.
-		if (bugPattern != null && !containsCategory(bugPattern.getCategory()))
+		if (bugPattern != null && !containsCategory(bugPattern.getCategory())) {
 			return false;
+		}
 
 		if (!displayFalseWarnings) {
 			boolean isFalseWarning =
 				!Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
-			if (isFalseWarning)
+			if (isFalseWarning) {
 				return false;
+			}
 		}
 
 		return true;
@@ -245,7 +251,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Set minimum warning priority threshold.
-	 * 
+	 *
 	 * @param minPriority the priority threshold: one of "High", "Medium", or "Low"
 	 */
 	public void setMinPriority(String minPriority) {
@@ -254,8 +260,9 @@ public class ProjectFilterSettings implements Cloneable {
 		Integer value = priorityNameToValueMap.get(minPriority);
 		if (value == null) {
 			value = priorityNameToValueMap.get(DEFAULT_PRIORITY);
-			if (value == null)
+			if (value == null) {
 				throw new IllegalStateException();
+			}
 		}
 
 		this.minPriorityAsInt = value.intValue();
@@ -264,7 +271,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Get the minimum warning priority threshold.
-	 * 
+	 *
 	 * @return minimum warning priority threshold: one of "High", "Medium", or "Low"
 	 */
 	public String getMinPriority() {
@@ -273,7 +280,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Return the minimum warning priority threshold as an integer.
-	 * 
+	 *
 	 * @return the minimum warning priority threshold as an integer
 	 */
 	public int getMinPriorityAsInt() {
@@ -282,7 +289,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Add a bug category to the set of categories to be displayed.
-	 * 
+	 *
 	 * @param category the bug category: e.g., "CORRECTNESS"
 	 */
 	public void addCategory(String category) {
@@ -312,7 +319,7 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * Returns false if the given category is hidden
 	 * in the project filter settings.
-	 * 
+	 *
 	 * @param category the category
 	 * @return false if the category is hidden, true if not
 	 */
@@ -323,22 +330,22 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Return set of active (enabled) bug categories.
-	 * 
+	 *
 	 * Note that bug categories that are not explicity
 	 * hidden will appear active even if they are not
 	 * members of this set.
-	 * 
+	 *
 	 * @return the set of active categories
 	 */
 	public Set<String> getActiveCategorySet() {
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new TreeSet<String>();
 		result.addAll(this.activeBugCategorySet);
 		return result;
 	}
 
 	/**
 	 * Set whether or not false warnings should be displayed.
-	 * 
+	 *
 	 * @param displayFalseWarnings true if false warnings should be displayed,
 	 *                             false if not
 	 */
@@ -348,7 +355,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Get whether or not false warnings should be displayed.
-	 * 
+	 *
 	 * @return true if false warnings should be displayed, false if not
 	 */
 	public boolean displayFalseWarnings() {
@@ -357,7 +364,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Create a string containing the encoded form of the hidden bug categories
-	 * 
+	 *
 	 * @return an encoded string
 	 */
 	public String hiddenToEncodedString() {
@@ -365,8 +372,9 @@ public class ProjectFilterSettings implements Cloneable {
 		// Encode hidden bug categories
 		for (Iterator<String> i = hiddenBugCategorySet.iterator(); i.hasNext(); ) {
 			buf.append(i.next());
-			if (i.hasNext())
+			if (i.hasNext()) {
 				buf.append(LISTITEM_DELIMITER);
+			}
 		}
 		buf.append(FIELD_DELIMITER);
 
@@ -375,7 +383,7 @@ public class ProjectFilterSettings implements Cloneable {
 
 	/**
 	 * Create a string containing the encoded form of the ProjectFilterSettings.
-	 * 
+	 *
 	 * @return an encoded string
 	 */
 	public String toEncodedString() {
@@ -388,8 +396,9 @@ public class ProjectFilterSettings implements Cloneable {
 		buf.append(FIELD_DELIMITER);
 		for (Iterator<String> i = activeBugCategorySet.iterator(); i.hasNext(); ) {
 			buf.append(i.next());
-			if (i.hasNext())
-				buf.append(LISTITEM_DELIMITER);			
+			if (i.hasNext()) {
+				buf.append(LISTITEM_DELIMITER);
+			}
 
 		}
 
@@ -410,19 +419,23 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	@Override
 		 public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass())
+		if (obj == null || obj.getClass() != this.getClass()) {
 			return false;
+		}
 		ProjectFilterSettings other = (ProjectFilterSettings) obj;
 
-		if (!this.getMinPriority().equals(other.getMinPriority()))
+		if (!this.getMinPriority().equals(other.getMinPriority())) {
 			return false;
+		}
 
 		// don't compare the activeBugCategorySet. compare the hiddenBugCategorySet only
-		if (!this.hiddenBugCategorySet.equals(other.hiddenBugCategorySet))
+		if (!this.hiddenBugCategorySet.equals(other.hiddenBugCategorySet)) {
 			return false;
+		}
 
-		if (this.displayFalseWarnings != other.displayFalseWarnings)
+		if (this.displayFalseWarnings != other.displayFalseWarnings) {
 			return false;
+		}
 
 		return true;
 	}
@@ -440,7 +453,7 @@ public class ProjectFilterSettings implements Cloneable {
 			// Copy field contents
 			clone.hiddenBugCategorySet = new HashSet<String>();
 			clone.hiddenBugCategorySet.addAll(this.hiddenBugCategorySet);
-			clone.activeBugCategorySet = new HashSet<String>();
+			clone.activeBugCategorySet = new TreeSet<String>();
 			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
 			clone.setMinPriority(this.getMinPriority());
 			clone.displayFalseWarnings = this.displayFalseWarnings;
