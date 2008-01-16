@@ -54,15 +54,16 @@ import org.eclipse.jdt.launching.JavaRuntime;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.workflow.Update;
@@ -125,8 +126,8 @@ public class FindBugsWorker {
 			FindbugsPlugin.getDefault().logInfo("Looking for detectors in: " + findBugsHome); //$NON-NLS-1$
 		}
 
-		// FIXME hardcoded findbugs.home property
-		System.setProperty("findbugs.home", findBugsHome); //$NON-NLS-1$
+		// System.setProperty("findbugs.home", findBugsHome); //$NON-NLS-1$
+		FindBugs.setHome(findBugsHome);
 
 		Set<IPath> outLocations = createOutputLocations();
 
@@ -220,7 +221,7 @@ public class FindBugsWorker {
 		outputFiles.clear();
 
 		final Reporter bugReporter = new Reporter(this.project, this.monitor);
-		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
+		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
 
 		String[] classPathEntries = createClassPathEntries();
 		// add to findbugs classpath
@@ -241,27 +242,11 @@ public class FindBugsWorker {
 		findBugs.setUserPreferences(this.userPrefs);
 		configureExtended(findBugs);
 
-
-
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
 					if(loadXml){
-						if (DEBUG) {
-							System.out.println("Loading XML...");
-						}
-						if (!(xmlFileName.equals(""))) {
-							try {
-								FileInputStream input = new FileInputStream(xmlFileName);
-								bugReporter.reportBugsFromXml(input, findBugsProject);
-							} catch (FileNotFoundException e) {
-								FindbugsPlugin.getDefault().logException(e,
-										"XML file not found: " + xmlFileName);
-							} catch (DocumentException e) {
-								FindbugsPlugin.getDefault().logException(e,
-										"Invalid XML file: " + xmlFileName);
-							}
-						}
+						reportFromXml(xmlFileName, findBugsProject, bugReporter);
 					} else {
 						if (DEBUG) {
 							System.out.println("Finding bugs");
@@ -277,6 +262,9 @@ public class FindBugsWorker {
 					//throw new OperationCanceledException("FindBugs operation cancelled by user");
 				} catch (IOException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+				} finally {
+					Global.removeAnalysisCacheForCurrentThread();
+					AnalysisContext.removeCurrentAnalysisContext();
 				}
 			}
 		};
@@ -314,12 +302,6 @@ public class FindBugsWorker {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
 		}
 
-		// Redisplay markers (this makes sure version information can get in)
-		Iterator<IFile> it = files.iterator();
-		if(it.hasNext()){
-			IResource res = it.next();
-			MarkerUtil.redisplayMarkersWithoutProgressDialog(res.getProject());
-		}
 	}
 
 	/**
@@ -531,5 +513,24 @@ public class FindBugsWorker {
 			}
 		}
 		return false;
+	}
+
+	private void reportFromXml(final String xmlFileName, final Project findBugsProject,
+			final Reporter bugReporter) throws IOException {
+		if (DEBUG) {
+			System.out.println("Loading XML...");
+		}
+		if (!(xmlFileName.equals(""))) {
+			try {
+				FileInputStream input = new FileInputStream(xmlFileName);
+				bugReporter.reportBugsFromXml(input, findBugsProject);
+			} catch (FileNotFoundException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"XML file not found: " + xmlFileName);
+			} catch (DocumentException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Invalid XML file: " + xmlFileName);
+			}
+		}
 	}
 }

@@ -377,6 +377,10 @@
 	  <classpathVariableInitializer
 			class="de.tobject.findbugs.AnnotationClasspathInitializer"
 			variable="FINDBUGS_ANNOTATIONS"/>
+   <classpathVariableInitializer
+         class="de.tobject.findbugs.AnnotationClasspathInitializer"
+         variable="JSR305_ANNOTATIONS">
+   </classpathVariableInitializer>
    </extension>
 
    <extension

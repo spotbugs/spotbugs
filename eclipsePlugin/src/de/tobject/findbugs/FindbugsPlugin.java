@@ -31,19 +31,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -63,13 +61,10 @@ import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
@@ -112,34 +107,23 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	// Debugging options
 	private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
-	private static final String WORKER_DEBUG = PLUGIN_ID + "/debug/worker"; //$NON-NLS-1$
 	private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
-	private static final String MARKER_DEBUG = PLUGIN_ID + "/debug/marker"; //$NON-NLS-1$
 	private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; //$NON-NLS-1$
-	private static final String PROPERTIES_DEBUG = PLUGIN_ID + "/debug/properties"; //$NON-NLS-1$
 	private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
-	private static final String UTIL_DEBUG = PLUGIN_ID + "/debug/util"; //$NON-NLS-1$
-	private static final String VISITOR_DEBUG = PLUGIN_ID + "/debug/visitor"; //$NON-NLS-1$
 
 	// Persistent and session property keys
-	public static final QualifiedName PERSISTENT_PROPERTY_ACTIVE_DETECTORS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".persprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
-	public static final QualifiedName SESSION_PROPERTY_ACTIVE_DETECTORS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "detectors.active"); //$NON-NLS-1$//$NON-NLS-2$
-	public static final QualifiedName PERSISTENT_PROPERTY_FILTER_SETTINGS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".persprops", "filter.settings");
-	public static final QualifiedName SESSION_PROPERTY_FILTER_SETTINGS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "filter.settings");
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
+
 	public static final QualifiedName SESSION_PROPERTY_FB_PROJECT =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
+
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
+
 	public static final QualifiedName SESSION_PROPERTY_USERPREFS =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
-	public static final QualifiedName SESSION_PROPERTY_EXTENDEDPREFS =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "extendedprefs");
+
 
 	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
 
@@ -194,13 +178,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	public static FindbugsPlugin getDefault() {
 		return plugin;
-	}
-
-	/**
-	 * Returns the workspace instance.
-	 */
-	public static IWorkspace getWorkspace() {
-		return ResourcesPlugin.getWorkspace();
 	}
 
 	/**
@@ -297,21 +274,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static String getFindBugsEnginePluginLocation() {
 		// findbugs.home should be set to the directory the plugin is
 		// installed in.
-		URL u = plugin.find(new Path("."));
+		URL u = plugin.getBundle().getEntry("/");
 		try {
-			URL u2 = Platform.resolve(u);
-			String pluginPath = u2.getPath();
+			URL bundleRoot = FileLocator.resolve(u);
 			if (FindBugsBuilder.DEBUG) {
-				System.out.println("Pluginpath: " + pluginPath); //$NON-NLS-1$
+				System.out.println("Pluginpath: " + bundleRoot.getPath()); //$NON-NLS-1$
 			}
-			return pluginPath;
-		} catch(RuntimeException e) {
-			throw e;
+			return bundleRoot.getPath();
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
-		}
-		if (FindBugsBuilder.DEBUG) {
-			System.out.println("Could not find findbugs binaries."); //$NON-NLS-1$
 		}
 		return null;
 	}
@@ -321,7 +292,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @return
 	 */
 	public String getMessage(String key) {
-		// TODO implement me!
 		return getResourceString(key);
 	}
 
@@ -377,31 +347,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Get ProjectFilterSettings for given project.
-	 * If no settings exist yet, default settings are created.
-	 * Note: this is just for backwards compatibility.
-	 * The UserPreferences for the project now stores the filter settings.
-	 *
-	 * @param project the project
-	 * @return the ProjectFilterSettings for the project
-	 */
-	private static ProjectFilterSettings getProjectFilterSettings(IProject project) throws CoreException {
-		ProjectFilterSettings settings = (ProjectFilterSettings)
-			project.getSessionProperty(SESSION_PROPERTY_FILTER_SETTINGS);
-		if (settings == null) {
-			String savedSettings = project.getPersistentProperty(PERSISTENT_PROPERTY_FILTER_SETTINGS);
-			if (savedSettings == null) {
-				settings = ProjectFilterSettings.createDefault();
-				project.setPersistentProperty(PERSISTENT_PROPERTY_FILTER_SETTINGS, settings.toEncodedString());
-			} else {
-				settings = ProjectFilterSettings.fromEncodedString(savedSettings);
-			}
-			project.setSessionProperty(SESSION_PROPERTY_FILTER_SETTINGS, settings);
-		}
-		return settings;
-	}
-
-	/**
 	 * Get the file resource used to store findbugs warnings for a project.
 	 *
 	 * @param project the project
@@ -413,7 +358,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return path.append(project.getName()+".fbwarnings");
 	}
 
-	public static boolean isBugCollectionDirty(IProject project) throws CoreException {
+	private static boolean isBugCollectionDirty(IProject project) throws CoreException {
 		Object dirty = project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY);
 
 		if (dirty == null) {
@@ -588,7 +533,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	private static void writeBugCollection(
 			IProject project, final SortedBugCollection bugCollection, final Project findbugsProject, IProgressMonitor monitor)
-			throws IOException, CoreException {
+			throws CoreException {
 		// Save to file
 		IPath bugCollectionPath = getBugCollectionFile(project);
 		// Don't turn the path to an IFile because it isn't local to the project.
@@ -613,7 +558,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param project the project
 	 * @return the IFile for the FindBugs preferences file
 	 */
-	public static IFile getUserPreferencesFile(IProject project) {
+	private static IFile getUserPreferencesFile(IProject project) {
 		return project.getFile(".fbprefs");
 	}
 
@@ -630,7 +575,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (prefs == null) {
 			prefs = readUserPreferences(project);
 			if (prefs == null) {
-				prefs = createDefaultUserPreferences(project);
+				prefs = UserPreferences.createDefaultUserPreferences();
 			}
 			project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
 		}
@@ -674,7 +619,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param file - file that should be made writable
 	 * @throws CoreException
 	 */
-	public static void ensureReadWrite(IFile file) throws CoreException {
+	private static void ensureReadWrite(IFile file) throws CoreException {
 		/*
 		 * fix for bug 1683264: we should checkout file before writing to it
 		 */
@@ -687,7 +632,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 	}
 
-	
+
 
 	/**
 	 * Read UserPreferences for project from the file in the project directory.
@@ -714,35 +659,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 					e, "Could not read user preferences for project");
 			return null;
 		}
-	}
-
-	
-	private static UserPreferences createDefaultUserPreferences(IProject project) {
-		UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
-
-		try {
-
-			// Active detector set
-			String activeDetectorList =
-				(String) project.getSessionProperty(SESSION_PROPERTY_ACTIVE_DETECTORS);
-			if (activeDetectorList != null) {
-				userPrefs.enableAllDetectors(false);
-				DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
-
-				StringTokenizer st = new StringTokenizer(activeDetectorList, LIST_DELIMITER);
-				while (st.hasMoreTokens()) {
-					String factoryName = st.nextToken();
-					DetectorFactory factory = factoryCollection.getFactory(factoryName);
-					if (factory != null) {
-						userPrefs.enableDetector(factory, true);
-					}
-				}
-			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not get FindBugs settings");
-		}
-
-		return userPrefs;
 	}
 
 	public BugResolutionAssociations getBugResolutions() {

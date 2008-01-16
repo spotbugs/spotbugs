@@ -64,9 +64,9 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	/** Current user preferences for the project. */
 	private UserPreferences userPrefs;
 
-	int pass = -1;
+	private int pass = -1;
 
-	int filteredBugCount;
+	private int filteredBugCount;
 
 	/**
 	 * Constructor.
