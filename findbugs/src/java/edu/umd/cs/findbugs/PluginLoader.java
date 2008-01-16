@@ -359,7 +359,7 @@ public class PluginLoader {
 				String description = bugCodeNode.getText();
 				
 				String query = "/FindbugsPlugin/BugCode[@abbrev='" + abbrev + "']";
-				Node fbNode = findOptionalMessageNode(messageCollectionList, query);
+				Node fbNode = pluginDescriptor.selectSingleNode(query);
 				int cweid = 0;
 				if (fbNode != null) try {
 					cweid = Integer.parseInt(fbNode.valueOf("@cweid"));
