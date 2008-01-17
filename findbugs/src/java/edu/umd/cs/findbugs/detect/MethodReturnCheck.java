@@ -118,6 +118,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 				OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
 				if (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0) {
 					callSeen = XFactory.createReferencedXMethod(this);
+					callPC = getPC();
 					sawMethodCallWithIgnoredReturnValue();
 				}
 			}
