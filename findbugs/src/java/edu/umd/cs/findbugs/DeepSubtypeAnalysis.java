@@ -18,6 +18,8 @@ public class DeepSubtypeAnalysis {
 	static private JavaClass remote;
 	static private ClassNotFoundException storedException;
 
+	private static final boolean DEBUG = SystemProperties.getBoolean("dsa.debug");
+
 	static {
 		try {
 			serializable = AnalysisContext.lookupSystemClass("java.io.Serializable");
@@ -47,8 +49,12 @@ public class DeepSubtypeAnalysis {
 		if (storedException != null)
 			throw storedException;
 
-		if (isPrimitiveComponentClass(refSig))
+		if (isPrimitiveComponentClass(refSig)) {
+			if(DEBUG) {
+				System.out.println("regSig \"" + refSig + "\" is primitive component class");
+			}
 			return 1.0;
+		}
 
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
@@ -107,17 +113,36 @@ public class DeepSubtypeAnalysis {
 		if (x.getClassName().equals("java.lang.Object"))
 			return 0.4;
 		double result = Analyze.deepInstanceOf(x, serializable);
-		if (result >= 0.9)
+		if (result >= 0.9) {
+			if(DEBUG) {
+				System.out.println("High serializable result: " + result);
+			}
 			return result;
+		}
 		result = Math.max(result, Analyze.deepInstanceOf(x, collection));
-		if (result >= 0.9)
+		if (result >= 0.9) {
+			if(DEBUG) {
+				System.out.println("High collection result: " + result);
+			}
 			return result;
+		}
 		result = Math.max(result, Analyze.deepInstanceOf(x, map));
-		if (result >= 0.9)
+		if (result >= 0.9) {
+			if(DEBUG) {
+				System.out.println("High map result: " + result);
+			}
 			return result;
+		}
 		result = Math.max(result, 0.5*Analyze.deepInstanceOf(x, comparator));
-		if (result >= 0.9)
+		if (result >= 0.9) {
+			if(DEBUG) {
+				System.out.println("High comparator result: " + result);
+			}
 			return result;
+		}
+		if(DEBUG) {
+			System.out.println("No high results; max: " + result);
+		}
 		return result;
 	}
 

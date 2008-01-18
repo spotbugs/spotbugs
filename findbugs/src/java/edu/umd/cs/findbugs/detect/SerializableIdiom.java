@@ -56,6 +56,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 public class SerializableIdiom extends OpcodeStackDetector
 		{
 
+	private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
+
 	final static boolean reportTransientFieldOfNonSerializableClass =
 		SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
 
@@ -154,21 +156,33 @@ public class SerializableIdiom extends OpcodeStackDetector
 			if (interface_name.equals("java.io.Externalizable")) {
 				directlyImplementsExternalizable = true;
 				isExternalizable = true;
-				// System.out.println("Directly implements Externalizable: " + betterClassName);
+				if(DEBUG) {
+					System.out.println("Directly implements Externalizable: " + getClassName());
+				}
 			} else if (interface_name.equals("java.io.Serializable")) {
 				implementsSerializableDirectly = true;
 				isSerializable = true;
+				if(DEBUG) {
+					System.out.println("Directly implements Serializable: " + getClassName());
+				}
 				break;
 			}
 		}
 
 		// Does this class indirectly implement Serializable?
 		if (!isSerializable) {
-				if (Subtypes2.instanceOf(obj, "java.io.Externalizable"))
-					isExternalizable = true;
-				if (Subtypes2.instanceOf(obj, "java.io.Serializable"))
-					isSerializable = true;
-
+			if (Subtypes2.instanceOf(obj, "java.io.Externalizable")) {
+				isExternalizable = true;
+				if(DEBUG) {
+					System.out.println("Indirectly implements Externalizable: " + getClassName());
+				}
+			}
+			if (Subtypes2.instanceOf(obj, "java.io.Serializable")) {
+				isSerializable = true;
+				if(DEBUG) {
+					System.out.println("Indirectly implements Serializable: " + getClassName());
+				}
+			}
 		}
 
 		hasPublicVoidConstructor = false;
@@ -241,7 +255,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 	@Override
 		 public void visitAfter(JavaClass obj) {
 		if (isEnum) return;
-		if (false) {
+		if (DEBUG) {
 			System.out.println(getDottedClassName());
 			System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);
 			System.out.println("  superClassHasVoidConstructor: " + superClassHasVoidConstructor);
@@ -325,12 +339,12 @@ public class SerializableIdiom extends OpcodeStackDetector
 		if (getMethodName().equals("readExternal")
 				&& getMethodSig().equals("(Ljava/io/ObjectInput;)V")) {
 			sawReadExternal = true;
-			if (false && !obj.isPrivate())
+			if (DEBUG && !obj.isPrivate())
 				System.out.println("Non-private readExternal method in: " + getDottedClassName());
 		} else if (getMethodName().equals("writeExternal")
 				&& getMethodSig().equals("(Ljava/io/Objectoutput;)V")) {
 			sawWriteExternal = true;
-			if (false && !obj.isPrivate())
+			if (DEBUG && !obj.isPrivate())
 				System.out.println("Non-private writeExternal method in: " + getDottedClassName());
 		}
 		else if (getMethodName().equals("readResolve")
@@ -475,9 +489,16 @@ public class SerializableIdiom extends OpcodeStackDetector
 				&& isSerializable
 				&& !isExternalizable
 				&& getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
+			if(DEBUG) {
+				System.out.println("Examining non-transient field with name: "
+				                   + getFieldName() + ", sig: " + getFieldSig());
+			}
 			try {
 
 				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(getFieldSig());
+				if(DEBUG) {
+					System.out.println("  isSerializable: " + isSerializable);
+				}
 				if (isSerializable < 1.0)
 					fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
 				if (isSerializable < 0.9) {
@@ -494,7 +515,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 						else priority+=1;
 					}
 					if (isGUIClass) priority++;
-					if (false)
+					if (DEBUG)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
 						+" " +  isSerializable
@@ -514,6 +535,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
 					.addClass(getThisClass().getClassName()));
 			} catch (ClassNotFoundException e) {
+				if (DEBUG) {
+					System.out.println("Caught ClassNotFoundException");
+				}
 				bugReporter.reportMissingClass(e);
 			}
 		}
