@@ -259,7 +259,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			if (o != null && o instanceof Integer) {
 				int v = (Integer) o;
 				if (v < 0 || v > 11)
-					bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addInt(v).describe(IntAnnotation.INT_VALUE)
 					.addCalledMethod(this)
