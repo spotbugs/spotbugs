@@ -88,6 +88,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>onlyAnalyze        (restrict analysis to find bugs to given comma-separated list of classes and packages - See the textui argument description for details)
  * <li>output             (enum text|xml|xml:withMessages|html - default xml)
  * <li>outputFile         (name of output file to create)
+ * <li>noClassOk          (boolean default false)
  * <li>pluginList         (list of plugin Jar files to load)
  * <li>projectFile        (project filename)
  * <li>projectName        (project name, for display in generated HTML)
@@ -146,7 +147,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private String stylesheet ;
 	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
 	private String onlyAnalyze ;
-	
+	private boolean noClassOk ;
+
 	public FindBugsTask() {
 		super("edu.umd.cs.findbugs.FindBugs2");
 	}
@@ -177,6 +179,16 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	 */
 	public void setWorkHard(boolean workHard){
 		this.workHard = workHard;   
+	}
+	
+	/**
+	 * Set the noClassOk flag.
+	 * 
+	 * @param noClassOk true if we should generate no-error output if no
+	 *        classfiles are specified 
+	 */
+	public void setNoClassOk(boolean noClassOk) {
+		this.noClassOk = noClassOk;
 	}
 
 	/**
@@ -613,6 +625,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		}
 		if ( relaxed ) {
 			addArg("-relaxed");
+		}
+		if ( noClassOk ) {
+			addArg("-noClassOk");
 		}
 		if ( onlyAnalyze != null ) {
 			addArg("-onlyAnalyze");

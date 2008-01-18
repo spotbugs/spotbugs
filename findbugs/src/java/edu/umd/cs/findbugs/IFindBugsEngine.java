@@ -257,6 +257,14 @@ public interface IFindBugsEngine {
 	 * @param scanNestedArchives true if nested archives should be scanned, false if not
 	 */
 	public void setScanNestedArchives(boolean scanNestedArchives);
+	
+	/**
+	 * Set whether or not to generate an empty output file if there
+	 * were no class files specified.
+	 * 
+	 * @param noClassOk true if FindBugs should generate empty output file
+	 */
+	public void setNoClassOk(boolean noClassOk);
 
 	/**
 	 * Set the DetectorFactoryCollection from which plugins/detectors 

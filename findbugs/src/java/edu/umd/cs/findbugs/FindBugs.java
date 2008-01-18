@@ -869,6 +869,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public void setScanNestedArchives(boolean scanNestedArchives) {
 		// Ignore this - we're not really going to try to do this
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
+	 */
+	public void setNoClassOk(boolean noClassOk) {
+		// Ignore for now; only implemented in FindBugs2
+	}
 
 	/**
 	 * Set the FindBugs home directory.

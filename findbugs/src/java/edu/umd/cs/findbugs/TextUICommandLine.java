@@ -79,6 +79,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private List<String> excludeFilterFile = new LinkedList<String>();
 	private List<String> excludeBugFile = new LinkedList<String>();
 	private boolean setExitCode = false;
+	private boolean noClassOk = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
 	private PrintStream outputStream = null;
 	private Set<String> bugCategorySet = null;
@@ -141,6 +142,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 		addOption("-sourcepath", "source path", "set source path for analyzed classes");
 		addSwitch("-exitcode", "set exit code of process");
+		addSwitch("-noClassOk", "output empty warning file if no classes are specified");
 		addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
 	}
 
@@ -153,6 +155,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	}
 	public boolean setExitCode() {
 		return setExitCode;
+	}
+	public boolean noClassOk() {
+		return noClassOk;
 	}
 
 	public boolean quiet() {
@@ -230,6 +235,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				optionExtraPart.equals("") || Boolean.valueOf(optionExtraPart).booleanValue();
 		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
+		} else if (option.equals("-noClassOk")) {
+			noClassOk = true;
 		} else if (option.equals("-xargs"))
 			xargs = true;
 		else {
@@ -474,6 +481,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setProjectName(projectName);
 
 		findBugs.setScanNestedArchives(scanNestedArchives);
+		findBugs.setNoClassOk(noClassOk);
 	}
 
 	/**

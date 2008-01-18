@@ -100,6 +100,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private FindBugsProgress progress;
 	private IClassScreener classScreener;
 	private boolean scanNestedArchives;
+	private boolean noClassOk;
 
 	/**
 	 * Constructor.
@@ -206,8 +207,13 @@ public class FindBugs2 implements IFindBugsEngine {
 			bugReporter.setDelegate(filterBugReporter);
 			}
 			
-			if (appClassList.size() == 0)
-				throw new NoClassesFoundToAnalyzeException(classPath);
+			if (appClassList.size() == 0) {
+				if(noClassOk) {
+					System.err.println("No classfiles specified; output will have no warnings");
+				} else {
+					throw new NoClassesFoundToAnalyzeException(classPath);
+				}
+			}
 			
 			// Analyze the application
 			analyzeApplication();
@@ -439,6 +445,13 @@ public class FindBugs2 implements IFindBugsEngine {
 	 */
 	public void setScanNestedArchives(boolean scanNestedArchives) {
 		this.scanNestedArchives = scanNestedArchives;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
+	 */
+	public void setNoClassOk(boolean noClassOk) {
+		this.noClassOk = noClassOk;
 	}
 
 	/**
