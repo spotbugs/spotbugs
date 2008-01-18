@@ -126,10 +126,6 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 			addArg("-withMessages");
 		}
 		
-		if (outputFile.exists()) {
-			addArg(outputFile.getPath());
-		}
-		
 		for (DataFile dataFile : dataFileList) {
 			addArg(dataFile.getName());
 		}
