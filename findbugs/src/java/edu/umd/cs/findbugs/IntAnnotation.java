@@ -45,6 +45,8 @@ public class IntAnnotation implements BugAnnotation {
 	public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
 	public static final String INT_VALUE = "INT_VALUE";
 	public static final String INT_SHIFT= "INT_SHIFT";
+	public static final String INT_EXPECTED_ARGUMENTS= "INT_EXPECTED_ARGUMENTS";
+	public static final String INT_ACTUAL_ARGUMENTS= "INT_ACTUAL_ARGUMENTS";
 
 	/**
 	 * Constructor.

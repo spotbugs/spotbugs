@@ -560,8 +560,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 								.addClassAndMethod(this)
 								.addCalledMethod(this)
 								.addString(fsFmtStr)
-								.addInt(pcts)
-								.addInt(prevConst)
+								.addInt(pcts).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
+								.addInt(prevConst).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
+								.addSourceLine(this)
 							);
 							if(VAMISMATCH_DEBUG) {
 								System.out.println(

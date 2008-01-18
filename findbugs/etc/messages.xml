@@ -6594,7 +6594,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="DLS">Dead local store</BugCode>
   <BugCode abbrev="IP">Ignored parameter</BugCode>
   <BugCode abbrev="MF">Masked Field</BugCode>
-  <BugCode abbrev="WMI">Wrong Map Iterator</BugCode>
+  <BugCode abbrev="WMI">Inefficient Map Iterator</BugCode>
   <BugCode abbrev="ISC">Instantiated Static Class</BugCode>
   <BugCode abbrev="REC">RuntimeException capture</BugCode>
   <BugCode abbrev="FE">Test for floating point equality</BugCode>
