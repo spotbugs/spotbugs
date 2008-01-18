@@ -536,7 +536,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					   "java/io/PrintStream".equals(cl) && "printf".equals(nm))
 					{
 						// Get the format string if possible
-						int pcts = 0;
+						int pcts = 0;    // number of normally consumed args
+						int highAbs = 0; // highest indexed arg
 						for(int i = 0; i < fsFmtStr.length(); i++) {
 							if(fsFmtStr.charAt(i) == '%') {
 								if(i < fsFmtStr.length()-1 &&
@@ -548,33 +549,90 @@ public class FindPuzzlers extends OpcodeStackDetector {
 								   (fsFmtStr.charAt(i+1) == '%' ||
 					                fsFmtStr.charAt(i+1) == 'n'))
 								{
-									i++; continue;
+									i++; // skip over
 								}
-								pcts++;
+								else if(i < fsFmtStr.length()-1 &&
+								        fsFmtStr.charAt(i+1) == '<')
+								{
+									// this just refers to whatever the
+									// previous placeholder referred to
+									i++; // skip over
+								}
+								else if(i < fsFmtStr.length()-1 &&
+								        fsFmtStr.charAt(i+1) >= '0' &&
+								        fsFmtStr.charAt(i+1) <= '9')
+								{
+									int idx = fsFmtStr.charAt(i+1) - '0';
+									i++;
+									// Parse index into idx
+									while(i+1 < fsFmtStr.length()) {
+										if(fsFmtStr.charAt(i+1) >= '0' &&
+								           fsFmtStr.charAt(i+1) <= '9')
+										{
+											idx *= 10;
+											idx += fsFmtStr.charAt(i+1) - '0';
+										}
+										else {
+											if(fsFmtStr.charAt(i+1) != '$') {
+												// oops, can't parse
+												// this as an absolute
+												idx = 0; pcts++;
+											}
+											break;
+										}
+										i++;
+									}
+									// This is the highest absolute
+									// index used so far
+									if(idx > highAbs) {
+										if(VAMISMATCH_DEBUG) {
+											System.out.println("New highest abs idx: " + idx);
+										}
+										highAbs = idx;
+									} else {
+										if(VAMISMATCH_DEBUG) {
+											System.out.println("Not highest abs idx: " + idx + " (highest: " + highAbs + ")");
+										}
+									}
+								}
+								else {
+									pcts++;
+								}
 							}
 						}
-						if(pcts != prevConst) {
+						int consumedPcts = Math.max(pcts, highAbs);
+						if(VAMISMATCH_DEBUG) {
+							System.out.println(
+							    "Consumed pcts is: " + consumedPcts +
+							    ", normal pcts: " + pcts +
+							    ", highest absolute: " + highAbs);
+						}
+						if(consumedPcts != prevConst) {
 							// Bug!
 							bugReporter.reportBug(
 								new BugInstance(this, "VA_FORMAT_STRING_ARG_MISMATCH", NORMAL_PRIORITY)
 								.addClassAndMethod(this)
 								.addCalledMethod(this)
 								.addString(fsFmtStr)
-								.addInt(pcts).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
+								.addInt(consumedPcts).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
 								.addInt(prevConst).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 								.addSourceLine(this)
 							);
 							if(VAMISMATCH_DEBUG) {
 								System.out.println(
-									"WARNING: # percent signs (" + pcts +
-									") doesn't match vararg array size: " +
-									prevConst);
+								    "WARNING: # consumed percent signs (" +
+								    consumedPcts +
+								    ") doesn't match vararg array size: " +
+								    prevConst);
 							}
 						} else {
 							// OK
 							if(VAMISMATCH_DEBUG) {
-								System.out.println("# percent signs (" + pcts +
-									") matchs vararg array size: " + prevConst);
+								System.out.println(
+								    "# consumed percent signs (" +
+								    consumedPcts +
+								    ") matchs vararg array size: " +
+								    prevConst);
 							}
 						}
 					}
