@@ -3900,14 +3900,14 @@ signals unexpected behavior by returning an atypical return value.
 something like  </p>
 <blockquote>
 <pre>
-if (x < 0)
+if (x &lt; 0)
   new IllegalArgumentException("x must be nonnegative");
 </pre>
 </blockquote>
 <p>It was probably the intent of the programmer to throw the created exception:</p>
 <blockquote>
 <pre>
-if (x < 0)
+if (x &lt; 0)
   throw new IllegalArgumentException("x must be nonnegative");
 </pre>
 </blockquote>
@@ -4770,7 +4770,7 @@ value of the result of the remainder operation (i.e., use
 <p> Signed bytes can only have a value in the range -128 to 127. Comparing
 a signed byte with a value outside that range is vacuous and likely to be incorrect.
 To convert a signed byte <code>b</code> to an unsigned value in the range 0..255,
-use <code>0xff & b</code>
+use <code>0xff &amp; b</code>
 </p>
 ]]>
     </Details>
@@ -4784,7 +4784,7 @@ use <code>0xff & b</code>
     <Details>
 <![CDATA[
 <p> There is an integer comparison that always returns
-the same value (e.g., x <= Integer.MAX_VALUE).
+the same value (e.g., x &lt;= Integer.MAX_VALUE).
 </p>
 ]]>
     </Details>
@@ -4795,7 +4795,7 @@ the same value (e.g., x <= Integer.MAX_VALUE).
     <Details>
 <![CDATA[
 <p> Any expression (exp % 1) is guaranteed to always return zero.
-Did you mean (exp & 1) or (exp % 2) instead?
+Did you mean (exp &amp; 1) or (exp % 2) instead?
 </p>
 ]]>
     </Details>
@@ -4818,15 +4818,15 @@ to get <code>0xffffffff</code>, and thus give the value
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
 <code>
 int result = 0;
-for(int i = 0; i < 4; i++) 
-  result = ((result << 8) | b[i]);
+for(int i = 0; i &lt; 4; i++) 
+  result = ((result &lt;&lt; 8) | b[i]);
 </code>
 
 <p>The following idiom will work instead: </p>
 <code>
 int result = 0;
-for(int i = 0; i < 4; i++) 
-  result = ((result << 8) | (b[i] &amps; 0xff));
+for(int i = 0; i &lt; 4; i++) 
+  result = ((result &lt;&lt; 8) | (b[i] &amps; 0xff));
 </code>
 
 ]]>
@@ -4854,12 +4854,12 @@ This may indicate a logic error or typo.</p>
     <Details>
 <![CDATA[
 <p> This method compares an expression such as
-<pre>((event.detail & SWT.SELECTED) > 0)</pre>.
+<pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
 Using bit arithmetic and then comparing with the greater than operator can
 lead to unexpected results (of course depending on the value of
 SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
 for a bug. Even when SWT.SELECTED is not negative, it seems good practice
-to use '!= 0' instead of '> 0'.
+to use '!= 0' instead of '&gt; 0'.
 </p>
 <p>
 <em>Boris Bokowski</em>
@@ -4874,12 +4874,12 @@ to use '!= 0' instead of '> 0'.
     <Details>
 <![CDATA[
 <p> This method compares an expression such as
-<pre>((event.detail & SWT.SELECTED) > 0)</pre>.
+<pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
 Using bit arithmetic and then comparing with the greater than operator can
 lead to unexpected results (of course depending on the value of
 SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
 for a bug. Even when SWT.SELECTED is not negative, it seems good practice
-to use '!= 0' instead of '> 0'.
+to use '!= 0' instead of '&gt; 0'.
 </p>
 <p>
 <em>Boris Bokowski</em>
@@ -6105,7 +6105,7 @@ publicized the bug pattern</a>.
 <p>
 The code uses x % 2 == 1 to check to see if a value is odd, but this won't work
 for negative numbers (e.g., (-5) % 2 == -1). If this code is intending to check
-for oddness, consider using x & 1 == 1, or x % 2 != 0.
+for oddness, consider using x &amp; 1 == 1, or x % 2 != 0.
 </p>
 ]]>
     </Details>
