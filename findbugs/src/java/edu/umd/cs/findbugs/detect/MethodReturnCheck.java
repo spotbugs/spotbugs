@@ -189,7 +189,8 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 				
 				String pattern = annotation.getPattern();
 				if (callSeen.getName().equals("<init>") 
-						&& callSeen.getClassName().endsWith("Exception"))
+						&& (callSeen.getClassName().endsWith("Exception")  
+								|| callSeen.getClassName().endsWith("Error")))
 					pattern = "RV_EXCEPTION_NOT_THROWN";
 				BugInstance warning = new BugInstance(this,
 						pattern, priority)
