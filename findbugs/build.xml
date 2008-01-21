@@ -141,6 +141,7 @@
 			</fileset>
 		</copy>
 		<!-- Compile JUnit test cases. -->
+		<echo level="info" message="compiling junit test cases"/>
 		<javac srcdir="${junitsrc.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
@@ -150,6 +151,7 @@
 			<classpath refid="tools.classpath"/>
 		</javac>
 		<!-- Compile tools. -->
+		<echo level="info" message="compiling tools"/>
 		<javac srcdir="${toolsrc.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
@@ -160,6 +162,7 @@
 			<classpath refid="tools.classpath"/>
 		</javac>
 		<!-- Compile Ant task. -->
+		<echo level="info" message="compiling ant task"/>
 		<javac srcdir="${anttasksrc.dir}"
 			destdir="${classes.dir}"
 			source="1.5"
