@@ -58,7 +58,6 @@
 			<pathelement location="svnant.jar"/>
 			<pathelement location="svnClientAdapter.jar"/>
 		</path>
-        <taskdef resource="svntask.properties" classpathref="svn.classpath"/>
 
 	<target name="init">
 		<mkdir dir="${dist.dir}"/>
@@ -118,7 +117,7 @@
 		<property file="${bin.dir}/plugininfo.properties"/>
 	</target>
 
-	<target name="dist" depends="clean,classes,version" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
+	<target name="dist" depends="clean,classes,version" description="Build a plugin distributable">
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
 				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
 		</jar>
@@ -222,11 +221,9 @@
 		<move file="${site.dir}/feature.xml" tofile="${site.dir}/.feature.xml"/>
 
 
-
-
-
-
 		<!-- site.xml -->
+		<echo level="info" message="copying site.xml to ${site.dir}"/>
+
 		<copy file="${fbeclipse.dir}/plugin_site.xml" toFile="${site.dir}/site.xml">
 		  <filterset refid="sitevars"/>
 		</copy>
