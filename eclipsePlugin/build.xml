@@ -78,7 +78,7 @@
 		<javac srcdir="${src.dir}"
 		  destdir="${bin.dir}"
 				source="1.5"
-				target="jsr14"
+				target="1.5"
 				debug="on">
 			<classpath refid="plugin.classpath"/>
 		</javac>
@@ -86,7 +86,7 @@
 		<javac srcdir="${buildtools.dir}"
 			destdir="${bin.dir}"
 			source="1.5"
-			target="jsr14"
+			target="1.5"
 			debug="on">
 			<classpath refid="tools.classpath"/>
 				<classpath refid="plugin.classpath"/>
