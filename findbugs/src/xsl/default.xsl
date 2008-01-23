@@ -177,7 +177,7 @@
 			
 		<tr class="{$styleclass}">
 			<td><a href="#Warnings_{$catkey}"><xsl:value-of select="$catdesc"/> Warnings</a></td>
-			<td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category=$catkey])"/></td>
+			<td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[(@category=$catkey) and not(@last)])"/></td>
 		</tr>
 		</xsl:for-each>
 
@@ -188,7 +188,7 @@
 		</xsl:variable>
 		<tr class="{$styleclass}">
 		    <td><b>Total</b></td>
-		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance)"/></b></td>
+		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance[not(@last)])"/></b></td>
 		</tr>
 	</table>
 
@@ -202,7 +202,7 @@
 		<xsl:variable name="catdesc" select="/BugCollection/BugCategory[@category=$catkey]/Description"/>
 			
 		<xsl:call-template name="generateWarningTable">
-			<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category=$catkey]"/>
+			<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[(@category=$catkey) and not(@last)]"/>
 			<xsl:with-param name="sectionTitle"><xsl:value-of select="$catdesc"/> Warnings</xsl:with-param>
 			<xsl:with-param name="sectionId">Warnings_<xsl:value-of select="$catkey"/></xsl:with-param>
 		</xsl:call-template>
@@ -237,7 +237,7 @@
 	<p><br/><br/></p>
 </xsl:template>
 
-<xsl:template match="BugInstance">
+<xsl:template match="BugInstance[not(@last)]">
 	<xsl:variable name="warningId"><xsl:value-of select="generate-id()"/></xsl:variable>
 
 	<tr class="tablerow{position() mod 2}" onclick="toggleRow('{$warningId}');">
@@ -306,7 +306,7 @@
 			<td align="right"><xsl:value-of select="@priority_1"/></td>
 			<td align="right">
 			    <xsl:choose>
-                    <xsl:when test= "number($kloc) &gt; 0.0">
+                    <xsl:when test= "number($kloc) &gt; 0.0 and number(@priority_1) &gt; 0.0">
         			    <xsl:value-of select="format-number(@priority_1 div $kloc, $format)"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -320,7 +320,7 @@
 			<td align="right"><xsl:value-of select="@priority_2"/></td>
 			<td align="right">
 			    <xsl:choose>
-                    <xsl:when test= "number($kloc) &gt; 0.0">
+                    <xsl:when test= "number($kloc) &gt; 0.0 and number(@priority_2) &gt; 0.0">
         			    <xsl:value-of select="format-number(@priority_2 div $kloc, $format)"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -337,7 +337,7 @@
 				<td align="right"><xsl:value-of select="@priority_3"/></td>
 				<td align="right">
                     <xsl:choose>
-                        <xsl:when test= "number($kloc) &gt; 0.0">
+                        <xsl:when test= "number($kloc) &gt; 0.0 and number(@priority_3) &gt; 0.0">
         			        <xsl:value-of select="format-number(@priority_3 div $kloc, $format)"/>
                         </xsl:when>
                         <xsl:otherwise>
