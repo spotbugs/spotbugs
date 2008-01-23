@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -314,6 +315,18 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		totalClasses += stats2.totalClasses;
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] += stats2.totalErrors[i];
-		packageStatsMap.putAll(stats2.packageStatsMap);
+		
+		for (Map.Entry<String,PackageStats> entry : stats2.packageStatsMap.entrySet()) {
+			String key = entry.getKey();
+			PackageStats pkgStats2 = entry.getValue();
+			if (packageStatsMap.containsKey(key)) {
+				PackageStats pkgStats = packageStatsMap.get(key);
+				for (ClassStats classStats : pkgStats2.getClassStats()) {
+					pkgStats.addClass(classStats);
+				}
+			} else {
+				packageStatsMap.put(key, pkgStats2);
+			}
+		}
 	}
 }

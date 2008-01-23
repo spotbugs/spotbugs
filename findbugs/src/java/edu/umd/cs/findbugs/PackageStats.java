@@ -178,6 +178,11 @@ public class PackageStats implements XMLWriteable {
 		this.size += size;
 	}
 
+	public void addClass(ClassStats classStats) {
+		packageMembers.put(classStats.getName(), classStats);
+		size += classStats.size();
+	}
+
 	public String getPackageName() {
 		return packageName;
 	}
