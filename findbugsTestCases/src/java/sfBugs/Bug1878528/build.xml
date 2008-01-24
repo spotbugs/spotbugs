@@ -1,0 +1,76 @@
+<project name="Bug1878528" default="all">
+
+   <property name="findbugs.home" value="../../../../../findbugs" />
+   <property name="jvmargs" value="-Xss1m -Xmx800m -Duser.language=en -Dfindbugs.home=${findbugs.home}" />
+
+   <path id="findbugs.lib">
+      <fileset dir="${findbugs.home}/lib">
+         <include name="findbugs-ant.jar"/>
+      </fileset>
+   </path>
+
+   <taskdef name="findbugs"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+	
+   <taskdef name="computeBugHistory"
+            classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <target name="all">
+      <javac srcdir="p1"/>
+      <javac srcdir="p2"/>
+      <javac srcdir="p3"/>
+   	
+      <findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="out1.xml"
+                projectName="Bug1878528"
+                debug="false">
+         <class location="p1/foo.class" />
+      </findbugs>
+
+      <findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="out2.xml"
+                projectName="Bug1878528"
+                debug="false">
+         <class location="p2/foo.class" />
+      </findbugs>
+
+      <findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="out3.xml"
+                projectName="Bug1878528"
+                debug="false">
+         <class location="p3/foo.class" />
+      </findbugs>
+
+   	  <computeBugHistory home="${findbugs.home}"
+    	                 withMessages="true"
+    	                 output="out.hist.xml">
+         <dataFile name="out1.xml"/>
+         <dataFile name="out2.xml"/>
+         <dataFile name="out3.xml"/>
+      </computeBugHistory>
+
+   	  <xslt in="out.hist.xml" out="out.hist.default.html"
+   	        style="${findbugs.home}/src/xsl/default.xsl"/>
+ 	  <xslt in="out.hist.xml" out="out.hist.plain.html"
+            style="${findbugs.home}/src/xsl/plain.xsl"/>
+ 	  <xslt in="out.hist.xml" out="out.hist.fancy.html"
+            style="${findbugs.home}/src/xsl/fancy.xsl"/>
+ 	  <xslt in="out.hist.xml" out="out.hist.fancy-hist.html"
+            style="${findbugs.home}/src/xsl/fancy-hist.xsl"/>
+	  <xslt in="out.hist.xml" out="out.hist.summary.html"
+            style="${findbugs.home}/src/xsl/summary.xsl"/>
+   </target>
+</project>
