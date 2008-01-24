@@ -1106,7 +1106,7 @@
       </xsl:for-each>
 
       <!-- bug descriptions - hidden -->
-      <xsl:for-each select="/BugCollection/BugInstance">
+      <xsl:for-each select="/BugCollection/BugInstance[not(@last)]">
             <div style="display:none;" class='bug'>
                <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:attribute>
                <xsl:for-each select="*/Message">

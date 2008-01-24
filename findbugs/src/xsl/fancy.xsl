@@ -353,7 +353,7 @@
       </xsl:for-each>
 
       <!-- bug descriptions - hidden -->
-      <xsl:for-each select="/BugCollection/BugInstance">
+      <xsl:for-each select="/BugCollection/BugInstance[not(@last)]">
             <div style="display:none;">
                <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:attribute>
                <xsl:for-each select="*/Message">
@@ -547,15 +547,15 @@
 <xsl:template name="categories" >
    <xsl:param name="category" select="''" />
    <xsl:variable name="category-count"
-                       select="count(/BugCollection/BugInstance[@category=$category])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and not(@last)])" />
    <xsl:variable name="category-count-p1"
-                       select="count(/BugCollection/BugInstance[@category=$category and @priority='1'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='1' and not(@last)])" />
    <xsl:variable name="category-count-p2"
-                       select="count(/BugCollection/BugInstance[@category=$category and @priority='2'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='2' and not(@last)])" />
    <xsl:variable name="category-count-p3"
-                       select="count(/BugCollection/BugInstance[@category=$category and @priority='3'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='3' and not(@last)])" />
    <xsl:variable name="category-count-p4"
-                       select="count(/BugCollection/BugInstance[@category=$category and @priority='4'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='4' and not(@last)])" />
    <div class='ob'>
       <div class='ob-t'>
          <a>
@@ -577,7 +577,7 @@
 
 <xsl:template name="list-by-category-and-code" >
    <xsl:param name="category" select="''" />
-   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and generate-id()= generate-id(key('lbc-code-key',concat(@category,@abbrev)))]/@abbrev" />
+   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and not(@last) and generate-id()= generate-id(key('lbc-code-key',concat(@category,@abbrev)))]/@abbrev" />
    <xsl:for-each select="$unique-code">
       <xsl:sort select="." order="ascending" />
          <xsl:call-template name="codes">
@@ -591,15 +591,15 @@
    <xsl:param name="category" select="''" />
    <xsl:param name="code"     select="''" />
    <xsl:variable name="code-count"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and not(@last)])" />
    <xsl:variable name="code-count-p1"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='1'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='1' and not(@last)])" />
    <xsl:variable name="code-count-p2"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='2'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='2' and not(@last)])" />
    <xsl:variable name="code-count-p3"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='3'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='3' and not(@last)])" />
    <xsl:variable name="code-count-p4"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='4'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='4' and not(@last)])" />
    <div class='ib-1'>
       <div class="ib-1-t">
          <a>
@@ -623,7 +623,7 @@
 <xsl:template name="list-by-category-and-code-and-bug" >
    <xsl:param name="category" select="''" />
    <xsl:param name="code" select="''" />
-   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and generate-id()= generate-id(key('lbc-bug-key',concat(@category,@abbrev,@type)))]/@type" />
+   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and not(@last) and @abbrev=$code and generate-id()= generate-id(key('lbc-bug-key',concat(@category,@abbrev,@type)))]/@type" />
    <xsl:for-each select="$unique-bug">
       <xsl:sort select="." order="ascending" />
          <xsl:call-template name="bugs">
@@ -639,15 +639,15 @@
    <xsl:param name="code"     select="''" />
    <xsl:param name="bug"      select="''" />
    <xsl:variable name="bug-count"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and not(@last)])" />
    <xsl:variable name="bug-count-p1"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='1'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='1' and not(@last)])" />
    <xsl:variable name="bug-count-p2"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='2'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='2' and not(@last)])" />
    <xsl:variable name="bug-count-p3"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='3'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='3' and not(@last)])" />
    <xsl:variable name="bug-count-p4"
-                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='4'])" />
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='4' and not(@last)])" />
    <div class='ib-2'>
       <div class='ib-2-t'>
          <a>
@@ -664,7 +664,7 @@
          <xsl:attribute name="id">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:attribute>
          <xsl:variable name="cat-code-type">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:variable>
          <xsl:variable name="bug-id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:variable>
-         <xsl:for-each select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug]">
+         <xsl:for-each select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and not(@last)]">
             <xsl:call-template name="display-bug">
                <xsl:with-param name="b-t"     select="@type" />
                <xsl:with-param name="bug-id"       select="$bug-id" />
@@ -799,7 +799,7 @@
 <xsl:template name="list-by-package-and-class-and-bug" >
    <xsl:param name="package" select="''" />
    <xsl:param name="class" select="''" />
-   <xsl:variable name="unique-class-bugs" select="/BugCollection/BugInstance[Class[position()=1 and @classname=$class] and generate-id() = generate-id(key('lbp-class-b-t',concat(Class/@classname,@type)))]/@type" />
+   <xsl:variable name="unique-class-bugs" select="/BugCollection/BugInstance[not(@last) and Class[position()=1 and @classname=$class] and generate-id() = generate-id(key('lbp-class-b-t',concat(Class/@classname,@type)))]/@type" />
 
    <xsl:for-each select="$unique-class-bugs">
       <xsl:sort select="." order="ascending" />
@@ -816,7 +816,7 @@
    <xsl:param name="class"     select="''" />
    <xsl:param name="type"      select="''" />
    <xsl:variable name="bug-count"
-                       select="count(/BugCollection/BugInstance[@type=$type and Class[position()=1 and @classname=$class]])" />
+                       select="count(/BugCollection/BugInstance[@type=$type and not(@last) and Class[position()=1 and @classname=$class]])" />
    <div class='ib-2'>
       <div class='ib-2-t'>
          <a>
@@ -832,7 +832,7 @@
          <xsl:attribute name="id">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:attribute>
          <xsl:variable name="package-class-type">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:variable>
          <xsl:variable name="bug-id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:variable>
-         <xsl:for-each select="/BugCollection/BugInstance[@type=$type and Class[position()=1 and @classname=$class]]">
+         <xsl:for-each select="/BugCollection/BugInstance[@type=$type and not(@last) and Class[position()=1 and @classname=$class]]">
             <xsl:call-template name="display-bug">
                <xsl:with-param name="b-t"     select="@type" />
                <xsl:with-param name="bug-id"       select="$bug-id" />

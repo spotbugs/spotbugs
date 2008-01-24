@@ -30,8 +30,6 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 	indent="yes"
 	encoding="UTF-8"/>
-	
-<!--xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/-->
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
@@ -70,8 +68,7 @@
 	</head>
 
 	<xsl:variable name="unique-catkey" select="/BugCollection/BugCategory/@category"/>
-	<!--xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/-->
-		
+
 	<body>
 
 	<h1>FindBugs Report</h1>
@@ -104,7 +101,7 @@
 
 		<tr class="{$styleclass}">
 			<td><a href="#Warnings_{$catkey}"><xsl:value-of select="$catdesc"/> Warnings</a></td>
-			<td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category=$catkey])"/></td>
+			<td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[(@category=$catkey) and (not(@last))])"/></td>
 		</tr>
 	</xsl:for-each>
 
@@ -115,7 +112,7 @@
 	</xsl:variable>
 		<tr class="{$styleclass}">
 		    <td><b>Total</b></td>
-		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance)"/></b></td>
+		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance[not(@last)])"/></b></td>
 		</tr>
 	</table>
 	<p><br/><br/></p>
@@ -131,7 +128,7 @@
 		<xsl:variable name="catdesc" select="/BugCollection/BugCategory[@category=$catkey]/Description"/>
 
 		<xsl:call-template name="generateWarningTable">
-			<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category=$catkey]"/>
+			<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[(@category=$catkey) and (not(@last))]"/>
 			<xsl:with-param name="sectionTitle"><xsl:value-of select="$catdesc"/> Warnings</xsl:with-param>
 			<xsl:with-param name="sectionId">Warnings_<xsl:value-of select="$catkey"/></xsl:with-param>
 		</xsl:call-template>
@@ -149,7 +146,7 @@
 	</html>
 </xsl:template>
 
-<xsl:template match="BugInstance">
+<xsl:template match="BugInstance[not(@last)]">
 	<xsl:variable name="warningId"><xsl:value-of select="generate-id()"/></xsl:variable>
 
 	<tr class="tablerow{position() mod 2}">
