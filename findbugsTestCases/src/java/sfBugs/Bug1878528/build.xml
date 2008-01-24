@@ -20,10 +20,22 @@
    </taskdef>
 
    <target name="all">
+      <!--
+      Shield these files from being compiled by the toplevel build.xml,
+      which will get confused about the overlapping classes.
+      -->
+   	  <move file="p1/Foo.j" tofile="p1/Foo.java"/>
+ 	  <move file="p2/Foo.j" tofile="p2/Foo.java"/>
+ 	  <move file="p3/Foo.j" tofile="p3/Foo.java"/>
+   	
       <javac srcdir="p1"/>
       <javac srcdir="p2"/>
       <javac srcdir="p3"/>
-   	
+
+ 	  <move file="p1/Foo.java" tofile="p1/Foo.j"/>
+	  <move file="p2/Foo.java" tofile="p2/Foo.j"/>
+	  <move file="p3/Foo.java" tofile="p3/Foo.j"/>
+
       <findbugs home="${findbugs.home}"
                 output="xml:withMessages"
                 jvmargs="${jvmargs}"
@@ -31,7 +43,7 @@
                 outputFile="out1.xml"
                 projectName="Bug1878528"
                 debug="false">
-         <class location="p1/foo.class" />
+         <class location="p1/Foo.class" />
       </findbugs>
 
       <findbugs home="${findbugs.home}"
@@ -41,7 +53,7 @@
                 outputFile="out2.xml"
                 projectName="Bug1878528"
                 debug="false">
-         <class location="p2/foo.class" />
+         <class location="p2/Foo.class" />
       </findbugs>
 
       <findbugs home="${findbugs.home}"
@@ -51,7 +63,7 @@
                 outputFile="out3.xml"
                 projectName="Bug1878528"
                 debug="false">
-         <class location="p3/foo.class" />
+         <class location="p3/Foo.class" />
       </findbugs>
 
    	  <computeBugHistory home="${findbugs.home}"
