@@ -682,7 +682,15 @@
 
 <!-- Bug Codes -->
 
+
  <BugCode abbrev="NP" cweid="476"/>
+ <BugCode abbrev="EQ" cweid="597"/>
+ <BugCode abbrev="ES" cweid="597"/>
+ <BugCode abbrev="FI" cweid="586"/>
+ <BugCode abbrev="AM" cweid="227"/>
+ <BugCode abbrev="J2EE" cweid="4"/>
+ <BugCode abbrev="RE" cweid="185"/>
+ <BugCode abbrev="DE" cweid="248"/>
  
  <!-- Bug patterns -->
  
@@ -692,7 +700,7 @@
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
  
-	<BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS" cweid="585"/>
    <BugPattern abbrev="NP" type="NP_BOOLEAN_RETURN_NULL" category="BAD_PRACTICE" />
   
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
@@ -727,7 +735,7 @@
   <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE" />
-  <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" cweid="382"/>
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
@@ -748,7 +756,7 @@
   <BugPattern abbrev="Bx" type="DM_BOXED_PRIMITIVE_TOSTRING" category="PERFORMANCE" />
   <BugPattern abbrev="Bx" type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR" category="CORRECTNESS" />
   <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED" category="PERFORMANCE" />
-  <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION" category="PERFORMANCE" />
+  <BugPattern abbrev="Bx" type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION" category="PERFORMANCE" cweid="192" />
   <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_MONITOR_WAIT_ON_CONDITION" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="NP" type="NP_ARGUMENT_MIGHT_BE_NULL" category="CORRECTNESS" />
@@ -764,7 +772,7 @@
   <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" category="BAD_PRACTICE" />
   <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" category="BAD_PRACTICE" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
+  <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" cweid="583"/>
   <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE" />
   <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" />
   <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE" />
@@ -856,7 +864,7 @@
   <BugPattern abbrev="Se" type="SE_BAD_FIELD_INNER_CLASS" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="BAD_PRACTICE" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" />
+  <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484" />
   <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" category="CORRECTNESS" />
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
