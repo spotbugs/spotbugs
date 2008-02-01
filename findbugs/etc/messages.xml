@@ -2247,8 +2247,8 @@ Don't do it.
   <p> This class defines a covariant version of the <code>equals()</code>
   method, but inherits the normal <code>equals(Object)</code> method
   defined in the base <code>java.lang.Object</code> class.&nbsp;
-  The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
-  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.</p>
+  The class should probably define a <code>boolean equals(Object)</code> method.
+  </p>
 ]]>
     </Details>
   </BugPattern>
@@ -2260,8 +2260,22 @@ Don't do it.
   <p> This class defines an <code>equals()</code>
   method, that doesn't override the normal <code>equals(Object)</code> method
   defined in the base <code>java.lang.Object</code> class.&nbsp;
-  The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
-  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.</p>
+  The class should probably define a <code>boolean equals(Object)</code> method.
+  </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EQ_OTHER_NO_OBJECT">
+    <ShortDescription>equals() method defined that doesn't override equals(Object)</ShortDescription>
+    <LongDescription>{0} defines {1.givenClass} method that doesn't override equals(Object)</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines an <code>equals()</code>
+  method, that doesn't override the normal <code>equals(Object)</code> method
+  defined in the base <code>java.lang.Object</code> class.&nbsp; Instead, it 
+  inherits an <code>equals(Object)</code> method from a superclass.
+  The class should probably define a <code>boolean equals(Object)</code> method.
+  </p>
 ]]>
     </Details>
   </BugPattern>
@@ -2277,6 +2291,7 @@ and that you don't need to override the equals method. Even if you don't need to
 the equals method, consider overriding it anyone to document the fact
 that the equals method for the subclass just return the result of
 invoking super.equals(o).
+  </p>
 ]]>
     </Details>
   </BugPattern>

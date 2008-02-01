@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -91,16 +93,41 @@ public class Lookup
 		return findSuperImplementor(clazz, name, signature, isStatic);
 	}
 	
-	public static JavaClass
-			findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+	public static @CheckForNull
+	JavaClass findSuperDefiner(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {
-			JavaClass c =
-					findImplementor(Repository.getSuperClasses(clazz),
-							name, signature);
-			return c;
+			while (true) {
+				JavaClass c = clazz.getSuperClass();
+				if (c == null)
+					return null;
+				Method m = findImplementation(c, name, signature);
+				if (m != null) {
+					return c;
+				}
+			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
-			return clazz;
+			return null;
+		}
+	}
+	public static @CheckForNull JavaClass
+			findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+		try {
+			while (true) {
+				JavaClass c = clazz.getSuperClass();
+				if (c == null)
+					return null;
+				Method m = findImplementation(c, name, signature);
+				if (m != null) {
+					if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
+						return null;
+					else
+						return c;
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return null;
 		}
 	}
 
@@ -117,7 +144,7 @@ public class Lookup
 		}
 	}
 
-	public static JavaClass
+	public static @CheckForNull JavaClass
 			findImplementor(JavaClass[] clazz, String name, String signature) {
 
 		for (JavaClass aClazz : clazz) {

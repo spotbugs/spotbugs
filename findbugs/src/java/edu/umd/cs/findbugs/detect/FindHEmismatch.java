@@ -158,8 +158,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			}
 		}
 
-		if (!hasEqualsObject && !hasEqualsSelf && hasEqualsOther && usesDefaultEquals) {
-			BugInstance bug = new BugInstance(this, "EQ_OTHER_USE_OBJECT",
+		if (!hasEqualsObject && !hasEqualsSelf && hasEqualsOther ) {
+			BugInstance bug = new BugInstance(this, usesDefaultEquals ? "EQ_OTHER_USE_OBJECT" : "EQ_OTHER_NO_OBJECT",
 					NORMAL_PRIORITY).addClass(this).addMethod(equalsOtherMethod).addClass(equalsOtherClass);
 			bugReporter.reportBug(bug);
 		}
@@ -383,10 +383,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			} else  {
 				String arg = m.group(1);
 				if (getSuperclassName().equals(arg)) {
-					hasEqualsOther = true;
-					equalsOtherMethod = MethodAnnotation.fromVisitedMethod(this);
-					equalsOtherClass = DescriptorFactory.createClassDescriptor(arg);
-				}
+					JavaClass findSuperImplementor = Lookup.findSuperDefiner(getThisClass(),  name, sig, bugReporter);
+					if (findSuperImplementor == null) {
+						hasEqualsOther = true;
+						equalsOtherMethod = MethodAnnotation.fromVisitedMethod(this);
+						equalsOtherClass = DescriptorFactory.createClassDescriptor(arg);
+				}}
 			
 			}
 		    }} else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic() ) {
