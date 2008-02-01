@@ -268,8 +268,9 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		dottedClassName = className.replace('/', '.');
 		packageName = obj.getPackageName();
 		sourceFile = obj.getSourceFileName();
-		superclassName = obj.getSuperclassName();
-		dottedSuperclassName = superclassName.replace('/', '.');
+		dottedSuperclassName = obj.getSuperclassName();
+		superclassName = dottedSuperclassName.replace('.', '/');
+	
 		ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
 		try {
 	        thisClassInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
@@ -343,12 +344,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	/** Get the slash-formatted superclass name for the current or most recently visited class */
-	public String getSuperclassName() {
+	public @SlashedClassName String getSuperclassName() {
 		return superclassName;
 	}
 
 	/** Get the dotted superclass name for the current or most recently visited class */
-	public String getDottedSuperclassName() {
+	public @DottedClassName String getDottedSuperclassName() {
 		return dottedSuperclassName;
 	}
 
