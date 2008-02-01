@@ -45,6 +45,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
@@ -66,12 +68,16 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 	boolean hasCompareToBridgeMethod = false;
 
 	boolean hasEqualsSelf = false;
+	boolean hasEqualsOther = false;
+	MethodAnnotation equalsOther = null;
 
 	boolean hasCompareToSelf = false;
 
 	boolean extendsObject = false;
 
 	MethodAnnotation equalsMethod = null;
+	MethodAnnotation equalsOtherMethod = null;
+	ClassDescriptor equalsOtherClass = null;
 
 	MethodAnnotation compareToMethod = null;
 	MethodAnnotation compareToObjectMethod = null;
@@ -112,7 +118,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		if (!hasEqualsObject) {
 			XClass we = Lookup.findImplementor(getXClass(), "equals",
 					"(Ljava/lang/Object;)Z", false, bugReporter);
-			if (we == null) {
+			if (we == null || we.equals(getXClass())) {
 				whereEqual = "java.lang.Object";
 			} else {
 				inheritedEqualsFromAbstractClass = we.isAbstract();
@@ -152,6 +158,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			}
 		}
 
+		if (!hasEqualsObject && !hasEqualsSelf && hasEqualsOther && usesDefaultEquals) {
+			BugInstance bug = new BugInstance(this, "EQ_OTHER_USE_OBJECT",
+					NORMAL_PRIORITY).addClass(this).addMethod(equalsOtherMethod).addClass(equalsOtherClass);
+			bugReporter.reportBug(bug);
+		}
 		if (!hasEqualsObject && hasEqualsSelf) {
 
 			if (usesDefaultEquals) {
@@ -280,9 +291,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			
 			BugInstance bug = new BugInstance(this,
 					"EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY)
-					.addClass(getDottedClassName()).addMethod(inheritedEquals);
+					.addClass(this).addMethod(inheritedEquals);
 			bugReporter.reportBug(bug);
-		}
+		}  
 	}
 
 	@Override
@@ -295,14 +306,17 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		hasCompareToSelf = false;
 		hasEqualsObject = false;
 		hasEqualsSelf = false;
+		hasEqualsOther = false;
 		hashCodeIsAbstract = false;
 		equalsObjectIsAbstract = false;
 		equalsMethodIsInstanceOfEquals = false;
 		equalsMethod = null;
+		equalsOtherMethod = null;
 		compareToMethod = null;
 		compareToSelfMethod = null;
 		compareToObjectMethod = null;
 		hashCodeMethod = null;
+		equalsOtherClass = null;
 	}
 
 	@Override
@@ -314,6 +328,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			hasFields = true;
 	}
 
+	static final Pattern predicateOverAnInstance = Pattern.compile("\\(L([^;]+);\\)Z");
+	
 	@Override
 	public void visit(Method obj) {
 	
@@ -342,7 +358,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				hashCodeIsAbstract = true;
 			hashCodeMethod = MethodAnnotation.fromVisitedMethod(this);
 			// System.out.println("Found hashCode for " + betterClassName);
-		} else if (name.equals("equals")) {
+		} else if (obj.isPublic() && name.equals("equals")) {
+			Matcher m = predicateOverAnInstance.matcher(sig);
+		    if(m.matches()){
 			if (sigIsObject) {
 				equalsMethod = MethodAnnotation.fromVisitedMethod(this);
 				hasEqualsObject = true;
@@ -362,8 +380,16 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				hasEqualsSelf = true;
 				if (equalsMethod == null)
 					equalsMethod = MethodAnnotation.fromVisitedMethod(this);
+			} else  {
+				String arg = m.group(1);
+				if (getSuperclassName().equals(arg)) {
+					hasEqualsOther = true;
+					equalsOtherMethod = MethodAnnotation.fromVisitedMethod(this);
+					equalsOtherClass = DescriptorFactory.createClassDescriptor(arg);
+				}
+			
 			}
-		} else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic() ) {
+		    }} else if (name.equals("compareTo") && sig.endsWith(")I") && !obj.isStatic() ) {
 			MethodAnnotation tmp  = MethodAnnotation.fromVisitedMethod(this);
 			if (obj.isSynthetic())
 				hasCompareToBridgeMethod = true;

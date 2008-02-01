@@ -2252,6 +2252,19 @@ Don't do it.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="EQ_OTHER_USE_OBJECT">
+    <ShortDescription>equals() method defined that doesn't override Object.equals(Object)</ShortDescription>
+    <LongDescription>{0} defines {1.givenClass} method and uses Object.equals(Object)</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines an <code>equals()</code>
+  method, that doesn't override the normal <code>equals(Object)</code> method
+  defined in the base <code>java.lang.Object</code> class.&nbsp;
+  The class should probably define a non-covariant version of <code>equals()</code>.&nbsp;
+  (I.e., a method with the signature <code>boolean equals(java.lang.Object)</code>.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="EQ_DOESNT_OVERRIDE_EQUALS">
     <ShortDescription>Class doesn't override equals in superclass</ShortDescription>
     <LongDescription>{0} doesn't override {1.givenClass}</LongDescription>
