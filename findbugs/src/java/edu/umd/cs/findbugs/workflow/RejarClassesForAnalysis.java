@@ -93,10 +93,14 @@ public class RejarClassesForAnalysis {
 		List<String> lst = new LinkedList<String>();
 		while (true) {
 			String s = in.readLine();
-			if (s == null)
+			if (s == null) {
+				in.close();
 				return lst;
+			}
 			lst.add(s);
 		}
+		
+
 	}
 	
 	static int analysisCount = 0;
