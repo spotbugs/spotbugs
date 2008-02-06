@@ -33,6 +33,13 @@ This plugin contains all of the standard FindBugs detectors.
             developer intended. We strive for a low false positive rate.</Details>
   </BugCategory>
 
+  <BugCategory category="SECURITY">
+    <Description>Security</Description>
+    <Abbreviation>S</Abbreviation>
+    <Details>A use of untrust input in a way that could create a remotely exploitable security vunerability.
+	</Details>
+  </BugCategory>
+
   <BugCategory category="BAD_PRACTICE">
     <Description>Bad practice</Description>
     <Abbreviation>B</Abbreviation>
@@ -348,6 +355,14 @@ detector looks for places where those methods might be invoked.
 <p> This detector looks for finalizers that null out fields of a class.  
 This does not help the garbage collector in any way, the nulling out of fields has no effect.
 </p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting">
+    <Details>
+<![CDATA[
+<p> This detector looks for obvious/blatent cases of cross site scripting vunerabilities.</p>
 ]]>
     </Details>
   </Detector>
@@ -1415,6 +1430,30 @@ It is a fast detector.</p>
   BugPatterns
   **********************************************************************
    -->
+
+  <BugPattern type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER">
+    <ShortDescription>Servlet cross site scripting vunerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to Servlet output, giving XSS vunerability in {1}</LongDescription>
+<Details>
+<![CDATA[
+	<p>This code directly writes an HTTP parameter to Servlet output, which allows for a cross site scripting
+vunerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
+for more information.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER">
+    <ShortDescription>JSP cross site scripting vunerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to JSP output, giving XSS vunerability in {1}</LongDescription>
+<Details>
+<![CDATA[
+	<p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
+vunerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
+for more information.</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
     <ShortDescription>Certain swing methods needs to be invoked in Swing thread</ShortDescription>
@@ -6590,6 +6629,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
   <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
   <BugCode abbrev="HSC" >Huge String constants</BugCode>
+  <BugCode abbrev="XSS" >Cross site scripting</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
