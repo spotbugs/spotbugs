@@ -131,6 +131,6 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 	@Override
 	public String toString() {
 		// FIXME: format more nicely
-		return (isStatic ? "static " : "") + slashedClassName + "." + name + ":" + signature;
+		return (isStatic ? "static " : "") + getClassDescriptor().getDottedClassName() + "." + name + ":" + signature;
 	}
 }

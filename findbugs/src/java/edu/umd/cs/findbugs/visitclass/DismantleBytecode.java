@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 abstract public class DismantleBytecode extends AnnotationVisitor {
 
@@ -66,7 +67,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	private int currentPosInPrevOpcodeBuffer;
 	private int sizePrevOpcodeBuffer;
 	private int defaultSwitchOffset;
-	private String classConstantOperand;
+	private @SlashedClassName String classConstantOperand;
 	private ClassDescriptor referencedClass;
 	private XClass referencedXClass;
 	private MethodDescriptor referencedMethod;
@@ -242,7 +243,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	/**
 	 * If the current opcode has a class constant operand, get the classname, slash-formatted.
 	 */
-	public String getClassConstantOperand() {
+	public @SlashedClassName String getClassConstantOperand() {
 		if (classConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getClassConstantOperand called but value not available");
 		return classConstantOperand;

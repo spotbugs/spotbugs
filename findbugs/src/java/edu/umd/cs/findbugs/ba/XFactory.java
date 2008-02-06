@@ -249,6 +249,10 @@ public class XFactory {
 		return xmethod;
 	}
 
+	public static void assertDottedClassName(@DottedClassName
+			String className) {
+		assert className.indexOf('/') == -1;
+	}
 	/**
 	 * @param className
 	 * @param methodName
@@ -259,6 +263,7 @@ public class XFactory {
 
 	public static XMethod createXMethod(@DottedClassName
 	String className, String methodName, String methodSig, boolean isStatic) {
+		assertDottedClassName(className);
 		MethodDescriptor desc = DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className),
 		        methodName, methodSig, isStatic);
 		return createXMethod(desc);

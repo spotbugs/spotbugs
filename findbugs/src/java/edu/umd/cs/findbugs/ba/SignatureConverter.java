@@ -26,6 +26,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Convert part or all of a Java type signature into something
@@ -184,7 +185,9 @@ public class SignatureConverter {
 	 * @return the formatted version of that signature
 	 */
 	public static String convertMethodSignature(XMethod xmethod) {
-		return convertMethodSignature(xmethod.getClassName(), xmethod.getName(), xmethod.getSignature());
+		@DottedClassName String className = xmethod.getClassName();
+		assert className.indexOf('/') == -1;
+		return convertMethodSignature(className, xmethod.getName(), xmethod.getSignature());
 	}
 
 	/**
