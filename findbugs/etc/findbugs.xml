@@ -694,6 +694,7 @@
  <BugCode abbrev="J2EE" cweid="4"/>
  <BugCode abbrev="RE" cweid="185"/>
  <BugCode abbrev="DE" cweid="248"/>
+ <BugCode abbrev="XSS" cweid="79"/>
  
  <!-- Bug patterns -->
  
@@ -775,8 +776,8 @@
   <BugPattern abbrev="RV" type="RV_01_TO_INT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" category="SECURITY" />
-  <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" category="SECURITY" />
+  <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" category="SECURITY" cweid="89" />
+  <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" category="SECURITY" cweid="89"/>
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" cweid="583"/>
   <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE" />
