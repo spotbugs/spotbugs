@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,12 +34,11 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * IScannableCodeBase implementation to read resources
  * from a filesystem directory.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DirectoryCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
@@ -80,13 +79,15 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param codeBaseLocator the codebase locator for this codebase
 	 * @param directory       the filesystem directory
 	 */
 	public DirectoryCodeBase(ICodeBaseLocator codeBaseLocator, File directory) {
 		super(codeBaseLocator);
-		if (!directory.isDirectory()) throw new IllegalArgumentException();
+		if (!directory.isDirectory()) {
+	        throw new IllegalArgumentException();
+        }
 		this.directory = directory;
 		this.rfs = new RecursiveFileSearch(directory.getPath(), new FileFilter(){
 			/* (non-Javadoc)
@@ -128,7 +129,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+	public ICodeBaseEntry lookupResource(String resourceName) {
 		// Translate resource name, in case a resource name
 		// has been overridden and the resource is being accessed
 		// using the overridden name.
@@ -136,7 +137,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 
 		File file = getFullPathOfResource(resourceName);
 		if (!file.exists()) {
-			throw new ResourceNotFoundException(resourceName);
+			return null;
 		}
 		return new DirectoryCodeBaseEntry(this, resourceName);
 	}
@@ -148,7 +149,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 
 	/**
 	 * Get the full path of given resource.
-	 * 
+	 *
 	 * @param resourceName
 	 * @return
 	 */
@@ -158,7 +159,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 
 	/**
 	 * Get the resource name given a full filename.
-	 * 
+	 *
 	 * @param fileName the full filename (which must be inside the directory)
 	 * @return the resource name (i.e., the filename with the directory stripped off)
 	 */

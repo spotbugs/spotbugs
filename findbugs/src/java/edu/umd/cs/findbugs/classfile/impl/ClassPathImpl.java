@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Implementation of IClassPath.
- * 
+ *
  * @author David Hovemeyer
  */
 public class ClassPathImpl implements IClassPath {
@@ -99,6 +99,9 @@ public class ClassPathImpl implements IClassPath {
 		for (ICodeBase codeBase : auxCodeBaseList) {
 			codeBase.close();
 		}
+		appCodeBaseList.clear();
+		auxCodeBaseList.clear();
+		codeBaseEntryMap.clear();
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +135,7 @@ public class ClassPathImpl implements IClassPath {
 
 	/**
 	 * Search list of codebases for named resource.
-	 * 
+	 *
 	 * @param codeBaseList list of codebases to search
 	 * @param resourceName name of resourse
 	 * @return codebase entry for the named resource, or null if
@@ -140,11 +143,11 @@ public class ClassPathImpl implements IClassPath {
 	 */
 	private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
 		for (ICodeBase codeBase : codeBaseList) {
-			try {
-				return codeBase.lookupResource(resourceName);
-			} catch (ResourceNotFoundException e) {
-				// Ignore, continue trying other codebases
-			}
+			ICodeBaseEntry resource = codeBase.lookupResource(resourceName);
+			if(resource != null) {
+                return resource;
+            }
+			// Ignore, continue trying other codebases
 		}
 		return null;
 	}

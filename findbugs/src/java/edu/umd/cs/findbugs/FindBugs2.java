@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -67,12 +67,12 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 /**
  * FindBugs driver class.
  * Orchestrates the analysis of a project, collection of results, etc.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
-	
+
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
@@ -132,7 +132,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * Set the detector factory collection to be used by this
 	 * FindBugs2 engine.  This method should be called before
 	 * the execute() method is called.
-	 * 
+	 *
 	 * @param detectorFactoryCollection The detectorFactoryCollection to set.
 	 */
 	public void setDetectorFactoryCollection(
@@ -145,27 +145,26 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * For obscure reasons, CheckedAnalysisExceptions are re-thrown
 	 * as IOExceptions.  However, these can only happen during the
 	 * setup phase where we scan codebases for classes.
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
 	public void execute() throws IOException, InterruptedException {
 		Profiler profiler = Profiler.getInstance();
-		// Get the class factory for creating classpath/codebase/etc. 
-		classFactory = ClassFactory.instance();
 
-		// The class path object
-		createClassPath();
-
-		// The analysis cache object
-		createAnalysisCache();
-
-		
-
-		progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
-		profiler.start(this.getClass());
-		
 		try {
+			// Get the class factory for creating classpath/codebase/etc.
+			classFactory = ClassFactory.instance();
+
+			// The class path object
+			createClassPath();
+
+			// The analysis cache object
+			createAnalysisCache();
+
+			progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
+			profiler.start(this.getClass());
+
 			// Discover all codebases in classpath and
 			// enumerate all classes (application and non-application)
 			buildClassPath();
@@ -195,26 +194,27 @@ public class FindBugs2 implements IFindBugsEngine {
 			if (!classScreener.vacuous()) {
 			final BugReporter origBugReporter = bugReporter.getDelegate();
 			BugReporter filterBugReporter = new  DelegatingBugReporter(origBugReporter) {
-				
+
 				@Override
 				public void reportBug(BugInstance bugInstance) {
 					String className = bugInstance.getPrimaryClass().getClassName();
 					String resourceName = className.replace('.','/')+".class";
-					if (classScreener.matches(resourceName))
-						this.getDelegate().reportBug(bugInstance);
+					if (classScreener.matches(resourceName)) {
+	                    this.getDelegate().reportBug(bugInstance);
+                    }
 				}
 			};
 			bugReporter.setDelegate(filterBugReporter);
 			}
-			
+
 			if (appClassList.size() == 0) {
 				if(noClassOk) {
 					System.err.println("No classfiles specified; output will have no warnings");
 				} else {
-					throw new NoClassesFoundToAnalyzeException(classPath);
+	                throw new NoClassesFoundToAnalyzeException(classPath);
 				}
 			}
-			
+
 			// Analyze the application
 			analyzeApplication();
 		} catch (CheckedAnalysisException e) {
@@ -225,22 +225,48 @@ public class FindBugs2 implements IFindBugsEngine {
 			System.err.println("Out of memory");
 			System.err.println("Total memory: " + Runtime.getRuntime().maxMemory() / 1000000 + "M");
 			System.err.println(" free memory: " + Runtime.getRuntime().freeMemory() / 1000000 + "M");
-			
-			for(String s : project.getFileList()) 
-				System.err.println("Analyzed: " + s);
-			for(String s : project.getAuxClasspathEntryList()) 
-				System.err.println("     Aux: " + s);
+
+			for(String s : project.getFileList()) {
+	            System.err.println("Analyzed: " + s);
+            }
+			for(String s : project.getAuxClasspathEntryList()) {
+	            System.err.println("     Aux: " + s);
+            }
 			throw e;
 		} finally {
 			AnalysisContext.removeCurrentAnalysisContext();
 			Global.removeAnalysisCacheForCurrentThread();
 			DescriptorFactory.clearInstance();
 			// Make sure the codebases on the classpath are closed
-			classPath.close();
+			if(classPath != null) {
+	            classPath.close();
+            }
 			profiler.end(this.getClass());
 			profiler.report();
 		}
 	}
+
+	/**
+	 * To avoid cyclic cross-references and allow GC after engine is not more needed.
+	 * (used by Eclipse plugin)
+	 */
+	public void dispose() {
+	    executionPlan.dispose();
+	    appClassList.clear();
+	    classObserverList.clear();
+	    referencedClassSet.clear();
+	    analysisCache = null;
+	    analysisFeatureSettingList = null;
+	    bugReporter = null;
+	    classFactory = null;
+	    classPath = null;
+	    classScreener = null;
+	    detectorFactoryCollection = null;
+	    executionPlan = null;
+	    progress = null;
+	    project = null;
+	    userPreferences = null;
+    }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
@@ -456,15 +482,15 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Create the analysis cache object.
-	 * 
-	 * @throws IOException if error occurs registering analysis engines in a plugin 
+	 *
+	 * @throws IOException if error occurs registering analysis engines in a plugin
 	 */
 	private void createAnalysisCache() throws IOException {
 		analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
 
 		// Register the "built-in" analysis engines
 		registerBuiltInAnalysisEngines(analysisCache);
-		
+
 		// Register analysis engines in plugins
 		registerPluginAnalysisEngines(detectorFactoryCollection, analysisCache);
 
@@ -476,7 +502,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Register the "built-in" analysis engines with given IAnalysisCache.
-	 * 
+	 *
 	 * @param analysisCache an IAnalysisCache
      */
     public static void registerBuiltInAnalysisEngines(IAnalysisCache analysisCache) {
@@ -487,8 +513,8 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Register all of the analysis engines defined in the plugins
-	 * contained in a DetectorFactoryCollection with an IAnalysisCache. 
-	 * 
+	 * contained in a DetectorFactoryCollection with an IAnalysisCache.
+	 *
 	 * @param detectorFactoryCollection a DetectorFactoryCollection
 	 * @param analysisCache             an IAnalysisCache
      * @throws IOException
@@ -497,7 +523,7 @@ public class FindBugs2 implements IFindBugsEngine {
     		DetectorFactoryCollection detectorFactoryCollection, IAnalysisCache analysisCache) throws IOException {
 	    for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext(); ) {
 			Plugin plugin = i.next();
-			
+
 			Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass =
 				plugin.getEngineRegistrarClass();
 			if (engineRegistrarClass != null) {
@@ -521,10 +547,10 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Build the classpath from project codebases and system codebases.
-	 * 
+	 *
 	 * @throws InterruptedException if the analysis thread is interrupted
 	 * @throws IOException if an I/O error occurs
-	 * @throws ResourceNotFoundException 
+	 * @throws ResourceNotFoundException
 	 */
 	private void buildClassPath() throws InterruptedException, IOException, CheckedAnalysisException {
 		IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
@@ -539,12 +565,14 @@ public class FindBugs2 implements IFindBugsEngine {
 		builder.scanNestedArchives(scanNestedArchives);
 
 		builder.build(classPath, progress);
-		
-		
+
+
 
 		appClassList = builder.getAppClassList();
-		
-		if (DEBUG) System.out.println(appClassList.size() + " classes scanned");
+
+		if (DEBUG) {
+	        System.out.println(appClassList.size() + " classes scanned");
+        }
 
 		// If any of the application codebases contain source code,
 		// add them to the source path.
@@ -568,8 +596,9 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void buildReferencedClassSet() throws CheckedAnalysisException, InterruptedException {
 		// XXX: should drive progress dialog (scanning phase)?
 
-		if (DEBUG)
-			System.out.println("Adding referenced classes");
+		if (DEBUG) {
+	        System.out.println("Adding referenced classes");
+        }
 		Set<String> referencedPackageSet = new HashSet<String>();
 
 		LinkedList<ClassDescriptor> workList = new LinkedList<ClassDescriptor>();
@@ -582,8 +611,9 @@ public class FindBugs2 implements IFindBugsEngine {
 		HashSet<ClassDescriptor> knownDescriptors = new HashSet<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
 		int count = 0;
 		while (!workList.isEmpty()) {
-			if (Thread.interrupted())
-				throw new InterruptedException();
+			if (Thread.interrupted()) {
+	            throw new InterruptedException();
+            }
 			ClassDescriptor classDesc = workList.removeFirst();
 
 			if (seen.contains(classDesc)) {
@@ -598,7 +628,7 @@ public class FindBugs2 implements IFindBugsEngine {
 					System.out.println("Adding referenced class " + classDesc);
 				}
 			}
-				
+
 			referencedPackageSet.add(classDesc.getPackageName());
 
 			// Get list of referenced classes and add them to set.
@@ -635,10 +665,11 @@ public class FindBugs2 implements IFindBugsEngine {
 		// Delete any application classes that could not be read
 		appClassList.removeAll(badAppClassSet);
 		DescriptorFactory.instance().purge(badAppClassSet);
-		
-		for(ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) 
-			referencedPackageSet.add(d.getPackageName());
-		
+
+		for(ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) {
+	        referencedPackageSet.add(d.getPackageName());
+        }
+
 		// Based on referenced packages, add any resolvable package-info classes
 		// to the set of referenced classes.
 		if (DEBUG) {
@@ -662,7 +693,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			}
 		}
 		referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
-		
+
 	}
 
 	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
@@ -672,7 +703,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		}
 
-	 
+
 	 public static void clearAnalysisContext() {
 		 AnalysisContext.removeCurrentAnalysisContext();
 
@@ -720,7 +751,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Create an execution plan.
-	 * 
+	 *
 	 * @throws OrderingConstraintException if the detector ordering constraints are inconsistent
 	 */
 	private void createExecutionPlan() throws OrderingConstraintException {
@@ -737,7 +768,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			}
 			public void enable(DetectorFactory factory) {
 				forcedEnabled.add(factory);
-				factory.setEnabledButNonReporting(true);        
+				factory.setEnabledButNonReporting(true);
 			}
 
 		};
@@ -771,8 +802,9 @@ public class FindBugs2 implements IFindBugsEngine {
 		AnalysisContext.currentXFactory().canonicalizeAll();
 		try {
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
-		if (executionPlan.getNumPasses() == 0)
-			throw new AssertionError("no analysis passes");
+		if (executionPlan.getNumPasses() == 0) {
+	        throw new AssertionError("no analysis passes");
+        }
 		int [] classesPerPass = new int[executionPlan.getNumPasses()];
 		classesPerPass[0] = referencedClassSet.size();
 		for(int i = 0; i < classesPerPass.length; i++) {
@@ -789,11 +821,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	           AnalysisContext.logError("Couldn't get class info for " + desc, e);
             }
 
-			
+
 		}
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
-			
+
 			// The first pass is generally a non-reporting pass which
 			// gathers information about referenced classes.
 			boolean isNonReportingFirstPass = multiplePasses && passCount == 0;
@@ -805,7 +837,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			// we apply detectors to all classes referenced by the application classes.
 			// On subsequent passes, we apply detector only to application classes.
 			Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass)
-					? referencedClassSet 
+					? referencedClassSet
 					: appClassList;
 			AnalysisContext.currentXFactory().canonicalizeAll();
 			if (DEBUG || LIST_ORDER) {
@@ -863,8 +895,9 @@ public class FindBugs2 implements IFindBugsEngine {
 
 
 				for (Detector2 detector : detectorList) {
-					if (Thread.interrupted())
-						throw new InterruptedException();
+					if (Thread.interrupted()) {
+	                    throw new InterruptedException();
+                    }
 					if (false && DEBUG) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
@@ -914,12 +947,12 @@ public class FindBugs2 implements IFindBugsEngine {
 		} finally {
 			profiler.end(this.getClass());
 		}
-	
+
 	}
 
 	/**
 	 * Notify all IClassObservers that we are visiting given class.
-	 * 
+	 *
 	 * @param classDescriptor the class being visited
 	 */
 	private void notifyClassObservers(ClassDescriptor classDescriptor) {
@@ -931,7 +964,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	/**
 	 * Report an exception that occurred while analyzing a class
 	 * with a detector.
-	 * 
+	 *
 	 * @param classDescriptor class being analyzed
 	 * @param detector        detector doing the analysis
 	 * @param e               the exception
@@ -962,5 +995,5 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	}
 
-	
+
 }

@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004,2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -81,6 +81,16 @@ public class ExecutionPlan {
 		this.assignedToPassSet = new HashSet<DetectorFactory>();
 	}
 
+	public void dispose() {
+		pluginList.clear();
+		factoryChooser = null;
+		passList.clear();
+		factoryMap.clear();
+		interPassConstraintList.clear();
+		intraPassConstraintList.clear();
+		assignedToPassSet.clear();
+	}
+
 	/**
 	 * Set the DetectorFactoryChooser to use to select which
 	 * detectors to enable.  This must be called before any Plugins
@@ -97,7 +107,7 @@ public class ExecutionPlan {
 		if (DEBUG) {
 			System.out.println("Adding plugin " + plugin.getPluginId() + " to execution plan");
 		}
-		
+
 		pluginList.add(plugin);
 
 		// Add ordering constraints
@@ -150,8 +160,9 @@ public class ExecutionPlan {
 						if (!factoryChooser.choose(startFactory)) {
 							factoryChooser.enable(startFactory);
 							change = true;
-							if (DEBUG || FindBugs2.DEBUG)
-								System.out.println("Dependences force enabling of " + startFactory.getFullName());
+							if (DEBUG || FindBugs2.DEBUG) {
+	                            System.out.println("Dependences force enabling of " + startFactory.getFullName());
+                            }
 						}
 
 					}
@@ -162,8 +173,9 @@ public class ExecutionPlan {
 
 		for(Iterator<Map.Entry<String,DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry<String,DetectorFactory> e = i.next();
-			if (!factoryChooser.choose(e.getValue()))
-					i.remove();
+			if (!factoryChooser.choose(e.getValue())) {
+	            i.remove();
+            }
 		}
 
 		// Build inter-pass constraint graph
@@ -172,8 +184,10 @@ public class ExecutionPlan {
 			nodeMap,
 			new HashSet<DetectorFactory>(factoryMap.values()),
 			interPassConstraintList);
-		if (DEBUG) System.out.println(interPassConstraintGraph.getNumVertices() +
-			" nodes in inter-pass constraint graph");
+		if (DEBUG) {
+	        System.out.println(interPassConstraintGraph.getNumVertices() +
+	        	" nodes in inter-pass constraint graph");
+        }
 
 		// Build list of analysis passes.
 		// This will assign all detectors referenced in inter- or intra-pass
@@ -215,7 +229,7 @@ public class ExecutionPlan {
 
 	/**
 	 * Get the number of passes in the execution plan.
-	 * 
+	 *
 	 * @return the number of passes in the execution plan
 	 */
 	public int getNumPasses() {
@@ -311,8 +325,9 @@ public class ExecutionPlan {
 
 		// It is perfectly fine for a constraint to produce no edges
 		// if any detector it specifies is not enabled.
-		if (earlierSet.isEmpty() || laterSet.isEmpty())
-			return;
+		if (earlierSet.isEmpty() || laterSet.isEmpty()) {
+	        return;
+        }
 
 		for (DetectorNode earlier : earlierSet) {
 			for (DetectorNode later : laterSet) {
@@ -331,13 +346,15 @@ public class ExecutionPlan {
 			// be chosen for the current pass.
 			for (Iterator<DetectorNode> i = constraintGraph.vertexIterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
-				if (constraintGraph.getNumIncomingEdges(node) == 0) 
-					inDegreeZeroList.add(node);
+				if (constraintGraph.getNumIncomingEdges(node) == 0) {
+	                inDegreeZeroList.add(node);
+                }
 
 			}
 
-			if (inDegreeZeroList.isEmpty())
-				throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
+			if (inDegreeZeroList.isEmpty()) {
+	            throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
+            }
 
 			// Remove all of the chosen detectors from the constraint graph.
 			for (DetectorNode node : inDegreeZeroList) {
@@ -416,8 +433,9 @@ public class ExecutionPlan {
 		DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs =
 			new DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode>(constraintGraph);
 		dfs.search();
-		if (dfs.containsCycle())
-			throw new OrderingConstraintException("Cycle in intra-pass ordering constraints!");
+		if (dfs.containsCycle()) {
+	        throw new OrderingConstraintException("Cycle in intra-pass ordering constraints!");
+        }
 
 		// Do a topological sort to put the detectors in the pass
 		// in the right order.
@@ -462,8 +480,9 @@ public class ExecutionPlan {
 			public int compare(DetectorFactory a, DetectorFactory b) {
 				// Sort first by plugin id...
 				int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
-				if (cmp != 0)
-					return cmp;
+				if (cmp != 0) {
+	                return cmp;
+                }
 				// Then by order specified in plugin descriptor
 				return a.getPositionSpecifiedInPluginDescriptor() - b.getPositionSpecifiedInPluginDescriptor();
 			}
@@ -502,8 +521,9 @@ public class ExecutionPlan {
 
 		for (String pluginId : argv) {
 			Plugin plugin = detectorFactoryCollection.getPluginById(pluginId);
-			if (plugin != null)
-				execPlan.addPlugin(plugin);
+			if (plugin != null) {
+	            execPlan.addPlugin(plugin);
+            }
 		}
 
 		execPlan.build();

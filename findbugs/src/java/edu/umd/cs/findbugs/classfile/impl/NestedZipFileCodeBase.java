@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.io.IO;
  * some other codebase.  These are handled by extracting the nested
  * zip/jar file to a temporary file, and delegating to an
  * internal ZipFileCodeBase that reads from the temporary file.
- * 
+ *
  * @author David Hovemeyer
  */
 public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
@@ -50,7 +50,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param codeBaseLocator the codebase locator for this codebase
 	 */
 	public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
@@ -68,7 +68,11 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 
 			// Copy nested zipfile to the temporary file
 			// FIXME: potentially long blocking operation - should be interruptible
-			inputStream = parentCodeBase.lookupResource(resourceName).openResource();
+			ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
+			if(resource == null) {
+				return;
+			}
+			inputStream = resource.openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
 			IO.copy(inputStream, outputStream);
 			outputStream.flush();
@@ -96,8 +100,11 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+	public ICodeBaseEntry lookupResource(String resourceName) {
 		ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
+		if(delegateCodeBaseEntry == null) {
+			return null;
+		}
 		return new DelegatingCodeBaseEntry(this, delegateCodeBaseEntry);
 	}
 
@@ -113,7 +120,8 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	 */
 	public void close() {
 		delegateCodeBase.close();
-		if (!tempFile.delete()) 
-			AnalysisContext.logError("Could not delete " + tempFile);
+		if (!tempFile.delete()) {
+	        AnalysisContext.logError("Could not delete " + tempFile);
+        }
 	}
 }

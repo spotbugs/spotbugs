@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Implementation of ICodeBase for a single classfile.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
@@ -108,9 +108,9 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+	public ICodeBaseEntry lookupResource(String resourceName) {
 		if (!resourceName.equals(getResourceName())) {
-			throw new ResourceNotFoundException(resourceName);
+			return null;
 		}
 
 		return new SingleFileCodeBaseEntry(this);
@@ -182,7 +182,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * Get the resource name of the single file.
 	 * We have to open the file and parse the constant pool
 	 * in order to find this out.
-	 * 
+	 *
 	 * @return the resource name (e.g., "java/lang/String.class"
 	 *          if the class is java.lang.String)
 	 */
@@ -213,7 +213,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 				ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 
 				classParser.parse(builder);
-				
+
 				return builder.build().getClassDescriptor();
 			} finally {
 				if (in != null) {
@@ -228,7 +228,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 
 	/**
 	 * Return the number of bytes in the file.
-	 * 
+	 *
 	 * @return the number of bytes in the file, or -1 if the file's length
 	 *          can't be determined
 	 */
