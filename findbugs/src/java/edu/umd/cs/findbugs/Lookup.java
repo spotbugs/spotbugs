@@ -114,8 +114,9 @@ public class Lookup
 	public static @CheckForNull JavaClass
 			findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {
+			JavaClass c = clazz;
 			while (true) {
-				JavaClass c = clazz.getSuperClass();
+				c = c.getSuperClass();
 				if (c == null)
 					return null;
 				Method m = findImplementation(c, name, signature);

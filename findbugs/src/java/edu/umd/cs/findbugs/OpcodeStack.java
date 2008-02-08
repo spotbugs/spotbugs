@@ -413,7 +413,7 @@ public class OpcodeStack implements Constants2
 			return false;
 		}
 		 public boolean isPrimitive() {
-			 return !signature.startsWith("L");
+			 return !signature.startsWith("L") && !signature.startsWith("[");
 		 }
 
 		 public int getRegisterNumber() {
@@ -903,7 +903,7 @@ public class OpcodeStack implements Constants2
 					 register = dbc.getRegisterOperand();
 					 it = getLVValue( register );
 					 it2 = new Item("I", dbc.getIntConstant());
-					 pushByIntMath( IADD, it2, it);
+					 pushByIntMath(dbc, IADD, it2, it);
 					 pushByLocalStore(register);
 				 break;
 
@@ -1099,7 +1099,7 @@ public class OpcodeStack implements Constants2
 				 case IUSHR:
 					 it = pop();
 					 it2 = pop();
-					 pushByIntMath(seen, it2, it);
+					 pushByIntMath(dbc, seen, it2, it);
 				 break;
 
 				 case INEG:
@@ -2001,7 +2001,7 @@ public void initialize() {
 		pushByLocalLoad("", register);
 	 }
 
-	 private void pushByIntMath(int seen, Item lhs, Item rhs) {
+	 private void pushByIntMath(DismantleBytecode dbc, int seen, Item lhs, Item rhs) {
 		 if (DEBUG) System.out.println("pushByIntMath: " + rhs.getConstant()  + " " + lhs.getConstant() );
 		 Item newValue  = new Item("I");
 		 try {
@@ -2056,7 +2056,9 @@ public void initialize() {
 					newValue.specialKind = Item.NON_NEGATIVE;
 			}
 		} catch (RuntimeException e) {
-			 // ignore it
+			String msg = "Error processing " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
+			AnalysisContext.logError(msg , e);
+			
 		 }
 		if (lhs.specialKind == Item.INTEGER_SUM && rhs.getConstant() != null ) {
 			int rhsValue = (Integer) rhs.getConstant();
