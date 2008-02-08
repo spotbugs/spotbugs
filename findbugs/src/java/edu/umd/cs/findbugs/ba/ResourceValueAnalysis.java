@@ -144,15 +144,11 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 					InstructionHandle ihPrevPrev = ihPrev == null ? null : ihPrev.getPrev();
 					int prevPush = 0;
 					if(ihPrev != null) {
-						try {
-							prevPush = ihPrev.getInstruction().produceStack(null);
-						} catch(NullPointerException e) { /* do nothing */ }
+						prevPush = ihPrev.getInstruction().produceStack(methodGen.getConstantPool());
 					}
 					int prevPrevPush = 0;
 					if(ihPrevPrev != null) {
-						try {
-							prevPrevPush = ihPrevPrev.getInstruction().produceStack(null);
-						} catch(NullPointerException e) { /* do nothing */ }
+						prevPrevPush = ihPrevPrev.getInstruction().produceStack(methodGen.getConstantPool());
 					}
 					// If instructions exist and both push one word onto the
 					// stack and the next-topmost pushes null...
