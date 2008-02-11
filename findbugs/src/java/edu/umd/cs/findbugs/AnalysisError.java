@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Object recording a recoverable error that occurred during analysis.
- * 
+ *
  * @author David Hovemeyer
  */
 public class AnalysisError {
@@ -13,9 +13,10 @@ public class AnalysisError {
 	private String[] stackTrace;
 	private String nestedExceptionMessage;
 	private String[] nestedStackTrace;
+	private final Throwable exception;
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param message message describing the error
 	 */
 	public AnalysisError(String message) {
@@ -24,12 +25,13 @@ public class AnalysisError {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param message   message describing the error
 	 * @param exception exception which is the cause of the error
 	 */
 	public AnalysisError(String message, Throwable exception) {
 		this.message = message;
+		this.exception = exception;
 		if (exception != null) {
 			exceptionMessage = exception.toString();
 			stackTrace =  getStackTraceAsStringArray(exception);
@@ -38,7 +40,7 @@ public class AnalysisError {
 				nestedExceptionMessage = initCause.toString();
 				nestedStackTrace = getStackTraceAsStringArray(initCause);
 			}
-			
+
 		}
 	}
 
@@ -58,7 +60,7 @@ public class AnalysisError {
 
 	/**
 	 * Set the message describing the error.
-	 * 
+	 *
 	 * @param message message describing the error
 	 */
 	public void setMessage(String message) {
@@ -75,7 +77,7 @@ public class AnalysisError {
 	/**
 	 * Set the exception message.  This is the value returned by
 	 * calling toString() on the original exception object.
-	 * 
+	 *
 	 * @param exceptionMessage the exception message
 	 */
 	public void setExceptionMessage(String exceptionMessage) {
@@ -100,7 +102,7 @@ public class AnalysisError {
 	 * Set the stack trace elements.
 	 * These are the strings returned by calling toString()
 	 * on each StackTraceElement in the original exception.
-	 * 
+	 *
 	 * @param stackTraceList the stack trace elements
 	 */
 	public void setStackTrace(String[] stackTraceList) {
@@ -122,5 +124,12 @@ public class AnalysisError {
 	 */
 	public String[] getNestedStackTrace() {
 		return nestedStackTrace;
+	}
+
+	/**
+	 * @return original exception object, or null if no exception was thrown
+	 */
+	public Throwable getException() {
+		return exception;
 	}
 }
