@@ -19,14 +19,17 @@
 
 package de.tobject.findbugs.builder;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 /**
  * The <code>FindBugsBuilder</code> performs a FindBugs run on a subset of the
@@ -52,48 +55,64 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		monitor.subTask("Running FindBugs...");
 		switch (kind) {
-			case IncrementalProjectBuilder.FULL_BUILD :
-				{
-					if (DEBUG) {
-						System.out.println("FULL BUILD");
-					}
-					doBuild(args, monitor, kind);
-					break;
-				}
-			case IncrementalProjectBuilder.INCREMENTAL_BUILD :
-				{
-					if (DEBUG) {
-						System.out.println("INCREMENTAL BUILD");
-					}
-					doBuild(args, monitor, kind);
-					break;
-				}
-			case IncrementalProjectBuilder.AUTO_BUILD :
-				{
-					if (DEBUG) {
-						System.out.println("AUTO BUILD");
-					}
-					doBuild(args, monitor, kind);
-					break;
-				}
+		case IncrementalProjectBuilder.FULL_BUILD: {
+			if (DEBUG) {
+				System.out.println("FULL BUILD");
+			}
+			doBuild(args, monitor, kind);
+			break;
+		}
+		case IncrementalProjectBuilder.INCREMENTAL_BUILD: {
+			if (DEBUG) {
+				System.out.println("INCREMENTAL BUILD");
+			}
+			doBuild(args, monitor, kind);
+			break;
+		}
+		case IncrementalProjectBuilder.AUTO_BUILD: {
+			if (DEBUG) {
+				System.out.println("AUTO BUILD");
+			}
+			doBuild(args, monitor, kind);
+			break;
+		}
 		}
 		return null;
 	}
 
 	/**
-	 * Performs the build process. This method gets all files in the current project
-	 * and has a <code>FindBugsVisitor</code> run on them.
+	 * Performs the build process. This method gets all files in the current project and
+	 * has a <code>FindBugsVisitor</code> run on them.
 	 *
-	 * @param args A <code>Map</code> containing additional build parameters.
-	 * @param monitor The <code>IProgressMonitor</code> displaying the build progress.
-	 * @param kind TODO
+	 * @param args
+	 *            A <code>Map</code> containing additional build parameters.
+	 * @param monitor
+	 *            The <code>IProgressMonitor</code> displaying the build progress.
+	 * @param kind
+	 *            kind the kind of build being requested, see IncrementalProjectBuilder
 	 * @throws CoreException
 	 */
 	private void doBuild(final Map<?,?> args, final IProgressMonitor monitor, int kind) throws CoreException {
-		AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(this);
-		Collection<IFile> files = collector.getFiles();
-		FindBugsWorker worker = new FindBugsWorker(this.getProject(), monitor);
-		worker.work(files, kind != IncrementalProjectBuilder.FULL_BUILD);
+		boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
+		IProject project = getProject();
+		FindBugsWorker worker = new FindBugsWorker(project, monitor);
+		List<IResource> files;
+		if(incremental) {
+			IResourceDelta resourceDelta = getDelta(project);
+			if (resourceDelta != null
+					&& resourceDelta.findMember(new Path(".project")) == null
+					&& resourceDelta.findMember(new Path(".classpath")) == null
+					&& resourceDelta.findMember(new Path(".fbprefs")) == null) {
+				files = ResourceUtils.collectIncremental(resourceDelta);
+			} else {
+				files = new ArrayList<IResource>();
+				files.add(project);
+			}
+		} else {
+			files = new ArrayList<IResource>();
+			files.add(project);
+		}
+		worker.work(files);
 	}
 
 }

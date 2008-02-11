@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.util;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /** a simple scheduling rule for mutually exclusivity, more-or-less copied from:
@@ -25,8 +26,26 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  */
 public class MutexSchedulingRule implements ISchedulingRule {
 
+	// TODO enable multicore without property if it works stable with FB
+	private static final boolean MULTICORE = Boolean.getBoolean("fb.allowParallelBuild")
+			&& Runtime.getRuntime().availableProcessors() > 1;
+
+	private final IProject project;
+
+	public MutexSchedulingRule(IProject project) {
+		super();
+		this.project = project;
+	}
+
 	public boolean isConflicting(ISchedulingRule rule) {
-		return rule == this;
+		if(rule instanceof MutexSchedulingRule) {
+			MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
+			if(MULTICORE) {
+				return mRule.project.equals(project);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public boolean contains(ISchedulingRule rule) {

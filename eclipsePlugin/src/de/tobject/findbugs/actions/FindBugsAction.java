@@ -19,21 +19,16 @@
 
 package de.tobject.findbugs.actions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -42,9 +37,9 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.builder.AbstractFilesCollector;
-import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.builder.ResourceUtils;
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 
 
@@ -59,15 +54,11 @@ import de.tobject.findbugs.builder.FindBugsWorker;
  */
 public class FindBugsAction implements IObjectActionDelegate {
 
-	/** lock to force no more than one findBugs.execute() task at a time. see
-	  * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/runtime_jobs_locks.htm
-	  * Alas, this is less pretty than a edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule
-	  * from the user's point of view, but it doesn't have the IllegalArgumentException
-	  * problem ("does not match outer scope rule") so this the ILock is preferred. */
-	protected static final ILock findbugsExecuteLock = Platform.getJobManager().newLock();
-
 	/** The current selection. */
 	protected ISelection selection;
+
+	/** true if this action is used from editor */
+	protected boolean usedInEditor;
 
 	/*
 	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
@@ -84,7 +75,9 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 */
 	public final void selectionChanged(final IAction action,
 			final ISelection newSelection) {
-		this.selection = newSelection;
+		if (!usedInEditor) {
+			this.selection = newSelection;
+		}
 	}
 
 	/*
@@ -93,47 +86,21 @@ public class FindBugsAction implements IObjectActionDelegate {
 	public void run(final IAction action) {
 		if (!selection.isEmpty()) {
 			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				for (Iterator iter = structuredSelection.iterator(); iter
-						.hasNext();) {
-					Object element = iter.next();
-					IResource resource = (IResource) ((IAdaptable) element)
-							.getAdapter(IResource.class);
-					if (resource == null) {
-						continue;
-					}
+				IStructuredSelection sSelection = (IStructuredSelection) selection;
 
-					work(resource);
+				if (selection.isEmpty()) {
+					return;
+				}
+
+				Map<IProject, List<IResource>> projectMap =
+					ResourceUtils.getResourcesPerProject(sSelection);
+
+				Set<IProject> keySet = projectMap.keySet();
+				for (IProject project : keySet) {
+					work(project, projectMap.get(project));
 				}
 			}
 		}
-	}
-
-	/**
-	 * The files contained within a resource. Searches container resources, such
-	 * as folders or packages, or parses single file resources such as java
-	 * files.
-	 *
-	 * @param resource
-	 *            the resource to search for files
-	 * @return the files contained within the given resource
-	 * @throws CoreException
-	 */
-	private Collection<IFile> filesInResource(IResource resource) throws CoreException {
-		/*
-		 * Note: the default package is an IContainer that has all other
-		 * packages as subfolders. Eclipse treats the "default package" as the
-		 * project itself. Thus, this method will return ALL java files in the
-		 * project when invoked on the default package resource.
-		 */
-		if (resource instanceof IContainer) {
-			AbstractFilesCollector collector = FilesCollectorFactory
-					.getFilesCollector((IContainer) resource);
-			return collector.getFiles();
-		}
-		Collection<IFile> result = new ArrayList<IFile>(1);
-		result.add((IFile) resource);
-		return result;
 	}
 
 	/**
@@ -142,35 +109,26 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 *
 	 * @param resource The resource to run the analysis on.
 	 */
-	protected final void work(final IResource resource) {
-		final Collection<IFile> files;
-		try {
-			files = filesInResource(resource);
-		} catch (CoreException e1) {
-			FindbugsPlugin.getDefault().logException(e1, "No files found in: " + resource);
-			return;
-		}
-		Job runFindBugs = new Job("Finding bugs in " + resource.getName() + "...") {
+	protected final void work(final IProject project, final List<IResource> resources) {
+
+		Job runFindBugs = new Job("Finding bugs in " + project.getName() + "...") {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				FindBugsWorker worker =
-					new FindBugsWorker(resource.getProject(), monitor);
 				try {
-					findbugsExecuteLock.acquire();
-					worker.work(files, !(resource instanceof IProject));
+					FindBugsWorker worker =	new FindBugsWorker(project, monitor);
+					worker.work(resources);
 				} catch (CoreException e) {
 					FindbugsPlugin.getDefault().logException(e, "Analysis exception");
 					return Status.CANCEL_STATUS;
-				}
-				finally {
-					findbugsExecuteLock.release();
 				}
 				return Status.OK_STATUS;
 			}
 		};
 
 		runFindBugs.setUser(true);
+		runFindBugs.setPriority(Job.BUILD);
+		runFindBugs.setRule(new MutexSchedulingRule(project));
 		runFindBugs.schedule();
 	}
 }

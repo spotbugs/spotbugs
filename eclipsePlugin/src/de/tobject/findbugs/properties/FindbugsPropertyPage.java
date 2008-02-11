@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -58,6 +59,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.ProjectUtilities;
+import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -289,7 +291,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		if (!builderEnabled
 				&& !currentUserPreferences.getFilterSettings().equals(
 						origUserPreferences.getFilterSettings())) {
-			MarkerUtil.redisplayMarkers(project, getShell());
+			MarkerUtil.redisplayMarkers(JavaCore.create(project), getShell());
 		}
 		return true;
 	}
@@ -303,7 +305,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	private boolean isEnabled() {
 		try {
-			return project.hasNature(FindbugsPlugin.NATURE_ID);
+			return project.hasNature(FindbugsPlugin.NATURE_ID) && Util.isJavaProject(project);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
 			"Error while testing FindBugs nature for project " + project);

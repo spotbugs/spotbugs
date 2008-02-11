@@ -52,8 +52,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import de.tobject.findbugs.builder.AbstractFilesCollector;
-import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsBuilder;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.io.FileOutput;
@@ -246,8 +244,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			option = Platform.getDebugOption(BUILDER_DEBUG);
 			if (option != null) {
 				FindBugsBuilder.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-				AbstractFilesCollector.DEBUG = FindBugsBuilder.DEBUG;
-				FilesCollectorFactory.DEBUG = FindBugsBuilder.DEBUG;
 				FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
 			}
 
@@ -301,7 +297,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param e       the exception
 	 * @param message message describing how/why the exception occurred
 	 */
-	public void logException(Exception e, String message) {
+	public void logException(Throwable e, String message) {
 		logMessage(IStatus.ERROR, message, e);
 	}
 
@@ -332,7 +328,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		logMessage(IStatus.INFO, message, null);
 	}
 
-	public void logMessage(int severity, String message, Exception e) {
+	public void logMessage(int severity, String message, Throwable e) {
 		if (DEBUG) {
 			String what = (severity == IStatus.ERROR)
 				? (e != null ? "Exception" : "Error")

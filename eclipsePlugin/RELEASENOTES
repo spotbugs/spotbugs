@@ -1,6 +1,17 @@
 Release 1.3.2 - FindBugs team
 - fixed bug 1855384: Bug configuration is broken in Eclipse (Andrei Loskutov)
 - refactored FindBugs properties page (Andrei Loskutov)
+- refactored FindBugs worker/builder/run action (Andrei Loskutov)
+- FB detects now only bugs from classes on project's classpath (no double work on 
+  duplicated class files) (Andrei Loskutov)
+- fixed bug introduced by the bad patch for 1867951: FB cannot be executed incrementally 
+  on a folder of file (Andrei Loskutov)
+- fixed job rule: now jobs for different projects may run in parallel if running on a 
+  multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrei Loskutov)  
+- fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrei Loskutov)
+- fixed not reporting bugs on secondary types (classes defined in java files with 
+  different name) (Andrei Loskutov)
+
 
 Release 1.3.1 - FindBugs team
 - fixed bug 1828973: OutOfMemoryError in Eclipse, caused by ThreadLocals usage in FindBugs2 engine (Andrei Loskutov)

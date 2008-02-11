@@ -1,53 +1,52 @@
 /*
-	* FindBugs Eclipse Plug-in.
-	* Copyright (C) 2003 - 2004, Peter Friese
-	* Copyright (C) 2005, University of Maryland
-	*
-	* This library is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU Lesser General Public
-	* License as published by the Free Software Foundation; either
-	* version 2.1 of the License, or (at your option) any later version.
-	*
-	* This library is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-	* Lesser General Public License for more details.
-	*
-	* You should have received a copy of the GNU Lesser General Public
-	* License along with this library; if not, write to the Free Software
-	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	*/
+ * FindBugs Eclipse Plug-in.
+ * Copyright (C) 2003 - 2004, Peter Friese
+ * Copyright (C) 2005, University of Maryland
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 package de.tobject.findbugs.builder;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -62,17 +61,15 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
  *
  * @author Peter Friese
- * @version 1.0
+ * @author Andrei Loskutov
+ * @version 2.0
  * @since 26.09.2003
  */
 public class FindBugsWorker {
@@ -83,225 +80,289 @@ public class FindBugsWorker {
 	private IProgressMonitor monitor;
 	private UserPreferences userPrefs;
 	private IProject project;
+	private IJavaProject javaProject;
 
 	/**
 	 * Creates a new worker.
 	 *
-	 * @param project The project to work on.
+	 * @param project The <b>java</b> project to work on.
 	 * @param monitor A progress monitor.
+	 * @throws CoreException if the given project is not a java project, does not exists
+	 * or is not open
 	 */
-	public FindBugsWorker(IProject project, IProgressMonitor monitor) {
+	public FindBugsWorker(IProject project, IProgressMonitor monitor) throws CoreException {
 		super();
 		this.project = project;
+		this.javaProject = JavaCore.create(project);
+		if (javaProject == null || !javaProject.exists()
+				|| !javaProject.getProject().isOpen()) {
+			throw new CoreException(new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID,
+					IStatus.ERROR, "Java project is not open or does not exist: "
+							+ project, null));
+		}
 		this.monitor = monitor;
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
+			FindbugsPlugin.getDefault().logException(e,
+					"Could not get selected detectors for project");
+			throw e;
 		}
 	}
 
 	/**
-	 * Run FindBugs on the given collection of files. (note: This is not thread-safe.)
+	 * Run FindBugs on the given collection of resources from same project (note: This is
+	 * currently not thread-safe)
 	 *
-	 * @param files A collection of {@link IResource}s.
-	 * @param incremental TODO
+	 * @param resources
+	 *            files or directories which should be on the project classpath. All
+	 *            resources must belong to the same project, and no one of the elements
+	 *            can contain another one. Ergo, if the list contains a project itself,
+	 *            then it must have only one element.
 	 * @throws CoreException
 	 */
-	public void work(Collection<IFile> files, boolean incremental) throws CoreException {
-		work2(files, incremental, false, null);
-	}
-
-	public void loadXml(Collection<IFile> files, boolean incremental, String fileName) throws CoreException {
-		work2(files, incremental, true, fileName);
-	}
-	public void work2(Collection<IFile> files, boolean incremental, final boolean loadXml, final String xmlFileName) throws CoreException {
-		if (files == null) {
-			FindbugsPlugin.getDefault().logError("No files to build");
+	public void work(List<IResource> resources) throws CoreException {
+		if (resources == null || resources.isEmpty()) {
+			FindbugsPlugin.getDefault().logInfo("No resources to analyse");
 			return;
 		}
-
-		String findBugsHome = FindbugsPlugin.getFindBugsEnginePluginLocation();
 		if (DEBUG) {
-			FindbugsPlugin.getDefault().logInfo("Looking for detectors in: " + findBugsHome); //$NON-NLS-1$
+			System.out.println(resources);
 		}
 
-		// System.setProperty("findbugs.home", findBugsHome); //$NON-NLS-1$
-		FindBugs.setHome(findBugsHome);
-
-		Set<IPath> outLocations = createOutputLocations();
+		// clear markers
+		clearMarkers(resources);
 
 		final Project findBugsProject = new Project();
-		Iterator<IFile> iter = files.iterator();
+		findBugsProject.setProjectName(javaProject.getElementName());
+		final Reporter bugReporter = new Reporter(javaProject, monitor);
+		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
+
+		FindBugs.setHome(FindbugsPlugin.getFindBugsEnginePluginLocation());
+
+		Map<IPath, IPath> outLocations = createOutputLocations();
 		Map<File, String> outputFiles = new HashMap<File, String>();
+		// collect all related class file patterns for analysis
+		collectClassFilesPatterns(resources, outLocations, outputFiles);
+
+		// find and add all the class files in the output directories
+		configureOutputFiles(findBugsProject, outputFiles);
+
+		String[] classPathEntries = createAuxClasspath();
+		// add to findbugs classpath
+		for (String entry : classPathEntries) {
+			findBugsProject.addAuxClasspathEntry(entry);
+		}
+		final FindBugs2 findBugs = new FindBugs2();
+		findBugs.setNoClassOk(true);
+		findBugs.setBugReporter(bugReporter);
+		findBugs.setProject(findBugsProject);
+		findBugs.setProgressCallback(bugReporter);
+		findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+
+		// configure detectors.
+		findBugs.setUserPreferences(userPrefs);
+
+		// configure extended preferences
+		findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
+		configureExtendedProps(userPrefs.getIncludeFilterFiles(), findBugs, true, false);
+		configureExtendedProps(userPrefs.getExcludeFilterFiles(), findBugs, false, false);
+		configureExtendedProps(userPrefs.getExcludeBugsFiles(), findBugs, false, true);
+
+		runFindBugs(findBugs);
+
+		// Merge new results into existing results
+		// if the argument is project, then it's not incremental
+		boolean incremental = !(resources.get(0) instanceof IProject);
+		updateBugCollection(findBugsProject, bugReporter, incremental);
+	}
+
+
+	/**
+	 * Load existing FindBugs xml report for the given collection of files.
+	 * @param fileName xml file name to load bugs from
+	 * @throws CoreException
+	 */
+	public void loadXml(String fileName) throws CoreException {
+		if(fileName == null) {
+			return;
+		}
+		// clear markers
+		clearMarkers(null);
+
+		final Project findBugsProject = new Project();
+		final Reporter bugReporter = new Reporter(javaProject, monitor);
+		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
+
+		reportFromXml(fileName, findBugsProject, bugReporter);
+		// Merge new results into existing results.
+		updateBugCollection(findBugsProject, bugReporter, false);
+	}
+
+	/**
+	 * Clear assotiated markers
+	 * @param files
+	 */
+	private void clearMarkers(List<IResource> files) throws CoreException {
+		if(files == null) {
+			project.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+			return;
+		}
+		Iterator<IResource> iter = files.iterator();
 		while (iter.hasNext()) {
 			// get the resource
-			IFile res = iter.next();
+			IResource res = iter.next();
 			if (res == null) {
 				continue;
 			}
-			if (Util.isJavaArtifact(res)) {
-				res.deleteMarkers(
-					FindBugsMarker.NAME,
-					true,
-					IResource.DEPTH_INFINITE);
-			}
+			res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+		}
+	}
 
-			IPath location = res.getLocation();
-			if (Util.isClassFile(res) && containsIn(outLocations, location)) {
-				// add this file to the work list:
-				String fileName = location.toOSString();
+	/**
+	 * Updates given outputFiles map with class name patterns matching given java source
+	 * names
+	 * @param resources java sources
+	 * @param outLocations key is src root, value is output location
+	 * @param outputFiles key is output directory path, value are class name patterns for
+	 * this directory
+	 */
+	private void collectClassFilesPatterns(List<IResource> resources,
+			Map<IPath, IPath> outLocations,	Map<File, String> outputFiles) {
 
-				res.refreshLocal(IResource.DEPTH_INFINITE, null);
-				if (DEBUG) {
-					System.out.println(
-							"Resource: " + fileName //$NON-NLS-1$
-							+ ": in sync: " + res.isSynchronized(IResource.DEPTH_INFINITE)); //$NON-NLS-1$
-				}
-				findBugsProject.addFile(fileName);
-			}
-			else if (Util.isJavaFile(res)) {
+		for (IResource resource : resources) {
+			if (Util.isJavaFile(resource)) {
 				// this is a .java file, so get the corresponding .class file(s)
-				// get the compilation unit for this file
-				ICompilationUnit cu = JavaCore.createCompilationUnitFrom(res);
-				if (cu == null) {
-					if (DEBUG) {
-						FindbugsPlugin.getDefault().logError("NULL Compilation Unit for "+res.getName());
-					}
-					continue; // ignore and continue
-				}
-				// find the output location for this CompilationUnit
-				IPackageFragmentRoot pkgRoot = (IPackageFragmentRoot) cu.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-				if (pkgRoot == null) {
-					if (DEBUG) {
-						FindbugsPlugin.getDefault().logError("NULL Package Root for: "+res.getName());
-					}
-					continue; // ignore and continue
-				}
-				IClasspathEntry cpe;
-				// fix for Eclipse 3.3: if RawClasspathEntry is missing, 3.2 just
-				// returns null but 3.3 throws JavaModelException
-				try {
-					cpe = pkgRoot.getRawClasspathEntry();
-				} catch (JavaModelException e) {
-					if (DEBUG) {
-						FindbugsPlugin.getDefault().logError("EXCEPTION for: "
-								+ res.getName() + ".getRawClasspathEntry()");
-					}
-					continue; // ignore and continue
-				}
-				if (cpe == null) {
-					if (DEBUG) {
-						FindbugsPlugin.getDefault().logError("NULL Classpath Entry for: "+res.getName());
-					}
-					continue; // ignore and continue
-				}
-				IPath outLocation = getAbsoluteOutputLocation(pkgRoot, cpe);
-				// get the workspace relative path for this .java file
-				IPath relativePath = getRelativeFilePath(res, cpe);
-				IPath pkgPath = relativePath.removeLastSegments(1);
-				String fName = relativePath.lastSegment();
-				fName = fName.substring(0, fName.lastIndexOf('.'));
-				// find the class and inner classes for this .java file
-				IPath clzLocation = outLocation.append(pkgPath);
-				String exp = fName+"\\.class"+"|"+fName+"\\$.*\\.class";
-				File clzDir = clzLocation.toFile();
-				// check if the directory exists in the output locations
-				String oldExp = outputFiles.get(clzDir);
-				if (oldExp != null) {
-					exp = oldExp + "|" + exp;
-				}
-				outputFiles.put(clzDir, exp);
+				addClassPatternsFromFile((IFile) resource, outLocations, outputFiles);
+			} else if(resource instanceof IFolder) {
+				addClassPatternsFromFolder((IFolder)resource, outLocations, outputFiles);
+			} else if(resource instanceof IProject) {
+				addClassPatternsFromProject(outLocations, outputFiles);
 			}
 		}
+	}
 
-		// find and add all the class files in the output directories
-		addOutputFiles(findBugsProject, outputFiles);
-		// clear the map for GC
-		outputFiles.clear();
-
-		final Reporter bugReporter = new Reporter(this.project, this.monitor);
-		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
-
-		String[] classPathEntries = createClassPathEntries();
-		// add to findbugs classpath
-		for (int i = 0; i < classPathEntries.length; i++) {
-			findBugsProject.addAuxClasspathEntry(classPathEntries[i]);
+	private void addClassPatternsFromFolder(IFolder folder, Map<IPath, IPath> outLocations,
+			Map<File, String> outputFiles) {
+		IPath path = folder.getLocation();
+		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
+		if(srcRoot == null) {
+			return;
 		}
+		IPath outputRoot = outLocations.get(srcRoot);
+		int firstSegments = path.matchingFirstSegments(srcRoot);
+		// add relative path to the output path
+		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
+		outputFiles.put(out.toFile(), ".*\\.class");
+	}
 
-		final IFindBugsEngine findBugs;
+	private void addClassPatternsFromProject(Map<IPath, IPath> outLocations,
+			Map<File, String> outputFiles) {
+		// just add anything in all project output folders
+		Set<Entry<IPath,IPath>> entrySet = outLocations.entrySet();
+		for (Entry<IPath, IPath> entry : entrySet) {
+			outputFiles.put(entry.getValue().toFile(), ".*\\.class");
+		}
+	}
 
-		final FindBugs2 engine = new FindBugs2();
-		engine.setBugReporter(bugReporter);
-		engine.setProject(findBugsProject);
-		engine.setProgressCallback(bugReporter);
-		engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-		findBugs = engine;
+	private void addClassPatternsFromFile(IFile file,
+			Map<IPath, IPath> outLocations, Map<File, String> outputFiles) {
+		IPath path = file.getLocation();
+		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
+		IPath outputRoot = outLocations.get(srcRoot);
+		int firstSegments = path.matchingFirstSegments(srcRoot);
+		// add relative path to the output path
+		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
+		String fileName = path.removeFileExtension().lastSegment();
+		String namePattern = fileName + "\\.class|" + fileName + "\\$.*\\.class";
+		namePattern = addSecondaryTypesToPattern(file, fileName, namePattern);
+		File directory = out.removeLastSegments(1).toFile();
+		String filesPattern = outputFiles.get(directory);
+		if(filesPattern != null) {
+			// add new to existing class patterns
+			namePattern += "|" + filesPattern;
+		}
+		// add parent folder and regexp for file names
+		outputFiles.put(directory, namePattern);
+	}
 
-		// configure detectors.
-		findBugs.setUserPreferences(this.userPrefs);
-		configureExtended(findBugs);
-
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					if(loadXml){
-						reportFromXml(xmlFileName, findBugsProject, bugReporter);
-					} else {
-						if (DEBUG) {
-							System.out.println("Finding bugs");
-						}
-						findBugs.execute();
+	/**
+	 * Add secondary types patterns (not nested in the type itself but contained in the
+	 * java file)
+	 *
+	 * @param fileName java file name (not path!) without .java suffix
+	 * @param classNamePattern non null pattern for all matching .class file names
+	 * @return modified classNamePattern, if there are more then one type defined in the
+	 * java file
+	 */
+	private String addSecondaryTypesToPattern(IFile file, String fileName,
+			String classNamePattern) {
+		ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
+		if (cu == null) {
+			FindbugsPlugin.getDefault().logError(
+					"NULL compilation unit for " + file
+							+ ", FB analysis might  be incomplete for included types");
+			return classNamePattern;
+		}
+		try {
+			IType[] types = cu.getTypes();
+			if (types.length > 1) {
+				for (IType type : types) {
+					if (fileName.equals(type.getElementName())) {
+						// "usual" type with the same name: we have it already
+						continue;
 					}
-				} catch (InterruptedException e) {
-					if (DEBUG) {
-						FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
-					}
-					Thread.currentThread().interrupt();
-					// @see IncrementalProjectBuilder.build
-					//throw new OperationCanceledException("FindBugs operation cancelled by user");
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
-				} finally {
-					Global.removeAnalysisCacheForCurrentThread();
-					AnalysisContext.removeCurrentAnalysisContext();
+					classNamePattern = classNamePattern + "|" + type.getElementName()
+							+ "\\.class|" + type.getElementName() + "\\$.*\\.class";
 				}
 			}
-		};
+		} catch (JavaModelException e) {
+			FindbugsPlugin.getDefault().logException(e,
+					"Cannot get types from compilation unit: " + cu);
+		}
+		return classNamePattern;
+	}
 
-		/*
-		 * see bug 1828973: https://sourceforge.net/tracker/?func=detail&atid=614693&aid=1828973&group_id=96405
-		 * FindBugs2 engine stores the analysis caches etc in the ThreadLocal and
-		 * InheritableThreadLocal fileds, which are assumed to be garbage collected
-		 * together with the execution thread on the execution finish.
-		 * Unfortunately, Eclipse uses thread pools for jobs, which means, that the
-		 * execution threads would stay forever and the analysis cache would never be released...
-		 * To avoid the OutOfMemory error, we have to run execution in the new thread
-		 * which would be destroyed after the execution (also releasing memory occupied
-		 * by all created ThreadLocal* fields).
-		 */
-		Thread t = new Thread(r);
-		// Perform the analysis! (note: This is not thread-safe.)
-		t.start();
-		try{
-			t.join();
+	/**
+	 * @param srcPath
+	 * @param outLocations key is the source root, value is output folder
+	 * @return source root folder matching (parent of) given path
+	 */
+	private IPath getMatchingSourceRoot(IPath srcPath, Map<IPath, IPath> outLocations) {
+		Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
+		IPath result = null;
+		int maxSegments = 0;
+		for (Entry<IPath, IPath> entry : outEntries) {
+			IPath srcRoot = entry.getKey();
+			int firstSegments = srcPath.matchingFirstSegments(srcRoot);
+			if(firstSegments > maxSegments && firstSegments == srcRoot.segmentCount()) {
+				maxSegments = firstSegments;
+				result = srcRoot;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * this method will block current thread until the findbugs is running
+	 * @param findBugs fb engine, which will be <b>disposed</b> after the analysis is done
+	 */
+	private void runFindBugs(final FindBugs2 findBugs) {
+		// bug 1828973 was fixed by findbugs engine, so that workaround to start the
+		// analysis in an extra thread is not more needed
+		try {
+			// Perform the analysis! (note: This is not thread-safe)
+			findBugs.execute();
 		} catch (InterruptedException e) {
 			if (DEBUG) {
 				FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
 			}
-			// @see IncrementalProjectBuilder.build
-			//throw new OperationCanceledException("FindBugs operation cancelled by user");
-		}
-
-		try {
-			// Merge new results into existing results.
-			updateBugCollection(findBugsProject, bugReporter, incremental);
+			Thread.currentThread().interrupt();
 		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
-		} catch (DocumentException e) {
-			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+		} finally {
+			findBugs.dispose();
 		}
-
 	}
 
 	/**
@@ -310,67 +371,16 @@ public class FindBugsWorker {
 	 *
 	 * @param findBugsProject   findbugs <code>Project</code>
 	 * @param outputFiles   Map containing output directories and patterns for .class files.
+	 * The map content will be deleted after this call
 	 */
-	private void addOutputFiles(Project findBugsProject, Map<File, String> outputFiles) {
+	private void configureOutputFiles(Project findBugsProject, Map<File, String> outputFiles) {
 		for (Map.Entry<File, String> entry: outputFiles.entrySet()) {
-			File clzDir = entry.getKey();
-			final Pattern pat = Pattern.compile(entry.getValue());
-			if (clzDir.exists() && clzDir.isDirectory()) {
-				File[] clzs = clzDir.listFiles(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return pat.matcher(name).find();
-					}
-				});
-				// add the clzs to the list of files to be analysed
-				for (File cl: clzs) {
-					findBugsProject.addFile(cl.getAbsolutePath());
-				}
-			}
+			File source = entry.getKey();
+			Pattern classNamesPattern = Pattern.compile(entry.getValue());
+			ResourceUtils.addFiles(findBugsProject, source, classNamesPattern);
 		}
-	}
-
-	/**
-	 * Get the workspace relative file path for the given .java file resource.
-	 *
-	 * @param res   Resource to lookup in the workspace
-	 * @param cpe   Classpath entry where the resource resides.
-	 * @return workspace relative file path for the .java file.
-	 */
-	private IPath getRelativeFilePath(IResource res, IClasspathEntry cpe) {
-		IPath cpePath = cpe.getPath();
-		IPath javaFilePath = res.getFullPath();
-		IPath relativePath = javaFilePath.removeFirstSegments(cpePath.matchingFirstSegments(javaFilePath));
-		return relativePath;
-	}
-
-	/**
-	 * Get the absolute path in the local file system for the specified <code>IClasspathEntry</code>.
-	 *
-	 * @param pkgRoot   Root package fragment for the classpath entry.
-	 * @param cpe       Classpath entry for the package.
-	 * @return absolute path in the local file system for the classpath entry.
-	 * @throws JavaModelException if the default location is not specified.
-	 */
-	private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot,
-			IClasspathEntry cpe) throws JavaModelException {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		IPath wkspLocation = root.getLocation();
-		IPath outLocation = cpe.getOutputLocation();
-		// check if it uses the default location
-		IJavaProject proj = pkgRoot.getJavaProject();
-		if (outLocation == null) {
-			outLocation = proj.getOutputLocation();
-		}
-		if (outLocation == null) {
-			throw new JavaModelException(new Exception(
-					"Could not get the absolute path in the local file system for: "
-							+ cpe.getPath().toString()), 1);
-		}
-		if (wkspLocation.matchingFirstSegments(outLocation) == 0) {
-			outLocation = wkspLocation.append(outLocation);
-		}
-		return outLocation;
+		// clear the map for GC
+		outputFiles.clear();
 	}
 
 	/**
@@ -378,149 +388,118 @@ public class FindBugsWorker {
 	 *
 	 * @param findBugsProject FindBugs project representing analyzed classes
 	 * @param bugReporter     Reporter used to collect the new warnings
-	 * @param incremental TODO
 	 * @throws CoreException
 	 * @throws IOException
 	 * @throws DocumentException
 	 */
-	private void updateBugCollection(Project findBugsProject, Reporter bugReporter, boolean incremental)
-			throws CoreException, IOException, DocumentException {
-		SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor);
-		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
-
-		SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
-		resultCollection.setTimestamp(System.currentTimeMillis());
-
-		FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject, monitor);
-	}
-
-	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection, boolean incremental)
-	{
-		Update update = new Update();
-		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false, incremental));
-	}
-
-	private void configureExtended(IFindBugsEngine findBugs) {
-		// configure extended preferences
-		findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
-
-		 for(String fileName : userPrefs.getIncludeFilterFiles()) {
-			IFile file = project.getFile(fileName);
-			// TODO: some error reporting here to indicate that a filter no longer exists
-			if (file.exists()) {
-				String filterName = file.getLocation().toOSString();
-				try {
-					findBugs.addFilter(filterName, true);
-				} catch (RuntimeException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
-				}
-			}
-		}
-
-		for(String fileName : userPrefs.getExcludeFilterFiles()) {
-			IFile file = project.getFile(fileName);
-			// TODO: some error reporting here to indicate that a filter no longer exists
-			if (file.exists()) {
-				String filterName = file.getLocation().toOSString();
-				try {
-					findBugs.addFilter(filterName, false);
-				} catch (FilterException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
-				}
-			}
-		}
-		for(String fileName : userPrefs.getExcludeBugsFiles()) {
-			IFile file = project.getFile(fileName);
-			if (file.exists()) {
-				String filterName = file.getLocation().toOSString();
-				try {
-					findBugs.excludeBaselineBugs(filterName);
-				} catch (DocumentException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while loading excluded bugs \"" + filterName + "\".");
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while reading excluded bugs \"" + filterName + "\".");
-				}
-			}
-		}
-	}
-
-	private String[] createClassPathEntries() {
-		IJavaProject javaProject = JavaCore.create(project);
+	private void updateBugCollection(Project findBugsProject, Reporter bugReporter,
+			boolean incremental) {
 		try {
-			return JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+			SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project,
+					monitor);
+			SortedBugCollection newBugCollection = bugReporter.getBugCollection();
+
+			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,
+					newBugCollection, incremental);
+			resultCollection.setTimestamp(System.currentTimeMillis());
+
+			FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject,
+					monitor);
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
 		}
-		catch (CoreException e) {
-			if (DEBUG) {
-				FindbugsPlugin.getDefault().logException(e, "Could not compute classpath for project");
+	}
+
+	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection,
+			SortedBugCollection secondCollection, boolean incremental) {
+		Update update = new Update();
+		return (SortedBugCollection) (update.mergeCollections(firstCollection,
+				secondCollection, false, incremental));
+	}
+
+	private void configureExtendedProps(Collection<String> filterFiles,
+			IFindBugsEngine findBugs, boolean include, boolean bugsFilter) {
+		for (String fileName : filterFiles) {
+			IFile file = project.getFile(fileName);
+			if (file.exists()) {
+				String filterName = file.getLocation().toOSString();
+				try {
+					if (bugsFilter) {
+						findBugs.excludeBaselineBugs(filterName);
+					} else {
+						findBugs.addFilter(filterName, include);
+					}
+				} catch (RuntimeException e) {
+					FindbugsPlugin.getDefault().logException(e,
+							"Error while loading filter \"" + filterName + "\".");
+				} catch (DocumentException e) {
+					FindbugsPlugin.getDefault().logException(e,
+							"Error while loading excluded bugs \"" + filterName + "\".");
+				} catch (IOException e) {
+					FindbugsPlugin.getDefault().logException(e,
+							"Error while reading filter \"" + filterName + "\".");
+				}
+			} else {
+				FindbugsPlugin.getDefault().logWarning(
+						"Include filter not found: " + fileName);
 			}
 		}
-		return new String[0];
 	}
 
 	/**
-	 * @return set with IPath objects which represents all known output locations for
-	 * current java project, never null
+	 * @return array with required class directories / libs on the classpath
+	 */
+	private String[] createAuxClasspath() {
+		String[] classPath = new String[0];
+		try {
+			// doesn't return jre libraries
+			classPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e,
+					"Could not compute aux. classpath for project " + javaProject);
+		}
+		return classPath;
+	}
+
+	/**
+	 * @return map of all source folders to output folders, for current java project,
+	 *         where both are represented by absolute IPath objects
+	 *
 	 * @throws CoreException
 	 */
-	private Set<IPath> createOutputLocations() throws CoreException {
-		Set<IPath> set = new HashSet<IPath>();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
+	private Map<IPath, IPath> createOutputLocations() throws CoreException {
 
-		IJavaProject javaProject = JavaCore.create(this.project);
+		Map<IPath, IPath> srcToOutputMap = new HashMap<IPath, IPath>();
+
+		// get the default location => relative to wsp
+		IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject.getOutputLocation());
+
 		// path to the project without project name itself
-
-		if (javaProject.exists() && javaProject.getProject().isOpen()) {
-			IClasspathEntry entries[] = javaProject.getRawClasspath();
-			for (int i = 0; i < entries.length; i++) {
-				IClasspathEntry classpathEntry = entries[i];
-				IPath path = classpathEntry.getOutputLocation();
-				if (path != null && classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+		IClasspathEntry entries[] = javaProject.getResolvedClasspath(true);
+		for (int i = 0; i < entries.length; i++) {
+			IClasspathEntry classpathEntry = entries[i];
+			if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+				IPath outputLocation = classpathEntry.getOutputLocation();
+				if(outputLocation != null) {
 					// this location is workspace relative and starts with project dir
-					IResource resource = root.findMember(path);
-					if (resource != null) {
-						set.add(resource.getLocation());
-					}
+					outputLocation = ResourceUtils.relativeToAbsolute(outputLocation);
+				} else {
+					outputLocation = defaultOutputLocation;
 				}
+				// TODO not clear if it is absolute in workspace or in global FS
+				IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
+				srcToOutputMap.put(srcLocation, outputLocation);
 			}
 		}
 
-		// add the default location
-		IPath def = javaProject.getOutputLocation();
-
-		IResource resource = root.findMember(def);
-		if (resource != null) {
-			IPath location = resource.getLocation();
-			set.add(location);
-		}
-
-		return set;
-	}
-
-	/**
-	 * @param outputLocations
-	 * @param path
-	 * @return true if given path is a child of any one of path objects from given set
-	 */
-	private boolean containsIn(Set<IPath> outputLocations, IPath path){
-		for (IPath dir : outputLocations) {
-			if(dir.isPrefixOf(path)){
-				return true;
-			}
-		}
-		return false;
+		return srcToOutputMap;
 	}
 
 	private void reportFromXml(final String xmlFileName, final Project findBugsProject,
-			final Reporter bugReporter) throws IOException {
-		if (DEBUG) {
-			System.out.println("Loading XML...");
-		}
-		if (!(xmlFileName.equals(""))) {
+			final Reporter bugReporter) {
+		if (!"".equals(xmlFileName)) {
 			try {
 				FileInputStream input = new FileInputStream(xmlFileName);
 				bugReporter.reportBugsFromXml(input, findBugsProject);
@@ -530,6 +509,9 @@ public class FindBugsWorker {
 			} catch (DocumentException e) {
 				FindbugsPlugin.getDefault().logException(e,
 						"Invalid XML file: " + xmlFileName);
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Error loading FindBugs results xml file: "  + xmlFileName);
 			}
 		}
 	}

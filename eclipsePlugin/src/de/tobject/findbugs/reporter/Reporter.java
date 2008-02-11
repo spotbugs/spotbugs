@@ -20,15 +20,12 @@
 
 package de.tobject.findbugs.reporter;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
@@ -54,7 +51,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	/** Controls debugging for the reporter */
 	public static boolean DEBUG;
 
-	private final IProject project;
+	private final IJavaProject project;
 
 	private final IProgressMonitor monitor;
 
@@ -74,15 +71,12 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 * @param project         the project whose classes are being analyzed for bugs
 	 * @param monitor         progress monitor
 	 */
-	public Reporter(IProject project, IProgressMonitor monitor) {
-		if (!Util.isJavaProject(project)) {
-			throw new IllegalArgumentException("Not a Java project");
-		}
+	public Reporter(IJavaProject project, IProgressMonitor monitor) {
 		this.monitor = monitor;
 		this.project = project;
 		this.bugCollection = new SortedBugCollection();
 		try {
-			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
+			this.userPrefs = FindbugsPlugin.getUserPreferences(project.getProject());
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
 			this.userPrefs = UserPreferences.createDefaultUserPreferences();
@@ -125,15 +119,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		return bugCollection;
 	}
 
-	/**
-	 * Returns the current project cast into a Java project.
-	 *
-	 * @return The current project as a Java project.
-	 */
-	public static IJavaProject getJavaProject(IProject project) {
-		return JavaCore.create(project);
-	}
-
 	public void observeClass(ClassDescriptor classDescriptor) {
 		if (monitor.isCanceled()) {
 			// causes break in FindBugs main loop
@@ -160,7 +145,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	@Override
 	public void reportAnalysisError(AnalysisError error) {
-		FindbugsPlugin.getDefault().logWarning(
+		FindbugsPlugin.getDefault().logException(error.getException(),
 				"FindBugs analysis error: " + error.getMessage());
 	}
 

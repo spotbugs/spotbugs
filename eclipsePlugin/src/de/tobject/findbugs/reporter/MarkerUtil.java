@@ -36,7 +36,6 @@ import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IScanner;
@@ -52,7 +51,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -88,7 +86,7 @@ public final class MarkerUtil {
 	 * @param bug     the BugInstance
 	 * @param project the project
 	 */
-	public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
+	public static void createMarker(BugInstance bug, IJavaProject project, BugCollection theCollection) {
 		if (bug == null) {
 			FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
 			return;
@@ -96,15 +94,6 @@ public final class MarkerUtil {
 		if (project == null) {
 			FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
 			return;
-		}
-		try {
-			if (!project.hasNature(JavaCore.NATURE_ID)) {
-				FindbugsPlugin.getDefault().logException(
-						new IllegalArgumentException(), "project isn't Java");
-				return;
-			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
 		}
 		String className = null;
 		String packageName = null;
@@ -148,9 +137,9 @@ public final class MarkerUtil {
 			if(startLine <= 0 && fieldLine > 0) {
 				startLine = fieldLine;
 			}
-			addMarker(bug, project, resource, startLine, theCollection);
+			addMarker(bug, project.getProject(), resource, startLine, theCollection);
 			if(startLine != fieldLine && fieldLine > 0){
-				addMarker(bug, project, resource, startLine, theCollection);
+				addMarker(bug, project.getProject(), resource, startLine, theCollection);
 			}
 
 		} else {
@@ -199,12 +188,8 @@ public final class MarkerUtil {
 	 * @throws JavaModelException
 	 */
 	private static @CheckForNull
-	IResource getUnderlyingResource(BugInstance bug, IProject project,
+	IResource getUnderlyingResource(BugInstance bug, IJavaProject project,
 			SourceLineAnnotation sla) throws JavaModelException {
-
-		if (!Util.isJavaProject(project)) {
-			return null;
-		}
 
 		SourceLineAnnotation primarySourceLineAnnotation;
 		if(sla == null) {
@@ -238,12 +223,11 @@ public final class MarkerUtil {
 		Matcher m = fullName.matcher(qualifiedClassName);
 		IType type;
 		String innerName = null;
-		IJavaProject javaProject = Reporter.getJavaProject(project);
 		if (m.matches() && m.group(2).length() > 0) {
 			String outerQualifiedClassName = m.group(1).replace('$','.');
 			innerName  = m.group(2).substring(1);
-			type = javaProject.findType(outerQualifiedClassName);
-			// dump(type, 0);
+			// second argument is required to find also secondary types
+			type = project.findType(outerQualifiedClassName, (IProgressMonitor)null);
 
 			/*
 			 * code below only points to the first line of inner class
@@ -251,7 +235,8 @@ public final class MarkerUtil {
 			 */
 			completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
 		} else {
-			type =  javaProject.findType(qualifiedClassName.replace('$','.'));
+			// second argument is required to find also secondary types
+			type =  project.findType(qualifiedClassName.replace('$','.'), (IProgressMonitor)null);
 		}
 
 		// reassign it as it may be changed for inner classes
@@ -509,15 +494,13 @@ public final class MarkerUtil {
 	 * Attempt to redisplay FindBugs problem markers for
 	 * given project.
 	 *
-	 * @param project the project
+	 * @param javaProject the project
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
-	public static void redisplayMarkers(final IProject project, Shell shell) {
-		if (!Util.isJavaProject(project)) {
-			throw new IllegalArgumentException("Not a Java project");
-		}
+	public static void redisplayMarkers(final IJavaProject javaProject, Shell shell) {
 
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
+		final IProject project = javaProject.getProject();
 
 		try {
 			progressDialog.run(false, false, new IRunnableWithProgress() {
@@ -527,7 +510,8 @@ public final class MarkerUtil {
 					try {
 						// Get user preferences for project,
 						// so we know what to diplay
-						UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
+						UserPreferences userPrefs = FindbugsPlugin
+								.getUserPreferences(project);
 						// Get the saved bug collection for the project
 						SortedBugCollection bugCollection =
 							FindbugsPlugin.getBugCollection(project, monitor);
@@ -538,7 +522,7 @@ public final class MarkerUtil {
 							for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 								BugInstance bugInstance = i.next();
 								if (displayWarning(bugInstance, userPrefs.getFilterSettings())) {
-									MarkerUtil.createMarker(bugInstance, project, bugCollection);
+									MarkerUtil.createMarker(bugInstance, javaProject, bugCollection);
 								}
 							}
 						}

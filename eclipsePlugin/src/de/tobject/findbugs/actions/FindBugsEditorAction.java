@@ -19,6 +19,11 @@
 
 package de.tobject.findbugs.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
@@ -55,7 +60,10 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
 	@Override
 	public final void run(final IAction action) {
 		if(currentEditor != null) {
-			work(((FileEditorInput)(currentEditor.getEditorInput())).getFile());
+			IFile file = ((FileEditorInput)(currentEditor.getEditorInput())).getFile();
+			List<IResource> list = new ArrayList<IResource>();
+			list.add(file);
+			work(file.getProject(), list);
 		}
 	}
 
