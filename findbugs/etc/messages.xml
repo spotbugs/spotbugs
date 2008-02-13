@@ -1445,7 +1445,7 @@ for more information.</p>
 
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER">
     <ShortDescription>JSP cross site scripting vunerability</ShortDescription>
-    <LongDescription>HTTP parameter directly written to JSP output, giving XSS vunerability in {1}</LongDescription>
+    <LongDescription>HTTP parameter directly written to JSP output, giving XSS vunerability in {1.class}</LongDescription>
 <Details>
 <![CDATA[
 	<p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
