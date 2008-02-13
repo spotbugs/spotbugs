@@ -366,23 +366,27 @@ public class OpcodeStack implements Constants2
 			 setNull(true);
 		 }
 
-		 public JavaClass getJavaClass() throws ClassNotFoundException {
+		 /** Returns null for primitive and arrays */
+		 public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
 			 String baseSig;
+			 try {
 
-			 if (isPrimitive())
+
+			 if (isPrimitive() || isArray())
 				 return null;
 
-			 if (isArray()) {
-				 baseSig = getElementSignature();
-			 } else {
-				 baseSig = signature;
-			 }
+			 
+			baseSig = signature;
 
 			 if (baseSig.length() == 0)
 				 return null;
 			 baseSig = baseSig.substring(1, baseSig.length() - 1);
 			 baseSig = baseSig.replace('/', '.');
 			 return Repository.lookupClass(baseSig);
+			 } catch (RuntimeException e) {
+				 e.printStackTrace();
+				 throw e;
+			 }
 		 }
 
 		 public boolean isArray() {
@@ -2002,10 +2006,15 @@ public void initialize() {
 	 }
 
 	 private void pushByIntMath(DismantleBytecode dbc, int seen, Item lhs, Item rhs) {
-		 if (DEBUG) System.out.println("pushByIntMath: " + rhs.getConstant()  + " " + lhs.getConstant() );
-		 Item newValue  = new Item("I");
+		  Item newValue  = new Item("I");
+		  if (lhs == null || rhs == null) {
+			  push(newValue);
+			  return;
+		  }
+			  
 		 try {
-
+			 if (DEBUG) System.out.println("pushByIntMath: " + rhs.getConstant()  + " " + lhs.getConstant() );
+				
 		if ((rhs.getConstant() != null) && lhs.getConstant() != null) {
 			Integer lhsValue = (Integer) lhs.getConstant();
 			Integer rhsValue = (Integer) rhs.getConstant();
@@ -2055,8 +2064,10 @@ public void initialize() {
 				else if (value >= 0)
 					newValue.specialKind = Item.NON_NEGATIVE;
 			}
-		} catch (RuntimeException e) {
-			String msg = "Error processing " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
+			} catch (ArithmeticException e) {
+				assert true; // ignore it
+			} catch (RuntimeException e) {
+			String msg = "Error processing2 " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
 			AnalysisContext.logError(msg , e);
 			
 		 }
@@ -2233,7 +2244,7 @@ public void initialize() {
 
 	 private Item getLVValue(int index) {
 		 if (index >= lvValues.size())
-			 return null;
+			 return new Item(); 
 
 		 return lvValues.get(index);
 	 }
