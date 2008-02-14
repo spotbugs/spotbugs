@@ -15,11 +15,11 @@ import org.osgi.framework.Bundle;
 public class AnnotationClasspathInitializer extends
 		ClasspathVariableInitializer {
 
-	private final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
-	private final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
+	private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
+	private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-	private final String FINDBUGS_LIBRARY = "/annotations.jar";
-	private final String JSR305_LIBRARY = "/jsr305.jar";
+	private static final String FINDBUGS_LIBRARY = "/annotations.jar";
+	private static final String JSR305_LIBRARY = "/jsr305.jar";
 
 	@Override
 	public void initialize(String variable) {

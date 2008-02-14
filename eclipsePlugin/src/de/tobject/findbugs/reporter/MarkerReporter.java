@@ -42,7 +42,6 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	private IResource resource;
 	private int startLine;
 	private BugCollection collection;
-	private IProject project;
 	private static final boolean EXPERIMENTAL_BUGS = false;
 
 	public MarkerReporter(BugInstance bug, IResource resource, int startLine,
@@ -51,7 +50,6 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		this.bug = bug;
 		this.resource = resource;
 		this.collection = theCollection;
-		this.project = project;
 	}
 
 	public void run(IProgressMonitor monitor) throws CoreException {
