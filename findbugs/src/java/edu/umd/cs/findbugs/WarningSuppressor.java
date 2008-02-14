@@ -8,7 +8,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 abstract public class WarningSuppressor implements Matcher {
 
-	final static boolean DEBUG = false;
+	final static boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
 	String bugPattern;
 
