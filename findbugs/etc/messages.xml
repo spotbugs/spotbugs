@@ -4053,7 +4053,7 @@ be an exception path, since the default case is often infeasible.</p>
     <LongDescription>Possible null pointer dereference of {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> There is a branch of statement that, <em>if executed,/em>  guarantees that
+<p> There is a branch of statement that, <em>if executed,</em>  guarantees that
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
@@ -4068,7 +4068,7 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
     <LongDescription>Possible null pointer dereference of {2.givenClass} on path that might be infeasible in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> There is a branch of statement that, <em>if executed,/em>  guarantees that
+<p> There is a branch of statement that, <em>if executed,</em>  guarantees that
 a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
