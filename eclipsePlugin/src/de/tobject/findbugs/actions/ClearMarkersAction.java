@@ -31,11 +31,14 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.team.internal.core.subscribers.ChangeSet;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.ResourceUtils;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
 
 /**
  * Remove all bug markers for the currently selectedt project.
@@ -98,11 +101,23 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 				public void run(IProgressMonitor pm) throws InvocationTargetException {
 					try {
 						for (Iterator<IAdaptable> it = selection.iterator(); it.hasNext();) {
-                            Object resource = it.next().getAdapter(IResource.class);
+							IAdaptable adaptable = it.next();
+                            Object resource = adaptable.getAdapter(IResource.class);
 							IResource res = (resource instanceof IResource ? (IResource) resource : null);
 							if (res != null) {
 								pm.subTask("Clearing FindBugs markers from " + res.getName());
                                 MarkerUtil.removeMarkers(res);
+							} else {
+								// Support for active changesets
+								ChangeSet set = (ChangeSet) adaptable
+										.getAdapter(ChangeSet.class);
+								for (IResource change : ResourceUtils.getResources(set)) {
+									if (Util.isJavaArtifact(change)) {
+										pm.subTask("Clearing FindBugs markers from "
+												+ change.getName());
+										MarkerUtil.removeMarkers(change);
+									}
+								}
 							}
 						}
 

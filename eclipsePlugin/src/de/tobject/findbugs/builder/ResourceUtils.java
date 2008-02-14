@@ -36,6 +36,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.team.internal.core.subscribers.ChangeSet;
 
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
@@ -44,6 +45,11 @@ import edu.umd.cs.findbugs.Project;
  * @author Andrei
  */
 public class ResourceUtils {
+
+	/**
+	 * Convenience empty array of resources.
+	 */
+	private static final IResource [] EMPTY = new IResource[0];
 
 	private ResourceUtils() {
 		// forbidden
@@ -168,21 +174,57 @@ public class ResourceUtils {
 			Object element = iter.next();
 			IResource resource = getResource(element);
 			if (resource == null) {
+				// Support for active changesets
+				ChangeSet set = (ChangeSet) ((IAdaptable) element)
+						.getAdapter(ChangeSet.class);
+				for (IResource change : getResources(set)) {
+					mapResource(change, projectsMap, true);
+				}
 				continue;
 			}
-			IProject project = resource.getProject();
-			List<IResource> resources = projectsMap.get(project);
-			if (resources == null) {
-				resources = new ArrayList<IResource>();
-				projectsMap.put(project, resources);
-			}
-			// do not need to check for duplicates, cause user cannot select
-			// the same element twice
-			if (!containsParents(resources, resource)) {
-				resources.add(resource);
-			}
+			mapResource(resource, projectsMap, false);
 		}
 		return projectsMap;
+	}
+
+	/**
+	 * Maps the resource into its project
+	 * @param resource
+	 * @param projectsMap
+	 */
+	private static void mapResource(IResource resource, Map<IProject,
+			List<IResource>> projectsMap, boolean checkJavaProject) {
+		if (!Util.isJavaArtifact(resource)) {
+			// Ignore non java files
+			return;
+		}
+		IProject project = resource.getProject();
+		if (checkJavaProject && !Util.isJavaProject(project)) {
+			// non java projects: can happen only for changesets
+			return;
+		}
+		List<IResource> resources = projectsMap.get(project);
+		if (resources == null) {
+			resources = new ArrayList<IResource>();
+			projectsMap.put(project, resources);
+		}
+		// do not need to check for duplicates, cause user cannot select
+		// the same element twice
+		if (!containsParents(resources, resource)) {
+			resources.add(resource);
+		}
+	}
+
+	/**
+	 * Extracts only files from a change set
+	 * @param set
+	 * @return
+	 */
+	public static IResource[] getResources(ChangeSet set) {
+		if (set != null && !set.isEmpty()) {
+			return set.getResources();
+		}
+		return EMPTY;
 	}
 
 	/**

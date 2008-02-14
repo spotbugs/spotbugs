@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode"
+            class="de.tobject.findbugs.adapters.ChangeSetAdapterFactory">
+         <adapter
+               type="org.eclipse.team.internal.core.subscribers.ChangeSet">
+         </adapter>
+      </factory>
+   </extension>
 
      <extension
 		 point="org.eclipse.ui.propertyPages">
@@ -332,6 +342,33 @@
 			   menubarPath="findbugs/additions"
 			   tooltip="%menu.findBugsPopup"/>
 	  </viewerContribution>
+   <objectContribution
+         adaptable="true"
+         id="de.tobject.findbugs.ActiveChangeSetActions"
+         objectClass="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode">
+      <action
+            class="de.tobject.findbugs.actions.FindBugsAction"
+            enablesFor="1"
+            icon="icons/runFindbugs.png"
+            id="de.tobject.findbugs.findBugs"
+            label="&amp;Find Bugs"
+            menubarPath="additions"
+            tooltip="%menu.findBugsPopup">
+      </action>
+      <action
+            class="de.tobject.findbugs.actions.ClearMarkersAction"
+            enablesFor="1"
+            id="de.tobject.findbugs.removeMarkers"
+            label="%menu.clearMarkers"
+            menubarPath="additions"
+            tooltip="%menu.clearMarkersPopup">
+      </action>
+      <enablement>
+         	<adapt type="org.eclipse.team.internal.core.subscribers.ChangeSet">
+         		<instanceof value="org.eclipse.team.internal.core.subscribers.ActiveChangeSet"/>
+         	</adapt>
+      </enablement>
+   </objectContribution>
    </extension>
 
 	<!-- Details view -->
