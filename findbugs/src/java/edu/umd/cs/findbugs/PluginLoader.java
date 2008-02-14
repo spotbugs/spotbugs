@@ -65,7 +65,7 @@ public class PluginLoader {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
 	// ClassLoader used to load classes and resources
-	private ClassLoader classLoader;
+	private URLClassLoader classLoader;
 	
 	// Keep a count of how many plugins we've seen without a
 	// "pluginid" attribute, so we can assign them all unique ids.
@@ -112,6 +112,25 @@ public class PluginLoader {
 			init();
 		return plugin;
 	}
+	
+	/**
+	 * Get a resource using the URLClassLoader classLoader.  We try
+	 * findResource first because (based on experiment) we can trust it
+	 * to prefer resources in the jarfile to resources on the
+	 * filesystem.  Simply calling classLoader.getResource() allows the
+	 * filesystem to override the jarfile, which can mess things up if,
+	 * for example, there is a findbugs.xml or messages.xml in the
+	 * current directory. 
+	 * @param name resource to get
+	 * @return URL for the resource, or null if it could not be found
+	 */
+	private URL getResource(String name) {
+		URL url = classLoader.findResource(name);
+		if(url == null) {
+			url = classLoader.getResource(name);
+		}
+		return url;
+	}
 
 	private void init() throws PluginException {
 		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
@@ -125,15 +144,20 @@ public class PluginLoader {
 		ArrayList<Document> messageCollectionList = new ArrayList<Document>();
 
 		// Read the plugin descriptor
+		String name = "findbugs.xml";
 		try {
-			URL descriptorURL = classLoader.getResource("findbugs.xml");
+			URL descriptorURL = getResource(name);
 			if (descriptorURL == null)
-				throw new PluginException("Couldn't find \"findbugs.xml\" in plugin");
+				throw new PluginException("Couldn't find \"" + name + "\" in plugin");
+			
+			if(DEBUG) {
+				System.out.println("PluginLoader found " + name + " at: " + descriptorURL);
+			}
 
 			SAXReader reader = new SAXReader();
 			pluginDescriptor = reader.read(descriptorURL);
 		} catch (DocumentException e) {
-			throw new PluginException("Couldn't parse \"findbugs.xml\"", e);
+			throw new PluginException("Couldn't parse \"" + name + "\"", e);
 		}
 
 		// Get the unique plugin id (or generate one, if none is present)
@@ -463,7 +487,7 @@ public class PluginLoader {
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
 			throws DocumentException {
-		URL messageURL = classLoader.getResource(filename);
+		URL messageURL = getResource(filename);
 		if (messageURL != null) {
 			SAXReader reader = new SAXReader();
 			Document messageCollection = reader.read(messageURL);
