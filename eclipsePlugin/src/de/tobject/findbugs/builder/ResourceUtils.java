@@ -194,7 +194,7 @@ public class ResourceUtils {
 	 */
 	private static void mapResource(IResource resource, Map<IProject,
 			List<IResource>> projectsMap, boolean checkJavaProject) {
-		if (!Util.isJavaArtifact(resource)) {
+		if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)) {
 			// Ignore non java files
 			return;
 		}
