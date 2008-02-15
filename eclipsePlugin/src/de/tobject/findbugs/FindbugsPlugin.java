@@ -644,9 +644,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (!userPrefsFile.exists()) {
 			return null;
 		}
-
 		try {
-			InputStream in = userPrefsFile.getContents();
+			// force is preventing us for out-of-sync exception if file was changed externally
+			InputStream in = userPrefsFile.getContents(true);
 			UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 			userPrefs.read(in);
 			return userPrefs;
