@@ -291,14 +291,17 @@ public class DetailsView extends AbstractFindbugsView {
 	private void setContent(BugPattern pattern, BugInstance theBug,
 			String priorityTypeString, IMarker marker) {
 		this.marker = marker;
+		String abbrev = null;
 		if (pattern != null) {
 			String shortDescription = pattern.getShortDescription();
 			String detailText = pattern.getDetailText();
-			title = (shortDescription == null) ? "" : shortDescription.trim();
+			abbrev = "[" + pattern.getAbbrev() + "] ";
+			title = (shortDescription == null) ? abbrev : abbrev + shortDescription.trim();
 			description = (detailText == null) ? "" : detailText.trim();
 		} else {
 			title = "";
 			description = "";
+			abbrev = "";
 		}
 		this.theBug = theBug;
 		this.file = (IFile) (marker.getResource() instanceof IFile ? marker
@@ -307,7 +310,8 @@ public class DetailsView extends AbstractFindbugsView {
 			FindbugsPlugin.getDefault().logError(
 					"Could not find file for " + theBug.getMessage());
 		}
-		setContentDescription(priorityTypeString);
+		setContentDescription(abbrev + priorityTypeString);
+		setTitleToolTip(getTitle());
 		showAnnotations(theBug);
 		updateDisplay();
 		IViewPart viewPart = getSite().getPage()
