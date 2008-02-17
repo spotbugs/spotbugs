@@ -1,4 +1,5 @@
 Release 1.3.2 - FindBugs team
+- new feature: added (experimental) Bug explorer view, based on Common Navigator framework (Andrei Loskutov)
 - new feature: bug counts decorators for projects, folders and files (has to be activated 
   via Preferences -> general -> appearance -> label decorations)(Andrei Loskutov)
 - patch 1746499: better icons (Alessandro Nistico)

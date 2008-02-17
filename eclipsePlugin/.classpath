@@ -12,5 +12,5 @@
 	<classpathentry kind="lib" path="asm-3.0.jar"/>
 	<classpathentry kind="lib" path="asm-tree-3.0.jar"/>
 	<classpathentry kind="lib" path="jsr305.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="bin_eclipse"/>
 </classpath>

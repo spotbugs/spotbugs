@@ -402,11 +402,27 @@
    <extension
 		 point="org.eclipse.ui.ide.markerImageProviders">
 	  <imageprovider
-			markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
-			icon="icons/bugAnnotation.gif"
-			id="de.tobject.findbugs.imageprovider">
+         icon="icons/buggy-tiny.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh">
+	  </imageprovider>
+	  <imageprovider
+         icon="icons/buggy-tiny-orange.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
+	  </imageprovider>
+	  <imageprovider
+         icon="icons/buggy-tiny-yellow.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
+	  </imageprovider>
+	  <imageprovider
+         icon="icons/buggy-tiny-green.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental">
 	  </imageprovider>
    </extension>
+   
    <extension
 		 point="org.eclipse.jdt.core.classpathVariableInitializer">
 	  <classpathVariableInitializer
@@ -463,7 +479,7 @@
 	  </perspectiveExtension>
    </extension>
    
-   <!-- experimental code for new bug explorer view 
+   <!-- experimental code for new bug explorer view --> 
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -491,6 +507,42 @@
                             type="org.eclipse.core.resources.IResource" >
                     </adapt>
             </triggerPoints>
+         <commonSorter
+               class="de.tobject.findbugs.view.explorer.BugPrioritySorter"
+               id="de.tobject.findbugs.view.explorer.BugPrioritySorter">
+            <parentExpression>
+               <or>
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                  </adapt>
+                  <adapt
+                        type="de.tobject.findbugs.view.explorer.BugPatternGroup">
+                  </adapt>
+                  <adapt
+                        type="org.eclipse.core.resources.IMarker">
+                  </adapt>
+               </or></parentExpression>
+         </commonSorter>
+         <actionProvider
+               class="de.tobject.findbugs.view.explorer.BugActionProvider"
+               id="de.tobject.findbugs.view.explorer.BugActionProvider">
+            <enablement>
+               <adapt
+                     type="org.eclipse.core.resources.IMarker">
+               </adapt>
+            </enablement>
+         </actionProvider>
+         <possibleChildren>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IMarker">
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+               </adapt>
+            </or>
+         </possibleChildren>
+             
 
       </navigatorContent>
    </extension>
@@ -512,12 +564,12 @@
       <viewerActionBinding
             viewerId="de.tobject.findbugs.view.bugexplorer">
          <includes>
-            <actionExtension
-                  pattern="de.tobject.findbugs.*">
-            </actionExtension>
+            <actionExtension pattern="de.tobject.findbugs.*" />
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
+            <actionExtension pattern="org.eclipse.jdt.*" />
          </includes>
       </viewerActionBinding>
-   </extension> --> 
+   </extension> 
    
    <!-- decorates any resource with bug counts (has to be activated via 
     Preferences -> general -> appearance -> label decorations)-->

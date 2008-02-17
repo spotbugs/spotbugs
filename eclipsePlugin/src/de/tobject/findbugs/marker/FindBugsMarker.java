@@ -21,13 +21,13 @@
 package de.tobject.findbugs.marker;
 
 /**
- * Marker for the findbugs plug-in.
+ * Marker ids for the findbugs.
  *
  * @author Peter Friese
  * @version 1.0
  * @since 13.08.2003
  */
-public class FindBugsMarker {
+public interface FindBugsMarker {
 	/**
 	 * Marker type for FindBugs warnings.
 	 * (should be the plugin id concatenated with ".findbugsMarker")
@@ -62,4 +62,28 @@ public class FindBugsMarker {
 	 * Marker attribute recording the "group" of the bug (e.g. "Unread field")
 	 */
 	public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
+
+	enum Priority {
+		High(NAME_HIGH),
+		Normal(NAME_NORMAL),
+		Low(NAME_LOW),
+		Experimental(NAME_EXPERIMENTAL);
+
+		private final String prioName;
+
+		Priority(String prioName){
+			this.prioName = prioName;
+		}
+
+		public static int ordinal(String prioId) {
+			Priority[] values = Priority.values();
+			for (Priority priority : values) {
+				if(priority.prioName.equals(prioId)) {
+					return priority.ordinal();
+				}
+			}
+			return -1;
+		}
+
+	}
 }
