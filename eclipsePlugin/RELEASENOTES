@@ -1,4 +1,6 @@
 Release 1.3.2 - FindBugs team
+- new feature: bug counts decorators for projects, folders and files (has to be activated 
+  via Preferences -> general -> appearance -> label decorations)(Andrei Loskutov)
 - patch 1746499: better icons (Alessandro Nistico)
 - patch 1893685: Find bug actions on change sets bug (Alessandro Nistico)
 - fixed bug 1855384: Bug configuration is broken in Eclipse (Andrei Loskutov)

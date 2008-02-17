@@ -34,6 +34,8 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.jdt,
  org.eclipse.team.core,
  org.eclipse.compare,
- org.eclipse.team.ui
+ org.eclipse.team.ui,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.navigator.resources
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
