@@ -32,6 +32,8 @@ import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Unknown;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Subclass of PreorderVisitor that visits annotations
  * on classes, fields, methods, and method parameters.
@@ -56,7 +58,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 	 * 
 	 */
 	private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
-	static final boolean DEBUG = false;
+	static final boolean DEBUG = SystemProperties.getBoolean("annotation.visitor");
 
 	/**
 	 * Visit annotation on a class, field or method
@@ -96,7 +98,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 	}
 
 	@Override
-		 public void visit(Unknown obj) {
+	public void visit(Unknown obj) {
 		try {
 
 				String name = obj.getName();
