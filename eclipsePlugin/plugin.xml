@@ -391,12 +391,14 @@
 			icon="icons/annotationsView.png"
 			id="de.tobject.findbugs.view.userannotationsview"
 			name="Bug User Annotations"/>
+	  <!-- deprecated 
+	  
 	  <view
 			category="de.tobject.findbugs.view.findBugsCategory"
 			class="de.tobject.findbugs.view.BugTreeView"
 			icon="icons/treeView.png"
 			id="de.tobject.findbugs.view.bugtreeview"
-			name="Bug Tree View"/>
+			name="Bug Tree View"/> -->
    </extension>
 
    <extension
@@ -486,7 +488,7 @@
          category="de.tobject.findbugs.view.findBugsCategory"
          class="org.eclipse.ui.navigator.CommonNavigator"
          icon="icons/treeView.png"
-         id="de.tobject.findbugs.view.bugexplorer"
+         id="de.tobject.findbugs.view.bugtreeview"
          name="Bug Explorer">
      </view>
    </extension>
@@ -542,32 +544,89 @@
                </adapt>
             </or>
          </possibleChildren>
-             
 
       </navigatorContent>
+      
+      <commonFilter
+            activeByDefault="true"
+            class="de.tobject.findbugs.view.explorer.ZeroBugsFilter"
+            description="Projects with bug-free code"
+            id="de.tobject.findbugs.view.explorer.zeroBugsFilter"
+            name="Projects without bugs">      
+      </commonFilter>
+      
+      <commonFilter
+            id="de.tobject.findbugs.view.explorer.closedProject"
+            name="Closed projects"
+            description="Closed projects" 
+            activeByDefault="true">
+         <filterExpression>
+            <and>
+                <instanceof value="org.eclipse.core.resources.IProject"/>
+                <test property="org.eclipse.core.resources.open" value="false"/>                
+            </and>
+         </filterExpression>
+      </commonFilter> 
+      
+      <commonFilter 
+            name="Non-Java projects"
+            description="Non-Java projects"
+            id="de.tobject.findbugs.view.explorer.NonJavaProjects"
+            activeByDefault="true">
+         <filterExpression>
+            <and>
+                <instanceof value="org.eclipse.core.resources.IProject"/>
+                <or>
+                    <test property="org.eclipse.core.resources.open" value="false"/>
+                    <not>
+                        <test property="org.eclipse.core.resources.projectNature" 
+                            value="org.eclipse.jdt.core.javanature" />
+                    </not>
+                </or>                
+            </and>
+         </filterExpression>
+             
+       </commonFilter>
    </extension>
    
    <extension
          point="org.eclipse.ui.navigator.viewer">
       <viewer
-            viewerId="de.tobject.findbugs.view.bugexplorer">
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <options>
+            <property
+                  name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
+                  value="true">
+            </property>
+         </options>
       </viewer>
       <viewerContentBinding
-            viewerId="de.tobject.findbugs.view.bugexplorer">
+            viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
             <contentExtension
                   isRoot="true"
                   pattern="de.tobject.findbugs.*">
             </contentExtension>
+            <!-- <contentExtension pattern="org.eclipse.ui.navigator.resources.*" />
+            <contentExtension pattern="org.eclipse.jdt.*" /> -->
          </includes>
       </viewerContentBinding>
+      
       <viewerActionBinding
-            viewerId="de.tobject.findbugs.view.bugexplorer">
+            viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
             <actionExtension pattern="de.tobject.findbugs.*" />
-            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
-            <actionExtension pattern="org.eclipse.jdt.*" />
          </includes>
+      </viewerActionBinding>
+      
+      <viewerActionBinding
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <includes>
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
+         </includes>
+         <excludes>
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.WorkingSetActions" />
+         </excludes>
       </viewerActionBinding>
    </extension> 
    
@@ -622,5 +681,22 @@
             Decorates java files with bug counts
          </description>
       </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="findBugsEclipsePlugin.viewContribution1"
+            targetID="de.tobject.findbugs.view.bugtreeview">
+         <action
+               class="de.tobject.findbugs.actions.RefreshAction"
+               icon="icons/refresh.gif"
+               id="findBugsEclipsePlugin.action1"
+               label="Refresh"
+               menubarPath="additions"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Refresh explorer content">
+         </action>
+      </viewContribution>
    </extension>
 </plugin>

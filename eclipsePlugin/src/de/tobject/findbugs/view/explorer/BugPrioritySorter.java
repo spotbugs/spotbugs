@@ -1,3 +1,21 @@
+/*
+ * Contributions to FindBugs
+ * Copyright (C) 2008, Andrei Loskutov
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package de.tobject.findbugs.view.explorer;
 
 import java.text.Collator;
@@ -33,26 +51,47 @@ public class BugPrioritySorter extends ViewerSorter {
         if(e1 instanceof IMarker) {
 			IMarker marker1 = (IMarker) e1;
 			IMarker marker2 = (IMarker) e2;
-			return compare(viewer, marker1, marker2);
+			return compare(marker1, marker2, true);
         }
 
+        // Sorts groups on priority first, then on group name
         if(e1 instanceof BugPatternGroup) {
-        	IMarker marker1 = ((BugPatternGroup)e1).getFirstElement();
-        	IMarker marker2 = ((BugPatternGroup)e2).getFirstElement();
-        	return compare(viewer, marker1, marker2);
+        	BugPatternGroup group1 = (BugPatternGroup)e1;
+        	BugPatternGroup group2 = (BugPatternGroup)e2;
+			IMarker marker1 = group1.getFirstElement();
+			IMarker marker2 = group2.getFirstElement();
+        	int result = compare(marker1, marker2, false);
+        	if (result == 0) {
+				return group1.getShortPatternDescription().compareTo(
+						group2.getShortPatternDescription());
+			}
+			return result;
         }
         return super.compare(viewer, e1, e2);
     }
 
-	private int compare(Viewer viewer, IMarker marker1, IMarker marker2) {
+    /**
+     * Sorts markers on priority first, then on name if requested
+     * @param marker1
+     * @param marker2
+     * @param compareNames
+     * @return
+     */
+	private int compare(IMarker marker1, IMarker marker2, boolean compareNames) {
 		try {
 			int ordinal1 = FindBugsMarker.Priority.ordinal(marker1.getType());
 			int ordinal2 = FindBugsMarker.Priority.ordinal(marker2.getType());
-			return ordinal1 - ordinal2;
+			int result = ordinal1 - ordinal2;
+			if(compareNames && result == 0) {
+				String a1 = marker1.getAttribute(IMarker.MESSAGE, "");
+				String a2 = marker1.getAttribute(IMarker.MESSAGE, "");
+				return a1.compareTo(a2);
+			}
+			return result;
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Sort error");
 		}
-		return super.compare(viewer, marker1, marker2);
+		return 0;
 	}
 
     /* (non-Javadoc)
