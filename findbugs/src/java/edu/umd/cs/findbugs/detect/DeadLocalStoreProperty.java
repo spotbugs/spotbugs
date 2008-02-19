@@ -13,6 +13,10 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 		super(name, priorityAdjustment);
 	}
 
+	/** A store in a JSP page */
+	public static final DeadLocalStoreProperty IN_JSP_PAGE = new DeadLocalStoreProperty(
+			"IN_JSP_PAGE", PriorityAdjustment.FALSE_POSITIVE);
+
 	/** A store that seemed to have been cloned (an inlined finally block or JSR? */
 	public static final DeadLocalStoreProperty CLONED_STORE = new DeadLocalStoreProperty(
 			"CLONED_STORE", PriorityAdjustment.FALSE_POSITIVE);

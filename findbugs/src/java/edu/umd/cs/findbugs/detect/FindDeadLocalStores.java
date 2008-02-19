@@ -446,6 +446,9 @@ public class FindDeadLocalStores implements Detector {
 						pc).size();
 				if (occurrences > 2 || sourceLineAnnotation.getStartLine() > 0 && linesMentionedMultipleTimes.get(sourceLineAnnotation.getStartLine()))
 					propertySet.addProperty(DeadLocalStoreProperty.CLONED_STORE);
+				if (javaClass.getClassName().endsWith("_jsp"))
+					propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
+					
 				
 				int priority = propertySet.computePriority(NORMAL_PRIORITY);
 				if (priority <= Detector.EXP_PRIORITY) {
