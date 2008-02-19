@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ClassParserUsingASM implements ClassParserInterface {
 
-	
+
 	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
 	static {
 		RETURN_OPCODE_SET.set(Constants.ARETURN);
@@ -63,15 +63,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 		RETURN_OPCODE_SET.set(Constants.RETURN);
 	}
 
-	
+
 	private final ClassReader  classReader;
 	private @SlashedClassName String slashedClassName;
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
 	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL };
-	
-	
-	
+
+
+
 
 	public ClassParserUsingASM(ClassReader classReader,
 			@CheckForNull ClassDescriptor expectedClassDescriptor,
@@ -92,7 +92,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 		classReader.accept(new ClassVisitor(){
 
 			boolean isInnerClass = false;
-			
+
 			public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)  {
 				ClassParserUsingASM.this.slashedClassName = name;
 				cBuilder.setClassfileVersion(version>>>16, version & 0xffff);
@@ -109,7 +109,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				if (cBuilder instanceof ClassInfo.Builder) {
 					AnnotationValue value = new AnnotationValue(desc);
 					((ClassInfo.Builder)cBuilder).addAnnotation(desc, value);
-					return value.getAnnotationVisitor();	
+					return value.getAnnotationVisitor();
 				}
 				return null;
 			}
@@ -158,13 +158,13 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				}
 
 			}
-			
+
 			public MethodVisitor visitMethod(final int access, final String methodName, final String methodDesc, String signature, String[] exceptions) {
 				if (cBuilder instanceof ClassInfo.Builder) {
 					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
 					mBuilder.setSourceSignature(signature);
 					mBuilder.setThrownExceptions(exceptions);
-					
+
 					return new AbstractMethodVisitor(){
 
 						int variable;
@@ -173,15 +173,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						boolean sawSystemExit = false;
 						boolean sawBranch = false;
 						State state = State.INITIAL;
-						
-						
+
+
 						@Override
 						public void visitInsn(int opcode) {
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
 							else if (opcode == Opcodes.ATHROW) sawThrow = true;
 							resetState();
 						}
-						
+
 						public void resetState() {
 							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
 						}
@@ -208,10 +208,10 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			                    String owner,
 			                    String name,
 			                    String desc) {
-							if (false && state == State.VARIABLE_LOADED && methodName.equals("<init>") 
+							if (false && state == State.VARIABLE_LOADED && methodName.equals("<init>")
 									&& owner.equals(slashedClassName) && name.indexOf('$') >= 0) {
-								
-						
+
+
 								System.out.println("Parameter " + (variable-1) + " to new " + slashedClassName + methodDesc +  " is synthetic");
 							}
 							}
@@ -224,6 +224,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 							if (opcode == Opcodes.INVOKEINTERFACE) return;
+							if(owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
+								// primitive array
+								return;
+							}
+							owner = ClassName.fromSignature(owner);
 							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit"))
 								sawSystemExit = true;
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
@@ -250,7 +255,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
 								boolean visible) {
 							if (false)
-								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); ) 
+								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); )
 								System.out.println("   " + i.next());
 							AnnotationValue value = new AnnotationValue(desc);
 							if (isInnerClass && methodName.equals("<init>")) {
@@ -266,7 +271,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			}
 
 			public void visitOuterClass(String owner, String name, String desc) {
-				
+
 			}
 
 			public void visitSource(String arg0, String arg1) {
@@ -289,7 +294,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			int size;
 			switch (tag) {
 			case Constants.CONSTANT_Methodref:
-			case Constants.CONSTANT_InterfaceMethodref:   
+			case Constants.CONSTANT_InterfaceMethodref:
 			case Constants.CONSTANT_Fieldref:
 			case Constants.CONSTANT_Integer:
 			case Constants.CONSTANT_Float:

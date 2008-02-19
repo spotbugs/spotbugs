@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -37,11 +37,11 @@ import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Factory for creating ClassDescriptors, MethodDescriptors, and FieldDescriptors.
- * 
+ *
  * @author David Hovemeyer
  */
 public class DescriptorFactory {
-	private static ThreadLocal<DescriptorFactory> instance = 
+	private static ThreadLocal<DescriptorFactory> instance =
 		new ThreadLocal<DescriptorFactory>() {
 		@Override
         protected
@@ -49,11 +49,11 @@ public class DescriptorFactory {
 			return  new DescriptorFactory();
 		}
 	};
-	
+
 	private Map<String, ClassDescriptor> classDescriptorMap;
 	private Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
 	private Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
-	
+
 	private DescriptorFactory() {
 		this.classDescriptorMap = new HashMap<String, ClassDescriptor>();
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
@@ -70,29 +70,29 @@ public class DescriptorFactory {
 	}
 
 	/**
-	 * Get the singleton instance of the DescriptorFactory. 
-	 * 
+	 * Get the singleton instance of the DescriptorFactory.
+	 *
 	 * @return the singleton instance of the DescriptorFactory
 	 */
 	public static DescriptorFactory instance() {
 		return instance.get();
 	}
-	
+
 	public static void clearInstance() {
 		instance.remove();
 	}
-	
+
 	public Collection<ClassDescriptor> getAllClassDescriptors() {
 		return classDescriptorMap.values();
 	}
-	
+
 	public void purge(Collection<ClassDescriptor> unusable) {
 		for(ClassDescriptor c : unusable)
 		 classDescriptorMap.remove(c.getClassName());
 	}
 	/**
 	 * Get a ClassDescriptor for a class name in VM (slashed) format.
-	 * 
+	 *
 	 * @param className a class name in VM (slashed) format
 	 * @return ClassDescriptor for that class
 	 */
@@ -106,10 +106,10 @@ public class DescriptorFactory {
 		}
 		return classDescriptor;
 	}
-	
+
 	/**
 	 * Get a ClassDescriptor for a class name in dotted format.
-	 * 
+	 *
 	 * @param className a class name in dotted format
 	 * @return ClassDescriptor for that class
 	 */
@@ -120,10 +120,10 @@ public class DescriptorFactory {
 	public MethodDescriptor getMethodDescriptor(JavaClass jClass, Method method) {
 		return getMethodDescriptor(ClassName.toSlashedClassName(jClass.getClassName()), method.getName(), method.getSignature(), method.isStatic());
 	}
-		
+
 	/**
 	 * Get a MethodDescriptor.
-	 * 
+	 *
 	 * @param className       name of the class containing the method, in VM format (e.g., "java/lang/String")
 	 * @param methodName      name of the method
 	 * @param methodSignature signature of the method
@@ -154,7 +154,7 @@ public class DescriptorFactory {
 			if (e.getValue() instanceof MethodInfo) values++;
 		}
 		System.out.printf("Descriptor factory: %d/%d/%d\n", keys, values, total);
-		
+
 	}
 	public void canonicalize(MethodDescriptor m) {
 		MethodDescriptor existing = methodDescriptorMap.get(m);
@@ -162,7 +162,7 @@ public class DescriptorFactory {
 			methodDescriptorMap.remove(m);
 			methodDescriptorMap.put(m, m);
 		}
-		
+
 	}
 	public void canonicalize(FieldDescriptor m) {
 		FieldDescriptor existing = fieldDescriptorMap.get(m);
@@ -170,14 +170,14 @@ public class DescriptorFactory {
 			fieldDescriptorMap.remove(m);
 			fieldDescriptorMap.put(m, m);
 		}
-		
+
 	}
 	public MethodDescriptor getMethodDescriptor(MethodAnnotation ma) {
 		return getMethodDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
 	}
 	/**
 	 * Get a FieldDescriptor.
-	 * 
+	 *
 	 * @param className      the name of the class the field belongs to, in VM format (e.g., "java/lang/String")
 	 * @param fieldName      the name of the field
 	 * @param fieldSignature the field signature (type)
@@ -202,7 +202,7 @@ public class DescriptorFactory {
 
 	/**
      * Create a class descriptor from a resource name.
-     * 
+     *
      * @param resourceName the resource name
      * @return the class descriptor
      */
@@ -215,7 +215,7 @@ public class DescriptorFactory {
 
 	/**
      * Create a class descriptor from a field signature
-     * 
+     *
      */
     public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
     	int start = signature.indexOf('L');
@@ -231,7 +231,7 @@ public class DescriptorFactory {
 
 	/**
      * Determine whether or not the given resource name refers to a class.
-     * 
+     *
      * @param resourceName the resource name
      * @return true if the resource is a class, false otherwise
      */
@@ -250,12 +250,13 @@ public class DescriptorFactory {
     }
 
 	public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+		className = ClassName.fromSignature(className);
     	return instance().getClassDescriptor(className);
     }
 
 	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
     	ClassDescriptor[] result = new ClassDescriptor[classNames.length];
-    	for(int i = 0; i < classNames.length; i++) 
+    	for(int i = 0; i < classNames.length; i++)
     		result[i] = createClassDescriptor(classNames[i]);
         return result;
     }
