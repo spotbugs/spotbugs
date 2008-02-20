@@ -124,8 +124,6 @@ public class DetailsView extends AbstractFindbugsView {
 		annotationList = new List(sash, SWT.V_SCROLL | SWT.H_SCROLL
 				| SWT.BORDER);
 		annotationList.setFont(JFaceResources.getDialogFont());
-		annotationList
-				.setToolTipText("Additional information about the selected bug");
 		annotationList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evnt) {
@@ -140,7 +138,6 @@ public class DetailsView extends AbstractFindbugsView {
 		});
 		try {
 			browser = new Browser(sash, SWT.NONE | SWT.BORDER);
-			browser.setToolTipText("Description of the selected bug");
 		} catch (SWTError e) {
 			htmlControl = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
 					| SWT.V_SCROLL | SWT.BORDER);
