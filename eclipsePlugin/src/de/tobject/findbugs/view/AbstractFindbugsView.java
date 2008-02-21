@@ -178,9 +178,7 @@ public abstract class AbstractFindbugsView extends ViewPart {
 		if(!(this instanceof UserAnnotationsView)) {
 			manager.add(actionShowAnnotationsView);
 		}
-		if(!(this instanceof BugTreeView)) {
-			manager.add(actionShowBugTreeView);
-		}
+		manager.add(actionShowBugTreeView);
 		if(!(this instanceof DetailsView)) {
 			manager.add(actionShowDetailsView);
 		}
@@ -198,9 +196,7 @@ public abstract class AbstractFindbugsView extends ViewPart {
 		if(!(this instanceof UserAnnotationsView)) {
 			manager.add(actionShowAnnotationsView);
 		}
-		if(!(this instanceof BugTreeView)) {
-			manager.add(actionShowBugTreeView);
-		}
+		manager.add(actionShowBugTreeView);
 		if(!(this instanceof DetailsView)) {
 			manager.add(actionShowDetailsView);
 		}

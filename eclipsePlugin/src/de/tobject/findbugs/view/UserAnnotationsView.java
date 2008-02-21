@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IViewPart;
@@ -155,9 +154,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 						.getFirstElement();
 				if (elt instanceof IMarker) {
 					theMarker = (IMarker) elt;
-				} else if (elt instanceof TreeItem) {
-					theMarker = BugTreeView
-							.getMarkerForTreeItem((TreeItem) elt);
 				}
 				if (theMarker != null) {
 					selectMarker(theMarker);

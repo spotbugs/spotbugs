@@ -46,7 +46,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -182,9 +181,6 @@ public class DetailsView extends AbstractFindbugsView {
 						.getFirstElement();
 				if (elt instanceof IMarker) {
 					theMarker = (IMarker) elt;
-				} else if (elt instanceof TreeItem) {
-					theMarker = BugTreeView
-							.getMarkerForTreeItem((TreeItem) elt);
 				}
 				if (theMarker != null) {
 					selectMarker(theMarker);
@@ -293,7 +289,7 @@ public class DetailsView extends AbstractFindbugsView {
 			String shortDescription = pattern.getShortDescription();
 			String detailText = pattern.getDetailText();
 			abbrev = "[" + pattern.getAbbrev() + "] ";
-			title = (shortDescription == null) ? abbrev : abbrev + shortDescription.trim();
+			title = (shortDescription == null) ? abbrev : abbrev + shortDescription.trim() + " [" + pattern.getType() + "]";
 			description = (detailText == null) ? "" : detailText.trim();
 		} else {
 			title = "";
