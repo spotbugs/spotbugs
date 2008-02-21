@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 
@@ -34,18 +35,24 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class CrossSiteScripting extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
+
 	BugAccumulator accumulator;
-	
+
 	public CrossSiteScripting(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		accumulator = new BugAccumulator(bugReporter);
 	}
 
+	Map<String, OpcodeStack.Item> map = new HashMap<String, OpcodeStack.Item>();
+
+	OpcodeStack.Item top = null;
+
 	@Override
 	public void visit(Code code) {
 		super.visit(code);
+		map.clear();
 		accumulator.reportAccumulatedBugs();
-		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -54,40 +61,68 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen != INVOKEVIRTUAL) {
-			return;
-		}
-		String calledClassName = getClassConstantOperand();
-		String calledMethodName = getNameConstantOperand();
-		String calledMethodSig = getSigConstantOperand();
-		// System.out.println(calledClassName + "." + calledMethodName);
-		if (calledMethodName.startsWith("print") && calledClassName.equals("javax/servlet/jsp/JspWriter")
-		        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
-			OpcodeStack.Item writing = stack.getStackItem(0);
-			XMethod method = writing.getReturnValueOf();
-			if (method != null) {
-				if (method.getName().equals("getParameter")
-				        && method.getClassName().equals("javax.servlet.http.HttpServletRequest"))
-					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", Priorities.HIGH_PRIORITY)
-			        .addClassAndMethod(this), this);
+		if (seen == INVOKEINTERFACE) {
+			String calledClassName = getClassConstantOperand();
+			String calledMethodName = getNameConstantOperand();
+			String calledMethodSig = getSigConstantOperand();
+			if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("setAttribute")) {
+				OpcodeStack.Item value = stack.getStackItem(0);
+				OpcodeStack.Item name = stack.getStackItem(1);
+				Object nameConstant = name.getConstant();
+				if (nameConstant instanceof String)
+					map.put((String) nameConstant, value);
+			} else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("getAttribute")) {
+				OpcodeStack.Item name = stack.getStackItem(0);
+				Object nameConstant = name.getConstant();
+				if (nameConstant instanceof String)
+					top = map.get((String) nameConstant);
+			} else 
+				top = null;
+		} else if (seen == INVOKEVIRTUAL) {
+			String calledClassName = getClassConstantOperand();
+			String calledMethodName = getNameConstantOperand();
+			String calledMethodSig = getSigConstantOperand();
+			// System.out.println(calledClassName + "." + calledMethodName);
+			if (calledMethodName.startsWith("print") && calledClassName.equals("javax/servlet/jsp/JspWriter")
+			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
+				OpcodeStack.Item writing = stack.getStackItem(0);
+				XMethod method = writing.getReturnValueOf();
+				if (isTainted(writing)) 
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
+					        Priorities.HIGH_PRIORITY).addClassAndMethod(this), this);
+					
+				else if (isTainted(top))
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
+					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
+			} else if (calledMethodName.startsWith("print") && calledClassName.equals("java/io/PrintWriter")
+			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
+				OpcodeStack.Item writing = stack.getStackItem(0);
+				OpcodeStack.Item writingTo = stack.getStackItem(1);
+				if (isTainted(writing) && isServletWriter(writingTo)) 
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
+					        Priorities.HIGH_PRIORITY).addClassAndMethod(this), this);
+				else if (isTainted(top) && isServletWriter(writingTo)) 
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
+					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
+	
 			}
-		} else if (calledMethodName.startsWith("print") && calledClassName.equals("java/io/PrintWriter")
-		        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
-			OpcodeStack.Item writing = stack.getStackItem(0);
-			OpcodeStack.Item writingTo = stack.getStackItem(1);
-			XMethod writingSource = writing.getReturnValueOf();
-			XMethod writingToSource = writingTo.getReturnValueOf();
-			if (writingSource != null && writingToSource != null)
-				if (writingSource.getName().equals("getParameter")
-				        && writingSource.getClassName().equals("javax.servlet.http.HttpServletRequest"))
-					if (writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
-					        && writingToSource.getName().equals("getWriter")) {
-						accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", Priorities.HIGH_PRIORITY)
-				        .addClassAndMethod(this), this);
-					}
-		}
+			top = null;
+		} else
+			top = null;
 	}
 
-	
+	private boolean isTainted(OpcodeStack.Item writing) {
+		if (writing == null) return false;
+		XMethod method = writing.getReturnValueOf();
+		return method != null && method.getName().equals("getParameter")
+		        && method.getClassName().equals("javax.servlet.http.HttpServletRequest");
+	}
+
+	private boolean isServletWriter(OpcodeStack.Item writingTo) {
+		XMethod writingToSource = writingTo.getReturnValueOf();
+
+		return writingToSource != null && writingToSource.getClassName().equals("javax.servlet.http.HttpServletResponse")
+		        && writingToSource.getName().equals("getWriter");
+	}
 
 }
