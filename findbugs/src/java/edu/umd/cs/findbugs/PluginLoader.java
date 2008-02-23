@@ -351,7 +351,8 @@ public class PluginLoader {
 			String detailText = getChildText(messageNode, "Details");
 			int cweid = 0;
 			try {
-				cweid = Integer.parseInt(messageNode.valueOf("@cweid"));
+				String cweString = bugPatternNode.valueOf("@cweid");
+				cweid = Integer.parseInt(cweString);
 			} catch (RuntimeException e) {
 				assert true; // ignore
 			}
