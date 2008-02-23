@@ -74,8 +74,11 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			} else if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("getAttribute")) {
 				OpcodeStack.Item name = stack.getStackItem(0);
 				Object nameConstant = name.getConstant();
-				if (nameConstant instanceof String)
+				if (nameConstant instanceof String) {
 					top = map.get((String) nameConstant);
+					if (isTainted(top)) 
+						stack.replaceTop(top);
+				}
 			} else 
 				top = null;
 		} else if (seen == INVOKEVIRTUAL) {

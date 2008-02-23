@@ -1960,6 +1960,10 @@ public void initialize() {
 	  private Item pop() {
 		 return stack.remove(stack.size()-1);
 	 }
+	  public void replaceTop(Item newTop) {
+		  pop();
+		  push(newTop);
+	  }
 
 	 private void pop(int count)
 	 {
