@@ -437,7 +437,6 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 							JavaClass classStored = first.getJavaClass();
 							if (classStored == null) {
-								JavaClass huh = first.getJavaClass();
 								return;
 							}
 							double isSerializable = DeepSubtypeAnalysis

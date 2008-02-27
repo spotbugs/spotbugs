@@ -69,7 +69,6 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 
 	boolean hasEqualsSelf = false;
 	boolean hasEqualsOther = false;
-	MethodAnnotation equalsOther = null;
 
 	boolean hasCompareToSelf = false;
 

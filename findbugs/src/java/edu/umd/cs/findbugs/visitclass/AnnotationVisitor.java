@@ -173,9 +173,11 @@ public class AnnotationVisitor extends PreorderVisitor {
 				}
 
 
-		} catch (Exception e) {
-			// ignore
-		}
+		} catch (RuntimeException e) {
+			assert true; // ignore 
+		} catch (IOException e) {
+			assert true; // ignore
+        }
 	}
 
 	private Map<String, Object> readAnnotationValues(DataInputStream bytes,

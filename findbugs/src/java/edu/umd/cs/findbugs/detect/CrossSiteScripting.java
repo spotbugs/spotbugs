@@ -34,12 +34,9 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class CrossSiteScripting extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
-
-	BugAccumulator accumulator;
+	final BugAccumulator accumulator;
 
 	public CrossSiteScripting(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		accumulator = new BugAccumulator(bugReporter);
 	}
 
@@ -64,7 +61,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 		if (seen == INVOKEINTERFACE) {
 			String calledClassName = getClassConstantOperand();
 			String calledMethodName = getNameConstantOperand();
-			String calledMethodSig = getSigConstantOperand();
 			if (calledClassName.equals("javax/servlet/http/HttpSession") && calledMethodName.equals("setAttribute")) {
 				OpcodeStack.Item value = stack.getStackItem(0);
 				OpcodeStack.Item name = stack.getStackItem(1);
