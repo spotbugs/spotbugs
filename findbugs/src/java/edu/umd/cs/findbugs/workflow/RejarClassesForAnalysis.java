@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
@@ -47,7 +48,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
 		public String prefix = "";
-		int maxClasses = Integer.MAX_VALUE;
+		int maxClasses = 29999;
 		long maxAge = Long.MIN_VALUE;
 		public String inputFileList;
 		RejarClassesForAnalysisCommandLine() {
@@ -103,12 +104,24 @@ public class RejarClassesForAnalysis {
 
 	}
 	
-	static int analysisCount = 0;
+	static int analysisCount = 1;
+	static int auxilaryCount = 1;
 	
 
+
+	static String getNextAuxilaryFileOutput(RejarClassesForAnalysisCommandLine commandLine) {
+		String result;
+		if (auxilaryCount== 1) result = "auxilary.jar";
+		else result =  "auxilary" + (auxilaryCount) + ".jar";
+		auxilaryCount++;
+		System.out.println("Starting " + result);
+		return result;
+	}
 	static String getNextAnalyzeFileOutput(RejarClassesForAnalysisCommandLine commandLine) {
-		if (commandLine.maxClasses == Integer.MAX_VALUE) return "analyze.jar";
-		String result =  "analyze" + (analysisCount++) + ".jar";
+		String result;
+		if (analysisCount== 1) result = "analyze.jar";
+		else result =  "analyze" + (analysisCount) + ".jar";
+		analysisCount++;
 		System.out.println("Starting " + result);
 		return result;
 	}
@@ -121,10 +134,8 @@ public class RejarClassesForAnalysis {
 		ZipOutputStream analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput(commandLine))));
 		String classPrefix = commandLine.prefix;
 		int analysisClassCount = 0;
-		ZipOutputStream auxilaryOut = null;
-		if (classPrefix.length() > 0 || commandLine.maxClasses < Integer.MAX_VALUE)
-			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream("auxilary.jar")));
-		
+		int auxilaryClassCount = 0;
+			
 		Set<String> copied = new HashSet<String>();
 		List<String> fileList;
 
@@ -133,13 +144,48 @@ public class RejarClassesForAnalysis {
 		else if (argCount == args.length)
 			fileList = readFromStandardInput();
 		else
-			fileList = Arrays.asList(args).subList(argCount, args.length - 1);
+			fileList = Arrays.asList(args).subList(argCount, args.length);
+		
+		List<File> inputZipFiles = new ArrayList<File>(fileList.size());
+		int filesToAnalyze = 0;
 		for(String fInName : fileList) {
+
 			File f = new File(fInName);
 			if (f.lastModified() < commandLine.maxAge) {
 				System.err.println("Skipping " + fInName + ", too old ("+new Date(f.lastModified())+")");
 				continue;
 			}
+			ZipFile zipInputFile;
+			try {
+				zipInputFile = new ZipFile(f);
+				for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
+					ZipEntry ze = e.nextElement();
+					if (!ze.isDirectory() && ze.getName().endsWith(".class"))
+						if (copied.add(ze.getName()) && ze.getName().replace('/', '.').startsWith(classPrefix))
+								filesToAnalyze++;
+				}
+				inputZipFiles.add(f);
+				zipInputFile.close();
+				} catch (IOException e) {
+					e.printStackTrace(System.out);
+				}
+
+		}
+		System.out.println("# Zip/jar files: " + inputZipFiles.size());
+		if (filesToAnalyze == copied.size())
+
+			System.out.println("Unique class files: " + filesToAnalyze);
+		else {
+			System.out.println("Unique class files: " + copied.size());
+			System.out.println("  files to analyze: " + filesToAnalyze);
+		}
+		
+		ZipOutputStream auxilaryOut = null;
+		if (classPrefix.length() > 0 || filesToAnalyze > commandLine.maxClasses  )
+			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput(commandLine))));
+		
+		copied.clear();
+		for(File f : inputZipFiles) {
 			System.err.println("Opening " + f);
 			ZipFile zipInputFile;
 			try {
@@ -169,10 +215,10 @@ public class RejarClassesForAnalysis {
 				boolean writeToAuxilaryOut = false;
 				if (name.replace('/', '.').startsWith(classPrefix) ) {
 					writeToAnalyzeOut = true;
-					if (commandLine.maxClasses < Integer.MAX_VALUE)
+					if (filesToAnalyze > commandLine.maxClasses)
 						writeToAuxilaryOut = true;
 					analysisClassCount++;
-					if (analysisClassCount >= commandLine.maxClasses) {
+					if (analysisClassCount > commandLine.maxClasses) {
 						analysisClassCount = 0;
 						analyzeOut.close();
 						analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput(commandLine))));
@@ -180,10 +226,18 @@ public class RejarClassesForAnalysis {
 
 				}
 				else writeToAuxilaryOut = auxilaryOut != null;
+				
 				if (writeToAnalyzeOut)
 					analyzeOut.putNextEntry(new ZipEntry(name));
-				if (writeToAuxilaryOut)
+				if (writeToAuxilaryOut) {
+					auxilaryClassCount++;
+					if (auxilaryClassCount > commandLine.maxClasses) {
+						auxilaryClassCount = 0;
+						auxilaryOut.close();
+						auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput(commandLine))));
+					}
 					auxilaryOut.putNextEntry(new ZipEntry(name));
+				}
 					
 
 				InputStream zipIn = zipInputFile.getInputStream(ze);
