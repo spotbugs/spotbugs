@@ -29,6 +29,10 @@ import java.lang.reflect.Method;
 public class LaunchAppropriateUI {
 	public static void main(String args[]) throws Exception {
 		int launchProperty = getLaunchProperty();
+		// Sanity-check the loaded BCEL classes
+		if(!CheckBcel.check()) {
+			System.exit(1);
+		}
 		if (GraphicsEnvironment.isHeadless() || launchProperty == 0)
 			FindBugs2.main(args);
 		else {

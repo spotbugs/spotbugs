@@ -976,6 +976,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// Sanity-check the loaded BCEL classes
+		if(!CheckBcel.check()) {
+			System.exit(1);
+		}
+
 		// Create FindBugs2 engine
 		FindBugs2 findBugs = new FindBugs2();
 
