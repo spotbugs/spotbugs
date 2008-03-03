@@ -65,6 +65,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 	boolean isSerializable, implementsSerializableDirectly;
 	boolean isExternalizable;
 	boolean isGUIClass;
+	boolean isEjbImplClass;
 	boolean foundSynthetic;
 	boolean seenTransientField;
 	boolean foundSynchronizedMethods;
@@ -141,6 +142,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 		isExternalizable = false;
 		directlyImplementsExternalizable = false;
 		isGUIClass = false;
+		isEjbImplClass = false;
 		seenTransientField = false;
 		// boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
 		fieldsThatMightBeAProblem.clear();
@@ -217,7 +219,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 		// Is this a GUI  or other class that is rarely serialized?
 
 			isGUIClass = false;
+			isEjbImplClass = false;
 			if (true || !directlyImplementsExternalizable && !implementsSerializableDirectly) {
+				isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
 				isGUIClass =
 				(Subtypes2.instanceOf(obj, "java.lang.Throwable")
 						|| Subtypes2.instanceOf(obj, "java.awt.Component")
@@ -263,6 +267,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 			System.out.println("  isSerializable: " + isSerializable);
 			System.out.println("  isAbstract: " + isAbstract);
 			System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
+			System.out.println("  isGUIClass: " + isGUIClass);
+			System.out.println("  isEjbImplClass: " + isEjbImplClass);
 		}
 		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField) {
 			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
@@ -273,6 +279,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 						priority--;
 					else {
 						if (isGUIClass) priority++;
+						if (isEjbImplClass) priority++;
 						if (e.getValue() < 3) 
 							priority++;
 						if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
@@ -299,11 +306,12 @@ public class SerializableIdiom extends OpcodeStackDetector
 			int priority = implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
 				( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY);
 			if (isGUIClass) priority++;
+			if (isEjbImplClass) priority++;
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR", priority)
 					.addClass(getThisClass().getClassName()));
 		}
-		// Downgrade class-level warnings if it's a GUI class.
-		int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
+		// Downgrade class-level warnings if it's a GUI or EJB-implementation class.
+		int priority = (isGUIClass || isEjbImplClass) ? LOW_PRIORITY : NORMAL_PRIORITY;
 		if (obj.getClassName().endsWith("_Stub")) priority++;
 
 		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
@@ -315,7 +323,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 		if (seenTransientField) priority--;
 		if (!isAnonymousInnerClass 
 			&& !isExternalizable && !isGUIClass && !obj.isAbstract()
-				&& isSerializable && !isAbstract && !sawSerialVersionUID)
+				&& isSerializable && !isAbstract && !sawSerialVersionUID
+				&& !isEjbImplClass)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
 		if (writeObjectIsSynchronized && !foundSynchronizedMethods)
@@ -518,13 +527,15 @@ public class SerializableIdiom extends OpcodeStackDetector
 						else priority+=1;
 					}
 					if (isGUIClass) priority++;
+					if (isEjbImplClass) priority++;
 					if (DEBUG)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
 						+" " +  isSerializable
 						+" " +  implementsSerializableDirectly
 						+" " +  sawSerialVersionUID
-						+" " +  isGUIClass);
+						+" " +  isGUIClass
+						+" " +  isEjbImplClass);
 					// Report is queued until after the entire class has been seen.
 
 					if (obj.getName().equals("this$0"))
@@ -533,7 +544,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 							.addClass(getThisClass().getClassName())
 							.addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
-				} else if (!isGUIClass && obj.getName().equals("this$0"))
+				} else if (!isGUIClass && !isEjbImplClass && obj.getName().equals("this$0"))
 					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
 					.addClass(getThisClass().getClassName()));
