@@ -19,7 +19,6 @@
 package de.tobject.findbugs.decorators;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelDecorator;
@@ -45,11 +44,8 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 
 	public String decorateText(String text, Object element) {
 		IResource resource = ResourceUtils.getResource(element);
-		if(resource instanceof IProject) {
-			IProject project = (IProject) resource;
-			if(!project.isAccessible()) {
-				return text;
-			}
+		if(!resource.isAccessible()) {
+			return text;
 		}
 		try {
 			IMarker[] markerArr = resource.findMarkers(FindBugsMarker.NAME, true,
