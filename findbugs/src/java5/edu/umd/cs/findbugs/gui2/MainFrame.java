@@ -1798,7 +1798,27 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			setTitle("FindBugs");
 
-			guiLayout.initialize();
+			try {
+				guiLayout.initialize();
+			} catch(Exception e) {
+				// If an exception was encountered while initializing, this may
+				// be because of a bug in the particular look-and-feel selected
+				// (as in sourceforge bug 1899648).  In an attempt to recover
+				// gracefully, this code reverts to the cross-platform look-
+				// and-feel and attempts again to initialize the layout.
+				if(!UIManager.getLookAndFeel().getName().equals("Metal")) {
+					System.err.println("Exception caught initializing GUI; reverting to CrossPlatformLookAndFeel");
+					try {
+						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+					} catch(Exception e2) {
+						System.err.println("Exception while setting CrossPlatformLookAndFeel: " + e2);
+						throw new Error(e2);
+					}
+					guiLayout.initialize();
+				} else {
+					throw new Error(e);
+				}
+			}
 			bugPopupMenu = createBugPopupMenu();
 			branchPopupMenu = createBranchPopUpMenu();
 			comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
