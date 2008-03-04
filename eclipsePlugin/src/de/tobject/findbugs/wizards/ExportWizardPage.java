@@ -167,7 +167,7 @@ public class ExportWizardPage extends WizardPage {
 	 */
 	private String getLastUsedExportFilters() {
 		String text = filteredBugIdsText.getText();
-		if(text == null || text.trim().isEmpty()) {
+		if(text == null || text.trim().length() == 0) {
 			return "";
 		}
 		String[] split = text.split("[^a-zA-Z]+");
