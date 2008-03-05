@@ -2103,7 +2103,7 @@ want to multiple the random value by something else before coercing it to an int
     <LongDescription>Method {1} uses the nextDouble method of Random to generate a random integer; using nextInt is more efficient</LongDescription>
     <Details>
 <![CDATA[
-  <p>If <code>r is a <code>java.util.Random</code>, you can generate a random number from <code>0</code> to <code>n-1</code>
+  <p>If <code>r</code> is a <code>java.util.Random</code>, you can generate a random number from <code>0</code> to <code>n-1</code>
 using <code>r.nextInt(n)</code>, rather than using <code>(int)(r.nextDouble() * n)</code>.
 </p>
 ]]>
