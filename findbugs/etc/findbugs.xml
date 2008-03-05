@@ -692,6 +692,7 @@
  <BugCode abbrev="RV" cweid="440"/>
  <BugCode abbrev="IS" cweid="366"/>
  <BugCode abbrev="NP" cweid="476"/>
+ <BugCode abbrev="RCN" cweid="476"/>
  <BugCode abbrev="EQ" cweid="595"/>
  <BugCode abbrev="ES" cweid="597"/>
  <BugCode abbrev="FI" cweid="586"/>
@@ -701,6 +702,10 @@
  <BugCode abbrev="MS" cweid="218"/>
  <BugCode abbrev="DE" cweid="391"/>
  <BugCode abbrev="XSS" cweid="79"/>
+ <BugCode abbrev="STCAL" cweid="366"/>
+ <BugCode abbrev="ICAST" cweid="192"/>
+          
+          
  
  <!-- Bug patterns -->
  
@@ -819,7 +824,7 @@
   <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" cweid="374" />
   <BugPattern abbrev="EI2" type="EI_EXPOSE_REP2" category="MALICIOUS_CODE" cweid="374" />
   <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE" />
-  <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572" />
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE" />
   <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="STYLE" />
@@ -899,7 +904,7 @@
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" 
-			category="BAD_PRACTICE" />
+            category="BAD_PRACTICE" cweid="253"/>
   <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE" />
