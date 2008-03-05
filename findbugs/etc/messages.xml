@@ -1562,7 +1562,7 @@ another package.</p>
      <LongDescription>In {1} the field {2.givenClass} is synchronized on and then checked if null.</LongDescription>
      <Details>
 <![CDATA[
-<p>Since field is synchronized on, it seems not likely to be null.
+<p>Since the field is synchronized on, it seems not likely to be null.
 If it is null and then synchronized on a NullPointerException will be
 thrown and the check would be pointless. Better to synchronize on 
 another field.</p>
@@ -2002,7 +2002,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     <LongDescription>Primitive value is unboxed and coerced for ternary operator in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>A wrapped primative value is unboxed and converted to another primative type as part of the
+  <p>A wrapped primitive value is unboxed and converted to another primitive type as part of the
 evaluation of a conditional ternary operator (the <code> b ? e1 : e2</code> operator). The
 semantics of Java mandate that if <code>e1</code> and <code>e2</code> are wrapped
 numeric values, the values are unboxed and converted/coerced to their common  type (e.g,
@@ -2020,7 +2020,7 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
 <![CDATA[
   <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
 	boxing in a place where  an unboxed value is required, thus forcing the compiler
-to immediately undue the work of the boxing.
+to immediately undo the work of the boxing.
 </p>
 ]]>
     </Details>
@@ -2029,8 +2029,8 @@ to immediately undue the work of the boxing.
 
 
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
-    <ShortDescription>Primitive value is boxed then unboxed to perform primative coercion</ShortDescription>
-    <LongDescription>Primitive value is boxed then unboxed to perform primative coercion in {1}</LongDescription>
+    <ShortDescription>Primitive value is boxed then unboxed to perform primitive coercion</ShortDescription>
+    <LongDescription>Primitive value is boxed then unboxed to perform primitive coercion in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>A primitive boxed value constructed and  then immediately converted into a different primitive type
@@ -2327,7 +2327,7 @@ Don't do it.
 define an equals method itself. Thus, equality on instances of this class will
 ignore the identity of the subclass and the added fields. Be sure this is what is intended,
 and that you don't need to override the equals method. Even if you don't need to override
-the equals method, consider overriding it anyone to document the fact
+the equals method, consider overriding it anyway to document the fact
 that the equals method for the subclass just return the result of
 invoking super.equals(o).
   </p>
@@ -2352,7 +2352,7 @@ invoking super.equals(o).
     <Details>
 <![CDATA[
   <p> This class defines an equals method that overrides an equals method in a superclass. Both equals methods
-methods use <code>instanceof</code> in the determination of whether two objects are equals. This is fraught with peril,
+methods use <code>instanceof</code> in the determination of whether two objects are equal. This is fraught with peril,
 since it is important that the equals method is symetrical (in other words, <code>a.equals(b) == b.equals(a)</code>).
 If B is a subtype of A, and A's equals method checks that the argument is an instanceof A, and B's equals method
 checks that the argument is an instanceof B, it is quite likely that the equivalence relation defined by these
@@ -2939,7 +2939,7 @@ public class CircularClassInitialization {
     <LongDescription>Synchronization on shared constant could deadlock in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on a shared primative constant, such as an interned String.
+  <p> The code synchronizes on a shared primitive constant, such as an interned String.
 <pre>
 private static String LOCK = "LOCK";
 ...
@@ -2947,7 +2947,7 @@ private static String LOCK = "LOCK";
 ...
 </pre>
 </p>
-<p>Such constants an interned and shared across all other classes loaded by the JVM. Thus, this could
+<p>Such constants are interned and shared across all other classes loaded by the JVM. Thus, this could
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
@@ -3737,7 +3737,7 @@ and generally bad practice.
   <p> The variable referenced at this point is known to be null due to an earlier
    check against null. Although this is valid, it might be a mistake (perhaps you
 intended to refer to a different variable, or perhaps the earlier check to see if the
-variable is null should have been a check to see if it was nonnull.
+variable is null should have been a check to see if it was nonnull).
 </p>
 ]]>
     </Details>
@@ -3822,7 +3822,7 @@ before being initialized.
   of the class larger, and may keep the reference to the creator object
   alive longer than necessary.&nbsp; If possible, the class should be
   made into a <em>static</em> inner class. Since anonymous inner
-classes cannot be marked as static, doing this will requiring refactoring
+classes cannot be marked as static, doing this will require refactoring
 the inner class so that it is a named inner class.</p>
 ]]>
     </Details>
@@ -4104,7 +4104,7 @@ be an exception path, since the default case is often infeasible.</p>
 <p> A reference value which is null on some exception control path is
 dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
 when the code is executed.&nbsp; The value may be null because it
-was return from a method which is known to return possibly-null values.</p>
+was returned from a method which is known to return possibly-null values.</p>
       ]]>
    </Details>
   </BugPattern>
@@ -4288,7 +4288,7 @@ are no results (i.e., an empty list of results).
 This way, no explicit check for null is needed by clients of the method.</p>
 
 <p>On the other hand, using null to indicate
-"there is no answer to this question", then it is probably appropriate.
+"there is no answer to this question" is probably appropriate.
 For example, <code>File.listFiles()</code> returns an empty list
 if given a directory containing no files, and returns null if the file
 is not a directory.</p>
@@ -5436,8 +5436,8 @@ for more details and examples, and suggestions on how to force class initializat
     <LongDescription>Dead store of null to {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>The code stores null into a local variable, and stored value is not
-read. This store may have been introduced in assist the garbage collector, but
+<p>The code stores null into a local variable, and the stored value is not
+read. This store may have been introduced to assist the garbage collector, but
 as of Java SE 6.0, this is no longer needed or useful.
 </p>
 ]]>
@@ -5657,9 +5657,9 @@ just use the constant. Methods detected are:
    <![CDATA[
     <p>
     This class declares that it implements an interface that is also implemented by a superclass.
-    This is redundant, once a superclass implements an interface, all subclasses by default also
+    This is redundant because once a superclass implements an interface, all subclasses by default also
     implement this interface. It may point out that the inheritance hierarchy has changed since
-    this class was created, and consideration should be taken into account for the ownership of
+    this class was created, and consideration should be given to the ownership of
     the interface's implementation.
     </p>
     ]]>
@@ -5672,7 +5672,7 @@ just use the constant. Methods detected are:
      <Details>
    <![CDATA[
     <p>
-    This class extends from a Struts Action class, and uses a instance member variable. Since only
+    This class extends from a Struts Action class, and uses an instance member variable. Since only
     one instance of a struts Action class is created by the Struts framework, and used in a
     multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
     only using method local variables.
@@ -5687,7 +5687,7 @@ just use the constant. Methods detected are:
      <Details>
    <![CDATA[
     <p>
-    This class extends from a Servlet class, and uses a instance member variable. Since only
+    This class extends from a Servlet class, and uses an instance member variable. Since only
     one instance of a Servlet class is created by the J2EE framework, and used in a
     multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
     only using method local variables.
@@ -6131,7 +6131,7 @@ String that gives the contents of the array. See Programming Puzzlers, chapter 3
     <Details>
 <![CDATA[
 <p>
-The code invokes toString on an array, which will generate a fairly useless result
+The code invokes toString on an (anonymous) array.  Calling toString on an array generates a fairly useless result
 such as [C@16f0472. Consider using Arrays.toString to convert the array into a readable
 String that gives the contents of the array. See Programming Puzzlers, chapter 3, puzzle 12.
 </p>
@@ -6557,7 +6557,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
     <Details>
       <![CDATA[
       <p>
-     This code opens a file in append mode and that wraps the result in an object output stream. 
+     This code opens a file in append mode and then wraps the result in an object output stream. 
      This won't allow you to append to an existing object output stream stored in a file. If you want to be
      able to append to an object output stream, you need to keep the object output stream open.
       </p>
