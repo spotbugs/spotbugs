@@ -20,6 +20,9 @@
 
 package de.tobject.findbugs.reporter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -63,7 +66,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		// This triggers resource update on IResourceChangeListener's (BugTreeView)
 		IMarker marker = resource.createMarker(markerType);
 
-		setAttributes(marker);
+		Map<String, Object> attributes = createMarkerAttributes(marker);
+		setAttributes(marker, attributes);
 	}
 
 	/**
@@ -99,58 +103,69 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	}
 
 	/**
-	 * @param marker
-	 * @throws CoreException
+	 * @param marker non null
+	 * @return attributes map which should be assigned to the given marker
 	 */
-	private void setAttributes(IMarker marker) throws CoreException {
-		marker.setAttribute(IMarker.LINE_NUMBER, startLine);
-		marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
+	private Map<String, Object> createMarkerAttributes(IMarker marker) {
+		Map<String, Object> attributes = new HashMap<String, Object>(23);
+		attributes.put(IMarker.LINE_NUMBER, Integer.valueOf(startLine));
+		attributes.put(FindBugsMarker.BUG_TYPE, bug.getType());
 		long seqNum = bug.getFirstVersion();
 		if(seqNum == 0) {
-			marker.setAttribute(FindBugsMarker.FIRST_VERSION, "-1");
+			attributes.put(FindBugsMarker.FIRST_VERSION, "-1");
 		} else {
 			AppVersion theVersion = collection.getAppVersionFromSequenceNumber(seqNum);
 			if (theVersion == null) {
-				marker.setAttribute(FindBugsMarker.FIRST_VERSION,
+				attributes.put(FindBugsMarker.FIRST_VERSION,
 						"Cannot find AppVersion: seqnum=" + seqNum
 								+ "; collection seqnum="
 								+ collection.getSequenceNumber());
 			} else {
-				marker.setAttribute(FindBugsMarker.FIRST_VERSION, Long
+				attributes.put(FindBugsMarker.FIRST_VERSION, Long
 						.toString(theVersion.getTimestamp()));
 			}
 		}
 		try {
-			marker.setAttribute(IMarker.MESSAGE, bug
+			attributes.put(IMarker.MESSAGE, bug
 					.getMessageWithPriorityTypeAbbreviation());
 		} catch (RuntimeException e) {
 			FindbugsPlugin.getDefault().logException(e,
 					"Error generating msg for " + bug.getType());
-			marker.setAttribute(IMarker.MESSAGE, "??? " + bug.getType());
+			attributes.put(IMarker.MESSAGE, "??? " + bug.getType());
 		}
-		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
-		marker.setAttribute(FindBugsMarker.PRIORITY_TYPE, bug.getPriorityTypeString());
+		attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));
+		attributes.put(FindBugsMarker.PRIORITY_TYPE, bug.getPriorityTypeString());
 
 		switch (bug.getPriority()) {
 		case Priorities.HIGH_PRIORITY:
-			marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+			attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_HIGH));
 			break;
 		case Priorities.NORMAL_PRIORITY:
-			marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
+			attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_NORMAL));
 			break;
 		default:
-			marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_LOW);
+			attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_LOW));
 			break;
 		}
 
-		marker.setAttribute(FindBugsMarker.PATTERN_DESCR_SHORT, bug.getBugPattern().getShortDescription());
+		attributes.put(FindBugsMarker.PATTERN_DESCR_SHORT, bug.getBugPattern().getShortDescription());
 
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.
 		String uniqueId = bug.getInstanceHash();
 		if (uniqueId != null) {
-			marker.setAttribute(FindBugsMarker.UNIQUE_ID, uniqueId);
+			attributes.put(FindBugsMarker.UNIQUE_ID, uniqueId);
 		}
+		return attributes;
+	}
+
+	/**
+	 * Set all the attributes to marker in one 'workspace transaction'
+	 * @param marker non null
+	 * @throws CoreException
+	 */
+	private void setAttributes(IMarker marker, Map<String, Object> attributes) throws CoreException {
+		marker.setAttributes(attributes);
 	}
 
 }
