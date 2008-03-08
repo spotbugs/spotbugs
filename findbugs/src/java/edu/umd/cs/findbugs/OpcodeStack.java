@@ -115,6 +115,7 @@ public class OpcodeStack implements Constants2
 		public static final int NON_NEGATIVE = 12;
 		public static final int NASTY_FLOAT_MATH = 13;
 		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
+		public static final int SERVLET_REQUEST_TAINTED = 15;
 
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -230,7 +231,10 @@ public class OpcodeStack implements Constants2
 			case  FILE_OPENED_IN_APPEND_MODE:
 				buf.append(", file opened in append mode");
 				break;
-			
+			case  SERVLET_REQUEST_TAINTED:
+				buf.append(", servlet request tainted");
+				break;
+		
 			case 0 :
 				break;
 			default:
@@ -492,6 +496,12 @@ public class OpcodeStack implements Constants2
 			return userValue;
 		}
 
+		public boolean isServletParameterTainted() {
+			return getSpecialKind() == Item.SERVLET_REQUEST_TAINTED;
+		}
+		public void setServletParameterTainted() {
+			 setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
+		}
 		public boolean valueCouldBeNegative() {
 			return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT 
 					|| getSpecialKind() == Item.SIGNED_BYTE 
@@ -1621,6 +1631,7 @@ public class OpcodeStack implements Constants2
 		 String methodName = dbc.getNameConstantOperand();
 		 String signature = dbc.getSigConstantOperand();
 		 String appenderValue = null;
+		 boolean servletRequestParameterTainted = false;
 		 boolean sawUnknownAppend = false;
 		 Item sbItem = null;
 
@@ -1631,16 +1642,22 @@ public class OpcodeStack implements Constants2
 				 if ("(Ljava/lang/String;)V".equals(signature)) {
 					 Item i = getStackItem(0);
 					 appenderValue = (String)i.getConstant();
+					 if (i.isServletParameterTainted())
+						 servletRequestParameterTainted = true;
 				 } else if ("()V".equals(signature)) {
 					 appenderValue = "";
 				 }
 			 } else if ("toString".equals(methodName) && getStackDepth() >= 1) {
 				 Item i = getStackItem(0);
 				 appenderValue = (String)i.getConstant();
+				 if (i.isServletParameterTainted())
+					 servletRequestParameterTainted = true;
 			 } else if ("append".equals(methodName)) { 
 				 if (signature.indexOf("II)")  == -1 && getStackDepth() >= 2) {
 					 sbItem = getStackItem(1);
 					 Item i = getStackItem(0);
+					 if (i.isServletParameterTainted() || sbItem.isServletParameterTainted())
+						 servletRequestParameterTainted = true;
 					 Object sbVal = sbItem.getConstant();
 					 Object sVal = i.getConstant();
 					 if ((sbVal != null) && (sVal != null)) {
@@ -1693,9 +1710,11 @@ public class OpcodeStack implements Constants2
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
 
-		 if ((sawUnknownAppend || appenderValue != null) && getStackDepth() > 0) {
+		 if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
+			 if (!sawUnknownAppend && servletRequestParameterTainted)
+				 i.setServletParameterTainted();
 			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;
 				  i.source = sbItem.source;
@@ -1711,8 +1730,13 @@ public class OpcodeStack implements Constants2
 			i.setSpecialKind(Item.RANDOM_INT);
 			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
-		}
-		if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
+		} else if (methodName.equals("getParameter")
+		        && clsName.equals("javax/servlet/http/HttpServletRequest")) {
+			Item i = pop();
+			i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
+			i.source = XFactory.createReferencedXMethod(dbc);
+			push(i);
+		} else if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
 			i.setSpecialKind(Item.MATH_ABS);
 			i.source = XFactory.createReferencedXMethod(dbc);

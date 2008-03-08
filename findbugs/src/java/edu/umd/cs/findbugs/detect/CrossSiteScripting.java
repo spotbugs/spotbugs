@@ -112,9 +112,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
 	private boolean isTainted(OpcodeStack.Item writing) {
 		if (writing == null) return false;
-		XMethod method = writing.getReturnValueOf();
-		return method != null && method.getName().equals("getParameter")
-		        && method.getClassName().equals("javax.servlet.http.HttpServletRequest");
+		return writing.isServletParameterTainted();
 	}
 
 	private boolean isServletWriter(OpcodeStack.Item writingTo) {
