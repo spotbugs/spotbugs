@@ -1439,6 +1439,13 @@ It is a fast detector.</p>
 	<p>This code directly writes an HTTP parameter to Servlet output, which allows for a cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
+<p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
+If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
+vulnerabilities that FindBugs can't detect. If you are concerned about cross site scripting, you should seriously 
+consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
+a sponsor of the FindBugs project.
+</p>
+
 ]]>
     </Details>
   </BugPattern>
@@ -1451,6 +1458,12 @@ for more information.</p>
 	<p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
+<p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
+If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
+vulnerabilities that FindBugs can't detect. If you are concerned about cross site scripting, you should seriously 
+consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
+a sponsor of the FindBugs project.
+</p>
 ]]>
     </Details>
   </BugPattern>
