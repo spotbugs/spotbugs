@@ -85,7 +85,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			if (calledMethodName.startsWith("print") && calledClassName.equals("javax/servlet/jsp/JspWriter")
 			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
-				XMethod method = writing.getReturnValueOf();
 				if (isTainted(writing)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
 					        Priorities.HIGH_PRIORITY).addClassAndMethod(this), this);
