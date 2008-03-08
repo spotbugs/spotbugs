@@ -666,7 +666,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" 
             speed="fast"
             reports="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" />
-  <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="TESTING" />
+  <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" hidden="true" reports="TESTING" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
             speed="fast"
