@@ -305,6 +305,8 @@ public class OpcodeStack implements Constants2
 				m.specialKind = NASTY_FLOAT_MATH;
 			else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
 				m.specialKind = FLOAT_MATH;
+			else if (i1.specialKind == SERVLET_REQUEST_TAINTED || i2.specialKind == SERVLET_REQUEST_TAINTED)
+				m.specialKind = SERVLET_REQUEST_TAINTED;
 			if (DEBUG) System.out.println("Merge " + i1 + " and " + i2 + " gives " + m);
 			return m;
 		}
