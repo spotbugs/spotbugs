@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -118,6 +119,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
+		if (seen != RETURN && isReturn(seen) && isRegisterStore(getPrevOpcode(1)))
+			bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 		
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + ternaryConversionState);
 		if (seen == IMUL) {

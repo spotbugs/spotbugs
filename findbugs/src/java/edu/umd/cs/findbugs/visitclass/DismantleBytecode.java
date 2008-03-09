@@ -916,4 +916,60 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	public int getNextPC() {
 		return nextPC;
 	}
+
+	public boolean isReturn(int opcode) {
+		switch(opcode) {
+		case IRETURN:
+		case ARETURN:
+		case LRETURN:
+		case DRETURN:
+		case FRETURN:
+		case RETURN:
+			return true;
+		default : 
+			return false;
+		}
+	}
+
+	public boolean isRegisterStore(int opcode) {
+		switch(opcode) {
+		case ISTORE_0:
+		case ISTORE_1:
+		case ISTORE_2:
+		case ISTORE_3:
+
+
+		case ASTORE_0:
+		case ASTORE_1:
+		case ASTORE_2:
+		case ASTORE_3:
+
+
+		case FSTORE_0:
+		case FSTORE_1:
+		case FSTORE_2:
+		case FSTORE_3:
+
+
+		case DSTORE_0:
+		case DSTORE_1:
+		case DSTORE_2:
+		case DSTORE_3:
+
+
+		case LSTORE_0:
+		case LSTORE_1:
+		case LSTORE_2:
+		case LSTORE_3:
+
+		case ISTORE:
+		case FSTORE:
+		case ASTORE:
+		case LSTORE:
+		case DSTORE:
+			return true;
+		default:
+			return false;
+		}
+	}
 }
