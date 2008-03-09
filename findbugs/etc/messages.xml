@@ -5439,7 +5439,19 @@ there is no easy way to eliminate these false positives.
 ]]>
     </Details>
   </BugPattern>
-
+  <BugPattern type="DLS_DEAD_LOCAL_STORE_IN_RETURN">
+    <ShortDescription>Useless assignment in return statement</ShortDescription>
+    <LongDescription>Useless assignment in return from {1}</LongDescription>
+    <Details>
+      <![CDATA[
+<p>
+This statement assigns to a local variable in a return statement. This assignment 
+has effect. Please verify that this statement does the right thing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="DLS_DEAD_STORE_OF_CLASS_LITERAL">
     <ShortDescription>Dead store of class literal</ShortDescription>
     <LongDescription>Dead store of {3}.class in {1}</LongDescription>

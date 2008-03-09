@@ -119,9 +119,16 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen != RETURN && isReturn(seen) && isRegisterStore(getPrevOpcode(1)))
-			bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
-		
+		if (seen != RETURN && isReturn(seen) && isRegisterStore(getPrevOpcode(1))) {
+			
+			int priority = Priorities.NORMAL_PRIORITY;
+			if  (getMethodSig().endsWith(")Z")) priority =  Priorities.HIGH_PRIORITY;
+			else {
+				if (getMethodSig().endsWith(")Ljava/lang/String;")) priority =  Priorities.LOW_PRIORITY;
+				if (getPC() == getCode().getCode().length-1 ) priority++;
+			}
+			bugReporter.reportBug(new BugInstance(this, "DLS_DEAD_LOCAL_STORE_IN_RETURN", priority).addClassAndMethod(this).addSourceLine(this));
+		}
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + ternaryConversionState);
 		if (seen == IMUL) {
 			if (imul_distance != 1) resetIMulCastLong();
