@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -42,10 +43,12 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
 	private ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor("java/lang/Cloneable");
 	
-	boolean /*isCloneable,*/ hasCloneMethod;
+	boolean isCloneable,hasCloneMethod;
 	MethodAnnotation cloneMethodAnnotation;
 	boolean referencesCloneMethod;
 	boolean invokesSuperClone;
+	boolean checksInstanceOfCloneable;
+	
 	boolean isFinal;
 	boolean cloneOnlyThrowsException;
 
@@ -71,6 +74,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
 	@Override
 		 public void sawOpcode(int seen) {
+		if (seen == INSTANCEOF && getNameConstantOperand().equals("java/lang/Cloneable"))
+			checksInstanceOfCloneable = true;
 		if (seen == INVOKESPECIAL
 				&& getNameConstantOperand().equals("clone")
 				&& getSigConstantOperand().startsWith("()")) {
@@ -88,7 +93,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		implementsCloneableDirectly = false;
 		invokesSuperClone = false;
 		cloneOnlyThrowsException = false;
-		//isCloneable = false;
+		isCloneable = false;
 		check = false;
 		isFinal = obj.isFinal();
 		if (obj.isInterface()) return;
@@ -98,21 +103,23 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		for (String interface_name : interface_names) {
 			if (interface_name.equals("java.lang.Cloneable")) {
 				implementsCloneableDirectly = true;
-				//isCloneable = true;
+				isCloneable = true;
 				break;
 			}
 		}
 
-		if (implementsCloneableDirectly) {
+	
 			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 			try {
-	            if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor))
+				 if (subtypes2.isSubtype(getClassDescriptor(), cloneDescriptor)) 
+					 isCloneable = true;
+	            if (subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(obj.getSuperclassName()), cloneDescriptor)) 
 	            	implementsCloneableDirectly = false;
+	            	
             } catch (ClassNotFoundException e) {
 	           bugReporter.reportMissingClass(e);
             }
 
-		}
 		hasCloneMethod = false;
 		referencesCloneMethod = false;
 		check = true;
@@ -129,11 +136,27 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 						.addClass(this));
 		}
 
-		if (hasCloneMethod && !invokesSuperClone && !isFinal && obj.isPublic()) {
-			bugReporter.reportBug(new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", (obj.isPublic() || obj.isProtected()) ?
-					NORMAL_PRIORITY : LOW_PRIORITY)
+		if (hasCloneMethod && isCloneable && !invokesSuperClone && !isFinal && obj.isPublic()) {
+			int priority = LOW_PRIORITY;
+			if (obj.isPublic() || obj.isProtected()) 
+				priority = NORMAL_PRIORITY;
+			try {
+				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+				if (!subtypes2.getDirectSubtypes(getClassDescriptor()).isEmpty())
+	            	priority--;
+            } catch (ClassNotFoundException e) {
+	           bugReporter.reportMissingClass(e);
+            }
+			bugReporter.reportBug(new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", priority)
 					.addClass(this)
 					.addMethod(cloneMethodAnnotation));
+		} else if (hasCloneMethod && !isCloneable && !cloneOnlyThrowsException && !obj.isAbstract()) {
+			int priority = Priorities.NORMAL_PRIORITY;
+			if (referencesCloneMethod) priority--;
+			
+			bugReporter.reportBug(new BugInstance(this, "CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE", priority)
+			.addClass(this)
+			.addMethod(cloneMethodAnnotation));
 		}
 
 	}

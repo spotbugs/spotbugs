@@ -242,7 +242,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.CloneIdiom" 
             speed="fast" 
-            reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL" />
+            reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL,CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE" />
             
   <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom" 
             speed="fast" 
@@ -749,6 +749,7 @@
   
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
+  <BugPattern abbrev="CN" type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE" category="BAD_PRACTICE" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE" />
   <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE" />
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE" />

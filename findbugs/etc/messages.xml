@@ -1441,9 +1441,10 @@ vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">h
 for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
-vulnerabilities that FindBugs can't detect. If you are concerned about cross site scripting, you should seriously 
+vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
 consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project.
+a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
+as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
 </p>
 
 ]]>
@@ -1460,9 +1461,10 @@ vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">h
 for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
-vulnerabilities that FindBugs can't detect. If you are concerned about cross site scripting, you should seriously 
+vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
 consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project.
+a sponsor of the FindBugs project.  If your software is open source, Fortify will scan your code for free
+as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
 </p>
 ]]>
     </Details>
@@ -1673,6 +1675,19 @@ should be written to the JarFile between the calls to
 <p>
    Class implements Cloneable but does not define or
    use the clone method.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE">
+    <ShortDescription>Class defines clone() but doesn't implement Cloneable</ShortDescription>
+    <LongDescription>{0} defines clone() but doesn't implement Cloneable</LongDescription>
+    <Details>
+<![CDATA[
+<p> This class defines a clone() method but the class doesn't implement Cloneable.
+There are some situations in which this is OK (e.g., you want to control how subclasses 
+can clone themselves), but just make sure that this is what you intended.
+</p>
 ]]>
     </Details>
   </BugPattern>
