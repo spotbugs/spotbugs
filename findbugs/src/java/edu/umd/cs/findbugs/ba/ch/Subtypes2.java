@@ -660,6 +660,10 @@ public class Subtypes2 {
 		return result;
 	}
 
+	
+	public boolean hasSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+		return !getSubtypes(classDescriptor).isEmpty();
+	}
 	/**
 	 * Get known subtypes of given class.
 	 * 

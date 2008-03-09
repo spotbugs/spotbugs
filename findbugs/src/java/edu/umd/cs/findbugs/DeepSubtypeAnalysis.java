@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Set;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class DeepSubtypeAnalysis {
@@ -44,7 +46,7 @@ public class DeepSubtypeAnalysis {
 		return false;
 	}
 
-	public static double isDeepSerializable(String refSig)
+	public static double isDeepSerializable(@DottedClassName String refSig)
 			throws ClassNotFoundException {
 		if (storedException != null)
 			throw storedException;
@@ -119,21 +121,45 @@ public class DeepSubtypeAnalysis {
 			}
 			return result;
 		}
-		result = Math.max(result, Analyze.deepInstanceOf(x, collection));
+		
+		if (x.isFinal()) return result;
+		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(x);
+		
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		
+		double confidence = 0.6;
+		Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(classDescriptor);
+		directSubtypes.remove(classDescriptor);
+		
+		if (x.isAbstract() || x.isInterface()) {
+			confidence = 0.8; 
+			result = Math.max(result, 0.4);
+		} else if (directSubtypes.isEmpty())
+			confidence = 0.2;
+		
+		for(ClassDescriptor subtype : directSubtypes) {
+			JavaClass subJavaClass = Repository.lookupClass(subtype.getDottedClassName());
+			result = Math.max(result, confidence * isDeepSerializable(subJavaClass));
+		}
+		if (result >= 0.9) {
+			return result;
+		}
+		
+		result = Math.max(result, confidence * Analyze.deepInstanceOf(x, collection));
 		if (result >= 0.9) {
 			if(DEBUG) {
 				System.out.println("High collection result: " + result);
 			}
 			return result;
 		}
-		result = Math.max(result, Analyze.deepInstanceOf(x, map));
+		result = Math.max(result, confidence * Analyze.deepInstanceOf(x, map));
 		if (result >= 0.9) {
 			if(DEBUG) {
 				System.out.println("High map result: " + result);
 			}
 			return result;
 		}
-		result = Math.max(result, 0.5*Analyze.deepInstanceOf(x, comparator));
+		result = Math.max(result, confidence * 0.5*Analyze.deepInstanceOf(x, comparator));
 		if (result >= 0.9) {
 			if(DEBUG) {
 				System.out.println("High comparator result: " + result);
