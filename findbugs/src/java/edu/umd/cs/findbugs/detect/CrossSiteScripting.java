@@ -87,8 +87,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				OpcodeStack.Item writing = stack.getStackItem(0);
 				if (isTainted(writing)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
-					        Priorities.HIGH_PRIORITY).addClassAndMethod(this), this);
-					
+					        taintPriority(writing)).addClassAndMethod(this), this);
 				else if (isTainted(top))
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
 					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
@@ -98,7 +97,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				OpcodeStack.Item writingTo = stack.getStackItem(1);
 				if (isTainted(writing) && isServletWriter(writingTo)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
-					        Priorities.HIGH_PRIORITY).addClassAndMethod(this), this);
+							taintPriority(writing)).addClassAndMethod(this), this);
 				else if (isTainted(top) && isServletWriter(writingTo)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
 					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
@@ -112,6 +111,17 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 	private boolean isTainted(OpcodeStack.Item writing) {
 		if (writing == null) return false;
 		return writing.isServletParameterTainted();
+	}
+
+	private int taintPriority(OpcodeStack.Item writing) {
+		if (writing == null) return Priorities.NORMAL_PRIORITY;
+		XMethod m = writing.getReturnValueOf();
+		XMethod method = writing.getReturnValueOf();
+		if ( method != null && method.getName().equals("getParameter")
+		        && method.getClassName().equals("javax.servlet.http.HttpServletRequest"))
+			return Priorities.HIGH_PRIORITY;
+		return Priorities.NORMAL_PRIORITY;
+	
 	}
 
 	private boolean isServletWriter(OpcodeStack.Item writingTo) {
