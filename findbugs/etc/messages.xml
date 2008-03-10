@@ -1456,7 +1456,7 @@ It is a fast detector.</p>
   </BugPattern>
 
 
-  <BugPattern type="XSS_REQUEST_PARAMETER_TO_HTTP_COOKIE">
+  <BugPattern type="XSS_REQUEST_PARAMETER_TO_COOKIE">
     <ShortDescription>HTTP cookie formed from untrusted input</ShortDescription>
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
     <Details>
