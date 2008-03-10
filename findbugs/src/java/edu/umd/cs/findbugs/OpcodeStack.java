@@ -293,6 +293,10 @@ public class OpcodeStack implements Constants2
 			if (equals(i1.source,i2.source)) {
 				m.source = i1.source;
 			}
+			else if ("".equals(i1.constValue)) 
+				m.source = i2.source;
+			else if ("".equals(i2.constValue)) 
+				m.source = i1.source;
 
 			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
