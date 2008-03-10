@@ -77,6 +77,33 @@ public class DumbMethodInvocations implements Detector {
 				continue;
 			}
 
+			if (iins.getName(cpg).equals("getConnection")
+					&& iins.getSignature(cpg).equals("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;")
+					&& iins.getClassName(cpg).equals("java.sql.DriverManager")) {
+				Constant operandValue = frame.getTopValue();
+				if (operandValue.isConstantString()) {
+					String password = operandValue.getConstantString();
+					if (password.length() == 0)
+						bugReporter.reportBug(new BugInstance(this,
+								"DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
+								.addClassAndMethod(methodGen, sourceFile)
+								.addSourceLine(
+										SourceLineAnnotation
+												.fromVisitedInstruction(classContext, methodGen,
+														sourceFile, location
+																.getHandle())));
+					else bugReporter.reportBug(new BugInstance(this,
+							"DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
+							.addClassAndMethod(methodGen, sourceFile)
+							.addSourceLine(
+									SourceLineAnnotation
+											.fromVisitedInstruction(classContext, methodGen,
+													sourceFile, location
+															.getHandle())));
+
+				}
+			}
+			
 			if (iins.getName(cpg).equals("substring")
 					&& iins.getSignature(cpg).equals("(I)Ljava/lang/String;")
 					&& iins.getClassName(cpg).equals("java.lang.String")) {

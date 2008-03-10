@@ -1431,6 +1431,29 @@ It is a fast detector.</p>
   **********************************************************************
    -->
 
+  <BugPattern type="DMI_EMPTY_DB_PASSWORD">
+    <ShortDescription>Empty database password</ShortDescription>
+    <LongDescription>Empty database password in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>This code creates a database connect using a blank or empty password. This indicates that the database is not protected by a password. 
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_CONSTANT_DB_PASSWORD">
+    <ShortDescription>Hardcoded constant database password</ShortDescription>
+    <LongDescription>Hardcoded constant database password in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>This code creates a database connect using a hardcoded, constant password. Anyone with access to either the source code or the compiled code can 
+	easily learn the password.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_HTTP_HEADER">
     <ShortDescription>HTTP Response splitting vulnerability</ShortDescription>
