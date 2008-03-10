@@ -103,7 +103,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			        ) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
 				if (isTainted(writing)) 
-					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_HTTP_HEADER",
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_COOKIE",
 					        taintPriority(writing)).addClassAndMethod(this), this);
 			}
 
