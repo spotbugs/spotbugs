@@ -1636,6 +1636,7 @@ public class OpcodeStack implements Constants2
 		 boolean servletRequestParameterTainted = false;
 		 boolean sawUnknownAppend = false;
 		 Item sbItem = null;
+		 boolean topIsTainted = getStackDepth() > 0 && getStackItem(0).isServletParameterTainted();
 
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
 		 if ("java/lang/StringBuffer".equals(clsName)
@@ -1730,27 +1731,31 @@ public class OpcodeStack implements Constants2
 		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
-			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		} else if (methodName.equals("getParameter")
 		        && clsName.equals("javax/servlet/http/HttpServletRequest")) {
 			Item i = pop();
 			i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
-			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		} else if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
 			i.setSpecialKind(Item.MATH_ABS);
-			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
 				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.HASHCODE_INT);
-			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
-		} else if (!signature.endsWith(")V")) {
+		} else if (topIsTainted 
+				&& ( methodName.startsWith("encode") && clsName.equals("javax/servlet/http/HttpServletResponse")
+		        	|| methodName.equals("trim") && clsName.equals("java/lang/String")) ) {
+			Item i = pop();
+			i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
+			push(i);
+		} 
+		
+		if (!signature.endsWith(")V")) {
 			Item i = pop();
 			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);

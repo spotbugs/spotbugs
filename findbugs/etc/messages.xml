@@ -1431,6 +1431,27 @@ It is a fast detector.</p>
   **********************************************************************
    -->
 
+
+  <BugPattern type="XSS_REQUEST_PARAMETER_TO_HTTP_HEADER">
+    <ShortDescription>HTTP Response splitting vulnerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
+vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
+for more information.</p>
+<p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
+If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more 
+vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously 
+consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
+a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
+as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER">
     <ShortDescription>Servlet cross site scripting vulnerability</ShortDescription>
     <LongDescription>HTTP parameter directly written to Servlet output, giving XSS vulnerability in {1}</LongDescription>
