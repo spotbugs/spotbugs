@@ -258,7 +258,7 @@ public class FindBadCast2 implements Detector {
 			ReferenceType refType = (ReferenceType) operandType;
 
 
-			if (refType.equals(castType)) {
+			if (isCast && refType.equals(castType)) {
 				// System.out.println("self-cast to " + castType.getSignature());
 				continue;
 			}
@@ -325,7 +325,7 @@ public class FindBadCast2 implements Detector {
 
 				boolean upcast = Repository.instanceOf(refJavaClass,
 						castJavaClass);
-				if (upcast) {
+				if (upcast || refType.equals(castType)) {
 					if (!isCast)
 						accumulator.accumulateBug(new BugInstance(this,
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
