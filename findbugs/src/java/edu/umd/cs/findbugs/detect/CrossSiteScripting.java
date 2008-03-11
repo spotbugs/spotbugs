@@ -103,7 +103,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			        ) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
 				if (isTainted(writing)) 
-					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_COOKIE",
+					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_HTTP_HEADER",
 					        taintPriority(writing)).addClassAndMethod(this), this);
 			}
 
@@ -112,9 +112,10 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			String calledMethodName = getNameConstantOperand();
 			String calledMethodSig = getSigConstantOperand();
 			
-			if (calledMethodName.startsWith("print") && calledClassName.equals("javax/servlet/jsp/JspWriter")
+			if ((calledMethodName.startsWith("print") || calledMethodName.equals("write")) && calledClassName.equals("javax/servlet/jsp/JspWriter")
 			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
+				System.out.println("writing " + writing);
 				if (isTainted(writing)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
 					        taintPriority(writing)).addClassAndMethod(this), this);
