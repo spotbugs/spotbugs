@@ -3064,7 +3064,29 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
 ]]>
     </Details>
   </BugPattern>
-
+  <BugPattern type="DL_SYNCHRONIZATION_ON_BOOLEAN">
+    <ShortDescription>Synchronization on Boolean could lead to deadlock</ShortDescription>
+    <LongDescription>Synchronization on Boolean could deadlock in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+  <p> The code synchronizes on a shared primitive constant, such as an interned String.
+<pre>
+private static Boolean inited = Boolean.FALSE;
+...
+  synchronized(inited) { 
+    if (!inited) {
+       init();
+       inited = BOOLEAN.TRUE;
+       }
+     }
+...
+</pre>
+</p>
+<p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
+and possible deadlock</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="ESync_EMPTY_SYNC">
     <ShortDescription>Empty synchronized block</ShortDescription>
     <LongDescription>Empty synchronized block in {1}</LongDescription>

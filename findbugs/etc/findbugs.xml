@@ -157,7 +157,7 @@
             hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant" 
 	        speed="fast"
-	        reports="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
+	        reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
             hidden="true" /> 
  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" 
 	        speed="fast"
@@ -822,6 +822,7 @@
   <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="BAD_PRACTICE" />
   <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE" />
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585" />
   <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />

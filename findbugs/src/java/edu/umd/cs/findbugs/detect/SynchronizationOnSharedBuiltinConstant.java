@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
@@ -42,6 +43,10 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			if (signature.equals("Ljava/lang/String;") && constant instanceof String) 
 				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
 				.addClassAndMethod(this).addString((String)constant).addSourceLine(this));
+			else if (signature.equals("Ljava/lang/Boolean;")) {
+				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", NORMAL_PRIORITY)
+				.addClassAndMethod(this).addOptionalField(top.getXField()).addSourceLine(this));
+			}
 		}
 	}
 }
