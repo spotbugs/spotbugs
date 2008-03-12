@@ -40,6 +40,7 @@ import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
+import org.apache.bcel.generic.DUP2;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
@@ -50,6 +51,8 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LoadInstruction;
+import org.apache.bcel.generic.LRETURN;
+import org.apache.bcel.generic.LSTORE;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
@@ -331,6 +334,17 @@ public class FindDeadLocalStores implements Detector {
 						} else
 							continue; // not an interesting DLS
 						
+					}
+					else if (prevIns instanceof DUP2) {
+						// Check for the case where, due to the bytecode
+						// compiler, a long is needlessly stored just
+						// after we've DUP2'ed the stack and just
+						// before we return 
+						Instruction cur = location.getHandle().getInstruction();
+						Instruction nxt = location.getHandle().getNext().getInstruction();
+						if(cur instanceof LSTORE && nxt instanceof LRETURN) {
+							continue; // not an interesting DLS
+						}
 					}
 					if (foundDeadClassInitialization) {
 						BugInstance bugInstance = new BugInstance(this,  "DLS_DEAD_STORE_OF_CLASS_LITERAL", 
