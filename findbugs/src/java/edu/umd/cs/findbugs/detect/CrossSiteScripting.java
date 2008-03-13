@@ -117,7 +117,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			if ((calledMethodName.startsWith("print") || calledMethodName.equals("write")) && calledClassName.equals("javax/servlet/jsp/JspWriter")
 			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
-				System.out.println(SourceLineAnnotation.fromVisitedInstruction(this) + " writing " + writing);
+				// System.out.println(SourceLineAnnotation.fromVisitedInstruction(this) + " writing " + writing);
 				if (isTainted(writing)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
 					        taintPriority(writing)).addClassAndMethod(this).addOptionalLocalVariable(this, writing), this);
