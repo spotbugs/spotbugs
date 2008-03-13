@@ -681,7 +681,7 @@
     speed="slow" reports="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED,TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED,TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK,TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting"
-      reports="XSS_REQUEST_PARAMETER_TO_HTTP_HEADER,XSS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"/>
+      reports="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER,HRS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"/>
 
 <!-- Bug Codes -->
 
@@ -702,6 +702,7 @@
  <BugCode abbrev="MS" cweid="218"/>
  <BugCode abbrev="DE" cweid="391"/>
  <BugCode abbrev="XSS" cweid="79"/>
+ <BugCode abbrev="HRS" cweid="113"/>
  <BugCode abbrev="STCAL" cweid="366"/>
  <BugCode abbrev="ICAST" cweid="192"/>
           
@@ -712,8 +713,8 @@
  
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER" category="SECURITY" />
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER" category="SECURITY" />
-       <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" cweid="113" />
-       <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY" cweid="113" />
+       <BugPattern abbrev="XSS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" />
+       <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_COOKIE" category="SECURITY" />
     
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />

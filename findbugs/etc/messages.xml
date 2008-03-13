@@ -1456,7 +1456,7 @@ It is a fast detector.</p>
   </BugPattern>
 
 
-  <BugPattern type="XSS_REQUEST_PARAMETER_TO_COOKIE">
+  <BugPattern type="HRS_REQUEST_PARAMETER_TO_COOKIE">
     <ShortDescription>HTTP cookie formed from untrusted input</ShortDescription>
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
     <Details>
@@ -1476,7 +1476,7 @@ as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR 
     </Details>
   </BugPattern>
 
-    <BugPattern type="XSS_REQUEST_PARAMETER_TO_HTTP_HEADER">
+    <BugPattern type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER">
         <ShortDescription>HTTP Response splitting vulnerability</ShortDescription>
       <LongDescription>HTTP parameter directly written to HTTP header output in {1}</LongDescription>
         <Details>
@@ -6755,7 +6755,8 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
   <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
   <BugCode abbrev="HSC" >Huge String constants</BugCode>
-  <BugCode abbrev="XSS" >Cross site scripting</BugCode>
+  <BugCode abbrev="HRS" >HTTP Response splitting vunerability</BugCode>
+  <BugCode abbrev="XSS" >Cross site scripting vunerabilitity</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>

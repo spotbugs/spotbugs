@@ -27,8 +27,10 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -71,8 +73,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				OpcodeStack.Item name = stack.getStackItem(1);
 				if (value.isServletParameterTainted() || name.isServletParameterTainted()) {
 					int priority = Math.min(taintPriority(value), taintPriority(name));
-					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_COOKIE",
-					        priority).addClassAndMethod(this), this);
+					accumulator.accumulateBug(new BugInstance(this, "HRS_REQUEST_PARAMETER_TO_COOKIE",
+					        priority).addClassAndMethod(this).addOptionalLocalVariable(this, value.isServletParameterTainted() ? value : name), this);
 				}
 				
 			}
@@ -103,8 +105,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			        ) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
 				if (isTainted(writing)) 
-					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_HTTP_HEADER",
-					        taintPriority(writing)).addClassAndMethod(this), this);
+					accumulator.accumulateBug(new BugInstance(this, "HRS_REQUEST_PARAMETER_TO_HTTP_HEADER",
+					        taintPriority(writing)).addClassAndMethod(this).addOptionalLocalVariable(this, writing), this);
 			}
 
 		} else if (seen == INVOKEVIRTUAL) {
@@ -115,9 +117,10 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 			if ((calledMethodName.startsWith("print") || calledMethodName.equals("write")) && calledClassName.equals("javax/servlet/jsp/JspWriter")
 			        && (calledMethodSig.equals("(Ljava/lang/Object;)V") || calledMethodSig.equals("(Ljava/lang/String;)V"))) {
 				OpcodeStack.Item writing = stack.getStackItem(0);
+				System.out.println(SourceLineAnnotation.fromVisitedInstruction(this) + " writing " + writing);
 				if (isTainted(writing)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
-					        taintPriority(writing)).addClassAndMethod(this), this);
+					        taintPriority(writing)).addClassAndMethod(this).addOptionalLocalVariable(this, writing), this);
 				else if (isTainted(oldTop))
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
 					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
@@ -127,10 +130,10 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 				OpcodeStack.Item writingTo = stack.getStackItem(1);
 				if (isTainted(writing) && isServletWriter(writingTo)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
-							taintPriority(writing)).addClassAndMethod(this), this);
+							taintPriority(writing)).addClassAndMethod(this).addOptionalLocalVariable(this, writing), this);
 				else if (isTainted(oldTop) && isServletWriter(writingTo)) 
 					accumulator.accumulateBug(new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
-					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this), this);
+					        Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addOptionalLocalVariable(this, writing), this);
 	
 			}
 		} 

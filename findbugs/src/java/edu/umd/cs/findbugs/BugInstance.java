@@ -1070,6 +1070,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	/**
+	 * Local variable adders
+	 */
+	public BugInstance addOptionalLocalVariable(DismantleBytecode dbc, OpcodeStack.Item item) {
+		int register = item.getRegisterNumber();
+
+		if (register >= 0)
+			this.add(LocalVariableAnnotation.getLocalVariableAnnotation(dbc.getMethod(), register, dbc.getPC()-1, dbc.getPC()));
+		return this;
+	}
+	
+	
 	/* ----------------------------------------------------------------------
 	 * Method annotation adders
 	 * ---------------------------------------------------------------------- */
