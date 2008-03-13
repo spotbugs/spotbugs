@@ -234,6 +234,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			}
 
 			if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName())) return;
+			if (getNameConstantOperand().startsWith("get")) return;
 			if (getNameConstantOperand().equals("equals") && numArguments == 1) {
 				OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
 				field = passedAsArgument.getXField();
