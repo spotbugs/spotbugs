@@ -243,6 +243,42 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		((FieldInfo)xfield).addAnnotation(annotationValue);
 	}
 
+	
+	public @CheckForNull XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
+		ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
+		ClassInfo xclass;
+		
+		// Get the XClass (really a ClassInfo object)
+		try {
+			xclass = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+		} catch (MissingClassException e) {
+			if (DEBUG) {
+				System.out.println("  Class not found!");
+			}
+//			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor());
+			return null;
+		} catch (CheckedAnalysisException e) {
+			if (DEBUG) {
+				System.out.println("  Class not found!");
+			}
+//			AnalysisContext.logError("Error adding built-in nullness annotation", e);
+			return null;
+		}
+		XMethod xmethod = xclass.findMethod(mName, sig, isStatic);
+		
+		if (xmethod == null) 
+			xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
+		if (xmethod == null || !xmethod.isResolved()) {
+			if (DEBUG) {
+				for(XMethod mm : xclass.getXMethods())
+					if (mm.getName().equals(mName)) System.out.println(mm);
+				System.out.println("  Method not found!");
+			}
+			return null;
+		}
+		return xmethod;
+
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addMethodAnnotation(java.lang.String, java.lang.String, java.lang.String, boolean, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
@@ -250,15 +286,8 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		if (DEBUG) {
 			System.out.println("addMethodAnnotation: annotate " + cName + "." + mName + " with " + annotation);
 		}
-		
-		XMethod xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
-		if (xmethod == null || !xmethod.isResolved()) {
-			if (DEBUG) {
-				System.out.println("  Method not found!");
-			}
-			return;
-		}
-		
+		XMethod xmethod = getXMethod( cName,  mName,  sig,  isStatic);
+		if (xmethod == null) return;
 		// Get JSR-305 nullness annotation type
 		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
 		
@@ -277,14 +306,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		if (DEBUG) {
 			System.out.println("addMethodParameterAnnotation: annotate " + cName + "." + mName + " param " + param + " with " + annotation);
 		}
+		XMethod xmethod = getXMethod( cName,  mName,  sig,  isStatic);
+		if (xmethod == null) return;
 		
-		XMethod xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
-		if (xmethod == null || !xmethod.isResolved()) {
-			if (DEBUG) {
-				System.out.println("  Method not found!");
-			}
-			return;
-		}
 		if (!(xmethod instanceof MethodInfo)) {
 			if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
 			return;

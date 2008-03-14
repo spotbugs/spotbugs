@@ -37,7 +37,7 @@ public class DefaultNullnessAnnotations {
 		
 		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
-		database.addFieldAnnotation("java.lang.System", "http://sourceforge.net/tracker/index.php?func=detail&aid=1795838&group_id=96405&atid=614693err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
+		database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
 
 		database.addMethodAnnotation("java.lang.Class", "newInstance", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
@@ -49,13 +49,13 @@ public class DefaultNullnessAnnotations {
 		
 		database.addMethodParameterAnnotation("java.lang.Object", "equals", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0, NullnessAnnotation.NONNULL);
-		database.addMethodParameterAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;I)I", true, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true, 0, NullnessAnnotation.NONNULL);
 
-		database.addMethodAnnotation("java.sql.Statement", "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", true,  NullnessAnnotation.NONNULL);
-		database.addMethodAnnotation("java.sql.Connection", "prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", true,  NullnessAnnotation.NONNULL);
-
+		database.addMethodAnnotation("java.sql.Statement", "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false,  NullnessAnnotation.NONNULL);
+		database.addMethodAnnotation("java.sql.Connection", "prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", false,  NullnessAnnotation.NONNULL);
+		
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
@@ -100,7 +100,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;", false, NullnessAnnotation.NONNULL);
-		database.addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;", false, NullnessAnnotation.NONNULL);
+		database.addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;", false, NullnessAnnotation.NONNULL);
 
 
 		database.addMethodParameterAnnotation("java.util.concurrent.ExecutorService", "submit", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
@@ -116,7 +116,7 @@ public class DefaultNullnessAnnotations {
 
 
 		database.addMethodParameterAnnotation("java.util.EnumMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
-		database.addMethodParameterAnnotation("java.util.EnumMap", "containsKey", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.EnumMap", "containsKey", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.EnumMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.EnumMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
 
@@ -127,7 +127,7 @@ public class DefaultNullnessAnnotations {
 
 		database.addMethodParameterAnnotation("java.util.SortedSet", "add", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.SortedSet", "remove", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
-		database.addMethodParameterAnnotation("java.util.SortedSet", "cotains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.SortedSet", "contains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 
 		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false, NullnessAnnotation.CHECK_FOR_NULL);
