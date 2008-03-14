@@ -37,6 +37,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 
 	@Override
 	public void visit(Code code) {
+		System.out.println(getMethodName());
 
 		state = 0;
 		super.visit(code); // make callbacks to sawOpcode for all opcodes
@@ -57,10 +58,25 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 	
 	 int state = 0;
 
-	XField field;
+	XField field, putField;
+	XField syncField;
 
 	@Override
 	public void sawOpcode(int seen) {
+		System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
+		if (seen == PUTFIELD) {
+			if (getPrevOpcode(1) == ALOAD_0) 
+				putField = null;
+			else putField = getXFieldOperand();
+		}
+		if (seen == MONITOREXIT && getPrevOpcode(2) == PUTFIELD
+				&& putField != null && putField.equals(syncField)) {
+			bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
+			        .addField(syncField).addSourceLine(this));
+		}
+		
+		if (seen==MONITORENTER)
+			syncField = null;
 		switch (state) {
 		case 0:
 			if (seen == ALOAD_0)
@@ -70,7 +86,6 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 			if (seen == GETFIELD) {
 				state = 2;
 				field = getXFieldOperand();
-
 			} else
 				state = 0;
 			break;
@@ -87,9 +102,10 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 				state = 0;
 			break;
 		case 4:
-			if (seen == MONITORENTER)
+			if (seen == MONITORENTER) {
 				state = 5;
-			else
+				syncField = field;
+			} else
 				state = 0;
 			break;
 		case 5:
@@ -100,7 +116,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 			break;
 		case 6:
 			if (seen == GETFIELD && field.equals(getXFieldOperand()))
-				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
+				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this)
 				        .addField(field).addSourceLine(this));
 			state = 0;
 			break;
