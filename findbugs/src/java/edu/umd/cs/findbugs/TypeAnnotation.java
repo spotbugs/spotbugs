@@ -86,7 +86,7 @@ public class TypeAnnotation implements BugAnnotation {
 
 
 	public String format(String key, ClassAnnotation primaryClass) {
-		return new SignatureConverter(descriptor).parseNext();
+		return new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
 	}
 
 	public void setDescription(String roleDescription) {
