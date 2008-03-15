@@ -59,7 +59,10 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 				XMethod method = top.getReturnValueOf();
 				if (method != null && method.getName().equals("<init>")) return;
 				if (field != null && field.isFinal()) return;
-				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+				if (isBoolean) 
+					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", HIGH_PRIORITY)
+					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
+				else bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", NORMAL_PRIORITY)
 				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
 			}
 		}
