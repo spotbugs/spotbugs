@@ -37,42 +37,34 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 
 	@Override
 	public void visit(Code code) {
-		System.out.println(getMethodName());
+		// System.out.println(getMethodName());
 
 		state = 0;
 		super.visit(code); // make callbacks to sawOpcode for all opcodes
 
 	}
 	
-	
-	/** Want to look for the following pattern 
-	
-	 	ALOAD 0
-	    GETFIELD BadSynchronization.x : Ljava/lang/Integer;
-	    DUP
-	    ASTORE x
-	    MONITORENTER
-	    ALOAD 0
-	    GETFIELD BadSynchronization.x : Ljava/lang/Integer;
-	*/
-	
 	 int state = 0;
 
 	XField field, putField;
 	XField syncField;
+	int putPC;
 
 	@Override
 	public void sawOpcode(int seen) {
-		System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
+		// System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
 		if (seen == PUTFIELD) {
 			if (getPrevOpcode(1) == ALOAD_0) 
 				putField = null;
-			else putField = getXFieldOperand();
+			else {
+				putField = getXFieldOperand();
+				putPC = getPC();
+			}
 		}
 		if (seen == MONITOREXIT && getPrevOpcode(2) == PUTFIELD
 				&& putField != null && putField.equals(syncField)) {
-			bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
-			        .addField(syncField).addSourceLine(this));
+			bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
+			        .addField(syncField).addSourceLine(this, putPC));
 		}
 		
 		if (seen==MONITORENTER)
@@ -103,23 +95,12 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 			break;
 		case 4:
 			if (seen == MONITORENTER) {
-				state = 5;
+				state = 0;
 				syncField = field;
 			} else
 				state = 0;
 			break;
-		case 5:
-			if (seen == ALOAD_0)
-				state = 6;
-			else
-				state = 0;
-			break;
-		case 6:
-			if (seen == GETFIELD && field.equals(getXFieldOperand()))
-				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this)
-				        .addField(field).addSourceLine(this));
-			state = 0;
-			break;
+		
 		}
 
 	}

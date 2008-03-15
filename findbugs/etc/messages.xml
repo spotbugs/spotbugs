@@ -276,7 +276,7 @@ after being checked for non-null.  </p>
 <![CDATA[
 <p> Looks for uses of this.getClass().getResource(...), which can give
 unexpected results if the class is extended by a class in
-another package. It is a fast detector</p>
+another package. /p>
 
 ]]>
     </Details>
@@ -284,14 +284,14 @@ another package. It is a fast detector</p>
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop">
     <Details>
 <![CDATA[
-<p> Looks for an infinite recursive loop. It is a fast detector.</p>
+<p> Looks for an infinite recursive loop. </p>
 ]]>
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop">
     <Details>
 <![CDATA[
-<p> Looks for an infinite loop. It is a fast detector.</p>
+<p> Looks for an infinite loop. </p>
 ]]>
     </Details>
   </Detector>
@@ -307,7 +307,7 @@ another package. It is a fast detector</p>
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
-<p> Looks for bug patterns in the usage of volatile fields. It is a fast detector.</p>
+<p> Looks for bug patterns in the usage of volatile fields. </p>
 ]]>
     </Details>
   </Detector>
@@ -409,7 +409,7 @@ Normally, this detector does nothing.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for switch statements containing fall through.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -418,7 +418,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for places where a field is assigned
-by reading the value of the same field.  It is a fast detector.</p>
+by reading the value of the same field.  </p>
 ]]>
     </Details>
   </Detector>
@@ -468,7 +468,7 @@ boolean operators (<code>|</code> and <code>&amp;</code> instead of
     <Details>
 <![CDATA[
 <p> This detector looks for violations of the idioms for writing
-cloneable classes. It is a fast detector.</p>
+cloneable classes. </p>
 ]]>
     </Details>
   </Detector>
@@ -476,7 +476,7 @@ cloneable classes. It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for violations of the idioms for writing
-classes that implement <code>Comparator</code>. It is a fast detector.</p>
+classes that implement <code>Comparator</code>. </p>
 ]]>
     </Details>
   </Detector>
@@ -484,7 +484,7 @@ classes that implement <code>Comparator</code>. It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for code where an exception is caught,
-but nothing is done to handle the exception.  It is a fast detector.</p>
+but nothing is done to handle the exception.  </p>
 ]]>
     </Details>
   </Detector>
@@ -510,7 +510,7 @@ but nothing is done to handle the exception.  It is a fast detector.</p>
 <![CDATA[
 <p> This detector looks for calls to pointless methods,
 such as the no-argument String constructor.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -519,7 +519,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> Looks for calls to Number constructors with primitive arguments.
-It is a fast detector</p>                      
+/p>                      
 ]]>
     </Details>
   </Detector>
@@ -528,7 +528,7 @@ It is a fast detector</p>
     <Details>
 <![CDATA[
 <p> This detector looks for instances of double checked locking.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -537,7 +537,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to finalize() and other finalizer-related
-issues.  It is a fast detector.</p>
+issues.  </p>
 ]]>
     </Details>
   </Detector>
@@ -546,7 +546,7 @@ issues.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for problems in the definition of the hashCode() and equals()
-methods.  It is a fast detector.</p>
+methods.  </p>
 ]]>
     </Details>
   </Detector>
@@ -564,7 +564,7 @@ methods.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to notify() that don't seem
-to modify mutable object state.  It is a fast detector.</p>
+to modify mutable object state.  </p>
 ]]>
     </Details>
   </Detector>
@@ -573,7 +573,7 @@ to modify mutable object state.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for methods that return mutable static data.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -591,7 +591,7 @@ detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for loops that spin reading from a field.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -609,7 +609,7 @@ It is a slow detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() not in a conditional or loop.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -618,7 +618,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for reads of uninitialized fields in constructors.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -627,7 +627,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for get and set methods where the get is unsynchronized
-while the set is synchronized.  It is a fast detector.</p>
+while the set is synchronized.  </p>
 ]]>
     </Details>
   </Detector>
@@ -636,7 +636,7 @@ while the set is synchronized.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for potentially circular class initialization
-dependencies.  It is a fast detector.</p>
+dependencies.  </p>
 ]]>
     </Details>
   </Detector>
@@ -645,7 +645,7 @@ dependencies.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This iterator looks for problems in how Iterator classes are defined.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -654,7 +654,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
-with respect to locking.  It is a fast detector.</p>
+with respect to locking.  </p>
 ]]>
     </Details>
   </Detector>
@@ -664,7 +664,7 @@ with respect to locking.  It is a fast detector.</p>
 <![CDATA[
 <p> This detector looks for comparisons of String objects using the == or !=
 operators.
- It is a fast detector.</p>
+ </p>
 ]]>
     </Details>
   </Detector>
@@ -673,7 +673,17 @@ operators.
     <Details>
 <![CDATA[
 <p> This detector looks for synchronization on objects read from
-modified fields.  It is a fast detector.</p>
+modified fields.  </p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField" >
+    <Details>
+<![CDATA[
+<p> This detector looks for code that seems to be synchronizing on a field in order
+to guard updates of that field.
+</p>
 ]]>
     </Details>
   </Detector>
@@ -682,7 +692,7 @@ modified fields.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for static fields that may be modified by
-malicious code.  It is a fast detector.</p>
+malicious code.  </p>
 ]]>
     </Details>
   </Detector>
@@ -690,7 +700,7 @@ malicious code.  It is a fast detector.</p>
   <Detector class="edu.umd.cs.findbugs.detect.Naming" >
     <Details>
 <![CDATA[
-<p> This detector looks for suspiciously-named methods.  It is a fast detector.</p>
+<p> This detector looks for suspiciously-named methods.  </p>
 ]]>
     </Details>
   </Detector>
@@ -699,7 +709,7 @@ malicious code.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to InputStream.read() or InputStream.skip() where the
-return value is ignored.  It is a fast detector.</p>
+return value is ignored.  </p>
 ]]>
     </Details>
   </Detector>
@@ -708,7 +718,7 @@ return value is ignored.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for potential problems in the implementation
-of Serializable classes.  It is a fast detector.</p>
+of Serializable classes.  </p>
 ]]>
     </Details>
   </Detector>
@@ -716,7 +726,7 @@ of Serializable classes.  It is a fast detector.</p>
   <Detector class="edu.umd.cs.findbugs.detect.StartInConstructor" >
     <Details>
 <![CDATA[
-<p> This detector looks for constructors that start threads.  It is a fast detector.</p>
+<p> This detector looks for constructors that start threads.  </p>
 ]]>
     </Details>
   </Detector>
@@ -732,7 +742,7 @@ of Serializable classes.  It is a fast detector.</p>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" >
     <Details>
 <![CDATA[
-<p> This detector looks for fields whose value is never read.  It is a fast detector.</p>
+<p> This detector looks for fields whose value is never read.  </p>
 ]]>
     </Details>
   </Detector>
@@ -741,7 +751,7 @@ of Serializable classes.  It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to wait() that are not in a loop.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -780,7 +790,7 @@ It is a slow detector.</p>
 <![CDATA[
 <p> This detector looks for methods that return either arrays or an explicit null reference.
 Returning a zero length array is generally preferred in this context to returning a null reference.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -789,7 +799,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for control flow statements which have no effect.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -848,7 +858,7 @@ with respect to locking.  It is a slow detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for self assignments of local variables.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -857,7 +867,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for suspicious bitwise logical expressions.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -884,7 +894,7 @@ on JSR166 locks.  It is a moderately fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for private methods that are never called.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -893,7 +903,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for String concatenation in loops using +.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -904,7 +914,7 @@ It is a fast detector.</p>
 <p> This detector looks for code that converts Collections to arrays
 using the toArray() method that takes a prototype array, passing
 an array argument which is zero-length.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -913,7 +923,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for JUnit tests that are malformed.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -922,7 +932,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for code that extends an Adapter class and overrides a Listener
-method with the wrong signature. It is a fast detector.</p>
+method with the wrong signature. </p>
 ]]>
     </Details>
   </Detector>
@@ -932,7 +942,7 @@ method with the wrong signature. It is a fast detector.</p>
 <![CDATA[
 <p> This detector looks for calls to getXXX or setXXX methods of a result set where the
 field index is 0. As ResultSet fields start at index 1, this is always a mistake.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -941,7 +951,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for type checks using the instanceof operator where the determination
-can be done statically. It is a fast detector.</p>
+can be done statically. </p>
 ]]>
     </Details>
   </Detector>
@@ -952,7 +962,7 @@ can be done statically. It is a fast detector.</p>
 <p>
 This detector looks for Applet constructors that call methods in the parent
 Applet that rely on the Applet stub. Since this stub isn't initialized until just
-before the init() method, these methods will fail in the constructor. It is a fast detector.
+before the init() method, these methods will fail in the constructor. 
 </p>
 ]]>
     </Details>
@@ -1009,7 +1019,7 @@ are never subsequently read. It is a moderately fast detector.
 <![CDATA[
 <p> This detector looks for class level fields that are masked by
 local fields defined in methods.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -1018,7 +1028,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for accessing the value of a Map entry, using a key that was retrieved from
-a keySet iterator. It is a fast detector.</p>
+a keySet iterator. </p>
 ]]>
    </Details>
   </Detector>
@@ -1027,7 +1037,7 @@ a keySet iterator. It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for code that creates objects based on classes that only define static methods.
-It is a fast detector.</p>
+</p>
 ]]>
    </Details>
   </Detector>
@@ -1071,7 +1081,7 @@ accurate, to use the constant instead.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
     <Details>
 <![CDATA[
-<p>This detector looks circular dependencies among classes. It is a fast detector.</p>
+<p>This detector looks circular dependencies among classes. </p>
 ]]>
     </Details>
   </Detector>
@@ -1090,7 +1100,7 @@ the subclass.</p>
     <Details>
 <![CDATA[
 <p>This detector looks for potential problems in implementing the Struts framework.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -1102,7 +1112,7 @@ It is a fast detector.</p>
 on <b>this</b>. This exposes a synchronization implementation as a public artifact of the class.
 Clients of the class may use an instance of the class as it's own synchronizing object, and cause
 havoc to the base implementation.
-It is a fast detector.</p>
+</p>
 ]]>
     </Details>
   </Detector>
@@ -1111,7 +1121,7 @@ It is a fast detector.</p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to methods where the return value
-is suspiciously ignored.  It is a fast detector.</p>
+is suspiciously ignored.  </p>
 ]]>
     </Details>
   </Detector>
@@ -1122,7 +1132,7 @@ is suspiciously ignored.  It is a fast detector.</p>
 <p>
 This detector looks for places where the result of integer division is
 cast to double. Often, what was meant was to cast the integer operands
-to double and then perform the division.  It is a fast detector.
+to double and then perform the division.  
 </p>
 ]]>
     </Details>
@@ -1205,7 +1215,7 @@ their work on Programming Puzzlers.
 <p> This detector looks for if/else or switch statements that have the
 same code for two branches, thus rendering the test useless. This often
 is caused by copying and pasting the two branches, causing incorrect logic
-for the one branch.</p><p>It is a fast detector.</p>
+for the one branch.</p><p></p>
 ]]>
     </Details>
   </Detector>
@@ -1217,7 +1227,7 @@ for the one branch.</p><p>It is a fast detector.</p>
 owning class, when that member variable is private. In this case, a special compiler
 generated accessor method needs to be used to write to this variable. Relaxing the
 visibility to protected will allow the field to be directly written.</p>
-<p>It is a fast detector.</p>
+<p></p>
 ]]>
     </Details>
   </Detector>
@@ -1228,7 +1238,7 @@ visibility to protected will allow the field to be directly written.</p>
 <p> This detector looks for direct allocations of implementations of XML interfaces.
 This ties the code to a specific implementation, rather than using the supplied
 factory pattern to create these objects.</p>
-<p>It is a fast detector.</p>
+<p></p>
 ]]>
     </Details>
   </Detector>
@@ -1255,7 +1265,7 @@ factory pattern to create these objects.</p>
       class, that only pass the parameters untouched to the parent class method.
       These methods can just be removed.
       </p>
-      <p>It is a fast detector.</p>
+      <p></p>
       ]]>
    </Details>
   </Detector>
@@ -1271,7 +1281,7 @@ factory pattern to create these objects.</p>
       use for this class, without completely changing all of the class to the new
       paradigm.
       </p>
-      <p>It is a fast detector.</p>
+      <p></p>
       ]]>
    </Details>
   </Detector>
@@ -1283,7 +1293,7 @@ factory pattern to create these objects.</p>
       This detector looks for simple assignments of literal boolean values to variables in 
       conditional expressions.
       </p>
-      <p>It is a fast detector.</p>
+      <p></p>
       ]]>
    </Details>
   </Detector>
@@ -1396,7 +1406,7 @@ factory pattern to create these objects.</p>
 <![CDATA[
 <p>This detector warns about static fields of type java.util.Calendar or java.text.DateFormat (and subclasses) because
  Calendars are inherently unsafe for multithreaded use.
-It is a fast detector.</p>
+</p>
 ]]>
 </Details>
 </Detector>
@@ -3031,7 +3041,7 @@ public class CircularClassInitialization {
     <LongDescription>Synchronization on shared constant could deadlock in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on a shared primitive constant, such as an interned String.
+  <p> The code synchronizes on a shared constant, such as an interned String.
 <pre>
 private static String LOCK = "LOCK";
 ...
@@ -3051,7 +3061,7 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
     <LongDescription>Synchronization on Boolean could deadlock in {1}</LongDescription>
     <Details>
       <![CDATA[
-  <p> The code synchronizes on a shared primitive constant, such as an interned String.
+  <p> The code synchronizes on a boxed primitive constant, such as an Boolean.
 <pre>
 private static Boolean inited = Boolean.FALSE;
 ...
@@ -3069,6 +3079,29 @@ and possible deadlock</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE">
+    <ShortDescription>Synchronization on boxed primative could lead to deadlock</ShortDescription>
+    <LongDescription>Synchronization on {2} could deadlock in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+  <p> The code synchronizes on a boxed primitive constant, such as an Boolean.
+<pre>
+private static Integer count = 0;
+...
+  synchronized(count) { 
+     count++;
+     }
+...
+</pre>
+</p>
+<p>Since Integer objects can be cached and shared,
+this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
+and possible deadlock</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="ESync_EMPTY_SYNC">
     <ShortDescription>Empty synchronized block</ShortDescription>
     <LongDescription>Empty synchronized block in {1}</LongDescription>
@@ -3115,18 +3148,49 @@ than less contrived solutions.
     </Details>
   </BugPattern>
 
+  <BugPattern type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD">
+    <ShortDescription>Synchronization on field in futile attempt to guard that field</ShortDescription>
+    <LongDescription>Synchronization on {2.givenClass} in futile attempt to guard it</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method synchronizes on a field in what appears to be an attempt
+to guard against simultaneous updates to that field. But guarding a field
+gets a lock on the referenced object, not on the field. This may not 
+provide the mutual exclusion you need, and other threads might 
+be obtaining locks on the referenced objects (for other purposes). An example
+of this pattern would be:
+
+<p><pre>
+private Long myNtfSeqNbrCounter = new Long(0);
+private Long getNotificationSequenceNumber() {
+     Long result = null;
+     synchronized(myNtfSeqNbrCounter) {
+         result = new Long(myNtfSeqNbrCounter.longValue() + 1);
+         myNtfSeqNbrCounter = new Long(result.longValue());
+     }
+     return result;
+ }
+</pre>
+
+
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
     <ShortDescription>Method synchronizes on an updated field</ShortDescription>
     <LongDescription>{1} synchronizes on updated field {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method synchronizes on an object
-   references from a mutable field.
+   referenced from a mutable field.
    This is unlikely to have useful semantics, since different
 threads may be synchronizing on different objects.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="MS_OOI_PKGPROTECT">
     <ShortDescription>Field should be moved out of an interface and made package protected</ShortDescription>
     <LongDescription>{1} should be moved out of an interface and made package protected</LongDescription>

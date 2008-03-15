@@ -19,19 +19,29 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
-
+	Set<String> badSignatures;
 	public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		badSignatures = new HashSet<String>();
+		badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;",
+				"Ljava/lang/Double;","Ljava/lang/Float;","Ljava/lang/Byte;","Ljava/lang/Character;",
+				"Ljava/lang/Short;","Ljava/lang/Integer;", "Ljava/lang/Long;"}));
 	}
+
 
 
 	@Override
@@ -43,9 +53,14 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			if (signature.equals("Ljava/lang/String;") && constant instanceof String) 
 				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
 				.addClassAndMethod(this).addString((String)constant).addSourceLine(this));
-			else if (signature.equals("Ljava/lang/Boolean;")) {
-				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", NORMAL_PRIORITY)
-				.addClassAndMethod(this).addOptionalField(top.getXField()).addSourceLine(this));
+			else if (badSignatures.contains(signature)) {
+				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
+				XField field = top.getXField();
+				XMethod method = top.getReturnValueOf();
+				if (method != null && method.getName().equals("<init>")) return;
+				if (field != null && field.isFinal()) return;
+				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
 			}
 		}
 	}

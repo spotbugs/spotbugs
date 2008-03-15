@@ -157,7 +157,7 @@
             hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant" 
 	        speed="fast"
-	        reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
+	        reports="DL_SYNCHRONIZATION_ON_BOOLEAN,DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE,DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
             hidden="true" /> 
  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" 
 	        speed="fast"
@@ -374,6 +374,10 @@
 			hidden="true"
             reports="ES_COMPARING_STRINGS_WITH_EQ" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField" 
+            speed="fast"
+            reports="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD" />
+
   <Detector class="edu.umd.cs.findbugs.detect.MutableLock" 
             speed="fast"
             reports="ML_SYNC_ON_UPDATED_FIELD" />
@@ -824,6 +828,7 @@
   <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE" />
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585" />
   <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
@@ -847,6 +852,7 @@
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE" />
   <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="ML" type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE" />
   <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE" />
