@@ -49,7 +49,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen == PUTFIELD) {
+		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
 			OpcodeStack.Item top = stack.getStackItem(0);
 			OpcodeStack.Item oldSummary = summary.get(fieldOperand);
