@@ -33,7 +33,8 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class StringAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "STRING_DEFAULT";
+	public static final String DEFAULT_ROLE = "STRING_DEFAULT";
+	public static final String STRING_CONSTANT_ROLE = "STRING_CONSTANT";
 
 	final private String value;
 	 private String description;

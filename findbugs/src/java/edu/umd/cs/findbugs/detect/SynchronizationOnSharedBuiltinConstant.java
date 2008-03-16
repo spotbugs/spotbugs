@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -50,26 +52,34 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 		if (method == null) return false;
 		return method.getName().equals("<init>");
 	}
+	
+	private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
+	
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == MONITORENTER) {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			String signature = top.getSignature();
 			Object constant = top.getConstant();
-			if (signature.equals("Ljava/lang/String;") && constant instanceof String) 
-				bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
-				.addClassAndMethod(this).addString((String)constant).addSourceLine(this));
-			else if (badSignatures.contains(signature)) {
+			if (signature.equals("Ljava/lang/String;") && constant instanceof String) {
+				BugInstance bug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY).addClassAndMethod(this);
+
+				String value = (String) constant;
+				if (identified.matcher(value).matches())
+					bug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+				
+				bugReporter.reportBug(bug.addSourceLine(this));
+			} else if (badSignatures.contains(signature)) {
 				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
 				FieldItemSummary fieldItemSummary = AnalysisContext.currentAnalysisContext().getFieldItemSummary();
 				OpcodeStack.Item summary = fieldItemSummary.getSummary(field);
-				if (field != null && field.isFinal()) return;
 				int priority = NORMAL_PRIORITY;
 				if (isBoolean) priority--;
 				if (newlyConstructedObject(summary))
-					priority = LOW_PRIORITY;
-				if (isBoolean) 
+					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", priority)
+					.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
+				else if (isBoolean) 
 					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
 					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
 				else bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)

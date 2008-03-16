@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -38,7 +40,8 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 	}
 
 	Map<XField,OpcodeStack.Item> summary = new HashMap<XField,OpcodeStack.Item>();
-		
+	Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
+	
 	OpcodeStack.Item getSummary(XField field) {
 		OpcodeStack.Item result = summary.get(field);
 		if (result == null)
@@ -46,11 +49,17 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 		return result;
 		
 	}
-
+	boolean isWrittenOutsideOfConstructor(XField field) {
+		if (field.isFinal()) return false;
+		return writtenOutsideOfConstructor.contains(field);
+	}
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
+			if (seen == PUTFIELD && !getMethodName().equals("<init>")
+					|| seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
+				writtenOutsideOfConstructor.add(fieldOperand);
 			OpcodeStack.Item top = stack.getStackItem(0);
 			OpcodeStack.Item oldSummary = summary.get(fieldOperand);
 			if (oldSummary != null) {
