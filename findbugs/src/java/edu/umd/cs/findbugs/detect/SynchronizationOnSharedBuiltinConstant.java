@@ -26,6 +26,7 @@ import java.util.Set;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -44,6 +45,11 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 
 
 
+	private static boolean newlyConstructedObject(OpcodeStack.Item item) {
+		XMethod method = item.getReturnValueOf();
+		if (method == null) return false;
+		return method.getName().equals("<init>");
+	}
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == MONITORENTER) {
@@ -56,13 +62,17 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			else if (badSignatures.contains(signature)) {
 				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
-				XMethod method = top.getReturnValueOf();
-				if (method != null && method.getName().equals("<init>")) return;
+				FieldItemSummary fieldItemSummary = AnalysisContext.currentAnalysisContext().getFieldItemSummary();
+				OpcodeStack.Item summary = fieldItemSummary.getSummary(field);
 				if (field != null && field.isFinal()) return;
+				int priority = NORMAL_PRIORITY;
+				if (isBoolean) priority--;
+				if (newlyConstructedObject(summary))
+					priority = LOW_PRIORITY;
 				if (isBoolean) 
-					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", HIGH_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
 					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
-				else bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+				else bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
 				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
 			}
 		}

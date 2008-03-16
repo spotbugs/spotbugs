@@ -116,7 +116,7 @@ public class OpcodeStack implements Constants2
 		public static final int NASTY_FLOAT_MATH = 13;
 		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
 		public static final int SERVLET_REQUEST_TAINTED = 15;
-
+		public static final int NEWLY_ALLOCATED  = 16;
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
 		private static final int IS_NULL_FLAG = 4;
@@ -233,6 +233,9 @@ public class OpcodeStack implements Constants2
 				break;
 			case  SERVLET_REQUEST_TAINTED:
 				buf.append(", servlet request tainted");
+				break;
+			case  NEWLY_ALLOCATED:
+				buf.append(", new");
 				break;
 		
 			case 0 :
@@ -1286,7 +1289,11 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case NEW:
-					 pushBySignature("L" + dbc.getClassConstantOperand() + ";");
+				 {
+					 Item item = new Item("L" + dbc.getClassConstantOperand() + ";", (Object) null);
+					 item.specialKind = Item.NEWLY_ALLOCATED;
+					push(item);
+				 }
 				 break;
 
 				 case NEWARRAY:
@@ -2227,6 +2234,17 @@ public void initialize() {
 
 	private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
 		String signature = dbc.getSigConstantOperand();
+		if (dbc.getNameConstantOperand().equals("<init>") && signature.endsWith(")V")
+				&& popThis) {
+			pop(PreorderVisitor.getNumberArguments(signature));
+			Item constructed = pop();
+			if (getStackDepth() > 0) {
+				Item next = getStackItem(0);
+				if (constructed.equals(next)) 
+					next.source = XFactory.createReferencedXMethod(dbc);
+			}
+			return;
+		}
 		pop(PreorderVisitor.getNumberArguments(signature)+(popThis ? 1 : 0));
 		pushBySignature(Type.getReturnType(signature).getSignature());
 	}

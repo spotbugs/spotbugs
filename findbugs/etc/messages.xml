@@ -212,6 +212,16 @@ by other detectors.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary">
+   <Details>
+      <![CDATA[
+      <p>
+	This detector produces summary information for what is stored 
+	into fields.
+      </p>
+      ]]>
+   </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations">
    <Details>
       <![CDATA[

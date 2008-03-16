@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.detect.FieldItemSummary;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -175,6 +176,17 @@ public abstract class AnalysisContext {
 		return currentXFactory.get();
 	}
 
+	FieldItemSummary fieldItemSummary;
+	
+	public FieldItemSummary getFieldItemSummary() {
+		if (unreadFields == null) throw new IllegalStateException("FieldItemSummary detector not set");
+		return fieldItemSummary;
+	}
+	public void setFieldItemSummary(@NonNull FieldItemSummary fieldItemSummary) {
+		if (this.fieldItemSummary != null) throw new IllegalStateException("FieldItemSummary detector already set");
+		this.fieldItemSummary = fieldItemSummary;
+	}
+	
 	UnreadFields unreadFields;
 	public UnreadFields getUnreadFields() {
 		if (unreadFields == null) throw new IllegalStateException("UnreadFields detector not set");

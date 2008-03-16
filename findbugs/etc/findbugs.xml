@@ -19,6 +19,10 @@
 		other plugins.
 	-->
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FieldItemSummary"/>
+		<Later class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
@@ -164,6 +168,10 @@
 	        reports=""
 	        requirejre="1.5"
             hidden="true" /> 
+  <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary"
+            speed="fast"
+            reports=""
+			hidden="true"/>
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
             speed="fast"
             reports=""
