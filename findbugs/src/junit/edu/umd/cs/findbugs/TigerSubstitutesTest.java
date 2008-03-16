@@ -28,11 +28,13 @@ import junit.framework.TestCase;
  * @author pugh
  */
 public class TigerSubstitutesTest extends TestCase {
-	static class Foo {};
+	static class Foo {}
+
 	static Object bar;
 	static Object test = new Object() {
-		class Bar { };
-		{ 
+		class Bar { }
+
+		{
 			bar = new Bar();
 		}
 		@Override

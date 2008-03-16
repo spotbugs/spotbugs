@@ -47,7 +47,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");
 	public static final boolean IGNORE_BUILTIN_ANNOTATIONS = SystemProperties.getBoolean("findbugs.ignoreBuiltinAnnotations");
 
-	public static enum Target { FIELD, METHOD, PARAMETER, @Deprecated CLASS, ANY };
+	public static enum Target { FIELD, METHOD, PARAMETER, @Deprecated CLASS, ANY }
+
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
 	private Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();

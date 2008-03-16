@@ -35,5 +35,5 @@ public enum SourceSinkType {
 	// Sink types
 	ARGUMENT_TO_CALLED_METHOD,
 	RETURN_VALUE,
-	FIELD_STORE;
+	FIELD_STORE
 }

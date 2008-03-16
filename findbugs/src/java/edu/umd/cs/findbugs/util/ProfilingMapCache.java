@@ -55,7 +55,7 @@ public class ProfilingMapCache<K,V> extends MapCache<K,V> {
 				break;
 			}
 			age--;
-		};
+		}
 		return super.get(k);
 	}
 	public String getStatistics() {

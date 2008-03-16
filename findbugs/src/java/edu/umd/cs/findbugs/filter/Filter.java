@@ -365,7 +365,7 @@ public class Filter extends OrMatcher {
 		    while (i.hasNext()) {
 		    	Matcher child = (Matcher) i.next();
 		    	if (!disabled.containsKey(child)) child.writeXML(xmlOutput, false);
-		    };
+		    }
 		xmlOutput.closeTag("FindBugsFilter");
 		xmlOutput.finish();
 	}

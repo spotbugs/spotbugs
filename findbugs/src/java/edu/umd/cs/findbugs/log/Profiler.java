@@ -38,7 +38,7 @@ public class Profiler {
 	private static Profiler instance = new Profiler();
 
 	private Profiler() {
-	};
+	}
 
 	public static Profiler getInstance() {
 		return instance;

@@ -472,7 +472,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		if (m.find()) return m.group(1).replace('/','.');
 
 		m = setPattern.matcher(sig);
-		if (m.find()) return m.group(1).replace('/','.');;
+		if (m.find()) return m.group(1).replace('/','.');
 		return null;
 
 	}

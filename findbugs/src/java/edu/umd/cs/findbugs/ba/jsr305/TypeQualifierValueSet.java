@@ -36,8 +36,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  */
 public class TypeQualifierValueSet {
 	// States
-	enum State { VALID, TOP, BOTTOM };
-	
+	enum State { VALID, TOP, BOTTOM }
+
 	private static final FlowValue DEFAULT_FLOW_VALUE = FlowValue.UNKNOWN;
 
 	private Map<ValueNumber, FlowValue> valueMap;

@@ -308,7 +308,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		return NullnessAnnotation.UNKNOWN_NULLNESS;
 	}
 
-	static class CheckCallSitesAndReturnInstructions {};
+	static class CheckCallSitesAndReturnInstructions {}
+
 	private void checkCallSitesAndReturnInstructions() {
 		Profiler profiler = Profiler.getInstance();
 		profiler.start(CheckCallSitesAndReturnInstructions.class);

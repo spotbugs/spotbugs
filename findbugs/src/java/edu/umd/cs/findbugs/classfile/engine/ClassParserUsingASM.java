@@ -68,9 +68,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 	private @SlashedClassName String slashedClassName;
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
-	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL };
-
-
+	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL }
 
 
 	public ClassParserUsingASM(ClassReader classReader,

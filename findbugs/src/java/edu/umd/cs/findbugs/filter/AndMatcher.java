@@ -50,7 +50,7 @@ public class AndMatcher extends CompoundMatcher {
 		}
 		xmlOutput.startTag("And");
 		if (disabled) xmlOutput.addAttribute("disabled", "true");
-		xmlOutput.stopTag(false);;	
+		xmlOutput.stopTag(false);
 		super.writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("And");
 	}
