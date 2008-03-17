@@ -58,6 +58,8 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.sql.PreparedStatement", "executeQuery", "()Ljava/sql/ResultSet;", false,  NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.sql.Connection", "prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", false,  NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.sql.DatabaseMetaData", NullnessAnnotation.NONNULL);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getConnection", "()Ljava/sql/Connection;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getURL", "()Ljava/lang/String;", false, NullnessAnnotation.NULLABLE);
 		
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
