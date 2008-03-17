@@ -146,7 +146,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
 	private int taintPriority(OpcodeStack.Item writing) {
 		if (writing == null) return Priorities.NORMAL_PRIORITY;
-		XMethod m = writing.getReturnValueOf();
 		XMethod method = writing.getReturnValueOf();
 		if ( method != null && method.getName().equals("getParameter")
 		        && method.getClassName().equals("javax.servlet.http.HttpServletRequest"))

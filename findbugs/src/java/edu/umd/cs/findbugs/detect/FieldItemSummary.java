@@ -60,6 +60,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 	public void sawOpcode(int seen) {
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
+			if (fieldOperand == null) return;
 			if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName()))
 				writtenOutsideOfConstructor.add(fieldOperand);
 			else if (seen == PUTFIELD) {
