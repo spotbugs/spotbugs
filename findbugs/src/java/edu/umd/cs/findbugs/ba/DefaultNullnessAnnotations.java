@@ -52,8 +52,10 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;I)I", true, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true, 0, NullnessAnnotation.NONNULL);
-
+		database.addMethodAnnotation("java.nio.channels.SocketChannel", "open", "()Ljava/nio/channels/SocketChannel;", true,  NullnessAnnotation.NONNULL);
+		
 		database.addMethodAnnotation("java.sql.Statement", "executeQuery", "(Ljava/lang/String;)Ljava/sql/ResultSet;", false,  NullnessAnnotation.NONNULL);
+		database.addMethodAnnotation("java.sql.PreparedStatement", "executeQuery", "()Ljava/sql/ResultSet;", false,  NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.sql.Connection", "prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", false,  NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.sql.DatabaseMetaData", NullnessAnnotation.NONNULL);
 		
