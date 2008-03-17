@@ -618,6 +618,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(containerFields);
 		declaredFields.removeAll(reflectiveFields);
+		for(Iterator<XField> i = declaredFields.iterator(); i.hasNext(); ) {
+			XField f = i.next();
+			if (f.isSynthetic() || f.getName().startsWith("_"))
+				i.remove();
+		}
 
 		TreeSet<XField> notInitializedInConstructors =
 				new TreeSet<XField>(declaredFields);
