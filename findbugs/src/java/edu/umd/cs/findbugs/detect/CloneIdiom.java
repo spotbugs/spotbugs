@@ -74,7 +74,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
 	@Override
 		 public void sawOpcode(int seen) {
-		if (seen == INSTANCEOF && getNameConstantOperand().equals("java/lang/Cloneable"))
+		if (seen == INSTANCEOF && getClassConstantOperand().equals("java/lang/Cloneable"))
 			checksInstanceOfCloneable = true;
 		if (seen == INVOKESPECIAL
 				&& getNameConstantOperand().equals("clone")
