@@ -59,6 +59,12 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.sql.Connection", "prepareStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;", false,  NullnessAnnotation.NONNULL);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.sql.DatabaseMetaData", NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getConnection", "()Ljava/sql/Connection;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getAttributes", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getColumns", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getSuperTables", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getSuperTypes", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getTimeDateFunctions", "()Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getTypeInfo", "()Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getURL", "()Ljava/lang/String;", false, NullnessAnnotation.NULLABLE);
 		
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
