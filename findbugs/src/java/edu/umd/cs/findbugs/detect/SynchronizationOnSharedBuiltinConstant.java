@@ -77,7 +77,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 				int priority = NORMAL_PRIORITY;
 				if (isBoolean) priority--;
 				if (newlyConstructedObject(summary))
-					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", priority)
+					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
 					.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
 				else if (isBoolean) 
 					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)

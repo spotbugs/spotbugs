@@ -33,32 +33,40 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FieldItemSummary extends OpcodeStackDetector implements NonReportingDetector {
 
-	
 	public FieldItemSummary(BugReporter bugReporter) {
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		context.setFieldItemSummary(this);
 	}
 
-	Map<XField,OpcodeStack.Item> summary = new HashMap<XField,OpcodeStack.Item>();
+	Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
+
 	Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
-	
+
 	OpcodeStack.Item getSummary(XField field) {
 		OpcodeStack.Item result = summary.get(field);
 		if (result == null)
 			return new OpcodeStack.Item();
 		return result;
-		
+
 	}
+
 	boolean isWrittenOutsideOfConstructor(XField field) {
-		if (field.isFinal()) return false;
+		if (field.isFinal())
+			return false;
 		return writtenOutsideOfConstructor.contains(field);
 	}
+
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
-			if (seen == PUTFIELD && !getMethodName().equals("<init>")
-					|| seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
+			if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName()))
+				writtenOutsideOfConstructor.add(fieldOperand);
+			else if (seen == PUTFIELD) {
+				OpcodeStack.Item addr = stack.getStackItem(1);
+				if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>"))
+					writtenOutsideOfConstructor.add(fieldOperand);
+			} else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
 				writtenOutsideOfConstructor.add(fieldOperand);
 			OpcodeStack.Item top = stack.getStackItem(0);
 			OpcodeStack.Item oldSummary = summary.get(fieldOperand);
@@ -67,7 +75,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 			} else
 				summary.put(fieldOperand, top);
 		}
-		
+
 	}
 
 }
