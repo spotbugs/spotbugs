@@ -1516,11 +1516,11 @@ as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR 
         </Details>
     </BugPattern>
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER">
-    <ShortDescription>Servlet cross site scripting vulnerability</ShortDescription>
-    <LongDescription>HTTP parameter directly written to Servlet output, giving XSS vulnerability in {1}</LongDescription>
+    <ShortDescription>Servlet reflected cross site scripting vulnerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to Servlet output, giving reflected XSS vulnerability in {1}</LongDescription>
 <Details>
 <![CDATA[
-	<p>This code directly writes an HTTP parameter to Servlet output, which allows for a cross site scripting
+	<p>This code directly writes an HTTP parameter to Servlet output, which allows for a reflected cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
@@ -1536,8 +1536,8 @@ as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR 
   </BugPattern>
 
   <BugPattern type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER">
-    <ShortDescription>JSP cross site scripting vulnerability</ShortDescription>
-    <LongDescription>HTTP parameter directly written to JSP output, giving XSS vulnerability in {1.class}</LongDescription>
+    <ShortDescription>JSP reflected cross site scripting vulnerability</ShortDescription>
+    <LongDescription>HTTP parameter directly written to JSP output, giving reflected XSS vulnerability in {1.class}</LongDescription>
 <Details>
 <![CDATA[
 	<p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
