@@ -126,15 +126,17 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 	private Thread analysisThread;
 	private boolean completed;
 	private Exception fatalException;
+	private int analysisPriority;
 
 	/**
 	 * Creates new form RunAnalysisDialog
 	 */
-	public RunAnalysisDialog(java.awt.Frame parent, AnalysisRun analysisRun_) {
+	public RunAnalysisDialog(java.awt.Frame parent, AnalysisRun analysisRun_, int analysisPriority) {
 		super(parent, true);
 		initComponents();
 		this.analysisRun = analysisRun_;
 		this.completed = false;
+		this.analysisPriority = analysisPriority;
 
 		// Create a progress callback to give the user feedback
 		// about how far along we are.
@@ -355,7 +357,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 		// Lower the priority of the analysis thread to leave more
 		// CPU for interactive tasks.
-		analysisThread.setPriority(Thread.NORM_PRIORITY - 1);
+		analysisThread.setPriority(analysisPriority);
 
 		analysisThread.start();
 	}//GEN-LAST:event_formWindowOpened

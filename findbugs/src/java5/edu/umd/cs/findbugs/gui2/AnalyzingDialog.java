@@ -208,8 +208,9 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	private class AnalysisThread extends Thread
 	{
 		{
-			// Give the analysis thread lower priority than the UI
-			setPriority(NORM_PRIORITY - 1);
+			// Give the analysis thread its (possibly user-defined) priority.
+			// The default is a slightly lower priority than the UI.
+			setPriority(Driver.getPriority());
 		}
 
 		@Override

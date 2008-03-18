@@ -2159,7 +2159,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		logger.logMessage(Logger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), new Object[]{project}));
 
 		// Run the analysis!
-		RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
+		RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun, analysisPriority);
 		dialog.setSize(400, 300);
 		dialog.setLocationRelativeTo(null); // center the dialog
 		dialog.setVisible(true);
@@ -3663,6 +3663,9 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			addSwitch("-debug", "enable debug output");
 			addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set look and feel");
 			addOption("-project", "project file", "load given project");
+			addOption("-priority", "thread priority",
+			          "set analysis thread's priority level (default is " +
+			          (Thread.NORM_PRIORITY-1) + ")");
 			addOption("-loadbugs", "bugs xml filename", "load given bugs xml file");
 		}
 
@@ -3671,7 +3674,18 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		public String getBugsFilename() {
 			return bugsFilename;
 		}
-
+		
+		// Thread priority for the analysis thread.  The default is
+		// just below the priority of the GUI
+		private int priority = Thread.NORM_PRIORITY-1;
+		
+		/**
+		 * Retrieve thread priority for the analysis thread.
+		 * @return thread priority for the analysis thread
+		 */
+		public int getPriority() {
+			return priority;
+		}
 
 		@Override
 		protected void handleOption(String option, String optionExtraPart) {
@@ -3714,6 +3728,14 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-loadbugs")) {
 				bugsFilename = argument;
+			} else if (option.equals("-priority")) {
+				int num;
+				try {
+					num = Integer.parseInt(argument);
+				} catch(NumberFormatException e) {
+					num = Thread.NORM_PRIORITY-1;
+				}
+				priority = num;
 			} else {
 				super.handleOptionWithArgument(option, argument);
 			}
@@ -3781,6 +3803,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 				System.err.println("Error: " + e.getMessage());
 			}
 		}
+		
+		frame.setPriority(commandLine.getPriority());
 
 		if (commandLine.getSettingList() != null) {
 			frame.settingList = commandLine.getSettingList();
@@ -3793,6 +3817,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null); // center the frame
 		frame.setVisible(true);
+	}
+	
+	private int analysisPriority = Thread.NORM_PRIORITY-1;
+	
+	public void setPriority(int priority) {
+		this.analysisPriority = priority;
 	}
 
 	public static void showCommandLineOptions() {

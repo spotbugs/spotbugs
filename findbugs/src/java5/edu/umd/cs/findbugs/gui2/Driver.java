@@ -36,6 +36,7 @@ public class Driver {
 	private static float fontSize = 12;
 	private static boolean docking = true;
 	private static SplashFrame splash;
+	private static int priority = Thread.NORM_PRIORITY-1;
 
 	public static void main(String[] args) throws Exception {
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -83,6 +84,18 @@ public class Driver {
 			else if(args[i].equals("-clear")){
 				GUISaveState.clear();
 				System.exit(0);
+			}
+
+			else if(args[i].equals("-priority")){
+				int num = 0;
+				try{
+					i++;
+					num = Integer.valueOf(args[i]);
+				}
+				catch(NumberFormatException exc){
+					num = Thread.NORM_PRIORITY-1;
+				}
+				priority = num;
 			}
 
 			else if (args[i].equals("-d") || args[i].equals("--nodock")) {
@@ -166,5 +179,9 @@ public class Driver {
 
 	public static float getFontSize(){
 		return fontSize;
+	}
+	
+	public static int getPriority() {
+		return priority;
 	}
 }
