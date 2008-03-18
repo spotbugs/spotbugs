@@ -383,7 +383,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 		}else if (getMethodName().equals("writeObject")
 				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
 				&& isSerializable) {
-			sawReadObject = true;
+			sawWriteObject = true;
 			if (!obj.isPrivate())
 				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
 						.addClassAndMethod(this));
