@@ -63,7 +63,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getColumns", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getSuperTables", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getSuperTypes", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
-		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getTimeDateFunctions", "()Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
+		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getTimeDateFunctions", "()Ljava/lang/String;", false, NullnessAnnotation.NULLABLE);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getTypeInfo", "()Ljava/sql/ResultSet;", false, NullnessAnnotation.NULLABLE);
 		database.addMethodAnnotation("java.sql.DatabaseMetaData", "getURL", "()Ljava/lang/String;", false, NullnessAnnotation.NULLABLE);
 		
