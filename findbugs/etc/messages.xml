@@ -5616,9 +5616,9 @@ the caller.
 <![CDATA[
 <p>
 This instruction assigns a value to a local variable,
-but the value is not read by any subsequent instruction.
-Often, this indicates an error, because the value computed
-is never used.
+but the value is not read or used in any subsequent instruction.
+Often, this indicates an error, because the value computed is never
+used.
 </p>
 <p>
 Note that Sun's javac compiler often generates dead stores for
