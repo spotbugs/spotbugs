@@ -620,7 +620,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		declaredFields.removeAll(reflectiveFields);
 		for(Iterator<XField> i = declaredFields.iterator(); i.hasNext(); ) {
 			XField f = i.next();
-			if (f.isSynthetic() || f.getName().startsWith("_"))
+			if (f.isSynthetic() && !f.getName().startsWith("this$") || f.getName().startsWith("_"))
 				i.remove();
 		}
 
