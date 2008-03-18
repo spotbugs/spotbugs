@@ -91,6 +91,15 @@ public class OpcodeStack implements Constants2
 	private boolean top;
 
 
+	static class HttpParameterInjection {
+		HttpParameterInjection(String parameterName, int pc) {
+			this.parameterName = parameterName;
+			this.pc = pc;
+		}
+		String parameterName;
+		int pc;
+	}
+	
 
 	private boolean seenTransferOfControl = false;
 
@@ -306,14 +315,20 @@ public class OpcodeStack implements Constants2
 			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
 				m.fieldLoadedFromRegister = i1.fieldLoadedFromRegister;
 
-			if (i1.specialKind == i2.specialKind)
+			if (i1.specialKind == SERVLET_REQUEST_TAINTED) {
+				m.specialKind = SERVLET_REQUEST_TAINTED;
+				m.userValue = i1.userValue;
+			}
+			else if (i2.specialKind == SERVLET_REQUEST_TAINTED) {
+				m.specialKind = SERVLET_REQUEST_TAINTED;
+				m.userValue = i2.userValue;
+			}
+			else if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
 			else if (i1.specialKind == NASTY_FLOAT_MATH || i2.specialKind == NASTY_FLOAT_MATH)
 				m.specialKind = NASTY_FLOAT_MATH;
 			else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
 				m.specialKind = FLOAT_MATH;
-			else if (i1.specialKind == SERVLET_REQUEST_TAINTED || i2.specialKind == SERVLET_REQUEST_TAINTED)
-				m.specialKind = SERVLET_REQUEST_TAINTED;
 			if (DEBUG) System.out.println("Merge " + i1 + " and " + i2 + " gives " + m);
 			return m;
 		}
@@ -352,6 +367,17 @@ public class OpcodeStack implements Constants2
 
 		public int getFieldLoadedFromRegister() {
 			return fieldLoadedFromRegister;
+		}
+		
+		public @CheckForNull String getHttpParameterName() {
+			if (!isServletParameterTainted()) throw new IllegalStateException();
+			if (!(userValue instanceof HttpParameterInjection)) return null;
+			return ((HttpParameterInjection) userValue).parameterName;
+		}
+		public  int getInjectionPC() {
+			if (!isServletParameterTainted()) throw new IllegalStateException();
+			if (!(userValue instanceof HttpParameterInjection)) return -1;
+			return ((HttpParameterInjection) userValue).pc;
 		}
 
 		 public Item(String signature, Object constantValue) {
@@ -1649,6 +1675,7 @@ public class OpcodeStack implements Constants2
 		 Item sbItem = null;
 		 boolean topIsTainted = getStackDepth() > 0 && getStackItem(0).isServletParameterTainted();
 
+		 
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
 		 if ("java/lang/StringBuffer".equals(clsName)
 		 ||  "java/lang/StringBuilder".equals(clsName)) {
@@ -1720,14 +1747,30 @@ public class OpcodeStack implements Constants2
 					top.source = XFactory.createReferencedXMethod(dbc);
 					return;
 				}
+		 } else if (seen == INVOKEINTERFACE && methodName.equals("getParameter")
+			        && clsName.equals("javax/servlet/http/HttpServletRequest")
+			         || clsName.equals("javax/servlet/http/ServletRequest")) {
+				 Item requestParameter = pop();
+				 pop();
+				 Item result = new Item("Ljava/lang/String");
+				 result.setServletParameterTainted();
+				 result.source = XFactory.createReferencedXMethod(dbc);
+				String parameterName = null;
+				 if (requestParameter.getConstant() instanceof String)
+					 parameterName = (String) requestParameter.getConstant();
+				 
+				 result.userValue = new HttpParameterInjection(parameterName, dbc.getPC());
+				 push(result);
+				 return;
 		 }
+
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
 
 		 if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
-			 if (!sawUnknownAppend && servletRequestParameterTainted)
+			 if (!sawUnknownAppend && servletRequestParameterTainted) 
 				 i.setServletParameterTainted();
 			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;

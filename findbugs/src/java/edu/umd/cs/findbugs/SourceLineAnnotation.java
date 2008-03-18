@@ -59,6 +59,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
 	public static final String DEFAULT_ROLE_UNKNOWN_LINE = "SOURCE_LINE_DEFAULT_UNKNOWN_LINE";
 	public static final String ROLE_ANOTHER_INSTANCE = "SOURCE_LINE_ANOTHER_INSTANCE";
+	public static final String ROLE_GENERATED_AT = "SOURCE_LINE_GENERATED_AT";
 
 
 	/**
@@ -680,6 +681,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	private static final String ELEMENT_NAME = "SourceLine";
 
+	
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, false);
 	}
