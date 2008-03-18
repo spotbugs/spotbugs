@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.InstructionHandle;
@@ -108,7 +109,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 		accumulator = new BugAccumulator(bugReporter);
 	}
 
-
+	@Override
+	public void visitJavaClass(JavaClass c) {
+		super.visitJavaClass(c);
+		accumulator.reportAccumulatedBugs();
+	}
 
 	@Override
 		 public void visitMethod(Method method) {
@@ -117,7 +122,6 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Dete
 			System.out.println("RuntimeExceptionCapture visiting " + method);
 		}
 		super.visitMethod(method);
-		accumulator.reportAccumulatedBugs();
 	}
 
 	@Override
