@@ -2096,8 +2096,8 @@ The list of configurable analysis properties is shown in
 <para>
 &FindBugs; supports several annotations to express the developer's intent
 so that FindBugs can issue warnings more appropriately. You need to use
-Java 5 to use annotations, and must place the annotations.jar on the
-classpath while compiling your program.
+Java 5 to use annotations, and must place the annotations.jar and jsr305.jar
+files in the classpath while compiling your program.
 </para>
 
 <variablelist>
