@@ -392,18 +392,41 @@ public class SortedBugCollection implements BugCollection {
 		if (project == null) throw new NullPointerException("No project");
 		try {
 			writePrologue(xmlOutput, project);
-			if (withMessages) computeBugHashes();
+			if (withMessages) {
+				computeBugHashes();
+				String commonBase = null;
+				for(String s : project.getSourceDirList()) {
+					if (commonBase == null) commonBase = s;
+					else commonBase = commonBase.substring(0, commonPrefix(commonBase, s));
+					
+				}
+				if (commonBase != null && commonBase.length() > 0) {
+					if (commonBase.indexOf("/./") > 0)
+						commonBase = commonBase.substring(0,commonBase.indexOf("/."));
+					File base = new File(commonBase);
+					if (base.exists() && base.isDirectory() && base.canRead())
+						SourceLineAnnotation.generateRelativeSource(base, project);
+				}
+			}
 
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
 				bugInstance.writeXML(xmlOutput, withMessages);
 
 			writeEpilogue(xmlOutput);
+			
 		} finally {
 			xmlOutput.finish();
+			SourceLineAnnotation.clearGenerateRelativeSource();
 		}
 	}
 
+	
+	int commonPrefix(String s1, String s2) {
+		int pos = 0;
+		while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos)) pos++;
+		return pos;
+	}
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
 		if (withMessages) {
 			writeBugCategories( xmlOutput);

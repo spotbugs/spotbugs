@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.bcel.classfile.Code;
@@ -36,6 +37,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -686,6 +689,23 @@ public class SourceLineAnnotation implements BugAnnotation {
 		writeXML(xmlOutput, false);
 	}
 
+	static ThreadLocal<SourceFinder> sourceFinder;
+	static ThreadLocal<String> relativeSourceBase;
+	public static void generateRelativeSource(File relativeSourceBase, Project project) {
+		try {
+		SourceLineAnnotation.relativeSourceBase.set(relativeSourceBase.getCanonicalPath());
+		SourceFinder mySourceFinder  = new SourceFinder();
+		sourceFinder.set(mySourceFinder);
+		mySourceFinder.setSourceBaseList(project.getSourceDirList());
+		} catch (IOException e) {
+			AnalysisContext.logError("Error resolving relative source base " + relativeSourceBase, e);
+		}
+	}
+	public static void clearGenerateRelativeSource() {
+		sourceFinder.remove();
+		relativeSourceBase.remove();
+	}
+
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		String classname = getClassName();
 		String packageName = "";
@@ -705,6 +725,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
 			attributeList.addAttribute("sourcepath", packageName.replace('.', '/')+sourceFile);
+			SourceFinder mySourceFinder = sourceFinder.get();
+			if (mySourceFinder != null) {
+				try {
+				String fullPath = new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+				String myRelativeSourceBase = relativeSourceBase.get();
+				if (fullPath.startsWith(myRelativeSourceBase))
+					attributeList.addAttribute("relSourcepath", fullPath.substring(myRelativeSourceBase.length()+1));
+				} catch (IOException e) {
+					assert true;
+				}
+				
+			}
 		}
 
 		String role = getDescription();
