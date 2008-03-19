@@ -689,8 +689,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 		writeXML(xmlOutput, false);
 	}
 
-	static ThreadLocal<SourceFinder> sourceFinder;
-	static ThreadLocal<String> relativeSourceBase;
+	static final ThreadLocal<SourceFinder> sourceFinder = new ThreadLocal<SourceFinder>();
+	static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<String>();
 	public static void generateRelativeSource(File relativeSourceBase, Project project) {
 		try {
 		SourceLineAnnotation.relativeSourceBase.set(relativeSourceBase.getCanonicalPath());
