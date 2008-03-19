@@ -1674,7 +1674,9 @@ public class OpcodeStack implements Constants2
 		 boolean sawUnknownAppend = false;
 		 Item sbItem = null;
 		 boolean topIsTainted = getStackDepth() > 0 && getStackItem(0).isServletParameterTainted();
-
+		 Item topItem = null;
+		 if (getStackDepth() > 0)
+			 topItem = getStackItem(0);
 		 
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
 		 if ("java/lang/StringBuffer".equals(clsName)
@@ -1770,11 +1772,14 @@ public class OpcodeStack implements Constants2
 		 if ((sawUnknownAppend || appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
-			 if (!sawUnknownAppend && servletRequestParameterTainted) 
+			 if (!sawUnknownAppend && servletRequestParameterTainted) {
+				 i.userValue = topItem.userValue;
 				 i.setServletParameterTainted();
+			 }
 			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;
 				  i.source = sbItem.source;
+				  if (i.userValue == null)
 				  i.userValue = sbItem.userValue;
 				  if (sbItem.registerNumber >= 0)
 					  setLVValue(sbItem.registerNumber, i );
@@ -1785,11 +1790,6 @@ public class OpcodeStack implements Constants2
 		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
-			push(i);
-		} else if (methodName.equals("getParameter")
-		        && clsName.equals("javax/servlet/http/HttpServletRequest")) {
-			Item i = pop();
-			i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
 			push(i);
 		} else if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
