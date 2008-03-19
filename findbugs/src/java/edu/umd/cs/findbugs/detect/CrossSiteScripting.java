@@ -38,9 +38,11 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class CrossSiteScripting extends OpcodeStackDetector {
 
 	final BugReporter bugReporter;
+	final BugAccumulator accumulator;
 
 	public CrossSiteScripting(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.accumulator = new BugAccumulator(bugReporter);
 	}
 
 	Map<String, OpcodeStack.Item> map = new HashMap<String, OpcodeStack.Item>();
@@ -52,6 +54,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 	public void visit(Code code) {
 		super.visit(code);
 		map.clear();
+		accumulator.reportAccumulatedBugs();
 	}
 	
 	private void annotateAndReport(BugInstance bug, OpcodeStack.Item item) {
@@ -61,7 +64,6 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 		if (s != null && xmlSafe.matcher(s).matches())
 			bug.addString(s).describe(StringAnnotation.PARAMETER_NAME_ROLE);
 		SourceLineAnnotation thisLine = SourceLineAnnotation.fromVisitedInstruction(this);
-		bug.add(thisLine);
 		if (pc >= 0) {
 			SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(this, pc);
 			if (thisLine.getStartLine() != source.getStartLine()) 
@@ -69,7 +71,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 		}
 		
 		bug.addOptionalLocalVariable(this, item);
-		bugReporter.reportBug(bug);
+		accumulator.accumulateBug(bug, this);
 	}
 	@Override
 	public void sawOpcode(int seen) {

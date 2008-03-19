@@ -399,6 +399,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
 		// Highest priority: return the first top level source line annotation
 		for (BugAnnotation annotation : annotationList) {
+			if (annotation instanceof SourceLineAnnotation
+					&& annotation.getDescription().equals(SourceLineAnnotation.DEFAULT_ROLE))
+				return (SourceLineAnnotation) annotation;
+		}
+		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation)
 				return (SourceLineAnnotation) annotation;
 		}
