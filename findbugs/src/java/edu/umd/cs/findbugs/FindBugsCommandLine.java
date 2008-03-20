@@ -115,71 +115,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
 			DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
-			project = readProject(argument);
+			project = Project.readProject(argument);
 		} else {
 			throw new IllegalStateException();
 		}
 	}
-
-	/**
-	 * Read Project from named file.
-	 * 
-     * @param argument command line argument containing project file name
-     * @return the Project
-     * @throws IOException
-     */
-    private Project readProject(String argument) throws IOException {
-	    String projectFileName = argument;
-	    
-	    File projectFile = new File(projectFileName);
-	    
-	    if (projectFile.isDirectory()) {
-	    	// New-style (GUI2) project directory.
-	    	// We read in the bug collection in order to read the project
-	    	// information as a side effect.
-	    	// Inefficient, but effective.
-	    	String name = projectFile.getAbsolutePath() + File.separator + projectFile.getName() + ".xml";
-	    	File f = new File(name);
-	    	SortedBugCollection bugCollection = new SortedBugCollection();
-
-	    	try {
-	    		Project project = new Project();
-	    		bugCollection.readXML(f.getPath(), project);
-	    		return project;
-	    	} catch (DocumentException e) {
-	    		IOException ioe = new IOException("Couldn't read saved XML in project directory");
-	    		ioe.initCause(e);
-	    		throw ioe;
-	    	}
-
-	    } else if (projectFileName.endsWith(".xml") || projectFileName.endsWith(".fbp")) {
-	    	try {
-	    	return project = Project.readXML(projectFile);
-	    	} catch (DocumentException e) {
-	    		IOException ioe = new IOException("Couldn't read saved FindBugs project");
-	    		ioe.initCause(e);
-	    		throw ioe;
-	    	}
-	    	catch (SAXException e) {
-	    		IOException ioe = new IOException("Couldn't read saved FindBugs project");
-	    		ioe.initCause(e);
-	    		throw ioe;
-	    	}
-	    } else {
-	    	// Old-style (original GUI) project file
-
-	    	// Convert project file to be an absolute path
-	    	projectFileName = new File(projectFileName).getAbsolutePath();
-
-	    	try {
-	    		Project project = new Project();
-	    		project.read(projectFileName);
-	    		return project;
-	    	} catch (IOException e) {
-	    		System.err.println("Error opening " + projectFileName);
-	    		e.printStackTrace(System.err);
-	    		throw e;
-	    	}
-	    }
-    }
 }

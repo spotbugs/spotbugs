@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.io.FileNotFoundException;
+
 import javax.swing.UIManager;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -37,6 +40,7 @@ public class Driver {
 	private static boolean docking = true;
 	private static SplashFrame splash;
 	private static int priority = Thread.NORM_PRIORITY-1;
+	private static Project project = null;
 
 	public static void main(String[] args) throws Exception {
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -98,6 +102,19 @@ public class Driver {
 				priority = num;
 			}
 
+			else if(args[i].equals("-project")){
+				try {
+					i++;
+					project = Project.readProject(args[i]);
+				} catch(FileNotFoundException e) {
+					System.err.println("Project file \"" + args[i] + "\" could not be found");
+					System.exit(1);
+				} catch(IndexOutOfBoundsException e) {
+					System.err.println("Option \"-project\" must be followed by a filename");
+					System.exit(1);
+				}
+			}
+			
 			else if (args[i].equals("-d") || args[i].equals("--nodock")) {
 				docking = false;
 			}
@@ -171,6 +188,11 @@ public class Driver {
 	public static void removeSplashScreen() {
 		splash.setVisible(false);
 		splash.dispose();
+
+		if(project != null) {
+			MainFrame.getInstance().setProject(project);
+			MainFrame.getInstance().newProject();
+		}
 	}
 	public static boolean isDocking()
 	{
