@@ -79,11 +79,18 @@ public interface BugCollection
 	public long getTimestamp();
 
 	/**
-	 * Get the timestamp for when the analysis was performed.
+	 * Set the timestamp for when the analysis was performed.
 	 * 
 	 * @param timestamp the analysis timestamp.
 	 */
 	public void setAnalysisTimestamp(long timestamp);
+
+	/**
+	 * Set the version of FindBugs used to perform the analysis
+	 * 
+	 * @param analysisVersion the analysis version.
+	 */
+	public void setAnalysisVersion(String analysisVersion);
 
 	/**
 	 * Get the timestamp for when the analysis was performed.

@@ -150,6 +150,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				if (analysisTimestamp != null) { 
 					bugCollection.setAnalysisTimestamp(parseLong(analysisTimestamp, -1L));
 				}
+				String analysisVersion = attributes.getValue("version");
+				if (analysisVersion != null) { 
+					bugCollection.setAnalysisVersion(analysisVersion);
+				}
 
 				// Set release name, if present.
 				String releaseName = attributes.getValue("release");
