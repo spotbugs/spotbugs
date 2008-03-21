@@ -136,11 +136,9 @@ public class OpcodeStack implements Constants2
 		private Object constValue = UNKNOWN;
 		private @CheckForNull ClassMember source;
 		private int flags;
-		 // private boolean isNull = false;
 		private int registerNumber = -1;
-		// private boolean isInitialParameter = false;
-		// private boolean couldBeZero = false;
 		private Object userValue = null;
+		private HttpParameterInjection injection = null;
 		private int fieldLoadedFromRegister = -1;
 
 
@@ -152,12 +150,6 @@ public class OpcodeStack implements Constants2
 		public boolean isWide() {
 			return getSize() == 2;
 		}
-
-		private static boolean equals(Object o1, Object o2) {
-			if (o1 == o2) return true;
-			if (o1 == null || o2 == null) return false;
-			return o1.equals(o2);
-			}
 
 		@Override
 		public int hashCode() {
@@ -182,13 +174,14 @@ public class OpcodeStack implements Constants2
 			if (!(o instanceof Item)) return false;
 			Item that = (Item) o;
 
-			return equals(this.signature, that.signature)
-				&& equals(this.constValue, that.constValue)
-				&& equals(this.source, that.source)
+			return Util.nullSafeEquals(this.signature, that.signature)
+				&& Util.nullSafeEquals(this.constValue, that.constValue)
+				&& Util.nullSafeEquals(this.source, that.source)
+				&& Util.nullSafeEquals(this.userValue, that.userValue)
+				&& Util.nullSafeEquals(this.injection, that.injection)
 				&& this.specialKind == that.specialKind
 				&& this.registerNumber == that.registerNumber
 				&& this.flags == that.flags
-				&& this.userValue == that.userValue
 				&& this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
 
 			}
@@ -298,17 +291,19 @@ public class OpcodeStack implements Constants2
 			Item m = new Item();
 			m.flags = i1.flags & i2.flags;
 			m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
-			if (equals(i1.signature,i2.signature))
+			if (Util.nullSafeEquals(i1.signature, i2.signature))
 				m.signature = i1.signature;
-			if (equals(i1.constValue,i2.constValue))
+			if (Util.nullSafeEquals(i1.constValue, i2.constValue))
 				m.constValue = i1.constValue;
-			if (equals(i1.source,i2.source)) {
+			if (Util.nullSafeEquals(i1.source, i2.source)) {
 				m.source = i1.source;
-			}
-			else if ("".equals(i1.constValue)) 
+			} else if ("".equals(i1.constValue)) 
 				m.source = i2.source;
 			else if ("".equals(i2.constValue)) 
 				m.source = i1.source;
+			
+			if (Util.nullSafeEquals(i1.userValue, i2.userValue))
+				m.userValue = i1.userValue;
 
 			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
@@ -317,11 +312,11 @@ public class OpcodeStack implements Constants2
 
 			if (i1.specialKind == SERVLET_REQUEST_TAINTED) {
 				m.specialKind = SERVLET_REQUEST_TAINTED;
-				m.userValue = i1.userValue;
+				m.injection = i1.injection;
 			}
 			else if (i2.specialKind == SERVLET_REQUEST_TAINTED) {
 				m.specialKind = SERVLET_REQUEST_TAINTED;
-				m.userValue = i2.userValue;
+				m.injection = i2.injection;
 			}
 			else if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
@@ -345,6 +340,7 @@ public class OpcodeStack implements Constants2
 			this.source = it.source;
 			this.registerNumber = it.registerNumber;
 			this.userValue = it.userValue;
+			this.injection = it.injection;
 			this.flags = it.flags;
 			this.specialKind = it.specialKind;
 		 }
@@ -371,13 +367,13 @@ public class OpcodeStack implements Constants2
 		
 		public @CheckForNull String getHttpParameterName() {
 			if (!isServletParameterTainted()) throw new IllegalStateException();
-			if (!(userValue instanceof HttpParameterInjection)) return null;
-			return ((HttpParameterInjection) userValue).parameterName;
+			if (injection == null) return null;
+			return injection.parameterName;
 		}
 		public  int getInjectionPC() {
 			if (!isServletParameterTainted()) throw new IllegalStateException();
-			if (!(userValue instanceof HttpParameterInjection)) return -1;
-			return ((HttpParameterInjection) userValue).pc;
+			if (injection == null)  return -1;
+			return injection.pc;
 		}
 
 		 public Item(String signature, Object constantValue) {
