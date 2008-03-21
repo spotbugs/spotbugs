@@ -30,5 +30,5 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public interface XMLWriteableWithMessages extends XMLWriteable {
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException;
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException;
 }

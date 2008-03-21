@@ -686,7 +686,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false);
+		writeXML(xmlOutput, false, false);
 	}
 
 	static final ThreadLocal<SourceFinder> sourceFinder = new ThreadLocal<SourceFinder>();
@@ -706,13 +706,15 @@ public class SourceLineAnnotation implements BugAnnotation {
 		relativeSourceBase.remove();
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		String classname = getClassName();
 		String packageName = "";
 		if (classname.indexOf('.') > 0) 
 			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", classname);
+		if (isPrimary) attributeList.addAttribute("primary", "true");
+
 		int n = getStartLine(); // start/end are now optional (were too many "-1"s in the xml)
 		if (n >= 0) attributeList.addAttribute("start", String.valueOf(n));
 		n = getEndLine();

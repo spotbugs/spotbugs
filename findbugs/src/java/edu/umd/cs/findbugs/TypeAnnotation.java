@@ -130,10 +130,10 @@ public class TypeAnnotation implements BugAnnotation {
 	private static final String ELEMENT_NAME = "Type";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false);
+		writeXML(xmlOutput, false, false);
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("descriptor", descriptor);
 

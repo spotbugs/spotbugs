@@ -302,22 +302,24 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	private static final String ELEMENT_NAME = "Field";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false);
+		writeXML(xmlOutput, false, false);
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getFieldName())
 			.addAttribute("signature", getFieldSignature())
 			.addAttribute("isStatic", String.valueOf(isStatic()));
+		if (isPrimary) attributeList.addAttribute("primary", "true");
+
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
-		getSourceLines().writeXML(xmlOutput, addMessages);
+		getSourceLines().writeXML(xmlOutput, addMessages, false);
 		if (addMessages) {
 			xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
 			xmlOutput.writeText(this.toString());

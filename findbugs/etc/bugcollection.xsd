@@ -39,6 +39,7 @@
 										</xs:sequence>
 										<xs:attribute name="classname" type="xs:string" use="required" />
 										<xs:attribute name="role" type="xs:string" use="optional" />
+										<xs:attribute name="primary" type="xs:boolean" use="optional" />
 									</xs:complexType>
 								</xs:element>
 								<xs:element name="Type">
@@ -64,6 +65,7 @@
 										<xs:attribute name="signature" type="xs:string" use="required" />
 										<xs:attribute name="isStatic" type="xs:boolean" use="required" />
 										<xs:attribute name="role" type="xs:string" use="optional" />
+										<xs:attribute name="primary" type="xs:boolean" use="optional" />
 									</xs:complexType>
 								</xs:element>
 								<xs:element ref="SourceLine" />
@@ -95,6 +97,8 @@
 										<xs:attribute name="signature" type="xs:string" use="required" />
 										<xs:attribute name="isStatic" type="xs:boolean" use="required" />
 										<xs:attribute name="role" type="xs:string" use="optional" />
+										<xs:attribute name="primary" type="xs:boolean" use="optional" />
+										
 									</xs:complexType>
 								</xs:element>
 								<xs:element name="Int">
@@ -289,6 +293,7 @@
 			<xs:attribute name="sourcepath" type="xs:string" use="optional" />
 			<xs:attribute name="synthetic" type="xs:boolean" use="optional" />
 			<xs:attribute name="role" type="xs:string" use="optional" />
+			<xs:attribute name="primary" type="xs:boolean" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Message" type="xs:string" />

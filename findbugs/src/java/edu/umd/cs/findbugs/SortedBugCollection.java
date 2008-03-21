@@ -411,7 +411,7 @@ public class SortedBugCollection implements BugCollection {
 
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
-				bugInstance.writeXML(xmlOutput, withMessages);
+				bugInstance.writeXML(xmlOutput, withMessages, false);
 
 			writeEpilogue(xmlOutput);
 			

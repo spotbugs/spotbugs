@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -1596,10 +1598,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * ---------------------------------------------------------------------- */
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false);
+		writeXML(xmlOutput, false, false);
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		  XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
@@ -1652,17 +1654,29 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("LongMessage");
 		}
 
+		Map<BugAnnotation,Void> primaryAnnotations;
+		
+		if (addMessages) {
+			primaryAnnotations = new IdentityHashMap<BugAnnotation,Void>();
+			primaryAnnotations.put(getPrimarySourceLineAnnotation(), null);
+			primaryAnnotations.put(getPrimaryClass(), null);
+			primaryAnnotations.put(getPrimaryField(), null);
+			primaryAnnotations.put(getPrimaryMethod(), null);
+		} else {
+			primaryAnnotations = Collections.emptyMap();
+		}
+		
 		boolean foundSourceAnnotation = false;
 		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation) 
 				foundSourceAnnotation = true;
-			annotation.writeXML(xmlOutput, addMessages);
+			annotation.writeXML(xmlOutput, addMessages,  primaryAnnotations.containsKey(annotation));
 		}
 		if (!foundSourceAnnotation && addMessages) {
 			SourceLineAnnotation synth = getPrimarySourceLineAnnotation();
 			if (synth != null) {
 				synth.setSynthetic(true);
-				synth.writeXML(xmlOutput, addMessages);
+				synth.writeXML(xmlOutput, addMessages, false);
 			}
 		}
 

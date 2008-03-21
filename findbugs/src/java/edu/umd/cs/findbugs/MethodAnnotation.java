@@ -438,12 +438,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getMethodName())
 			.addAttribute("signature", getMethodSignature())
 			.addAttribute("isStatic", String.valueOf(isStatic()));
+		if (isPrimary) attributeList.addAttribute("primary", "true");
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

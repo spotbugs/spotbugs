@@ -167,10 +167,10 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	private static final String ELEMENT_NAME = "LocalVariable";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		writeXML(xmlOutput, false);
+		writeXML(xmlOutput, false, false);
 	}
 
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("name", value)
 		.addAttribute("register", String.valueOf(register))
