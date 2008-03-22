@@ -234,9 +234,11 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 */
 	int getNumBytes() {
 		File file = new File(fileName);
-		if (!file.exists()) {
-			return -1;
-		}
+		// this is not needed but causes slowdown on a slow file system IO
+		// file.length() returns zero if not found, and matches the contract of this method
+//		if (!file.exists()) {
+//			return -1;
+//		}
 		return (int) file.length();
 	}
 }
