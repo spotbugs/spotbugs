@@ -45,9 +45,9 @@ public class Version {
 	public static final int PATCHLEVEL = 3;
 
 	/**
-	 * Development version (true) or release candidate (false)?
+	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
 	 * Release candidate number.
