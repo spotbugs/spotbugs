@@ -78,6 +78,7 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
 				if (seenPutStatic || seenGetStatic)
 					pendingBug.setPriority(HIGH_PRIORITY);
 				bugReporter.reportBug(pendingBug);
+				pendingBug = null;
 			}
 			return;
 		}
