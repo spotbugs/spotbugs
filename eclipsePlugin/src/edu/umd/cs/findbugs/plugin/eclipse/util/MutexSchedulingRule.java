@@ -26,9 +26,8 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  */
 public class MutexSchedulingRule implements ISchedulingRule {
 
-	// TODO enable multicore without property if it works stable with FB
-	private static final boolean MULTICORE = Boolean.getBoolean("fb.allowParallelBuild")
-			&& Runtime.getRuntime().availableProcessors() > 1;
+	// enable multicore
+	private static final boolean MULTICORE = Runtime.getRuntime().availableProcessors() > 1;
 
 	private final IProject project;
 
