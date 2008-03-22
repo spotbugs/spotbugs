@@ -123,7 +123,7 @@ public class FindBugsWorker {
 	 */
 	public void work(List<IResource> resources) throws CoreException {
 		if (resources == null || resources.isEmpty()) {
-			FindbugsPlugin.getDefault().logInfo("No resources to analyse");
+			FindbugsPlugin.getDefault().logInfo("No resources to analyse for project " + project);
 			return;
 		}
 		if (DEBUG) {
