@@ -186,7 +186,10 @@
 	        speed="slow"
 	        reports=""
 	        hidden="true"/>
-
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass"
+                    speed="fast"
+                    reports="TESTING"
+                    hidden="false"/>        
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
@@ -838,6 +841,7 @@
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS" />
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE" category="MT_CORRECTNESS" />
   <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585" />
   <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />

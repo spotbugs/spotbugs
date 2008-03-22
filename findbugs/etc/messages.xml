@@ -203,6 +203,7 @@ by other detectors.</p>
     </Details>
   </Detector>
 
+
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
     <Details>
 <![CDATA[
@@ -211,7 +212,16 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
-
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass">
+    <Details>
+      <![CDATA[
+<p> Look for code that synchronizes on the results of getClass rather than on class 
+literals.
+</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="edu.umd.cs.findbugs.detect.FieldItemSummary">
    <Details>
       <![CDATA[
@@ -6801,7 +6811,40 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
       ]]>
     </Details>
   </BugPattern>
-
+  <BugPattern type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL">
+    <ShortDescription>Sychronization on getClass rather than class literal</ShortDescription>
+    <LongDescription>Sychronization on getClass rather than class literal in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+     This instance method synchronizes on <code>this.getClass()</code>. If this class is subclassed,
+     subclasses will synchronize on the class object for the subclass, which isn't likely what was intended.
+     For example, consider this code from java.awt.Label:
+     <pre>
+     private static final String base = "label";
+     private static int nameCounter = 0;
+     String constructComponentName() {
+        synchronized (getClass()) {
+            return base + nameCounter++;
+        }
+     }
+     </pre></p>
+     <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
+     Instead, this code should be synchronizing on <code>Label.class</code>
+      <pre>
+     private static final String base = "label";
+     private static int nameCounter = 0;
+     String constructComponentName() {
+        synchronized (Label.class) {
+            return base + nameCounter++;
+        }
+     }
+     </pre></p>
+      <p>Bug pattern contributed by Jason Mehrens</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -6905,6 +6948,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="RE">Regular expressions</BugCode>
   <BugCode abbrev="SQL">SQL Problem</BugCode>
   <BugCode abbrev="DL">Potential deadlock or unexpected blocking</BugCode>
+  <BugCode abbrev="WL">Possible locking on wrong object</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
   <BugCode abbrev="VA">Var arg problems</BugCode>
