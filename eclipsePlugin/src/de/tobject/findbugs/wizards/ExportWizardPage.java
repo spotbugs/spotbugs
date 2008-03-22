@@ -108,6 +108,7 @@ public class ExportWizardPage extends WizardPage {
 		} else {
 			sortByCombo.select(0);
 		}
+		sortBy = sortByCombo.getSelectionIndex();
 
 		sortByCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
