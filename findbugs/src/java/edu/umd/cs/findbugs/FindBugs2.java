@@ -35,9 +35,13 @@ import org.dom4j.DocumentException;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -237,6 +241,10 @@ public class FindBugs2 implements IFindBugsEngine {
 			AnalysisContext.removeCurrentAnalysisContext();
 			Global.removeAnalysisCacheForCurrentThread();
 			DescriptorFactory.clearInstance();
+			ObjectTypeFactory.clearInstance();
+			TypeQualifierApplications.clearInstance();
+			TypeQualifierAnnotation.clearInstance();
+			TypeQualifierValue.clearInstance();
 			// Make sure the codebases on the classpath are closed
 			if(classPath != null) {
 	            classPath.close();
@@ -677,9 +685,13 @@ public class FindBugs2 implements IFindBugsEngine {
 		System.out.println("Added " + count + " referenced classes");
 		System.out.println("Total of " + referencedPackageSet.size() + " packages");
 		}
+
+		// TODO the block below seems to be an old workaround which does not add any value
+		// except even more "package-info not found" exceptions
+		if(Boolean.getBoolean("fb.addPackageInfo"))
 		for (String pkg : referencedPackageSet) {
 			ClassDescriptor pkgInfoDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(pkg + ".package-info");
-			if (false && DEBUG) {
+			if (DEBUG) {
 				System.out.println("Checking package " + pkg + " for package-info...");
 			}
 			try {
@@ -693,7 +705,6 @@ public class FindBugs2 implements IFindBugsEngine {
 			}
 		}
 		referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
-
 	}
 
 	 public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {

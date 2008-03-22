@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
  * Figure out where and how type qualifier annotations are applied.
- * 
+ *
  * @author William Pugh
  * @author David Hovemeyer
  */
@@ -76,27 +76,41 @@ public class TypeQualifierApplications {
 		private  Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations =
 			new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,TypeQualifierAnnotation>>();
 	}
-	
-	static Data data = new Data();
+
+//	static Data data = new Data();
+
+	private static ThreadLocal<Data> instance =
+		new ThreadLocal<Data>() {
+		@Override
+        protected
+        Data initialValue() {
+			return  new Data();
+		}
+	};
+
+	public static void clearInstance() {
+		instance.remove();
+	}
+
 	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> getEffectiveParameterAnnotations() {
-	    return data.effectiveParameterAnnotations;
+	    return instance.get().effectiveParameterAnnotations;
     }
 
 	private static Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> getEffectiveObjectAnnotations() {
-	    return data.effectiveObjectAnnotations;
+	    return instance.get().effectiveObjectAnnotations;
     }
 
 	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> getDirectParameterAnnotations() {
-	    return data.directParameterAnnotations;
+	    return instance.get().directParameterAnnotations;
     }
 
 	private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
-	    return data.directObjectAnnotations;
+	    return instance.get().directObjectAnnotations;
     }
 
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
-	 * 
+	 *
 	 * @param m an AnnotatedObject
 	 * @return Collection of AnnotationValues representing annotations directly
 	 *         applied to this AnnotatedObject
@@ -113,7 +127,7 @@ public class TypeQualifierApplications {
 
 	/**
 	 * Get the direct annotations (if any) on given method parameter.
-	 * 
+	 *
 	 * @param m         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 * @return Collection of AnnotationValues representing annotations directly
@@ -132,8 +146,8 @@ public class TypeQualifierApplications {
 	/**
 	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
-	 * method parameter. 
-	 * 
+	 * method parameter.
+	 *
 	 * @param result    Set of TypeQualifierAnnotations
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
@@ -144,13 +158,13 @@ public class TypeQualifierApplications {
 		for(AnnotationValue v : values) {
 			Object a = v.getValue("applyTo");
 			if (a instanceof Object[]) {
-				for(Object o2 : (Object[]) a) 
-					if (o2 instanceof EnumValue) { 
+				for(Object o2 : (Object[]) a)
+					if (o2 instanceof EnumValue) {
 						EnumValue ev = (EnumValue)o2;
 						if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
 							constructTypeQualifierAnnotation(result, v);
 					}
-			} else 
+			} else
 				constructTypeQualifierAnnotation(result, v);
 		}
 	}
@@ -158,8 +172,8 @@ public class TypeQualifierApplications {
 	/**
 	 * Populate a Set of TypeQualifierAnnotations representing
 	 * directly-applied type qualifier annotations on given
-	 * AnnotatedObject. 
-	 * 
+	 * AnnotatedObject.
+	 *
 	 * @param result Set of TypeQualifierAnnotations
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of annotated object
@@ -169,8 +183,8 @@ public class TypeQualifierApplications {
 		for(AnnotationValue v : values) {
 			Object a = v.getValue("applyTo");
 			if (a instanceof Object[]) {
-				for(Object o2 : (Object[]) a) 
-					if (o2 instanceof EnumValue) { 
+				for(Object o2 : (Object[]) a)
+					if (o2 instanceof EnumValue) {
 						EnumValue ev = (EnumValue)o2;
 						if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
 							constructTypeQualifierAnnotation(result, v);
@@ -179,10 +193,10 @@ public class TypeQualifierApplications {
 				constructTypeQualifierAnnotation(result, v);
 		}
 	}
-	
+
 	/**
 	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation.
-	 * 
+	 *
 	 * @param v   a raw AnnotationValue
 	 * @return a constructed TypeQualifierAnnotation
 	 */
@@ -192,14 +206,14 @@ public class TypeQualifierApplications {
 		When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
 		ClassDescriptor annotationClass = v.getAnnotationClass();
 		TypeQualifierValue tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-		TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when); 
+		TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when);
 		return tqa;
 	}
-	
+
 	/**
 	 * Resolve a raw AnnotationValue into a TypeQualifierAnnotation,
 	 * storing result in given Set.
-	 * 
+	 *
 	 * @param set Set of resolved TypeQualifierAnnotations
 	 * @param v   a raw AnnotationValue
 	 */
@@ -214,14 +228,14 @@ public class TypeQualifierApplications {
 	 * for given AnnotatedObject,
 	 * taking into account annotations
 	 * applied to outer scopes (e.g., enclosing classes and packages.)
-	 * 
+	 *
 	 * @param result Set of TypeQualifierAnnotations
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of AnnotatedObject
 	 */
 	private static void getApplicableScopedApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
 		AnnotatedObject outer = o.getContainingScope();
-		if (outer != null) 
+		if (outer != null)
 			getApplicableScopedApplications(result, outer, e);
 		getDirectApplications(result, o, e);
 	}
@@ -231,7 +245,7 @@ public class TypeQualifierApplications {
 	 * a given AnnotatedObject,
 	 * taking into account annotations
 	 * applied to outer scopes (e.g., enclosing classes and packages.)
-	 * 
+	 *
 	 * @param o an AnnotatedObject
 	 * @param e ElementType representing kind of AnnotatedObject
 	 * @return Collection of resolved TypeQualifierAnnotations
@@ -247,7 +261,7 @@ public class TypeQualifierApplications {
 	 * a given parameter,
 	 * taking into account annotations
 	 * applied to outer scopes (e.g., enclosing classes and packages.)
-	 * 
+	 *
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 * @return Collection of resolved TypeQualifierAnnotations
@@ -264,12 +278,12 @@ public class TypeQualifierApplications {
 	 * Get the Collection of resolved TypeQualifierAnnotations representing
 	 * directly applied and default (outer scope) type qualifier annotations
 	 * for given AnnotatedObject.
-	 * 
+	 *
 	 * <p>NOTE: does not properly account for inherited annotations
 	 * on instance methods.
 	 * It is ok to call this method to find out generally-relevant TypeQualifierAnnotations,
 	 * but not to find the effective TypeQualifierAnnotation.</p>
-	 * 
+	 *
 	 * @param o an AnnotatedObject
 	 * @return Collection of TypeQualifierAnnotations applicable to the AnnotatedObject
 	 */
@@ -281,12 +295,12 @@ public class TypeQualifierApplications {
 	 * Get the Collection of resolved TypeQualifierAnnotations representing
 	 * directly applied and default (outer scope) type qualifier annotations
 	 * for given method parameter.
-	 * 
+	 *
 	 * <p>NOTE: does not properly account for inherited annotations
 	 * on instance method parameters.
 	 * It is ok to call this method to find out generally-relevant TypeQualifierAnnotations,
 	 * but not to find the effective TypeQualifierAnnotation.</p>
-	 * 
+	 *
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 * @return Collection of TypeQualifierAnnotations applicable to the method parameter
@@ -297,8 +311,8 @@ public class TypeQualifierApplications {
 
 	/**
 	 * Look up a TypeQualifierAnnotation matching given TypeQualifierValue.
-	 * 
-	 * @param typeQualifierAnnotations a Collection of TypeQualifierAnnotations 
+	 *
+	 * @param typeQualifierAnnotations a Collection of TypeQualifierAnnotations
 	 * @param typeQualifierValue       a TypeQualifierValue
 	 * @return matching TypeQualifierAnnotation, or null if none
 	 */
@@ -316,19 +330,19 @@ public class TypeQualifierApplications {
 	/**
 	 * Check to see if one of the FindBugs-specific default annotation mechanisms
 	 * is used on given AnnotatedObject to define a default value for
-	 * given TypeQualifierValue. 
-	 * 
+	 * given TypeQualifierValue.
+	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue a TypeQualifierValue
 	 * @param elementType        type of annotated element
-	 * @return default TypeQualifierAnnotation, or null if none 
+	 * @return default TypeQualifierAnnotation, or null if none
 	 */
 	private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
 		TypeQualifierAnnotation result;
 		Collection<AnnotationValue> values =  TypeQualifierResolver.resolveTypeQualifierDefaults(o.getAnnotations(), elementType);
 		TypeQualifierAnnotation tqa = extractAnnotation(values, typeQualifierValue);
 		if (tqa != null) return tqa;
-		
+
 		if ((result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
 			return result;
 		}
@@ -405,7 +419,7 @@ public class TypeQualifierApplications {
 			Collection<AnnotationValue> resolvedTypeQualifiers = TypeQualifierResolver.resolveTypeQualifiers(annotation);
 			TypeQualifierAnnotation tqa = extractAnnotation(resolvedTypeQualifiers, typeQualifierValue);
 			if (tqa != null) return tqa;
-			
+
 		}
 
 		return null;
@@ -417,7 +431,7 @@ public class TypeQualifierApplications {
 				if (DEBUG) {
 					System.out.println("  ===> Found match " + tqa);
 				}
-				return tqa; 
+				return tqa;
 			}
 		}
 		return null;
@@ -426,7 +440,7 @@ public class TypeQualifierApplications {
 	 * Get the effective TypeQualifierAnnotation on given
 	 * AnnotatedObject.  Takes into account inherited and
 	 * default (outer scope) annotations.
-	 * 
+	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue a TypeQualifierValue specifying kind of annotation
 	 *                           we want to look up
@@ -485,7 +499,7 @@ public class TypeQualifierApplications {
 
 	/**
 	 * Get a directly-applied TypeQualifierAnnotation on given AnnotatedObject.
-	 * 
+	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
 	 * @return directly-applied TypeQualifierAnnotation, or null if there is no
@@ -506,7 +520,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the effective inherited TypeQualifierAnnotation on given
 	 * instance method.
-	 * 
+	 *
 	 * @param o                  an XMethod
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
 	 * @return effective TypeQualifierAnnotation inherited from overridden supertype methods,
@@ -528,7 +542,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the default (outer scope) annotation applicable to given
 	 * AnnotatedObject.
-	 * 
+	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
 	 * @return the applicable default TypeQualifierAnnotation, or null
@@ -536,8 +550,8 @@ public class TypeQualifierApplications {
 	 */
 	private static TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
-		
-		if (o instanceof AbstractClassMember 
+
+		if (o instanceof AbstractClassMember
 				&& (((AbstractClassMember)o).getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
 				return null; // synthetic methods don't get default annotations
 		TypeQualifierAnnotation result = null;
@@ -567,7 +581,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the effective TypeQualifierAnnotation on given method parameter.
 	 * Takes into account inherited and default (outer scope) annotations.
-	 * 
+	 *
 	 * @param xmethod            a method
 	 * @param parameter          a parameter (0 == first parameter)
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
@@ -626,7 +640,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the TypeQualifierAnnotation directly applied to given
 	 * method parameter.
-	 * 
+	 *
 	 * @param xmethod            a method
 	 * @param parameter          a parameter (0 == first parameter)
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
@@ -644,7 +658,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the effective inherited TypeQualifierAnnotation on the given
 	 * instance method parameter.
-	 * 
+	 *
 	 * @param xmethod            an instance method
 	 * @param parameter          a parameter (0 == first parameter)
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
@@ -667,7 +681,7 @@ public class TypeQualifierApplications {
 
 	/**
 	 * Get the default (outer-scope) TypeQualifierAnnotation on given method parameter.
-	 * 
+	 *
 	 * @param xmethod            a method
 	 * @param parameter          a parameter (0 == first parameter)
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
@@ -678,8 +692,8 @@ public class TypeQualifierApplications {
 			XMethod xmethod,
 			int parameter,
 			TypeQualifierValue typeQualifierValue) {
-		
-		if ((xmethod.getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0) 
+
+		if ((xmethod.getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
 			return null;  // synthetic methods don't get default annotations
 		AnnotatedObject o = xmethod;
 
