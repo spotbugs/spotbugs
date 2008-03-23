@@ -1757,7 +1757,7 @@ public class OpcodeStack implements Constants2
 				 if (requestParameter.getConstant() instanceof String)
 					 parameterName = (String) requestParameter.getConstant();
 				 
-				 result.userValue = new HttpParameterInjection(parameterName, dbc.getPC());
+				 result.injection = new HttpParameterInjection(parameterName, dbc.getPC());
 				 push(result);
 				 return;
 		 }
@@ -1769,14 +1769,14 @@ public class OpcodeStack implements Constants2
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
 			 if (!sawUnknownAppend && servletRequestParameterTainted) {
-				 i.userValue = topItem.userValue;
+				 i.injection = topItem.injection;
 				 i.setServletParameterTainted();
 			 }
 			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;
 				  i.source = sbItem.source;
-				  if (i.userValue == null)
-				  i.userValue = sbItem.userValue;
+				  if (i.injection == null)
+					  i.injection = sbItem.injection;
 				  if (sbItem.registerNumber >= 0)
 					  setLVValue(sbItem.registerNumber, i );
 			 }
