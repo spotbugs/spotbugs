@@ -163,6 +163,7 @@ public class FindDeadLocalStores implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
+			
 
 		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
@@ -252,8 +253,12 @@ public class FindDeadLocalStores implements Detector {
 
 				LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
+				String sourceFileName = javaClass.getSourceFileName();
+				if (lvAnnotation.getName().equals("?") && sourceFileName.endsWith(".groovy"))
+					continue;
+				
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-						methodGen, javaClass.getSourceFileName(), location.getHandle());
+						methodGen, sourceFileName, location.getHandle());
 
 				if (DEBUG) {
 					System.out.println("    Store at " + sourceLineAnnotation.getStartLine() + "@" +
@@ -286,8 +291,8 @@ public class FindDeadLocalStores implements Detector {
 
 					pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
 							storeLive ? LOW_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
-									javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
-											javaClass.getSourceFileName(), location.getHandle());
+									sourceFileName).add(lvAnnotation).addSourceLine(classContext, methodGen,
+											sourceFileName, location.getHandle());
 					complainedAbout.set(local);
 				}
 
@@ -350,7 +355,7 @@ public class FindDeadLocalStores implements Detector {
 						BugInstance bugInstance = new BugInstance(this,  "DLS_DEAD_STORE_OF_CLASS_LITERAL", 
 								Priorities.NORMAL_PRIORITY).addClassAndMethod(
 										methodGen,
-										javaClass.getSourceFileName()).add(lvAnnotation).addType(initializationOf);
+										sourceFileName).add(lvAnnotation).addType(initializationOf);
 						accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
 						continue;
 					}
@@ -471,7 +476,7 @@ public class FindDeadLocalStores implements Detector {
 					BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL"
 							: "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(
 									methodGen,
-									javaClass.getSourceFileName()).add(lvAnnotation);
+									sourceFileName).add(lvAnnotation);
 
 					// If in relaxed reporting mode, encode heuristic
 					// information.
@@ -484,7 +489,7 @@ public class FindDeadLocalStores implements Detector {
 					}
 
 					if (DEBUG) {
-						System.out.println(javaClass.getSourceFileName() + " : " + methodGen.getName());
+						System.out.println(sourceFileName + " : " + methodGen.getName());
 						System.out.println("priority: " + priority);
 						System.out.println("Reporting " + bugInstance);
 						System.out.println(propertySet);
