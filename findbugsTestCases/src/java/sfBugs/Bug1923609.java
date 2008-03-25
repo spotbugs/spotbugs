@@ -112,7 +112,7 @@ public class Bug1923609 {
         }
 		
 	}
-s
+
 	public void writeMyMap() throws IOException {
  		ObjectOutputStream os = new ObjectOutputStream(new ByteArrayOutputStream());
 		Map<String,String> m = new MyMap<String,String>();
