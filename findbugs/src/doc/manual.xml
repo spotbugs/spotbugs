@@ -2285,7 +2285,12 @@ Annotated fields must not be null after construction has completed. Annotated me
       <para>
 The annotated element could be null under some circumstances. In general, this means
 developers will have to read the documentation to determine when a null value is
-acceptable and whether it is neccessary to check for a null value.
+acceptable and whether it is neccessary to check for a null value.  FindBugs will
+treat the annotated items as though they had no annotation.
+      </para>
+      <para>
+In pratice this annotation is useful only for overriding an overarching NonNull
+annotation.
       </para>
     </listitem>
   </varlistentry>
