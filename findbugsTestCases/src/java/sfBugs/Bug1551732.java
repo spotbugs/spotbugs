@@ -32,7 +32,7 @@ public class Bug1551732 extends Thread {
 				}
 				final long elapsed = System.currentTimeMillis() - start;
 				if (elapsed >= 50) {
-					start += 50;
+					start += 50; // dead store warning here
 				}
 			}
 		}
