@@ -459,6 +459,20 @@ public class UnreadFields extends OpcodeStackDetector  {
 					getFullyQualifiedMethodName());
 				}
 			}
+		
+		if ((seen == IF_ACMPEQ || seen == IF_ACMPNE) 
+				&& stack.getStackDepth() >= 2)  {
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
+				XField field1 = item1.getXField();
+				if (item0.isNull() && field1 != null)
+					nullTested.add(field1);
+                else {
+	                XField field0 = item0.getXField();
+	                if (item1.isNull() && field0 != null)
+	                	nullTested.add(field0);
+                }
+				}
 
 		if (seen == GETFIELD || seen == INVOKEVIRTUAL 
 				|| seen == INVOKEINTERFACE
