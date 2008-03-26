@@ -3057,11 +3057,11 @@ public class CircularClassInitialization {
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on shared constant could lead to deadlock</ShortDescription>
-    <LongDescription>Synchronization on shared constant could deadlock in {1}</LongDescription>
+    <ShortDescription>Synchronization on interned String could lead to deadlock</ShortDescription>
+    <LongDescription>Synchronization on interned String could deadlock in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The code synchronizes on a shared constant, such as an interned String.
+  <p> The code synchronizes on interned String.
 <pre>
 private static String LOCK = "LOCK";
 ...
@@ -3069,7 +3069,7 @@ private static String LOCK = "LOCK";
 ...
 </pre>
 </p>
-<p>Such constants are interned and shared across all other classes loaded by the JVM. Thus, this could
+<p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this could
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
@@ -3736,7 +3736,7 @@ is generally easy and good defensive programming.
   </BugPattern>
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
    <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
-   <LongDescription>Value of {2} from previous case is overwritten here due to switch statement fall through</LongDescription>
+   <LongDescription>Value of {2.givenClass} from previous case is overwritten here due to switch statement fall through</LongDescription>
     <Details>
 <![CDATA[
   <p> A value stored in the previous switch case is overwritten here due to a switch fall through. It is likely that

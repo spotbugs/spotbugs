@@ -25,14 +25,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SwitchHandler;
@@ -41,9 +43,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 
-public class SwitchFallthrough extends BytecodeScanningDetector implements StatelessDetector {
+public class SwitchFallthrough extends OpcodeStackDetector implements StatelessDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("switchFallthrough.debug");
 	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
 		SystemProperties.getBoolean("findbugs.sf.comment");
@@ -53,7 +57,9 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 	private BugReporter bugReporter;
 	private int lastPC;
 	private BitSet potentiallyDeadStores = new BitSet();
+	private Set<XField> potentiallyDeadFields = new HashSet<XField>();
 	private BitSet potentiallyDeadStoresFromBeforeFallthrough = new BitSet();
+	private Set<XField> potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>();
 	private LocalVariableAnnotation deadStore = null;
 	private int priority;
 	private int fallthroughDistance;
@@ -77,9 +83,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		lastPC = 0;
 		found.clear();
 		switchHdlr = new SwitchHandler();
-		potentiallyDeadStores.clear();
+		clearAll();
 		deadStore = null;
-		potentiallyDeadStoresFromBeforeFallthrough.clear();
 		priority = NORMAL_PRIORITY;
 		fallthroughDistance = 1000;
 		super.visit(obj);
@@ -102,6 +107,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 			}
 			fallthroughDistance = 0;
 			potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
+			potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
 				SourceLineAnnotation sourceLineAnnotation =
 					SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, lastPC, getPC());
@@ -115,11 +121,34 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		if (isBranch(seen) || isSwitch(seen)
 				|| seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN || seen == LRETURN
 				|| seen == DRETURN || seen == FRETURN) {
-			potentiallyDeadStores.clear();
-			potentiallyDeadStoresFromBeforeFallthrough.clear();
+			clearAll();
 		}
 
+		if (seen == GETFIELD && stack.getStackDepth() > 0) {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			if (top.getRegisterNumber() == 0) 
+				potentiallyDeadFields.remove(getXFieldOperand());
+		}
 
+		else if (seen == PUTFIELD && stack.getStackDepth() >= 2) {
+			OpcodeStack.Item obj = stack.getStackItem(1);
+			if (obj.getRegisterNumber() == 0) {
+				XField f = getXFieldOperand();
+				if (potentiallyDeadFields.contains(f) && potentiallyDeadFieldsFromBeforeFallthrough.contains(f)){
+					// killed store
+					priority = HIGH_PRIORITY;
+					BugInstance bug = new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+					.addClassAndMethod(this).addField(f).addSourceLine(this);
+					bugReporter.reportBug(bug);
+
+				}
+				potentiallyDeadFields.add(f);
+			}
+		}
+		
+		
+		
+		
 		if (isRegisterLoad())
 			potentiallyDeadStores.clear(getRegisterOperand());
 
@@ -167,6 +196,18 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		lastPC = getPC();
 		fallthroughDistance++;
 	}
+
+
+
+	/**
+     * 
+     */
+    private void clearAll() {
+	    potentiallyDeadStores.clear();
+	    potentiallyDeadStoresFromBeforeFallthrough.clear();
+	    potentiallyDeadFields.clear();
+	    potentiallyDeadFieldsFromBeforeFallthrough.clear();
+    }
 
 	private boolean hasFallThruComment( int startPC, int endPC ) {
 		if (LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT) {

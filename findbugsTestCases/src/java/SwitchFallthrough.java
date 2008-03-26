@@ -1,5 +1,26 @@
 class SwitchFallthrough {
+	
+	static class DeadStoreToField {
+	int x;
+	
+	void deadStoreToField(int i) {
+		switch(i) {
+		case 0:
+		case 1:
+			x = 1;
+		case 2:
+		case 3:
+			x = 2;
+			break;
+		case 4:
+		case 5:
+			x = 3;
+			break;
+		default: break;
+		}
 
+	}
+	}
 	int reallyBad(int i) {
 		int result = 0;
 		switch(i) {
