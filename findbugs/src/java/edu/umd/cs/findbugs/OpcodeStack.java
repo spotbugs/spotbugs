@@ -135,6 +135,7 @@ public class OpcodeStack implements Constants2
 		private String signature;
 		private Object constValue = UNKNOWN;
 		private @CheckForNull ClassMember source;
+		private int pc = -1;
 		private int flags;
 		private int registerNumber = -1;
 		private Object userValue = null;
@@ -147,6 +148,12 @@ public class OpcodeStack implements Constants2
 			return 1;
 		}
 
+		public int getPC() {
+			return pc;
+		}
+		public void setPC(int pc) {
+			this.pc = pc;
+		}
 		public boolean isWide() {
 			return getSize() == 2;
 		}
@@ -291,6 +298,8 @@ public class OpcodeStack implements Constants2
 			Item m = new Item();
 			m.flags = i1.flags & i2.flags;
 			m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
+			if (i1.pc == i2.pc)
+				m.pc = i1.pc;
 			if (Util.nullSafeEquals(i1.signature, i2.signature))
 				m.signature = i1.signature;
 			if (Util.nullSafeEquals(i1.constValue, i2.constValue))
@@ -343,6 +352,7 @@ public class OpcodeStack implements Constants2
 			this.injection = it.injection;
 			this.flags = it.flags;
 			this.specialKind = it.specialKind;
+			this.pc = it.pc;
 		 }
 		 public Item(Item it, int reg) {
 			 this(it);
@@ -1321,7 +1331,7 @@ public class OpcodeStack implements Constants2
 				 case NEWARRAY:
 					 pop();
 					 signature = "[" + BasicType.getType((byte)dbc.getIntConstant()).getSignature();
-					 pushBySignature(signature);
+					 pushBySignature(signature, dbc);
 				 break;
 
 				// According to the VM Spec 4.4.1, anewarray and multianewarray
@@ -1335,7 +1345,7 @@ public class OpcodeStack implements Constants2
 					if (!signature.startsWith("[")) {
 						signature = "[L" + signature + ";";
 					}
-					 pushBySignature(signature);
+					 pushBySignature(signature, dbc);
 				 break;
 
 				 case MULTIANEWARRAY:
@@ -1348,13 +1358,13 @@ public class OpcodeStack implements Constants2
 						dims = dbc.getIntConstant();
 						signature = Util.repeat("[", dims) +"L" + signature + ";";
 					}
-					pushBySignature(signature);
+					pushBySignature(signature, dbc);
 				 break;
 
 				 case AALOAD:
 					 pop();
 					 it = pop();
-					 pushBySignature(it.getElementSignature());
+					 pushBySignature(it.getElementSignature(), dbc);
 				 break;
 
 				 case JSR:
@@ -1729,6 +1739,7 @@ public class OpcodeStack implements Constants2
 					if (top.signature.equals("Ljava/io/FileOutputStream;")) {
 						top.setSpecialKind(Item.FILE_OPENED_IN_APPEND_MODE);
 						top.source = XFactory.createReferencedXMethod(dbc);
+						top.setPC(dbc.getPC());
 						}
 					return;
 				}
@@ -1743,6 +1754,7 @@ public class OpcodeStack implements Constants2
 					Item top = getStackItem(0);
 					top.setSpecialKind(Item.FILE_OPENED_IN_APPEND_MODE);
 					top.source = XFactory.createReferencedXMethod(dbc);
+					top.setPC(dbc.getPC());
 					return;
 				}
 		 } else if (seen == INVOKEINTERFACE && methodName.equals("getParameter")
@@ -1758,6 +1770,7 @@ public class OpcodeStack implements Constants2
 					 parameterName = (String) requestParameter.getConstant();
 				 
 				 result.injection = new HttpParameterInjection(parameterName, dbc.getPC());
+				 result.setPC(dbc.getPC());
 				 push(result);
 				 return;
 		 }
@@ -2168,6 +2181,7 @@ public void initialize() {
 		if (seen == IREM && lhs.specialKind == Item.RANDOM_INT)
 			newValue.specialKind = Item.RANDOM_INT_REMAINDER;
 		 if (DEBUG) System.out.println("push: " + newValue);
+		 newValue.setPC(dbc.getPC());
 		 push(newValue);
 	}
 
@@ -2285,7 +2299,7 @@ public void initialize() {
 			return;
 		}
 		pop(PreorderVisitor.getNumberArguments(signature)+(popThis ? 1 : 0));
-		pushBySignature(Type.getReturnType(signature).getSignature());
+		pushBySignature(Type.getReturnType(signature).getSignature(), dbc);
 	}
 
 	private String getStringFromIndex(DismantleBytecode dbc, int i) {
@@ -2293,10 +2307,12 @@ public void initialize() {
 		return name.getBytes();
 	}
 
-	private void pushBySignature(String s) {
+	private void pushBySignature(String s, DismantleBytecode dbc) {
 		 if ("V".equals(s))
 			 return;
-		  push(new Item(s, (Object) null));
+		  Item item = new Item(s, (Object) null);
+		  if (dbc != null) item.setPC(dbc.getPC());
+		push(item);
 	 }
 
 	 private void pushByLocalStore(int register) {

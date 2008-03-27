@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -195,9 +196,14 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
 		if (seen >= IALOAD && seen <= SALOAD || seen >= IASTORE && seen <= SASTORE ) {
 			Item index  = stack.getStackItem(0);
-			if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION)
+			if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION) {
+				SourceLineAnnotation where;
+				if (index.getPC() >= 0)
+					where = SourceLineAnnotation.fromVisitedInstruction(this, index.getPC());
+				else where = SourceLineAnnotation.fromVisitedInstruction(this);
 				bugAccumulator.accumulateBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
-				.addClassAndMethod(this), this);
+				.addClassAndMethod(this), where);
+			}
 				
 		}
 
