@@ -4173,7 +4173,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
    <p> This method returns a value that is not checked. The return value should be checked
-since it can indication an unusual or unexpected function execution. For
+since it can indicate an unusual or unexpected function execution. For
 example, the <code>File.delete()</code> method returns false
 if the file could not be successfully deleted (rather than 
 throwing an Exception).
