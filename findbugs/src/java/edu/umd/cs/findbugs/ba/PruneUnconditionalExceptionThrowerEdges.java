@@ -103,7 +103,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			Location loc = new Location(instructionHandle, basicBlock);
 			TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
 			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
-			if (primaryXMethod.isAbstract()) continue;
+			// if (primaryXMethod.isAbstract()) continue;
 			Set<XMethod> targetSet = null;
 			try {
 
