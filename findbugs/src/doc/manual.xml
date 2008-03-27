@@ -285,7 +285,7 @@ These options may be used with both the GUI and Text UI.
     <para>
     Specify a project to be analyzed.  The project file you specify should
     be one that was created using the GUI interface.  It will typically end
-    in the extension <filename>.fb</filename>.
+    in the extension <filename>.fb</filename> or <filename>.fbp</filename>.
     </para>
   </listitem>
   </varlistentry>
