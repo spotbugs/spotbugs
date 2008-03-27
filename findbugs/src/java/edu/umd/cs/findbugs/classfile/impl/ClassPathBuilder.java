@@ -448,6 +448,15 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 				continue;
 			}
+			
+			// Detect .java files, which are probably human error
+			if(item.getCodeBaseLocator() instanceof FilesystemCodeBaseLocator) {
+				FilesystemCodeBaseLocator l = (FilesystemCodeBaseLocator)item.getCodeBaseLocator();
+				if(l.getPathName().endsWith(".java")) {
+					System.err.println("Ignoring .java file \"" + l.getPathName() + "\" specified in classpath or auxclasspath");
+					continue;
+				}
+			}
 
 			// If we are working on an application codebase,
 			// then failing to open/scan it is a fatal error.
