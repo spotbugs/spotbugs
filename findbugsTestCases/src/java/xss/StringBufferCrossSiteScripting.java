@@ -12,10 +12,12 @@ public class StringBufferCrossSiteScripting extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 		throws ServletException, IOException {
 		response.setContentType("text/html");
-
+		String name = request.getParameter("firstName");
+		
 		PrintWriter out = response.getWriter();
 		
-		out.println("Hi" + request.getParameter("foo"));
+		out.println("<p>Hi" + name);
+		out.println("<p>Please come back" + name);
 		out.close();
 	}
 }

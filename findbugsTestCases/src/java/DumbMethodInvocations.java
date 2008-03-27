@@ -1,9 +1,18 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
 class DumbMethodInvocations implements Iterator {
 
+	Connection getConnection1() throws SQLException {
+		return DriverManager.getConnection("jdbc:hsqldb:mem:test","sa","");
+	}
+	Connection getConnection2() throws SQLException {
+		return DriverManager.getConnection("jdbc:hsqldb:mem:test","sa","secret");
+	}
 	String f(String s) {
 		return s.substring(0);
 	}
