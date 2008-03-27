@@ -259,11 +259,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * (used by Eclipse plugin)
 	 */
 	public void dispose() {
-	    executionPlan.dispose();
-	    appClassList.clear();
-	    classObserverList.clear();
-	    referencedClassSet.clear();
-	    analysisCache = null;
+		if (executionPlan != null) executionPlan.dispose();
+		if (appClassList != null) appClassList.clear();
+		if (classObserverList != null)  classObserverList.clear();
+		if (referencedClassSet != null) referencedClassSet.clear();
+		analysisCache = null;
 	    analysisFeatureSettingList = null;
 	    bugReporter = null;
 	    classFactory = null;
