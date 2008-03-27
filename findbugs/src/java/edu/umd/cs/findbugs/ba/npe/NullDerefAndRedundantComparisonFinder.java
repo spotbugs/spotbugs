@@ -31,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.GETFIELD;
@@ -551,11 +552,20 @@ public class NullDerefAndRedundantComparisonFinder {
 			// confused if there is JSR confusion or multiple null checks with different results on the same line
 
 			boolean reportIt = true;
+		
 			if (lineMentionedMultipleTimes.get(lineNumber) && confused)
 				reportIt = false;
-			if (redundantBranch.location.getBasicBlock().isInJSRSubroutine() /* occurs in a JSR */
+			else if (redundantBranch.location.getBasicBlock().isInJSRSubroutine() /* occurs in a JSR */
 					&& confused)
 				reportIt = false;
+			else {
+				int pc = redundantBranch.location.getHandle().getPosition();
+				for(CodeException e : method.getCode().getExceptionTable()) {
+					if (e.getCatchType() == 0 && e.getStartPC() != e.getHandlerPC() && e.getEndPC() <= pc && pc <= e.getEndPC()+5 )
+						reportIt = false;
+				}
+			}
+			
 			if (reportIt) {
 				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
