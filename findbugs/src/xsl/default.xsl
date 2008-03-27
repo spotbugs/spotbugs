@@ -62,7 +62,7 @@
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
-		<th align="left">Code<xsl:value-of select="$literalNbsp"/></th>
+		<th align="left">Code</th>
 		<th align="left">Warning</th>
 	</tr>
 </xsl:variable>
