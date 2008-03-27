@@ -5,6 +5,7 @@
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
 <!ENTITY FBHome "<replaceable>$FINDBUGS_HOME</replaceable>">
+<!ENTITY FBHomeWin "<replaceable>%FINDBUGS_HOME%</replaceable>">
 <!ENTITY nbsp "&#160;">
 ]>
  
@@ -129,7 +130,7 @@ the binary distribution from the <filename class="directory">C:\Software</filena
 directory, then the &FindBugs; software will be extracted into the directory
 <filename class="directory">C:\Software\findbugs-@VERSION@</filename>.
 This directory is the &FindBugs; home directory.  We'll refer to it as
-&FBHome; throughout this manual.
+&FBHome; (or &FBHomeWin; for Windows) throughout this manual.
 </para>
 </sect1>
 
@@ -151,7 +152,7 @@ On Unix-like systems, use the following command to invoke the wrapper script:
 <para>
 On Windows systems, the command to invoke the wrapper script is 
 <screen>
-<prompt>C:\My Directory></prompt><command>&FBHome;\bin\findbugs.bat <replaceable>options...</replaceable></command>
+<prompt>C:\My Directory></prompt><command>&FBHomeWin;\bin\findbugs.bat <replaceable>options...</replaceable></command>
 </screen>
 </para>
 
