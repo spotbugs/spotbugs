@@ -5,7 +5,7 @@
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
 <!ENTITY FBHome "<replaceable>$FINDBUGS_HOME</replaceable>">
-<!ENTITY FBHomeWin "<replaceable>%FINDBUGS_HOME%</replaceable>">
+<!ENTITY FBHomeWin "<replaceable>&#x25;FINDBUGS_HOME&#x25;</replaceable>">
 <!ENTITY nbsp "&#160;">
 ]>
  
