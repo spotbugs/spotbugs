@@ -28,6 +28,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -94,13 +95,15 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			boolean foundThrower = false;
 			boolean foundNonThrower = false;
 
-
+			if (inv instanceof INVOKEINTERFACE) continue;
+				
 			String className = inv.getClassName(cpg);
 			if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle + " in " + className);
 
 			Location loc = new Location(instructionHandle, basicBlock);
 			TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
-			XMethod primaryXMethod = null;
+			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
+			if (primaryXMethod.isAbstract()) continue;
 			Set<XMethod> targetSet = null;
 			try {
 
@@ -114,9 +117,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 				for(XMethod xMethod : targetSet) {
 					if (DEBUG) System.out.println("\tFound " + xMethod);
+					
 					// Ignore abstract and native methods
-					Boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod);
-
+					boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod);
 					if (isUnconditionalThrower) {
 						foundThrower = true;
 						if (DEBUG) System.out.println("Found thrower");
@@ -138,7 +141,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 						FALL_THROUGH_EDGE);
 				if (fallThrough != null) {
 					if (DEBUG) {
-						System.out.println("\tREMOVING normal return for: " + XFactory.createXMethod(inv, cpg));
+						System.out.println("\tREMOVING normal return for: " + primaryXMethod);
 					}
 					deletedEdgeSet.add(fallThrough);
 				}
