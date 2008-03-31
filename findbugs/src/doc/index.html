@@ -181,103 +181,104 @@
 						<a name="changes">Change history</a>
 					</h1>
 					<p> The current version of FindBugs is s @VERSION@.</p>
-					
-					<p> Changes since version 1.3.1</p>
+
+					<p> Changes since version 1.3.3</p>
 
 					<ul>
 					  <li>FindBugs base</li>
 					  <ul>
-					    <li>New Bug Category:</li>
-					    <ul>
-					      <li>SECURITY (Abbrev: S), A use of untrusted input in
-					          a way that could create a remotely exploitable
-					          security vulnerability</li>
-					    </ul>
 					    <li>New Detectors:</li>
 					    <ul>
-					      <li>CrossSiteScripting: This detector looks for
-					          obvious/blatent cases of cross site scripting
-					          vulnerabilities</li>
+					      <li>FieldItemSummary: Produces summary information
+                                    for what is stored into fields </li>
+					      <li>SynchronizeOnClassLiteralNotGetClass: Look for
+                                    code that synchronizes on the results of getClass
+                                    rather than on class literals</li>
+					      <li>SynchronizingOnContentsOfFieldToProtectField: This
+					          detector looks for code that seems to be
+					          synchronizing on a field in order to guard updates
+					          of that field </li>
 					    </ul>
 					    <li>New BugCode:</li>
 					    <ul>
-					      <li>XSS: Cross site scripting</li>
+					      <li> HRS: HTTP Response splitting vulnerability </li>
+					      <li> WL: Possible locking on wrong object </li>
 					    </ul>
 					    <li>New Reports:</li>
 					    <ul>
-					      <li>XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER: HTTP
-					          parameter directly written to Servlet output,
-					          giving XSS vulnerability</li>
-					      <li>XSS_REQUEST_PARAMETER_TO_JSP_WRITER: HTTP
-					          parameter directly written to JSP output, giving
-					          XSS vulnerability</li>
-					      <li>EQ_OTHER_USE_OBJECT: equals() method defined that
-					          doesn't override Object.equals(Object)</li>
-					      <li>EQ_OTHER_NO_OBJECT: equals() method inherits
-					          rather than overrides equals(Object)</li>
-					      <li>NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE:
-					          Possible null pointer dereference on path that
-					          might be infeasible</li>
+					      <li>DMI_CONSTANT_DB_PASSWORD:
+					          This code creates a database connect using a hardcoded, constant password </li>
+					      <li>HRS_REQUEST_PARAMETER_TO_COOKIE:
+					          HTTP cookie formed from untrusted input </li>
+					      <li>HRS_REQUEST_PARAMETER_TO_HTTP_HEADER:
+					          HTTP parameter directly written to HTTP header output </li>
+					      <li>CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE:
+					          Class defines clone() but doesn't implement Cloneable </li>
+					      <li>DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE:
+					          Synchronization on boxed primative could lead to deadlock </li>
+					      <li> DL_SYNCHRONIZATION_ON_BOOLEAN:
+					          Synchronization on Boolean could lead to deadlock </li>
+					      <li> ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD:
+					          Synchronization on field in futile attempt to guard that field </li>
+					      <li> DLS_DEAD_LOCAL_STORE_IN_RETURN:
+					          Useless assignment in return statement </li>
+					      <li> WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL:
+					          Sychronization on getClass rather than class literal </li>
 					    </ul>
 					    <li>Other:</li>
 					    <ul>
-					      <li>Added -noClassOk command-line parameter to
-					         command-line and ant interfaces; when -noClassOk
-					         is specified and no classfiles are given, FindBugs
-					         will print a warning message and output a well-
-					         formed file with no warnings</li>
-					      <li>Fewer false positives for null pointer bugs</li>
-					      <li>Suppress dead-local-store false positives in .jsp
-					          code</li>
-					      <li>Type fixes in warning messages</li>
-					      <li>Better warning message for
-					          NP_NULL_ON_SOME_PATH</li>
-					      <li>"WMI" bug code description renamed from "Wrong
-					          Map Iterator" to "Inefficient Map Iterator"</li>
+					      <li>Many enhancements to cross-site scripting detector and its documentation</li>
+					      <li> Enhanced switch fallthrough handling </li>
+					      <li> Enhanced unread field handling (look for IF_ACMPEQ and IF_ACMPNE) </li>
+					      <li> Clarified documentation for @Nullable in manual </li>
+					      <li> Fewer DeadLocalStore false positives </li>
+					      <li> Fewer UnreadField false positives </li>
+					      <li> Fewer StaticCalendarDetector false positives </li>
+					      <li> Performance fix for dog file system IO e.g. Clearcase repositories (thanks, Andrei!) </li>
+					      <li> Other, general performance enhancements (thanks, Andrei!) </li>
+					      <li> Enhancements for using FindBugs scripts with MKS on Windows (thanks, Kelly O'Hair!) </li>
+					      <li> Noted in the manual that jsr305.jar must be present for annotations to compile </li>
+					      <li> Added and fine-tuned default-nullness annotations </li>
+					      <li> More CWE IDs added </li>
+					      <li> Check and warning for unexpected BCEL version in classpath </li>
 					    </ul>
 					    <li>Fixes:</li>
 					    <ul>
-					      <li>[ 1893048 ] FindBugs confused by a findbugs.xml file</li>
-					      <li>[ 1878528 ] XSL xforms don't support history features</li>
-					      <li>[ 1876584 ] two default.xsl flaws</li>
-					      <li>[ 1874856 ] Format string bug detector doesn't handle special operators</li>
-					      <li>[ 1872645 ] computeBugHistory - java.lang.IllegalArgumentException</li>
-					      <li>[ 1872237 ] Ant task fails when no .class files</li>
-					      <li>[ 1868670 ] Filters: include AND exclude don't allowed</li>
-					      <li>[ 1868666 ] check-for-oddness reported, but array length can never be negative</li>
-					      <li>[ 1866108 ] SetBugDatabaseInfoTask strips dir from output filename</li>
-					      <li>[ 1866021 ] MineBugHistoryTask strips dir of output filename</li>
-					      <li>[ 1865265 ] code doesn't handle StringBuffer.append([CII) right</li>
-					      <li>[ 1864793 ] Warning when casting a null reference compared to a String</li>
-					      <li>[ 1863376 ] Typo in manual chap 8: Filter Files</li>
-					      <li>[ 1862705 ] Transient fields that default to null</li>
-					      <li>[ 1842545 ] DLS on catch variable (with priority tweaking)</li>
-					      <li>[ 1816258 ] false positive BC_IMPOSSIBLE_CAST</li>
-					      <li>[ 1551732 ] Get erroneous DLS with while loop</li>
+					      <li>Bug fix to handling of local variable tables in BCEL</li>
+					      <li>Refined documentation for MTIA_SUSPECT_STRUTS_INSTANCE_FIELD</li>
+					      <li>[ 1927295 ] NPE when called on project root</li>
+					      <li>[ 1926405 ] Incorrect dead store warning</li>
+					      <li>[ 1926409 ] Incorrect redundant nullcheck warning</li>
+					      <li>[ 1926389 ] Wrong line number printed/highlighted in bug</li>
+					      <li>[ 1927040 ] typo in bug description</li>
+					      <li>[ 1926263 ] Minor glitch in HTML output</li>
+					      <li>[ 1926240 ] Minor error in standard options in manual</li>
+					      <li>[ 1926236 ] Minor bug in installation section of manual</li>
+					      <li>[ 1925539 ] ZIP is default file system code base</li>
+					      <li>[ 1894701 ] Livelock / memory leak in ObjectTypeFactory (thanks, Andrei!)</li>
+					      <li>[ 1867491 ] Doesn't reload annotations after code changes in IDE (thanks, Andrei!)</li>
+					      <li>[ 1921399 ] -project option not supported</li>
+					      <li>[ 1913834 ] "Dead" store to variable with method call</li>
+					      <li>[ 1917352 ] H B se:...field in serializable class</li>
+					      <li>[ 1911617 ] CloneIdiom relies on getNameConstantOperand for INSTANCEOF</li>
+					      <li>[ 1911620 ] False +: DLS predecrement before return</li>
+					      <li>[ 1871376 ] False negative: non-serializable Map field</li>
+					      <li>[ 1871051 ] non standard clone() method</li>
+					      <li>[ 1908854 ] Error in TestASM</li>
+					      <li>[ 1907539 ] 22 minor errors in bug checker documentation</li>
+					      <li>[ 1897323 ] EJB implementation class false positives</li>
+					      <li>[ 1899648 ] Crash on startup on Vista with Java 1.6.0_04</li>
 					    </ul>
 					    </ul>
 					  <li>FindBugs Eclipse plugin (change log by Andrei Loskutov)</li>
 					  <ul>
-					    <li>new feature: added Bug explorer view (replacing Bug tree view), based on Common Navigator framework (Andrei Loskutov)</li>
-					    <li>bug 1873860 fixed: empty projects are no longer shown in Bug tree view  (Andrei Loskutov)</li>
-					    <li>new feature: bug counts decorators for projects, folders and files (has to be activated
-                            via Preferences -> general -> appearance -> label decorations)(Andrei Loskutov)</li>
-					    <li>patch 1746499: better icons (Alessandro Nistico)</li>
-					    <li>patch 1893685: Find bug actions on change sets bug (Alessandro Nistico)</li>
-					    <li>fixed bug 1855384: Bug configuration is broken in Eclipse (Andrei Loskutov)</li>
-					    <li>refactored FindBugs properties page (Andrei Loskutov)</li>
-					    <li>refactored FindBugs worker/builder/run action (Andrei Loskutov)</li>
-					    <li>FB detects now only bugs from classes on project's classpath (no double work on
-                            duplicated class files) (Andrei Loskutov)</li>
-					    <li>fixed bug introduced by the bad patch for 1867951: FB cannot be executed incrementally
-                            on a folder of file (Andrei Loskutov)</li>
-					    <li>fixed job rule: now jobs for different projects may run in parallel if running on a
-                            multi-core PC and "fb.allowParallelBuild" system property is set to true (Andrei Loskutov)</li>
-					    <li>fixed FB auto-build not started if .fbprefs or .classpath was changed (Andrei Loskutov)</li>
-					    <li>fixed not reporting bugs on secondary types (classes defined in java files with
- 					        different name) (Andrei Loskutov) </li>
-					  </ul>
-			  	    </ul>
+					    <li> new feature: export basic FindBugs numbers for projects via File->Export->Java->BugCounts (Andrei Loskutov) </li>
+					    <li> new feature: jobs for different projects will be run in parallel per default if running on a
+                             multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrei Loskutov) </li>
+					    <li> fixed performance slowdown in the multi-threaded build, caused by workspace operation locks during
+                             assigning marker attributes (Andrei Loskutov)</li>
+                       </ul>
+                    </ul>
 					
 					<p>
 						<a href="Changes.html">Older versions...</a>
