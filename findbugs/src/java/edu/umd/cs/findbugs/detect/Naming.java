@@ -135,12 +135,14 @@ public class Naming extends PreorderVisitor implements Detector {
 								if ((m3 = definedIn(s, m)) != null) {
 									// the method we define is also defined in our superclass
 									priority = NORMAL_PRIORITY;
+									break;
 								}
 						if (m3 == null)
 							for (JavaClass i : clazz.getAllInterfaces())
 								if ((m3 = definedIn(i, m)) != null) {
 									priority = NORMAL_PRIORITY;
 									// the method we define is also defined in an interface
+									break;
 								}
 					} catch (ClassNotFoundException e) {
 						priority++;
