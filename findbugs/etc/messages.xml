@@ -6902,8 +6902,8 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
   <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
   <BugCode abbrev="HSC" >Huge String constants</BugCode>
-  <BugCode abbrev="HRS" >HTTP Response splitting vunerability</BugCode>
-  <BugCode abbrev="XSS" >Cross site scripting vunerabilitity</BugCode>
+  <BugCode abbrev="HRS" >HTTP Response splitting vulnerability</BugCode>
+  <BugCode abbrev="XSS" >Cross site scripting vulnerabilitity</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
