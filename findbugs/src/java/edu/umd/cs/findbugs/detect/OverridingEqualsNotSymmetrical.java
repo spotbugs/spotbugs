@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.bcel.classfile.Code;
@@ -31,6 +32,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 
@@ -88,7 +93,7 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 	}
 
 	Map<ClassAnnotation, KindOfEquals> kindMap = new HashMap<ClassAnnotation, KindOfEquals>();
-
+	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
 	Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
 
 	Map<ClassAnnotation, MethodAnnotation> equalsMethod = new TreeMap<ClassAnnotation, MethodAnnotation>();
@@ -124,12 +129,26 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 			else if (sawCheckedCast)
 				kind = KindOfEquals.CHECKED_CAST_EQUALS;
 
+			if (kind.equals(KindOfEquals.GETCLASS_EQUALS)) {
+				
+				ClassDescriptor classDescriptor = getClassDescriptor();
+				try {
+	                Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(classDescriptor);
+	                if (subtypes.size() > 1) {
+	                	classesWithGetClassBasedEquals.put(classDescriptor,subtypes);
+	                }
+                } catch (ClassNotFoundException e) {
+	               assert true;
+                }
+				
+			}
 			ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
 			kindMap.put(classAnnotation, kind);
 			String superClassName = getSuperclassName().replace('/', '.');
 			if (!superClassName.equals("java.lang.Object"))
 				parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
 			equalsMethod.put(classAnnotation, MethodAnnotation.fromVisitedMethod(this));
+			
 		}
 	}
 
@@ -190,6 +209,23 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 	@Override
 	public void report() {
 
+		if (false) 
+		for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
+			ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+			for(ClassDescriptor child : e.getValue()) {
+				if (child.equals(e.getKey())) continue;
+				XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
+				if (xChild == null) continue;
+				ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
+				KindOfEquals childKind = kindMap.get(childClass);
+				int fieldsOfInterest = 0;
+				for(XField f : xChild.getXFields())
+					if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
+				System.out.println(childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
+				
+			}
+		}
+			
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
 			ClassAnnotation childClass = e.getKey();
 			KindOfEquals childKind = kindMap.get(childClass);
