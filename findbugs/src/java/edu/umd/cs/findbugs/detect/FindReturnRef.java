@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class FindReturnRef extends BytecodeScanningDetector {
@@ -40,7 +41,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	String classNameOnStack;
 	String sigOnStack;
 	int parameterCount;
-	//int r;
+	int r;
 	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
 	private BugReporter bugReporter;
@@ -97,6 +98,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1))
 					.addSourceLine(this));
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
@@ -104,6 +106,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1))
 					.addSourceLine(this));
 		}
 		dangerousToStoreIntoField = false;
@@ -138,7 +141,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 			case ALOAD_3:
 			case ALOAD:
 				if (reg < parameterCount) {
-					//r = reg;
+					r = reg;
 					dangerousToStoreIntoField = true;
 					// System.out.println("Found dangerous value from parameter " + reg);
 				}

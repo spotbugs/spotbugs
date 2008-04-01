@@ -2,13 +2,14 @@ package edu.umd.cs.findbugs;
 
 public class ParameterWarningSuppressor extends ClassWarningSuppressor {
 
-	MethodAnnotation method;
+	final MethodAnnotation method;
 
-	int register;
+	final int register;
 
 	public ParameterWarningSuppressor(String bugPattern, ClassAnnotation clazz, MethodAnnotation method, int register) {
 		super(bugPattern, clazz);
 		this.method = method;
+		this.register = register;
 	}
 
 	@Override
@@ -21,7 +22,7 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
 		LocalVariableAnnotation localVariable = bugInstance.getPrimaryLocalVariableAnnotation();
 		if (bugMethod == null || !method.equals(bugMethod))
 			return false;
-		if (localVariable == null || localVariable.getPC() != 0 || localVariable.getRegister() != register)
+		if (localVariable == null || localVariable.getRegister() != register)
 			return false;
 		if (DEBUG)
 			System.out.println("Suppressing " + bugInstance);
