@@ -147,7 +147,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		if (!aField.isPublic() && !aField.isProtected()) return;
 		ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
 		String tBugType = null;
-		int priority = aField.isPublic()  && getThisClass().isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY;
+		int priority = aField.isPublic() && aField.isFinal() && aField.getName().equals(aField.getName().toUpperCase()) && getThisClass().isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY;
 		if (classOfField != null) try {
 			if (subtypes2.isSubtype(classOfField, calendarType)) {
 				tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
