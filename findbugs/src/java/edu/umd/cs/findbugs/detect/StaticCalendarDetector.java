@@ -147,14 +147,17 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		if (!aField.isPublic() && !aField.isProtected()) return;
 		ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
 		String tBugType = null;
+		int priority = aField.isPublic()  && getThisClass().isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY;
 		if (classOfField != null) try {
 			if (subtypes2.isSubtype(classOfField, calendarType)) {
 				tBugType = "STCAL_STATIC_CALENDAR_INSTANCE";
+				priority++;
 			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {
 				tBugType = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE";
 			}
 		if (tBugType != null) {
-				reporter.reportBug(new BugInstance(this, tBugType, aField.isPublic() ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(currentClass).addField(this));
+				
+				reporter.reportBug(new BugInstance(this, tBugType, priority).addClass(currentClass).addField(this));
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
@@ -234,8 +237,9 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			}
 
 			if (getMethodName().equals("<clinit>") && field.getClassName().equals(getDottedClassName())) return;
-			if (getNameConstantOperand().startsWith("get")) return;
-			if (getNameConstantOperand().equals("equals") && numArguments == 1) {
+			String invokedName = getNameConstantOperand();
+			if (invokedName.startsWith("get")) return;
+			if (invokedName.equals("equals") && numArguments == 1) {
 				OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
 				field = passedAsArgument.getXField();
 				if (field == null || !field.isStatic()) {
@@ -270,7 +274,10 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				tBugType = "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE";
 			} else 
 				throw new IllegalStateException("Not possible");
-			bugAccumulator.accumulateBug(new BugInstance(this, tBugType, NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
+			int priority = NORMAL_PRIORITY;
+			if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse"))
+				priority--;
+			bugAccumulator.accumulateBug(new BugInstance(this, tBugType, priority).addClassAndMethod(this).addCalledMethod(this)
 					.addOptionalField(field), this);
 
 		} catch (ClassNotFoundException e) {
