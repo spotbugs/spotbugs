@@ -2105,7 +2105,7 @@ files in the classpath while compiling your program.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.CheckForNull</command></term>
     <listitem>
-<command>[Target]</command> Field, Method, Parameter, Local variable
+<command>[Target]</command> Field, Method, Parameter
     </listitem>
     <listitem>
       <para>
@@ -2267,7 +2267,7 @@ This is same as the DefaultAnnotation except it only applys to method parameters
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
     <listitem>
-      <command>[Target]</command> Field, Method, Parameter, Local variable
+      <command>[Target]</command> Field, Method, Parameter
     </listitem>
     <listitem>
       <para>
@@ -2280,7 +2280,7 @@ Annotated fields must not be null after construction has completed. Annotated me
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.Nullable</command></term>
     <listitem>
-      <command>[Target]</command> Field, Method, Parameter, Local variable
+      <command>[Target]</command> Field, Method, Parameter
     </listitem>
     <listitem>
       <para>
@@ -2337,7 +2337,7 @@ This annotation is deprecated. Use CheckForNull instead.
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.SuppressWarnings</command></term>
     <listitem>
-      <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Local variable, Package
+      <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Package
     </listitem>
     <listitem>
       <variablelist>
@@ -2372,7 +2372,7 @@ are encouraged to cooperate to ensure that the same names work across multiple c
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
-      <command>[Target]</command> Field, Method, Parameter, Local variable
+      <command>[Target]</command> Field, Method, Parameter
     </listitem>
     <listitem>
       <para>
@@ -2384,7 +2384,7 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
     <listitem>
-      <command>[Target]</command> Field, Method, Parameter, Local variable
+      <command>[Target]</command> Field, Method, Parameter
     </listitem>
     <listitem>
       <para>
