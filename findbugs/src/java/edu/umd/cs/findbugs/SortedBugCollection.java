@@ -831,6 +831,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	public void addMissingClass(String className) {
+		if (className.length() == 0) return;
 		if (className.startsWith("[")) {
 			assert false : "Bad class name " + className;
 			return;
