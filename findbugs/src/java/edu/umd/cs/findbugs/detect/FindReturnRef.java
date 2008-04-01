@@ -96,16 +96,14 @@ public class FindReturnRef extends BytecodeScanningDetector {
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-							true)
+					.addReferencedField(this)
 					.addSourceLine(this));
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-							true)
+					.addReferencedField(this)
 					.addSourceLine(this));
 		}
 		dangerousToStoreIntoField = false;
