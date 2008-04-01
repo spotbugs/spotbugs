@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -99,6 +101,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
 	/** Stores current LDF */
 	private LockDataflow currentLockDataFlow;
+	
+	private Map<XField, BugInstance> pendingBugs = new HashMap<XField, BugInstance>();
 
 	/**
 	 * Creates a new instance of this Detector.
@@ -124,7 +128,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		sawDateClass = false;
 
 	}
-
+	
 	@Override
 	public void visit(ConstantPool pool) {
 		for(Constant constant : pool.getConstantPool()) {
@@ -157,7 +161,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			}
 		if (tBugType != null) {
 				
-				reporter.reportBug(new BugInstance(this, tBugType, priority).addClass(currentClass).addField(this));
+				pendingBugs.put(getXField(), new BugInstance(this, tBugType, priority).addClass(currentClass).addField(this));
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
@@ -203,6 +207,17 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
+		
+		if (seen == GETSTATIC) {
+			XField f = getXFieldOperand();
+			if (pendingBugs.containsKey(f)) {
+				if (!isLocked()) {
+					reporter.reportBug(pendingBugs.remove(f));
+					
+				}
+				
+			}
+		}
 		// we are only interested in method calls
 		if (seen != INVOKEVIRTUAL) {
 			return;
@@ -249,20 +264,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
 			if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)) {
 				// check synchronization
-				try {
-					if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {
-						Collection<Location> tLocations = currentCFG.getLocationsContainingInstructionWithOffset(getPC());
-						for (Location tLoc : tLocations) {
-							LockSet lockSet = currentLockDataFlow.getFactAtLocation(tLoc);
-							if (lockSet.getNumLockedObjects() > 0) {
-								// within a synchronized block
-								return;
-							}
-						}
-					}
-				} catch (DataflowAnalysisException e) {
-					reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-				}
+				if (isLocked()) return;
 			}
 
 			// if we get here, we want to generate a report, depending on the
@@ -284,5 +286,26 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			AnalysisContext.reportMissingClass(e);
 		}
 	}
+	/**
+     * @param isLocked
+     * @return
+     */
+    private boolean isLocked() {
+	    try {
+	    	if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {
+	    		Collection<Location> tLocations = currentCFG.getLocationsContainingInstructionWithOffset(getPC());
+	    		for (Location tLoc : tLocations) {
+	    			LockSet lockSet = currentLockDataFlow.getFactAtLocation(tLoc);
+	    			if (lockSet.getNumLockedObjects() > 0) {
+	    				// within a synchronized block
+	    				return true;
+	    			}
+	    		}
+	    	}
+	    } catch (DataflowAnalysisException e) {
+	    	reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
+	    }
+	    return false;
+    }
 
 }
