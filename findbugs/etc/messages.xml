@@ -3101,7 +3101,7 @@ and possible deadlock</p>
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE">
-    <ShortDescription>Synchronization  boxed primative values</ShortDescription>
+    <ShortDescription>Synchronization on boxed primative values</ShortDescription>
     <LongDescription>Synchronization on {2} in {1}</LongDescription>
     <Details>
       <![CDATA[
