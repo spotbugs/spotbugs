@@ -187,10 +187,15 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	 * @return name of local variable
 	 */
 	public String getName() {
-
 		return value;
 	}
 
+	public int getPC() {
+		return pc;
+	}
+	public int getRegister() {
+		return register;
+	}
 
 	public boolean isSignificant() {
 		return !value.equals("?");

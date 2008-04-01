@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.MethodWarningSuppressor;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
+import edu.umd.cs.findbugs.ParameterWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
@@ -111,7 +112,36 @@ public class NoteSuppressedWarnings
 			suppressWarning(null);
 		else
 			for (Object suppressedWarning : suppressedWarnings)
+				if (suppressedWarning instanceof String)
 				suppressWarning((String) suppressedWarning);
+	}
+
+	@Override
+	public void visitParameterAnnotation(int p, String annotationClass,
+			Map<String, Object> map, boolean runtimeVisible) {
+		if (!annotationClass.endsWith("SuppressWarnings"))
+			return;
+		if (!getMethod().isStatic()) p++;
+		Object value = map.get("value");
+		if (value == null || !(value instanceof Object[])) {
+			suppressWarning(p, null);
+			return;
+		}
+		Object[] suppressedWarnings = (Object[]) value;
+		if (suppressedWarnings.length == 0)
+			suppressWarning(p, null);
+		else
+			for (Object suppressedWarning : suppressedWarnings)
+				if (suppressedWarning instanceof String)
+				suppressWarning(p, (String) suppressedWarning);
+	}
+	
+	private void suppressWarning(int parameter, String pattern) {
+		String className = getDottedClassName();
+		ClassAnnotation clazz = new ClassAnnotation(className);
+		suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, clazz,
+					MethodAnnotation.fromVisitedMethod(this), parameter));
+		
 	}
 
 	private void suppressWarning(String pattern) {
