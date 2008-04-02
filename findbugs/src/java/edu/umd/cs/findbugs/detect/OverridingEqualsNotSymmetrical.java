@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -29,69 +28,27 @@ import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
-public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
+public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 
 	private static final String EQUALS_NAME = "equals";
 
 	private static final String EQUALS_SIGNATURE = "(Ljava/lang/Object;)Z";
 
-	static class KindOfEquals {
-		static int next = 0;
-
-		final int ordinal;
-
-		final String name;
-
-		static LinkedList<KindOfEquals> valueCollection = new LinkedList<KindOfEquals>();
-
-		public static KindOfEquals[] values() {
-			return valueCollection.toArray(new KindOfEquals[valueCollection.size()]);
-		}
-
-		KindOfEquals(String name) {
-			this.ordinal = next++;
-			this.name = name;
-			valueCollection.add(this);
-		}
-
-		public int ordinal() {
-			return ordinal;
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-
-		static KindOfEquals OBJECT_EQUALS = new KindOfEquals("OBJECT_EQUALS");
-
-		static KindOfEquals ABSTRACT_INSTANCE_OF = new KindOfEquals("ABSTRACT_INSTANCE_OF");
-
-		static KindOfEquals INSTANCE_OF_EQUALS = new KindOfEquals("INSTANCE_OF_EQUALS");
-
-		static KindOfEquals CHECKED_CAST_EQUALS = new KindOfEquals("CHECKED_CAST_EQUALS");
-
-		static KindOfEquals RETURNS_SUPER = new KindOfEquals("RETURNS_SUPER");
-
-		static KindOfEquals GETCLASS_EQUALS = new KindOfEquals("GETCLASS_EQUALS");
-
-		static KindOfEquals DELEGATE_EQUALS = new KindOfEquals("DELEGATE_EQUALS");
-
-		static KindOfEquals TRIVIAL_EQUALS = new KindOfEquals("TRIVIAL_EQUALS");
-
-		static KindOfEquals INVOKES_SUPER = new KindOfEquals("INVOKES_SUPER");
-
-		static KindOfEquals UNKNOWN = new KindOfEquals("UNKNOWN");
-	}
-
+	static enum KindOfEquals {
+		OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, UNKNOWN };
+		
 	Map<ClassAnnotation, KindOfEquals> kindMap = new HashMap<ClassAnnotation, KindOfEquals>();
 	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
 	Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
@@ -109,7 +66,7 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 	public void visit(Code obj) {
 		if (getMethodName().equals(EQUALS_NAME) && !getMethod().isStatic() && getMethod().isPublic()
 		        && getMethodSig().equals(EQUALS_SIGNATURE)) {
-			sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawReturnNonSuper = prevWasSuperEquals = false;
+			sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawReturnNonSuper = prevWasSuperEquals = sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = false;
 			sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
 			equalsCalls = 0;
 			super.visit(obj);
@@ -118,18 +75,23 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 				kind = KindOfEquals.RETURNS_SUPER;
 			else if (sawSuperEquals)
 				kind = KindOfEquals.INVOKES_SUPER;
-			else if (sawInstanceOf)
+			else if (sawInstanceOf || sawInstanceOfSupertype)
 				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_INSTANCE_OF : KindOfEquals.INSTANCE_OF_EQUALS;
-			else if (sawGetClass)
-				kind = KindOfEquals.GETCLASS_EQUALS;
+			else if (sawGetClass && sawGoodEqualsClass)
+				kind = KindOfEquals.GETCLASS_GOOD_EQUALS;
+			else if (sawGetClass && sawBadEqualsClass) 
+					kind = KindOfEquals.GETCLASS_BAD_EQUALS;
 			else if (equalsCalls == 1)
 				kind = KindOfEquals.DELEGATE_EQUALS;
 			else if (sawInitialIdentityCheck)
 				kind = KindOfEquals.TRIVIAL_EQUALS;
 			else if (sawCheckedCast)
 				kind = KindOfEquals.CHECKED_CAST_EQUALS;
+			else {
+				bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addString("Strange equals method"));
+			}
 
-			if (kind.equals(KindOfEquals.GETCLASS_EQUALS)) {
+			if (kind == KindOfEquals.GETCLASS_GOOD_EQUALS || kind == KindOfEquals.GETCLASS_BAD_EQUALS) {
 				
 				ClassDescriptor classDescriptor = getClassDescriptor();
 				try {
@@ -152,7 +114,7 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 		}
 	}
 
-	boolean sawInstanceOf, sawCheckedCast;
+	boolean sawInstanceOf, sawInstanceOfSupertype, sawCheckedCast;
 
 	boolean sawGetClass;
 
@@ -167,6 +129,8 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 	boolean sawInitialIdentityCheck;
 
 	int equalsCalls;
+	boolean sawGoodEqualsClass, sawBadEqualsClass;
+	boolean dangerDanger = false;
 
 	@Override
 	public void sawOpcode(int seen) {
@@ -175,11 +139,32 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 			sawInitialIdentityCheck = false;
 		}
 
+		if (seen == IF_ACMPEQ || seen == IF_ACMPNE) {
+			checkForComparingClasses();
+		}
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals(EQUALS_NAME)
 		        && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
 			equalsCalls++;
+			checkForComparingClasses();
 		}
-
+		
+		if (dangerDanger && seen == INVOKEVIRTUAL && getNameConstantOperand().equals(EQUALS_NAME)
+		        && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
+			bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this).addString("Testing class names"));
+			
+		}
+		dangerDanger = false;
+		if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/lang/Class") && getNameConstantOperand().equals("getName")
+		        && getSigConstantOperand().equals("()Ljava/lang/String;") && stack.getStackDepth() >= 2) {
+			Item left = stack.getStackItem(1);
+	    	XMethod leftM = left.getReturnValueOf();
+	    	Item right = stack.getStackItem(0);
+	    	XMethod rightM = right.getReturnValueOf();
+	    	if (leftM != null && rightM != null && leftM.getName().equals("getName") && rightM.getName().equals("getClass")) {
+	    		dangerDanger = true;
+	    	}
+	    	 
+		}
 		if (seen == INVOKESPECIAL && getNameConstantOperand().equals(EQUALS_NAME)
 		        && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
 			sawSuperEquals = prevWasSuperEquals = true;
@@ -193,11 +178,30 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 			prevWasSuperEquals = false;
 		}
 
-		if (seen == INSTANCEOF && getClassConstantOperand().equals(getClassName())) {
-			sawInstanceOf = true;
+		if (seen == INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+			ClassDescriptor instanceOfCheck = getClassDescriptorOperand();
+			if (instanceOfCheck.equals(getClassDescriptor()))
+				sawInstanceOf = true;
+            else
+	            try {
+	                if (AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(getClassDescriptor(), instanceOfCheck))
+	                	sawInstanceOfSupertype = true;
+                } catch (ClassNotFoundException e) {
+                	sawInstanceOfSupertype = true;
+                }
 		}
-		if (seen == CHECKCAST && getClassConstantOperand().equals(getClassName())) {
-			sawCheckedCast = true;
+		
+
+		if (seen == CHECKCAST && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+			ClassDescriptor castTo = getClassDescriptorOperand();
+			if (castTo.equals(getClassDescriptor()))
+				sawCheckedCast = true;
+			try {
+                if (AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(getClassDescriptor(), castTo))
+                	sawCheckedCast = true;
+            } catch (ClassNotFoundException e) {
+            	sawCheckedCast = true;
+            }
 		}
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
 		        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
@@ -206,12 +210,48 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 
 	}
 
+
+	/**
+     * 
+     */
+    private void checkForComparingClasses() {
+	    if (stack.getStackDepth() >= 2) {
+	    	Item left = stack.getStackItem(1);
+	    	XMethod leftM = left.getReturnValueOf();
+	    	Item right = stack.getStackItem(0);
+	    	XMethod rightM = right.getReturnValueOf();
+	    	if (left.getSignature().equals("Ljava/lang/Class;") && right.getSignature().equals("Ljava/lang/Class;") ) {
+	    	boolean leftMatch = leftM != null && leftM.getName().equals("getClass");
+			boolean rightMatch = rightM != null && rightM.getName().equals("getClass");
+			if (leftMatch && rightMatch) {
+	    		sawGoodEqualsClass = true;
+	    	} else {
+	    		if (left.getConstant() != null  && rightMatch || leftMatch && right.getConstant() != null) {
+	    			sawBadEqualsClass = true;
+	    			if (!getThisClass().isFinal()) {
+						int priority = Priorities.NORMAL_PRIORITY;
+						try {
+	                        if (AnalysisContext.currentAnalysisContext().getSubtypes2().hasSubtypes(getClassDescriptor()))
+	                        	priority--;
+                        } catch (ClassNotFoundException e) {
+	                        bugReporter.reportMissingClass(e);
+                        }
+						bugReporter.reportBug(new BugInstance(this,"TESTING", priority).addClassAndMethod(this).addSourceLine(this).addString("doesn't work for subtypes"));
+					}
+	    		}
+	    	}
+	    	}
+	    	
+	    }
+    }
+
 	@Override
 	public void report() {
 
 		if (false) 
 		for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
 			ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+			KindOfEquals parentKind = kindMap.get(parentClass);
 			for(ClassDescriptor child : e.getValue()) {
 				if (child.equals(e.getKey())) continue;
 				XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
@@ -221,7 +261,7 @@ public class OverridingEqualsNotSymmetrical extends BytecodeScanningDetector {
 				int fieldsOfInterest = 0;
 				for(XField f : xChild.getXFields())
 					if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
-				System.out.println(childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
+				System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
 				
 			}
 		}
