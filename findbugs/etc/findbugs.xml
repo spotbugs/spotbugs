@@ -316,7 +316,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" 
             speed="fast"
-            reports="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC"/>
+            reports="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC,EQ_ALWAYS_TRUE,EQ_ALWAYS_FALSE,EQ_COMPARING_CLASS_NAMES,EQ_UNUSUAL,EQ_GETCLASS_AND_CLASS_CONSTANT"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" 
             speed="fast"
@@ -817,6 +817,11 @@
   <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE" />
   <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" />
   <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586" />
+  <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_UNUSUAL" category="STYLE" />
+  <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_DOESNT_OVERRIDE_EQUALS" category="STYLE" />
   <BugPattern abbrev="Eq" type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM" category="CORRECTNESS" />

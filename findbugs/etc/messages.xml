@@ -2479,9 +2479,82 @@ since it is important that the equals method is symetrical (in other words, <cod
 If B is a subtype of A, and A's equals method checks that the argument is an instanceof A, and B's equals method
 checks that the argument is an instanceof B, it is quite likely that the equivalence relation defined by these
 methods is not symmetric.
+</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="EQ_GETCLASS_AND_CLASS_CONSTANT">
+    <ShortDescription>equals method fails for subtypes</ShortDescription>
+    <LongDescription>{1} fails for subtypes</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class has an equals method that will be broken if it is inherited by subclasses.
+It compares a class literal with the class of the argument (e.g., in class <code>Foo</code>
+it might check if <code>Foo.class == o.getClass()</code>).
+It is better to check  if  <code>this.getClass() == o.getClass()</code>.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="EQ_UNUSUAL">
+    <ShortDescription>Unusual equals method </ShortDescription>
+    <LongDescription>{1} is unusual</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class doesn't do any of the patterns we recognize for checking that the type of the argument 
+is compatible with the type of the <code>this</code> object. There might not be anything wrong with
+this code, but it is worth reviewing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="EQ_COMPARING_CLASS_NAMES">
+    <ShortDescription>equals method compares class names rather than class objects</ShortDescription>
+    <LongDescription>{1} compares class names rather than class objects</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method checks to see if two objects are the same class by checking to see if the names
+of their classes are equal. You can have different classes with the same name if they are loaded by
+different class loaders. Just check to see if the class objects are the same.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="EQ_ALWAYS_TRUE">
+    <ShortDescription>equals method always returns true</ShortDescription>
+    <LongDescription>{1} always returns true</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines an equals method that always returns true. This is imaginative, but not very smart.
+Plus, it means that the equals method is not symmetric.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="EQ_ALWAYS_FALSE">
+    <ShortDescription>equals method always returns false</ShortDescription>
+    <LongDescription>{1} always returns false</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines an equals method that always returns false. This means that an object is not equal to itself, and it is impossible to create useful Maps or Sets of this class. More fundementally, it means
+that equals is not reflexive, one of the requirements of the equals method.</p>
+<p>The likely intended semantics are object identity: that an object is equal to itself. This is the behavior inherited from class <code>Object</code>. If you need to override an equals inherited from a different 
+superclass, you can use use:
+<pre>
+public boolean equals(Object o) { return this == o; }
+</pre>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+
   <BugPattern type="HSC_HUGE_SHARED_STRING_CONSTANT">
    <ShortDescription>Huge string constants is duplicated across multiple class files</ShortDescription>
    <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated in {3} other class files</LongDescription>
