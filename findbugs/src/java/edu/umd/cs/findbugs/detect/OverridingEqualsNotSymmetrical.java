@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -47,7 +47,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	private static final String EQUALS_SIGNATURE = "(Ljava/lang/Object;)Z";
 
 	static enum KindOfEquals {
-		OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN };
+		OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN };
 		
 	Map<ClassAnnotation, KindOfEquals> kindMap = new HashMap<ClassAnnotation, KindOfEquals>();
 	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
@@ -84,7 +84,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			else if (sawInstanceOf || sawInstanceOfSupertype)
 				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_INSTANCE_OF : KindOfEquals.INSTANCE_OF_EQUALS;
 			else if (sawGetClass && sawGoodEqualsClass)
-				kind = KindOfEquals.GETCLASS_GOOD_EQUALS;
+				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS : KindOfEquals.GETCLASS_GOOD_EQUALS;
 			else if (sawGetClass && sawBadEqualsClass) 
 					kind = KindOfEquals.GETCLASS_BAD_EQUALS;
 			else if (equalsCalls == 1)
@@ -99,7 +99,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				bugReporter.reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addString("Strange equals method"));
 			}
 
-			if (kind == KindOfEquals.GETCLASS_GOOD_EQUALS || kind == KindOfEquals.GETCLASS_BAD_EQUALS) {
+			count(kind);
+			if (kind == KindOfEquals.GETCLASS_GOOD_EQUALS || kind == KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS || kind == KindOfEquals.GETCLASS_BAD_EQUALS) {
 				
 				ClassDescriptor classDescriptor = getClassDescriptor();
 				try {
@@ -122,6 +123,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		}
 	}
 
+	
 	boolean sawInstanceOf, sawInstanceOfSupertype, sawCheckedCast;
 
 	boolean sawGetClass;
@@ -142,6 +144,13 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	boolean sawCompare;
 	boolean dangerDanger = false;
 
+	private EnumMap<KindOfEquals, Integer> count = new EnumMap<KindOfEquals, Integer> (KindOfEquals.class);
+	
+	private void count(KindOfEquals k) {
+		Integer v = count.get(k);
+		if (v == null) count.put(k,1);
+		else count.put(k, v+1);
+	}
 	@Override
 	public void sawOpcode(int seen) {
 		if (getPC() == 2 && seen != IF_ACMPEQ && seen != IF_ACMPNE) {
@@ -279,6 +288,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		if (false) 
 		for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
 			ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+			XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
+			if (xParent == null) continue;
 			KindOfEquals parentKind = kindMap.get(parentClass);
 			for(ClassDescriptor child : e.getValue()) {
 				if (child.equals(e.getKey())) continue;
@@ -292,6 +303,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
 				
 			}
+		}
+		for (Map.Entry<KindOfEquals, Integer> e : count.entrySet()) {
+			System.out.println(e);
 		}
 			
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
