@@ -2335,7 +2335,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param f
 	 * @return
 	 */
-	private boolean openAnalysis(File f, SaveType saveType){
+	public boolean openAnalysis(File f, SaveType saveType){
 		if (!f.exists() || !f.canRead()) {
 			throw new IllegalArgumentException("Can't read " + f);
 		}

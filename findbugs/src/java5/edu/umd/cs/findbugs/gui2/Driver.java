@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.swing.UIManager;
@@ -41,6 +42,7 @@ public class Driver {
 	private static SplashFrame splash;
 	private static int priority = Thread.NORM_PRIORITY-1;
 	private static Project project = null;
+	private static File saveFile = null;
 
 	public static void main(String[] args) throws Exception {
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -102,7 +104,21 @@ public class Driver {
 				priority = num;
 			}
 
-			else if(args[i].equals("-project")){
+			else if (args[i].equals("-loadbugs")) {
+				i++;
+				try {
+					saveFile = new File(args[i]);
+				} catch (IndexOutOfBoundsException e) {
+					System.err.println("Option \"-loadbugs\" must be followed by a filename");
+					System.exit(1);
+				}
+				if (!saveFile.exists()) {
+					System.err.println("Bugs file \"" + args[i] + "\" could not be found");
+					System.exit(1);
+				}
+			}
+
+			else if(args[i].equals("-project")) {
 				try {
 					i++;
 					project = Project.readProject(args[i]);
@@ -189,7 +205,10 @@ public class Driver {
 		splash.setVisible(false);
 		splash.dispose();
 
-		if(project != null) {
+		if(saveFile != null) {
+			MainFrame.getInstance().openAnalysis(saveFile, SaveType.XML_ANALYSIS);
+		}
+		else if(project != null) {
 			MainFrame.getInstance().setProject(project);
 			MainFrame.getInstance().newProject();
 		}
