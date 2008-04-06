@@ -676,6 +676,7 @@
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
 		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/jsr305.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.0.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-commons-3.0.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.0.jar"/>
