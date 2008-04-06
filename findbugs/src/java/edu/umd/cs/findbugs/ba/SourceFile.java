@@ -166,6 +166,12 @@ public class SourceFile {
 	 *         or -1 if the line is not valid
 	 */
 	public int getLineOffset(int line) {
+		try {
+			loadFileData();
+		} catch (IOException e) {
+			System.err.println("SourceFile.getLineOffset: " + e.getMessage());
+			return -1;
+		}
 		if (line < 0 || line >= numLines)
 			return -1;
 		return lineNumberMap[line];
