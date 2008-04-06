@@ -20,6 +20,7 @@
     <jar href="findbugs.jar"/> 
     <jar href="findbugsGUI.jar"/> 
     <jar href="bcel.jar"/> 
+    <jar href="jsr305.jar"/> 
     <jar href="asm-3.0.jar"/>
     <jar href="asm-commons-3.0.jar"/>
     <jar href="asm-tree-3.0.jar"/>
