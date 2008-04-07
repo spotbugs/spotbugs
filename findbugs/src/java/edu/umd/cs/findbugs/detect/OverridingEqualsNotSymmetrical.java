@@ -285,28 +285,30 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	@Override
 	public void report() {
 
-		if (false) 
-		for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
-			ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
-			XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
-			if (xParent == null) continue;
-			KindOfEquals parentKind = kindMap.get(parentClass);
-			for(ClassDescriptor child : e.getValue()) {
-				if (child.equals(e.getKey())) continue;
-				XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
-				if (xChild == null) continue;
-				ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
-				KindOfEquals childKind = kindMap.get(childClass);
-				int fieldsOfInterest = 0;
-				for(XField f : xChild.getXFields())
-					if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
-				System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
-				
+		if (false) {
+			for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
+				ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+				XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
+				if (xParent == null) continue;
+				KindOfEquals parentKind = kindMap.get(parentClass);
+				for(ClassDescriptor child : e.getValue()) {
+					if (child.equals(e.getKey())) continue;
+					XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
+					if (xChild == null) continue;
+					ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
+					KindOfEquals childKind = kindMap.get(childClass);
+					int fieldsOfInterest = 0;
+					for(XField f : xChild.getXFields())
+						if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
+					System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
+
+				}
+
+
 			}
-			for (Map.Entry<KindOfEquals, Integer> e2 : count.entrySet()) {
-				System.out.println(e2);
+			for (Map.Entry<KindOfEquals, Integer> e : count.entrySet()) {
+				System.out.println(e);
 			}
-				
 		}
 		
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
