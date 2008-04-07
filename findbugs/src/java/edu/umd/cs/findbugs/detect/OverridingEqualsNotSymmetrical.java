@@ -303,11 +303,12 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
 				
 			}
+			for (Map.Entry<KindOfEquals, Integer> e2 : count.entrySet()) {
+				System.out.println(e2);
+			}
+				
 		}
-		for (Map.Entry<KindOfEquals, Integer> e : count.entrySet()) {
-			System.out.println(e);
-		}
-			
+		
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
 			ClassAnnotation childClass = e.getKey();
 			KindOfEquals childKind = kindMap.get(childClass);
