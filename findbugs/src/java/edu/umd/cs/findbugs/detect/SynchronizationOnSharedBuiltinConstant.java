@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -72,8 +73,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 			} else if (badSignatures.contains(signature)) {
 				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
-				FieldItemSummary fieldItemSummary = AnalysisContext.currentAnalysisContext().getFieldItemSummary();
-				OpcodeStack.Item summary = fieldItemSummary.getSummary(field);
+				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+				OpcodeStack.Item summary = fieldSummary.getSummary(field);
 				int priority = NORMAL_PRIORITY;
 				if (isBoolean) priority--;
 				if (newlyConstructedObject(summary))

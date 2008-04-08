@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ConstantClass;
@@ -46,10 +47,13 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Visitor which models the effects of bytecode instructions
@@ -385,6 +389,19 @@ public class ValueNumberFrameModelingVisitor
 
 	private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
 		try {
+			 try {
+	            XMethod called = Hierarchy2.findExactMethod(
+	            			ins,
+	            			methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
+	            FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+				Set<XField> touched = fieldSummary.getFieldsWritten(called);
+				if (!touched.isEmpty()) {
+					getFrame().killLoadsOf(touched);
+				}
+				
+            } catch (ClassNotFoundException e) {
+            	AnalysisContext.reportMissingClass(e);
+            }
 			int passed = getNumWordsConsumed(ins);
 			ValueNumber [] arguments = new ValueNumber[passed];
 			getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));

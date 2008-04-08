@@ -19,64 +19,57 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+
+import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FieldItemSummary extends OpcodeStackDetector implements NonReportingDetector {
-
+	
+	FieldSummary fieldSummary = new FieldSummary();
 	public FieldItemSummary(BugReporter bugReporter) {
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
-		context.setFieldItemSummary(this);
+		context.setFieldSummary(fieldSummary);
 	}
 
-	Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
+	Set<XField> touched = new HashSet<XField>();
 
-	Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
-
-	OpcodeStack.Item getSummary(XField field) {
-		OpcodeStack.Item result = summary.get(field);
-		if (result == null)
-			return new OpcodeStack.Item();
-		return result;
-
-	}
-
-	boolean isWrittenOutsideOfConstructor(XField field) {
-		if (field.isFinal())
-			return false;
-		return writtenOutsideOfConstructor.contains(field);
-	}
-
-	@Override
+	
+	
+		@Override
 	public void sawOpcode(int seen) {
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
 			if (fieldOperand == null) return;
+			touched.add(fieldOperand);
 			if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName()))
-				writtenOutsideOfConstructor.add(fieldOperand);
+				fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
 			else if (seen == PUTFIELD) {
-				OpcodeStack.Item addr = stack.getStackItem(1);
+				OpcodeStack.Item addr = stack.getStackItem(1); {
 				if (addr.getRegisterNumber() != 0 || !getMethodName().equals("<init>"))
-					writtenOutsideOfConstructor.add(fieldOperand);
+					fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
+				}
 			} else if (seen == PUTSTATIC && !getMethodName().equals("<clinit>"))
-				writtenOutsideOfConstructor.add(fieldOperand);
+				fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
 			OpcodeStack.Item top = stack.getStackItem(0);
-			OpcodeStack.Item oldSummary = summary.get(fieldOperand);
-			if (oldSummary != null) {
-				summary.put(fieldOperand, OpcodeStack.Item.merge(top, oldSummary));
-			} else
-				summary.put(fieldOperand, top);
+			fieldSummary.mergeSummary(fieldOperand, top);
 		}
 
 	}
+		
+		 
+		public void visit(Code obj) {
+			super.visit(obj);
+			fieldSummary.setFieldsWritten(getXMethod(), touched);
+			touched.clear();
+		}
 
 }

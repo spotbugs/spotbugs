@@ -27,9 +27,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.util.Strings;
@@ -127,6 +130,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	private static boolean USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR = true;
 	/**
 	 * Kill all loads.
 	 * This conservatively handles method calls where we
@@ -134,9 +138,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoads() {
 		if (REDUNDANT_LOAD_ELIMINATION) {
+			FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal()) {
+				XField field = availableLoad.getField();
+				if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
 					if (RLE_DEBUG) 
 						System.out.println("KILLING load of " + availableLoad + " in " + this);
 					i.remove();
@@ -164,9 +170,13 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoadsOf(@CheckForNull ValueNumber v) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
+			FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+			
 			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v) {
+				if (availableLoad.getReference() != v) continue;
+				XField field = availableLoad.getField();
+				if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
 					if (RLE_DEBUG) System.out.println("Killing load of " + availableLoad + " in " + this);
 					i.remove();
 				}
@@ -174,6 +184,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	public void killLoadsOf(Set<XField> fieldsToKill) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
+				AvailableLoad availableLoad = i.next();
+
+				if (fieldsToKill.contains(availableLoad.getField()) )
+						i.remove();
+			}
+		}
+	}
 	public void killLoadsWithSimilarName(String className, String methodName) {
 		String packageName = extractPackageName(className);
 		if (REDUNDANT_LOAD_ELIMINATION) {
