@@ -400,7 +400,13 @@ public class ValueNumberFrameModelingVisitor
 	public void visitMONITORENTER(MONITORENTER obj) {
 		// Don't know what this sync invocation is doing.
 		// Kill all loads.
-		getFrame().killAllLoads();
+		ValueNumber topValue = null;
+		try {
+	        topValue = getFrame().getStackValue(0);
+        } catch (DataflowAnalysisException e) {
+	        AnalysisContext.logError("error handling monitor enter in value numbering", e);
+        }
+		getFrame().killAllLoadsExceptFor(topValue);
 		handleNormalInstruction(obj);
 	}
 

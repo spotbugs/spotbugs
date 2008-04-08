@@ -144,6 +144,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			}
 		}
 	}
+	public void killAllLoadsExceptFor(@CheckForNull ValueNumber v) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			AvailableLoad myLoad = getLoad(v);
+			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
+				AvailableLoad availableLoad = i.next();
+				if (!availableLoad.getField().isFinal() && !availableLoad.equals(myLoad)) {
+					if (RLE_DEBUG) 
+						System.out.println("KILLING load of " + availableLoad + " in " + this);
+					i.remove();
+				}
+			}
+		}
+	}
 	/**
 	 * Kill all loads.
 	 * This conservatively handles method calls where we
