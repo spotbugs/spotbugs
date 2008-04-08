@@ -314,6 +314,8 @@ public class XFactory {
 			}
 		} catch (CheckedAnalysisException e) {
 			assert true;
+		} catch (RuntimeException e) {
+			assert true;
 		}
 		return new UnresolvedXMethod(originalDescriptor);
 	}

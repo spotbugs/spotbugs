@@ -92,7 +92,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	}
 	public ClassAnnotation getTopLevelClass() {
 		int firstDollar = className.indexOf('$');
-		if (firstDollar == -1) return this;
+		if (firstDollar <= 0) return this;
 		return new ClassAnnotation(className.substring(0,firstDollar));
 
 	}

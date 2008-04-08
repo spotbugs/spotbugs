@@ -78,7 +78,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		 String superClassName = getDottedSuperclassName();
 		 while(true) {
 			 int i = possibleTargetClass.lastIndexOf('$');
-			if (i == -1) break;
+			if (i <= 0) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
 			if (possibleTargetClass.equals(superClassName)) break;
 			 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
