@@ -34,9 +34,11 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
@@ -286,6 +288,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	public void report() {
 
 		if (false) {
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 			for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
 				ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
 				XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
@@ -300,7 +303,22 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 					int fieldsOfInterest = 0;
 					for(XField f : xChild.getXFields())
 						if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
-					System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest);
+					int grandchildren = -1;
+					try {
+	            
+						grandchildren = subtypes2.getSubtypes(child).size();
+                    } catch (ClassNotFoundException e1) {
+	                  assert true;
+                    }
+					System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " " + fieldsOfInterest + " " + grandchildren);
+					try {
+			            if (grandchildren >= 2) {
+						for(ClassDescriptor g : subtypes2.getSubtypes(child))
+							if (!g.equals(child))
+								System.out.println("  " + g);
+					}  } catch (ClassNotFoundException e1) {
+	                  assert true;
+                    }
 
 				}
 
