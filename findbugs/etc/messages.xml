@@ -2822,6 +2822,22 @@ but can be accessed in a way that seems to violate the annotation.</p>
 </Details>
 </BugPattern>
 
+  <BugPattern type="MSF_MUTABLE_SERVLET_FIELD">
+    <ShortDescription>Mutable servlet field</ShortDescription>
+    <LongDescription>{1} is a mutable servlet field</LongDescription>
+    <Details>
+<![CDATA[
+<p>A web server generally only creates one instance of servlet or jsp class (i.e., treates
+the class as a Singleton), 
+and will 
+have multiple threads invoke methods on that instance to service multiple 
+simultaneous requests.
+Thus, having a mutable instance field generally creates race conditions.
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="IS2_INCONSISTENT_SYNC">
     <ShortDescription>Inconsistent synchronization</ShortDescription>
     <LongDescription>Inconsistent synchronization of {1}; locked {2}% of time</LongDescription>
@@ -2851,9 +2867,6 @@ but can be accessed in a way that seems to violate the annotation.</p>
   distinguishing locked vs. unlocked accesses, the code in question may still
   be correct.</p>
 
-  <p> This description refers to the "IS2" version of the pattern detector,
-  which has more accurate ways of detecting locked vs. unlocked accesses
-  than the older "IS" detector.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6940,6 +6953,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="IO" >Input/Output problem</BugCode>
   <BugCode abbrev="IC" >Initialization circularity</BugCode>
   <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
+  <BugCode abbrev="MSF" >Mutable servlet field</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
   <BugCode abbrev="Eq" >Problems with equals()</BugCode>
   <BugCode abbrev="Co" >Problems with  compareTo()</BugCode>
