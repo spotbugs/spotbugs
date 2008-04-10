@@ -19,11 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
 
@@ -75,8 +81,22 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
 				if (classConstantOperand.equals(thisClassName))
 					seenGetStatic = true;
 			} else if (seen == MONITOREXIT) {
+				int priority = LOW_PRIORITY;
 				if (seenPutStatic || seenGetStatic)
-					pendingBug.setPriority(HIGH_PRIORITY);
+					priority--;
+				try {
+	                Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+	                Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
+					if (!directSubtypes.isEmpty()) {
+						for(ClassDescriptor sub : directSubtypes) {
+	                		pendingBug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
+	                	}
+	                	priority--;
+	                }
+                } catch (ClassNotFoundException e) {
+	              bugReporter.reportMissingClass(e);
+                }
+				pendingBug.setPriority(priority);
 				bugReporter.reportBug(pendingBug);
 				pendingBug = null;
 			}
