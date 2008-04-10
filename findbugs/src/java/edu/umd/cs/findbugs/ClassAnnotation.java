@@ -38,6 +38,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
+	public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
 
 	/**
 	 * Constructor.
