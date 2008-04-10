@@ -93,18 +93,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 	}
 
 	private boolean isBoring(BugAnnotation annotation) {
-		// We ignore int annotations.
-		if (annotation.getClass() == IntAnnotation.class) {
-			if (annotation.getDescription().equals(IntAnnotation.INT_SYNC_PERCENT))
-				return true;
-		}
-
-		// Ignore  all source line annotations 
-		if (annotation instanceof SourceLineAnnotation) {
-			return true;
-		}
-
-		return false;
+		return !annotation.isSignificant();
 	}
 
 	private static int compareNullElements(Object a, Object b) {
@@ -189,8 +178,9 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 				String rhsClassName = classNameRewriter.rewriteClassName(
 						((ClassAnnotation)rhsAnnotation).getClassName());
 
-				return lhsClassName.compareTo(rhsClassName);
-
+				cmp = lhsClassName.compareTo(rhsClassName);
+				if (cmp != 0)
+					return cmp;
 			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ) {
 				// Rewrite class names in MethodAnnotations
 				MethodAnnotation lhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
@@ -210,6 +200,38 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 						classNameRewriter, (FieldAnnotation) rhsAnnotation);
 
 				cmp = lhsField.compareTo(rhsField);
+				if (cmp != 0)
+					return cmp;
+			} else if(lhsAnnotation.getClass() == StringAnnotation.class) {
+				// Rewrite class names in FieldAnnotations
+				String lhsString = ((StringAnnotation)lhsAnnotation).getValue();
+				String rhsString = ((StringAnnotation)rhsAnnotation).getValue();
+				cmp = lhsString.compareTo(rhsString);
+				if (cmp != 0)
+					return cmp;
+			} else if(lhsAnnotation.getClass() == LocalVariableAnnotation.class) {
+				// Rewrite class names in FieldAnnotations
+				String lhsName = ((LocalVariableAnnotation)lhsAnnotation).getName();
+				String rhsName = ((LocalVariableAnnotation)rhsAnnotation).getName();
+				if (lhsName.equals("?") && rhsName.equals("?"))
+					continue;
+				cmp = lhsName.compareTo(rhsName);
+				if (cmp != 0)
+					return cmp;
+			} else if(lhsAnnotation.getClass() == TypeAnnotation.class) {
+				// Rewrite class names in FieldAnnotations
+				String lhsType = ((TypeAnnotation)lhsAnnotation).getTypeDescriptor();
+				String rhsType = ((TypeAnnotation)rhsAnnotation).getTypeDescriptor();
+				lhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, lhsType);
+				rhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, rhsType);
+				cmp = lhsType.compareTo(lhsType);
+				if (cmp != 0)
+					return cmp;
+			} else if(lhsAnnotation.getClass() == IntAnnotation.class) {
+				// Rewrite class names in FieldAnnotations
+				int lhsValue = ((IntAnnotation)lhsAnnotation).getValue();
+				int rhsValue = ((IntAnnotation)rhsAnnotation).getValue();
+				cmp = lhsValue - rhsValue;
 				if (cmp != 0)
 					return cmp;
 			} else if (isBoring(lhsAnnotation)) {
