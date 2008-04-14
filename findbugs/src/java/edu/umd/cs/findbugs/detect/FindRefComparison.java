@@ -639,7 +639,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String methodSig = inv.getSignature(cpg);
 			if (isEqualsMethod(methodName, methodSig)) {
 				sawCallToEquals = true;
-				checkEqualsComparison(location, jclass, method, methodGen, typeDataflow);
+				checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
 			}
 		}
 		return sawCallToEquals;
@@ -810,9 +810,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			Location location,
 			JavaClass jclass,
 			Method method,
-			MethodGen methodGen, TypeDataflow typeDataflow) throws DataflowAnalysisException {
+			MethodGen methodGen, ConstantPoolGen cpg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
+		InstructionHandle next = handle.getNext();
+		if (next != null && next.getInstruction() instanceof INVOKESTATIC) {
+			INVOKESTATIC is = (INVOKESTATIC) next.getInstruction();
+			if (is.getMethodName(cpg).equals("assertFalse")) return;
+		}
 		String sourceFile = jclass.getSourceFileName();
 
 		TypeFrame frame = typeDataflow.getFactAtLocation(location);
