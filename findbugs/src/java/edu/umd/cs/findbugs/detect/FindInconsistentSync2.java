@@ -503,9 +503,6 @@ public class FindInconsistentSync2 implements Detector {
 				|| methodName.equals("writeObject")
 				|| methodName.equals("toString")
 				|| methodName.equals("init")
-				|| methodName.startsWith("init")
-				|| methodName.startsWith("_")
-				|| methodName.indexOf('$') >= 0
 				|| methodName.equals("initialize")
 				|| methodName.equals("dispose")
 				|| methodName.equals("finalize")
