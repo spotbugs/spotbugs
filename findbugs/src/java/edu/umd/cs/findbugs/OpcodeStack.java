@@ -1773,7 +1773,30 @@ public class OpcodeStack implements Constants2
 				 result.setPC(dbc.getPC());
 				 push(result);
 				 return;
+		 } else if (seen == INVOKEINTERFACE && methodName.equals("getQueryString")
+			        && clsName.equals("javax/servlet/http/HttpServletRequest")
+			         || clsName.equals("javax/servlet/http/ServletRequest")) {
+				 Item requestParameter = pop();
+				 pop();
+				 Item result = new Item("Ljava/lang/String");
+				 result.setServletParameterTainted();
+				 result.source = XFactory.createReferencedXMethod(dbc);
+				result.setPC(dbc.getPC());
+				 push(result);
+				 return;
+		 } else if (seen == INVOKEINTERFACE && methodName.equals("getHeader")
+			        && clsName.equals("javax/servlet/http/HttpServletRequest")
+			         || clsName.equals("javax/servlet/http/ServletRequest")) {
+				 Item requestParameter = pop();
+				 pop();
+				 Item result = new Item("Ljava/lang/String");
+				 result.setServletParameterTainted();
+				 result.source = XFactory.createReferencedXMethod(dbc);
+				result.setPC(dbc.getPC());
+				 push(result);
+				 return;
 		 }
+
 
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
