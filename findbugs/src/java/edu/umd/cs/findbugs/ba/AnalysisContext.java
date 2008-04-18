@@ -179,7 +179,7 @@ public abstract class AnalysisContext {
 	FieldSummary fieldSummary;
 	
 	public FieldSummary getFieldSummary() {
-		if (unreadFields == null) throw new IllegalStateException("FieldSummary detector not set");
+		if (fieldSummary == null) throw new IllegalStateException("FieldSummary detector not set");
 		return fieldSummary;
 	}
 	public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
