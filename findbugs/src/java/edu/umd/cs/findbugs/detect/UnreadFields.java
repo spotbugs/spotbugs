@@ -542,8 +542,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 					&& seen == GETFIELD ) {
 				writtenFields.add(f);
 				writtenNonNullFields.add(f);
-				if (f == null) 
-					System.out.println("Added null 1");
+
 			}
 			if (DEBUG) System.out.println("get: " + f);
 			// readFields.add(f);
