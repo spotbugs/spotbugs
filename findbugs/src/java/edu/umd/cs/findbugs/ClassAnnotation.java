@@ -49,6 +49,10 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		super(className, DEFAULT_ROLE);
 	}
 
+	@Override
+	public boolean isSignificant() {
+		return !SUBCLASS_ROLE.equals(description);
+	}
 	/**
 	 * Factory method to create a ClassAnnotation from a ClassDescriptor.
 	 * 
