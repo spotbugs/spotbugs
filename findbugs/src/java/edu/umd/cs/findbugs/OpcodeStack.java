@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -375,6 +376,10 @@ public class OpcodeStack implements Constants2
 			return fieldLoadedFromRegister;
 		}
 		
+		public void setLoadedFromField(XField f, int fieldLoadedFromRegister) {
+			source = f;
+			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
+		}
 		public @CheckForNull String getHttpParameterName() {
 			if (!isServletParameterTainted()) throw new IllegalStateException();
 			if (injection == null) return null;
@@ -820,8 +825,19 @@ public class OpcodeStack implements Constants2
 
 
 				 case GETSTATIC:
-					{
-					FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
+				 {
+					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+					 XField fieldOperand = dbc.getXFieldOperand();
+					 if (fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
+						 if (item != null) {
+							 Item itm = new Item(item);
+							 item.setLoadedFromField(fieldOperand, Integer.MAX_VALUE);
+							 push(itm);
+							 break;
+						 }
+					 }
+					 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
 					 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
 					 if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
 						 i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
@@ -1080,12 +1096,25 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case GETFIELD:
-					 {
-						 Item item = pop();
-						 int reg = item.getRegisterNumber();
-					 push(new Item(dbc.getSigConstantOperand(), 
-						FieldAnnotation.fromReferencedField(dbc), reg));
+				 {
+					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+					 XField fieldOperand = dbc.getXFieldOperand();
+					 if (fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
+						 if (item != null) {
+							 Item addr = pop();
+							 Item itm = new Item(item);
+							 item.setLoadedFromField(fieldOperand, addr.getRegisterNumber());
+							 push(itm);
+							 break;
+						 }
 					 }
+					 Item item = pop();
+					 int reg = item.getRegisterNumber();
+					 push(new Item(dbc.getSigConstantOperand(), 
+							 FieldAnnotation.fromReferencedField(dbc), reg));
+
+				 }
 				 break;
 
 				 case ARRAYLENGTH:

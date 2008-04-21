@@ -66,10 +66,17 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 	}
 		
 		 
-		public void visit(Code obj) {
+		@Override
+        public void visit(Code obj) {
 			super.visit(obj);
 			fieldSummary.setFieldsWritten(getXMethod(), touched);
 			touched.clear();
+		}
+		
+		
+		@Override
+        public void report() {
+			fieldSummary.setComplete(true);
 		}
 
 }

@@ -33,6 +33,7 @@ public class FieldSummary {
 	private Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
 	private Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
 	
+	private boolean complete = false;
 	public OpcodeStack.Item getSummary(XField field) {
 		OpcodeStack.Item result = summary.get(field);
 		if (result == null)
@@ -72,6 +73,20 @@ public class FieldSummary {
 			summary.put(fieldOperand, OpcodeStack.Item.merge(mergeValue, oldSummary));
 		} else
 			summary.put(fieldOperand, mergeValue);
+    }
+
+	/**
+     * @param complete The complete to set.
+     */
+    public void setComplete(boolean complete) {
+	    this.complete = complete;
+    }
+
+	/**
+     * @return Returns the complete.
+     */
+    public boolean isComplete() {
+	    return complete;
     }
 
 
