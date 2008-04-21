@@ -828,7 +828,7 @@ public class OpcodeStack implements Constants2
 				 {
 					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 					 XField fieldOperand = dbc.getXFieldOperand();
-					 if (fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+					 if (false && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
 						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
 						 if (item != null) {
 							 Item itm = new Item(item);
@@ -1099,7 +1099,7 @@ public class OpcodeStack implements Constants2
 				 {
 					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 					 XField fieldOperand = dbc.getXFieldOperand();
-					 if (fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+					 if (false && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
 						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
 						 if (item != null) {
 							 Item addr = pop();
