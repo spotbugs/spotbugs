@@ -8,6 +8,8 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.GOTO;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -154,6 +156,17 @@ public class LoadOfKnownNullValue implements Detector {
 				if (next instanceof ARETURN) {
 					// probably stored for duration of finally block
 					continue;
+				}
+				if(next instanceof GOTO) {
+					InstructionHandle targ = ((BranchInstruction)next).getTarget();
+					if(targ.getInstruction() instanceof ARETURN) {
+						// Skip for the same reason we would skip if
+						// (next instanceof ARETURN) were true.  This
+						// is necessary because the bytecode compiler
+						// compiles the ternary ? operator with a GOTO
+						// to an ARETURN instead of just an ARETURN.
+						continue;
+					}
 				}
 				int startLine = sourceLineAnnotation.getStartLine();
 				if (startLine > 0 && lineMentionedMultipleTimes.get(startLine) && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
