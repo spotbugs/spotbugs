@@ -124,12 +124,12 @@ public class NewProjectWizard extends FBDialog
 
 
 		wizardComponents[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
-				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
+				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Class Archives and Directories to Analyze");
 
 		wizardComponents[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
-				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
+				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories");
 
-		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
+		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories");
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -294,7 +294,8 @@ public class NewProjectWizard extends FBDialog
 	 * 
 	 */
 	private JPanel createFilePanel(final String label, final JList list, 
-			final DefaultListModel listModel, final int fileSelectionMode, final FileFilter filter) {
+			final DefaultListModel listModel, final int fileSelectionMode, final FileFilter filter,
+			final String dialogTitle) {
 		JPanel myPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -339,6 +340,8 @@ public class NewProjectWizard extends FBDialog
 			{
 				chooser.setFileSelectionMode(fileSelectionMode);
 				chooser.setMultiSelectionEnabled(true);
+				chooser.setApproveButtonText("Choose");
+				chooser.setDialogTitle(dialogTitle);
 				
 				//Removes all the file filters currently in the chooser.
 				for(FileFilter ff : chooser.getChoosableFileFilters()){
