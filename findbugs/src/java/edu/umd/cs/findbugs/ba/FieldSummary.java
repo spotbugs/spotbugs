@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class FieldSummary {
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
@@ -70,7 +71,8 @@ public class FieldSummary {
 	public void mergeSummary(XField fieldOperand, OpcodeStack.Item mergeValue) {
 		OpcodeStack.Item oldSummary = summary.get(fieldOperand);
 		if (oldSummary != null) {
-			summary.put(fieldOperand, OpcodeStack.Item.merge(mergeValue, oldSummary));
+			Item newValue = OpcodeStack.Item.merge(mergeValue, oldSummary);
+			summary.put(fieldOperand, newValue);
 		} else
 			summary.put(fieldOperand, mergeValue);
     }

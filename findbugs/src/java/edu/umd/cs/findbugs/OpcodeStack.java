@@ -303,6 +303,10 @@ public class OpcodeStack implements Constants2
 				m.pc = i1.pc;
 			if (Util.nullSafeEquals(i1.signature, i2.signature))
 				m.signature = i1.signature;
+			else if (i1.isNull())
+				m.signature = i2.signature;
+			else if (i2.isNull())
+				m.signature = i1.signature;
 			if (Util.nullSafeEquals(i1.constValue, i2.constValue))
 				m.constValue = i1.constValue;
 			if (Util.nullSafeEquals(i1.source, i2.source)) {
@@ -379,6 +383,7 @@ public class OpcodeStack implements Constants2
 		public void setLoadedFromField(XField f, int fieldLoadedFromRegister) {
 			source = f;
 			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
+			this.registerNumber = -1;
 		}
 		public @CheckForNull String getHttpParameterName() {
 			if (!isServletParameterTainted()) throw new IllegalStateException();
@@ -416,6 +421,12 @@ public class OpcodeStack implements Constants2
 			 setNull(true);
 		 }
 
+		 public static Item nullItem(String signature) {
+			 Item item = new Item(signature);
+			 item.constValue = null;
+			 item.setNull(true);
+			 return item;
+		 }
 		 /** Returns null for primitive and arrays */
 		 public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
 			 String baseSig;
@@ -828,7 +839,8 @@ public class OpcodeStack implements Constants2
 				 {
 					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 					 XField fieldOperand = dbc.getXFieldOperand();
-					 if (false && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+
+					 if (fieldOperand != null && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
 						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
 						 if (item != null) {
 							 Item itm = new Item(item);
@@ -844,8 +856,8 @@ public class OpcodeStack implements Constants2
 					 }
 
 					 push(i);
-					break;
-					}
+					 break;
+				 }
 
 				 case LDC:
 				 case LDC_W:
@@ -1099,7 +1111,7 @@ public class OpcodeStack implements Constants2
 				 {
 					 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 					 XField fieldOperand = dbc.getXFieldOperand();
-					 if (false && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
+					 if (fieldOperand != null && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
 						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
 						 if (item != null) {
 							 Item addr = pop();

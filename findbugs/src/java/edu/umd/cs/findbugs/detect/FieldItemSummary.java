@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -42,10 +43,11 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
 	Set<XField> touched = new HashSet<XField>();
 
-	
-	
-		@Override
+	boolean sawInitializeSuper;
+	@Override
 	public void sawOpcode(int seen) {
+		if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>") && !getClassConstantOperand().equals(getClassName()))
+			sawInitializeSuper = true;
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
 			if (fieldOperand == null) return;
@@ -68,8 +70,26 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 		 
 		@Override
         public void visit(Code obj) {
+			sawInitializeSuper = false;
 			super.visit(obj);
 			fieldSummary.setFieldsWritten(getXMethod(), touched);
+			if (getMethodName().equals("<init>") && sawInitializeSuper) {
+				XClass thisClass = getXClass();
+				for(XField f : thisClass.getXFields()) 
+					if (!touched.contains(f)) {
+					OpcodeStack.Item item;
+					char firstChar = f.getSignature().charAt(0);
+					if (firstChar == 'L' || firstChar == '[')
+						item = OpcodeStack.Item.nullItem(f.getSignature());
+					else if (firstChar == 'I')
+						item = new OpcodeStack.Item("I", (Integer) 0);
+					else if (firstChar == 'J')
+						item = new OpcodeStack.Item("J", (Long) 0L);
+					else
+						item = new OpcodeStack.Item(f.getSignature());
+					fieldSummary.mergeSummary(f, item);
+					}
+			}
 			touched.clear();
 		}
 		

@@ -217,7 +217,16 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		try {
 			if (getSuperclassDescriptor() == null) return null;
 			XClass superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,  getSuperclassDescriptor());
-			return superClass.findField(name, signature, isStatic);
+			XField result = superClass.findField(name, signature, isStatic);
+			if (result != null) return result;
+			if (!isStatic) return null;
+			ClassDescriptor[] interfaces = getInterfaceDescriptorList();
+			for(ClassDescriptor implementedInterface : interfaces) {
+				superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,  implementedInterface);
+				result = superClass.findField(name, signature, isStatic);
+				if (result != null) return result;
+			}
+			return null;
         } catch (CheckedAnalysisException e) {
         	return null;
         }
