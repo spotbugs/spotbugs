@@ -844,7 +844,7 @@ public class OpcodeStack implements Constants2
 						 OpcodeStack.Item item = fieldSummary.getSummary(fieldOperand);
 						 if (item != null) {
 							 Item itm = new Item(item);
-							 item.setLoadedFromField(fieldOperand, Integer.MAX_VALUE);
+							 itm.setLoadedFromField(fieldOperand, Integer.MAX_VALUE);
 							 push(itm);
 							 break;
 						 }
@@ -1116,7 +1116,7 @@ public class OpcodeStack implements Constants2
 						 if (item != null) {
 							 Item addr = pop();
 							 Item itm = new Item(item);
-							 item.setLoadedFromField(fieldOperand, addr.getRegisterNumber());
+							 itm.setLoadedFromField(fieldOperand, addr.getRegisterNumber());
 							 push(itm);
 							 break;
 						 }
