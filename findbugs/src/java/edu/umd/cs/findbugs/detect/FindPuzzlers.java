@@ -148,7 +148,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
 		if (prevOpCode == IMUL && seen == I2L) {
 			int priority = adjustPriority(imul_constant, NORMAL_PRIORITY);
-			if (priority >= LOW_PRIORITY && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
+			if (priority >= LOW_PRIORITY && imul_constant != 1000 && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
 			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
 				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
 				bugAccumulator.accumulateBug(new BugInstance(this, 
