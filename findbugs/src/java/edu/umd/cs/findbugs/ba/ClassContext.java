@@ -125,7 +125,12 @@ public class ClassContext {
 	public Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
 		Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
 		if (objectMap == null) {
-			objectMap = new HashMap<MethodDescriptor, Object>();
+			if (analysisClass == ValueNumberDataflow.class)
+				objectMap = new MapCache<MethodDescriptor, Object>(300);
+			else if (Dataflow.class.isAssignableFrom(analysisClass))
+				objectMap = new MapCache<MethodDescriptor, Object>(500);
+			else 
+				objectMap = new HashMap<MethodDescriptor, Object>();
 			methodAnalysisObjectMap.put(analysisClass, objectMap);
 		}
 		return objectMap;
