@@ -30,11 +30,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.classfile.ClassFormatException;
+import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -901,6 +903,21 @@ public class FindBugs2 implements IFindBugsEngine {
 					continue;
 				}
 
+				if (!isNonReportingFirstPass) {
+					IAnalysisCache analysisCache = Global.getAnalysisCache();
+					
+                    try {
+                    	ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+	                    JavaClass javaClass = classContext.getJavaClass();
+						if (javaClass.getMethods().length > 1000) {
+							AnalysisContext.logError("Skipping analysis of class with " + javaClass.getMethods().length + " methods (too many): "
+									+ javaClass.getClassName());
+							continue;
+						}
+                    } catch (CheckedAnalysisException e) {
+                    	AnalysisContext.logError("Could not get class context", e);
+                    }
+				}
 				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
 				notifyClassObservers(classDescriptor);
 
