@@ -113,21 +113,27 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	
+	private static <K,V> void removeAllKeys(Map<K,V> map, Iterable<K> removeMe) {
+		for(K k : removeMe)
+			map.remove(k);
+	}
 	/**
 	 * Kill all loads of given field.
 	 *
 	 * @param field the field
 	 */
 	public void killLoadsOfField(XField field) {
-		Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator();
-		while (i.hasNext()) {
-			AvailableLoad availableLoad = i.next();
+	    if (!REDUNDANT_LOAD_ELIMINATION)  return;
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 			if (availableLoad.getField().equals(field)) {
 				if (RLE_DEBUG) 
 					System.out.println("KILLING Load of " + availableLoad + " in " + this);
-				i.remove();
+				killMe.add(availableLoad);
 			}
 		}
+		killAvailableLoads(killMe);
 	}
 
 	private static boolean USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR = true;
@@ -137,31 +143,32 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * don't really know what fields might be assigned.
 	 */
 	public void killAllLoads() {
-		if (REDUNDANT_LOAD_ELIMINATION) {
-			FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-				AvailableLoad availableLoad = i.next();
-				XField field = availableLoad.getField();
-				if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
-					if (RLE_DEBUG) 
-						System.out.println("KILLING load of " + availableLoad + " in " + this);
-					i.remove();
-				}
+		if (!REDUNDANT_LOAD_ELIMINATION)  return;
+		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
+			XField field = availableLoad.getField();
+			if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
+				if (RLE_DEBUG) 
+					System.out.println("KILLING load of " + availableLoad + " in " + this);
+				killMe.add(availableLoad);
 			}
 		}
+		killAvailableLoads(killMe);
+
 	}
 	public void killAllLoadsExceptFor(@CheckForNull ValueNumber v) {
-		if (REDUNDANT_LOAD_ELIMINATION) {
-			AvailableLoad myLoad = getLoad(v);
-			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal() && !availableLoad.equals(myLoad)) {
-					if (RLE_DEBUG) 
-						System.out.println("KILLING load of " + availableLoad + " in " + this);
-					i.remove();
-				}
+		if (!REDUNDANT_LOAD_ELIMINATION)  return;
+		AvailableLoad myLoad = getLoad(v);
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
+			if (!availableLoad.getField().isFinal() && !availableLoad.equals(myLoad)) {
+				if (RLE_DEBUG) 
+					System.out.println("KILLING load of " + availableLoad + " in " + this);
+				killMe.add(availableLoad);
 			}
 		}
+		killAvailableLoads(killMe);
 	}
 	/**
 	 * Kill all loads.
@@ -169,46 +176,59 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * don't really know what fields might be assigned.
 	 */
 	public void killAllLoadsOf(@CheckForNull ValueNumber v) {
-		if (REDUNDANT_LOAD_ELIMINATION) {
-			FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-			
-			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-				AvailableLoad availableLoad = i.next();
-				if (availableLoad.getReference() != v) continue;
-				XField field = availableLoad.getField();
-				if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
-					if (RLE_DEBUG) System.out.println("Killing load of " + availableLoad + " in " + this);
-					i.remove();
-				}
+		if (!REDUNDANT_LOAD_ELIMINATION) return;
+		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
+			if (availableLoad.getReference() != v) continue;
+			XField field = availableLoad.getField();
+			if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
+				if (RLE_DEBUG) System.out.println("Killing load of " + availableLoad + " in " + this);
+				killMe.add(availableLoad);
 			}
 		}
+		killAvailableLoads(killMe);
+
 	}
 
 	public void killLoadsOf(Set<XField> fieldsToKill) {
-		if (REDUNDANT_LOAD_ELIMINATION) {
-			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-				AvailableLoad availableLoad = i.next();
+		if (!REDUNDANT_LOAD_ELIMINATION) return;
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 
-				if (fieldsToKill.contains(availableLoad.getField()) )
-						i.remove();
-			}
+			if (fieldsToKill.contains(availableLoad.getField()) )
+				killMe.add(availableLoad);
+
 		}
+		killAvailableLoads(killMe);
+
 	}
 	public void killLoadsWithSimilarName(String className, String methodName) {
+		if (!REDUNDANT_LOAD_ELIMINATION) return;
 		String packageName = extractPackageName(className);
-		if (REDUNDANT_LOAD_ELIMINATION) {
-			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-				AvailableLoad availableLoad = i.next();
 
-				XField field = availableLoad.getField();
-				String fieldPackageName = extractPackageName(field.getClassName());
-				if (packageName.equals(fieldPackageName) && field.isStatic() 
-						&& methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
-					i.remove();
+		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 
-			}
+			XField field = availableLoad.getField();
+			String fieldPackageName = extractPackageName(field.getClassName());
+			if (packageName.equals(fieldPackageName) && field.isStatic() 
+					&& methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
+				killMe.add(availableLoad);
+
 		}
+		killAvailableLoads(killMe);
 	}
+
+	/**
+     * @param killMe
+     */
+    private void killAvailableLoads(HashSet<AvailableLoad> killMe) {
+	    if (killMe.size() > 0)
+			removeAllKeys(getUpdateableAvailableLoadMap(), killMe);
+    }
+
 
 	/**
 	 * @param className
@@ -233,7 +253,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				setAvailableLoadMap(Collections.EMPTY_MAP);
 			}
 			else if (!other.isTop()) {
-				for(Map.Entry<AvailableLoad,ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
+				for(Map.Entry<AvailableLoad,ValueNumber[]> e : getUpdateableAvailableLoadMap().entrySet()) {
 					AvailableLoad load = e.getKey();
 					ValueNumber[] myVN = e.getValue();
 					ValueNumber[] otherVN = other.getAvailableLoadMap().get(load);
@@ -243,10 +263,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 						ValueNumber phi = getMergedLoads().get(load);
 						if (phi == null) {
-							phi = factory.createFreshValue();
 							int flags = ValueNumber.PHI_NODE;
-
-							getUpdateableMergedLoads().put(load, phi);
 							for(ValueNumber vn : myVN) {
 								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
@@ -255,7 +272,17 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
 							}
-							phi.setFlag(flags);
+						
+							phi = factory.createFreshValue(flags);
+
+							getUpdateableMergedLoads().put(load, phi);
+							for(ValueNumber vn : myVN) {
+								mergeTree.mapInputToOutput(vn, phi);
+							}
+							if (otherVN != null) for(ValueNumber vn : otherVN) {
+								mergeTree.mapInputToOutput(vn, phi);
+							}
+
 							if (RLE_DEBUG)
 								System.out.println("Creating phi node " + phi + " for " + load + " from " + Strings.toString(myVN) + " x " +  Strings.toString(otherVN) + " in " + System.identityHashCode(this));	
 							changed = true;
@@ -299,6 +326,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	  @Override
 	public void copyFrom(Frame<ValueNumber> other) {
+		if (!(other instanceof ValueNumberFrame)) throw new IllegalArgumentException();
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {
 			// This is where this frame gets its size.
@@ -310,25 +338,31 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			// Copy available load set.
-			Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = ((ValueNumberFrame) other).getAvailableLoadMap();
-			if (availableLoadMapOther.size() == 0) 
-				setAvailableLoadMap(Collections.EMPTY_MAP);
-			else {
-				getUpdateableAvailableLoadMap().clear();
-				getUpdateableAvailableLoadMap().putAll(availableLoadMapOther);
-			}
-			assignPreviouslyKnownAs(other);
+			assignAvailableLoadMap((ValueNumberFrame) other);
+			assignPreviouslyKnownAs((ValueNumberFrame) other);
 		}
 
 		super.copyFrom(other);
 	}
 
-	private void assignPreviouslyKnownAs(Frame<ValueNumber> other) {
-		Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
+	  private void assignAvailableLoadMap(ValueNumberFrame other) {
+			Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
+			if (availableLoadMapOther instanceof HashMap) {
+				availableLoadMapOther = Collections.unmodifiableMap(availableLoadMapOther);
+				other.setAvailableLoadMap(availableLoadMapOther);
+				setAvailableLoadMap(availableLoadMapOther);   
+				constructedUnmodifiableMap++;
+			} else {
+				setAvailableLoadMap(availableLoadMapOther);
+				reusedMap++;
+			}
+		}
+
+	private void assignPreviouslyKnownAs(ValueNumberFrame other) {
+		Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
 		if (previouslyKnownAsOther instanceof HashMap) {
 			previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
-			((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
+			other.setPreviouslyKnownAs(previouslyKnownAsOther);
 			setPreviouslyKnownAs(previouslyKnownAsOther);   
 			constructedUnmodifiableMap++;
 		} else {
@@ -438,8 +472,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return availableLoadMap;
 	}
 	private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap() {
-		if (!(availableLoadMap instanceof HashMap))
-			availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
+		if (!(availableLoadMap instanceof HashMap)) {
+			HashMap<AvailableLoad, ValueNumber[]> tmp =  new HashMap<AvailableLoad, ValueNumber[]>(availableLoadMap.size()+4);
+			tmp.putAll(availableLoadMap);
+			availableLoadMap = tmp;
+		}
 		return availableLoadMap;
 	}
 	/**
@@ -499,7 +536,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			createdEmptyMap++;
 		}
 		else if (!(previouslyKnownAs instanceof HashMap)) {
-			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs);
+			HashMap<ValueNumber, AvailableLoad> tmp = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs.size()+4);
+			tmp.putAll(previouslyKnownAs);
+			previouslyKnownAs = tmp;
 			madeImmutableMutable++;
 		} else
 			reusedMutableMap++;

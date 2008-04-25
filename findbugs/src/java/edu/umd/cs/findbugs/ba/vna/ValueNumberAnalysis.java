@@ -216,8 +216,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		ValueNumber mergedValue = frame.getMergedValue(slot);
 		if (mergedValue == null) {
-			mergedValue = factory.createFreshValue();
-			mergedValue.setFlags(mine.getFlags() | other.getFlags() | ValueNumber.PHI_NODE);
+			mergedValue = factory.createFreshValue(mine.getFlags() | other.getFlags() | ValueNumber.PHI_NODE);
 			frame.setMergedValue(slot, mergedValue);
 
 		}
@@ -314,7 +313,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	 * @param dataflow the Dataflow object which executed this analysis
 	 *                 (and has all of the block result values)
 	 */
+	@Deprecated
 	public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
+		if (true) throw new UnsupportedOperationException();
 		ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
 
 		// We can get all extant Frames by looking at the values in

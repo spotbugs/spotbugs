@@ -556,8 +556,7 @@ public class ValueNumberFrameModelingVisitor
 		if (outputValueList == null) {
 			outputValueList = new ValueNumber[numWordsProduced];
 			for (int i = 0; i < numWordsProduced; ++i) {
-				ValueNumber freshValue = factory.createFreshValue();
-				freshValue.setFlags(flags);
+				ValueNumber freshValue = factory.createFreshValue(flags);
 				outputValueList[i] = freshValue;
 			}
 			if (false && RLE_DEBUG) {
@@ -759,8 +758,7 @@ public class ValueNumberFrameModelingVisitor
 		className = className.replace('/','.');
 		ValueNumber value = classObjectValueMap.get(className);
 		if (value == null) {
-			value = factory.createFreshValue();
-			value.setFlag(ValueNumber.CONSTANT_CLASS_OBJECT);
+			value = factory.createFreshValue(ValueNumber.CONSTANT_CLASS_OBJECT);
 			classObjectValueMap.put(className, value);
 		}
 		return value;

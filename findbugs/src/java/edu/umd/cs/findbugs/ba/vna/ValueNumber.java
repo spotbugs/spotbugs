@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import edu.umd.cs.findbugs.util.MapCache;
+import edu.umd.cs.findbugs.util.Util;
+
 
 
 /**
@@ -36,15 +39,42 @@ package edu.umd.cs.findbugs.ba.vna;
  * @see ValueNumberAnalysis
  */
 public class ValueNumber implements Comparable<ValueNumber> {
+	static MapCache<ValueNumber, ValueNumber> cache = new MapCache<ValueNumber, ValueNumber>(200);
+	
+	static int valueNumbersCreated = 0;
+	static int valueNumbersReused = 0;
+	
+	public static synchronized  ValueNumber createValueNumber(int number, int flags) {
+	    ValueNumber probe = new ValueNumber(number, flags);
+	    ValueNumber result = cache.get(probe);
+	    if (result != null) {
+	    	valueNumbersReused++;
+	    	return result;
+	    }
+	    cache.put(probe, probe);
+	    valueNumbersCreated++;
+	    return probe;
+    }
+	public static ValueNumber createValueNumber(int number) {
+	    return createValueNumber(number, 0);
+    }
+	static {
+		Util.runLogAtShutdown(new Runnable(){
+
+			public void run() {
+	            System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused + " reused");
+	            
+            }});
+	}
 	/**
 	 * The value number.
 	 */
-	int number;
+	final int number;
 
 	/**
 	 * Flags representing meta information about the value.
 	 */
-	int flags;
+	final int flags;
 
 	/**
 	 * Flag specifying that this value was the return value
@@ -63,11 +93,14 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	 *
 	 * @param number the value number
 	 */
-	ValueNumber(int number) {
+	private ValueNumber(int number) {
 		this.number = number;
 		this.flags = 0;
 	}
-
+	private ValueNumber(int number, int flags) {
+		this.number = number;
+		this.flags = flags;
+	}
 	public int getNumber() {
 		return number;
 	}
@@ -76,12 +109,14 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return flags;
 	}
 
+	@Deprecated
 	public void setFlags(int flags) {
-		this.flags = flags;
+		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	public void setFlag(int flag) {
-		flags |= flag;
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean hasFlag(int flag) {
@@ -96,16 +131,20 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
 	@Override
 	public int hashCode() {
-		return number;
+		return number*17+flags;
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof ValueNumber) 
-			return number == ((ValueNumber)o).number;
+		if (o instanceof ValueNumber) {
+			return number == ((ValueNumber)o).number && flags == ((ValueNumber)o).flags;
+		}
 		return false;
 	}
 	public int compareTo(ValueNumber other) {
-		return number - other.number;
+		int result = number - other.number;
+		if (result != 0) return result;
+		return flags - other.flags;
+
 	}
 /*
 

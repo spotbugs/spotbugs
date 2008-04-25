@@ -40,11 +40,15 @@ public class ValueNumberFactory {
 	 * Create a fresh (unique) value number.
 	 */
 	public ValueNumber createFreshValue() {
-		ValueNumber result = new ValueNumber(getNumValuesAllocated());
+		ValueNumber result = ValueNumber.createValueNumber(getNumValuesAllocated());
 		allocatedValueList.add(result);
 		return result;
 	}
-
+	public ValueNumber createFreshValue(int flags) {
+		ValueNumber result = ValueNumber.createValueNumber(getNumValuesAllocated(), flags);
+		allocatedValueList.add(result);
+		return result;
+	}
 	/**
 	 * Return a previously allocated value.
 	 */
@@ -67,7 +71,9 @@ public class ValueNumberFactory {
 	 * @param map                array mapping old numbers to new numbers
 	 * @param numValuesAllocated the number of values allocated in the new numbering
 	 */
+	 @Deprecated
 	public void compact(int[] map, int numValuesAllocated) {
+		if (true) throw new UnsupportedOperationException();
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
 		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber)null));
 
@@ -76,7 +82,7 @@ public class ValueNumberFactory {
 			if (newNumber >= 0) {
 				// Note: because we are simply assigning new numbers to the
 				// old ValueNumber objects, their flags remain valid.
-				value.number = newNumber;
+				// value.number = newNumber;
 				newList.set(newNumber, value);
 			}
 		}
