@@ -32,7 +32,9 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -53,10 +55,30 @@ public class Util {
 			b.append(s);
 		return b.toString();
 	}
-	public static void runLogAtShutdown(Runnable r) {
-		if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
+	static Collection<Runnable> runAtShutdown;
+	
+	public static synchronized void runLogAtShutdown(Runnable r) {
+		if (LOGGING) {
+			if (runAtShutdown == null) {
+				runAtShutdown = new LinkedList<Runnable>();
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					@Override
+                    public void run() {
+						for(Runnable r : runAtShutdown) {
+							try {
+								r.run();
+							} catch (RuntimeException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+			}
+			runAtShutdown.add(r);
+		}
+		
 	}
-
+	
 	public static <T>  Set<T> emptyOrNonnullSingleton(T t) {
 		if (t == null) return Collections.emptySet();
 		return Collections.singleton(t);
