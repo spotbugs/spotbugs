@@ -133,7 +133,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 
 	@Override
 		 public void visit(JavaClass obj) {
-		System.out.println("UnreadFields: " + obj.getClassName());
 		calledFromConstructors.clear();
 		hasNativeMethods = false;
 		sawSelfCallInConstructor = false;
@@ -591,7 +590,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 	static Pattern withinAnonymousClass = Pattern.compile("[$][0-9].*[$]");
 	@Override
 		 public void report() {
-		System.out.println("UnreadFields report:");
 		Set<String> fieldNamesSet = new HashSet<String>();
 		for(XField f : writtenNonNullFields)
 			fieldNamesSet.add(f.getName());
