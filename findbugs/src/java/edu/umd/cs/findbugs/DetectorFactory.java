@@ -85,9 +85,11 @@ public class DetectorFactory {
 			}
 
 			if (Detector.class.isAssignableFrom(detectorClass)) {
-				DetectorToDetector2Adapter adapter = new DetectorToDetector2Adapter(
+				if (NonReportingDetector.class.isAssignableFrom(detectorClass))
+					return new NonReportingDetectorToDetector2Adapter(createDetector(bugReporter));
+				return new DetectorToDetector2Adapter(
 						createDetector(bugReporter));
-				return adapter;
+				
 			}
 
 			throw new RuntimeException("Class " + detectorClass.getName() + " is not a detector class");

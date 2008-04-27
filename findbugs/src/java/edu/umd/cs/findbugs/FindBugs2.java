@@ -902,22 +902,9 @@ public class FindBugs2 implements IFindBugsEngine {
 					}
 					continue;
 				}
-
-				if (!isNonReportingFirstPass) {
-					IAnalysisCache analysisCache = Global.getAnalysisCache();
-					
-                    try {
-                    	ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
-	                    JavaClass javaClass = classContext.getJavaClass();
-						if (javaClass.getMethods().length > 1000) {
-							AnalysisContext.logError("Skipping analysis of class with " + javaClass.getMethods().length + " methods (too many): "
-									+ javaClass.getClassName());
-							continue;
-						}
-                    } catch (CheckedAnalysisException e) {
-                    	AnalysisContext.logError("Could not get class context", e);
-                    }
-				}
+				boolean isHuge = AnalysisContext.currentAnalysisContext().isTooBig(classDescriptor);
+				if (isHuge && AnalysisContext.currentAnalysisContext().isApplicationClass(classDescriptor))
+					bugReporter.reportBug(new BugInstance("SKIPPED_CLASS_TOO_BIG", Priorities.NORMAL_PRIORITY).addClass(classDescriptor));
 				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
 				notifyClassObservers(classDescriptor);
 
@@ -926,8 +913,14 @@ public class FindBugs2 implements IFindBugsEngine {
 					if (Thread.interrupted()) {
 	                    throw new InterruptedException();
                     }
+					if (isHuge && !NonReportingDetector.class.isAssignableFrom(detector.getClass())) {
+						
+						continue;
+					}
 					if (false && DEBUG) {
-						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
+						System.out.println("Applying " + detector.getDetectorClassName() + " to " 
+								+ classDescriptor + ", huge:" + isHuge + ", isNonReportingFirstPass: "+ isNonReportingFirstPass);
+						System.out.println("foo: " + NonReportingDetector.class.isAssignableFrom(detector.getClass()) + ", bar: " + detector.getClass().getName());
 					}
 					try {
 						profiler.start(detector.getClass());

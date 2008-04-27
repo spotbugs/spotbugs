@@ -33,6 +33,8 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisLocal;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -50,6 +52,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.detect.FieldItemSummary;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -343,6 +346,21 @@ public abstract class AnalysisContext {
 		return getSubtypes2().isApplicationClass(desc);
 	}
 
+	public boolean isTooBig(ClassDescriptor desc) {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+		
+        try {
+        	ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, desc);
+        	ClassData classData = analysisCache.getClassAnalysis(ClassData.class, desc);
+			JavaClass javaClass = classContext.getJavaClass();
+			if (classData.getData().length > 1000000 && javaClass.getMethods().length > 1000) return true;
+				
+        } catch (CheckedAnalysisException e) {
+        	AnalysisContext.logError("Could not get class context", e);
+        }
+        return false;
+
+	}
 	/**
 	 * Lookup a class.
 	 * <em>Use this method instead of Repository.lookupClass().</em>
