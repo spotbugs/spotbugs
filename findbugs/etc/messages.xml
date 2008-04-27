@@ -1461,6 +1461,17 @@ factory pattern to create these objects.</p>
   **********************************************************************
    -->
 
+  <BugPattern type="SKIPPED_CLASS_TOO_BIG">
+    <ShortDescription>Class too big for analysis</ShortDescription>
+    <LongDescription>{0} is too big for analysis</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>This class is bigger than can be effectively handled, and was not fully analyzed for errors.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_EMPTY_DB_PASSWORD">
     <ShortDescription>Empty database password</ShortDescription>
     <LongDescription>Empty database password in {1}</LongDescription>
@@ -6938,6 +6949,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   **********************************************************************
    -->
 
+  <BugCode abbrev="SKIPPED" >Analysis skipped</BugCode>
   <BugCode abbrev="IL" >Infinite Loop</BugCode>
   <BugCode abbrev="VO" >Use of volatile</BugCode>
   <BugCode abbrev="UI" >Unsafe inheritance</BugCode>

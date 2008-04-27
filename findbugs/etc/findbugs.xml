@@ -726,6 +726,7 @@
  <!-- Bug patterns -->
  
  
+       <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="STYLE" />
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER" category="SECURITY" />
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_JSP_WRITER" category="SECURITY" />
        <BugPattern abbrev="HRS" type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER" category="SECURITY" />
