@@ -91,6 +91,7 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
 				.addClass(this).addMethod(this).addField(syncField).addSourceLine(this);
 				bugReporter.reportBug(bug);
 			} else currState = 0;
+			break;
 		default:
 			currState = 0;
 		}
