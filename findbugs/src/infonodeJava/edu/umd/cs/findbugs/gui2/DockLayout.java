@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import edu.umd.cs.findbugs.L10N;
+
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -146,7 +148,7 @@ public class DockLayout implements FindBugsLayoutManager {
 		viewMap.addView(0, topView);
 		summaryView = new View(L10N.getLocalString("view.bug_summary", "Bug Summary"), null, frame.summaryTab());
 		viewMap.addView(1, summaryView);
-		commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.commentsPanel());
+		commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.createCommentsInputPanel());
 		viewMap.addView(2, commentsView);
 		sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
 		viewMap.addView(3, sourceView);
