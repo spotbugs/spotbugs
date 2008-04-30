@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Attribute;
@@ -37,6 +38,7 @@ import org.apache.bcel.classfile.Synthetic;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
@@ -363,6 +365,34 @@ public class SerializableIdiom extends OpcodeStackDetector
 			if (!getMethodSig().equals("()Ljava/lang/Object;"))
 				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
 						.addClassAndMethod(this));
+			else if (obj.isStatic())
+				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_IS_STATIC", HIGH_PRIORITY)
+						.addClassAndMethod(this).addString("static readResolve() method"));
+			else if (obj.isPrivate())
+				try {
+					Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(getClassDescriptor());
+	                if (subtypes.size() > 1) {
+	                	BugInstance bug = new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
+	                	.addClassAndMethod(this).addString("private readResolve() method");
+	                	boolean nasty = false;
+	                	for(ClassDescriptor subclass : subtypes) if (!subclass.equals(getClassDescriptor())) {
+	        
+	                		XClass xSub = AnalysisContext.currentXFactory().getXClass(subclass);
+	                		if (xSub != null && xSub.findMethod("readResolve", "()Ljava/lang/Object;", false) == null && xSub.findMethod("writeReplace", "()Ljava/lang/Object;", false) == null) {
+	                			bug.addClass(subclass).describe(ClassAnnotation.SUBCLASS_ROLE);
+	                			nasty = true;
+	                		}
+	                	}
+	                	if (nasty) bug.setPriority(HIGH_PRIORITY);
+	                	else if (!getThisClass().isPublic())
+	                		bug.setPriority(LOW_PRIORITY);
+	                	bugReporter.reportBug(bug);
+	                }
+	            
+            } catch (ClassNotFoundException e) {
+	            bugReporter.reportMissingClass(e);
+            }
+			
 
 		}else if (getMethodName().equals("readObject")
 				&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")

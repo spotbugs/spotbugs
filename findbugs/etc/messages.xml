@@ -3727,6 +3727,28 @@ be confusing to users of this class.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_READ_RESOLVE_IS_STATIC">
+    <ShortDescription>The readResolve method must not be declared as a static method.  </ShortDescription>
+    <LongDescription>{1} should be declared as an instance method rather than a static method</LongDescription>
+    <Details>
+<![CDATA[
+  <p> In order for the readResolve method to be recognized by the serialization
+mechanism, it must not be declared as a static method.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED">
+    <ShortDescription>private readResolve method not inherited by subclasses</ShortDescription>
+    <LongDescription>private readResolve method in {0} not inherited by subclasses.</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a private readResolve method. Since it is private, it won't be inherited by subclasses.
+This might be intentional and OK, but should be reviewed to ensure it is what is intended.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
     <ShortDescription>The readResolve method must be declared with a return type
 of Object. </ShortDescription>
@@ -3734,7 +3756,7 @@ of Object. </ShortDescription>
     <Details>
 <![CDATA[
   <p> In order for the readResolve method to be recognized by the serialization
-mechanism.
+mechanism, it must be declared to have a return type of Object.
 </p>
 ]]>
     </Details>
