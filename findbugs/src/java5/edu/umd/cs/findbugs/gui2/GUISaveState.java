@@ -180,7 +180,7 @@ public class GUISaveState{
 	
 	/**
 	 * Returns the list of recent files.
-	 * @return
+	 * @return the list of recent files
 	 */
 	public ArrayList<File> getRecentFiles()
 	{

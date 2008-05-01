@@ -39,10 +39,6 @@ public class DesignationMatcher implements Matcher {
 	 * 
 	 * @param designations
 	 *            comma-separated list of designations
-	 * @param patterns
-	 *            coma-separated list of bug patterns.
-	 * @param categories
-	 *            coma-separated list of bug categories.
 	 */
 	public DesignationMatcher(String designations) {
 		this.designations = new StringSetMatch(designations);

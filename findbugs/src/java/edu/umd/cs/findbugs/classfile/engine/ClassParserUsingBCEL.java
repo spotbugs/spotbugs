@@ -121,17 +121,15 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
 	    
     }
 	/**
-     * @param slashedClassName
-     * @param obj
-     * @return
+     * @param obj the field to parse
+     * @return a descriptor for the field
      */
     protected FieldDescriptor parseField(Field obj) {
     	return new FieldDescriptor(slashedClassName, obj.getName(), obj.getSignature(), obj.isStatic());
     }
 	/**
-     * @param slashedClassName
-     * @param obj
-     * @return
+     * @param obj the method to parse
+     * @return a descriptor for the method
      */
     protected MethodDescriptor parseMethod(Method obj) {
 	    return new MethodDescriptor(slashedClassName, obj.getName(), obj.getSignature(), obj.isStatic());

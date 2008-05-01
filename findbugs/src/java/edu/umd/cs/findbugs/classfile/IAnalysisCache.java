@@ -153,7 +153,7 @@ public interface IAnalysisCache {
 	public IErrorLogger getErrorLogger();
 
 	/**
-     * @return
+	 * @return FIXME
      */
     public Map<?, ?> getAnalysisLocals();
 }

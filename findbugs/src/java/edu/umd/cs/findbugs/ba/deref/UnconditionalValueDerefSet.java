@@ -432,7 +432,7 @@ public class UnconditionalValueDerefSet {
 	}
 
 	/**
-	 * @return
+	 * @return {@code true} if the set is empty
 	 */
 	public boolean isEmpty() {
 		return valueNumbersUnconditionallyDereferenced.isEmpty();

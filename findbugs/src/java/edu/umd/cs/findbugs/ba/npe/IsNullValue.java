@@ -220,7 +220,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	/**
 	 * Convert to a value known because it was returned from a method
 	 * in a method property database.
-	 * @param methodInvoked TODO
+	 * @param field TODO
 	 */
 	public IsNullValue markInformationAsComingFromFieldValue(XField field) {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);

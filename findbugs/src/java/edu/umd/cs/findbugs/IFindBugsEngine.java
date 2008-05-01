@@ -90,7 +90,7 @@ public interface IFindBugsEngine {
 	/**
 	 * Provide baseline of bugs not to report
 	 *
-	 * @param filterFileName the name of the xml bug baseline file 
+	 * @param baselineBugs the name of the xml bug baseline file
 	 * @throws DocumentException 
 	 */
 	public void excludeBaselineBugs(String baselineBugs)

@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.jaif;
  * Callbacks for parsing an extenal annotation file.
  * 
  * @author David Hovemeyer
- * @see http://pag.csail.mit.edu/jsr308/annotation-file-utilities/
+ * @see <a href="http://groups.csail.mit.edu/pag/jsr308/annotation-file-utilities/">Annotation File Utilities/</a>
  */
 public interface JAIFEvents {
 

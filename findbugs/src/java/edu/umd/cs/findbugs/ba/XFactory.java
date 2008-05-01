@@ -343,14 +343,6 @@ public class XFactory {
 
 	public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 
-	/**
-	 * If a method is not marked as resolved, look in superclasses to see if the
-	 * method can be found there. Return whatever method is found.
-	 * 
-	 * @param m
-	 * @return
-	 */
-
 	public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
 		String className = fieldInstruction.getClassName(cpg);
 		String fieldName = fieldInstruction.getName(cpg);

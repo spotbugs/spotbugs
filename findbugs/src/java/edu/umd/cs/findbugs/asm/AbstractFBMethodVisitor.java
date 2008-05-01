@@ -27,9 +27,6 @@ import org.objectweb.asm.commons.EmptyVisitor;
  */
 public abstract class AbstractFBMethodVisitor extends MethodAdapter implements FBMethodVisitor {
 
-	/**
-     * @param mv
-     */
     public AbstractFBMethodVisitor() {
 	    super(new EmptyVisitor());
     }

@@ -753,7 +753,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame
-	 * @return
+	 * @return the annotation
 	 * @deprecated Use {@link ValueNumberSourceInfo#findAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
 	@Deprecated

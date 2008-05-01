@@ -43,7 +43,7 @@ public abstract class ValueNumberSourceInfo {
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame
-	 * @return
+	 * @return the annotation
 	 */
 	public static BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,

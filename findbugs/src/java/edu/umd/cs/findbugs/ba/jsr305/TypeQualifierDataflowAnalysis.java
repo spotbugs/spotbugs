@@ -58,10 +58,10 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 	/**
 	 * Constructor.
 	 * 
-	 * @param dfs                DepthFirstSearch on the control-flow graph of the method being analyzed
 	 * @param xmethod            XMethod object containing information about the method being analyzed
 	 * @param cfg                the control-flow graph (CFG) of the method being analyzed
 	 * @param vnaDataflow        ValueNumberDataflow for the method
+	 * @param cpg                the constant pool being built up
 	 * @param typeQualifierValue the TypeQualifierValue we want the dataflow analysis to check
 	 */
 	public TypeQualifierDataflowAnalysis(

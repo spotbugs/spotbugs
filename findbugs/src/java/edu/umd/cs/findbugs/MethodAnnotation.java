@@ -129,7 +129,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param className  name of the class containing the method
 	 * @param methodName name of the method
 	 * @param methodSig  signature of the method
-	 * @param isStatic   true if the method is static, false otherwise
+	 * @param accessFlags the access flags of the method
 	 * @return the MethodAnnotation
 	 */
 	public static MethodAnnotation fromForeignMethod(

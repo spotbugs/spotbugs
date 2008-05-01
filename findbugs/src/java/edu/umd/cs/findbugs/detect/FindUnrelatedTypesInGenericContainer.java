@@ -87,13 +87,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private Map<String, int []> collectionsMap = new HashMap<String, int[]>();
 
 	/**
-	 * @param triplet[0] = className. 
-	 * 			The name of the collection e.g. <code>java.util.List</code>
-	 * @param triplet[1] = methodName.
-	 * 			The method's name e.g. <code>contains</code>
-	 * @param triplet[2] = methodSignature.
-	 * 			The method's signature e.g. <code>(Ljava/lang/Object;)Z</code>
-	 * @return
+	 * @param triplet a variable arity parameter intended to receive three
+	 *        arguments.  The three arguments are:
+	 *        <ol>
+	 *          <li>className: the name of the collection; e.g.,
+	 *            {@code java.util.List}</li>
+	 *          <li>methodName: the name of the method; e.g.,
+	 *            {@code contains}</li>
+	 *          <li>methodSignature: the signature of the method; e.g.,
+	 *            {@code (Ljava/lang/Object;)Z}</li>
+	 *        </ol>
+	 * @return the key for the method in collectionsMap
 	 */
 	public static String getCollectionsMapKey(String...triplet) {
 		return triplet[0] + "??" + triplet[1] + "???" + triplet[2];

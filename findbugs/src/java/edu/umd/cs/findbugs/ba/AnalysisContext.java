@@ -407,8 +407,8 @@ public abstract class AnalysisContext {
 	/**
 	 * Lookup a class's source file
 	 * 
-	 * @param className the name of the class
-	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
+	 * @param dottedClassName the name of the class
+	 * @return the source file for the class, or {@link SourceLineAnnotation#UNKNOWN_SOURCE_FILE} if unable to determine
 	 */
 	public final String lookupSourceFile(@NonNull @DottedClassName String dottedClassName) {
 		if (dottedClassName == null) 

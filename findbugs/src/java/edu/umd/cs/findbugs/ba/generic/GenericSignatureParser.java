@@ -184,7 +184,7 @@ public class GenericSignatureParser {
 	}
 
 	/**
-	 * @param method
+	 * @param target the method whose signature is to be parsed
 	 * @return an iterator over the parameters of the generic 
 	 *  		signature of method. Returns null if the
 	 *  		generic signature cannot be parsed

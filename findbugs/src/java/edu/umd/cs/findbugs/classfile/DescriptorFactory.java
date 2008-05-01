@@ -110,7 +110,7 @@ public class DescriptorFactory {
 	/**
 	 * Get a ClassDescriptor for a class name in dotted format.
 	 *
-	 * @param className a class name in dotted format
+	 * @param dottedClassName a class name in dotted format
 	 * @return ClassDescriptor for that class
 	 */
 	public ClassDescriptor getClassDescriptorForDottedClassName(@DottedClassName String dottedClassName) {
@@ -125,8 +125,8 @@ public class DescriptorFactory {
 	 * Get a MethodDescriptor.
 	 *
 	 * @param className       name of the class containing the method, in VM format (e.g., "java/lang/String")
-	 * @param methodName      name of the method
-	 * @param methodSignature signature of the method
+	 * @param name      name of the method
+	 * @param signature signature of the method
 	 * @param isStatic        true if method is static, false otherwise
 	 * @return MethodDescriptor
 	 */
@@ -179,8 +179,8 @@ public class DescriptorFactory {
 	 * Get a FieldDescriptor.
 	 *
 	 * @param className      the name of the class the field belongs to, in VM format (e.g., "java/lang/String")
-	 * @param fieldName      the name of the field
-	 * @param fieldSignature the field signature (type)
+	 * @param name      the name of the field
+	 * @param signature the field signature (type)
 	 * @param isStatic       true if field is static, false if not
 	 * @return FieldDescriptor
 	 */

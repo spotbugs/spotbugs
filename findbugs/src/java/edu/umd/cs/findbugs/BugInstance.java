@@ -979,7 +979,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param className name of the class containing the field
 	 * @param fieldName the name of the field
 	 * @param fieldSig  type signature of the field
-	 * @param isStatic  whether or not the field is static
+	 * @param accessFlags access flags for the field
 	 * @return this object
 	 */
 	public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {

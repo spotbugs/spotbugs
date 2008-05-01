@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
  * FindBugs-specific default-annotation annotations.
  * I.e.:
  * <pre>
- *   @DefaultAnnotationForParameters({Nonnull.class})
+ *   {@literal @DefaultAnnotationForParameters({Nonnull.class})}
  *   public class MyClass {
  *      ...
  *   }
