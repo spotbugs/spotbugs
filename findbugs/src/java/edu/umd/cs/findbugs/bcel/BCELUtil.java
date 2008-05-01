@@ -27,7 +27,6 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 
-import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -125,7 +124,7 @@ public abstract class BCELUtil {
      * 
      * @param classDescriptor ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException
-     * @see ClassNotFoundExceptionParser
+     * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
      */
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
     	throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");

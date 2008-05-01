@@ -24,9 +24,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.dom4j.DocumentException;
-import org.xml.sax.SAXException;
-
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 

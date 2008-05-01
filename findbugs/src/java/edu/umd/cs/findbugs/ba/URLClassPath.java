@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -361,7 +360,6 @@ public class URLClassPath implements Serializable {
 	 * @param className name of class to look up
 	 * @return the JavaClass object for the class
 	 * @throws ClassNotFoundException if the class couldn't be found
-	 * @throws ClassFormatException if the classfile format is invalid
 	 */
 	public JavaClass lookupClass(String className) throws ClassNotFoundException {
 		if (classesThatCantBeFound.contains(className)) {

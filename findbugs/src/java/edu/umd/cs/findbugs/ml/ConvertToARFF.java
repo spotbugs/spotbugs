@@ -41,16 +41,14 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
  * Convert a BugCollection into ARFF format.
  * See Witten and Frank, <em>Data Mining</em>, ISBN 1-55860-552-5.
  *
- * @see BugCollection
- * @see BugInstance
+ * @see edu.umd.cs.findbugs.BugCollection
+ * @see edu.umd.cs.findbugs.BugInstance
  * @author David Hovemeyer
  */
 public class ConvertToARFF {

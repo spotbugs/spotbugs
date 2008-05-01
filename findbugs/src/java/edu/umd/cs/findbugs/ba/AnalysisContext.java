@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * </p>
  *
  * @author David Hovemeyer
- * @see IAnalysisCache
+ * @see edu.umd.cs.findbugs.classfile.IAnalysisCache
  * @see edu.umd.cs.findbugs.classfile.Global
  */
 @NotThreadSafe

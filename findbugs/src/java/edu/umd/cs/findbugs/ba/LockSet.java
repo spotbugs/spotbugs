@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
@@ -33,7 +32,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * insofar as we can accurately determine them.
  *
  * @author David Hovemeyer
- * @see ValueNumberAnalysis
+ * @see edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis
  */
 public final class LockSet {
 	/**

@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +30,6 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -54,7 +51,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
  * Detector for static fields of type {@link java.util.Calendar} or
- * {@link java.text.DateFormat} and their subclasses. Because {@link Calendar}
+ * {@link java.text.DateFormat} and their subclasses. Because {@link java.util.Calendar}
  * is unsafe for multithreaded use, static fields look suspicous. To work
  * correctly, all access would need to be synchronized by the client which
  * cannot be guaranteed.
@@ -84,12 +81,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	private String currentClass;
 
 	/**
-	 * {@link ObjectType} for {@link java.util.Calendar}
+	 * {@link org.apache.bcel.generic.ObjectType} for {@link java.util.Calendar}
 	 */
 	private final ClassDescriptor calendarType = DescriptorFactory.createClassDescriptor("java/util/Calendar");
 
 	/**
-	 * {@link ObjectType} for {@link java.text.DateFormat}
+	 * {@link org.apache.bcel.generic.ObjectType} for {@link java.text.DateFormat}
 	 */
 	private final ClassDescriptor dateFormatType = DescriptorFactory.createClassDescriptor("java/text/DateFormat");
 
@@ -141,8 +138,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 		}
 	}
 	/**
-	 * Checks if the visited field is of type {@link Calendar} or
-	 * {@link DateFormat} or a subclass of either one. If so and the field is
+	 * Checks if the visited field is of type {@link java.util.Calendar} or
+	 * {@link java.text.DateFormat} or a subclass of either one. If so and the field is
 	 * static it is suspicious and will be reported.
 	 */
 	@Override
@@ -197,7 +194,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
 	/**
 	 * Checks for method invocations ({@link org.apache.bcel.generic.INVOKEVIRTUAL})
-	 * call on a static {@link Calendar} or {@link DateFormat} fields. The
+	 * call on a static {@link java.util.Calendar} or {@link java.text.DateFormat} fields. The
 	 * {@link OpcodeStack} is used to determine if an invocation is done on such
 	 * a static field.
 	 * 

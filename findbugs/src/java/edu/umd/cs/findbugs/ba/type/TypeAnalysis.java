@@ -53,7 +53,6 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.DataflowAnalysis;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
@@ -87,7 +86,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  *
  * @author David Hovemeyer
  * @see Dataflow
- * @see DataflowAnalysis
+ * @see edu.umd.cs.findbugs.ba.DataflowAnalysis
  * @see TypeFrame
  */
 public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>

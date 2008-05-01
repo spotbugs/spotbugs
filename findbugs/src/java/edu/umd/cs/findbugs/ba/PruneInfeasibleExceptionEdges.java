@@ -30,7 +30,6 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.ExceptionSet;
-import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 
 /**
@@ -41,7 +40,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
  *
  * @author David Hovemeyer
  * @see CFG
- * @see TypeAnalysis
+ * @see edu.umd.cs.findbugs.ba.type.TypeAnalysis
  */
 public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.debug");

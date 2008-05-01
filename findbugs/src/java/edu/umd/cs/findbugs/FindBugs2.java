@@ -56,7 +56,6 @@ import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
@@ -560,7 +559,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 *
 	 * @throws InterruptedException if the analysis thread is interrupted
 	 * @throws IOException if an I/O error occurs
-	 * @throws ResourceNotFoundException
+	 * @throws CheckedAnalysisException
 	 */
 	private void buildClassPath() throws InterruptedException, IOException, CheckedAnalysisException {
 		IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
