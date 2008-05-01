@@ -327,6 +327,7 @@ public class DetectorFactory {
 	 * @return the Detector
 	 * @deprecated Use createDetector2 in new code
 	 */
+	@Deprecated
 	public Detector create(BugReporter bugReporter) {
 		return detectorCreator.createDetector(bugReporter);
 	}

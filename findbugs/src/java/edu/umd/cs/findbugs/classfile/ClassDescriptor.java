@@ -117,6 +117,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * @return the class descriptor
      * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromResourceName(String)} instead
      */
+    @Deprecated
     public static ClassDescriptor fromResourceName(String resourceName) {
         return DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
     }
@@ -126,6 +127,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)} instead
      * 
      */
+    @Deprecated
     public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
     }
@@ -137,6 +139,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * @return true if the resource is a class, false otherwise
      * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
      */
+    @Deprecated
     public static boolean isClassResource(String resourceName) {
         return DescriptorFactory.isClassResource(resourceName);
     }
@@ -144,30 +147,35 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	/**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromSignature(String)} instead
      */
+    @Deprecated
     public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
         return DescriptorFactory.createClassDescriptorFromSignature(signature);
     }
 	/**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)} instead
      */
+    @Deprecated
     public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return DescriptorFactory.createClassDescriptor(className);
     }
 	/**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])} instead
      */
+    @Deprecated
     public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
         return DescriptorFactory.createClassDescriptor(classNames);
     }
 	/**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)} instead
      */
+    @Deprecated
     public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName);
     }
 	/**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptor(JavaClass)} instead
      */
+    @Deprecated
     public static ClassDescriptor createClassDescriptor(JavaClass c) {
         return DescriptorFactory.createClassDescriptor(c);
     }

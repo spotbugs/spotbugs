@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
  *             Resolving nullness annotations will be handled through the
  *             JSR-305 type qualifier code. 
  */
+@Deprecated
 public class NoteNonNullAnnotations
 	extends BuildNonNullAnnotationDatabase
 	implements Detector, NonReportingDetector {

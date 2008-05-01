@@ -46,6 +46,7 @@ public abstract class RelationalOp {
 	/**
      * @deprecated Use {@link #RelationalOp(String,String)} instead
      */
+	@Deprecated
     private RelationalOp(String value) {
         this(value, "xxx");
     }

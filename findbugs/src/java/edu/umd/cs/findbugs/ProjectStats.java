@@ -130,6 +130,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      *                    see detect/FindBugsSummaryStats.
      * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
      */
+	@Deprecated
     public void addClass(String className, boolean isInterface, int size) {
         addClass(className, null, isInterface, size);
     }

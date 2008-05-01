@@ -842,6 +842,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 * @deprecated use addClass(String) instead
 	 */
+	@Deprecated
 	public BugInstance addClass(String className, String sourceFileName) {
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
 		add(classAnnotation);

@@ -720,6 +720,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	/**
 	 * @deprecated Use {@link ValueNumberSourceInfo#findXFieldFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
+	@Deprecated
 	public static XField findXFieldFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
@@ -729,6 +730,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	/**
 	 * @deprecated Use {@link ValueNumberSourceInfo#findFieldAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
+	@Deprecated
 	public static FieldAnnotation findFieldAnnotationFromValueNumber(
 			Method method, Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
@@ -738,6 +740,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	/**
 	 * @deprecated Use {@link ValueNumberSourceInfo#findLocalAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
+	@Deprecated
 	public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
 			Method method, Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
@@ -753,6 +756,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @return
 	 * @deprecated Use {@link ValueNumberSourceInfo#findAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
+	@Deprecated
 	public static BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {

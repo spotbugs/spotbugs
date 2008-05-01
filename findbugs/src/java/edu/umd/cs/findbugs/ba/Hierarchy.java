@@ -384,6 +384,7 @@ public class Hierarchy {
      *         if we can't find the list of declared exceptions
      * @deprecated Use {@link Hierarchy2#findDeclaredExceptions(InvokeInstruction,ConstantPoolGen)} instead
      */
+	@Deprecated
     public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
     		throws ClassNotFoundException {
                 return Hierarchy2.findDeclaredExceptions(inv, cpg);

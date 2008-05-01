@@ -136,6 +136,7 @@ public class AnalysisPass {
 	 * @return array of Detectors
 	 * @deprecated call instantiateDetector2sInPass() instead
 	 */
+    @Deprecated
 	public Detector[] instantiateDetectorsInPass(BugReporter bugReporter) {
 		int count;
 

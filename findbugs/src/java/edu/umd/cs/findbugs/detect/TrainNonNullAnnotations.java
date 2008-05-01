@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
  *             Resolving nullness annotations will be handled through the
  *             JSR-305 type qualifier code. 
  */
+@Deprecated
 public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 		implements Detector, TrainingDetector {
 

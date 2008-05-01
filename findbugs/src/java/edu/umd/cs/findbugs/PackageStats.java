@@ -167,6 +167,7 @@ public class PackageStats implements XMLWriteable {
 	/**
      * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
      */
+    @Deprecated
     public void addClass(String name, boolean isInterface, int size) {
         addClass(name, null, isInterface, size);
     }
