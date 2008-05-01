@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -720,8 +721,15 @@ public class ClassContext {
 
 		BitSet lineMentionedMultipleTimes = new BitSet();
 		Code code = method.getCode();
-		if (code == null || code.getExceptionTable() == null) return lineMentionedMultipleTimes;
+		if (code == null) return lineMentionedMultipleTimes;
+		CodeException[] exceptionTable = code.getExceptionTable();
+		if (exceptionTable == null || exceptionTable.length == 0) return lineMentionedMultipleTimes;
+		int firstHandler = Integer.MAX_VALUE;
+		for(CodeException e : exceptionTable) if (e.getCatchType() == 0){
+			firstHandler = Math.min(firstHandler, e.getHandlerPC());
+		}
 		BitSet foundOnce = new BitSet();
+		BitSet afterHandler = new BitSet();
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		int lineNum = -1;
 		if (lineNumberTable != null) 
@@ -729,6 +737,8 @@ public class ClassContext {
 				int newLine = line.getLineNumber();
 				if (newLine == lineNum || newLine == -1) continue;
 				lineNum = newLine;
+				if (line.getStartPC() >= firstHandler)
+					afterHandler.set(lineNum);
 				if (foundOnce.get(lineNum)  ) {
 					lineMentionedMultipleTimes.set(lineNum);
 				}
@@ -736,6 +746,7 @@ public class ClassContext {
 					foundOnce.set(lineNum);	
 				}
 			}
+		lineMentionedMultipleTimes.and(afterHandler);
 		return lineMentionedMultipleTimes;
 	}
 
