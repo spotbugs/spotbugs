@@ -224,7 +224,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 				String rhsType = ((TypeAnnotation)rhsAnnotation).getTypeDescriptor();
 				lhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, lhsType);
 				rhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, rhsType);
-				cmp = lhsType.compareTo(lhsType);
+				cmp = lhsType.compareTo(rhsType);
 				if (cmp != 0)
 					return cmp;
 			} else if(lhsAnnotation.getClass() == IntAnnotation.class) {
