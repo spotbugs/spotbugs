@@ -47,7 +47,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	MethodAnnotation cloneMethodAnnotation;
 	boolean referencesCloneMethod;
 	boolean invokesSuperClone;
-	boolean checksInstanceOfCloneable;
 	
 	boolean isFinal;
 	boolean cloneOnlyThrowsException;
@@ -74,8 +73,6 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
 	@Override
 		 public void sawOpcode(int seen) {
-		if (seen == INSTANCEOF && getClassConstantOperand().equals("java/lang/Cloneable"))
-			checksInstanceOfCloneable = true;
 		if (seen == INVOKESPECIAL
 				&& getNameConstantOperand().equals("clone")
 				&& getSigConstantOperand().startsWith("()")) {
