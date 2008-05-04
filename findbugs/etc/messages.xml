@@ -3206,7 +3206,7 @@ private static Boolean inited = Boolean.FALSE;
   synchronized(inited) { 
     if (!inited) {
        init();
-       inited = BOOLEAN.TRUE;
+       inited = Boolean.TRUE;
        }
      }
 ...
