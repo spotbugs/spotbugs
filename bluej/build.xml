@@ -1,83 +1,82 @@
 <project name="fbbluej" default="dist"> 
-        <property file="build.properties" />
-
+	<property file="build.properties" />
 	<property name="src.dir" value="src"/>
-		<property name="lib.dir" value="lib"/>
-		<property name="dist.dir" value="dist"/>
-		<property name="bin.dir" value="bin" />
+	<property name="lib.dir" value="lib"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="bin.dir" value="bin" />
 
 	<patternset id="codebase.data.pats">
-			<include name="**/*.properties"/>
-			<include name="**/*.png"/>
-			<include name="**/*.html"/>
-		</patternset>
-		<path id="classpath">
-			<fileset dir="${lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
-		</path>
+		<include name="**/*.properties"/>
+		<include name="**/*.png"/>
+		<include name="**/*.html"/>
+	</patternset>
+	
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
 
+	<!-- Make output directories -->
 	<target name="init">
-			<mkdir dir="${dist.dir}"/>
-			<mkdir dir="${bin.dir}"/>
-		</target>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${bin.dir}"/>
+	</target>
+	
+	<!-- Delete dist and bin directories -->
 	<target name="clean" depends="init" description="Clean up temporary files">
-			<delete>
-				<fileset dir="${dist.dir}" includes="**"/>
-			</delete>
-			<delete>
-				<fileset dir="${bin.dir}" excludes=".cvsignore" includes="**" />
-			</delete>
-			<mkdir dir="${dist.dir}"/>
-			<mkdir dir="${bin.dir}"/>
-		</target>
+		<delete>
+			<fileset dir="${dist.dir}" includes="**"/>
+		</delete>
+		<delete>
+			<fileset dir="${bin.dir}" excludes=".cvsignore" includes="**" />
+		</delete>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${bin.dir}"/>
+	</target>
+	
 	<target name="classes" depends="init,fbjars" description="Compile java source files">
-
-	        <!-- Compile Java source files. -->
-	        <javac srcdir="${src.dir}"
-			  destdir="${bin.dir}"
-	                source="1.5"
-	                target="jsr14"
-	                debug="on">
-	            <classpath refid="classpath"/>
-	        </javac>
+        <!-- Compile Java source files. -->
+        <javac srcdir="${src.dir}"
+		       destdir="${bin.dir}"
+		       source="1.5"
+		       target="jsr14"
+		       debug="on">
+			<classpath refid="classpath"/>
+		</javac>
 		<copy todir="${bin.dir}">
-					<fileset dir="${src.dir}">
-						<patternset refid="codebase.data.pats"/>
-					</fileset>
-					
-				</copy>
-				
-		
-		</target>
+			<fileset dir="${src.dir}">
+				<patternset refid="codebase.data.pats"/>
+			</fileset>
+		</copy>
+	</target>
 
-        <target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
-                <ant dir="${findbugs.dir}" inheritall="false" target="build"/>
-                <copy todir="${lib.dir}">
-                        <fileset dir="${findbugs.dir}/lib" includes="asm-3.0.jar,bcel.jar,findbugs.jar, asm-tree-3.0.jar,dom4j-full.jar"/>
-                        <fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
-                </copy>
-        </target>
+	<!-- Build the findbugs source checkout in ${findbugs.dir} and
+	     copy the relevant jars into lib -->
+	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
+		<ant dir="${findbugs.dir}" inheritall="false" target="build"/>
+		<copy todir="${lib.dir}" failonerror="true">
+			<fileset dir="${findbugs.dir}/lib" includes="asm-3.0.jar,asm-commons-3.0.jar,asm-tree-3.0.jar,bcel.jar,findbugs.jar,dom4j-full.jar,jsr305.jar"/>
+			<fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
+		</copy>
+	</target>
 	
+	<!-- Build the extension .jar file -->
 	<target name="dist" depends="clean,classes" description="Build a plugin distributable">
-			<jar destfile="${dist.dir}/FindBugs.jar">
-				 <fileset dir="${bin.dir}"/>
-
-				 <zipfileset src="lib/findbugs.jar"/>
-				 <zipfileset src="lib/coreplugin.jar"/>
-				 <zipfileset src="lib/bcel.jar"/>
-				 <zipfileset src="lib/asm-3.0.jar"/>
-				 <zipfileset src="lib/asm-tree-3.0.jar"/>
-				 <zipfileset src="lib/dom4j-full.jar"/>
-				 <fileset file="smallBuggy.png"/>
-			
-				
-				<manifest>
-							<attribute name="Main-Class" value="edu.umd.cs.findbugs.bluej.FindBugsExtension"/>
-							</manifest>
-				</jar>
-
-		</target>
-
-	</project>
-	
+		<jar destfile="${dist.dir}/FindBugs.jar">
+			<fileset dir="${bin.dir}"/>
+			<zipfileset src="lib/findbugs.jar"/>
+			<zipfileset src="lib/coreplugin.jar"/>
+			<zipfileset src="lib/bcel.jar"/>
+			<zipfileset src="lib/asm-3.0.jar"/>
+			<zipfileset src="lib/asm-commons-3.0.jar"/>
+			<zipfileset src="lib/asm-tree-3.0.jar"/>
+			<zipfileset src="lib/dom4j-full.jar"/>
+			<zipfileset src="lib/jsr305.jar"/>
+			<fileset file="smallBuggy.png"/>
+			<manifest>
+				<attribute name="Main-Class" value="edu.umd.cs.findbugs.bluej.FindBugsExtension"/>
+			</manifest>
+		</jar>
+	</target>
+</project>
