@@ -182,102 +182,77 @@
 					</h1>
 					<p> The current version of FindBugs is s @VERSION@.</p>
 
-					<p> Changes since version 1.3.2</p>
+					<p> Changes since version 1.3.3</p>
 
 					<ul>
 					  <li>FindBugs base</li>
 					  <ul>
-					    <li>New Detectors:</li>
-					    <ul>
-					      <li>FieldItemSummary: Produces summary information
-                                    for what is stored into fields </li>
-					      <li>SynchronizeOnClassLiteralNotGetClass: Look for
-                                    code that synchronizes on the results of getClass
-                                    rather than on class literals</li>
-					      <li>SynchronizingOnContentsOfFieldToProtectField: This
-					          detector looks for code that seems to be
-					          synchronizing on a field in order to guard updates
-					          of that field </li>
-					    </ul>
-					    <li>New BugCode:</li>
-					    <ul>
-					      <li> HRS: HTTP Response splitting vulnerability </li>
-					      <li> WL: Possible locking on wrong object </li>
-					    </ul>
 					    <li>New Reports:</li>
 					    <ul>
-					      <li>DMI_CONSTANT_DB_PASSWORD:
-					          This code creates a database connect using a hardcoded, constant password </li>
-					      <li>HRS_REQUEST_PARAMETER_TO_COOKIE:
-					          HTTP cookie formed from untrusted input </li>
-					      <li>HRS_REQUEST_PARAMETER_TO_HTTP_HEADER:
-					          HTTP parameter directly written to HTTP header output </li>
-					      <li>CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE:
-					          Class defines clone() but doesn't implement Cloneable </li>
-					      <li>DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE:
-					          Synchronization on boxed primative could lead to deadlock </li>
-					      <li> DL_SYNCHRONIZATION_ON_BOOLEAN:
-					          Synchronization on Boolean could lead to deadlock </li>
-					      <li> ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD:
-					          Synchronization on field in futile attempt to guard that field </li>
-					      <li> DLS_DEAD_LOCAL_STORE_IN_RETURN:
-					          Useless assignment in return statement </li>
-					      <li> WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL:
-					          Sychronization on getClass rather than class literal </li>
+					      <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC:
+					      equals method overrides equals in superclass and may not be symmetric</li>
+					      <li>EQ_ALWAYS_TRUE:
+					      equals method always returns true</li>
+					      <li>EQ_ALWAYS_FALSE:
+					      equals method always returns false</li>
+					      <li>EQ_COMPARING_CLASS_NAMES:
+					      equals method compares class names rather than class objects</li>
+					      <li>EQ_UNUSUAL: Unusual equals method</li>
+					      <li>EQ_GETCLASS_AND_CLASS_CONSTANT:
+					      equals method fails for subtypes</li>
+					      <li>SE_READ_RESOLVE_IS_STATIC:
+					      The readResolve method must not be declared as a static method.</li>
+					      <li>SE_PRIVATE_READ_RESOLVE_NOT_INHERITED:
+					      private readResolve method not inherited by subclasses</li>
+					      <li>MSF_MUTABLE_SERVLET_FIELD: Mutable servlet field</li>
+					      <li>XSS_REQUEST_PARAMETER_TO_SEND_ERROR:
+					      Servlet reflected cross site scripting vulnerability</li>
+					      <li>SKIPPED_CLASS_TOO_BIG: Class too big for analysis</li>
 					    </ul>
 					    <li>Other:</li>
 					    <ul>
-					      <li>Many enhancements to cross-site scripting detector and its documentation</li>
-					      <li> Enhanced switch fallthrough handling </li>
-					      <li> Enhanced unread field handling (look for IF_ACMPEQ and IF_ACMPNE) </li>
-					      <li> Clarified documentation for @Nullable in manual </li>
-					      <li> Fewer DeadLocalStore false positives </li>
-					      <li> Fewer UnreadField false positives </li>
-					      <li> Fewer StaticCalendarDetector false positives </li>
-					      <li> Performance fix for slow file system IO e.g. Clearcase repositories (thanks, Andrei!) </li>
-					      <li> Other, general performance enhancements (thanks, Andrei!) </li>
-					      <li> Enhancements for using FindBugs scripts with MKS on Windows (thanks, Kelly O'Hair!) </li>
-					      <li> Noted in the manual that jsr305.jar must be present for annotations to compile </li>
-					      <li> Added and fine-tuned default-nullness annotations </li>
-					      <li> More CWE IDs added </li>
-					      <li> Check and warning for unexpected BCEL version in classpath </li>
+					      <li>Value-number analysis now more space-efficient</li>
+					      <li>Enhancements to reduce memory overhead when
+					          analyzing very large classes</li>
+					      <li>Now skips very large classes that would otherwise
+					          take too much time and memory to analyze</li>
+					      <li>Infrastructure for tracking effectively-constant/
+					          effectively-final fields</li>
+					      <li>Added more cweids</li>
+					      <li>Enhanced taint tracking for taint-based detectors</li>
+					      <li>Ignore doomed calls to equals if result is used
+					          as an argument to assertFalse</li>
+					      <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC handles compareTo</li>
+					      <li>Priority tweak for ICAST_INTEGER_MULTIPLY_CAST_TO_LONG 
+					          (only low priority if multiplying by 1000)</li>
+					      <li>Improved tracking of fields across method calls</li>
 					    </ul>
 					    <li>Fixes:</li>
 					    <ul>
-					      <li>Bug fix to handling of local variable tables in BCEL</li>
-					      <li>Refined documentation for MTIA_SUSPECT_STRUTS_INSTANCE_FIELD</li>
-					      <li>[ 1927295 ] NPE when called on project root</li>
-					      <li>[ 1926405 ] Incorrect dead store warning</li>
-					      <li>[ 1926409 ] Incorrect redundant nullcheck warning</li>
-					      <li>[ 1926389 ] Wrong line number printed/highlighted in bug</li>
-					      <li>[ 1927040 ] typo in bug description</li>
-					      <li>[ 1926263 ] Minor glitch in HTML output</li>
-					      <li>[ 1926240 ] Minor error in standard options in manual</li>
-					      <li>[ 1926236 ] Minor bug in installation section of manual</li>
-					      <li>[ 1925539 ] ZIP is default file system code base</li>
-					      <li>[ 1894701 ] Livelock / memory leak in ObjectTypeFactory (thanks, Andrei!)</li>
-					      <li>[ 1867491 ] Doesn't reload annotations after code changes in IDE (thanks, Andrei!)</li>
-					      <li>[ 1921399 ] -project option not supported</li>
-					      <li>[ 1913834 ] "Dead" store to variable with method call</li>
-					      <li>[ 1917352 ] H B se:...field in serializable class</li>
-					      <li>[ 1911617 ] CloneIdiom relies on getNameConstantOperand for INSTANCEOF</li>
-					      <li>[ 1911620 ] False +: DLS predecrement before return</li>
-					      <li>[ 1871376 ] False negative: non-serializable Map field</li>
-					      <li>[ 1871051 ] non standard clone() method</li>
-					      <li>[ 1908854 ] Error in TestASM</li>
-					      <li>[ 1907539 ] 22 minor errors in bug checker documentation</li>
-					      <li>[ 1897323 ] EJB implementation class false positives</li>
-					      <li>[ 1899648 ] Crash on startup on Vista with Java 1.6.0_04</li>
+					      <li>[ 1941450 ] DLS_DEAD_LOCAL_STORE not reported</li>
+					      <li>[ 1953323 ] Omitted break statement in SynchronizeAndNullCheckField</li>
+					      <li>[ 1942620 ] Source Directories selection dialog interface confusion (partial)</li>
+					      <li>[ 1948275 ] Unhelpful "Load of known null"</li>
+					      <li>[ 1933922 ] MWM error in findbugs</li>
+					      <li>[ 1934772 ] 1.3.3 appears to rely on JDK 1.6, JNLP still specifies 1.5</li>
+					      <li>[ 1933945 ] -loadbugs doesn't work</li>
+					      <li>Fixed problems for class names starting with '$'</li>
+					      <li>Fixed bugs and incomplete handling of annotations in
+					          VersionInsensitiveBugComparator</li>
 					    </ul>
+					    <li>Patches:</li>
+					    <ul>
+					      <li>[ 1955106 ] Javadoc fixes</li>
+					      <li>[ 1951930 ] Superfluous import statements (thanks to Jerry James)</li>
+					      <li>[ 1951907 ] Missing @Deprecated annotations (thanks to Jerry James)</li>
+					      <li>[ 1951876 ] Infonode Docking Windows compile fix (thanks to Jerry James)</li>
+					      <li>[ 1936055 ] bugfix for findbugs.de.comment not working (thanks to Peter Fokkinga)
 					    </ul>
-					  <li>FindBugs Eclipse plugin (change log by Andrei Loskutov)</li>
+					  </ul>
+					  <li>FindBugs BlueJ plugin</li>
 					  <ul>
-					    <li> new feature: export basic FindBugs numbers for projects via File->Export->Java->BugCounts (Andrei Loskutov) </li>
-					    <li> new feature: jobs for different projects will be run in parallel per default if running on a
-                             multi-core PC ("fb.allowParallelBuild" system property not used anymore) (Andrei Loskutov) </li>
-					    <li> fixed performance slowdown in the multi-threaded build, caused by workspace operation locks during
-                             assigning marker attributes (Andrei Loskutov)</li>
-                       </ul>
+					    <li>Updated to use FindBugs 1.3.4 (first new release since 1.1.3)</li>
+                      </ul>
                     </ul>
 					
 					<p>
