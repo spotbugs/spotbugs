@@ -265,11 +265,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 						if (phi == null) {
 							int flags = ValueNumber.PHI_NODE;
 							for(ValueNumber vn : myVN) {
-								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
 							}
 							if (otherVN != null) for(ValueNumber vn : otherVN) {
-								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
 							}
 						
