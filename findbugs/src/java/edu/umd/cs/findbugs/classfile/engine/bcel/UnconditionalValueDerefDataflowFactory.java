@@ -81,6 +81,9 @@ public class UnconditionalValueDerefDataflowFactory extends AnalysisFactory<Unco
 		UnconditionalValueDerefDataflow dataflow =
 			new UnconditionalValueDerefDataflow(cfg, analysis);
 		dataflow.execute();
+		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
+			dataflow.dumpDataflow(analysis);
+		}
 		if (UnconditionalValueDerefAnalysis.DEBUG) {
 			ClassContext.dumpDataflowInformation(getMethod(analysisCache, descriptor), cfg, vnd, inv, dataflow, typeDataflow);
 		}
