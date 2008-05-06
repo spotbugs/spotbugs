@@ -107,7 +107,7 @@ public class Version {
 		String release, eclipse_ui_version, date, eclipseDate;
 		try {
 			Properties versionProperties = new Properties();
-			 in = Version.class.getResourceAsStream("/version.properties");
+			 in = Version.class.getResourceAsStream("version.properties");
 			 versionProperties.load(in);
 			 release = (String) versionProperties.get("release.number");
 			 eclipse_ui_version = (String) versionProperties.get("eclipse.ui.version");

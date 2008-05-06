@@ -53,7 +53,7 @@
 	<property name="scripts.stamp" value="${build.dir}/scripts.stamp"/>
 	<property name="allClassFiles.jar" value="${build.dir}/allClassFiles.jar"/>
 	<property name="doc.props.file" value="${etc.dir}/doc.properties"/>
-	<property name="version.props.file" value="${build.dir}/version.properties"/>
+	<property name="version.props.file" value="${build.dir}/classes/edu/umd/cs/findbugs/version.properties"/>
 	
 	<path id="findbugs.classpath">
 	    <pathelement location="${jar.dir}/bcel.jar"/>
