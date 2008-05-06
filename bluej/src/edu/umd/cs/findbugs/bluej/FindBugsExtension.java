@@ -34,7 +34,7 @@ public class FindBugsExtension extends Extension
 	@Override
 	public String getVersion()
 	{
-		return "1.3.4";
+		return "1.3.5-dev";
 	}
 
 	@Override
