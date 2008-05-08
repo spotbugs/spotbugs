@@ -17,6 +17,16 @@
                     <type>java</type>
                     <location>src/junit</location>
                 </source-folder>
+                <source-folder>
+                    <label>src/antTask</label>
+                    <type>java</type>
+                    <location>src/antTask</location>
+                </source-folder>
+                <source-folder>
+                    <label>src/java5</label>
+                    <type>java</type>
+                    <location>src/java5</location>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -49,6 +59,14 @@
                         <label>src/junit</label>
                         <location>src/junit</location>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>src/antTask</label>
+                        <location>src/antTask</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src/java5</label>
+                        <location>src/java5</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -62,16 +80,28 @@
                     <ide-action name="rebuild"/>
                 </context-menu>
             </view>
+            <subprojects/>
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src/java</package-root>
-                <classpath mode="compile">lib/bcel.jar:lib/dom4j-full.jar:lib/junit.jar</classpath>
+                <classpath mode="compile">build/classes:lib/bcel.jar:lib/dom4j-full.jar:lib/junit.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/jsr305.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>src/junit</package-root>
                 <unit-tests/>
+                <classpath mode="compile">build/classes:lib/annotations.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/bcel.jar:lib/dom4j-full.jar:lib/jsr305.jar:lib/junit.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>src/antTask</package-root>
+                <classpath mode="compile">build/classes:lib/annotations.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/bcel.jar:lib/dom4j-full.jar:lib/jsr305.jar:lib/junit.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>src/java5</package-root>
+                <classpath mode="compile">build/classes:lib/annotations.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/bcel.jar:lib/dom4j-full.jar:lib/jsr305.jar:lib/junit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
