@@ -42,8 +42,8 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  returned by I18N.getInstance().getUserDesignations() */
 	@NonNull private String designation = UNCLASSIFIED;
 
-	// TODO: make this @CheckForNull 
-	private String user;
+	 
+	private @javax.annotation.CheckForNull String user;
 
 	private long timestamp;
 
