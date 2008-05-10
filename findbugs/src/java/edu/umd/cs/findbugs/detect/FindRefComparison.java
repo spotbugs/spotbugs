@@ -51,10 +51,12 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -456,6 +458,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 	private ClassContext classContext;
 	private Set<String> suspiciousSet;
 
@@ -465,6 +468,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	public FindRefComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 		this.suspiciousSet = new HashSet<String>(DEFAULT_SUSPICIOUS_SET);
 		
 		// Check frc.suspicious system property for additional suspicious types to check
@@ -506,6 +510,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				// bugReporter.logError("Error analyzing " + method.toString(), e);
 			}
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	/**
@@ -716,10 +721,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (result != IncompatibleTypes.SEEMS_OK) {
 				String sourceFile = jclass.getSourceFileName();
 				
-				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
+				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsType.getSignature(), lhsType.getSignature())
-				.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+				.addFoundAndExpectedType(rhsType.getSignature(), lhsType.getSignature()),
+				SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
 				);
 			}
 			String lhs = SignatureConverter.convert(lhsType.getSignature());
@@ -853,9 +858,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (rhsType_.getType() == T_NULL) {	
 				// A literal null value was passed directly to equals().
 				if (!looksLikeTestCase)
-					bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
-					.addClassAndMethod(methodGen, sourceFile)
-					.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle()));
+					bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
+					.addClassAndMethod(methodGen, sourceFile),
+					SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
 			} else if (lhsType_.getType() == T_NULL) {
 				// Hmm...in this case, equals() is being invoked on
 				// a literal null value.  This is really the
@@ -870,19 +875,18 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 		}
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
-			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
-			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
 			String lhsSig = lhsType_.getSignature();
@@ -893,25 +897,25 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				priorityModifier = 0;
 			}
 			if (!looksLikeTestCase) {
-				bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsSig, lhsSig)
-				.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+				.addFoundAndExpectedType(rhsSig, lhsSig),
+				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
 			}
 		}
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE 
 				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) 
-			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.UNRELATED_INTERFACES) 
-			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 	}
 

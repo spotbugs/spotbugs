@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -45,16 +46,23 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
 	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
+	
 	//private LocalVariableTable variableNames;
 
 	public FindReturnRef(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
 		 public void visit(JavaClass obj) {
 		publicClass = obj.isPublic();
 		super.visit(obj);
+	}
+	@Override
+	public void visitAfter(JavaClass obj) {
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -95,19 +103,19 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		
 		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
-			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
+			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
-					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1))
-					.addSourceLine(this));
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1)),
+					this);
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
-			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
+			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
-					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1))
-					.addSourceLine(this));
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1)),
+					this);
 		}
 		dangerousToStoreIntoField = false;
 		int reg = -1; // this value should never be seen
@@ -201,10 +209,10 @@ public class FindReturnRef extends BytecodeScanningDetector {
 				&& nameOnStack.indexOf("EMPTY") == -1
 				&& MutableStaticFields.mutableSignature(sigOnStack)
 		) {
-			bugReporter.reportBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
+			bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
-					.addSourceLine(this));
+					.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic),
+					this);
 		}
 
 		fieldOnTOS = false;

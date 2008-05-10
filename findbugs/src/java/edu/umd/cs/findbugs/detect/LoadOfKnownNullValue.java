@@ -14,6 +14,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -32,9 +33,11 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 public class LoadOfKnownNullValue implements Detector {
 
 	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 
 	public LoadOfKnownNullValue(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -56,6 +59,7 @@ public class LoadOfKnownNullValue implements Detector {
 				bugReporter.logError("Detector " + this.getClass().getName()
 						+ " caught exception", e);
 			}
+			bugAccumulator.reportAccumulatedBugs();
 		}
 	}
 
@@ -183,11 +187,11 @@ public class LoadOfKnownNullValue implements Detector {
 				// System.out.println("lineMentionedMultipleTimes: " + lineMentionedMultipleTimes);
 				// System.out.println("linesWithLoadsOfNonNullValues: " + linesWithLoadsOfNotDefinitelyNullValues);
 
-				bugReporter.reportBug(new BugInstance(this,
+				bugAccumulator.accumulateBug(new BugInstance(this,
 						"NP_LOAD_OF_KNOWN_NULL_VALUE",
 						priority)
-						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(sourceLineAnnotation));
+						.addClassAndMethod(methodGen, sourceFile),
+						sourceLineAnnotation);
 			}
 
 		}
