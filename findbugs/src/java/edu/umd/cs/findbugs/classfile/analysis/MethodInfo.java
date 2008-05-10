@@ -194,7 +194,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object rhs) {
+	@Override
+    public int compareTo(Object rhs) {
 		if (rhs instanceof MethodDescriptor) {
 			return super.compareTo((MethodDescriptor) rhs);
 		}

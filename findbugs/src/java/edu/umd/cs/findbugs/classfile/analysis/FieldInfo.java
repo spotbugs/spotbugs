@@ -141,6 +141,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	/* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(Object rhs) {
     	if (rhs instanceof FieldDescriptor) {
     		return super.compareTo((FieldDescriptor) rhs);
