@@ -21,8 +21,10 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -34,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements   StatelessDetector {
-	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_MAP_LOAD1 = 1;
 	private static final int SAW_KEYSET = 2;
@@ -58,7 +60,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 
 
 	public WrongMapIterator(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -71,6 +73,12 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 		keySetRegister = -1;
 		iteratorRegister = -1;
 		keyRegister = -1;
+	}
+	
+	@Override
+	public void visit(Code code) {
+		super.visit(code);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 	
 	/**
@@ -216,11 +224,10 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 				&&  ("get".equals(getNameConstantOperand()))
 				&&  ("(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand()))) {
 					MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
-					bugReporter.reportBug(
+					bugAccumulator.accumulateBug(
 						new BugInstance("WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY)
 														.addClass(this)
-														.addMethod(ma)
-														.addSourceLine(this, getPC()));
+														.addMethod(ma),this);
 					state = SAW_NOTHING;
 				}
 			break;

@@ -25,6 +25,7 @@ import java.util.LinkedList;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -38,10 +39,12 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 	private static final int SAW_COMP = 1;
 	private int priority;
 	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 	private int state;
 
 	public FindFloatEquality(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -56,6 +59,7 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 		state = SAW_NOTHING;
 
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 		if (!found.isEmpty()) {
 				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", priority)
 						.addClassAndMethod(this);
@@ -102,8 +106,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 						if (n1 != null && Double.isNaN(n1.doubleValue())
 								|| n2 != null && Double.isNaN(n2.doubleValue()) ) {
 							BugInstance bug = new BugInstance(this, "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER", HIGH_PRIORITY)
-							.addClassAndMethod(this).addSourceLine(this);
-							bugReporter.reportBug(bug);
+							.addClassAndMethod(this);
+							bugAccumulator.accumulateBug(bug, this);
 							state = SAW_NOTHING;
 							break;
 						}

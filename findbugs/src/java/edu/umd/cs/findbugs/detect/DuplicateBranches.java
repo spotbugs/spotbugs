@@ -57,6 +57,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 {
 	private ClassContext classContext;
 	private BugReporter bugReporter;
+	private Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
 
 	public DuplicateBranches(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -92,6 +93,11 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		} catch (Exception e) {
 			bugReporter.logError("Failure examining basic blocks in Duplicate Branches detector", e);
 		}
+		if (pendingBugs.size() <= 2)
+		for(BugInstance b : pendingBugs) 
+			bugReporter.reportBug(b);
+		pendingBugs.clear();
+		
 	}
 
 	private void findIfElseDuplicates(CFG cfg, Method method, BasicBlock bb) {
@@ -144,7 +150,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		InstructionHandle elseLastIns = elseFinishHandle.getPrev();
 		if (elseLastIns != null) elseFinishPos = elseLastIns.getPosition();
 
-		bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
+		pendingBugs.add(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
 				.addClass(classContext.getJavaClass())
 				.addMethod(classContext.getJavaClass(), method)
 				.addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
@@ -234,7 +240,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 					bug.addSourceLineRange(this.classContext, this, 
 							switchPos[i],
 							switchPos[i+1]-1); // not endPos, but that's ok
-				bugReporter.reportBug(bug);
+				pendingBugs.add(bug);
 			}
 		}
 	}

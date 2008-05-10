@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCreationPoint;
 import edu.umd.cs.findbugs.ResourceTrackingDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -391,9 +392,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			}
 
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(this, bugType, priority)
-					.addClassAndMethod(methodGen, sourceFile)
-					.addSourceLine(classContext, methodGen, sourceFile, resource.getLocation().getHandle()));
+			bugAccumulator.accumulateBug(new BugInstance(this, bugType, priority)
+					.addClassAndMethod(methodGen, sourceFile),
+					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, resource.getLocation().getHandle()));
 		}
 	}
 

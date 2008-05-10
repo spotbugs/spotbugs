@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -44,10 +46,10 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements
 	boolean sawArrayDanger, sawArrayDangerOld;
 	boolean sawMethodCall, sawMethodCallOld;
 
-	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 
 	public FindNonShortCircuit(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -67,6 +69,12 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements
 		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
 	}
 	int prevOpcode;
+	
+	@Override
+	public void visit(Code code) {
+		super.visit(code);
+		bugAccumulator.reportAccumulatedBugs();
+	}
 	@Override
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
@@ -173,9 +181,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements
 			else priority = NORMAL_PRIORITY;
 		}
 
-		bugReporter.reportBug(new BugInstance(this, pattern,
-				priority)
-		.addClassAndMethod(this).addSourceLine(this, getPC()));
+		bugAccumulator.accumulateBug(new  BugInstance(this, pattern,priority).addClassAndMethod(this), this);
 	}
 
 

@@ -56,10 +56,12 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 	private static final String DEBUG_METHOD_NAME = SystemProperties.getProperty("rtd.method");
 
+	protected BugAccumulator bugAccumulator;
 	protected BugReporter bugReporter;
 
 	public ResourceTrackingDetector(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public abstract boolean prescreen(ClassContext classContext, Method method);
@@ -108,6 +110,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			} catch (DataflowAnalysisException e) {
 				bugReporter.logError("Error analyzing method " + method.toString(), e);
 			}
+			bugAccumulator.reportAccumulatedBugs();
 		}
 
 	}
