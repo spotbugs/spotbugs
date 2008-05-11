@@ -138,9 +138,12 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 			return;
 
 		case LCMP:
-		    isLong = true;
-			return; /* Ignore. An 'if' opcode will follow */
-
+			if (state == 3) {
+				isLong = true;
+					return; /* Ignore. An 'if' opcode will follow */
+				}
+			state = 0;
+			return;
 			
 		case IFLE:
 		case IFLT:
@@ -205,8 +208,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 			// System.out.println("Match at offset " + getPC());
 			BugInstance bug = new BugInstance(this, t, NORMAL_PRIORITY)
 					.addClassAndMethod(this);
-			if (arg0 == (int) arg0 && arg1 == (int) arg1) 
-				bug.addInt((int)arg0).addInt((int)arg1);
+			bug.addString("0x"+Long.toHexString(arg0)).addString("0x"+Long.toHexString(arg1));
 			
 			bug.addSourceLine(this);
 			bugReporter.reportBug(bug);
