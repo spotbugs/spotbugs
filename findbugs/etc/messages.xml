@@ -4840,8 +4840,8 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY">
-    <ShortDescription>Using pointer equality  to compare  different types</ShortDescription>
-    <LongDescription>Using pointer equality  to compare a {2} with a {3} in {1}</LongDescription>
+    <ShortDescription>Using pointer equality to compare  different types</ShortDescription>
+    <LongDescription>Using pointer equality to compare a {2} with a {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method uses using pointer equality to compare two references that seem to be of
