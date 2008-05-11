@@ -21,16 +21,17 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
-	BugReporter bugReporter;
+	BugAccumulator bugAccumulator;
 
 	public BadUseOfReturnValue(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -42,6 +43,7 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 		stringIndexOfOnTOS= false;
 		readLineOnTOS = false;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 
@@ -54,9 +56,8 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 		   stringIndexOfOnTOS= true;
 		else if (stringIndexOfOnTOS) {
 			if (seen == IFLE || seen == IFGT)
-				   bugReporter.reportBug(new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY)
-								.addClassAndMethod(this)
-								.addSourceLine(this));
+				   bugAccumulator.accumulateBug(new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY)
+								.addClassAndMethod(this), this);
 			stringIndexOfOnTOS = false;
 		}
 
@@ -69,9 +70,8 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 		  readLineOnTOS = true;
 		else if (readLineOnTOS) {
 			if (seen == IFNULL || seen == IFNONNULL)
-				   bugReporter.reportBug(new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY)
-								.addClassAndMethod(this)
-								.addSourceLine(this));
+				 bugAccumulator.accumulateBug(new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY)
+								.addClassAndMethod(this), this);
 
 			readLineOnTOS = false;
 			}

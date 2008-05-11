@@ -22,9 +22,11 @@ package edu.umd.cs.findbugs.detect;
 
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -50,6 +52,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 	private final static JavaClass collectionClass;
 
 	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 	private int state = SEEN_NOTHING;
 
 	static {
@@ -64,6 +67,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
 	public InefficientToArray(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -82,6 +86,12 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 		super.visit(obj);
 	}
 
+	@Override
+	public void  visit(Code obj) {
+		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
+		
+	}
 	@Override
 		 public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
@@ -107,9 +117,8 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 					String clsName = getDottedClassConstantOperand();
 					JavaClass cls = Repository.lookupClass(clsName);
 					if (cls.implementationOf(collectionClass))
-						bugReporter.reportBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
-								.addClassAndMethod(this)
-								.addSourceLine(this));
+						bugAccumulator.accumulateBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
+								.addClassAndMethod(this), this);
 
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);

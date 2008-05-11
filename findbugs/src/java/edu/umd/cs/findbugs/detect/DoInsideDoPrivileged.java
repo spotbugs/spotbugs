@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -32,9 +33,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @author pugh
  */
 public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
-	BugReporter bugReporter;
+	BugAccumulator bugAccumulator;
 	public DoInsideDoPrivileged(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 	boolean isDoPrivileged = false;
 	@Override
@@ -51,29 +52,27 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 		if (getMethod().isPrivate()) return;
 		if (DumbMethods.isTestMethod(getMethod())) return;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
 			@DottedClassName String className = getDottedClassConstantOperand();
 			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
-				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED",
+				bugAccumulator.accumulateBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED",
 						LOW_PRIORITY)
 							.addClassAndMethod(this)
-							.addCalledMethod(this)
-							.addSourceLine(this)
-							);
+							.addCalledMethod(this), this);
+							
 		}
 		if (seen == NEW) {
 			@DottedClassName String classOfConstructedClass = getDottedClassConstantOperand();
 			if (Subtypes2.instanceOf(classOfConstructedClass,"java/lang/ClassLoader") 
 					&& !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod().isStatic()) )
-				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
+				bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
 					NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addClass(classOfConstructedClass)
-						.addSourceLine(this)
-						);
+						.addClass(classOfConstructedClass), this);
 		}
 
 
