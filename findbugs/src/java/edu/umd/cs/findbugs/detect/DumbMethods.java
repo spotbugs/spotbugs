@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -133,12 +134,37 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	}
 
+	int opcodesSincePendingAbsoluteValueBug;
+	BugInstance pendingAbsoluteValueBug;
+	SourceLineAnnotation pendingAbsoluteValueBugSourceLine;
+	
 	boolean freshRandomOnTos = false;
 	boolean freshRandomOneBelowTos = false;
+	static boolean isPowerOfTwo(int i) {
+		if (i <= 0) return false;
+		if ((i | (i-1))+1 == 2*i) return true;
+		return false;
+	}
 	@Override
 		 public void sawOpcode(int seen) {
 		String opcodeName = OPCODE_NAMES[seen];
-
+		
+		if (pendingAbsoluteValueBug != null) {
+			if (opcodesSincePendingAbsoluteValueBug == 0) {
+				opcodesSincePendingAbsoluteValueBug++;
+			} else {
+				if (seen == IREM) {
+					OpcodeStack.Item top = stack.getStackItem(0);
+					Object constantValue = top.getConstant();
+					if (constantValue instanceof Number && isPowerOfTwo(((Number) constantValue).intValue()))
+						pendingAbsoluteValueBug.setPriority(Priorities.LOW_PRIORITY);
+				}
+				accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
+				pendingAbsoluteValueBug = null;
+				pendingAbsoluteValueBugSourceLine = null;
+			}
+		}
+		
 		if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
 				&& getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
 			SignatureParser parser = new SignatureParser(getSigConstantOperand());
@@ -266,15 +292,21 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getSigConstantOperand().equals("(I)I")) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			int special = item0.getSpecialKind();
-			if (special == OpcodeStack.Item.RANDOM_INT) 
-				accumulator.accumulateBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT", 
+			if (special == OpcodeStack.Item.RANDOM_INT) {
+				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT", 
 						 HIGH_PRIORITY)
-					.addClassAndMethod(this), this);
+					.addClassAndMethod(this);
+				pendingAbsoluteValueBugSourceLine = SourceLineAnnotation.fromVisitedInstruction(this);
+				opcodesSincePendingAbsoluteValueBug = 0;
+			}
 					
-			else if (special == OpcodeStack.Item.HASHCODE_INT)
-				accumulator.accumulateBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE", 
-						HIGH_PRIORITY)
-					.addClassAndMethod(this), this);
+			else if (special == OpcodeStack.Item.HASHCODE_INT)  {
+				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE", 
+						 HIGH_PRIORITY)
+					.addClassAndMethod(this);
+				pendingAbsoluteValueBugSourceLine = SourceLineAnnotation.fromVisitedInstruction(this);
+				opcodesSincePendingAbsoluteValueBug = 0;
+			}
 					
 		}
 
@@ -802,6 +834,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	@Override
 	public void visit(Code obj) {
+		
 		super.visit(obj);
 		flush();
 	}
@@ -815,6 +848,12 @@ public class DumbMethods extends OpcodeStackDetector  {
 	 * Flush out cached state at the end of a method.
 	 */
 	private void flush() {
+		if (pendingAbsoluteValueBug != null) {
+			accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
+			pendingAbsoluteValueBug = null;
+			pendingAbsoluteValueBugSourceLine = null;
+			
+		}
 		if (gcInvocationBugReport != null && !sawCurrentTimeMillis) {
 			// Make sure the GC invocation is not in an exception handler
 			// for OutOfMemoryError.
