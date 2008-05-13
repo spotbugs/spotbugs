@@ -2,8 +2,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.lang.annotation.ElementType;
 import java.util.Collection;
+import java.util.Collections;
 
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -62,14 +62,14 @@ class UnresolvedXMethod extends AbstractMethod implements XMethod {
 	 * @see edu.umd.cs.findbugs.ba.XMethod#getAnnotationDescriptors()
 	 */
 	public Collection<ClassDescriptor> getAnnotationDescriptors() {
-		return TigerSubstitutes.emptyList();
+		return Collections.<ClassDescriptor>emptyList();
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.XMethod#getAnnotations()
 	 */
 	public Collection<AnnotationValue> getAnnotations() {
-		return TigerSubstitutes.emptyList();
+		return Collections.<AnnotationValue>emptyList();
 	}
 
 	/* (non-Javadoc)
@@ -83,14 +83,14 @@ class UnresolvedXMethod extends AbstractMethod implements XMethod {
 	 * @see edu.umd.cs.findbugs.ba.XMethod#getParameterAnnotationDescriptors(int)
 	 */
 	public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
-		return TigerSubstitutes.emptyList();
+		return Collections.<ClassDescriptor>emptyList();
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.XMethod#getParameterAnnotations(int)
 	 */
 	public Collection<AnnotationValue> getParameterAnnotations(int param) {
-		return TigerSubstitutes.emptyList();
+		return Collections.<AnnotationValue>emptyList();
 	}
 
 	public ElementType getElementType() {

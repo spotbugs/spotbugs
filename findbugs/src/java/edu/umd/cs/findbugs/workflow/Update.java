@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -101,13 +100,13 @@ public class Update {
 				if (optionExtraPart.length() == 0)
 					overrideRevisionNames = true;
 				else
-					overrideRevisionNames = TigerSubstitutes
+					overrideRevisionNames = Boolean
 							.parseBoolean(optionExtraPart);
 			} else if (option.equals("-noPackageMoves")) {
 				if (optionExtraPart.length() == 0)
 					noPackageMoves = true;
 				else
-					noPackageMoves = TigerSubstitutes
+					noPackageMoves = Boolean
 							.parseBoolean(optionExtraPart);
 			} else if (option.equals("-preciseMatch")) {
 				preciseMatch = true;

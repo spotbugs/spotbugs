@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -865,10 +866,10 @@ public class FindBugs2 implements IFindBugsEngine {
 								return ((ClassNameAndSuperclassInfo)classNameAndInfo).getCalledClassDescriptorList();
 							}
 							assert false;
-							return TigerSubstitutes.emptyList();
+							return Collections.<ClassDescriptor>emptyList();
 						} catch  (CheckedAnalysisException e2) {
 							AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
-							return TigerSubstitutes.emptyList();
+							return Collections.<ClassDescriptor>emptyList();
 
 						}
 					}

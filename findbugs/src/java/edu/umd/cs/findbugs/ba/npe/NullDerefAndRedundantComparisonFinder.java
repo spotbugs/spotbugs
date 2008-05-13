@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +45,6 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
@@ -353,7 +353,7 @@ public class NullDerefAndRedundantComparisonFinder {
 				if (false) 
 				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet()
 				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
-				assignedNullLocationSet = TigerSubstitutes.emptySet();
+				assignedNullLocationSet = Collections.<Location>emptySet();
 			}
 			SortedSet<Location> knownNullAndDoomedAt = bugLocationMap.get(valueNumber);
 

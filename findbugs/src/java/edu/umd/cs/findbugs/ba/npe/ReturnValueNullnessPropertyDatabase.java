@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 
 /**
@@ -35,7 +34,7 @@ public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<
 
 	@Override
 		 protected Boolean decodeProperty(String propStr) {
-			return TigerSubstitutes.parseBoolean(propStr);
+			return Boolean.parseBoolean(propStr);
 
 	}
 

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +45,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
@@ -468,7 +468,7 @@ public class ClassContext {
 		for(int i = 0; i < instructionList.length; i++)
 			if (checkForBranchExit(instructionList,i)) result.add(i);
 		if (result.size() == 0)
-			result = TigerSubstitutes.emptySet(); // alas, emptySet() is @since 1.5
+			result = Collections.<Integer>emptySet();
 
 		cachedLoopExits.put(xmethod, result);
 		return result;

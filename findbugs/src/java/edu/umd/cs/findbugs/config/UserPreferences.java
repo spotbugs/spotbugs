@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -49,7 +50,6 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 
 /**
  * User Preferences outside of any one Project.
@@ -91,10 +91,10 @@ public class UserPreferences implements Cloneable {
 
 	private String effort = EFFORT_DEFAULT;
 
-	private Collection<String> includeFilterFiles = TigerSubstitutes.emptySet();
+	private Collection<String> includeFilterFiles = Collections.<String>emptySet();
 
-	private Collection<String> excludeFilterFiles = TigerSubstitutes.emptySet();
-	private Collection<String> excludeBugsFiles = TigerSubstitutes.emptySet();
+	private Collection<String> excludeFilterFiles = Collections.<String>emptySet();
+	private Collection<String> excludeBugsFiles = Collections.<String>emptySet();
 
 	private UserPreferences() {
 		this.filterSettings = ProjectFilterSettings.createDefault();

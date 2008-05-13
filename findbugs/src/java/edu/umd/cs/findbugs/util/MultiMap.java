@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.util;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.TigerSubstitutes;
 /**
  * @author pugh
  */
@@ -69,7 +69,7 @@ public class MultiMap<K,  V> {
 	public Collection<V> get(K k) {
 		Collection<V> s = map.get(k);
 		if (s != null) return s;
-		return TigerSubstitutes.emptySet();
+		return Collections.<V>emptySet();
 		}
 
 }

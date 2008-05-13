@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -341,7 +340,7 @@ public class Filter {
 			if (optionExtraPart.length() == 0)
 				setField(option, true);
 			else
-				setField(option, TigerSubstitutes.parseBoolean(optionExtraPart));
+				setField(option, Boolean.parseBoolean(optionExtraPart));
 			setField(option+"Specified", true);
 		}
 

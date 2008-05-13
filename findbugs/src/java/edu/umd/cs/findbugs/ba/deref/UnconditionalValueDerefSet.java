@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -328,7 +327,7 @@ public class UnconditionalValueDerefSet {
 	public Set<Location> getUnconditionalDerefLocationSet(ValueNumber vn) {
 		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
 		if (derefLocationSet == null ) {
-			derefLocationSet = TigerSubstitutes.emptySet();
+			derefLocationSet = Collections.<Location>emptySet();
 		}
 		return derefLocationSet;
 	}
