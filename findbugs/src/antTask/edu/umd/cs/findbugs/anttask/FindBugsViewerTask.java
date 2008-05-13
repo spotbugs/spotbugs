@@ -228,12 +228,28 @@ public class FindBugsViewerTask extends Task {
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
+			File findbugsLib = new File(homeDir, "lib");
+			
+			File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
+			File findBugsFindBugs =  new File(homeDir, "findbugs.jar");
+			//log("executing using home dir [" + homeDir + "]");
+			if (findbugsLibFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
+			else if (findBugsFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
+			else throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
 
-			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" +
-					File.separator + FINDBUGSGUI_JAR ) );
+			File findbugsGuiLibFindBugs = new File(findbugsLib, "findbugsGUI.jar");
+			File findBugsGuiFindBugs =  new File(homeDir, "findbugsGUI.jar");
+			//log("executing using home dir [" + homeDir + "]");
+			if (findbugsGuiLibFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findbugsGuiLibFindBugs.getPath()));
+			else if (findBugsGuiFindBugs.exists())
+				findbugsEngine.setClasspath(new Path(getProject(), findBugsGuiFindBugs.getPath()));
+			else throw new IllegalArgumentException("Can't find findbugsGUI.jar in " + homeDir);
 
-			addArg("-home");
-			addArg(homeDir.getPath());
+			findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
+			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
 		}
 		else {
 			// Use an explicitly specified classpath and list of plugin Jars
@@ -241,7 +257,7 @@ public class FindBugsViewerTask extends Task {
 			// FindBugs installed using a non-standard directory layout.
 
 			findbugsEngine.setClasspath(classpath);
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugsFrame");
+			findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
 
 			addArg("-pluginList");
 			addArg(pluginList.toString());
