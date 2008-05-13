@@ -3056,7 +3056,7 @@ a table header.</para>
 	
 	<sect1 id="examples">
 		<title>Examples</title>
-<sect2 id="unixscriptsexemples">
+<sect2 id="unixscriptsexamples">
    <title>Mining history using proveded shell scrips</title>
 <para>In all of the following, the commands are given in a directory that contains
 directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.</para>
@@ -3212,8 +3212,8 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 		
 			</sect1>
 	
-         <sect1 id="antexemple">
-            <title>Ant exemple</title>
+         <sect1 id="antexample">
+            <title>Ant example</title>
 <para>
 Here is a complete ant script example for both running findbugs and running a chain of data-mining tools afterward:
 </para>
