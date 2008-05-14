@@ -3750,8 +3750,7 @@ This might be intentional and OK, but should be reviewed to ensure it is what is
     </Details>
   </BugPattern>
   <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
-    <ShortDescription>The readResolve method must be declared with a return type
-of Object. </ShortDescription>
+    <ShortDescription>The readResolve method must be declared with a return type of Object. </ShortDescription>
     <LongDescription>The method {1} must be declared with a return type of Object rather than {1.returnType}</LongDescription>
     <Details>
 <![CDATA[

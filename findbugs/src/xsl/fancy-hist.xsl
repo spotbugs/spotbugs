@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright (C) 2005, 2006 Etienne Giraudy, InStranet Inc
   Copyright (C) 2005, 2007 Etienne Giraudy
@@ -243,6 +243,7 @@
 
          // display filter
          function loadFilter() {
+            var versions    = document.findbugsForm.versions;
             var versionsBox = document.findbugsForm.versions.options;
             versionsBox[0] = new Option(" -- All Versions -- ","-1");
             versionsBox.selectedIndex = 0;
