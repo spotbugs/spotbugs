@@ -5270,10 +5270,10 @@ for(int i = 0; i &lt; 4; i++)
 
   <BugPattern type="BIT_AND">
     <ShortDescription>Incompatible bit masks</ShortDescription>
-    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <LongDescription>Incompatible bit masks in (e &amp; {2} == {3}) yields a constant result in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (a &amp; C) to D,
+<p> This method compares an expression of the form (e &amp; C) to D,
 which will always compare unequal
 due to the specific values of constants C and D.
 This may indicate a logic error or typo.</p>
@@ -5328,7 +5328,7 @@ to use '!= 0' instead of '&gt; 0'.
     <LongDescription>Check to see if ((...) &amp; 0) == 0 in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (a &amp; 0) to 0,
+<p> This method compares an expression of the form (e &amp; 0) to 0,
 which will always compare equal.
 This may indicate a logic error or typo.</p>
 ]]>
@@ -5337,10 +5337,10 @@ This may indicate a logic error or typo.</p>
 
   <BugPattern type="BIT_IOR">
     <ShortDescription>Incompatible bit masks</ShortDescription>
-    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <LongDescription>Incompatible bit masks in (e | {2} == {3}) yields constant result in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (a | C) to D.
+<p> This method compares an expression of the form (e | C) to D.
 which will always compare unequal
 due to the specific values of constants C and D.
 This may indicate a logic error or typo.</p>
