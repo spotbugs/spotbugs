@@ -28,10 +28,10 @@ import java.util.Iterator;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -78,8 +78,8 @@ public class CopyBuggySource {
 					.hasNext();) {
 				BugAnnotation ann = i.next();
 				SourceLineAnnotation sourceAnnotation;
-				if (ann instanceof PackageMemberAnnotation)
-					sourceAnnotation = ((PackageMemberAnnotation) ann)
+				if (ann instanceof BugAnnotationWithSourceLines)
+					sourceAnnotation = ((BugAnnotationWithSourceLines) ann)
 							.getSourceLines();
 				else if (ann instanceof SourceLineAnnotation)
 					sourceAnnotation = (SourceLineAnnotation) ann;
