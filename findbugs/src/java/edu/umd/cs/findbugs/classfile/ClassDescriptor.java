@@ -209,4 +209,18 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	public int hashCode() {
 		return className.hashCode();
 	}
+
+	/**
+     * Throw a ClassNotFoundException to indicate that class named
+     * by given ClassDescriptor cannot be found.
+     * The exception message is formatted in a way that can
+     * be decoded by ClassNotFoundExceptionParser.
+     * 
+     * @param classDescriptor ClassDescriptor naming a class that cannot be found
+     * @throws ClassNotFoundException
+     * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
+     */
+    public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    	throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
+    }
 }

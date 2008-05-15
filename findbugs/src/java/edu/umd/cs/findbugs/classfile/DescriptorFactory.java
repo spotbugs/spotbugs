@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -196,6 +197,16 @@ public class DescriptorFactory {
 	public FieldDescriptor getFieldDescriptor(FieldAnnotation ma) {
 		return getFieldDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getFieldName(), ma.getFieldSignature(), ma.isStatic());
 	}
+	/**
+     * Get a ClassDescriptor for the class described by given ObjectType object.
+     * 
+     * @param type an ObjectType
+     * @return a ClassDescriptor for the class described by the ObjectType
+     */
+    public static ClassDescriptor getClassDescriptor(ObjectType type) {
+    	return instance().getClassDescriptorForDottedClassName(type.getClassName());
+    }
+
 	public static ClassDescriptor createClassDescriptor(JavaClass c) {
         return DescriptorFactory.createClassDescriptorFromDottedClassName(c.getClassName());
     }

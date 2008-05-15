@@ -43,7 +43,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -342,8 +341,8 @@ public class Subtypes2 {
 			}
 			return true;
 		}
-		ClassDescriptor typeClassDescriptor = BCELUtil.getClassDescriptor(type);
-		ClassDescriptor possibleSuperclassClassDescriptor  = BCELUtil.getClassDescriptor(possibleSupertype);
+		ClassDescriptor typeClassDescriptor = DescriptorFactory.getClassDescriptor(type);
+		ClassDescriptor possibleSuperclassClassDescriptor  = DescriptorFactory.getClassDescriptor(possibleSupertype);
 		
 		// In principle, we should be able to answer no if the ObjectType objects
 		// are not equal and possibleSupertype is final.
@@ -554,8 +553,8 @@ public class Subtypes2 {
 
 	private ObjectType computeFirstCommonSuperclassOfObjectTypes(ObjectType a, ObjectType b) throws ClassNotFoundException {
 	    ObjectType firstCommonSupertype;
-	    ClassDescriptor aDesc = BCELUtil.getClassDescriptor(a);
-	    ClassDescriptor bDesc = BCELUtil.getClassDescriptor(b);
+	    ClassDescriptor aDesc = DescriptorFactory.getClassDescriptor(a);
+	    ClassDescriptor bDesc = DescriptorFactory.getClassDescriptor(b);
 
 	    ClassVertex aVertex = resolveClassVertex(aDesc);
 	    ClassVertex bVertex = resolveClassVertex(bDesc);
@@ -591,7 +590,7 @@ public class Subtypes2 {
 	    	firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().toDottedClassName());
 	    if (firstCommonSupertype.equals(ObjectType.OBJECT)) {
 	    	 // see if we can't do better
-	    	 ClassDescriptor objDesc= BCELUtil.getClassDescriptor(ObjectType.OBJECT);
+	    	 ClassDescriptor objDesc= DescriptorFactory.getClassDescriptor(ObjectType.OBJECT);
 	    	 aSuperTypes.retainAll(bSuperTypes);
 	    	 aSuperTypes.remove(objDesc);
 	    	 for(ClassDescriptor c : aSuperTypes) 
@@ -636,7 +635,7 @@ public class Subtypes2 {
 		ClassVertex cur = vertex;
 		while (cur != null) {
 			if (!cur.isResolved()) {
-				BCELUtil.throwClassNotFoundException(cur.getClassDescriptor());
+				ClassDescriptor.throwClassNotFoundException(cur.getClassDescriptor());
 			}
 			result.add(cur);
 			cur = cur.getDirectSuperclass();
@@ -994,7 +993,7 @@ public class Subtypes2 {
 		}
 
 		if (!typeVertex.isResolved()) {
-			BCELUtil.throwClassNotFoundException(classDescriptor);
+			ClassDescriptor.throwClassNotFoundException(classDescriptor);
 		}
 
 		assert typeVertex.isResolved();

@@ -107,13 +107,14 @@ public abstract class BCELUtil {
     }
 
 	/**
-	 * Get a ClassDescriptor for the class described by given ObjectType object.
-	 * 
+     * Get a ClassDescriptor for the class described by given ObjectType object.
+     * 
      * @param type an ObjectType
      * @return a ClassDescriptor for the class described by the ObjectType
+     * @deprecated Use {@link DescriptorFactory#getClassDescriptor(ObjectType)} instead
      */
     public static ClassDescriptor getClassDescriptor(ObjectType type) {
-    	return DescriptorFactory.instance().getClassDescriptorForDottedClassName(type.getClassName());
+        return DescriptorFactory.getClassDescriptor(type);
     }
     
     /**
@@ -125,8 +126,9 @@ public abstract class BCELUtil {
      * @param classDescriptor ClassDescriptor naming a class that cannot be found
      * @throws ClassNotFoundException
      * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
+     * @deprecated Use {@link ClassDescriptor#throwClassNotFoundException(ClassDescriptor)} instead
      */
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-    	throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
+        ClassDescriptor.throwClassNotFoundException(classDescriptor);
     }
 }
