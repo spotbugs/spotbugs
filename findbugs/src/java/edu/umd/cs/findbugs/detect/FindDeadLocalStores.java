@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
@@ -287,15 +288,34 @@ public class FindDeadLocalStores implements Detector {
 				if (isParameter)
 					propertySet.addProperty(DeadLocalStoreProperty.IS_PARAMETER);
 
+				Field shadowedField = null;
+				
+				for (Field f : javaClass.getFields()) {
+					if (f.getName().equals(name)) {
+						shadowedField = f;
+						propertySet.addProperty(DeadLocalStoreProperty.SHADOWS_FIELD);
+						break;
+					}
+				}
+				
 				// Is this a store to a parameter which was dead on entry to the
 				// method?
 				boolean parameterThatIsDeadAtEntry = isParameter
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 				if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 
+					int priority = storeLive ? LOW_PRIORITY : NORMAL_PRIORITY;
+					if (shadowedField != null) priority--;
 					pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
-							storeLive ? LOW_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
-									sourceFileName).add(lvAnnotation).addSourceLine(classContext, methodGen,
+							priority).addClassAndMethod(methodGen,
+									sourceFileName).add(lvAnnotation);
+					
+					if (shadowedField != null)
+						pendingBugReportAboutOverwrittenParameter
+							.addField(FieldAnnotation.fromBCELField(classContext.getJavaClass(), shadowedField))
+							.describe(FieldAnnotation.DID_YOU_MEAN_ROLE);
+					
+					pendingBugReportAboutOverwrittenParameter.addSourceLine(classContext, methodGen,
 											sourceFileName, location.getHandle());
 					complainedAbout.set(local);
 				}
@@ -372,12 +392,7 @@ public class FindDeadLocalStores implements Detector {
 					}
 				}
 
-				for (Field f : javaClass.getFields()) {
-					if (f.getName().equals(name)) {
-						propertySet.addProperty(DeadLocalStoreProperty.SHADOWS_FIELD);
-						break;
-					}
-				}
+				
 
 				if (typeOfValue instanceof BasicType || Type.STRING.equals(typeOfValue))
 					propertySet.addProperty(DeadLocalStoreProperty.BASE_VALUE);
@@ -482,6 +497,10 @@ public class FindDeadLocalStores implements Detector {
 									methodGen,
 									sourceFileName).add(lvAnnotation);
 
+					if (shadowedField != null)
+						bugInstance.addField(FieldAnnotation.fromBCELField(classContext.getJavaClass(), shadowedField))
+						.describe(FieldAnnotation.DID_YOU_MEAN_ROLE);
+					
 					// If in relaxed reporting mode, encode heuristic
 					// information.
 					if (FindBugsAnalysisFeatures.isRelaxedMode()) {
