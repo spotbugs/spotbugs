@@ -20,14 +20,21 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -57,10 +64,17 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 				&& getSigConstantOperand().equals("()V")) {
 			try {
 				if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
-					bugReporter.reportBug(new BugInstance(this, "SC_START_IN_CTOR", NORMAL_PRIORITY)
+					BugInstance bug = new BugInstance(this, "SC_START_IN_CTOR", Priorities.NORMAL_PRIORITY)
 							.addClassAndMethod(this)
-							.addCalledMethod(this)
-							.addSourceLine(this));
+							.addCalledMethod(this);
+					 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		             Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
+		             if (!directSubtypes.isEmpty()) {
+							for(ClassDescriptor sub : directSubtypes) 
+		                		bug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
+		                	bug.setPriority(Priorities.HIGH_PRIORITY);
+		                }
+					bugReporter.reportBug(bug.addSourceLine(this));
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
