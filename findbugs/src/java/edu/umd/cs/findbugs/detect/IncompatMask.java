@@ -208,7 +208,8 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 			// System.out.println("Match at offset " + getPC());
 			BugInstance bug = new BugInstance(this, t, NORMAL_PRIORITY)
 					.addClassAndMethod(this);
-			bug.addString("0x"+Long.toHexString(arg0)).addString("0x"+Long.toHexString(arg1));
+			if (!t.equals("BIT_AND_ZZ"))
+					bug.addString("0x"+Long.toHexString(arg0)).addString("0x"+Long.toHexString(arg1));
 			
 			bug.addSourceLine(this);
 			bugReporter.reportBug(bug);
