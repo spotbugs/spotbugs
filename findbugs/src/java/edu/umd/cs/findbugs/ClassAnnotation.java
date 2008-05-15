@@ -113,29 +113,33 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 */
 	@Override
 	public SourceLineAnnotation getSourceLines() {
-		if (sourceLines == null) {
-			// Create source line annotation for class on demand
-
-			AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-			if (currentAnalysisContext == null)
-				sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
-			else {
-			SourceInfoMap.SourceLineRange classLine = currentAnalysisContext
-				.getSourceInfoMap()
-				.getClassLine(className);
-
-			if (classLine == null)
-				sourceLines = SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
-			else sourceLines = new SourceLineAnnotation(
-					className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
-			}
-		}
+		if (sourceLines == null)
+			this.sourceLines = getSourceLinesForClass(className, sourceFileName);
 		return sourceLines;
 	}
 
-	/* ----------------------------------------------------------------------
+	public static SourceLineAnnotation getSourceLinesForClass(String className, String sourceFileName) {
+
+		// Create source line annotation for class on demand
+
+		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+
+		if (currentAnalysisContext == null)
+			return new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
+
+		SourceInfoMap.SourceLineRange classLine = currentAnalysisContext.getSourceInfoMap().getClassLine(className);
+
+		if (classLine == null)
+			return SourceLineAnnotation.getSourceAnnotationForClass(className, sourceFileName);
+		else
+			return new SourceLineAnnotation(className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
+	}
+
+	/*
+	 * ----------------------------------------------------------------------
 	 * XML Conversion support
-	 * ---------------------------------------------------------------------- */
+	 * ----------------------------------------------------------------------
+	 */
 
 	private static final String ELEMENT_NAME = "Class";
 

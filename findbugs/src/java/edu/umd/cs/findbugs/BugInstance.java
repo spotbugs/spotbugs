@@ -444,7 +444,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
 	 *         there is no SourceLineAnnotation
 	 */
-	private SourceLineAnnotation inspectPackageMemberSourceLines(PackageMemberAnnotation packageMember) {
+	private SourceLineAnnotation inspectPackageMemberSourceLines(BugAnnotationWithSourceLines packageMember) {
 		return (packageMember != null) ? packageMember.getSourceLines() : null;
 	}
 

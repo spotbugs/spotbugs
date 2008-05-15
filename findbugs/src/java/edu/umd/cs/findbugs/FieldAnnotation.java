@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETFIELD;
@@ -51,7 +52,9 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class FieldAnnotation extends PackageMemberAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "FIELD_DEFAULT";
+	public static final String DEFAULT_ROLE = "FIELD_DEFAULT";
+
+	public static final String DID_YOU_MEAN_ROLE = "FIELD_DID_YOU_MEAN";
 
 	private String fieldName;
 	private String fieldSig;
@@ -120,8 +123,18 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param field     the BCEL Field object
 	 * @return the FieldAnnotation
 	 */
-	public static FieldAnnotation fromBCELField(String className, Field field) {
+	public static FieldAnnotation fromBCELField(@DottedClassName String className, Field field) {
 		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
+	}
+	/**
+	 * Factory method. Construct from class name and BCEL Field object.
+	 *
+	 * @param className the name of the class which defines the field
+	 * @param field     the BCEL Field object
+	 * @return the FieldAnnotation
+	 */
+	public static FieldAnnotation fromBCELField(JavaClass jClass, Field field) {
+		return new FieldAnnotation(jClass.getClassName(), field.getName(), field.getSignature(), field.isStatic());
 	}
 
 	/**

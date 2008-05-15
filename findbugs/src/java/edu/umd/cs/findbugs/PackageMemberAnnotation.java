@@ -31,14 +31,11 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public abstract class PackageMemberAnnotation implements BugAnnotation {
+public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines implements BugAnnotation {
 	private static final long serialVersionUID = -8208567669352996892L;
 
 	protected final @DottedClassName String className;
-	protected  String sourceFileName;
 	protected  String description;
-	protected SourceLineAnnotation sourceLines;
-
 	/**
 	 * Constructor.
 	 *
@@ -56,22 +53,6 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		this.description = description;
 	}
 
-
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(e);
-		}
-	}
-
-	/**
-	 * Get the source file name.
-	 */
-	public final String getSourceFileName() {
-		return sourceFileName;
-	}
 
 	/**
 	 * Get the class name.
@@ -163,27 +144,6 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this}, null);
 	}
-
-	/**
-	 * Set a SourceLineAnnotation describing the source lines
-	 * where the package element is defined.
-	 */
-	public void setSourceLines(SourceLineAnnotation sourceLines) {
-		this.sourceLines = sourceLines;
-		sourceFileName = sourceLines.getSourceFile();
-	}
-
-	/**
-	 * Get the SourceLineAnnotation describing the source lines
-	 * where the method is defined.
-	 *
-	 * @return the SourceLineAnnotation, or null if there is no source information
-	 *         for this package element
-	 */
-	public SourceLineAnnotation getSourceLines() {
-		return sourceLines;
-	}
-
 
 	public boolean isSignificant() {
 		return true;

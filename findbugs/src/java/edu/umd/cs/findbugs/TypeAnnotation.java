@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * 
  * @see ClassAnnotation
  */
-public class TypeAnnotation implements BugAnnotation {
+public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	private static final long serialVersionUID = 1L;
 
 	public static final String DEFAULT_ROLE = "TYPE_DEFAULT";
@@ -60,16 +60,6 @@ public class TypeAnnotation implements BugAnnotation {
 	public TypeAnnotation(String typeDescriptor, String roleDescription) {
 		descriptor = typeDescriptor;
 		this.roleDescription = roleDescription;
-	}
-
-
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new AssertionError(e);
-		}
 	}
 
 	/**
