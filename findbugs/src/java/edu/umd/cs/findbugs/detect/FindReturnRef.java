@@ -45,13 +45,11 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	int r;
 	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
-	private BugReporter bugReporter;
 	private BugAccumulator bugAccumulator;
 	
 	//private LocalVariableTable variableNames;
 
 	public FindReturnRef(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
