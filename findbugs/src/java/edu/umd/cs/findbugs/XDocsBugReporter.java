@@ -75,7 +75,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		String missing = AbstractBugReporter.getMissingClassName(ex);
-		if (missing.charAt(0) == '[') return;
+		if (missing.isEmpty() || missing.charAt(0) == '[') return;
 		bugCollection.addMissingClass(missing);
 		super.reportMissingClass(ex);
 	}
