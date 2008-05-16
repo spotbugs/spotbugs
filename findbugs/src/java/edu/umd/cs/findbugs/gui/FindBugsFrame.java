@@ -103,6 +103,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
@@ -3253,9 +3254,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			Object leaf = ((DefaultMutableTreeNode) selPath.getLastPathComponent()).getUserObject();
 			if (leaf instanceof SourceLineAnnotation)
 				srcLine = (SourceLineAnnotation) leaf;
-
-			if (srcLine == null && leaf instanceof MethodAnnotation)
-				srcLine = ((MethodAnnotation) leaf).getSourceLines();
+			else if (leaf instanceof BugAnnotationWithSourceLines)
+				srcLine = ((BugAnnotationWithSourceLines) leaf).getSourceLines();
 
 			if (srcLine == null)
 				srcLine = selected.getPrimarySourceLineAnnotation();

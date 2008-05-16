@@ -74,7 +74,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ArrayList<String> elementStack;
 	private StringBuffer textBuffer;
 	private BugInstance bugInstance;
-	private PackageMemberAnnotation packageMemberAnnotation;
+	private BugAnnotationWithSourceLines bugAnnotationWithSourceLines;
 	private AnalysisError analysisError;
 //	private ClassHash classHash;
 	private ClassFeatureSet classFeatureSet;
@@ -232,10 +232,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					}
 				} else if (outerElement.equals("BugInstance")) {
 					parseBugInstanceContents(qName, attributes);
-				} else if (outerElement.equals("Method") || outerElement.equals("Field") || outerElement.equals("Class")) {
+				} else if (outerElement.equals("Method") || outerElement.equals("Field") || outerElement.equals("Class")
+						|| outerElement.equals("Type")) {
 					if (qName.equals("SourceLine")) {
 						// package member elements can contain nested SourceLine elements.
-						packageMemberAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
+						bugAnnotationWithSourceLines.setSourceLines(createSourceLineAnnotation(qName, attributes));
 					}
 				} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 					if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME) ||
@@ -388,10 +389,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    BugAnnotation bugAnnotation = null;
 	    if (qName.equals("Class")) {
 	    	String className = getRequiredAttribute(attributes, "classname", qName);
-	    	bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
+	    	bugAnnotation = bugAnnotationWithSourceLines = new ClassAnnotation(className);
 	    } else if (qName.equals("Type")) {
 	    	String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
-	    	bugAnnotation = new TypeAnnotation(typeDescriptor);
+	    	bugAnnotation = bugAnnotationWithSourceLines = new TypeAnnotation(typeDescriptor);
 	    } else if (qName.equals("Method") || qName.equals("Field")) {
 	    	String classname = getRequiredAttribute(attributes, "classname", qName);
 	    	String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
@@ -402,12 +403,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    			isStatic = "false"; // Hack for old data
 	    		}
 
-	    		bugAnnotation = packageMemberAnnotation = 
+	    		bugAnnotation = bugAnnotationWithSourceLines = 
 	    			new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
 
 	    	} else {
 	    		String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
-	    		bugAnnotation = packageMemberAnnotation = 
+	    		bugAnnotation = bugAnnotationWithSourceLines = 
 	    			new FieldAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
 	    	}
 

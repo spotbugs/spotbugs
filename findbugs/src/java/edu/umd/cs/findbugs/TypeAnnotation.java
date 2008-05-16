@@ -20,7 +20,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -60,6 +62,15 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	public TypeAnnotation(String typeDescriptor, String roleDescription) {
 		descriptor = typeDescriptor;
 		this.roleDescription = roleDescription;
+		if (descriptor.startsWith("L")) {
+			String className = typeDescriptor.substring(1, typeDescriptor.length()-1);
+			AnalysisContext context = AnalysisContext.currentAnalysisContext();
+			if (context != null) {
+				this.sourceFileName = context.lookupSourceFile(className);
+				this.sourceLines = ClassAnnotation.getSourceLinesForClass(className, sourceFileName);
+			}
+			else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		}
 	}
 
 	/**

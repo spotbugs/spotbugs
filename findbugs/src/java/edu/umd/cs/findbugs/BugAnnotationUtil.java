@@ -48,6 +48,12 @@ public abstract class BugAnnotationUtil {
 
 		if (addMessages) {
 			xmlOutput.openTag(elementName, attributeList);
+			if (annotation instanceof BugAnnotationWithSourceLines) {
+				SourceLineAnnotation src = ((BugAnnotationWithSourceLines) annotation).getSourceLines();
+				if (src != null)
+					src.writeXML(xmlOutput, addMessages, false);
+				
+			}
 			xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
 			xmlOutput.writeText(annotation.toString());
 			xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);

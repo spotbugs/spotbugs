@@ -24,6 +24,7 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -118,7 +119,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		return sourceLines;
 	}
 
-	public static SourceLineAnnotation getSourceLinesForClass(String className, String sourceFileName) {
+	public static SourceLineAnnotation getSourceLinesForClass(@DottedClassName String className, String sourceFileName) {
 
 		// Create source line annotation for class on demand
 
