@@ -106,10 +106,12 @@ public class FindDeadLocalStores implements Detector {
 		// Get the value of the property...
 		String exclLocalsProperty = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
 
-		// If we have one, then split its contents into a table...
+		// If we have one, then split its contents into a list...
 		if (exclLocalsProperty != null) {
-			EXCLUDED_LOCALS.addAll((List<String>) Arrays.asList(exclLocalsProperty.split(",")));
-			EXCLUDED_LOCALS.remove("");
+			for(String s : exclLocalsProperty.split(",")) {
+				String s2 = s.trim();
+				if (s2.length() > 0) EXCLUDED_LOCALS.add(s2);
+			}
 		}
 	}
 
@@ -400,8 +402,11 @@ public class FindDeadLocalStores implements Detector {
 				// Ignore assignments that were killed by a subsequent
 				// assignment.
 				boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);
-				if (killedBySubsequentStore)
+				if (killedBySubsequentStore) {
+					if (propertySet.containsProperty(DeadLocalStoreProperty.STORE_OF_NULL) 
+							|| propertySet.containsProperty(DeadLocalStoreProperty.STORE_OF_CONSTANT) ) continue;
 					propertySet.addProperty(DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE);
+				}
 
 				// Ignore dead assignments of null and 0.
 				// These often indicate defensive programming.
