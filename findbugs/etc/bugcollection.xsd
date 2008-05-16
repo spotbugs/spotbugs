@@ -45,6 +45,7 @@
 								<xs:element name="Type">
 									<xs:complexType>
 										<xs:sequence>
+											<xs:element ref="SourceLine" minOccurs="0" />
 											<xs:element ref="Message" minOccurs="0" />
 										</xs:sequence>
 										<xs:attribute name="descriptor" type="xs:string" use="required" />
