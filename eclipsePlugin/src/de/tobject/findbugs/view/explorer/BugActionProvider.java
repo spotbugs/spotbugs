@@ -32,7 +32,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 public class BugActionProvider extends CommonActionProvider {
 
-	public class MyAction extends Action {
+	public static class MyAction extends Action {
 		private IMarker marker;
 
 		public MyAction() {

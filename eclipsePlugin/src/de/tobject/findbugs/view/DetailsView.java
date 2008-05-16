@@ -256,13 +256,14 @@ public class DetailsView extends AbstractFindbugsView {
 		if (browser != null && !browser.isDisposed()) {
 			browser.setText(html);
 		} else {
-			if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
-				Rectangle size = htmlControl.getClientArea();
+			StyledText myHtmlControl = htmlControl;
+			if (myHtmlControl != null && !myHtmlControl.isDisposed() && presenter != null) {
+				Rectangle size = myHtmlControl.getClientArea();
 				html = presenter.updatePresentation(getSite().getShell()
 						.getDisplay(), html, presentation, size.width,
 						size.height);
-				htmlControl.setText(html);
-				TextPresentation.applyTextPresentation(presentation, htmlControl);
+				myHtmlControl.setText(html);
+				TextPresentation.applyTextPresentation(presentation, myHtmlControl);
 			}
 		}
 	}

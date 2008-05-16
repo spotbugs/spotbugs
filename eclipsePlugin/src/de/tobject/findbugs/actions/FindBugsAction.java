@@ -95,9 +95,8 @@ public class FindBugsAction implements IObjectActionDelegate {
 				Map<IProject, List<IResource>> projectMap =
 					ResourceUtils.getResourcesPerProject(sSelection);
 
-				Set<IProject> keySet = projectMap.keySet();
-				for (IProject project : keySet) {
-					work(project, projectMap.get(project));
+				for(Map.Entry<IProject, List<IResource>> e : projectMap.entrySet()) {
+					work(e.getKey(), e.getValue());
 				}
 			}
 		}
