@@ -199,7 +199,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		updateCount(0, numArchives);
 	}
 
-	int pass = -1;
+	int pass = 0;
 	public void startAnalysis(int numClasses)
 	{
 		pass++;
