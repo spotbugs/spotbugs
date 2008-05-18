@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
+import javax.annotation.Nonnull;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -97,6 +98,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -1758,11 +1760,11 @@ public class MainFrame extends FBFrame implements LogSync
 
 				label.setText(note.toString());
 			}
-			else if(value instanceof PackageMemberAnnotation){
-				PackageMemberAnnotation note = (PackageMemberAnnotation) value;
+			else if(value instanceof BugAnnotationWithSourceLines){
+				BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
 				final SourceLineAnnotation noteSrc = note.getSourceLines();
 				String srcStr = "";
-				if(sourceCodeExist(noteSrc) && noteSrc != null){
+				if(noteSrc != null && sourceCodeExist(noteSrc)){
 					int start = noteSrc.getStartLine();
 					int end = noteSrc.getEndLine();
 					if(start < 0 && end < 0)
@@ -1927,9 +1929,9 @@ public class MainFrame extends FBFrame implements LogSync
 	 *
 	 */
 	private class BugSummaryMouseListener extends MouseAdapter{
-		private BugInstance bugInstance;
-		private JLabel label;
-		private SourceLineAnnotation note;
+		private final BugInstance bugInstance;
+		private final JLabel label;
+		private final SourceLineAnnotation note;
 
 		BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label,  @NonNull SourceLineAnnotation note){
 			this.bugInstance = bugInstance;
@@ -1958,7 +1960,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param note
 	 * @return
 	 */
-	private boolean sourceCodeExist(SourceLineAnnotation note){
+	private boolean sourceCodeExist(@Nonnull SourceLineAnnotation note){
 		try{
 			sourceFinder.findSourceFile(note);
 		}catch(FileNotFoundException e){

@@ -35,6 +35,7 @@ import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -199,7 +200,9 @@ public final class SourceCodeDisplay implements Runnable {
 
 		int startLine = sourceAnnotation.getStartLine();
 		if (startLine == -1) return;
-		if (!sourceAnnotation.getClassName().equals(src.getTitle())) return;
+		String sourceFile = sourceAnnotation.getSourcePath();
+		String sourceFile2 = src.getSourceFile().getFullFileName();
+		if (!sourceFile2.endsWith(sourceFile)) return;
 		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
 	}
 

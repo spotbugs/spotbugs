@@ -707,9 +707,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		String classname = getClassName();
-		String packageName = "";
-		if (classname.indexOf('.') > 0) 
-			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
+		String sourcePath = getSourcePath();
+		
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", classname);
 		if (isPrimary) attributeList.addAttribute("primary", "true");
@@ -725,7 +724,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
-			attributeList.addAttribute("sourcepath", packageName.replace('.', '/')+sourceFile);
+			attributeList.addAttribute("sourcepath", sourcePath);
 			SourceFinder mySourceFinder = sourceFinder.get();
 			if (mySourceFinder != null) {
 				try {
@@ -755,6 +754,16 @@ public class SourceLineAnnotation implements BugAnnotation {
 			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 		}
 	}
+
+
+	public String getSourcePath() {
+		String classname = getClassName();
+	    String packageName = "";
+		if (classname.indexOf('.') > 0) 
+			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
+		String sourcePath = packageName.replace('.', '/')+sourceFile;
+	    return sourcePath;
+    }
 
 	/**
 	 * @param synthetic The synthetic to set.
