@@ -199,9 +199,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		updateCount(0, numArchives);
 	}
 
+	int pass = -1;
 	public void startAnalysis(int numClasses)
 	{
-		updateStage(edu.umd.cs.findbugs.L10N.getLocalString("progress.analyzing_classes", "Analyzing classes..."));
+		pass++;
+		String localString = edu.umd.cs.findbugs.L10N.getLocalString("progress.analyzing_classes", "Analyzing classes...");
+		updateStage(localString + ", pass " + pass + "/" + classesPerPass.length);
 		updateCount(0, numClasses);
 	}
 
@@ -267,11 +270,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		}
 	}
 
+	int [] classesPerPass;
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.FindBugsProgress#predictPassCount(int[])
 	 */
 	public void predictPassCount(int[] classesPerPass) {
-		// TODO Auto-generated method stub
+		this.classesPerPass = classesPerPass;
 
 	}
 }
