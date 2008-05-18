@@ -63,6 +63,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 	boolean equalsObjectIsAbstract = false;
 
 	boolean equalsMethodIsInstanceOfEquals = false;
+	boolean equalsReimplementesObjectEquals = false;
 
 	boolean hasCompareToObject = false;
 	boolean hasCompareToBridgeMethod = false;
@@ -222,7 +223,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 
 		// if (!hasFields) return;
 		if (hasHashCode && !hashCodeIsAbstract
-				&& !(hasEqualsObject || hasEqualsSelf)) {
+				&& !(hasEqualsObject && !equalsReimplementesObjectEquals || hasEqualsSelf)) {
 			int priority = LOW_PRIORITY;
 			if (usesDefaultEquals)
 				bugReporter.reportBug(new BugInstance(this,
@@ -233,8 +234,11 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 						"HE_HASHCODE_NO_EQUALS", priority).addClass(
 						getDottedClassName()).addMethod(hashCodeMethod));
 		}
-		if (!hasHashCode
-				&& (hasEqualsObject && !equalsObjectIsAbstract || hasEqualsSelf)) {
+		if (equalsObjectIsAbstract) {
+			// no errors reported
+		}
+		else if (!hasHashCode
+				&& (hasEqualsObject || hasEqualsSelf)) {
 			if (usesDefaultHashCode) {
 				int priority = HIGH_PRIORITY;
 				if (equalsMethodIsInstanceOfEquals)
@@ -318,6 +322,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		equalsOtherClass = null;
 	}
 
+	public static int opcode(byte code[], int offset) {
+		return code[offset] & 0xff;
+	}
 	@Override
 	public void visit(Field obj) {
 		int accessFlags = obj.getAccessFlags();
@@ -368,8 +375,41 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				else if (!obj.isNative()) {
 					Code code = obj.getCode();
 					byte[] codeBytes = code.getCode();
+					if (codeBytes.length == 9) {
+						int op0 = opcode(codeBytes, 0);
+						int op1 = opcode(codeBytes, 1);
+						int op2 = opcode(codeBytes, 2);
+						int op5 = opcode(codeBytes, 5);
+						int op6 = opcode(codeBytes, 6);
+						int op7 = opcode(codeBytes, 7);
+						int op8 = opcode(codeBytes, 8);
+						if ((op0 == ALOAD_0 && op1 == ALOAD_1 
+								|| op0 == ALOAD_1 && op1 == ALOAD_0)
+								&& (op2 == IF_ACMPEQ || op2 == IF_ACMPNE)
+								&& (op5 == ICONST_0 || op5 == ICONST_1)
+								&& op6 == IRETURN
+								&& (op7 == ICONST_0 || op7 == ICONST_1)
+								&& op8 == IRETURN)
+						 equalsMethodIsInstanceOfEquals = true;
+					} else if (codeBytes.length == 11) {
+							int op0 = opcode(codeBytes, 0);
+							int op1 = opcode(codeBytes, 1);
+							int op2 = opcode(codeBytes, 2);
+							int op5 = opcode(codeBytes, 5);
+							int op6 = opcode(codeBytes, 6);
+							int op9 = opcode(codeBytes, 9);
+							int op10 = opcode(codeBytes, 10);
+							if ((op0 == ALOAD_0 && op1 == ALOAD_1 
+									|| op0 == ALOAD_1 && op1 == ALOAD_0)
+									&& (op2 == IF_ACMPEQ || op2 == IF_ACMPNE)
+									&& (op5 == ICONST_0 || op5 == ICONST_1)
+									&& op6 == GOTO
+									&& (op9 == ICONST_0 || op9 == ICONST_1)
+									&& op10 == IRETURN)
+							 equalsMethodIsInstanceOfEquals = true;
 
-					if ((codeBytes.length == 5 && (codeBytes[1] & 0xff) == INSTANCEOF)
+
+					} else if ((codeBytes.length == 5 && (codeBytes[1] & 0xff) == INSTANCEOF)
 							|| (codeBytes.length == 15
 									&& (codeBytes[1] & 0xff) == INSTANCEOF && (codeBytes[11] & 0xff) == INVOKESPECIAL)) {
 						equalsMethodIsInstanceOfEquals = true;
