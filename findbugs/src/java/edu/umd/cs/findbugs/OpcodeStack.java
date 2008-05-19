@@ -1803,7 +1803,7 @@ public class OpcodeStack implements Constants2
 			         || clsName.equals("javax/servlet/http/ServletRequest")) {
 				 Item requestParameter = pop();
 				 pop();
-				 Item result = new Item("Ljava/lang/String");
+				 Item result = new Item("Ljava/lang/String;");
 				 result.setServletParameterTainted();
 				 result.source = XFactory.createReferencedXMethod(dbc);
 				String parameterName = null;
@@ -1818,7 +1818,7 @@ public class OpcodeStack implements Constants2
 			        && clsName.equals("javax/servlet/http/HttpServletRequest")
 			         || clsName.equals("javax/servlet/http/ServletRequest")) {
 				 pop();
-				 Item result = new Item("Ljava/lang/String");
+				 Item result = new Item("Ljava/lang/String;");
 				 result.setServletParameterTainted();
 				 result.source = XFactory.createReferencedXMethod(dbc);
 				result.setPC(dbc.getPC());
@@ -1829,7 +1829,7 @@ public class OpcodeStack implements Constants2
 			         || clsName.equals("javax/servlet/http/ServletRequest")) {
 				 Item requestParameter = pop();
 				 pop();
-				 Item result = new Item("Ljava/lang/String");
+				 Item result = new Item("Ljava/lang/String;");
 				 result.setServletParameterTainted();
 				 result.source = XFactory.createReferencedXMethod(dbc);
 				result.setPC(dbc.getPC());
