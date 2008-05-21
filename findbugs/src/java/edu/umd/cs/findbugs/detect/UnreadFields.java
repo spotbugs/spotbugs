@@ -119,9 +119,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
-	ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor("java/io/Externalizable");
-	ClassDescriptor serializable = DescriptorFactory.createClassDescriptor("java/io/Serializable");
-	ClassDescriptor remote = DescriptorFactory.createClassDescriptor("java/rmi/Remote");
+	ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor(java.io.Externalizable.class);
+	ClassDescriptor serializable = DescriptorFactory.createClassDescriptor(java.io.Serializable.class);
+	ClassDescriptor remote = DescriptorFactory.createClassDescriptor(java.rmi.Remote.class);
 	
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

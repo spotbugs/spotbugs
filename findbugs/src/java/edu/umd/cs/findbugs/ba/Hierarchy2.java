@@ -60,7 +60,7 @@ import edu.umd.cs.findbugs.util.Util;
 public class Hierarchy2 {
 
 	
-	public static final ClassDescriptor ObjectDescriptor =DescriptorFactory.createClassDescriptor("java/lang/Object");
+	public static final ClassDescriptor ObjectDescriptor =DescriptorFactory.createClassDescriptor(java.lang.Object.class);
 	/**
 	 * Look up the method referenced by given InvokeInstruction.
 	 * This method does <em>not</em> look for implementations in

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -34,7 +35,6 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -53,6 +53,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		
 	Map<ClassAnnotation, KindOfEquals> kindMap = new HashMap<ClassAnnotation, KindOfEquals>();
 	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
+	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
 	Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
 
 	Map<ClassAnnotation, MethodAnnotation> equalsMethod = new TreeMap<ClassAnnotation, MethodAnnotation>();
@@ -114,7 +115,20 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	               assert true;
                 }
 				
+			} if (kind == KindOfEquals.INSTANCE_OF_EQUALS  || kind == KindOfEquals.ABSTRACT_INSTANCE_OF) {
+				
+				ClassDescriptor classDescriptor = getClassDescriptor();
+				try {
+	                Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(classDescriptor);
+	                if (subtypes.size() > 1) {
+	                	classesWithInstanceOfBasedEquals.put(classDescriptor,subtypes);
+	                }
+                } catch (ClassNotFoundException e) {
+	               assert true;
+                }
+				
 			}
+	
 			ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
 			kindMap.put(classAnnotation, kind);
 			String superClassName = getSuperclassName().replace('/', '.');
@@ -166,7 +180,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		}
 		if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_1 ) {
 			alwaysTrue = true;
-			bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
+			bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 
 		}
 		if (seen == IF_ACMPEQ || seen == IF_ACMPNE) {
@@ -324,20 +338,44 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 
 
 			}
+			int overridden = 0, total = 0;
+			for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithInstanceOfBasedEquals.entrySet()) {
+				ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+				XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
+				if (xParent == null) continue;
+				KindOfEquals parentKind = kindMap.get(parentClass);
+				boolean isOverridden= false;
+				for(ClassDescriptor child : e.getValue()) {
+					if (child.equals(e.getKey())) continue;
+					XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
+					if (xChild == null) continue;
+					ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
+					KindOfEquals childKind = kindMap.get(childClass);
+					if (childKind != null) isOverridden = true;
+				}
+				total++;
+				if (isOverridden) overridden++;
+				System.out.println("IS_OVERRIDDEN: " + e.getKey().getClassName());
+			}
+			System.out.println("Instance of equals: " + total + " subclassed, " + overridden + " overrridden");
 			for (Map.Entry<KindOfEquals, Integer> e : count.entrySet()) {
 				System.out.println(e);
 			}
+			
 		}
+				
 		
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
 			ClassAnnotation childClass = e.getKey();
 			KindOfEquals childKind = kindMap.get(childClass);
 			ClassAnnotation parentClass = e.getValue();
 			KindOfEquals parentKind = kindMap.get(parentClass);
+					
 			if (parentKind != null && childKind == KindOfEquals.INSTANCE_OF_EQUALS && parentKind == KindOfEquals.INSTANCE_OF_EQUALS)
 				bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
 				        .add(childClass).add(equalsMethod.get(childClass)).add(equalsMethod.get(parentClass)));
 
 		}
+				
 	}
 }

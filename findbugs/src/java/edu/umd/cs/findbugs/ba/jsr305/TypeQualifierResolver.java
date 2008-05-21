@@ -39,13 +39,13 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
  * @author William Pugh
  */
 public class TypeQualifierResolver {
-	static ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor("javax/annotation/meta/TypeQualifier");
+	static ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
 	static ClassDescriptor typeQualifierNickname = DescriptorFactory
-	        .createClassDescriptor("javax/annotation/meta/TypeQualifierNickname");
+	        .createClassDescriptor(javax.annotation.meta.TypeQualifierNickname.class);
 	static ClassDescriptor typeQualifierDefault = DescriptorFactory
-    .createClassDescriptor("javax/annotation/meta/TypeQualifierDefault");
+    .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 	static ClassDescriptor elementTypeDescriptor = DescriptorFactory
-    .createClassDescriptor("java/lang/annotation/ElementType");
+    .createClassDescriptor(java.lang.annotation.ElementType.class);
 
 	/**
 	 * Resolve an AnnotationValue into a list of AnnotationValues

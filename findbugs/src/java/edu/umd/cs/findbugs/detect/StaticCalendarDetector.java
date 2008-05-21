@@ -83,12 +83,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	/**
 	 * {@link org.apache.bcel.generic.ObjectType} for {@link java.util.Calendar}
 	 */
-	private final ClassDescriptor calendarType = DescriptorFactory.createClassDescriptor("java/util/Calendar");
+	private final ClassDescriptor calendarType = DescriptorFactory.createClassDescriptor(java.util.Calendar.class);
 
 	/**
 	 * {@link org.apache.bcel.generic.ObjectType} for {@link java.text.DateFormat}
 	 */
-	private final ClassDescriptor dateFormatType = DescriptorFactory.createClassDescriptor("java/text/DateFormat");
+	private final ClassDescriptor dateFormatType = DescriptorFactory.createClassDescriptor(java.text.DateFormat.class);
 
 	/** Stores the current method */
 	private Method currentMethod = null;

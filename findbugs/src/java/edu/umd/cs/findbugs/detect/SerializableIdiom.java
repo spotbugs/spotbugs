@@ -199,7 +199,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			if (superXClass != null) {
 				superClassImplementsSerializable 
 				= AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(superXClass.getClassDescriptor(),
-						DescriptorFactory.createClassDescriptor("java/io/Serializable"));
+						DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
 				superClassHasVoidConstructor = false;
 				for (XMethod m : superXClass.getXMethods()) {
 					if (m.getName().equals("<init>")

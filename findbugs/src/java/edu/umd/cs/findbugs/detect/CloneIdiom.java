@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, StatelessDetector {
 
-	private ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor("java/lang/Cloneable");
+	private ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
 	
 	boolean isCloneable,hasCloneMethod;
 	MethodAnnotation cloneMethodAnnotation;

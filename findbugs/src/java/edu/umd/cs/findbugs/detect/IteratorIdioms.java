@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
-	private ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor("java/util/Iterator");
+	private ClassDescriptor iteratorDescriptor = DescriptorFactory.createClassDescriptor(java.util.Iterator.class);
 	private BugReporter bugReporter;
 	
 	
