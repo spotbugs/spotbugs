@@ -208,8 +208,8 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	protected void checkBugInstance(BugInstance bugInstance) {
 		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext();) {
 			BugAnnotation bugAnnotation = i.next();
-			if (bugAnnotation instanceof BugAnnotationWithSourceLines) {
-				BugAnnotationWithSourceLines pkgMember = (BugAnnotationWithSourceLines) bugAnnotation;
+			if (bugAnnotation instanceof PackageMemberAnnotation) {
+				PackageMemberAnnotation pkgMember = (PackageMemberAnnotation) bugAnnotation;
 				if (pkgMember.getSourceLines() == null) {
 					throw new IllegalStateException("Package member " + pkgMember +
 							" reported without source lines!");
