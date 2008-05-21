@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -62,7 +65,7 @@ public class SourceFinder {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-				 protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}
 	}
@@ -93,10 +96,7 @@ public class SourceFinder {
 			return "DirectorySourceRepository:" + baseDir;
 		}
 		public boolean contains(String fileName) {
-			File file = new File(getFullFileName(fileName));
-			boolean exists = file.exists();
-			if (DEBUG) System.out.println("Exists " + exists + " for " + file);
-			return exists;
+			return listRecursive(new File(baseDir), fileName) != null;
 		}
 
 		public boolean isPlatformDependent() {
@@ -104,11 +104,24 @@ public class SourceFinder {
 		}
 
 		public SourceFileDataSource getDataSource(String fileName) {
-			return new FileSourceFileDataSource(getFullFileName(fileName));
+			String result = listRecursive(new File(baseDir), fileName);
+			if (result == null) throw new IllegalArgumentException("No file found for " + fileName);
+			return new FileSourceFileDataSource(result);
 		}
+		
+		private @CheckForNull
+		String listRecursive(File dir, String sourceQualified) {
+			File f = new File(new File(baseDir), sourceQualified);
+			if (f.exists())
+				return f.getAbsolutePath();
 
-		private String getFullFileName(String fileName) {
-			return baseDir + File.separator + fileName;
+			for (File child : dir.listFiles())
+				if (child.isDirectory()) {
+					String result = listRecursive(child, sourceQualified);
+					if (result != null)
+						return result;
+				}
+			return null;
 		}
 	}
 
