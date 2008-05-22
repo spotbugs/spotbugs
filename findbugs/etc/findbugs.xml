@@ -227,6 +227,9 @@
   			speed="fast"
   			reports="FI_FINALIZER_NULLS_FIELDS,FI_FINALIZER_ONLY_NULLS_FIELDS" />
   			
+  <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" 
+            speed="fast"
+            reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -948,6 +951,7 @@
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />

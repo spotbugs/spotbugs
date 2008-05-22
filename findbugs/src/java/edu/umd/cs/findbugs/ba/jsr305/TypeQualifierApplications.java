@@ -647,7 +647,7 @@ public class TypeQualifierApplications {
 	 * @return TypeQualifierAnnotation directly applied to the parameter,
 	 *         or null if there is no directly applied TypeQualifierAnnotation
 	 */
-	private static @CheckForNull TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
+	public static @CheckForNull TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
 			TypeQualifierValue typeQualifierValue) {
 		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, xmethod, parameter);

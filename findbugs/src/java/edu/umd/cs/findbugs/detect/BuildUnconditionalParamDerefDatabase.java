@@ -36,10 +36,16 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Build database of unconditionally dereferenced parameters.
@@ -49,7 +55,12 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 public class BuildUnconditionalParamDerefDatabase {
 	public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
-
+	public final TypeQualifierValue nonnullTypeQualifierValue;
+	
+	public BuildUnconditionalParamDerefDatabase() {
+		ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+		this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
+	}
 	public void visitClassContext(ClassContext classContext) {
 		boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
 		if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(classContext.getJavaClass()))
@@ -117,6 +128,14 @@ public class BuildUnconditionalParamDerefDatabase {
 
 			if (VERBOSE_DEBUG) {
 				ClassContext.dumpDataflowInformation(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow,  classContext.getTypeDataflow(method));
+			}
+			for(int p : Util.setBitIteratable(unconditionalDerefSet)) {
+				System.out.println("Parameter " + p + " must be nonnull");
+				XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+
+				TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
+				System.out.println("qualifier: " + directTypeQualifierAnnotation);
+				
 			}
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
 			nonnullReferenceParameters += unconditionalDerefSet.cardinality();

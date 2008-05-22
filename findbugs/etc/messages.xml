@@ -97,6 +97,16 @@ This plugin contains all of the standard FindBugs detectors.
   **********************************************************************
    -->
 
+ <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations">
+     <Details>
+<![CDATA[
+<p> This detector finds inconsistencies between  type qualifiers directly
+applied to method parameters and uses of those method parameters. </p>
+]]>
+     </Details>
+   </Detector>
+
+
 	<Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
      <Details>
 <![CDATA[
@@ -4414,6 +4424,18 @@ be an exception path, since the default case is often infeasible.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE">
+    <ShortDescription>Parameter must be nonnull but is marked as nullable</ShortDescription>
+    <LongDescription>{2} must be nonnull but is marked as nullable</LongDescription>
+    <Details>
+<![CDATA[
+<p> This parameter is always used in a way that requires it to be nonnull,
+but the parameter is explicitly annotated as being Nullable. Either the use
+of the parameter or the annotation is wrong.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>Possible null pointer dereference</ShortDescription>
     <LongDescription>Possible null pointer dereference of {2.givenClass} in {1}</LongDescription>
@@ -4467,10 +4489,10 @@ be an exception path, since the default case is often infeasible.</p>
    <LongDescription>Possible null pointer dereference in {1} due to return value of called method</LongDescription>
    <Details>
       <![CDATA[
-<p> A reference value which is null on some exception control path is
-dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
-when the code is executed.&nbsp; The value may be null because it
-was returned from a method which is known to return possibly-null values.</p>
+<p> The return value from a method is dereferenced without a null check,
+and the return value of that method is one that should generally be checked
+for null.  This may lead to a <code>NullPointerException</code> when the code is executed.
+</p>
       ]]>
    </Details>
   </BugPattern>

@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.Iterator;
 
 /**
  * Method property recording which parameters are (or should be)
@@ -27,7 +28,7 @@ import java.util.BitSet;
  * 
  * @author David Hovemeyer
  */
-public class ParameterNullnessProperty {
+public class ParameterNullnessProperty{
 	/**
 	 * Maximum number of parameters that can be represented by a ParameterNullnessProperty.
 	 */
@@ -52,6 +53,39 @@ public class ParameterNullnessProperty {
 		return nonNullParamSet;
 	}
 
+	public Iterable<Integer> iterable() {
+		return new Iterable<Integer>() {
+
+			public Iterator<Integer> iterator() {
+	            return new Iterator<Integer>() {
+	            	int nextInt = 0;
+	            	{
+	            	  advanceNextInt();
+	            	}
+
+                    private void advanceNextInt() {
+	                    while (!isNonNull(nextInt) && nextInt < 32) nextInt++;
+	                      if (nextInt >= 32) nextInt = -1;
+                    }
+					public boolean hasNext() {
+	                   return nextInt >= 0;
+                    }
+
+					public Integer next() {
+	                    int result = nextInt;
+	                    nextInt++;
+	                    advanceNextInt();
+	                    return result;
+                    }
+
+					public void remove() {
+	                    throw new UnsupportedOperationException();
+	                    
+                    }};
+            }
+			
+		};
+	}
 	/**
 	 * Set the non-null param bitset.
 	 * 
