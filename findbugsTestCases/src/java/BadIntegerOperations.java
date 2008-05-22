@@ -145,6 +145,12 @@ class BadIntegerOperations {
 		return Math.abs(System.identityHashCode(this));
 	}
 
+	public int getNonNegativeHashCodeLowPriority256(Object x) {
+		return Math.abs(x.hashCode()) % 256;
+	}
+	public int getNonNegativeHashCode257(Object x) {
+		return Math.abs(x.hashCode()) % 257;
+	}
 	/** This method is OK */
 	public int getRandomIntFalsePositive(int n) {
 		return Math.abs(r.nextInt() % n);
