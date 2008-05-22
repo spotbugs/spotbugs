@@ -32,8 +32,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,32 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class Util {
 	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
 
+	
+	public static Iterable<Integer> setBitIteratable(final BitSet b) {
+		return new Iterable<Integer>(){
+			public Iterator<Integer> iterator() {
+	           return setBitIterator(b);
+            }};
+	}
+		
+	public static Iterator<Integer> setBitIterator(final BitSet b) {
+		return new Iterator<Integer>() {
+			int nextBit =   b.nextSetBit(0);
+			
+			public boolean hasNext() {
+	            return nextBit >= 0;
+            }
+
+			public Integer next() {
+	           int result = nextBit;
+	           nextBit = b.nextSetBit(nextBit+1);
+	           return result;
+            }
+
+			public void remove() {
+	            throw new UnsupportedOperationException(); 
+            }};
+	}
 	public static String repeat(String s, int number) {
 		StringBuilder b = new StringBuilder(s.length() * number);
 		for(int i = 0; i < number; i++)
