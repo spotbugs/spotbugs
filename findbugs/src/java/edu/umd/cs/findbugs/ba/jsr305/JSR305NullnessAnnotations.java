@@ -30,10 +30,10 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 public abstract class JSR305NullnessAnnotations {
 	
 	public static final ClassDescriptor CHECK_FOR_NULL =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/CheckForNull");
+		DescriptorFactory.createClassDescriptor(javax.annotation.CheckForNull.class);
 	public static final ClassDescriptor NONNULL =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/Nonnull");
+		DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
 	public static final ClassDescriptor NULLABLE =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/Nullable");
+		DescriptorFactory.createClassDescriptor(javax.annotation.Nullable.class);
 
 }

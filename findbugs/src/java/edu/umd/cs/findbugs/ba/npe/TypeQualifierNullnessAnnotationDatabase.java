@@ -64,10 +64,10 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotationDatabase {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.npe.tq.debug");
 
-	private final TypeQualifierValue nonnullTypeQualifierValue;
+	public final TypeQualifierValue nonnullTypeQualifierValue;
 	
 	public TypeQualifierNullnessAnnotationDatabase() {
-		ClassDescriptor nonnullClassDesc = DescriptorFactory.instance().getClassDescriptor("javax/annotation/Nonnull");
+		ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
 		this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
 	}
 	
@@ -149,9 +149,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		}
 	}
 	private static final ClassDescriptor PARAMETERS_ARE_NONNULL_BY_DEFAULT =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/ParametersAreNonnullByDefault");
+		DescriptorFactory.createClassDescriptor(javax.annotation.ParametersAreNonnullByDefault.class);
 	private static final ClassDescriptor RETURN_VALUES_ARE_NONNULL_BY_DEFAULT =
-		DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/ReturnValuesAreNonnullByDefault");
+		DescriptorFactory.createClassDescriptor(edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault.class);
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#addDefaultAnnotation(java.lang.String, java.lang.String, edu.umd.cs.findbugs.ba.NullnessAnnotation)
 	 */
