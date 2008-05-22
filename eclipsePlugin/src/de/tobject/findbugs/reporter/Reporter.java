@@ -20,8 +20,17 @@
 
 package de.tobject.findbugs.reporter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 
@@ -72,6 +81,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 * @param monitor         progress monitor
 	 */
 	public Reporter(IJavaProject project, IProgressMonitor monitor) {
+		super();
 		this.monitor = monitor;
 		this.project = project;
 		this.bugCollection = new SortedBugCollection();
@@ -99,6 +109,42 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	public ProjectStats getProjectStats() {
 		return bugCollection.getProjectStats();
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.AbstractBugReporter#reportQueuedErrors()
+	 */
+	@Override
+	public void reportQueuedErrors() {
+		// Report unique errors in order of their sequence
+		List<Error> errorList = new ArrayList<Error>(getQueuedErrors());
+		if(errorList.size() > 0) {
+			Collections.sort(errorList, new Comparator<Error>() {
+				public int compare(Error o1, Error o2) {
+					return o1.getSequence() - o2.getSequence();
+				}
+			});
+
+			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
+					"The following errors occurred during FindBugs analysis:", null);
+
+			for (Error error : errorList) {
+				status.add(new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, error
+						.getMessage(), error.getCause()));
+			}
+			FindbugsPlugin.getDefault().getLog().log(status);
+		}
+
+		Set<String> missingClasses = getMissingClasses();
+		if(missingClasses.size() > 0) {
+			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
+					"The following classes needed for FindBugs analysis were missing:", null);
+			for (String missingClass : missingClasses) {
+				status.add(new Status(IStatus.WARNING, FindbugsPlugin.PLUGIN_ID, missingClass));
+			}
+			FindbugsPlugin.getDefault().getLog().log(status);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
@@ -145,15 +191,12 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	@Override
 	public void reportAnalysisError(AnalysisError error) {
-		FindbugsPlugin.getDefault().logException(error.getException(),
-				"FindBugs analysis error: " + error.getMessage());
+		// nothing to do, see reportQueuedErrors()
 	}
 
 	@Override
 	public void reportMissingClass(String missingClass) {
-		FindbugsPlugin.getDefault().logWarning(
-				"FindBugs could not find a class that would be useful in analyzing your code: "
-						+ missingClass);
+		// nothing to do, see reportQueuedErrors()
 	}
 
 	public BugReporter getRealBugReporter() {
