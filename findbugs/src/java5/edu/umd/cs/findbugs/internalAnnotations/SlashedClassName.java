@@ -32,9 +32,8 @@ import javax.annotation.meta.When;
  * @author pugh
  */
 @Documented
-@TypeQualifier
+@TypeQualifier(applicableTo=CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SlashedClassName {
 	When when() default When.ALWAYS;
-	ElementType[] applyTo() default {};
 }

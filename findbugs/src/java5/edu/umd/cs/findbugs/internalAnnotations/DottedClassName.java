@@ -36,6 +36,4 @@ import javax.annotation.meta.When;
 @SlashedClassName(when=When.NEVER)
 @TypeQualifierNickname
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DottedClassName {
-	ElementType[] applyTo() default {};
-}
+public @interface DottedClassName { }
