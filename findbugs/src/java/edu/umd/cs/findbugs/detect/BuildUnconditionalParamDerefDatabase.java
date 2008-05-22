@@ -129,14 +129,6 @@ public class BuildUnconditionalParamDerefDatabase {
 			if (VERBOSE_DEBUG) {
 				ClassContext.dumpDataflowInformation(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow,  classContext.getTypeDataflow(method));
 			}
-			for(int p : Util.setBitIteratable(unconditionalDerefSet)) {
-				System.out.println("Parameter " + p + " must be nonnull");
-				XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-
-				TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
-				System.out.println("qualifier: " + directTypeQualifierAnnotation);
-				
-			}
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
 			nonnullReferenceParameters += unconditionalDerefSet.cardinality();
 			property.setNonNullParamSet(unconditionalDerefSet);
