@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantPool;
@@ -1168,7 +1170,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			@NonNull Set<Location> derefLocationSet, 
 			SortedSet<Location> doomedLocations,
 			ValueNumberDataflow vna, ValueNumber refValue,
-			BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref,
+			@CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref,
 			boolean npeIfStatementCovered) {
 		if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 			return;
@@ -1335,7 +1337,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			.addInt(parameterNumber+1).describe("INT_MAYBE_NULL_ARG");
 		if (storedField!= null)
 			bugInstance.addField(storedField).describe("FIELD_STORED");
-		bugInstance.add(variableAnnotation);
+		bugInstance.addOptionalAnnotation(variableAnnotation);
 		if (variableAnnotation instanceof FieldAnnotation)
 			bugInstance.describe("FIELD_CONTAINS_VALUE");
 		for (Location loc : derefLocationSet)

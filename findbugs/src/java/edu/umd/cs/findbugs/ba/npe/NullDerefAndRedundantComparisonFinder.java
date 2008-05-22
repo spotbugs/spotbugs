@@ -375,7 +375,9 @@ public class NullDerefAndRedundantComparisonFinder {
 
 			} catch (DataflowAnalysisException e2) {
 			}
-			if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
+			if (variableAnnotation instanceof LocalVariableAnnotation && ((LocalVariableAnnotation)variableAnnotation).getName().equals("?") 
+					&& method.getCode().getLocalVariableTable() != null)
+				variableAnnotation = null;
 
 
 
