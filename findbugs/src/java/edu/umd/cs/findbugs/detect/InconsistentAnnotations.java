@@ -57,8 +57,7 @@ final BugReporter reporter;
     		
     		
     		JavaClass jclass = classContext.getJavaClass();
-    		String className = jclass.getClassName();
-
+    		
     		for (Method method : jclass.getMethods()) {
     			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
     			ParameterNullnessProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());

@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.npe;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
@@ -50,7 +52,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 
 	/**
 	 * Subclasses should override this method to capture locations where
-	 * a redundant null comparision is performed.
+	 * a redundant null comparison is performed.
 	 * 
 	 * @param location        the Location of the redundant null check
 	 * @param redundantBranch the RedundantBranch
@@ -77,6 +79,6 @@ public interface NullDerefAndRedundantComparisonCollector {
 			SortedSet<Location> doomedLocations,
 			ValueNumberDataflow vna,
 			ValueNumber refValue,
-			BugAnnotation variableAnnotation,
+			@CheckForNull BugAnnotation variableAnnotation,
 			NullValueUnconditionalDeref deref, boolean npeIfStatementCovered);
 }
