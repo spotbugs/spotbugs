@@ -15,5 +15,4 @@ import javax.annotation.meta.TypeQualifier;
 @TypeQualifier
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Strict {
-	ElementType[] applyTo() default {};
 }

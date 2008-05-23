@@ -15,7 +15,6 @@ import javax.annotation.meta.When;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Bar {
 	When when() default When.ALWAYS;
-	ElementType[] applyTo() default {};
 
 	int iField() default 1;
 	char cField() default 'Z';
