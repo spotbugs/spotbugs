@@ -3683,8 +3683,8 @@ removing or deprecating the method with the similar but not identical signature.
   </BugPattern>
 
   <BugPattern type="NM_BAD_EQUAL">
-    <ShortDescription>Class defines equal(); should it be equals()?</ShortDescription>
-    <LongDescription>Class {0} defines equal(); should it be equals()?</LongDescription>
+    <ShortDescription>Class defines equal(Object); should it be equals(Object)?</ShortDescription>
+    <LongDescription>Class {0} defines equal(Object); should it be equals(Object)?</LongDescription>
     <Details>
 <![CDATA[
 <p> This class defines a method <code>equal(Object)</code>.&nbsp; This method does
