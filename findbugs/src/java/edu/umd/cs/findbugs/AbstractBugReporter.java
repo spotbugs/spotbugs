@@ -200,7 +200,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		logMissingClass(getMissingClassName(ex));
 	}
 
-	private boolean isValidMissingClassMessage(String message) {
+	static final protected boolean isValidMissingClassMessage(String message) {
 		if(message == null) {
 			return false;
 		}
