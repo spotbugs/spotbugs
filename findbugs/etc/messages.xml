@@ -100,7 +100,7 @@ This plugin contains all of the standard FindBugs detectors.
  <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations">
      <Details>
 <![CDATA[
-<p> This detector finds inconsistencies between  type qualifiers directly
+<p> This detector finds inconsistencies between type qualifiers directly
 applied to method parameters and uses of those method parameters. </p>
 ]]>
      </Details>
@@ -1512,7 +1512,7 @@ factory pattern to create these objects.</p>
     <LongDescription>HTTP cookie formed from untrusted input in {1}</LongDescription>
     <Details>
       <![CDATA[
-	<p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow  a HTTP response splitting
+	<p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow a HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
@@ -1864,7 +1864,7 @@ in order to compile it in later versions of Java.</p>
 <![CDATA[
 <p>This identifier is used as a keyword in later versions of Java. This code, and 
 any code that references this API, 
-will need to be changed  in order to compile it in later versions of Java.</p>
+will need to be changed in order to compile it in later versions of Java.</p>
 
 ]]>
     </Details>
@@ -1924,7 +1924,7 @@ will need to be changed  in order to compile it in later versions of Java.</p>
 <![CDATA[
   <p> This code creates a classloader,  which requires a security manager.
   If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the classloader creation  needs to occur inside a doPrivileged block.</p>
+  have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1935,7 +1935,7 @@ will need to be changed  in order to compile it in later versions of Java.</p>
 <![CDATA[
   <p> This code creates a classloader,  which requires a security manager.
   If this code will be granted security permissions, but might be invoked by code that does not
-  have security permissions, then the classloader creation  needs to occur inside a doPrivileged block.</p>
+  have security permissions, then the classloader creation needs to occur inside a doPrivileged block.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2019,7 +2019,7 @@ of source-only retention, the annotation isn't retained in the classfile and can
 
 
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
-    <ShortDescription>Method invokes dangerous method runFinalizersOnExit  </ShortDescription>
+    <ShortDescription>Method invokes dangerous method runFinalizersOnExit</ShortDescription>
     <LongDescription>{1} invokes dangerous method runFinalizersOnExit</LongDescription>
     <Details>
 <![CDATA[
@@ -2169,7 +2169,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   <p>A wrapped primitive value is unboxed and converted to another primitive type as part of the
 evaluation of a conditional ternary operator (the <code> b ? e1 : e2</code> operator). The
 semantics of Java mandate that if <code>e1</code> and <code>e2</code> are wrapped
-numeric values, the values are unboxed and converted/coerced to their common  type (e.g,
+numeric values, the values are unboxed and converted/coerced to their common type (e.g,
 if <code>e1</code> is of type <code>Integer</code> 
 and <code>e2</code> is of type <code>Float</code>, then <code>e1</code> is unboxed,
 converted to a floating point value, and boxed. See JLS Section 15.25.
@@ -2183,7 +2183,7 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
     <Details>
 <![CDATA[
   <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
-	boxing in a place where  an unboxed value is required, thus forcing the compiler
+	boxing in a place where an unboxed value is required, thus forcing the compiler
 to immediately undo the work of the boxing.
 </p>
 ]]>
@@ -2197,7 +2197,7 @@ to immediately undo the work of the boxing.
     <LongDescription>Primitive value is boxed then unboxed to perform primitive coercion in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p>A primitive boxed value constructed and  then immediately converted into a different primitive type
+  <p>A primitive boxed value constructed and then immediately converted into a different primitive type
 (e.g., <code>new Double(d).intValue()</code>). Just perform direct primitive coercion (e.g., <code>(int) d</code>).</p>
 ]]>
     </Details>
@@ -2533,7 +2533,7 @@ methods is not symmetric.
   <p> This class has an equals method that will be broken if it is inherited by subclasses.
 It compares a class literal with the class of the argument (e.g., in class <code>Foo</code>
 it might check if <code>Foo.class == o.getClass()</code>).
-It is better to check  if  <code>this.getClass() == o.getClass()</code>.
+It is better to check if <code>this.getClass() == o.getClass()</code>.
 </p>
 ]]>
     </Details>
@@ -3498,7 +3498,7 @@ opportunities to accidently define methods that do not override methods in their
     <LongDescription>The class name {0} shadows the simple name of implemented interface {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class/interface has a simple name that is identical to that of an implemented/extended  interface, except
+  <p> This class/interface has a simple name that is identical to that of an implemented/extended interface, except
 that the interface is in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>). 
 This can be exceptionally confusing, create lots of situations in which you have to look at import statements
 to resolve references and creates many
@@ -3802,7 +3802,7 @@ deserialized instance of the class.
     <Details>
 <![CDATA[
   <p> This class implements the <code>Serializable</code> interface, and defines a method
-  for custom  serialization/deserialization. But since that method isn't declared private,
+  for custom serialization/deserialization. But since that method isn't declared private,
   it will be silently ignored by the serialization/deserialization API.</p>
 ]]>
     </Details>
@@ -3823,7 +3823,7 @@ deserialized instance of the class.
   </BugPattern>
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR">
     <ShortDescription>Class is Serializable but its superclass doesn't define a void constructor</ShortDescription>
-    <LongDescription>{0} is Serializable  but its superclass doesn't define an accessible void constructor</LongDescription>
+    <LongDescription>{0} is Serializable but its superclass doesn't define an accessible void constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>Serializable</code> interface
@@ -4216,7 +4216,7 @@ inner object.&nbsp; This reference makes the instances
   made into a <em>static</em> inner class. Since the reference to the
    outer object is required during construction of the inner instance,
    the inner class will need to be refactored so as to
-   pass  a reference to the outer instance to the constructor
+   pass a reference to the outer instance to the constructor
    for the inner class.</p>
 ]]>
     </Details>
@@ -4340,7 +4340,7 @@ signals unexpected behavior by returning an atypical return value.
     <Details>
 <![CDATA[
    <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,
-something like  </p>
+something like </p>
 <blockquote>
 <pre>
 if (x &lt; 0)
@@ -4861,7 +4861,7 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
   </BugPattern>
 
   <BugPattern type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY">
-    <ShortDescription>Using pointer equality to compare  different types</ShortDescription>
+    <ShortDescription>Using pointer equality to compare different types</ShortDescription>
     <LongDescription>Using pointer equality to compare a {2} with a {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -5041,7 +5041,7 @@ Such assignments are useless, and may indicate a logic error or typo.
     x = x = 17;
   }
 </pre>
-<p>Assigning the same value to  a variable twice is useless, and may indicate a logic error or typo.</p>
+<p>Assigning the same value to a variable twice is useless, and may indicate a logic error or typo.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6443,7 +6443,7 @@ executed.
 <p>
 The code here uses <code>File.separator</code> 
 where a regular expression is required. This will fail on Windows
-platforms, where the  <code>File.separator</code> is a backslash, which is interpreted in a
+platforms, where the <code>File.separator</code> is a backslash, which is interpreted in a
 regular expression as an escape character. Amoung other options, you can just use
 <code>File.separatorChar=='\\' &amp; "\\\\" : File.separator</code> instead of
 <code>File.separator</code>
@@ -6908,50 +6908,62 @@ public @NonNegative Integer example(@Negative Integer value) {
   </BugPattern>
   
   <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK">
-    <ShortDescription>Value that might not carry a type qualifier reaches a use requiring that type qualifier</ShortDescription>
-    <LongDescription>Value that might not carry the @{2.excludingPackage} annotation reaches a use requiring that annotation</LongDescription>
+    <ShortDescription>Value that might not carry a type qualifier is always used in a way requires that type qualifier</ShortDescription>
+    <LongDescription>Value that might not carry the @{2.excludingPackage} annotation is always used in a way that requires that type qualifier</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      A value that might not carry a type qualifier annotation
-      reaches a use which requires that annotation.
+      A value that is annotated as possibility not being an instance of
+	the values denoted by the type qualifier, and the value is guaranteed to be used
+	in a way that requires values denoted by that type qualifier.
       </p>
-      
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
+    <ShortDescription>Value that might carry a type qualifier is always used in a way prohibits it from having that type qualifier</ShortDescription>
+    <LongDescription>Value that might carry the @{2.excludingPackage} annotation is always used in a way that prohibits it from having that type qualifier</LongDescription>
+    <Details>
+      <![CDATA[
       <p>
-      For example, consider the following method:
-      </p>
-      <blockquote>
-<pre>
-public @Untainted Object mustReturnUntainted(Object unknown) {
-    return unknown;
-}
-</pre>
-      </blockquote>
-      <p>
-      The <code>mustReturnUntainted</code> method is required to
-      return a value carrying the @Untainted annotation,
-      but a value not known to carry that annotation is returned.
+      A value that is annotated as possibility being an instance of
+	the values denoted by the type qualifier, and the value is guaranteed to be used
+	in a way that prohibits values denoted by that type qualifier.
       </p>
       ]]>
     </Details>
   </BugPattern>
   
-  <BugPattern type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK">
-    <ShortDescription>Unknown value reaches a use which forbids values carrying type qualifier annotation</ShortDescription>
-    <LongDescription>Unknown value reaches a use which forbids values carrying the @{2.excludingPackage} annotation</LongDescription>
+  <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK">
+    <ShortDescription>Explicit annotation inconsistent with use</ShortDescription>
+    <LongDescription>Value is required never be @{2.excludingPackage}, but is explicitly annotated as unknown with regards to @{2.excludingPackage}</LongDescription>
     <Details>
       <![CDATA[
       <p>
-      A value which might carry a type qualifier annotation reaches
-      a use which forbids values carrying that annotation.
-      </p> 
-      
-      <p>
-      TODO: example.
+      A value is used in a way that requires it to be never be a value denoted by a type qualifier, but
+	there is an explicit annotation stating that it is not known where the value is prohibited from having that type qualifier.
+	Either the usage or the annotation is incorrect.
       </p>
       ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK">
+    <ShortDescription>Explicit annotation inconsistent with use</ShortDescription>
+    <LongDescription>Value is required to always be @{2.excludingPackage}, but is explicitly annotated as unknown with regards to @{2.excludingPackage}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      A value is used in a way that requires it to be always be a value denoted by a type qualifier, but
+	there is an explicit annotation stating that it is not known where the value is required to have that type qualifier.
+	Either the usage or the annotation is incorrect.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+
+
+
   <BugPattern type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM">
     <ShortDescription>Doomed attempt to append to an object output stream</ShortDescription>
     <LongDescription>Doomed attempt to append to an object output stream in {1}</LongDescription>
@@ -7032,7 +7044,7 @@ public @Untainted Object mustReturnUntainted(Object unknown) {
   <BugCode abbrev="MSF" >Mutable servlet field</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
   <BugCode abbrev="Eq" >Problems with equals()</BugCode>
-  <BugCode abbrev="Co" >Problems with  compareTo()</BugCode>
+  <BugCode abbrev="Co" >Problems with compareTo()</BugCode>
   <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
   <BugCode abbrev="AM" >API misuse</BugCode>
   <BugCode abbrev="Dm" >Dubious method used</BugCode>
