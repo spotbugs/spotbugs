@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.meta.When;
+
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -39,6 +41,8 @@ import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowAnalysis;
@@ -48,6 +52,9 @@ import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.jsr305.ForwardTypeQualifierDataflowFactory;
 import edu.umd.cs.findbugs.ba.jsr305.SourceSinkInfo;
+import edu.umd.cs.findbugs.ba.jsr305.SourceSinkType;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValueSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -270,7 +277,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				ValueNumber vn = source.getValueNumber();
 				TypeQualifierValueSet backwardsFact = backwardDataflow.getFactAtLocation(location);
 				FlowValue backwardsFlowValue = backwardsFact.getValue(vn);
-				
+
 				if (DEBUG) {
 					System.out.println("Checking value source at " + location.toCompactString());
 					System.out.println("  back=" + backwardsFact);
@@ -280,7 +287,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 				if (!(backwardsFlowValue == FlowValue.ALWAYS || backwardsFlowValue == FlowValue.NEVER)) {
 					continue;
 				}
-				
+
 				// Check to see if this warning has already been reported because
 				// the dataflow values conflict directly with each other.
 				TypeQualifierValueSet forwardsFact = forwardDataflow.getFactAfterLocation(location);
@@ -290,18 +297,42 @@ public class CheckTypeQualifiers extends CFGDetector {
 				}
 
 				if (FlowValue.backwardsValueConflictsWithSource(backwardsFlowValue, source, typeQualifierValue)) {
+					String bugType =
+						(backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+
 					emitSourceWarning(
+							bugType,
 							methodDescriptor,
 							typeQualifierValue,
 							backwardsFlowValue,
 							backwardsFact,
 							source,
-							vn,
-							location
+							vn, location
 					);
-				}
-			}
+				} else if (source.getWhen() == When.UNKNOWN && source.getType() == SourceSinkType.PARAMETER) {
+
+					XMethod xmethod = XFactory.createXMethod(methodDescriptor);
+					int p = source.getParameter();
+					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, typeQualifierValue);
+					if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
+						String bugType =
+							(backwardsFlowValue == FlowValue.NEVER) ? "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+
+
+						emitSourceWarning(
+								bugType,
+								methodDescriptor,
+								typeQualifierValue,
+								backwardsFlowValue,
+								backwardsFact,
+								source,
+								vn, location
+						);
+					}
+
+				}}
 		}
+
 	}
 
 
@@ -438,15 +469,13 @@ public class CheckTypeQualifiers extends CFGDetector {
 	}
 
 	private void emitSourceWarning(
+			String bugType,
 			MethodDescriptor methodDescriptor,
 			TypeQualifierValue typeQualifierValue,
 			FlowValue backwardsFlowValue,
 			TypeQualifierValueSet backwardsFact,
 			SourceSinkInfo source,
-			ValueNumber vn,
-			Location location) {
-		String bugType =
-			(backwardsFlowValue == FlowValue.NEVER) ? "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" : "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK";
+			ValueNumber vn, Location location) {
 		
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
 			.addClassAndMethod(methodDescriptor)
