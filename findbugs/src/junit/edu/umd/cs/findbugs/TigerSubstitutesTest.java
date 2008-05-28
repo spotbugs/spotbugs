@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import junit.framework.TestCase;
 
 /**
@@ -30,7 +32,7 @@ import junit.framework.TestCase;
 public class TigerSubstitutesTest extends TestCase {
 	static class Foo {}
 
-	static Object bar;
+	@SuppressWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD") static Object bar;
 	static Object test = new Object() {
 		class Bar { }
 
