@@ -155,18 +155,9 @@ public class TypeQualifierApplications {
 	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		ElementType e = ElementType.PARAMETER;
-		for(AnnotationValue v : values) {
-			Object a = v.getValue("applyTo");
-			if (a instanceof Object[]) {
-				for(Object o2 : (Object[]) a)
-					if (o2 instanceof EnumValue) {
-						EnumValue ev = (EnumValue)o2;
-						if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
-							constructTypeQualifierAnnotation(result, v);
-					}
-			} else
-				constructTypeQualifierAnnotation(result, v);
-		}
+		for(AnnotationValue v : values) 
+			constructTypeQualifierAnnotation(result, v);
+		
 	}
 
 	/**
@@ -179,19 +170,11 @@ public class TypeQualifierApplications {
 	 * @param e      ElementType representing kind of annotated object
 	 */
 	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
+		if (!o.getElementType().equals(e)) return;
 		Collection<AnnotationValue> values = getDirectAnnotation(o);
-		for(AnnotationValue v : values) {
-			Object a = v.getValue("applyTo");
-			if (a instanceof Object[]) {
-				for(Object o2 : (Object[]) a)
-					if (o2 instanceof EnumValue) {
-						EnumValue ev = (EnumValue)o2;
-						if (ev.desc.getClassName().equals("java/lang/annotation/ElementType") && e.toString().equals(ev.value))
-							constructTypeQualifierAnnotation(result, v);
-					}
-			} else if (o.getElementType().equals(e))
+		for(AnnotationValue v : values) 
 				constructTypeQualifierAnnotation(result, v);
-		}
+		
 	}
 
 	/**
