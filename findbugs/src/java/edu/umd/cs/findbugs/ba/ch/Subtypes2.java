@@ -57,7 +57,6 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 @javax.annotation.ParametersAreNonnullByDefault
-@DefaultAnnotationForParameters(NonNull.class)
 public class Subtypes2 {
 	public static final boolean ENABLE_SUBTYPES2 = true; 
 	public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES =
