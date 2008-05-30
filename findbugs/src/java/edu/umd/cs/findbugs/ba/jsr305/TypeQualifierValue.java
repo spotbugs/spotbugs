@@ -28,7 +28,9 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -43,15 +45,22 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class TypeQualifierValue {
 	private static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
+	
+	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
+		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
+	private static final ClassDescriptor TYPE_QUALIFIER_ANNOTATION =
+		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/TypeQualifier");
 
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
 	private boolean isStrict;
+	private boolean isExclusive;
 
 	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
 		this.typeQualifier =  typeQualifier;
 		this.value = value;
 		this.isStrict = false; // will be set to true if this is a strict type qualifier value
+		this.isExclusive = false; // will be set to true if this is an exclusive type qualifier value
 	}
 
 //	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
@@ -83,6 +92,7 @@ public class TypeQualifierValue {
 		if (result != null) return result;
 		result = new TypeQualifierValue(desc, value);
 		determineIfQualifierIsStrict(desc, result);
+		determineIfQualifierIsExclusive(desc, result);
 		map.put(desc, value, result);
 		return result;
 	}
@@ -111,6 +121,52 @@ public class TypeQualifierValue {
 			System.out.println(result.isStrictQualifier() ? "yes" : "no");
 		}
 	}
+	
+	private static void determineIfQualifierIsExclusive(ClassDescriptor desc, TypeQualifierValue result) {
+		if (DEBUG) {
+			System.out.print("Checking to see if " + desc + " is exclusive...");
+		}
+		
+		boolean isExclusive = false;
+		
+		try {
+			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc); 
+
+			// If the value() method is annotated as @Exclusive, the type qualifier is exclusive.
+			for (XMethod xmethod : xclass.getXMethods()) {
+				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
+					isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+					break;
+				}
+			}
+			
+/*
+			// If the "exclusive" element is set to true in the type qualifier's
+			// @TypeQualifier annotation, then the type qualifier is exclusive.
+			// XXX: not supported currently in JSR 305 reference implementation
+			if (!isExclusive) {
+				AnnotationValue tqv = xclass.getAnnotation(TYPE_QUALIFIER_ANNOTATION);
+				assert tqv != null;
+				Object exclusiveVal = tqv.getValue("exclusive");
+				if (exclusiveVal != null && exclusiveVal instanceof Boolean && exclusiveVal.equals(Boolean.TRUE)) {
+					isExclusive = true;
+				}
+			}
+*/
+		} catch (MissingClassException e) {
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error looking up annotation class " + desc.toDottedClassName(), e);
+		}
+		
+		if (isExclusive) {
+			result.setIsExclusive();
+		}
+		
+		if (DEBUG) {
+			System.out.println(result.isExclusiveQualifier() ? "yes" : "no");
+		}
+	}
 
 	/**
 	 * Get the ClassDescriptor which specifies the type qualifier annotation.
@@ -137,6 +193,20 @@ public class TypeQualifierValue {
 	 */
 	public boolean isStrictQualifier() {
 		return isStrict;
+	}
+	
+    private void setIsExclusive() {
+    	this.isExclusive = true;
+    }
+	
+	/**
+	 * Return whether or not this TypeQualifierValue denotesw
+	 * an exclusive qualifier.
+	 * 
+	 * @return true if type qualifier is exclusive, false otherwise
+	 */
+	public boolean isExclusiveQualifier() {
+		return isExclusive;
 	}
 
 	@Override
