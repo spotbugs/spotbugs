@@ -154,7 +154,6 @@ public class TypeQualifierApplications {
 	 */
 	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
-		ElementType e = ElementType.PARAMETER;
 		for(AnnotationValue v : values) 
 			constructTypeQualifierAnnotation(result, v);
 		
@@ -537,11 +536,12 @@ public class TypeQualifierApplications {
 		if (o instanceof AbstractClassMember
 				&& (((AbstractClassMember)o).getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
 				return null; // synthetic methods don't get default annotations
-		TypeQualifierAnnotation result = null;
-
+		
 		ElementType elementType = o.getElementType();
-		while (o.getContainingScope() != null) {
+		while (true) {
 			o = o.getContainingScope();
+			if (o == null) return null;
+			TypeQualifierAnnotation result;
 
 			// Check direct applications of the type qualifier
 			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
@@ -549,16 +549,15 @@ public class TypeQualifierApplications {
 			result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (result != null) {
 				// Great - found an outer scope with a relevant annotation
-				break;
+				return result;
 			}
 
 			// Check FindBugs-specific default annotations
 			result = getFindBugsDefaultAnnotation(o, typeQualifierValue, elementType);
 			if (result != null) {
-				break;
+				return result;
 			}
 		}
-		return result;
 	}
 
 	/**
@@ -679,10 +678,10 @@ public class TypeQualifierApplications {
 		if ((xmethod.getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
 			return null;  // synthetic methods don't get default annotations
 		AnnotatedObject o = xmethod;
-
-		while (o.getContainingScope() != null) {
-			o = o.getContainingScope();
-
+		while (true) {
+			o =  o.getContainingScope();
+			if (o == null) return null;
+			
 			// Check for direct type qualifier annotation
 			Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 			getDirectApplications(applications, o, ElementType.PARAMETER);
@@ -699,6 +698,5 @@ public class TypeQualifierApplications {
 			}
 		}
 
-		return null;
 	}
 }
