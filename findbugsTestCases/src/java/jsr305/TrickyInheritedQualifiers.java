@@ -43,4 +43,13 @@ public class TrickyInheritedQualifiers {
 		//
 		y.f(q);
 	}
+	
+	//
+	// This violation is easier to find because the (irrelevant) annotation
+	// on parameter "r" informs FindBugs that the @Strict annotation needs
+	// to be checked.
+	//
+	public void violateWorksAccidentally(Y y, Object q, @Strict Object r) {
+		y.f(q);
+	}
 }
