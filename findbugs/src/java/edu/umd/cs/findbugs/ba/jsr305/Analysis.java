@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,11 +39,22 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
- * @author pugh
+ * Find relevant type qualifiers needing to be checked
+ * for a given method.
+ * 
+ * @author William Pugh
  */
 public class Analysis {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug.analysis");
 	
+	/**
+	 * Find relevant type qualifiers needing to be checked
+	 * for a given method.
+	 * 
+	 * @param methodDescriptor a method
+	 * @return Collection of relevant type qualifiers needing to be checked
+	 * @throws CheckedAnalysisException
+	 */
 	public static Collection<TypeQualifierValue> getRelevantTypeQualifiers(
 			MethodDescriptor methodDescriptor)
 			throws CheckedAnalysisException {
