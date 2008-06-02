@@ -48,9 +48,11 @@ public class TypeQualifierValue {
 	
 	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
 		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
+/*
 	private static final ClassDescriptor TYPE_QUALIFIER_ANNOTATION =
 		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/TypeQualifier");
-
+*/
+	
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
 	private boolean isStrict;
