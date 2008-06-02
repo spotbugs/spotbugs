@@ -2,7 +2,11 @@ package jsr305;
 
 /**
  * See if FindBugs does the right thing when
- * a call to a method
+ * a method with an inherited strict parameter
+ * annotation is called, passing an UNKNOWN
+ * value as the argument.  This is hard to check
+ * because the method containing the violation
+ * does not have any obvious annotations.
  */
 public class TrickyInheritedQualifiers {
 	static class X {
