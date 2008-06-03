@@ -142,4 +142,22 @@ public abstract class ClassName {
 		return false;
 	}
 
+	/**
+	 * Extract a slashed classname from a JVM classname or signature.
+	 * 
+	 * @param originalName JVM classname or signature
+	 * @return a slashed classname 
+	 */
+	public static @SlashedClassName String extractClassName(String originalName) {
+    	String name = originalName;
+    	if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';')
+    		return name;
+    	while (name.charAt(0) == '[')
+    		name = name.substring(1);
+    	if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
+    		name = name.substring(1, name.length() - 1);
+    	if (name.charAt(0) == '[') throw new IllegalArgumentException("Bad class name: " + originalName);
+    	return name;
+    }
+
 }

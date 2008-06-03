@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,25 +17,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba.ch;
+package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import junit.framework.TestCase;
 
 /**
  * @author pugh
  */
-public class SubtypesTest extends TestCase {
+public class ClassNameTest extends TestCase {
 
 	public void testExtractClassName() {
-		assertEquals("java/lang/Integer", Subtypes.extractClassName("Ljava/lang/Integer;"));
-		assertEquals("java/lang/Integer", Subtypes.extractClassName("[Ljava/lang/Integer;"));
-		assertEquals("java/lang/Integer", Subtypes.extractClassName("[[Ljava/lang/Integer;"));
-		assertEquals("java/lang/Integer", Subtypes.extractClassName("[[[Ljava/lang/Integer;"));
-		assertEquals("java/lang/Integer", Subtypes.extractClassName("java/lang/Integer"));
+		assertEquals("java/lang/Integer", ClassName.extractClassName("Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", ClassName.extractClassName("[Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", ClassName.extractClassName("[[Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", ClassName.extractClassName("[[[Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", ClassName.extractClassName("java/lang/Integer"));
 	}
+
 	public void testExtractClassNameBad() {
 		try {
-		Subtypes.extractClassName("L[Ljava/lang/Integer;");
+		ClassName.extractClassName("L[Ljava/lang/Integer;");
 		fail();
 		} catch (IllegalArgumentException e) {
 			assert true;

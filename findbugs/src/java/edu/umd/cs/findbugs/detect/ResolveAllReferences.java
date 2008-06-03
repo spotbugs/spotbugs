@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +24,13 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
@@ -41,12 +48,22 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 		if (defined == null) {
 			// System.out.println("Computing");
 			defined = new HashSet<String>();
-			Subtypes subtypes = AnalysisContext.currentAnalysisContext()
-					.getSubtypes();
-			Set<JavaClass> allClasses;
-			allClasses = subtypes.getAllClasses();
-			for (JavaClass c : allClasses)
-				addAllDefinitions(c);
+			
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			Collection<XClass> allClasses = subtypes2.getXClassCollection();
+			
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			
+			for (XClass c : allClasses) {
+				try {
+					JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, c.getClassDescriptor());
+					addAllDefinitions(jclass);
+				} catch (MissingClassException e) {
+					bugReporter.reportMissingClass(e.getClassDescriptor());
+				} catch (CheckedAnalysisException e) {
+					bugReporter.logError("Could not find class " + c.getClassDescriptor().toDottedClassName(), e);
+				}
+			}
 			// System.out.println("Done Computing: " + defined.contains("edu.umd.cs.findbugs.ba.IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP : Z"));
 		}
 	}
@@ -80,7 +97,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 	private String getClassName(JavaClass c, int classIndex) {
 		String name = c.getConstantPool().getConstantString(classIndex,
 				CONSTANT_Class);
-		return Subtypes.extractClassName(name).replace('/','.');
+		return ClassName.extractClassName(name).replace('/','.');
 	}
 
 	private String getMemberName(JavaClass c, String className,
