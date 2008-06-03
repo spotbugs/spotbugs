@@ -41,9 +41,8 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 /**
- * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
- * and convey them to FindNullDeref.
- * 
+ * Scan classes for type qualifier annotations
+ * and convey them to interested detectors (FindNullDeref, CheckTypeQualifiers, ...)
  */
 public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQualifiersDatabase
 	implements Detector, NonReportingDetector {
