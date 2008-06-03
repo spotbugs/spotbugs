@@ -31,12 +31,20 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 
+	private static final boolean USE_SUBTYPES2 = SystemProperties.getBoolean("iugr.subtypes2");
+	
 	private BugReporter bugReporter;
 	private boolean classIsFinal;
 //	private boolean methodIsVisibleToOtherPackages;
@@ -56,21 +64,21 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 
 
 	@Override
-		 public void visit(JavaClass obj) {
+	public void visit(JavaClass obj) {
 		classIsFinal = obj.isFinal();
 		reportedForThisClass = false;
 		classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 	}
 
 	@Override
-		 public void visit(Method obj) {
+	public void visit(Method obj) {
 		methodIsStatic = obj.isStatic();
 		state = 0;
 		sawGetClass = -100;
 	}
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		if (reportedForThisClass) return;
 
 
@@ -90,28 +98,58 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		case INVOKEVIRTUAL:
 			if (getClassConstantOperand().equals("java/lang/Class")
 					&& (getNameConstantOperand().equals("getResource")
-					|| getNameConstantOperand().equals("getResourceAsStream"))
+							|| getNameConstantOperand().equals("getResourceAsStream"))
 					&& sawGetClass + 10 >= getPC()) {
-				 Subtypes subtypes = AnalysisContext.currentAnalysisContext()
-					.getSubtypes();
-				 int priority = NORMAL_PRIORITY;
-				 if (prevOpcode == LDC && stringConstant != null && stringConstant.charAt(0)=='/')
-					 priority = LOW_PRIORITY;
-				 else {
-				 String myPackagename = getThisClass().getPackageName();
-				Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
-				if (mySubtypes.isEmpty()) priority++;
-				else for(JavaClass c : mySubtypes) {
-						if (!c.getPackageName().equals(myPackagename)) {
-							priority--;
-							break;
-						}	
+				int priority = NORMAL_PRIORITY;
+				if (prevOpcode == LDC && stringConstant != null && stringConstant.charAt(0)=='/')
+					priority = LOW_PRIORITY;
+				else {
+					if (USE_SUBTYPES2) {
+						try {
+							Subtypes2 subtypes2;
+							subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+
+							if (!subtypes2.hasSubtypes(getClassDescriptor())) {
+								priority++;
+							} else {
+								Set<ClassDescriptor> mySubtypes = subtypes2.getSubtypes(getClassDescriptor());
+
+								String myPackagename = getThisClass().getPackageName();
+
+								for (ClassDescriptor c : mySubtypes) {
+									if (c.equals(getClassDescriptor())) {
+										continue;
+									}
+									if (!c.getPackageName().equals(myPackagename)) {
+										priority--;
+										break;
+									}
+								}
+							}
+						} catch (ClassNotFoundException e) {
+							bugReporter.reportMissingClass(e);
+						}
+					} else {
+						Subtypes subtypes;
+						subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+						String myPackagename = getThisClass().getPackageName();
+						Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
+						if (mySubtypes.isEmpty()) {
+							priority++;
+						} else {
+							for(JavaClass c : mySubtypes) {
+								if (!c.getPackageName().equals(myPackagename)) {
+									priority--;
+									break;
+								}	
+							}
+						}
 					}
-				 }
+				}
 				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
 						priority)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+				.addClassAndMethod(this)
+				.addSourceLine(this));
 				reportedForThisClass = true;
 
 			} else if (state == 1
