@@ -644,6 +644,7 @@ public class Subtypes2 {
 
 	/**
 	 * Get known subtypes of given class.
+	 * The set returned <em>DOES</em> include the class itself.
 	 * 
 	 * @param classDescriptor ClassDescriptor naming a class
 	 * @return Set of ClassDescriptors which are the known subtypes of the class
@@ -658,11 +659,18 @@ public class Subtypes2 {
 		return result;
 	}
 
-	
+	/**
+	 * Determine whether or not the given class has any known subtypes.
+	 * 
+	 * @param classDescriptor ClassDescriptor naming a class
+	 * @return true if the class has subtypes, false if it has no subtypes
+	 * @throws ClassNotFoundException
+	 */
 	public boolean hasSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
 		Set<ClassDescriptor> subtypes = getDirectSubtypes(classDescriptor);
 		return !subtypes.isEmpty();
 	}
+	
 	/**
 	 * Get known subtypes of given class.
 	 * 
@@ -672,19 +680,27 @@ public class Subtypes2 {
 	 */
 	public Set<ClassDescriptor> getDirectSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
 		
-        ClassVertex startVertex = resolveClassVertex(classDescriptor);
-        
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
-     // Add all known subtype vertices to the work list
-    	Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(startVertex);
-    	while (i.hasNext()) {
-    		InheritanceEdge edge = i.next();
-    		result.add(edge.getSource().getClassDescriptor());
-    	}
-        
-        
-        return result;
+		ClassVertex startVertex = resolveClassVertex(classDescriptor);
+
+		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+		Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(startVertex);
+		while (i.hasNext()) {
+			InheritanceEdge edge = i.next();
+			result.add(edge.getSource().getClassDescriptor());
+		}
+
+
+		return result;
 	}
+	
+	/**
+	 * Get the set of common subtypes of the two given classes.
+	 * 
+	 * @param classDescriptor1  a ClassDescriptor naming a class
+	 * @param classDescriptor2  a ClassDescriptor naming another class
+	 * @return Set containing all common transitive subtypes of the two classes
+	 * @throws ClassNotFoundException
+	 */
 	public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2) throws ClassNotFoundException {
 		Set<ClassDescriptor> subtypes1 = getSubtypes(classDescriptor1);
 		Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(subtypes1);
@@ -692,6 +708,7 @@ public class Subtypes2 {
 		result.retainAll(subtypes2);
 		return result;
 	}
+	
 	/**
 	 * Get Collection of all XClass objects (resolved classes)
 	 * seen so far.
