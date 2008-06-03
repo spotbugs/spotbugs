@@ -46,9 +46,18 @@ import edu.umd.cs.findbugs.classfile.Global;
 @Deprecated // use Subtypes2 instead
 public class Subtypes {
 	private static final boolean DEBUG_HIERARCHY = false || SystemProperties.getBoolean("findbugs.debug.hierarchy");
-
+	
+	/**
+	 * This boolean property may be set to completely disable the use of
+	 * this (deprecated) class.  Assuming that tests verify that no breakage
+	 * results, we'll go ahead and completely eliminate this class. 
+	 */
+	public static final boolean DO_NOT_USE = SystemProperties.getBoolean("subtypes.donotuse");
 	
 	public Subtypes() {
+		if (DO_NOT_USE) {
+			throw new IllegalStateException("Subtypes is supposed to be disabled!");
+		}
 	}
 
 	/**

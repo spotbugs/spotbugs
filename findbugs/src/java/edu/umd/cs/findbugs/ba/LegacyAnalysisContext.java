@@ -160,6 +160,9 @@ public class LegacyAnalysisContext extends AnalysisContext {
 
 	@Override
 	public Subtypes getSubtypes() {
+		if (Subtypes.DO_NOT_USE) {
+			throw new IllegalArgumentException();
+		}
 		return subtypes;
 	}
 

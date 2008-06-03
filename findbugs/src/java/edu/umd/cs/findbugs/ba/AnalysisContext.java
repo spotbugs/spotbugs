@@ -322,7 +322,8 @@ public abstract class AnalysisContext {
 	 *         an application class or if the class cannot be located
 	 */
 	public boolean isApplicationClass(JavaClass cls) {
-		return getSubtypes().isApplicationClass(cls);
+		//return getSubtypes().isApplicationClass(cls);
+		return getSubtypes2().isApplicationClass(DescriptorFactory.createClassDescriptor(cls));
 	}
 
 	/**
@@ -333,13 +334,15 @@ public abstract class AnalysisContext {
 	 *         an application class or if the class cannot be located
 	 */
 	public boolean isApplicationClass(@DottedClassName String className) {
-		try {
-			JavaClass javaClass = lookupClass(className);
-			return isApplicationClass(javaClass);
-		} catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
-			return false;
-		}
+//		try {
+//			JavaClass javaClass = lookupClass(className);
+//			return isApplicationClass(javaClass);
+//		} catch (ClassNotFoundException e) {
+//			AnalysisContext.reportMissingClass(e);
+//			return false;
+//		}
+		ClassDescriptor classDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(className);
+		return getSubtypes2().isApplicationClass(classDesc);
 	}
 
 	public boolean isApplicationClass(ClassDescriptor desc) {

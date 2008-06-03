@@ -98,7 +98,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	};
 	
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {
-		new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
+//		new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
 		new ReflectionDatabaseFactory<Subtypes2>(Subtypes2.class),
 		new ReflectionDatabaseFactory<InnerClassAccessMap>(InnerClassAccessMap.class),
 		new ReflectionDatabaseFactory<CheckReturnAnnotationDatabase>(CheckReturnAnnotationDatabase.class),
@@ -126,6 +126,10 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 
 		for (IDatabaseFactory<?> databaseFactory : databaseFactoryList) {
 			databaseFactory.registerWith(analysisCache);
+		}
+		
+		if (!Subtypes.DO_NOT_USE) {
+			new ReflectionDatabaseFactory<Subtypes>(Subtypes.class).registerWith(analysisCache);
 		}
 	}
 

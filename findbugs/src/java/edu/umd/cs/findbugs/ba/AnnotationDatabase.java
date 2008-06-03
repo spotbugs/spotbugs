@@ -66,7 +66,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(Target.FIELD,
 				new HashMap<String, AnnotationEnum>());
-		subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+		if (!Subtypes.DO_NOT_USE) {
+			subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+		}
 
 	}
 
@@ -298,7 +300,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		return oldValue;
 	}
 	protected void addDefaultMethodAnnotation(String cName, AnnotationEnum annotation) {
-		subtypes.addNamedClass(cName);
+		if (!Subtypes.DO_NOT_USE) {
+			subtypes.addNamedClass(cName);
+		}
 
 		if (addClassOnly) return;
 
@@ -308,14 +312,18 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	}
 
 	protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
-		subtypes.addNamedClass(cName);
+		if (!Subtypes.DO_NOT_USE) {
+			subtypes.addNamedClass(cName);
+		}
 		if (addClassOnly) return;
 		XField m = XFactory.createXField(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
 
 	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
-		subtypes.addNamedClass(cName);
+		if (!Subtypes.DO_NOT_USE) {
+			subtypes.addNamedClass(cName);
+		}
 		if (addClassOnly) return;
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
@@ -326,7 +334,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		return true;
 	}
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
-		subtypes.addNamedClass(cName);
+		if (!Subtypes.DO_NOT_USE) {
+			subtypes.addNamedClass(cName);
+		}
 		if (addClassOnly) return;
 		SignatureParser parser = new SignatureParser(mSig);
 		if (param < 0 || param >= parser.getNumParameters())

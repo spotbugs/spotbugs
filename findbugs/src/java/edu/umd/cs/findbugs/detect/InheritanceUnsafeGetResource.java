@@ -43,8 +43,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 
-	private static final boolean USE_SUBTYPES2 = SystemProperties.getBoolean("iugr.subtypes2");
-	
 	private BugReporter bugReporter;
 	private boolean classIsFinal;
 //	private boolean methodIsVisibleToOtherPackages;
@@ -104,47 +102,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 				if (prevOpcode == LDC && stringConstant != null && stringConstant.charAt(0)=='/')
 					priority = LOW_PRIORITY;
 				else {
-					if (USE_SUBTYPES2) {
-						try {
-							Subtypes2 subtypes2;
-							subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-
-							if (!subtypes2.hasSubtypes(getClassDescriptor())) {
-								priority++;
-							} else {
-								Set<ClassDescriptor> mySubtypes = subtypes2.getSubtypes(getClassDescriptor());
-
-								String myPackagename = getThisClass().getPackageName();
-
-								for (ClassDescriptor c : mySubtypes) {
-									if (c.equals(getClassDescriptor())) {
-										continue;
-									}
-									if (!c.getPackageName().equals(myPackagename)) {
-										priority--;
-										break;
-									}
-								}
-							}
-						} catch (ClassNotFoundException e) {
-							bugReporter.reportMissingClass(e);
-						}
-					} else {
-						Subtypes subtypes;
-						subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
-						String myPackagename = getThisClass().getPackageName();
-						Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
-						if (mySubtypes.isEmpty()) {
-							priority++;
-						} else {
-							for(JavaClass c : mySubtypes) {
-								if (!c.getPackageName().equals(myPackagename)) {
-									priority--;
-									break;
-								}	
-							}
-						}
-					}
+					priority = adjustPriority(priority);
 				}
 				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
 						priority)
@@ -170,5 +128,57 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		prevOpcode = seen;
 
 	}
+
+
+
+	/**
+	 * Adjust the priority of a warning about to be reported.
+	 * 
+     * @param priority initial priority
+     * @return adjusted priority
+     */
+    private int adjustPriority(int priority) {
+	    if (Subtypes.DO_NOT_USE) {
+	    	// Use Subtypes2 instead of (deprecated) Subtypes
+	    	try {
+	    		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+
+	    		if (!subtypes2.hasSubtypes(getClassDescriptor())) {
+	    			priority++;
+	    		} else {
+	    			Set<ClassDescriptor> mySubtypes = subtypes2.getSubtypes(getClassDescriptor());
+
+	    			String myPackagename = getThisClass().getPackageName();
+
+	    			for (ClassDescriptor c : mySubtypes) {
+	    				if (c.equals(getClassDescriptor())) {
+	    					continue;
+	    				}
+	    				if (!c.getPackageName().equals(myPackagename)) {
+	    					priority--;
+	    					break;
+	    				}
+	    			}
+	    		}
+	    	} catch (ClassNotFoundException e) {
+	    		bugReporter.reportMissingClass(e);
+	    	}
+	    } else {
+	    	Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+	    	String myPackagename = getThisClass().getPackageName();
+	    	Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
+	    	if (mySubtypes.isEmpty()) {
+	    		priority++;
+	    	} else {
+	    		for(JavaClass c : mySubtypes) {
+	    			if (!c.getPackageName().equals(myPackagename)) {
+	    				priority--;
+	    				break;
+	    			}	
+	    		}
+	    	}
+	    }
+	    return priority;
+    }
 
 }

@@ -489,7 +489,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		if (type == null) return;
 		 int priority = NORMAL_PRIORITY;
 		if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
-		if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
+		if (!AnalysisContext.currentAnalysisContext()/*.getSubtypes()*/.isApplicationClass(type)) priority++;
 
 		if (type.isAbstract() || type.isInterface()) priority++;
 		potentialBugs.put(type.getClassName(), 
@@ -534,7 +534,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		int priority = NORMAL_PRIORITY;
 		if (sig.indexOf("Hash") >= 0) priority--;
 		if (type.isAbstract() || type.isInterface()) priority++;
-		if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
+		if (!AnalysisContext.currentAnalysisContext()/*.getSubtypes()*/.isApplicationClass(type)) priority++;
 
 
 		BugInstance bug = null;
