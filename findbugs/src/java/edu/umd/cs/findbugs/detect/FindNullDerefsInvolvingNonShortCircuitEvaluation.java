@@ -59,7 +59,7 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 
 	@Override
 	public void visit(Code code) {
-		boolean interesting = true;
+		boolean interesting = false;
 		if (interesting) {
 			// initialize any variables we want to initialize for the method
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
