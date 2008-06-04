@@ -805,6 +805,16 @@ null.  It is a slow detector.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where a null pointer exception might
+occur, and the use of non-short-circuit evaluation causes the usual techniques to fail.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream">
     <Details>
 <![CDATA[

@@ -44,6 +44,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import sun.tools.tree.NewInstanceExpression;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -127,6 +129,9 @@ public class OpcodeStack implements Constants2
 		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
 		public static final int SERVLET_REQUEST_TAINTED = 15;
 		public static final int NEWLY_ALLOCATED  = 16;
+		public static final int ZERO_MEANS_NULL  = 17;
+		public static final int NONZERO_MEANS_NULL  = 18;
+		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
 		private static final int IS_NULL_FLAG = 4;
@@ -247,6 +252,13 @@ public class OpcodeStack implements Constants2
 			case  NEWLY_ALLOCATED:
 				buf.append(", new");
 				break;
+			case  ZERO_MEANS_NULL:
+				buf.append(", zero means null");
+				break;
+			case  NONZERO_MEANS_NULL:
+				buf.append(", nonzero means null");
+				break;
+		
 		
 			case 0 :
 				break;
@@ -295,6 +307,9 @@ public class OpcodeStack implements Constants2
 		 public static Item merge(Item i1, Item i2) {
 			if (i1 == null) return i2;
 			if (i2 == null) return i1;
+			if (i1.getSpecialKind() == Item.ZERO_MEANS_NULL || i2.getSpecialKind() == Item.ZERO_MEANS_NULL 
+					|| i1.getSpecialKind() == Item.NONZERO_MEANS_NULL || i2.getSpecialKind() == Item.NONZERO_MEANS_NULL )
+				System.out.println("Found it");
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
 			m.flags = i1.flags & i2.flags;
@@ -518,6 +533,12 @@ public class OpcodeStack implements Constants2
 		public int getSpecialKind() {
 			return specialKind;
 		}
+		/**
+		 * @return Returns the specialKind.
+		 */
+		public boolean isBooleanNullnessValue() {
+			return specialKind == ZERO_MEANS_NULL || specialKind == NONZERO_MEANS_NULL;
+		}
 
 		/**
 		 * attaches a detector specified value to this item
@@ -726,6 +747,11 @@ public class OpcodeStack implements Constants2
 	public int getNumLastUpdates() {
 		return lastUpdate.size();
 	}
+	
+	boolean zeroOneComing = false;
+	boolean oneMeansNull;
+
+	
 	 public void sawOpcode(DismantleBytecode dbc, int seen) {
 		 int register;
 		 String signature;
@@ -733,6 +759,23 @@ public class OpcodeStack implements Constants2
 		 Constant cons;
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
+		 if (zeroOneComing)  {
+				top = false;
+				OpcodeStack.Item item = new Item("I");
+				if (oneMeansNull) item.setSpecialKind(Item.NONZERO_MEANS_NULL);
+				else  item.setSpecialKind(Item.ZERO_MEANS_NULL);
+				item.setPC(dbc.getPC() - 7);
+				item.setCouldBeZero(true);
+				jumpEntries.remove(dbc.getPC()+1);
+				jumpStackEntries.remove(dbc.getPC()+1);
+				push(item);
+				convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
+				zeroOneComing= false;
+				if (DEBUG) 
+					System.out.println("Updated to " + this);
+				return;
+			}
+	
 		 mergeJumps(dbc);
 		 needToMerge = true;
 		 try
@@ -741,6 +784,31 @@ public class OpcodeStack implements Constants2
 			 encountedTop = true;
 		    return;
 		 }
+		 
+		 
+		 if (seen == GOTO) {
+			 int nextPC = dbc.getPC() + 3;
+			 if (nextPC <= dbc.getMaxPC()) {
+
+				 int prevOpcode1 = dbc.getPrevOpcode(1);
+				 int prevOpcode2 = dbc.getPrevOpcode(2);
+				 try {
+					 int nextOpcode = dbc.getCodeByte(dbc.getPC() + 3);
+
+					 if ((prevOpcode1 == ICONST_0 || prevOpcode1 == ICONST_1) && (prevOpcode2 == IFNULL || prevOpcode2 == IFNONNULL)
+							 && (nextOpcode == ICONST_0 || nextOpcode == ICONST_1) && prevOpcode1 != nextOpcode) {
+						 oneMeansNull = prevOpcode1 == ICONST_0;
+						 if (prevOpcode2 != IFNULL) oneMeansNull = !oneMeansNull;
+						 zeroOneComing = true;
+					 }
+				 } catch(ArrayIndexOutOfBoundsException e) {
+					 throw e; // throw new ArrayIndexOutOfBoundsException(nextPC + " " + dbc.getMaxPC());
+				 }
+			 }
+		 }
+		 
+		 
+		 
 		 switch (seen) {
 		 case ICONST_1:
 			 convertJumpToOneZeroState = 1;
@@ -2016,6 +2084,7 @@ public void initialize() {
 	backwardsBranch = false;
 	lastUpdate.clear();
 	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
+	zeroOneComing = false;
 	setReachOnlyByBranch(false);
 }
 	 public int resetForMethodEntry(final DismantleBytecode v) {
@@ -2224,6 +2293,18 @@ public void initialize() {
 					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 				else if (value >= 0)
 					newValue.specialKind = Item.NON_NEGATIVE;
+			} else if (seen == IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+				newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
+				newValue.setPC(lhs.getPC());
+			} else if (seen == IAND && rhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+				newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
+				newValue.setPC(rhs.getPC());
+			} else if (seen == IOR && lhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+				newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
+				newValue.setPC(lhs.getPC());
+			} else if (seen == IOR && rhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+				newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
+				newValue.setPC(rhs.getPC());
 			}
 			} catch (ArithmeticException e) {
 				assert true; // ignore it
