@@ -307,9 +307,6 @@ public class OpcodeStack implements Constants2
 		 public static Item merge(Item i1, Item i2) {
 			if (i1 == null) return i2;
 			if (i2 == null) return i1;
-			if (i1.getSpecialKind() == Item.ZERO_MEANS_NULL || i2.getSpecialKind() == Item.ZERO_MEANS_NULL 
-					|| i1.getSpecialKind() == Item.NONZERO_MEANS_NULL || i2.getSpecialKind() == Item.NONZERO_MEANS_NULL )
-				System.out.println("Found it");
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
 			m.flags = i1.flags & i2.flags;
