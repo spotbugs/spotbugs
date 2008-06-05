@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -60,14 +61,8 @@ public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQu
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-
 		if (qualifiers == null) {
-			try {
-				qualifiers = Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
-			} catch (CheckedAnalysisException e) {
-				// should not happen
-				bugReporter.logError("Error getting directly relevant qualifiers database", e);
-			}
+			qualifiers = AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase();
 		}
 		
 		JavaClass javaClass = classContext.getJavaClass();
