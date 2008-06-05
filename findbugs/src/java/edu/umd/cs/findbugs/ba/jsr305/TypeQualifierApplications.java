@@ -159,7 +159,7 @@ public class TypeQualifierApplications {
 	 * @param o         a method
 	 * @param parameter a parameter (0 == first parameter)
 	 */
-	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
+	public static void getDirectApplications(Set<TypeQualifierAnnotation> result, XMethod o, int parameter) {
 		Collection<AnnotationValue> values = getDirectAnnotation(o, parameter);
 		for(AnnotationValue v : values) 
 			constructTypeQualifierAnnotation(result, v);
@@ -175,7 +175,7 @@ public class TypeQualifierApplications {
 	 * @param o      an AnnotatedObject
 	 * @param e      ElementType representing kind of annotated object
 	 */
-	private static void getDirectApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
+	public static void getDirectApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
 		if (!o.getElementType().equals(e)) return;
 		Collection<AnnotationValue> values = getDirectAnnotation(o);
 		for(AnnotationValue v : values) 
@@ -317,21 +317,27 @@ public class TypeQualifierApplications {
 	}
 
 	/**
-	 * Check to see if one of the FindBugs-specific default annotation mechanisms
-	 * is used on given AnnotatedObject to define a default value for
-	 * given TypeQualifierValue.
+	 * Look for a default type qualifier annotation.
 	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue a TypeQualifierValue
-	 * @param elementType        type of annotated element
+	 * @param elementType        type of element for which we're looking for a default annotation
 	 * @return default TypeQualifierAnnotation, or null if none
 	 */
-	private static @CheckForNull TypeQualifierAnnotation getFindBugsDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
+	private static @CheckForNull TypeQualifierAnnotation getDefaultAnnotation(AnnotatedObject o, TypeQualifierValue typeQualifierValue, ElementType elementType) {
+		//
+		// Try to find a default annotation using the standard JSR-305
+		// default annotation mechanism.
+		//
 		TypeQualifierAnnotation result;
 		Collection<AnnotationValue> values =  TypeQualifierResolver.resolveTypeQualifierDefaults(o.getAnnotations(), elementType);
 		TypeQualifierAnnotation tqa = extractAnnotation(values, typeQualifierValue);
 		if (tqa != null) return tqa;
 
+		//
+		// Try one of the FindBugs-specific default annotation mechanisms.
+		//
+		
 		if ((result = checkFindBugsDefaultAnnotation(FindBugsDefaultAnnotations.DEFAULT_ANNOTATION, o, typeQualifierValue)) != null) {
 			return result;
 		}
@@ -560,7 +566,7 @@ public class TypeQualifierApplications {
 			}
 
 			// Check FindBugs-specific default annotations
-			result = getFindBugsDefaultAnnotation(o, typeQualifierValue, elementType);
+			result = getDefaultAnnotation(o, typeQualifierValue, elementType);
 			if (result != null) {
 				return result;
 			}
@@ -699,7 +705,7 @@ public class TypeQualifierApplications {
 			}
 
 			// Check for FindBugs-specific default annotation
-			tqa = getFindBugsDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
+			tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
 			if (tqa != null) {
 				return tqa;
 			}
