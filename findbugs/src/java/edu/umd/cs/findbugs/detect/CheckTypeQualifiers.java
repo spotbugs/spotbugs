@@ -43,6 +43,9 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.InterproceduralCallGraph;
+import edu.umd.cs.findbugs.ba.ch.InterproceduralCallGraphEdge;
+import edu.umd.cs.findbugs.ba.ch.InterproceduralCallGraphVertex;
 import edu.umd.cs.findbugs.ba.jsr305.Analysis;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflow;
 import edu.umd.cs.findbugs.ba.jsr305.BackwardTypeQualifierDataflowAnalysis;
@@ -63,6 +66,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -78,11 +82,66 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
 	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
 
+	/**
+	 * This system property enables a second pass (following
+	 * discovery of directly-relevant type qualifiers)
+	 * that finds the effectively-relevant type qualifiers
+	 * for each method.
+	 * 
+	 * The distinction is that by finding <em>effectively</em>
+	 * relevant type qualifiers, we enable checking of qualifiers
+	 * on called methods which have effective inherited type
+	 * qualifiers.  This checking needs to be done even if there
+	 * are no direct type qualifier annotations on either the
+	 * caller or callee.
+	 * 
+	 * This step uses an interprocedural call graph.
+	 */
+	public static final boolean FIND_EFFECTIVE_RELEVANT_QUALIFIERS = 
+		SystemProperties.getBoolean("ctq.findeffective");
+
 	private final BugReporter bugReporter;
+	private boolean firstTime;
 
 	public CheckTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.firstTime = true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+	 */
+	@Override
+	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+		if (FIND_EFFECTIVE_RELEVANT_QUALIFIERS && firstTime) {
+			computeEffectiveRelevantTypeQualifiers();
+			firstTime = false;
+		}
+		
+		super.visitClass(classDescriptor);
+	}
+
+	/**
+     * @throws CheckedAnalysisException
+     */
+    private void computeEffectiveRelevantTypeQualifiers() throws CheckedAnalysisException {
+	    InterproceduralCallGraph callGraph = Global.getAnalysisCache().getDatabase(InterproceduralCallGraph.class);
+
+	    for (Iterator<InterproceduralCallGraphVertex> i = callGraph.vertexIterator(); i.hasNext();) {
+	    	InterproceduralCallGraphVertex caller = i.next();
+	    	
+	    	for (Iterator<InterproceduralCallGraphEdge> j = callGraph.outgoingEdgeIterator(caller); j.hasNext(); ) {
+	    		InterproceduralCallGraphVertex callee = j.next().getTarget();
+	    		
+	    		Collection<TypeQualifierValue> relevant;
+	    		
+	    		// XXX: try finding effective type qualifier annotations
+	    		// for ALL known TypeQualifierValues
+	    	}
+	    }
+	    
+	    // TODO: purge the interprocedural call graph
+    }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitMethodCFG(edu.umd.cs.findbugs.classfile.MethodDescriptor, edu.umd.cs.findbugs.ba.CFG)

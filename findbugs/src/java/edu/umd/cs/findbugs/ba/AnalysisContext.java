@@ -200,7 +200,8 @@ public abstract class AnalysisContext {
 		this.unreadFields = unreadFields;
 	}
 	
-	DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
+	/*
+	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
 	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
 		if (directlyRelevantTypeQualifiersDatabase == null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  not set");
 		return directlyRelevantTypeQualifiersDatabase;
@@ -209,6 +210,10 @@ public abstract class AnalysisContext {
 		if (this.directlyRelevantTypeQualifiersDatabase != null) throw new IllegalStateException("DirectlyRelevantTypeQualifiersDatabase  already set");
 		this.directlyRelevantTypeQualifiersDatabase = directlyRelevantTypeQualifiersDatabase;
 	}
+	*/
+	
+	public abstract DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase();
+	
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback
 	 * @see #getLookupFailureCallback()

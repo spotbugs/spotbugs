@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -302,5 +303,12 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	     return "";
     }
 	
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDirectlyRelevantTypeQualifiersDatabase()
+     */
+    @Override
+    public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
+    	throw new UnsupportedOperationException("not supported by LegacyAnalysisContext");
+    }
 
 }

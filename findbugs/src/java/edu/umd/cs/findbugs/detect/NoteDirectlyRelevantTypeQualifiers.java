@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -39,20 +40,36 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * Scan classes for type qualifier annotations
  * and convey them to interested detectors (FindNullDeref, CheckTypeQualifiers, ...)
  */
-public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQualifiersDatabase
+public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQualifiersDatabase
+	extends DismantleBytecode
 	implements Detector, NonReportingDetector {
+	
+	private BugReporter bugReporter;
+	private DirectlyRelevantTypeQualifiersDatabase qualifiers;
 
 	public NoteDirectlyRelevantTypeQualifiers(BugReporter bugReporter) {
-	
+		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
 
+		if (qualifiers == null) {
+			try {
+				qualifiers = Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
+			} catch (CheckedAnalysisException e) {
+				// should not happen
+				bugReporter.logError("Error getting directly relevant qualifiers database", e);
+			}
+		}
+		
 		JavaClass javaClass = classContext.getJavaClass();
 		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
@@ -63,11 +80,15 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
     public void visit(Code m) {
 		applicableApplications = new HashSet<TypeQualifierValue>();
 		XMethod xMethod = getXMethod();
+		
+		// Find the direct annotations on this method
 		updateApplicableAnnotations(xMethod);
+		
+		// Find direct annotations on called methods and loaded fields
 		super.visit(m);
 		
 		if (applicableApplications.size() > 0) {
-			qualifiers.put(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
+			qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}
 		
 		
@@ -110,6 +131,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DirectlyRelevantTypeQual
 	    Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
 	    Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
     }
-	public void report() {
+
+    public void report() {
 	}
 }

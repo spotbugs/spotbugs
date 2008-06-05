@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,18 +30,44 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
- * @author pugh
+ * Database of type qualfiers applied directly to methods.
+ * 
+ * @author William Pugh
+ * @author David Hovemeyer
  */
-public class DirectlyRelevantTypeQualifiersDatabase extends DismantleBytecode {
-	protected Map<MethodDescriptor, Collection<TypeQualifierValue>> qualifiers = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>> ();
+public class DirectlyRelevantTypeQualifiersDatabase {
 	
-	protected DirectlyRelevantTypeQualifiersDatabase() {
-		AnalysisContext.currentAnalysisContext().setDirectlyRelevantTypeQualifiersDatabase(this);
+	private Map<MethodDescriptor, Collection<TypeQualifierValue>> methodToDirectlyRelevantQualifiersMap;
+	
+	/*
+	 * Constructor.
+	 */
+	public DirectlyRelevantTypeQualifiersDatabase() {
+		methodToDirectlyRelevantQualifiersMap = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>> ();
 	}
+
+	/**
+	 * Get the directly-relevant type qualifiers applied to given
+	 * method.
+	 * 
+	 * @param m MethodDescriptor identifying a method
+	 * @return Collection of type qualifiers applied directly to that method
+	 */
 	public Collection<TypeQualifierValue> getDirectlyRelevantTypeQualifiers(MethodDescriptor m) {
-		Collection<TypeQualifierValue> result = qualifiers.get(m);
+		Collection<TypeQualifierValue> result = methodToDirectlyRelevantQualifiersMap.get(m);
 		if (result != null) 
 			return result;
 		return Collections.emptyList();
 	}
+
+	/**
+	 * Set the collection of directly-relevant type qualifiers for
+	 * a given method. 
+	 * 
+     * @param methodDescriptor MethodDescriptor identifying a method
+     * @param qualifiers       collection of directly-relevant type qualifiers for the method
+     */
+    public void setDirectlyRelevantTypeQualifiers(MethodDescriptor methodDescriptor, Collection<TypeQualifierValue> qualifiers) {
+    	methodToDirectlyRelevantQualifiersMap.put(methodDescriptor, qualifiers);
+    }
 }

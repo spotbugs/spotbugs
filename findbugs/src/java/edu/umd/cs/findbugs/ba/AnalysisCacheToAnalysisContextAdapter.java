@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
@@ -375,7 +376,25 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		}
 		return subtypes2;
 	}
-
 	
+	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDirectlyRelevantTypeQualifiersDatabase()
+	 */
+	@Override
+	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
+		if (directlyRelevantTypeQualifiersDatabase == null) {
+			try {
+				directlyRelevantTypeQualifiersDatabase =
+					Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
+			} catch (CheckedAnalysisException e) {
+				IllegalStateException ise = new IllegalStateException("Should not happen");
+				ise.initCause(e);
+				throw ise;
+			}
+		}
+		return directlyRelevantTypeQualifiersDatabase;
+	}
 	
 }
