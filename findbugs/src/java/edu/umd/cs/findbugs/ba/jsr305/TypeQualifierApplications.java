@@ -565,7 +565,7 @@ public class TypeQualifierApplications {
 				return result;
 			}
 
-			// Check FindBugs-specific default annotations
+			// Check default annotations
 			result = getDefaultAnnotation(o, typeQualifierValue, elementType);
 			if (result != null) {
 				return result;
@@ -704,7 +704,7 @@ public class TypeQualifierApplications {
 				return tqa;
 			}
 
-			// Check for FindBugs-specific default annotation
+			// Check for default annotation
 			tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
 			if (tqa != null) {
 				return tqa;
