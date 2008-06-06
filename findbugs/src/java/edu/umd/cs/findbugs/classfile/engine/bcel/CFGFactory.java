@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.PruneInfeasibleExceptionEdges;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -176,8 +177,10 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 					new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow);
 				pruner.execute();
 				changed  = changed || pruner.wasCFGModified();
+			} catch (MissingClassException e) {
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
 			} catch (DataflowAnalysisException e) {
-				// FIXME: should report the error
+				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError("unable to extract type analysis", e);
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 			}
