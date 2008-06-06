@@ -44,7 +44,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
-import sun.tools.tree.NewInstanceExpression;
+//import sun.tools.tree.NewInstanceExpression;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
