@@ -59,7 +59,7 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 
 	@Override
 	public void visit(Code code) {
-		boolean interesting = false;
+		boolean interesting = true;
 		if (interesting) {
 			// initialize any variables we want to initialize for the method
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
@@ -161,11 +161,11 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 				}
 
 			} catch (DataflowAnalysisException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
 			} catch (CFGBuilderException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
 			}
 
 		}
