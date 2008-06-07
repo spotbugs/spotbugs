@@ -83,10 +83,20 @@ public class Naming extends PreorderVisitor implements Detector {
 			return false;
 		if (m1.getClassName().equals(m2.getClassName()))
 			return false;
-
-		if (m1.getName().equalsIgnoreCase(m2.getName()) && !m1.getName().equals(m2.getName())
-		        && m1.getSignature().equals(m2.getSignature()))
+		if (m1.getName().equals(m2.getName())) return false;
+		if (m1.getName().equalsIgnoreCase(m2.getName()) 
+		        && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature())))
 			return true;
+		return false;
+	}
+	public static boolean confusingMethodNamesWrongPackage(XMethod m1, XMethod m2) {
+		if (m1.isStatic() != m2.isStatic())
+			return false;
+		if (m1.getClassName().equals(m2.getClassName()))
+			return false;
+
+		if (!m1.getName().equals(m2.getName()))
+			return false;
 		if (m1.getSignature().equals(m2.getSignature()))
 			return false;
 		if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature())))
@@ -119,7 +129,8 @@ public class Naming extends PreorderVisitor implements Detector {
 			return false;
 		for (XMethod m2 : others) {
 			try {
-				if (confusingMethodNames(m, m2) && Repository.instanceOf(m.getClassName(), m2.getClassName())) {
+				if ((confusingMethodNames(m, m2) || confusingMethodNamesWrongPackage(m,m2)) 
+						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
 					WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
 
 					int priority = HIGH_PRIORITY;
@@ -306,15 +317,15 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
 	}
 
+	
 
 	@Override
 	public void visit(JavaClass obj) {
 		String name = obj.getClassName();
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
+		for(String p : obj.getClassName().split("[.]")) if (p.length() == 1) return;
 		classIsPublicOrProtected = obj.isPublic() || obj.isProtected();
-		if (baseClassName.length() == 1)
-			return;
 		if (Character.isLetter(baseClassName.charAt(0)) && !Character.isUpperCase(baseClassName.charAt(0))
 		        && baseClassName.indexOf("_") == -1)
 			bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", classIsPublicOrProtected ? NORMAL_PRIORITY
