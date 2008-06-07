@@ -622,7 +622,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					}
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
-					throw new MissingClassException(e);
+					return tmpFact;
 				}
 			}
 		} else if (!instanceOfType.equals(NullType.instance())) {
@@ -644,7 +644,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					return tmpFact;
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
-					throw new MissingClassException(e);
+					return tmpFact;
 				}
 			}
 		}
