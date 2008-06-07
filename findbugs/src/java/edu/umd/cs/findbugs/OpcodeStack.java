@@ -658,9 +658,25 @@ public class OpcodeStack implements Constants2
 		return "Ljava/lang/Throwable;";
 	}
 	public void mergeJumps(DismantleBytecode dbc) {
-
 		if (!needToMerge) return;
 		needToMerge = false;
+		if (dbc.getPC() == zeroOneComing)  {
+			 Item oldItem = pop();
+			 top = false;
+			 OpcodeStack.Item item = new Item("I");
+			 if (oneMeansNull) item.setSpecialKind(Item.NONZERO_MEANS_NULL);
+			 else  item.setSpecialKind(Item.ZERO_MEANS_NULL);
+			 item.setPC(dbc.getPC() - 8);
+			 item.setCouldBeZero(true);
+
+			 push(item);
+			 
+			 zeroOneComing= -1;
+			 if (DEBUG) 
+				 System.out.println("Updated to " + this);
+			 return;
+		 }
+
 		boolean stackUpdated = false;
 		if (!isTop() && (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3)) {
 			 pop();
@@ -681,7 +697,7 @@ public class OpcodeStack implements Constants2
 			
 			if (DEBUG2) {
 				System.out.println("XXXXXXX " + isReachOnlyByBranch());
-				System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
+				System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
 				System.out.println(" current lvValues " + lvValues);
 				System.out.println(" merging stack entry " + jumpStackEntry);
 				System.out.println(" current stack values " + stack);
@@ -745,7 +761,7 @@ public class OpcodeStack implements Constants2
 		return lastUpdate.size();
 	}
 	
-	boolean zeroOneComing = false;
+	int zeroOneComing = -1;
 	boolean oneMeansNull;
 
 	
@@ -754,26 +770,13 @@ public class OpcodeStack implements Constants2
 		 String signature;
 		 Item it, it2, it3;
 		 Constant cons;
+	
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
-		 if (zeroOneComing)  {
-				top = false;
-				OpcodeStack.Item item = new Item("I");
-				if (oneMeansNull) item.setSpecialKind(Item.NONZERO_MEANS_NULL);
-				else  item.setSpecialKind(Item.ZERO_MEANS_NULL);
-				item.setPC(dbc.getPC() - 7);
-				item.setCouldBeZero(true);
-				jumpEntries.remove(dbc.getPC()+1);
-				jumpStackEntries.remove(dbc.getPC()+1);
-				push(item);
-				convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
-				zeroOneComing= false;
-				if (DEBUG) 
-					System.out.println("Updated to " + this);
-				return;
-			}
+		 
 	
 		 mergeJumps(dbc);
+
 		 needToMerge = true;
 		 try
 		 {
@@ -796,7 +799,8 @@ public class OpcodeStack implements Constants2
 							 && (nextOpcode == ICONST_0 || nextOpcode == ICONST_1) && prevOpcode1 != nextOpcode) {
 						 oneMeansNull = prevOpcode1 == ICONST_0;
 						 if (prevOpcode2 != IFNULL) oneMeansNull = !oneMeansNull;
-						 zeroOneComing = true;
+						 zeroOneComing = nextPC+1;
+						 convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 					 }
 				 } catch(ArrayIndexOutOfBoundsException e) {
 					 throw e; // throw new ArrayIndexOutOfBoundsException(nextPC + " " + dbc.getMaxPC());
@@ -2081,7 +2085,7 @@ public void initialize() {
 	backwardsBranch = false;
 	lastUpdate.clear();
 	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
-	zeroOneComing = false;
+	zeroOneComing = -1;
 	setReachOnlyByBranch(false);
 }
 	 public int resetForMethodEntry(final DismantleBytecode v) {
@@ -2165,7 +2169,7 @@ public void initialize() {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
 		    AnalysisContext.logError("Can't get stack offset " + stackOffset 
 		    		+ " from " + stack.toString() +" @ " + v.getPC() + " in " 
-		    		+ v.getFullyQualifiedMethodName(), new IllegalArgumentException());
+		    		+ v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset + " is not a value stack offset"));
 			return new Item("Lfindbugs/OpcodeStackError;");
 
 		}
