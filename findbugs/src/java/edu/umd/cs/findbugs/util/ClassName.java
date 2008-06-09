@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -159,5 +160,4 @@ public abstract class ClassName {
     	if (name.charAt(0) == '[') throw new IllegalArgumentException("Bad class name: " + originalName);
     	return name;
     }
-
 }

@@ -91,13 +91,6 @@ public class TypeQualifierApplications {
 	public static void clearInstance() {
 		instance.remove();
 	}
-	
-	public static Collection<TypeQualifierValue> getAllKnownTypeQualifierValues() {
-		HashSet<TypeQualifierValue> allKnown = new HashSet<TypeQualifierValue>();
-
-		
-		return allKnown;
-	}
 
 	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> getEffectiveParameterAnnotations() {
 	    return instance.get().effectiveParameterAnnotations;

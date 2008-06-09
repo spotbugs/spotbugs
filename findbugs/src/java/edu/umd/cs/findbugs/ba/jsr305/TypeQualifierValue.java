@@ -30,9 +30,12 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A TypeQualifierValue is a pair specifying a type qualifier annotation
@@ -48,10 +51,6 @@ public class TypeQualifierValue {
 	
 	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
 		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
-/*
-	private static final ClassDescriptor TYPE_QUALIFIER_ANNOTATION =
-		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/TypeQualifier");
-*/
 	
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
@@ -67,15 +66,27 @@ public class TypeQualifierValue {
 
 //	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
 
-	private static ThreadLocal<DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>> instance =
-		new ThreadLocal<DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>>() {
+	static class Data {
+		/**
+		 * Cache in which constructed TypeQualifierValues are interned.
+		 */
+		DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> typeQualifierMap =
+			new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>();
+		
+		/**
+		 * Set of all known TypeQualifierValues.
+		 */
+		Set<TypeQualifierValue> allKnownTypeQualifiers =
+			new HashSet<TypeQualifierValue>();
+	}
+
+	private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
 		@Override
-        protected
-        DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> initialValue() {
-			return new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue>();
+		protected Data initialValue() {
+			return new Data();
 		}
 	};
-
+	
 	public static void clearInstance() {
 		instance.remove();
 	}
@@ -89,14 +100,24 @@ public class TypeQualifierValue {
 	 * @return an interned TypeQualifierValue object
 	 */
 	public static @NonNull TypeQualifierValue getValue(ClassDescriptor desc, Object value) {
-		DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get();
+		DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue> map = instance.get().typeQualifierMap;
 		TypeQualifierValue result = map.get(desc, value);
 		if (result != null) return result;
 		result = new TypeQualifierValue(desc, value);
 		determineIfQualifierIsStrict(desc, result);
 		determineIfQualifierIsExclusive(desc, result);
 		map.put(desc, value, result);
+		instance.get().allKnownTypeQualifiers.add(result);
 		return result;
+	}
+	
+	/**
+	 * Get Collection of all known TypeQualifierValues.
+	 * 
+	 * @return Collection of all known TypeQualifierValues
+	 */
+	public static Collection<TypeQualifierValue> getAllKnownTypeQualifiers() {
+		return Collections.unmodifiableSet(instance.get().allKnownTypeQualifiers);
 	}
 
 	private static void determineIfQualifierIsStrict(ClassDescriptor desc, TypeQualifierValue result) {

@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -38,12 +40,14 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 public class DirectlyRelevantTypeQualifiersDatabase {
 	
 	private Map<MethodDescriptor, Collection<TypeQualifierValue>> methodToDirectlyRelevantQualifiersMap;
+	private Set<TypeQualifierValue> allKnownQualifiers;
 	
 	/*
 	 * Constructor.
 	 */
 	public DirectlyRelevantTypeQualifiersDatabase() {
 		methodToDirectlyRelevantQualifiersMap = new HashMap<MethodDescriptor, Collection<TypeQualifierValue>> ();
+		allKnownQualifiers = new HashSet<TypeQualifierValue>();
 	}
 
 	/**
@@ -59,6 +63,15 @@ public class DirectlyRelevantTypeQualifiersDatabase {
 			return result;
 		return Collections.emptyList();
 	}
+	
+	/**
+	 * Return a set of all known type qualifiers.
+	 * 
+     * @return set of all known type qualifiers
+     */
+    public Set<TypeQualifierValue> getAllKnownQualifiers() {
+	    return Collections.unmodifiableSet(allKnownQualifiers);
+    }
 
 	/**
 	 * Set the collection of directly-relevant type qualifiers for
@@ -69,5 +82,6 @@ public class DirectlyRelevantTypeQualifiersDatabase {
      */
     public void setDirectlyRelevantTypeQualifiers(MethodDescriptor methodDescriptor, Collection<TypeQualifierValue> qualifiers) {
     	methodToDirectlyRelevantQualifiersMap.put(methodDescriptor, qualifiers);
+    	allKnownQualifiers.addAll(qualifiers);
     }
 }

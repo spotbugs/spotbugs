@@ -152,6 +152,15 @@ applied to method parameters and uses of those method parameters. </p>
 ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph">
+    <Details>
+      <![CDATA[
+      <p>Builds the interprocedural call graph.</p>
+      ]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>
 <![CDATA[

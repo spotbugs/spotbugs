@@ -37,6 +37,10 @@
 		<Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
 	</SplitPass>
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph"/>
+		<Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue"/>
 		<Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
 	</SplitPass>
@@ -113,6 +117,10 @@
 			hidden="true" /> 
 	      
   <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" 
+	        speed="fast"
+	        reports=""
+			hidden="true" /> 
+  <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph" 
 	        speed="fast"
 	        reports=""
 			hidden="true" /> 
