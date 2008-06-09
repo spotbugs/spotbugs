@@ -30,17 +30,14 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>build</target>
+                    <target>classes</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
                 </action>
-                <action name="run">
-                    <target>runfindbugs</target>
-                </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>build</target>
+                    <target>classes</target>
                 </action>
             </ide-actions>
             <export>
@@ -66,7 +63,6 @@
                     <ide-action name="build"/>
                     <ide-action name="rebuild"/>
                     <ide-action name="clean"/>
-                    <ide-action name="run"/>
                 </context-menu>
             </view>
             <subprojects/>
