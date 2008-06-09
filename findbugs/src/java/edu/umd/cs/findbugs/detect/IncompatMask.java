@@ -122,6 +122,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case SIPUSH:
 			return;  /* will pick up value via sawInt */
 		case LDC:
+		case LDC_W:
 			return;  /* will pick up value via sawInt */
 
 		case IAND:

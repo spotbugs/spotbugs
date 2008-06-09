@@ -53,6 +53,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 
 		switch (seen) {
 		case LDC:
+		case LDC_W:
 			constantOnTOS = true;
 			// stringOnTop = stringConstant;
 			return;

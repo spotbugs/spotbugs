@@ -45,7 +45,8 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements Detec
 	}
 	@Override
     public void sawClass() {
-		if (getOpcode() == LDC) process(getClassConstantOperand());
+		int opcode = getOpcode();
+		if ((opcode == LDC) || (opcode == LDC_W)) process(getClassConstantOperand());
 	}
 	@Override
 	public void sawOpcode(int seen) {

@@ -475,7 +475,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 		// Formatter.format
 
 		if(fsState == FS_STATE_NONE) {
-			if(seen == LDC) {
+			if((seen == LDC) || (seen == LDC_W)) {
 				Constant c = getConstantRefOperand();
 				if (c instanceof ConstantString) {
 					fsFmtStr = getStringConstantOperand();
