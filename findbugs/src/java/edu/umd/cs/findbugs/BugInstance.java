@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import java.util.List;
 
 /**
  * An instance of a bug pattern.
@@ -453,6 +454,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public Iterator<BugAnnotation> annotationIterator() {
 		return annotationList.iterator();
+	}
+	
+	/**
+	 * Get List of all bug annotations.
+	 */
+	public List<BugAnnotation> getAnnotations() {
+		return Collections.unmodifiableList(annotationList);
 	}
 
 	/**

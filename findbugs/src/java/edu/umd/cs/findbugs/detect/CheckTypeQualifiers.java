@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -68,6 +70,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
+import java.util.List;
 
 /**
  * Check JSR-305 type qualifiers.
@@ -439,7 +442,14 @@ public class CheckTypeQualifiers extends CFGDetector {
 		// Issue warning
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
 			.addClassAndMethod(methodDescriptor)
-			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_TYPE_QUALIFIER");
+		
+		if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+			List<BugAnnotation> annotations = warning.getAnnotations();
+			ClassAnnotation qualifier = (ClassAnnotation) annotations.get(annotations.size() - 1);
+			qualifier.setExtra("(" + typeQualifierValue.value.toString() + ")");
+		}
+		
 
 		// Hopefully we can find the conflicted value in a local variable
 		if (locationWhereDoomedValueIsObserved != null) {
