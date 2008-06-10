@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2006, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,6 +70,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private int bugReporterType = PRINTING_REPORTER;
 	private boolean relaxedReportingMode = false;
 	private boolean useLongBugCodes = false;
+	private boolean showProgress = false;
 	private boolean xmlWithMessages = false;
 	private boolean xmlWithAbridgedMessages = false;
 	private String stylesheet = null;
@@ -102,6 +103,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 		addSwitch("-quiet", "suppress error messages");
 		addSwitch("-longBugCodes", "report long bug codes");
+		addSwitch("-progress", "display progress in terminal window");
 		addOption("-release", "release name", "set the release name of the analyzed application");
 		addSwitch("-experimental", "report all warnings including experimental bug patterns");
 		addSwitch("-low", "report all warnings");
@@ -190,6 +192,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			priorityThreshold = Detector.EXP_PRIORITY;
 		else if (option.equals("-longBugCodes"))
 			useLongBugCodes = true;
+		else if (option.equals("-progress")) {
+			showProgress = true;
+		}
 		else if (option.equals("-timestampNow"))
 			project.setTimestamp(System.currentTimeMillis());
 		else if (option.equals("-low"))
@@ -444,6 +449,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 		findBugs.setBugReporter(bugReporter);
 		findBugs.setProject(project);
+		
+		if (showProgress) {
+			findBugs.setProgressCallback(new TextUIProgressCallback(System.out));
+		}
 
 		findBugs.setUserPreferences(getUserPreferences());
 		for(String s : excludeBugFile) 
