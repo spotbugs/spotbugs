@@ -28,7 +28,6 @@ import java.util.Set;
 import javax.annotation.meta.When;
 
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
@@ -42,7 +41,6 @@ import edu.umd.cs.findbugs.ba.ch.InterproceduralCallGraphVertex;
 import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.Iterator;
 
