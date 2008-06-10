@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,6 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -41,15 +40,16 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
- * Scan classes for type qualifier annotations
- * and convey them to interested detectors (FindNullDeref, CheckTypeQualifiers, ...)
+ * Scan methods for directly-relevant type qualifiers,
+ * building the DirectlyRelevantTypeQualifiersDatabase.
+ * This helps the CheckTypeQualifiers detector
+ * figure out which type qualifiers to check for each
+ * method.
  */
-public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQualifiersDatabase
+public class NoteDirectlyRelevantTypeQualifiers
 	extends DismantleBytecode
 	implements Detector, NonReportingDetector {
 	
@@ -72,22 +72,21 @@ public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQu
 	
 	HashSet<TypeQualifierValue> applicableApplications;
 	@Override
-    public void visit(Code m) {
+	public void visit(Code m) {
 		applicableApplications = new HashSet<TypeQualifierValue>();
 		XMethod xMethod = getXMethod();
-		
+
 		// Find the direct annotations on this method
 		updateApplicableAnnotations(xMethod);
-		
+
 		// Find direct annotations on called methods and loaded fields
 		super.visit(m);
-		
+
 		if (applicableApplications.size() > 0) {
 			qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}
-		
-		
 	}
+	
 	@Override
 	public void sawOpcode(int seen) {
 		switch(seen) {
@@ -95,12 +94,18 @@ public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQu
 		case INVOKEVIRTUAL:
 		case INVOKESTATIC:
 		case INVOKESPECIAL:
-		{
-			XMethod m = XFactory.createReferencedXMethod(this);
-			updateApplicableAnnotations(m);
-	
-			break;
-		}
+			// We don't need to look for method invocations
+			// if Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS is enabled -
+			// that will build an interprocedural call graph which
+			// we'll use at a later point to find relevant qualifiers
+			// stemming from called methods.
+			if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
+				XMethod m = XFactory.createReferencedXMethod(this);
+				updateApplicableAnnotations(m);
+
+				break;
+			}
+		
 		case GETSTATIC:
 		case PUTSTATIC:
 		case GETFIELD:
@@ -110,23 +115,21 @@ public class NoteDirectlyRelevantTypeQualifiers //extends DirectlyRelevantTypeQu
 
 				Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
 				Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
-				
-				
-			break;
+
+				break;
 			}
-			
 		}
 	}
 
 	/**
-     * @param m
-     */
-    private void updateApplicableAnnotations(XMethod m) {
-	    Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
-	    Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
-	    Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
-    }
+	 * @param m
+	 */
+	private void updateApplicableAnnotations(XMethod m) {
+		Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(m);
+		Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+		Analysis.addKnownTypeQualifiersForParameters(applicableApplications, m);
+	}
 
-    public void report() {
+	public void report() {
 	}
 }
