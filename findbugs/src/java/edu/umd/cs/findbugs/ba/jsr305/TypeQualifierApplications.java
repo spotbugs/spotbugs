@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,8 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
+	
+	static final boolean CHECK_EXCLUSIVE = SystemProperties.getBoolean("ctq.applications.checkexclusive");
 
 	static class Data {
 		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
@@ -77,36 +79,33 @@ public class TypeQualifierApplications {
 			new HashMap<TypeQualifierValue, DualKeyHashMap<XMethod,Integer,TypeQualifierAnnotation>>();
 	}
 
-//	static Data data = new Data();
-
 	private static ThreadLocal<Data> instance =
 		new ThreadLocal<Data>() {
-		@Override
-        protected
-        Data initialValue() {
-			return  new Data();
-		}
-	};
+			@Override
+			protected Data initialValue() {
+				return new Data();
+			}
+		};
 
 	public static void clearInstance() {
 		instance.remove();
 	}
 
 	private static Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> getEffectiveParameterAnnotations() {
-	    return instance.get().effectiveParameterAnnotations;
-    }
+		return instance.get().effectiveParameterAnnotations;
+	}
 
 	private static Map<TypeQualifierValue, Map<AnnotatedObject, TypeQualifierAnnotation>> getEffectiveObjectAnnotations() {
-	    return instance.get().effectiveObjectAnnotations;
-    }
+		return instance.get().effectiveObjectAnnotations;
+	}
 
 	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> getDirectParameterAnnotations() {
-	    return instance.get().directParameterAnnotations;
-    }
+		return instance.get().directParameterAnnotations;
+	}
 
 	private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
-	    return instance.get().directObjectAnnotations;
-    }
+		return instance.get().directObjectAnnotations;
+	}
 
 	/**
 	 * Get the direct annotations (if any) on given AnnotatedObject.
@@ -412,6 +411,7 @@ public class TypeQualifierApplications {
 
 		return null;
 	}
+	
 	private static TypeQualifierAnnotation extractAnnotation(Collection<AnnotationValue> resolvedTypeQualifiers, TypeQualifierValue typeQualifierValue) {
 		for (AnnotationValue typeQualifier : resolvedTypeQualifiers) {
 			TypeQualifierAnnotation tqa = constructTypeQualifierAnnotation(typeQualifier);
@@ -424,10 +424,12 @@ public class TypeQualifierApplications {
 		}
 		return null;
 	}
+	
 	/**
 	 * Get the effective TypeQualifierAnnotation on given
 	 * AnnotatedObject.  Takes into account inherited and
 	 * default (outer scope) annotations.
+	 * Also takes exclusive qualifiers into account.
 	 *
 	 * @param o                  an AnnotatedObject
 	 * @param typeQualifierValue a TypeQualifierValue specifying kind of annotation
@@ -439,6 +441,35 @@ public class TypeQualifierApplications {
 	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
 			AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
+
+		TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, o);
+		
+		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
+			// Type qualifier is exclusive.
+			// Check to see if there is an effective application of
+			// a "complementary" TypeQualifierValue in which
+			// when=ALWAYS.  If so, then it's effectively
+			// the same as the asked-for TypeQualifierValue,
+			// but with when=NEVER.
+
+			Collection<TypeQualifierValue> complementaryTypeQualifierValues =
+				TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
+			
+			for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
+				TypeQualifierAnnotation complementaryTqa =
+					computeEffectiveTypeQualifierAnnotation(complementaryTypeQualifierValue, o);
+				if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
+					tqa = TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
+					break;
+				}
+			}
+		}
+		
+		return tqa;
+	}
+
+
+	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, AnnotatedObject o) {
 		if (DEBUG) {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
 		}
@@ -456,7 +487,6 @@ public class TypeQualifierApplications {
 			result = map.get(o);
 		} else {
 			// Compute answer
-
 			TypeQualifierAnnotation tqa;
 
 			// See if there is a direct application
@@ -483,7 +513,6 @@ public class TypeQualifierApplications {
 		// Return cached answer
 		return result;
 	}
-
 
 	/**
 	 * Get a directly-applied TypeQualifierAnnotation on given AnnotatedObject.
@@ -569,6 +598,7 @@ public class TypeQualifierApplications {
 	/**
 	 * Get the effective TypeQualifierAnnotation on given method parameter.
 	 * Takes into account inherited and default (outer scope) annotations.
+	 * Also takes exclusive qualifiers into account.
 	 *
 	 * @param xmethod            a method
 	 * @param parameter          a parameter (0 == first parameter)
@@ -580,12 +610,40 @@ public class TypeQualifierApplications {
 			XMethod xmethod,
 			int parameter,
 			TypeQualifierValue typeQualifierValue) {
+
+		
+		TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, xmethod, parameter);
+		
+		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
+			// Type qualifier is exclusive.
+			// Check to see if there is an effective application of
+			// a "complementary" TypeQualifierValue in which
+			// when=ALWAYS.  If so, then it's effectively
+			// the same as the asked-for TypeQualifierValue,
+			// but with when=NEVER.
+
+			Collection<TypeQualifierValue> complementaryTypeQualifierValues =
+				TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
+			
+			for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
+				TypeQualifierAnnotation complementaryTqa =
+					computeEffectiveTypeQualifierAnnotation(complementaryTypeQualifierValue, xmethod, parameter);
+				if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
+					tqa = TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
+					break;
+				}
+			}
+		}
+		
+		return tqa;
+	}
+
+	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, XMethod xmethod, int parameter) {
 		if (DEBUG) {
 			System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
 		}
 
-		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map =
-			getEffectiveParameterAnnotations().get(typeQualifierValue);
+		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map = getEffectiveParameterAnnotations().get(typeQualifierValue);
 		if (map == null) {
 			map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
 			getEffectiveParameterAnnotations().put(typeQualifierValue, map);
@@ -593,9 +651,9 @@ public class TypeQualifierApplications {
 
 		// Check cached answer
 		TypeQualifierAnnotation result;
-		if (map.containsKey(xmethod, parameter) )
+		if (map.containsKey(xmethod, parameter)) {
 			result = map.get(xmethod, parameter);
-		else {
+		} else {
 			// Compute answer
 			TypeQualifierAnnotation tqa;
 

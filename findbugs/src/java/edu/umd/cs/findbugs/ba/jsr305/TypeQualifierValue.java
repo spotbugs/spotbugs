@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.util.Util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 /**
@@ -118,6 +119,31 @@ public class TypeQualifierValue {
 	 */
 	public static Collection<TypeQualifierValue> getAllKnownTypeQualifiers() {
 		return Collections.unmodifiableSet(instance.get().allKnownTypeQualifiers);
+	}
+	
+	/**
+	 * Get the "complementary" TypeQualifierValues for given exclusive type qualifier.
+	 * 
+	 * @param tqv a type qualifier (which must be exclusive)
+	 * @return Collection of complementary exclusive type qualifiers
+	 */
+	public static Collection<TypeQualifierValue> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue tqv) {
+		assert tqv.isExclusiveQualifier();
+		
+		LinkedList<TypeQualifierValue> result = new LinkedList<TypeQualifierValue>();
+		
+		for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
+			//
+			// Any TypeQualifierValue with the same
+			// annotation class but a different value is a complementary
+			// type qualifier.
+			//
+			if (t.typeQualifier.equals(tqv.typeQualifier) && !t.value.equals(tqv.value)) {
+				result.add(t);
+			}
+		}
+		
+		return result;
 	}
 
 	private static void determineIfQualifierIsStrict(ClassDescriptor desc, TypeQualifierValue result) {
