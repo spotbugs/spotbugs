@@ -146,24 +146,6 @@ public class TypeQualifierValue {
 		return result;
 	}
 
-	/**
-	 * Determine whether or not given TypeQualifierValue has multiple variants.
-	 * I.e., if Color is a type qualifier having values RED, GREEN, and BLUE,
-	 * then there are 3 variants, Color(RED), Color(GREEN), and COLOR(BLUE).
-	 * 
-	 * @param tqv a TypeQualifierValue
-	 * @return true if there are multiple variants of this type qualifier, false otherwise
-	 */
-	public static boolean hasMultipleVariants(TypeQualifierValue tqv) {
-		int count = 0;
-		for (TypeQualifierValue t : instance.get().allKnownTypeQualifiers) {
-			if (t.typeQualifier.equals(tqv.typeQualifier)) {
-				count++;
-			}
-		}
-		return count > 1;
-	}
-
 	private static void determineIfQualifierIsStrict(ClassDescriptor desc, TypeQualifierValue result) {
 		if (DEBUG) {
 			System.out.print("Checking to see if " + desc + " requires strict checking...");

@@ -6871,7 +6871,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 
   <BugPattern type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED">
     <ShortDescription>Value annotated as carrying a type qualifier used where a value that must not carry that qualifier is required</ShortDescription>
-    <LongDescription>Value annotated as carrying type qualifier @{2.excludingPackage}{2.extra} used where a value that must not carry that qualifier is required</LongDescription>
+    <LongDescription>Value annotated as carrying type qualifier @{2.excludingPackage} used where a value that must not carry that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>
@@ -6905,7 +6905,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED">
     <ShortDescription>Value annotated as never carrying a type qualifier used where value carrying that qualifier is required</ShortDescription>
-    <LongDescription>Value annotated as never carrying type qualifier @{2.excludingPackage}{2.extra} used where value carrying that qualifier is required</LongDescription>
+    <LongDescription>Value annotated as never carrying type qualifier @{2.excludingPackage} used where value carrying that qualifier is required</LongDescription>
     <Details>
       <![CDATA[
         <p>

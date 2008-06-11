@@ -40,8 +40,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 	public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
-	
-	private String extra;
 
 	/**
 	 * Constructor.
@@ -50,18 +48,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 */
 	public ClassAnnotation(String className) {
 		super(className, DEFAULT_ROLE);
-		this.extra = "";
 	}
 
-	/**
-	 * Set some extra information associated with this ClassAnnotation.
-	 * 
-	 * @param extra extra information associated with this ClassAnnotation
-	 */
-	public void setExtra(String extra) {
-		this.extra = extra;
-	}
-	
 	@Override
 	public boolean isSignificant() {
 		return !SUBCLASS_ROLE.equals(description);
@@ -88,9 +76,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			return shorten(primaryClass.getPackageName(), className);
 		else if (key.equals("excludingPackage"))
 			return shorten(getPackageName(), className);
-		else if (key.equals("extra")) {
-			return extra;
-		}
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
@@ -167,10 +152,6 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName());
 		if (isPrimary) attributeList.addAttribute("primary", "true");
-
-		if (!extra.equals("")) {
-			attributeList.addAttribute("extra", extra);
-		}
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
