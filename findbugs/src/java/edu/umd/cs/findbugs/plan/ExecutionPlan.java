@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004,2005 University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -155,14 +155,19 @@ public class ExecutionPlan {
 				DetectorNode end = i.next();
 				if (factoryChooser.choose(end.getFactory())) {
 					for(Iterator<ConstraintEdge> j = allPassConstraintGraph.incomingEdgeIterator(end); j.hasNext(); ) {
-						DetectorNode start = j.next().getSource();
+						ConstraintEdge edge = j.next();
+						DetectorNode start = edge.getSource();
 						DetectorFactory startFactory = start.getFactory();
-						if (!factoryChooser.choose(startFactory)) {
+						//
+						// Note that we only enable an otherwise-disabled detector
+						// if it was the earlier detector in a single-source constraint.
+						//
+						if (!factoryChooser.choose(startFactory) && edge.isSingleSource()) {
 							factoryChooser.enable(startFactory);
 							change = true;
 							if (DEBUG || FindBugs2.DEBUG) {
-	                            System.out.println("Dependences force enabling of " + startFactory.getFullName());
-                            }
+								System.out.println("Dependences force enabling of " + startFactory.getFullName());
+							}
 						}
 
 					}
@@ -171,11 +176,11 @@ public class ExecutionPlan {
 			}
 		} while (change);
 
-		for(Iterator<Map.Entry<String,DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry<String,DetectorFactory> e = i.next();
+		for (Iterator<Map.Entry<String, DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<String, DetectorFactory> e = i.next();
 			if (!factoryChooser.choose(e.getValue())) {
-	            i.remove();
-            }
+				i.remove();
+			}
 		}
 
 		// Build inter-pass constraint graph
@@ -185,9 +190,9 @@ public class ExecutionPlan {
 			new HashSet<DetectorFactory>(factoryMap.values()),
 			interPassConstraintList);
 		if (DEBUG) {
-	        System.out.println(interPassConstraintGraph.getNumVertices() +
-	        	" nodes in inter-pass constraint graph");
-        }
+			System.out.println(interPassConstraintGraph.getNumVertices() +
+				" nodes in inter-pass constraint graph");
+		}
 
 		// Build list of analysis passes.
 		// This will assign all detectors referenced in inter- or intra-pass
@@ -326,12 +331,13 @@ public class ExecutionPlan {
 		// It is perfectly fine for a constraint to produce no edges
 		// if any detector it specifies is not enabled.
 		if (earlierSet.isEmpty() || laterSet.isEmpty()) {
-	        return;
-        }
+			return;
+		}
 
 		for (DetectorNode earlier : earlierSet) {
 			for (DetectorNode later : laterSet) {
-				result.createEdge(earlier, later);
+				ConstraintEdge edge = result.createEdge(earlier, later);
+				edge.setConstraint(constraint);
 			}
 		}
 	}

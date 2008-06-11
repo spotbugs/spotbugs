@@ -28,6 +28,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -43,7 +44,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
  * 
  * @author David Hovemeyer
  */
-public class CheckCalls implements Detector {
+public class CheckCalls implements Detector, NonReportingDetector {
 
 	private static final String METHOD = SystemProperties.getProperty("checkcalls.method");
 	private static final String TARGET_METHOD = SystemProperties.getProperty("checkcalls.targetmethod");

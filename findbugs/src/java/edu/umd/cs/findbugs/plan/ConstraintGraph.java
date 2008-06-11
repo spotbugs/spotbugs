@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ public class ConstraintGraph
 	extends AbstractGraph<ConstraintEdge, DetectorNode>
 {
 	@Override
-		 protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
+	protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
 		return new ConstraintEdge(source, target);
 	}
 

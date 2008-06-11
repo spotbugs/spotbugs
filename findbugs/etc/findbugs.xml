@@ -105,6 +105,15 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"/>
 	</SplitPass>
+
+	<!--
+		Make CheckExpectedWarnings run in a separate pass, after all
+		reporting detectors have completed.
+	-->
+	<SplitPass>
+		<EarlierCategory name="reporting" spanplugins="true"/>
+		<Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
+	</SplitPass>
   </OrderingConstraints>
 				
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
@@ -712,6 +721,8 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting"
       reports="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER,HRS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER,XSS_REQUEST_PARAMETER_TO_SEND_ERROR"/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="true"/>
 
 <!-- Bug Codes -->
 

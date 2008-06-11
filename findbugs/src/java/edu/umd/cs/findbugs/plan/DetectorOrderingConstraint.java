@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004,2005 University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,10 +30,37 @@ package edu.umd.cs.findbugs.plan;
 public class DetectorOrderingConstraint {
 	private DetectorFactorySelector earlier;
 	private DetectorFactorySelector later;
+	private boolean singleSource;
 
 	public DetectorOrderingConstraint(DetectorFactorySelector earlier, DetectorFactorySelector later) {
 		this.earlier = earlier;
 		this.later = later;
+	}
+
+	/**
+	 * Set whether or not this ordering constraint resulted from
+	 * an ordering constraint having a single detector as its source
+	 * (ealier detector).  Such constraints automatically enable
+	 * the source (earlier) detector if the target (later)
+	 * detector is enabled.
+	 * 
+	 * @return true if this edge has a single detector as its source (earlier detector)
+	 */
+	public void setSingleSource(boolean singleSource) {
+		this.singleSource = singleSource;
+	}
+	
+	/**
+	 * Determine whether or not this ordering constraint resulted from
+	 * an ordering constraint having a single detector as its source
+	 * (ealier detector).  Such constraints automatically enable
+	 * the source (earlier) detector if the target (later)
+	 * detector is enabled.
+	 * 
+	 * @return true if this edge has a single detector as its source (earlier detector)
+	 */
+	public boolean isSingleSource() {
+		return singleSource;
 	}
 
 	public DetectorFactorySelector getEarlier() {
@@ -45,7 +72,7 @@ public class DetectorOrderingConstraint {
 	}
 
 	@Override
-		 public String toString() {
+	public String toString() {
 		return earlier.toString() + " -> " + later.toString();
 	}
 }

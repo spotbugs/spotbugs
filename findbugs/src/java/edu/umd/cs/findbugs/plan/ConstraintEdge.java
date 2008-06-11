@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,8 @@ import edu.umd.cs.findbugs.graph.AbstractEdge;
 public class ConstraintEdge
 	extends AbstractEdge<ConstraintEdge, DetectorNode>
 {
+	private DetectorOrderingConstraint constraint;
+	
 	/**
 	 * Constructor.
 	 *
@@ -41,6 +43,28 @@ public class ConstraintEdge
 	 */
 	public ConstraintEdge(DetectorNode source, DetectorNode target) {
 		super(source, target);
+	}
+
+	/**
+	 * Set the DetectorOrderingConstraint that created this edge.
+	 * 
+	 * @param constraint the DetectorOrderingConstraint that created this edge
+	 */
+	public void setConstraint(DetectorOrderingConstraint constraint) {
+		this.constraint = constraint;
+	}
+	
+	/**
+	 * Determine whether or not this ConstraintEdge resulted from
+	 * an ordering constraint having a single detector as its source
+	 * (ealier detector).  Such constraints automatically enable
+	 * the source (earlier) detector if the target (later)
+	 * detector is enabled.
+	 * 
+	 * @return true if this edge has a single detector as its source (earlier detector)
+	 */
+	public boolean isSingleSource() {
+		return constraint.isSingleSource();
 	}
 }
 

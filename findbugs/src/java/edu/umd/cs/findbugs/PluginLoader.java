@@ -282,6 +282,9 @@ public class PluginLoader {
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
 						earlierSelector, laterSelector);
 
+				// Keep track of which constraints are single-source
+				constraint.setSingleSource(earlierSelector instanceof SingleDetectorFactorySelector);
+
 				// Add the constraint to the plugin
 				if (constraintElement.getName().equals("SplitPass"))
 					plugin.addInterPassOrderingConstraint(constraint);

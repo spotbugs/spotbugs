@@ -1484,6 +1484,16 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings">
+	  <Details>
+		  <![CDATA[
+		  <p>Checks @ExpectedWarning and @NoWarning annotations.
+		  This detector is used only for testing FindBugs.</p>
+		  ]]>
+	  </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns

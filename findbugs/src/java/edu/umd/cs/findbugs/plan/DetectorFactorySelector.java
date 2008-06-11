@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,17 @@ package edu.umd.cs.findbugs.plan;
 import edu.umd.cs.findbugs.DetectorFactory;
 
 /**
+ * Select one or more DetectorFactories as part of
+ * satisfying a Detector ordering constraint.
+ * 
  * @author David Hovemeyer
  */
 public interface DetectorFactorySelector {
+	/**
+	 * Is given DetectorFactory selected (as part of an ordering constraint)?
+	 * 
+	 * @param factory a DetectorFactory
+	 * @return true if the factory is selected, false otherwise
+	 */
 	public boolean selectFactory(DetectorFactory factory);
 }
