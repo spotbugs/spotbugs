@@ -1,5 +1,7 @@
 package jsr305;
 
+import fbtest.annotations.ExpectWarning;
+
 /**
  * See if FindBugs does the right thing when
  * a method with an inherited strict parameter
@@ -25,6 +27,7 @@ public class TrickyInheritedQualifiers {
 		}
 	}
 	
+	@ExpectWarning("TQ")
 	public void violateEasy(X x, Object q) {
 		//
 		// An easy-to-check violation: X.f() is directly
@@ -34,6 +37,7 @@ public class TrickyInheritedQualifiers {
 		x.f(q);
 	}
 	
+	@ExpectWarning("TQ")
 	public void violateTricky(Y y, Object q) {
 		//
 		// This is a violation:
@@ -49,6 +53,7 @@ public class TrickyInheritedQualifiers {
 	// on parameter "r" informs FindBugs that the @Strict annotation needs
 	// to be checked.
 	//
+	@ExpectWarning("TQ")
 	public void violateWorksAccidentally(Y y, Object q, @Strict Object r) {
 		y.f(q);
 	}

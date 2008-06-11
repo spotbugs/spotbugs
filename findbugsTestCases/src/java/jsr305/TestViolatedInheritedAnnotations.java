@@ -1,5 +1,6 @@
 package jsr305;
 
+import fbtest.annotations.ExpectWarning;
 import javax.annotation.Tainted;
 import javax.annotation.meta.When;
 
@@ -11,19 +12,23 @@ public class TestViolatedInheritedAnnotations implements I1, I2 {
 	
 	@Bar(when=When.MAYBE, strArrField={"yip", "yip"}, cField='Q', eArrField={When.UNKNOWN}) Object barField;
 
+	@ExpectWarning("TQ")
 	public Object alwaysReturnFoo1() {
 		return never;
 	}
 
+	@ExpectWarning("TQ")
 	public Object neverReturnFoo1() {
 		return always;
 	}
 
 	// This method inherits parameter and return value annotations from I1
+	@ExpectWarning("TQ")
 	public Object alwaysReturnFooParams1(Object alwaysParam, Object neverParam) {
 		return neverParam;
 	}
 	
+	@ExpectWarning("TQ")
 	public void needsUntaintedParam(@Tainted Object tainted, InterfaceWithDefaultUntaintedParams obj) {
 		// Should see a warning here
 		obj.requiresUntaintedParam(tainted);
@@ -47,11 +52,13 @@ public class TestViolatedInheritedAnnotations implements I1, I2 {
 		}
 	}
 	
+	@ExpectWarning("TQ")
 	public void easyViolation(InterfaceWithDefaultUntaintedParams obj) {
 		X x = new X();
 		obj.requiresUntaintedParam(x.f()); // violation
 	}
 	
+	@ExpectWarning("TQ")
 	public void trickyViolation(InterfaceWithDefaultUntaintedParams obj) {
 		Y y = new Y();
 		obj.requiresUntaintedParam(y.f()); // violation

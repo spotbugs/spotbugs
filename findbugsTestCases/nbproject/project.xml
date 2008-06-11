@@ -27,6 +27,12 @@
                     <location>src/java</location>
                     <encoding>UTF-8</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>src/testAnnotations</label>
+                    <type>java</type>
+                    <location>src/testAnnotations</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -43,7 +49,7 @@
             <export>
                 <type>folder</type>
                 <location>build/classes</location>
-                <build-target>build</build-target>
+                <build-target>classes</build-target>
             </export>
             <view>
                 <items>
@@ -54,6 +60,10 @@
                     <source-folder style="packages">
                         <label>src/java</label>
                         <location>src/java</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>src/testAnnotations</label>
+                        <location>src/testAnnotations</location>
                     </source-folder>
                     <source-file>
                         <location>build.xml</location>
@@ -71,7 +81,8 @@
             <compilation-unit>
                 <package-root>src/fakeAnnotations</package-root>
                 <package-root>src/java</package-root>
-                <classpath mode="compile">/home/daveho/NetBeansProjects/findbugs/lib/annotations.jar:/home/daveho/NetBeansProjects/findbugs/lib/jsr305.jar:/home/daveho/NetBeansProjects/findbugs/lib/junit.jar:lib/j2ee.jar</classpath>
+                <package-root>src/testAnnotations</package-root>
+                <classpath mode="compile">../findbugs/lib/annotations.jar:../findbugs/lib/jsr305.jar:../findbugs/lib/junit.jar:lib/j2ee.jar:${java.home}/lib/tools.jar</classpath>
                 <built-to>build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
