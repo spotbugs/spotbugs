@@ -252,7 +252,7 @@ public class NullDerefAndRedundantComparisonFinder {
 				}
 
 
-				if (assertionMethods.isAssertionInstruction (in, classContext.getConstantPoolGen()) ) {
+				if (assertionMethods.isAssertionHandle (location.getHandle(), classContext.getConstantPoolGen()) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;

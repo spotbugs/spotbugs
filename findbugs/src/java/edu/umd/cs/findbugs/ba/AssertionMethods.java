@@ -24,6 +24,8 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;
@@ -34,8 +36,11 @@ import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.SIPUSH;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -165,10 +170,38 @@ public class AssertionMethods implements Constants {
 		return false;
 	}
 
+	public boolean isAssertionHandle(InstructionHandle handle, ConstantPoolGen cpg) {
+		Instruction ins = handle.getInstruction();
+		if (isAssertionInstruction(ins, cpg)) return true;
+		if (ins instanceof INVOKEINTERFACE) {
+			INVOKEINTERFACE iInterface = (INVOKEINTERFACE) ins;
+			String className = iInterface.getClassName(cpg);
+			String fieldName = iInterface.getMethodName(cpg);
+			if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
+				return true;
+		}
+
+		if (false && ins instanceof SIPUSH) {
+			int v = ((SIPUSH) ins).getValue().intValue();
+			if (v == 500) {
+				Instruction next = handle.getNext().getInstruction();
+				if (next instanceof INVOKEINTERFACE) {
+					INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
+					String className = iInterface.getClassName(cpg);
+					String fieldName = iInterface.getMethodName(cpg);
+					if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
+						return true;
+				
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
-	 * Does the given InvokeInstruction refer to a likely assertion method?
+	 * Does the given instruction refer to a likely assertion method?
 	 *
-	 * @param ins the InvokeInstruction
+	 * @param ins the instruction
 	 * @return true if the instruction likely refers to an assertion, false if not
 	 */
 
@@ -193,13 +226,13 @@ public class AssertionMethods implements Constants {
 
 
 	public boolean isAssertionCall(InvokeInstruction inv) {
-//		if (DEBUG) {
-//			System.out.print("Checking if " + inv + " is an assertion method: ");
-//		}
+		if (DEBUG) {
+			System.out.print("Checking if " + inv + " is an assertion method: ");
+		}
 		boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
-//		if (DEBUG) {
-//			System.out.println("==> " + isAssertionMethod);
-//		}
+		if (DEBUG) {
+			System.out.println("==> " + isAssertionMethod);
+		}
 		return isAssertionMethod;
 	}
 }

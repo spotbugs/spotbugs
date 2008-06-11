@@ -518,7 +518,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @return true if instruction is an assertion, false otherwise
 	 */
 	private boolean isAssertion(InstructionHandle handle) {
-		return  assertionMethods.isAssertionInstruction ( handle.getInstruction() , 
+		return  assertionMethods.isAssertionHandle ( handle, 
 				methodGen.getConstantPool());
 
 
