@@ -28,14 +28,12 @@
 		<javac  destdir="build/classes" source="1.5" debug="on">
 			<src path="src/java"/>
 			<src path="src/fakeAnnotations"/>
-			<src path="src/testAnnotations"/>
 			<classpath>
 				<pathelement location="build/classes"/>
 				<pathelement location="${findbugs.home}/lib/annotations.jar" />
 				<pathelement location="${findbugs.home}/lib/jsr305.jar"/>
 				<pathelement location="${junit.home}/junit.jar"/>
 				<pathelement location="lib/j2ee.jar"/>
-				<pathelement location="${java.home}/lib/tools.jar"/>
 			</classpath>
 		</javac>
 	</target>
