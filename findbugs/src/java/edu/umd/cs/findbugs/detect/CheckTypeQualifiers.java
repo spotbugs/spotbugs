@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -438,8 +439,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 
 		// Issue warning
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
-			.addClassAndMethod(methodDescriptor)
-			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+			.addClassAndMethod(methodDescriptor);
+		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 
 		// Hopefully we can find the conflicted value in a local variable
 		if (locationWhereDoomedValueIsObserved != null) {
@@ -490,8 +491,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 			ValueNumber vn, Location location) {
 		
 		BugInstance warning = new BugInstance(this, bugType, Priorities.NORMAL_PRIORITY)
-			.addClassAndMethod(methodDescriptor)
-			.addClass(typeQualifierValue.getTypeQualifierClassDescriptor()).describe("TYPE_ANNOTATION");
+			.addClassAndMethod(methodDescriptor);
+		annotateWarningWithTypeQualifier(warning, typeQualifierValue);
 		
 		annotateWarningWithSourceSinkInfo(warning, methodDescriptor, vn, source);
 		
@@ -501,6 +502,20 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 		
 		bugReporter.reportBug(warning);
+	}
+
+	private void annotateWarningWithTypeQualifier(BugInstance warning, TypeQualifierValue typeQualifierValue) {
+		StringBuilder buf = new StringBuilder();
+		buf.append("@");
+		buf.append(typeQualifierValue.typeQualifier.getDottedClassName());
+		if (TypeQualifierValue.hasMultipleVariants(typeQualifierValue)) {
+			// When there are multiple variants, qualify the type
+			// qualifier with the value indicating which variant.
+			buf.append("(");
+			buf.append(typeQualifierValue.value.toString());
+			buf.append(")");
+		}
+		warning.addString(buf.toString()).describe(StringAnnotation.TYPE_QUALIFIER_ROLE);
 	}
 
 	private void annotateWarningWithSourceSinkInfo(BugInstance warning, MethodDescriptor methodDescriptor, ValueNumber vn, SourceSinkInfo sourceSinkInfo) {
