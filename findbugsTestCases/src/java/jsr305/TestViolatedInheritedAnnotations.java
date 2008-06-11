@@ -1,6 +1,6 @@
 package jsr305;
 
-import fbtest.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import javax.annotation.Tainted;
 import javax.annotation.meta.When;
 

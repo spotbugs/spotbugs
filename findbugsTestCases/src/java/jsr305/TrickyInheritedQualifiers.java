@@ -1,6 +1,7 @@
 package jsr305;
 
-import fbtest.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 
 /**
  * See if FindBugs does the right thing when

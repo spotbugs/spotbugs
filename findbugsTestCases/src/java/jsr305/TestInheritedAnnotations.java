@@ -1,6 +1,7 @@
 package jsr305;
 
-import fbtest.annotations.NoWarning;
+
+import edu.umd.cs.findbugs.annotations.NoWarning;
 import javax.annotation.meta.When;
 
 public class TestInheritedAnnotations implements I1, I2 {
