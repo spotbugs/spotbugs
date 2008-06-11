@@ -82,7 +82,7 @@
                 <package-root>src/fakeAnnotations</package-root>
                 <package-root>src/java</package-root>
                 <package-root>src/testAnnotations</package-root>
-                <classpath mode="compile">../findbugs/lib/annotations.jar:../findbugs/lib/jsr305.jar:../findbugs/lib/junit.jar:lib/j2ee.jar:${java.home}/lib/tools.jar</classpath>
+                <classpath mode="compile">../findbugs/lib/annotations.jar:../findbugs/lib/jsr305.jar:../findbugs/lib/junit.jar:lib/j2ee.jar:${java.home}/../lib/tools.jar</classpath>
                 <built-to>build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
