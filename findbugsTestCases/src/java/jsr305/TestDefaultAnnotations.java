@@ -1,5 +1,7 @@
 package jsr305;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 import javax.annotation.meta.When;
 
 @DefaultFooParameters
@@ -12,14 +14,17 @@ public class TestDefaultAnnotations {
 	}
 	
 	// violation: @Foo(when=When.NEVER) value passed to method expecting @Foo(when=When.ALWAYS)
+	@ExpectWarning("TQ")
 	public void violate(@Foo(when=When.NEVER) Object x) {
 		requiresFoo(x);
 	}
 	
+	@NoWarning("TQ")
 	public void ok(Object x) {
 		requiresFoo(x);
 	}
 	
+	@NoWarning("TQ")
 	public void ok2(@Foo(when=When.ALWAYS) Object x) {
 		requiresFoo(x);
 	}
