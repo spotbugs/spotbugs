@@ -621,29 +621,28 @@ public class Project implements XMLWriteable {
 			SortedBugCollection bugs = new SortedBugCollection();
 			handler = new SAXBugCollectionHandler(bugs, project, f);
 		} else {
-	        throw new IOException("Can't load a project from a " + tag + " file");
-        }
+			throw new IOException("Can't load a project from a " + tag + " file");
+		}
 		try {
 			XMLReader xr = null;
 			if (true) {
-	            try {
-	            	xr = XMLReaderFactory.createXMLReader();
-	            } catch (SAXException e) {
-	            	AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
-	            }
-            }
-
-			if (xr == null) {
-				xr = new org.dom4j.io.aelfred.SAXDriver();
+				try {
+					xr = XMLReaderFactory.createXMLReader();
+				} catch (SAXException e) {
+					AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
+				}
 			}
+
+//			if (xr == null) {
+//				xr = new org.dom4j.io.aelfred.SAXDriver();
+//			}
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
 			Reader reader = Util.getReader(in);
 
 			xr.parse(new InputSource(reader));
-		}
-		finally {
+		} finally {
 			in.close();
 		}
 
@@ -651,7 +650,6 @@ public class Project implements XMLWriteable {
 		project.setModified(false);
 
 		return project;
-
 	}
 	public  void writeXML(File f) throws IOException {
 		OutputStream out  = new FileOutputStream(f);

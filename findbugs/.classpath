@@ -17,9 +17,9 @@
 			<attribute name="javadoc_location" value="http://jakarta.apache.org/bcel/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar">
+	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://www.dom4j.org/dom4j-1.4/apidocs/"/>
+			<attribute name="javadoc_location" value="http://dom4j.org/apidocs/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/junit.jar"/>

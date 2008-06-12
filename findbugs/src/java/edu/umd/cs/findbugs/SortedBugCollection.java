@@ -221,9 +221,9 @@ public class SortedBugCollection implements BugCollection {
 				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
 			  }
 
-			if (xr == null) {
-				xr = new org.dom4j.io.aelfred.SAXDriver();
-				}
+//			if (xr == null) {
+//				xr = new org.dom4j.io.aelfred.SAXDriver();
+//				}
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 

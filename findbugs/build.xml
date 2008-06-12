@@ -56,10 +56,10 @@
 	<property name="version.props.file" value="${build.dir}/classes/edu/umd/cs/findbugs/version.properties"/>
 	
 	<path id="findbugs.classpath">
-	    <pathelement location="${jar.dir}/bcel.jar"/>
-	    <pathelement location="${jar.dir}/dom4j-full.jar"/>
-	    <pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
-	    <pathelement location="${jar.dir}/junit.jar"/>
+		<pathelement location="${jar.dir}/bcel.jar"/>
+		<pathelement location="${jar.dir}/dom4j-1.6.1.jar"/>
+		<pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
+		<pathelement location="${jar.dir}/junit.jar"/>
 		<pathelement location="${jar.dir}/asm-3.0.jar"/>
 		<pathelement location="${jar.dir}/asm-commons-3.0.jar"/>
 		<pathelement location="${jar.dir}/asm-tree-3.0.jar"/>
@@ -680,7 +680,8 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.0.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-commons-3.0.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.0.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-full.jar"/>		
+		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>		
+		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
 		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
@@ -802,7 +803,7 @@
       <javadoc access="protected" 
        author="true" 
 	    packagenames="*"
-       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-commons-3.0.jar"
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-commons-3.0.jar"
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
@@ -816,7 +817,7 @@
        <delete dir="${annotationDoc.dir}"/>
        <mkdir dir="${annotationDoc.dir}"/>
       <javadoc access="public" 
-       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar"
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/AppleJavaExtensions.jar"
         destdir="${annotationDoc.dir}" 
 	    packagenames="edu.umd.cs.findbugs.annotations"
         doctitle="FindBugs Annotation Documentation" 
