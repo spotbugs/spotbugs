@@ -368,7 +368,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @return an encoded string
 	 */
 	public String hiddenToEncodedString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		// Encode hidden bug categories
 		for (Iterator<String> i = hiddenBugCategorySet.iterator(); i.hasNext(); ) {
 			buf.append(i.next());
@@ -388,7 +388,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	public String toEncodedString() {
 		// Priority threshold
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(getMinPriority());
 
 		// Encode enabled bug categories. Note that these aren't really used for much.

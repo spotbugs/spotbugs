@@ -63,7 +63,7 @@ public class StringAnnotation implements BugAnnotation {
 
 
 	 private static String quoteCharacters(String s) {
-			StringBuffer result = null;
+			StringBuilder result = null;
 			for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
 				char c = s.charAt(i);
 				String replacement = null;
@@ -84,7 +84,7 @@ public class StringAnnotation implements BugAnnotation {
 
 				if (replacement != null) {
 					if (result == null) {
-						result = new StringBuffer(s);
+						result = new StringBuilder(s);
 					}
 					result.replace(i + delta, i + delta + 1, replacement);
 					delta += (replacement.length() - 1);

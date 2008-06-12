@@ -61,7 +61,7 @@ public class JavaScanner {
 		MAX_KEYWORD_LENGTH = max;
 	}
 
-	private final StringBuffer buf = new StringBuffer();
+	private final StringBuilder buf = new StringBuilder();
 
 
 	private final CharacterIterator iterator;

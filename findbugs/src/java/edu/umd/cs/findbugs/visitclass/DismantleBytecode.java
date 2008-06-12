@@ -207,7 +207,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		if (refConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
 		if (refConstantOperand == null) {
-			StringBuffer ref = new StringBuffer(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
+			StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
 		ref.append(dottedClassConstantOperand)
 			.append(".")
 			.append(nameConstantOperand)

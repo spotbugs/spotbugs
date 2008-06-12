@@ -111,7 +111,7 @@ public class JavaVersion {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(major);
 		buf.append('.');
 		buf.append(minor);

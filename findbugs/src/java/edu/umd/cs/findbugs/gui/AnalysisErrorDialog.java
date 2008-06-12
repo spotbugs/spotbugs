@@ -206,7 +206,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		dispose();
 	}//GEN-LAST:event_closeDialog
 
-	private StringBuffer buf = new StringBuffer();
+	private StringBuilder buf = new StringBuilder();
 
 	public void addLine(String line) {
 		//System.out.println("Appending: " + line);

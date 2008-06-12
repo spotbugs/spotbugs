@@ -317,7 +317,7 @@ public final class LockSet {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('[');
 		boolean first = true;
 		if (defaultLockCount == 0) {

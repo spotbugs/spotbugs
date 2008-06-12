@@ -164,7 +164,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		BasicBlock source = getSource();
 		BasicBlock target = getTarget();
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(reverse ? "REVERSE_EDGE(" : "EDGE(");
 		buf.append(getLabel());
 		buf.append(") type ");

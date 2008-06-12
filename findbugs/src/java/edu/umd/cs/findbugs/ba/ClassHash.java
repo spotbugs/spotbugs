@@ -247,7 +247,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	 * @return a String representation of the hash
 	 */
 	public static String hashToString(byte[] hash) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (byte b : hash) {
 			buf.append(HEX_CHARS[(b >> 4) & 0xF]);
 			buf.append(HEX_CHARS[b & 0xF]);

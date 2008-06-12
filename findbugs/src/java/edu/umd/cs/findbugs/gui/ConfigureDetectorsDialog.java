@@ -309,7 +309,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		} else {
 			detectorDescription.setContentType("text/html");
 			detectorDescription.setText(detailHTML);
-			StringBuffer toolTip = new StringBuffer(100);
+			StringBuilder toolTip = new StringBuilder(100);
 			toolTip.append("<html><body><b>");
 			toolTip.append(factory.getFullName());
 			toolTip.append("</b><br><br><table border='1' width='100%'><tr><th>");

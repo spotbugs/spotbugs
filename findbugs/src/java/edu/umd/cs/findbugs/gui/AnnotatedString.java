@@ -70,7 +70,7 @@ public class AnnotatedString {
 				int startIndex = myAnnotatedString.length() - "(&X)...".length();
 				int endIndex = startIndex + "(&X)".length();
 
-				return new StringBuffer(myAnnotatedString).delete(startIndex, endIndex).toString();
+				return new StringBuilder(myAnnotatedString).delete(startIndex, endIndex).toString();
 			}
 		}
 		return myAnnotatedString.replaceFirst("&", "");

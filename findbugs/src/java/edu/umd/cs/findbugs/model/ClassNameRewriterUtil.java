@@ -43,7 +43,7 @@ public abstract class ClassNameRewriterUtil {
 		if (classNameRewriter != IdentityClassNameRewriter.instance()) {
 			SignatureParser parser = new SignatureParser(methodSignature);
 
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 
 			buf.append('(');
 			for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {

@@ -49,7 +49,7 @@ public class ClassPathImpl implements IClassPath {
 
 	@Override
     public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for(IScannableCodeBase cb : appCodeBaseList) {
 			buf.append(cb);
 			buf.append(" ");

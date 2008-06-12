@@ -134,7 +134,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	private static String xmlEscape(String theString)
 	{
 		//Replaces characters '>', '<', '"', '&', ''' with XML equivalents
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int len = theString.length();
 		char theChar;
 		for (int i=0; i<len; i++)

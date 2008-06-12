@@ -76,7 +76,7 @@ public class GenericUtilities {
 		 {
 			@Override
 			public String asString(GenericObjectType obj) {
-				StringBuffer b = new StringBuffer(obj.toPlainString());
+				StringBuilder b = new StringBuilder(obj.toPlainString());
 				b.append("<");
 				boolean first = true;
 				for (Type t : obj.parameters) {
@@ -180,7 +180,7 @@ public class GenericUtilities {
 
 	 static String stripAngleBrackets(String s) {
 		if (s.indexOf('<') == -1) return s;
-		StringBuffer result = new StringBuffer(s.length());
+		StringBuilder result = new StringBuilder(s.length());
 		int nesting = 0;
 		for(int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
@@ -248,7 +248,7 @@ public class GenericUtilities {
 	public static String removeMatchedAngleBrackets(String s) {
 		int first = s.indexOf('<');
 		if (first < 0) return s;
-		StringBuffer result = new StringBuffer(s.substring(0, first));
+		StringBuilder result = new StringBuilder(s.substring(0, first));
 		int pos = first;
 		int nesting = 0;
 		while (pos < s.length()) {

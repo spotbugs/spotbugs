@@ -86,8 +86,8 @@ public class ValueNumberCache {
 		}
 
 		@Override
-				 public String toString() {
-			StringBuffer buf = new StringBuffer();
+		public String toString() {
+			StringBuilder buf = new StringBuilder();
 			buf.append(handle.toString());
 			for (ValueNumber aInputValueList : inputValueList) {
 				buf.append(", ");

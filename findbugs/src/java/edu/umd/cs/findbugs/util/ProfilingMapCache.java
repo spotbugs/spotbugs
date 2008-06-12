@@ -59,7 +59,7 @@ public class ProfilingMapCache<K,V> extends MapCache<K,V> {
 		return super.get(k);
 	}
 	public String getStatistics() {
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		for(int c : count) 
 			b.append(c).append(" ");
 		return b.toString();

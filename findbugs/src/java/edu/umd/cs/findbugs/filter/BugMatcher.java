@@ -90,7 +90,7 @@ public class BugMatcher implements Matcher {
 			xmlOutput.addAttribute(name, value);
 	}
 	@Override public String toString() {
-		StringBuffer buf = new StringBuffer("Bug(");
+		StringBuilder buf = new StringBuilder("Bug(");
 		if (!codes.isEmpty())
 			buf.append("code = \"").append(codes).append("\" ");
 		if (!patterns.isEmpty())

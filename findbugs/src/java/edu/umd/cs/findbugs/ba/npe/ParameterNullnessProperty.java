@@ -172,7 +172,7 @@ public class ParameterNullnessProperty{
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		buf.append('{');
 		for (int i = 0; i < 32; ++i) {

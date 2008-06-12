@@ -54,7 +54,7 @@ public class FileBugHash {
 			origCollection.readXML(System.in, project);
 		else
 			origCollection.readXML(args[argCount], project);
-		Map<String, StringBuffer> map = new TreeMap<String, StringBuffer>();
+		Map<String, StringBuilder> map = new TreeMap<String, StringBuilder>();
 		
 		for(BugInstance bug : origCollection.getCollection()) {
 			SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
@@ -70,14 +70,14 @@ public class FileBugHash {
 				source = bug.getPrimarySourceLineAnnotation();
 			}
 			String key = source.getPackageName().replace('.','/')+"/"+source.getSourceFile();
-			StringBuffer buf = map.get(key);
+			StringBuilder buf = map.get(key);
 			if (buf == null) {
-				buf = new StringBuffer();
+				buf = new StringBuilder();
 				map.put(key,buf);
 			}
 			buf.append(bug.getInstanceKey()).append("-").append(source.getStartLine()).append(".").append(source.getStartBytecode()).append(" ");
 		}
-		for(Map.Entry<String, StringBuffer> e : map.entrySet()) {
+		for(Map.Entry<String, StringBuilder> e : map.entrySet()) {
 			byte [] data = digest.digest(e.getValue().toString().getBytes());
 			String tmp = new BigInteger(1,data).toString(16);
 			if (tmp.length() < 32) tmp = "000000000000000000000000000000000".substring(0,32-tmp.length())+tmp;

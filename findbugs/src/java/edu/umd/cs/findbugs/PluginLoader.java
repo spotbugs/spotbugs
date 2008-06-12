@@ -255,7 +255,7 @@ public class PluginLoader {
 
 				Element details = (Element) node;
 				String detailHTML = details.getText();
-				StringBuffer buf = new StringBuffer();
+				StringBuilder buf = new StringBuilder();
 				buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
 				buf.append("<HTML><HEAD><TITLE>Detector Description</TITLE></HEAD><BODY>\n");
 				buf.append(detailHTML);

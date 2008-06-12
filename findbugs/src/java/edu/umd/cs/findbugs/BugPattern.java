@@ -151,7 +151,7 @@ public class BugPattern implements Comparable<BugPattern> {
 	 */
 	public String getDetailHTML() {
 		if (detailHTML == null) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
 			buf.append("<HTML><HEAD><TITLE>");
 			buf.append(getShortDescription());

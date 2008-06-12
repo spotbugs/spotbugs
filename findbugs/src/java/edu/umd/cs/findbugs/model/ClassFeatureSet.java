@@ -242,7 +242,7 @@ public class ClassFeatureSet implements XMLWriteable {
 	 * @return the transformed signature
 	 */
 	public static String transformMethodSignature(String signature) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		buf.append('(');
 
@@ -266,7 +266,7 @@ public class ClassFeatureSet implements XMLWriteable {
 	 * @return the transformed signature
 	 */
 	public static String transformSignature(String signature) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		int lastBracket = signature.lastIndexOf('[');
 		if (lastBracket > 0) {

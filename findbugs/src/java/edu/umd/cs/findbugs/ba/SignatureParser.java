@@ -68,7 +68,7 @@ public class SignatureParser {
 
 		public String next() {
 			if (!hasNext()) throw new NoSuchElementException();
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 			boolean done;
 			do {
 				done = true;

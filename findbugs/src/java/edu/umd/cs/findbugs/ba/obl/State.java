@@ -80,8 +80,8 @@ public class State {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		buf.append(obligationSet.toString());
 		buf.append(",");

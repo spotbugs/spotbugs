@@ -59,7 +59,7 @@ public class FindBugsMessageFormat {
 	 */
 	public String format(BugAnnotation[] args, ClassAnnotation primaryClass) {
 		String pat = pattern;
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		while (pat.length() > 0) {
 			int subst = pat.indexOf('{');

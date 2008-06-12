@@ -193,7 +193,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 		if (knownValueMap != null) {
 //			result = result + ", [known=" + knownValueMap.toString() + "]";
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("{");
 			boolean first = true;
 			for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {

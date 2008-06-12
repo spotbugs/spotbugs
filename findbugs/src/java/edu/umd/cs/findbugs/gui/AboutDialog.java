@@ -80,7 +80,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		InputStream in = null;
 		BufferedReader reader = null;
 		try {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 
 			// Open the file as a stream
 			in = getClass().getClassLoader().getResourceAsStream(fileName);

@@ -71,9 +71,9 @@ public class StringSetMatch {
 	}
 	
 	@Override
-    public String toString() {
+	public String toString() {
 		if (strings.isEmpty()) return "";
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		for(String s : strings)
 			result.append(s).append(",");
 		return result.substring(0, result.length()-1);

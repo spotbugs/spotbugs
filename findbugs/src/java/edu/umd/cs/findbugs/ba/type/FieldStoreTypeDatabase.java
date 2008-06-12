@@ -69,7 +69,7 @@ public class FieldStoreTypeDatabase
 
 	@Override
 	protected String encodeProperty(FieldStoreType property) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
 			if (buf.length() > 0) {
 				buf.append(',');

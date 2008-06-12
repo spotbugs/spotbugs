@@ -55,8 +55,8 @@ public class BindingSet {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		BindingSet cur = this;
 		buf.append('[');
 		while (cur != null) {

@@ -227,7 +227,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return fieldName;
 		else if (key.equals("fullField")) {
 			SignatureConverter converter = new SignatureConverter(fieldSig);
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 			if (isStatic)
 				result.append("static ");
 			result.append(converter.parseNext());

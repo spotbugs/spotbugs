@@ -167,7 +167,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		} else if (isBottom()) {
 			return "[BOTTOM]";
 		} else {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			boolean first = true;
 
 			buf.append("{");

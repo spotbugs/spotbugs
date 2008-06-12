@@ -409,7 +409,7 @@ public class ConvertToARFF {
 		}
 
 		private String generateId() {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 
 			for (int i = 0; i < 20; ++i) {
 				char c = RANDOM_CHARS.charAt(rng.nextInt(RANDOM_CHARS.length()));
@@ -465,7 +465,7 @@ public class ConvertToARFF {
 	}
 
 	public static String collectionToRange(Collection<String> collection) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("{");
 		for (String aCollection : collection) {
 			if (buf.length() > 1)

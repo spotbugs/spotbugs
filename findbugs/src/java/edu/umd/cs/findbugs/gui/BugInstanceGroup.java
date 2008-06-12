@@ -78,7 +78,7 @@ public class BugInstanceGroup {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(groupName);
 		buf.append(" (");
 		buf.append(memberCount);

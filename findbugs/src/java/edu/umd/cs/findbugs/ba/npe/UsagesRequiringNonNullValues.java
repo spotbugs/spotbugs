@@ -51,7 +51,7 @@ public class UsagesRequiringNonNullValues {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for(Location loc : map.keySet()) {
 			buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
 			for(Pair p : getPairs(loc)) {

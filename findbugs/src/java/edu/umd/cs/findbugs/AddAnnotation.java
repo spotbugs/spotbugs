@@ -63,7 +63,7 @@ public class AddAnnotation {
 				continue;
 
 			String annotation = bugInstance.getAnnotationText();
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			if (!annotation.equals("")) {
 				buf.append(annotation);
 				buf.append('\n');

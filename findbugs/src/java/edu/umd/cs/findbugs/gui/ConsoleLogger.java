@@ -51,7 +51,7 @@ public class ConsoleLogger implements Logger {
 
 		// Format a message for the console window
 		Date date = new Date();
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('[');
 		buf.append(date.toString());
 		buf.append("] ");

@@ -572,7 +572,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	private static String vlts(ValueNumber[] vl) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (ValueNumber aVl : vl) {
 			if (buf.length() > 0) buf.append(',');
 			buf.append(aVl.getNumber());

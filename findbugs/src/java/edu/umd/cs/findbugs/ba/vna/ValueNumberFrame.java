@@ -64,7 +64,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 
 	public String availableLoadMapAsString() {
-		StringBuffer buf = new StringBuffer("{ ");
+		StringBuilder buf = new StringBuilder("{ ");
 		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			buf.append(e.getKey());
 			buf.append("=");
@@ -377,7 +377,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public String toString() {
 		String frameValues = super.toString();
 		if (RLE_DEBUG) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append(frameValues);
 
 			Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator();
@@ -402,7 +402,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 
 	private static String valueToString(ValueNumber[] valueNumberList) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('[');
 		boolean first = true;
 		for (ValueNumber aValueNumberList : valueNumberList) {

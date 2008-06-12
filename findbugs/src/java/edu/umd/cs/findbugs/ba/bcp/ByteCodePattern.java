@@ -94,7 +94,7 @@ public class ByteCodePattern {
 	 * is the same as one used by another PatternElement.
 	 */
 	public String dummyVariable() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("$_");
 		buf.append(dummyVariableCount++);
 		return buf.toString();

@@ -344,7 +344,7 @@ public class UnconditionalValueDerefSet {
 			return "[BOTTOM]";
 		}
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('[');
 		boolean firstVN = true;
 		for (int i = 0; i < numValueNumbersInMethod; i++)  {

@@ -54,25 +54,17 @@ import edu.umd.cs.findbugs.util.Strings;
  * @author David Hovemeyer
  */
 public class SAXBugCollectionHandler extends DefaultHandler {
-	/**
-     * 
-     */
-    private static final String FIND_BUGS_FILTER = "FindBugsFilter";
-	/**
-     * 
-     */
-    private static final String PROJECT = "Project";
-	/**
-     * 
-     */
-    private static final String BUG_COLLECTION = "BugCollection";
+	private static final String FIND_BUGS_FILTER = "FindBugsFilter";
+	private static final String PROJECT = "Project";
+	private static final String BUG_COLLECTION = "BugCollection";
+
 	private BugCollection bugCollection;
 	private Project project;
 	private Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
 	private Filter filter;
 
 	private ArrayList<String> elementStack;
-	private StringBuffer textBuffer;
+	private StringBuilder textBuffer;
 	private BugInstance bugInstance;
 	private BugAnnotationWithSourceLines bugAnnotationWithSourceLines;
 	private AnalysisError analysisError;
@@ -89,7 +81,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		this.project = project;
 
 		this.elementStack = new ArrayList<String>();
-		this.textBuffer = new StringBuffer();
+		this.textBuffer = new StringBuilder();
 		this.stackTrace = new ArrayList<String>();
 		this.base = base;
 	

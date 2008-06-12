@@ -366,7 +366,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			getDottedSuperclassName();
 			getMethodName();
 			getDottedMethodSig();
-			StringBuffer ref = new StringBuffer(5 + dottedClassName.length()
+			StringBuilder ref = new StringBuilder(5 + dottedClassName.length()
 					+ methodName.length()
 					+ dottedMethodSig.length());
 

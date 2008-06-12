@@ -76,7 +76,7 @@ public class SignatureConverter {
 	 * @return the parsed type string
 	 */
 	public String parseNext() {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		if (signature.startsWith("[")) {
 			int dimensions = 0;
@@ -215,7 +215,7 @@ public class SignatureConverter {
 	 *                   class names)
 	 */
 	public static String convertMethodSignature(String className, String methodName, String methodSig, String pkgName) {
-		StringBuffer args = new StringBuffer();
+		StringBuilder args = new StringBuilder();
 		SignatureConverter converter = new SignatureConverter(methodSig);
 
 		converter.skip();
@@ -231,7 +231,7 @@ public class SignatureConverter {
 
 		// Ignore return type
 
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append(className);
 		result.append('.');
 		result.append(methodName);

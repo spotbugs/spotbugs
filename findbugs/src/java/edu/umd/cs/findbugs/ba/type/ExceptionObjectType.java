@@ -97,8 +97,8 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		buf.append("<exception:");
 		boolean first = true;
 		for (ExceptionSet.ThrownExceptionIterator i = exceptionSet.iterator(); i.hasNext();) {

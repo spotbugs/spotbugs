@@ -262,7 +262,7 @@ public class TypeQualifierValueSet {
 		TreeSet<ValueNumber> interesting = new TreeSet<ValueNumber>(); 
 		interesting.addAll(valueMap.keySet());
 		
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		
 		buf.append("{");
 		
@@ -279,7 +279,7 @@ public class TypeQualifierValueSet {
 	}
 	
 	public String valueNumberToString(ValueNumber vn) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		buf.append(vn.getNumber());
 		buf.append("->");
@@ -293,7 +293,7 @@ public class TypeQualifierValueSet {
 		return buf.toString();
 	}
 
-	private static void appendSourceSinkInfos(StringBuffer buf, String key, Set<SourceSinkInfo> sourceSinkInfoSet) {
+	private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<SourceSinkInfo> sourceSinkInfoSet) {
 		TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<SourceSinkInfo>();
 		sortedLocSet.addAll(sourceSinkInfoSet);
 		boolean first = true;

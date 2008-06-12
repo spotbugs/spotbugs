@@ -118,8 +118,8 @@ public class CallList {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		for (Call call : callList) {
 			if (buf.length() > 0)
 				buf.append(',');

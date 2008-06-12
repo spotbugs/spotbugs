@@ -116,8 +116,8 @@ public class Path {
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < length; ++i) {
 			int block = blockIdList[i];
 			if (block < SYMBOLS.length())

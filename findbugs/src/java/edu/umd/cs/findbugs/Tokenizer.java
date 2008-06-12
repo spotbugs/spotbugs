@@ -121,7 +121,7 @@ public class Tokenizer {
 		final int ESCAPE = 1;
 		final int DONE = 2;
 
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append((char) delimiter);
 		int state = SCAN;
 
@@ -149,7 +149,7 @@ public class Tokenizer {
 		int c = reader.read();
 		if (c == '/') {
 			// Single line comment
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 			result.append("//");
 			for (; ;) {
 				c = reader.read();
@@ -164,7 +164,7 @@ public class Tokenizer {
 			return new Token(Token.COMMENT, result.toString());
 		} else if (c == '*') {
 			// C-style multiline comment
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 			result.append("/*");
 			final int SCAN = 0;
 			final int STAR = 1;
@@ -200,7 +200,7 @@ public class Tokenizer {
 	}
 
 	private Token parseWord() throws IOException {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		for (; ;) {
 			int c = reader.read();
 			if (c < 0)

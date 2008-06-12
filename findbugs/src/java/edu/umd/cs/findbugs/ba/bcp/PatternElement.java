@@ -200,8 +200,8 @@ public abstract class PatternElement {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		String className = this.getClass().getName();
 		buf.append(className.substring(className.lastIndexOf('.') + 1));
 		buf.append('(');

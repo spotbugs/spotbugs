@@ -51,25 +51,25 @@ public class XMLAttributeList {
 	}
 
 	private static class StringBufferQuoteMetaCharacters extends QuoteMetaCharacters {
-		private StringBuffer buf;
+		private StringBuilder buf;
 
 		public StringBufferQuoteMetaCharacters(String text, MetaCharacterMap map,
-			StringBuffer buf) {
+			StringBuilder buf) {
 			super(text, map);
 			this.buf = buf;
 		}
 
 		@Override
-				 public void process() {
+		public void process() {
 			try {
 				super.process();
 			} catch (java.io.IOException e) {
-				// This can't actually happen - we're writing to a StringBuffer
+				// This can't actually happen - we're writing to a StringBuilder
 			}
 		}
 
 		@Override
-				 public void emitLiteral(String s) {
+		public void emitLiteral(String s) {
 			buf.append(s);
 		}
 	}
@@ -129,8 +129,8 @@ public class XMLAttributeList {
 	 * directly output as part of an XML tag.
 	 */
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		for (NameValuePair pair : nameValuePairList) {
 			buf.append(' ');
 			buf.append(pair.getName());
@@ -154,7 +154,7 @@ public class XMLAttributeList {
 	 */
 	public static String getQuotedAttributeValue(@NonNull String rawValue) {
 		if (rawValue == null) throw new NullPointerException("rawValue must be nonnull");
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('"');
 		new StringBufferQuoteMetaCharacters(rawValue, attrMetaCharacterMap, buf).process();
 		buf.append('"');

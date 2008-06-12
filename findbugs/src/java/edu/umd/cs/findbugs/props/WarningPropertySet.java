@@ -38,7 +38,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer("{ ");
+		StringBuilder buf = new StringBuilder("{ ");
 		for (Map.Entry<T, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();

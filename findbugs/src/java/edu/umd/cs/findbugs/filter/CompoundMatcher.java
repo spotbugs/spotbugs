@@ -71,7 +71,7 @@ public abstract class CompoundMatcher implements Matcher {
 	@Override
 	public String toString() {
 		if (children.isEmpty()) return "";
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for(Matcher m : children) 
 			buf.append(m).append(" ");
 		buf.setLength(buf.length()-1);

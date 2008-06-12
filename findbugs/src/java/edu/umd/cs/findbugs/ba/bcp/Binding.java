@@ -56,8 +56,8 @@ public class Binding {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		buf.append(varName);
 		buf.append('=');
 		buf.append(variable.toString());

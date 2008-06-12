@@ -248,13 +248,13 @@ public class BlockType extends BitSet {
 	}
 
 	@Override
-		 public String toString() {
+	public String toString() {
 		if (isTop())
 			return "<top>";
 		else if (isBottom())
 			return "<bottom>";
 		else {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("N");
 			for (int i = 0; i < depth; ++i) {
 				buf.append(get(i) == CATCH ? "C" : "F");

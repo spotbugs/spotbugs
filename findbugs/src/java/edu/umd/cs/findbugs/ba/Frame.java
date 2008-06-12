@@ -603,7 +603,7 @@ public abstract class Frame<ValueType> {
 			return "[TOP]";
 		if (isBottom())
 			return "[BOTTOM]";
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append('[');
 		int numSlots = getNumSlots();
 		int start = STACK_ONLY ? getNumLocals() : 0;

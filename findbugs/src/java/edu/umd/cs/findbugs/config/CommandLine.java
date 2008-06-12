@@ -279,7 +279,7 @@ public abstract class CommandLine {
 			if (unlistedOptions.contains(option)) continue;
 			out.print("  ");
 
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append(option);
 			if (optionExtraPartSynopsisMap.get(option) != null) {
 				String optionExtraPartSynopsis = optionExtraPartSynopsisMap.get(option);

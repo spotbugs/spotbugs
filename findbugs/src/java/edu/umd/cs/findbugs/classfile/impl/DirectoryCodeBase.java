@@ -184,7 +184,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 			partList.addFirst(file.getName());
 		} while ((file = file.getParentFile()) != null);
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (String part : partList) {
 			if (buf.length() > 0) {
 				buf.append('/');

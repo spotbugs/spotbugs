@@ -30,7 +30,7 @@ public class SignatureUtil {
 		if (params == null && returns == null) return null;
 		if (params == null) throw new NullPointerException("params is null but returns is nonnull");
 		if (returns == null) throw new NullPointerException("returns is null but params is nonnull");
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		buf.append('(');
 		StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");

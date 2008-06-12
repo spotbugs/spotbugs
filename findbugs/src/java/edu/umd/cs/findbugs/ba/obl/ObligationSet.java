@@ -99,7 +99,7 @@ public class ObligationSet {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("{");
 		int count = 0;
 		for (int i = 0; i < countList.length; ++i) {

@@ -45,8 +45,8 @@ public class NonNullSpecification {
 	}
 
 	@Override
-		 public String toString() {
-		StringBuffer buf = new StringBuffer();
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
 		buf.append(classAndMethod);
 		buf.append(":");
 		if (!nonNullProperty.isEmpty()) {

@@ -183,7 +183,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		public String toString() {
 			try {
 				BugInstance bugInstance = (BugInstance) getUserObject();
-				StringBuffer result = new StringBuffer();
+				StringBuilder result = new StringBuilder();
 
 				if (count >= 0) {
 					result.append(count);
@@ -1763,7 +1763,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	}
 
 	private String buildSelectPath(JList list) {
-		StringBuffer path = new StringBuffer();
+		StringBuilder path = new StringBuilder();
 		int[] indices = list.getSelectedIndices();
 		String separatorStr = SystemProperties.getProperty("path.separator");
 		String sep = "";

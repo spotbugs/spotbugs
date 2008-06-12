@@ -295,7 +295,7 @@ public class TypeQualifierValue {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(typeQualifier.toString());
 		if (value != null) {
 			buf.append(':');

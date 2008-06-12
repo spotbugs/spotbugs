@@ -169,7 +169,7 @@ public class MineBugHistory {
 
 	public void dumpSummary(PrintStream out) {
 
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 
 		for (int i = Math.max(0,versionList.length - 10); i < versionList.length; ++i) {
 			Version version = versionList[i];

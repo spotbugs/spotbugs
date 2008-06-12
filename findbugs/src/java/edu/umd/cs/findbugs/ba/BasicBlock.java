@@ -284,7 +284,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
 		@Override
 		public String toString() {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("[basicBlock=");
 			buf.append(getBasicBlock().getLabel());
 			buf.append(", index=");

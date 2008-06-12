@@ -342,7 +342,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash, boolean omitMethodName) {
 		// Convert to "nice" representation
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		if (!omitMethodName) {
 			if (useJVMMethodName)
 				result.append(getMethodName());

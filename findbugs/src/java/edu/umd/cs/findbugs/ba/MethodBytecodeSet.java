@@ -31,7 +31,7 @@ import org.apache.bcel.Constants;
 public class MethodBytecodeSet extends BitSet {
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer("[");
+		StringBuilder buf = new StringBuilder("[");
 		for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
 			buf.append(Constants.OPCODE_NAMES[i]).append(", ");
 		}

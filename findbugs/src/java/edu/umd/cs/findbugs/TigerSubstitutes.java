@@ -93,7 +93,7 @@ public class TigerSubstitutes {
 
 	  public static String getTextContent(Node n) {
 		  NodeList nodeList= n.getChildNodes();
-		  StringBuffer buf = new StringBuffer();
+		  StringBuilder buf = new StringBuilder();
 		  for (int j=0; j < nodeList.getLength(); j++) {
 			  Node k = nodeList.item(j);
 			  buf.append( k.getNodeValue()); 

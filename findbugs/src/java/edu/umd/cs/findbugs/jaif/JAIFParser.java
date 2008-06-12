@@ -92,7 +92,7 @@ public class JAIFParser {
 	}
 
 	private String readCompoundName() throws IOException, JAIFSyntaxException {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		
 		boolean firstToken = true;
 		
@@ -121,7 +121,7 @@ public class JAIFParser {
 	}
 	
 	private String readType() throws IOException, JAIFSyntaxException {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		
 		JAIFToken t = expect(JAIFTokenKind.IDENTIFIER_OR_KEYWORD);
 		
@@ -243,7 +243,7 @@ public class JAIFParser {
 	}
 
 	private Object unparseStringLiteral(String lexeme) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		int where = 1; // skip initial double quote char
 

@@ -201,7 +201,7 @@ public class OpcodeStack implements Constants2
 
 		@Override
 		public String toString() {
-			StringBuffer buf = new StringBuffer("< ");
+			StringBuilder buf = new StringBuilder("< ");
 			buf.append(signature);
 			switch(specialKind) {
 			case SIGNED_BYTE:

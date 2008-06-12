@@ -299,7 +299,7 @@ public class URLClassPath implements Serializable {
 	 * @return the classpath string
 	 */
 	public String getClassPath() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (Entry entry : entryList) {
 			if (buf.length() > 0)
 				buf.append(File.pathSeparator);

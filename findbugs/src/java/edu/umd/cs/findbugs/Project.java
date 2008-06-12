@@ -999,7 +999,7 @@ public class Project implements XMLWriteable {
 					slashPos = base.indexOf(slash, slashPos + 1);
 				}
 
-				StringBuffer path = new StringBuffer();
+				StringBuilder path = new StringBuilder();
 				String upDir = ".." + slash;
 				for (int i = 0; i < slashCount; i++) {
 	                path.append(upDir);

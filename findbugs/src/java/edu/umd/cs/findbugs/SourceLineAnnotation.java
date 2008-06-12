@@ -586,16 +586,16 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public String format(String key, ClassAnnotation primaryClass) {
 		if (key.equals("hash")) return "";
 		if (key.equals("")) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append(sourceFile);
 			appendLines(buf);
 			return buf.toString();
 		} else if (key.equals("lineNumber")) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			appendLinesRaw(buf);
 			return buf.toString();
 		} else if (key.equals("full")) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			String pkgName = getPackageName();
 			if (!pkgName.equals("")) {
 				buf.append(pkgName.replace('.', '/'));
@@ -608,14 +608,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 			throw new IllegalArgumentException("Unknown format key " + key);
 	}
 
-	private void appendLines(StringBuffer buf) {
+	private void appendLines(StringBuilder buf) {
 		if (isUnknown()) return;
 		buf.append(":[");
 		appendLinesRaw(buf);
 		buf.append(']');
 	}
 
-	private void appendLinesRaw(StringBuffer buf) {
+	private void appendLinesRaw(StringBuilder buf) {
 		if (isUnknown()) return;
 		if (startLine == endLine) {
 			buf.append("line ");

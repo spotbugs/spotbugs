@@ -116,7 +116,7 @@ public class IsNullConditionDecision implements EdgeTypes {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(value != null ? value.toString() : "NoValue,");
 		buf.append("ifcmp=");
 		buf.append(ifcmpDecision != null ? Strings.trimComma(ifcmpDecision.toString()) : "INFEASIBLE");
