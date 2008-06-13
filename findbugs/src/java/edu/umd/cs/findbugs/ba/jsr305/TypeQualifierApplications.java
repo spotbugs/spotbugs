@@ -461,6 +461,11 @@ public class TypeQualifierApplications {
 				public TypeQualifierAnnotation compute(TypeQualifierValue tqv) {
 					return computeEffectiveTypeQualifierAnnotation(tqv, o);
 				}
+
+				@Override
+				public String toString() {
+					return o.toString();
+				}
 			});
 		}
 		
@@ -616,6 +621,11 @@ public class TypeQualifierApplications {
 			tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
 				public TypeQualifierAnnotation compute(TypeQualifierValue tqv) {
 					return computeEffectiveTypeQualifierAnnotation(tqv, xmethod, parameter);
+				}
+
+				@Override
+				public String toString() {
+					return "parameter " + parameter + " of " + xmethod;
 				}
 			});
 		}
@@ -779,7 +789,7 @@ public class TypeQualifierApplications {
 					// was observed effectively when=ALWAYS.
 					return TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
 				} else if (complementaryTqa.when != When.NEVER) {
-						allComplementaryValuesAreWhenEqualsNever = false;
+					allComplementaryValuesAreWhenEqualsNever = false;
 				}
 			} else {
 				allComplementaryValuesAreWhenEqualsNever = false;
@@ -789,6 +799,9 @@ public class TypeQualifierApplications {
 		if (isExhaustive && allComplementaryValuesAreWhenEqualsNever) {
 			// It's an exhaustive qualifier, and all complementary
 			// qualifiers were effectively when=NEVER.
+			if (TypeQualifierValue.DEBUG) {
+				System.out.println("*** application of " + typeQualifierValue + " on " + c + " is when=ALWAYS due to exhaustion");
+			}
 			return TypeQualifierAnnotation.getValue(typeQualifierValue, When.ALWAYS);
 		}
 		

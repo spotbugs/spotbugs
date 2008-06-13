@@ -48,7 +48,7 @@ import java.util.Set;
  * @author William Pugh
  */
 public class TypeQualifierValue {
-	private static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("tqv.debug");
 	
 	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
 		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
@@ -202,29 +202,22 @@ public class TypeQualifierValue {
 		try {
 			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc); 
 
+			// If the value() method is annotated as @Exhaustive, the type qualifier is exhaustive and exclusive.
 			// If the value() method is annotated as @Exclusive, the type qualifier is exclusive.
-			// If the value() method is annotated as @Exhaustive, the type qualifier is exhaustive.
 			for (XMethod xmethod : xclass.getXMethods()) {
 				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
-					isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
-					isExhaustive = isExclusive && xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
+					isExhaustive = xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
+					if (isExhaustive) {
+						// exhaustive qualifiers are automatically exclusive
+						isExclusive = true;
+					} else {
+						// see if there is an explicit @Exclusive annotation
+						isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+					}
+					
 					break;
 				}
 			}
-			
-/*
-			// If the "exclusive" element is set to true in the type qualifier's
-			// @TypeQualifier annotation, then the type qualifier is exclusive.
-			// XXX: not supported currently in JSR 305 reference implementation
-			if (!isExclusive) {
-				AnnotationValue tqv = xclass.getAnnotation(TYPE_QUALIFIER_ANNOTATION);
-				assert tqv != null;
-				Object exclusiveVal = tqv.getValue("exclusive");
-				if (exclusiveVal != null && exclusiveVal instanceof Boolean && exclusiveVal.equals(Boolean.TRUE)) {
-					isExclusive = true;
-				}
-			}
-*/
 		} catch (MissingClassException e) {
 			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
 		} catch (CheckedAnalysisException e) {
@@ -239,7 +232,14 @@ public class TypeQualifierValue {
 		}
 		
 		if (DEBUG) {
-			System.out.println(result.isExclusiveQualifier() ? "yes" : "no");
+			//System.out.println(result.isExclusiveQualifier() ? "yes" : "no");
+			if (isExhaustive) {
+				System.out.println("exhaustive,exclusive");
+			} else if (isExclusive) {
+				System.out.println("exclusive");
+			} else {
+				System.out.println("neither");
+			}
 		}
 	}
 
