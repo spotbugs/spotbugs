@@ -106,7 +106,7 @@
                 <package-root>src/junit</package-root>
                 <package-root>src/antTask</package-root>
                 <package-root>src/java5</package-root>
-                <classpath mode="compile">build/classes:lib/bcel.jar:lib/junit.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/jsr305.jar:lib/dom4j-1.6.1.jar:lib/jaxen-1.1.1.jar</classpath>
+                <classpath mode="compile">build/classes:lib/bcel.jar:lib/junit.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/jsr305.jar:lib/dom4j-1.6.1.jar:lib/jaxen-1.1.1.jar:lib/asm-3.1.jar:lib/asm-analysis-3.1.jar:lib/asm-commons-3.1.jar:lib/asm-tree-3.1.jar:lib/asm-util-3.1.jar:lib/asm-xml-3.1.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

@@ -60,9 +60,9 @@
 		<pathelement location="${jar.dir}/dom4j-1.6.1.jar"/>
 		<pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
 		<pathelement location="${jar.dir}/junit.jar"/>
-		<pathelement location="${jar.dir}/asm-3.0.jar"/>
-		<pathelement location="${jar.dir}/asm-commons-3.0.jar"/>
-		<pathelement location="${jar.dir}/asm-tree-3.0.jar"/>
+		<pathelement location="${jar.dir}/asm-3.1.jar"/>
+		<pathelement location="${jar.dir}/asm-commons-3.1.jar"/>
+		<pathelement location="${jar.dir}/asm-tree-3.1.jar"/>
 		<pathelement location="${jar.dir}/jsr305.jar"/>
 	</path>
 	
@@ -677,9 +677,9 @@
 		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jsr305.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.0.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-commons-3.0.jar"/>
-		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.0.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.1.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-commons-3.1.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.1.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
 		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
@@ -803,7 +803,7 @@
       <javadoc access="protected" 
        author="true" 
 	    packagenames="*"
-       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-commons-3.0.jar"
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/AppleJavaExtensions.jar:lib/asm-3.1.jar:lib/asm-tree-3.1.jar:lib/asm-commons-3.1.jar"
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
