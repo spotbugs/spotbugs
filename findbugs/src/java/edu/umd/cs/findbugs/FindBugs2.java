@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006-2007 University of Maryland
+ * Copyright (C) 2006-2008 University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,13 +31,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.classfile.ClassFormatException;
-import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
