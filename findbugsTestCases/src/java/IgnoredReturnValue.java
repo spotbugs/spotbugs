@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
@@ -9,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class IgnoredReturnValue {
+	@ExpectWarning("RV")
 	public static void main(String args[]) throws Exception {
 		String str = " ttesting ";
 		str.trim();
@@ -38,6 +41,7 @@ public class IgnoredReturnValue {
 	// This method shows one way to check to see if a string encoding name is legal.
 	// Under earlier versions of the JVM, this may have been the best way to do this.
 	// So we shouldn't signal a RV warning here
+	@NoWarning("RV")
 	public static boolean falsePositive(String enc) {
 		try {
 			new String(new byte[0], enc);
