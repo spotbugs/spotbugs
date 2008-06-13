@@ -53,7 +53,10 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
 	
-	static final boolean CHECK_EXCLUSIVE = SystemProperties.getBoolean("ctq.applications.checkexclusive");
+	/**
+	 * Should exclusive type qualifiers be handled?
+	 */
+	static final boolean CHECK_EXCLUSIVE = true;//SystemProperties.getBoolean("ctq.applications.checkexclusive");
 
 	static class Data {
 		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
