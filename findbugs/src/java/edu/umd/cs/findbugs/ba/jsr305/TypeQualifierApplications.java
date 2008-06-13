@@ -57,6 +57,7 @@ public class TypeQualifierApplications {
 	 * Should exclusive type qualifiers be handled?
 	 */
 	static final boolean CHECK_EXCLUSIVE = true;//SystemProperties.getBoolean("ctq.applications.checkexclusive");
+//	static final boolean CHECK_EXHAUSTIVE = SystemProperties.getBoolean("ctq.checkexhaustive");
 
 	static class Data {
 		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
@@ -108,6 +109,14 @@ public class TypeQualifierApplications {
 
 	private static Map<AnnotatedObject, Collection<AnnotationValue>> getDirectObjectAnnotations() {
 		return instance.get().directObjectAnnotations;
+	}
+	
+	/**
+	 * Callback interface to compute effective TypeQualifierAnnotation on an
+	 * AnnotatedObject or method parameter.
+	 */
+	private interface ComputeEffectiveTypeQualifierAnnotation {
+		public TypeQualifierAnnotation compute(TypeQualifierValue tqv);
 	}
 
 	/**
@@ -442,35 +451,21 @@ public class TypeQualifierApplications {
 	 *         AnnotatedObject
 	 */
 	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
-			AnnotatedObject o,
+			final AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
 
 		TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, o);
-		
-		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
-			// Type qualifier is exclusive.
-			// Check to see if there is an effective application of
-			// a "complementary" TypeQualifierValue in which
-			// when=ALWAYS.  If so, then it's effectively
-			// the same as the asked-for TypeQualifierValue,
-			// but with when=NEVER.
 
-			Collection<TypeQualifierValue> complementaryTypeQualifierValues =
-				TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
-			
-			for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
-				TypeQualifierAnnotation complementaryTqa =
-					computeEffectiveTypeQualifierAnnotation(complementaryTypeQualifierValue, o);
-				if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
-					tqa = TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
-					break;
+		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
+			tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
+				public TypeQualifierAnnotation compute(TypeQualifierValue tqv) {
+					return computeEffectiveTypeQualifierAnnotation(tqv, o);
 				}
-			}
+			});
 		}
 		
 		return tqa;
 	}
-
 
 	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, AnnotatedObject o) {
 		if (DEBUG) {
@@ -610,32 +605,19 @@ public class TypeQualifierApplications {
 	 *         or null if there is no effective TypeQualifierAnnotation
 	 */
 	public static @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
-			XMethod xmethod,
-			int parameter,
+			final XMethod xmethod,
+			final int parameter,
 			TypeQualifierValue typeQualifierValue) {
 
 		
 		TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, xmethod, parameter);
 		
 		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
-			// Type qualifier is exclusive.
-			// Check to see if there is an effective application of
-			// a "complementary" TypeQualifierValue in which
-			// when=ALWAYS.  If so, then it's effectively
-			// the same as the asked-for TypeQualifierValue,
-			// but with when=NEVER.
-
-			Collection<TypeQualifierValue> complementaryTypeQualifierValues =
-				TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
-			
-			for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
-				TypeQualifierAnnotation complementaryTqa =
-					computeEffectiveTypeQualifierAnnotation(complementaryTypeQualifierValue, xmethod, parameter);
-				if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
-					tqa = TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
-					break;
+			tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
+				public TypeQualifierAnnotation compute(TypeQualifierValue tqv) {
+					return computeEffectiveTypeQualifierAnnotation(tqv, xmethod, parameter);
 				}
-			}
+			});
 		}
 		
 		return tqa;
@@ -765,5 +747,25 @@ public class TypeQualifierApplications {
 			}
 		}
 
+	}
+
+	private static TypeQualifierAnnotation computeExclusiveQualifier(TypeQualifierValue typeQualifierValue, ComputeEffectiveTypeQualifierAnnotation c) {
+		// Check to see if there is an effective application of
+		// a "complementary" TypeQualifierValue in which
+		// when=ALWAYS.  If so, then it's effectively
+		// the same as the asked-for TypeQualifierValue,
+		// but with when=NEVER.
+
+		Collection<TypeQualifierValue> complementaryTypeQualifierValues =
+			TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
+
+		for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
+			TypeQualifierAnnotation complementaryTqa = c.compute(complementaryTypeQualifierValue);
+			if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
+				return TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
+			}
+		}
+		
+		return null;
 	}
 }
