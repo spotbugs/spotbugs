@@ -796,6 +796,9 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		// Build the execution plan
 		executionPlan.build();
+		
+		// Stash the ExecutionPlan in the AnalysisCache.
+		Global.getAnalysisCache().eagerlyPutDatabase(ExecutionPlan.class, executionPlan);
 
 		if (DEBUG) {
 			System.out.println(executionPlan.getNumPasses() + " passes in execution plan");
