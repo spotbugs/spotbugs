@@ -52,20 +52,22 @@ public class TypeQualifierValue {
 	
 	private static final ClassDescriptor EXCLUSIVE_ANNOTATION =
 		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exclusive");
+	private static final ClassDescriptor EXHAUSTIVE_ANNOTATION =
+		DescriptorFactory.instance().getClassDescriptor("javax/annotation/meta/Exhaustive");
 	
 	public final ClassDescriptor typeQualifier;
 	public final @CheckForNull Object value;
 	private boolean isStrict;
 	private boolean isExclusive;
+	private boolean isExhaustive;
 
 	private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
 		this.typeQualifier =  typeQualifier;
 		this.value = value;
 		this.isStrict = false; // will be set to true if this is a strict type qualifier value
 		this.isExclusive = false; // will be set to true if this is an exclusive type qualifier value
+		this.isExhaustive = false; // will be set to true if this is an exhaustive type qualifier value
 	}
-
-//	private static DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> map = new DualKeyHashMap <ClassDescriptor, Object, TypeQualifierValue> ();
 
 	static class Data {
 		/**
@@ -106,7 +108,7 @@ public class TypeQualifierValue {
 		if (result != null) return result;
 		result = new TypeQualifierValue(desc, value);
 		determineIfQualifierIsStrict(desc, result);
-		determineIfQualifierIsExclusive(desc, result);
+		determineIfQualifierIsExclusiveOrExhaustive(desc, result);
 		map.put(desc, value, result);
 		instance.get().allKnownTypeQualifiers.add(result);
 		return result;
@@ -189,20 +191,23 @@ public class TypeQualifierValue {
 		}
 	}
 	
-	private static void determineIfQualifierIsExclusive(ClassDescriptor desc, TypeQualifierValue result) {
+	private static void determineIfQualifierIsExclusiveOrExhaustive(ClassDescriptor desc, TypeQualifierValue result) {
 		if (DEBUG) {
-			System.out.print("Checking to see if " + desc + " is exclusive...");
+			System.out.print("Checking to see if " + desc + " is exclusive or exhaustive...");
 		}
 		
 		boolean isExclusive = false;
+		boolean isExhaustive = false;
 		
 		try {
 			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc); 
 
 			// If the value() method is annotated as @Exclusive, the type qualifier is exclusive.
+			// If the value() method is annotated as @Exhaustive, the type qualifier is exhaustive.
 			for (XMethod xmethod : xclass.getXMethods()) {
 				if (xmethod.getName().equals("value") && xmethod.getSignature().startsWith("()")) {
 					isExclusive = xmethod.getAnnotation(EXCLUSIVE_ANNOTATION) != null;
+					isExhaustive = isExclusive && xmethod.getAnnotation(EXHAUSTIVE_ANNOTATION) != null;
 					break;
 				}
 			}
@@ -228,6 +233,9 @@ public class TypeQualifierValue {
 		
 		if (isExclusive) {
 			result.setIsExclusive();
+		}
+		if (isExhaustive) {
+			result.setIsExhaustive();
 		}
 		
 		if (DEBUG) {
@@ -262,12 +270,12 @@ public class TypeQualifierValue {
 		return isStrict;
 	}
 	
-    private void setIsExclusive() {
-    	this.isExclusive = true;
-    }
+	private void setIsExclusive() {
+		this.isExclusive = true;
+	}
 	
 	/**
-	 * Return whether or not this TypeQualifierValue denotesw
+	 * Return whether or not this TypeQualifierValue denotes
 	 * an exclusive qualifier.
 	 * 
 	 * @return true if type qualifier is exclusive, false otherwise
@@ -276,15 +284,30 @@ public class TypeQualifierValue {
 		return isExclusive;
 	}
 
+	
+	private void setIsExhaustive() {
+		this.isExhaustive = true;
+	}
+
+	/**
+	 * Return whether or not this TypeQualifierValue denotes
+	 * an exhaustive qualifier.
+	 * 
+	 * @return true if type qualifier is exhaustive, false otherwise
+	 */
+	public boolean isExhaustiveQualifier() {
+		return isExhaustive;
+	}
+
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		int result = typeQualifier.hashCode();
 		if (value != null) result += 37*value.hashCode();
 		return result;
 	}
 
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (!(o instanceof TypeQualifierValue)) return false;
 		TypeQualifierValue other = (TypeQualifierValue) o;
 		return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);

@@ -57,7 +57,7 @@ public class TypeQualifierApplications {
 	 * Should exclusive type qualifiers be handled?
 	 */
 	static final boolean CHECK_EXCLUSIVE = true;//SystemProperties.getBoolean("ctq.applications.checkexclusive");
-//	static final boolean CHECK_EXHAUSTIVE = SystemProperties.getBoolean("ctq.checkexhaustive");
+	static final boolean CHECK_EXHAUSTIVE = SystemProperties.getBoolean("ctq.applications.checkexhaustive");
 
 	static class Data {
 		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
@@ -750,20 +750,46 @@ public class TypeQualifierApplications {
 	}
 
 	private static TypeQualifierAnnotation computeExclusiveQualifier(TypeQualifierValue typeQualifierValue, ComputeEffectiveTypeQualifierAnnotation c) {
-		// Check to see if there is an effective application of
-		// a "complementary" TypeQualifierValue in which
-		// when=ALWAYS.  If so, then it's effectively
-		// the same as the asked-for TypeQualifierValue,
-		// but with when=NEVER.
+		assert typeQualifierValue.isExclusiveQualifier();
+		
+		boolean isExhaustive = CHECK_EXHAUSTIVE && typeQualifierValue.isExhaustiveQualifier();
+		
+		// Exclusive qualifiers:
+		// - if there is an effective application of
+		//   a "complementary" TypeQualifierValue in which
+		//   when=ALWAYS.  If so, then it's effectively
+		//   the same as the asked-for TypeQualifierValue,
+		//   but with when=NEVER.
+		//
+		// Exhaustive qualifiers:
+		// - if all effective applications of "complementary" TypeQualifierValues
+		//   are when=NEVER, then the asked-for TypeQualifierValue
+		//   is effectively when=ALWAYS.
+		
+		boolean allComplementaryValuesAreWhenEqualsNever = true;
 
 		Collection<TypeQualifierValue> complementaryTypeQualifierValues =
 			TypeQualifierValue.getComplementaryExclusiveTypeQualifierValue(typeQualifierValue);
 
 		for (TypeQualifierValue complementaryTypeQualifierValue : complementaryTypeQualifierValues) {
 			TypeQualifierAnnotation complementaryTqa = c.compute(complementaryTypeQualifierValue);
-			if (complementaryTqa != null && complementaryTqa.when == When.ALWAYS) {
-				return TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
+			if (complementaryTqa != null) {
+				if (complementaryTqa.when == When.ALWAYS) {
+					// Exclusive qualifier where a complementary qualifier
+					// was observed effectively when=ALWAYS.
+					return TypeQualifierAnnotation.getValue(typeQualifierValue, When.NEVER);
+				} else if (complementaryTqa.when != When.NEVER) {
+						allComplementaryValuesAreWhenEqualsNever = false;
+				}
+			} else {
+				allComplementaryValuesAreWhenEqualsNever = false;
 			}
+		}
+		
+		if (isExhaustive && allComplementaryValuesAreWhenEqualsNever) {
+			// It's an exhaustive qualifier, and all complementary
+			// qualifiers were effectively when=NEVER.
+			return TypeQualifierAnnotation.getValue(typeQualifierValue, When.ALWAYS);
 		}
 		
 		return null;
