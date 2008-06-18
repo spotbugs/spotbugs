@@ -140,7 +140,7 @@ public class TypeQualifierValue {
 			// annotation class but a different value is a complementary
 			// type qualifier.
 			//
-			if (t.typeQualifier.equals(tqv.typeQualifier) && !t.value.equals(tqv.value)) {
+			if (t.typeQualifier.equals(tqv.typeQualifier) && !Util.nullSafeEquals(t.value, tqv.value)) {
 				result.add(t);
 			}
 		}

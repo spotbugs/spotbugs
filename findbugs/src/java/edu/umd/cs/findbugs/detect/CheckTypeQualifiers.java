@@ -512,7 +512,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 			// When there are multiple variants, qualify the type
 			// qualifier with the value indicating which variant.
 			buf.append("(");
-			buf.append(typeQualifierValue.value.toString());
+			buf.append(typeQualifierValue.value);
 			buf.append(")");
 		}
 		warning.addString(buf.toString()).describe(StringAnnotation.TYPE_QUALIFIER_ROLE);
