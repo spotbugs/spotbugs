@@ -41,5 +41,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
