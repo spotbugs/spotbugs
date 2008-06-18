@@ -43,8 +43,6 @@ public class DetectorOrderingConstraint {
 	 * (ealier detector).  Such constraints automatically enable
 	 * the source (earlier) detector if the target (later)
 	 * detector is enabled.
-	 * 
-	 * @return true if this edge has a single detector as its source (earlier detector)
 	 */
 	public void setSingleSource(boolean singleSource) {
 		this.singleSource = singleSource;
