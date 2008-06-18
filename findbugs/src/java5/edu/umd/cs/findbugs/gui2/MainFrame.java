@@ -2335,7 +2335,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * Opens the analysis. Also clears the source and summary panes. Makes comments enabled false.
 	 * Sets the saveType and adds the file to the recent menu.
 	 * @param f
-	 * @return
+	 * @return whether the operation was successful
 	 */
 	public boolean openAnalysis(File f, SaveType saveType){
 		if (!f.exists() || !f.canRead()) {
