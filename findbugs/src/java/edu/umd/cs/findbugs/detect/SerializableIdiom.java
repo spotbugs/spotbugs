@@ -76,10 +76,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 	boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
 	private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
-	private HashMap<String, XField> transientFields = new HashMap<String, XField>();
-	private HashMap<String, Integer> transientFieldsUpdates = new HashMap<String, Integer>();
-	private HashSet<String> transientFieldsSetInConstructor = new HashSet<String>();
-	private HashSet<String> transientFieldsSetToDefaultValueInConstructor = new HashSet<String>();
+	private HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
+	private HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
+	private HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<XField>();
 
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
@@ -148,7 +147,6 @@ public class SerializableIdiom extends OpcodeStackDetector
 		seenTransientField = false;
 		// boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
 		fieldsThatMightBeAProblem.clear();
-		transientFields.clear();
 		transientFieldsUpdates.clear();
 		transientFieldsSetInConstructor.clear();
 		transientFieldsSetToDefaultValueInConstructor.clear();
@@ -273,20 +271,20 @@ public class SerializableIdiom extends OpcodeStackDetector
 			System.out.println("  isEjbImplClass: " + isEjbImplClass);
 		}
 		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField) {
-			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
+			for(Map.Entry<XField,Integer> e : transientFieldsUpdates.entrySet()) {
 
-					XField fieldX = transientFields.get(e.getKey());
+					XField fieldX = e.getKey();
 					int priority = NORMAL_PRIORITY;
 					if (transientFieldsSetInConstructor.contains(e.getKey()))
 						priority--;
-					else {
-						if (isGUIClass) priority++;
-						if (isEjbImplClass) priority++;
-						if (e.getValue() < 3) 
-							priority++;
-						if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
-							priority++;
-					}
+
+					if (isGUIClass) priority++;
+					if (isEjbImplClass) priority++;
+					if (e.getValue() < 3) 
+						priority++;
+					if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
+						priority++;
+
 					try {
 						double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
 						if (isSerializable < 0.6) priority++;
@@ -452,10 +450,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == PUTFIELD) {
-			String nameOfClass = getClassConstantOperand();
-			if ( getClassName().equals(nameOfClass))  {
+			XField xField = getXFieldOperand();
+			if ( xField != null && xField.getClassDescriptor().equals(getClassDescriptor()))  {
 				Item first = stack.getStackItem(0);
-				boolean isPutOfDefaultValue = first.isNull() || first.isInitialParameter();
+				boolean isPutOfDefaultValue = first.isNull(); // huh?? || first.isInitialParameter();
 				if (!isPutOfDefaultValue && first.getConstant() != null) {
 					Object constant = first.getConstant();
 					if (constant instanceof Number && ((Number)constant).intValue() == 0 
@@ -464,13 +462,13 @@ public class SerializableIdiom extends OpcodeStackDetector
 				}
 
 				if (isPutOfDefaultValue) {
-					String nameOfField = getNameConstantOperand();
-					if (getMethodName().equals("<init>")) transientFieldsSetToDefaultValueInConstructor.add(nameOfField);
+					if (getMethodName().equals("<init>")) transientFieldsSetToDefaultValueInConstructor.add(xField);
 				} else {
 					String nameOfField = getNameConstantOperand();
-					if (transientFieldsUpdates.containsKey(nameOfField) ) {
-						if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
-						else transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
+					
+					if (transientFieldsUpdates.containsKey(xField) ) {
+						if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(xField);
+						else transientFieldsUpdates.put(xField, transientFieldsUpdates.get(xField)+1);
 					} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
 						try {
 
@@ -517,10 +515,9 @@ public class SerializableIdiom extends OpcodeStackDetector
 		int flags = obj.getAccessFlags();
 
 		if (obj.isTransient()) {
-			if (isSerializable) {
+			if (isSerializable && !isExternalizable) {
 				seenTransientField = true;
-				transientFields.put(obj.getName(), XFactory.createXField(this));
-				transientFieldsUpdates.put(obj.getName(), 0);
+				transientFieldsUpdates.put(getXField(), 0);
 			} else if (reportTransientFieldOfNonSerializableClass) {
 				bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
 				.addClass(this)
