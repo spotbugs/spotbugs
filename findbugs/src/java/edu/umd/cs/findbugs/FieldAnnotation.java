@@ -129,7 +129,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	/**
 	 * Factory method. Construct from class name and BCEL Field object.
 	 *
-	 * @param className the name of the class which defines the field
+	 * @param jClass the class which defines the field
 	 * @param field     the BCEL Field object
 	 * @return the FieldAnnotation
 	 */
