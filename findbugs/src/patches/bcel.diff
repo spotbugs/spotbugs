@@ -123,7 +123,7 @@ Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apa
 + * This class represents colection of local variables in a
 + * method. This attribute is contained in the <em>Code</em> attribute.
 + *
-+ * @version $Id: LocalVariableTable.java 386056 2006-03-15 11:31:56Z tcurdt $
++ * @version $Id: bcel.diff,v 1.2 2007/08/14 03:33:02 wpugh Exp $
 + * @author  <A HREF="mailto:m.dahm@gmx.de">M. Dahm</A>
 + * @see     Code
 + * @see LocalVariable

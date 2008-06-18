@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.16 $
+// $Revision: 1.17 $
 
 package edu.umd.cs.findbugs.graph;
 

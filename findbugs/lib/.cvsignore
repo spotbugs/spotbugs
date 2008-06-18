@@ -5,6 +5,7 @@ findbugs.jar
 findbugsGUI.jar
 findbugsAttributes.jar
 findbugsAnnotations.jar
+oneFourCompatibility.jar
 foo
 log
 foo2

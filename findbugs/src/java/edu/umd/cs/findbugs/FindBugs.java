@@ -86,6 +86,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  */
 public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	
+
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
