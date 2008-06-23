@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,6 +79,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
 	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
+	
+	private static final String METHOD = SystemProperties.getProperty("ctq.method");
 
 	private final BugReporter bugReporter;
 	private boolean firstTime;
@@ -102,6 +104,10 @@ public class CheckTypeQualifiers extends CFGDetector {
 	 */
 	@Override
 	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
+		if (METHOD != null && !methodDescriptor.getName().equals(METHOD)) {
+			return;
+		}
+
 		if (DEBUG) {
 			System.out.println("CheckTypeQualifiers: checking " + methodDescriptor.toString());
 		}
