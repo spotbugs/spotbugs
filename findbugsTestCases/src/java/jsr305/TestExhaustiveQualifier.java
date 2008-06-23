@@ -16,6 +16,12 @@ public class TestExhaustiveQualifier {
 		redField = v;
 	}
 
+	@ExpectWarning("TQ")
+	public void report1a(@AlwaysBlue Object v) {
+		// always BLUE should imply never RED
+		redField = v;
+	}
+	
 	@NoWarning("TQ")
 	public void noReport(@NeverBlue @NeverGreen Object v) {
 		// no report: never blue and never green should imply always red
