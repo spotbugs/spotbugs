@@ -196,26 +196,26 @@ public class FindBugs2 implements IFindBugsEngine {
 			createExecutionPlan();
 
 			if (!classScreener.vacuous()) {
-			final BugReporter origBugReporter = bugReporter.getDelegate();
-			BugReporter filterBugReporter = new  DelegatingBugReporter(origBugReporter) {
+				final BugReporter origBugReporter = bugReporter.getDelegate();
+				BugReporter filterBugReporter = new DelegatingBugReporter(origBugReporter) {
 
-				@Override
-				public void reportBug(BugInstance bugInstance) {
-					String className = bugInstance.getPrimaryClass().getClassName();
-					String resourceName = className.replace('.','/')+".class";
-					if (classScreener.matches(resourceName)) {
-	                    this.getDelegate().reportBug(bugInstance);
-                    }
-				}
-			};
-			bugReporter.setDelegate(filterBugReporter);
+					@Override
+					public void reportBug(BugInstance bugInstance) {
+						String className = bugInstance.getPrimaryClass().getClassName();
+						String resourceName = className.replace('.', '/') + ".class";
+						if (classScreener.matches(resourceName)) {
+							this.getDelegate().reportBug(bugInstance);
+						}
+					}
+				};
+				bugReporter.setDelegate(filterBugReporter);
 			}
 
 			if (appClassList.size() == 0) {
-				if(noClassOk) {
+				if (noClassOk) {
 					System.err.println("No classfiles specified; output will have no warnings");
 				} else {
-	                throw new NoClassesFoundToAnalyzeException(classPath);
+					throw new NoClassesFoundToAnalyzeException(classPath);
 				}
 			}
 
@@ -230,12 +230,12 @@ public class FindBugs2 implements IFindBugsEngine {
 			System.err.println("Total memory: " + Runtime.getRuntime().maxMemory() / 1000000 + "M");
 			System.err.println(" free memory: " + Runtime.getRuntime().freeMemory() / 1000000 + "M");
 
-			for(String s : project.getFileList()) {
-	            System.err.println("Analyzed: " + s);
-            }
-			for(String s : project.getAuxClasspathEntryList()) {
-	            System.err.println("     Aux: " + s);
-            }
+			for (String s : project.getFileList()) {
+				System.err.println("Analyzed: " + s);
+			}
+			for (String s : project.getAuxClasspathEntryList()) {
+				System.err.println("     Aux: " + s);
+			}
 			throw e;
 		} finally {
 			AnalysisContext.removeCurrentAnalysisContext();
@@ -246,9 +246,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			TypeQualifierAnnotation.clearInstance();
 			TypeQualifierValue.clearInstance();
 			// Make sure the codebases on the classpath are closed
-			if(classPath != null) {
-	            classPath.close();
-            }
+			if (classPath != null) {
+				classPath.close();
+			}
 			profiler.end(this.getClass());
 			profiler.report();
 		}
