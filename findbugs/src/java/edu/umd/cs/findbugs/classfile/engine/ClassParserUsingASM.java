@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,6 +53,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ClassParserUsingASM implements ClassParserInterface {
 
+//	static final boolean NO_SHIFT_INNER_CLASS_CTOR = SystemProperties.getBoolean("classparser.noshift");
 
 	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
 	static {
@@ -256,9 +258,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); )
 								System.out.println("   " + i.next());
 							AnnotationValue value = new AnnotationValue(desc);
-							if (isInnerClass && methodName.equals("<init>")) {
-								parameter++;
-							}
+//							if (!NO_SHIFT_INNER_CLASS_CTOR && isInnerClass && methodName.equals("<init>")) {
+//								parameter++;
+//							}
 							// System.out.println(isInnerClass + " parameter " + parameter + " of " + slashedClassName+"." + methodName +methodDesc + " is annotated " + desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
 							return value.getAnnotationVisitor();
