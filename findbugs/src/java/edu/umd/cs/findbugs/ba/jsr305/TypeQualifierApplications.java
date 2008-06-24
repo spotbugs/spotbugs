@@ -59,7 +59,7 @@ public class TypeQualifierApplications {
 	 * Should exclusive type qualifiers be handled?
 	 */
 	static final boolean CHECK_EXCLUSIVE = true;//SystemProperties.getBoolean("ctq.applications.checkexclusive");
-	static final boolean CHECK_EXHAUSTIVE = SystemProperties.getBoolean("ctq.applications.checkexhaustive");
+	static final boolean CHECK_EXHAUSTIVE = true; //SystemProperties.getBoolean("ctq.applications.checkexhaustive");
 
 	static class Data {
 		/** Type qualifier annotations applied directly to methods/fields/classes/etc. */
