@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
+	static final boolean DEBUG_DEFAULT_ANNOTATION = SystemProperties.getBoolean("ctq.applications.default.debug");
 	
 	/**
 	 * Should exclusive type qualifiers be handled?
@@ -92,6 +93,9 @@ public class TypeQualifierApplications {
 		};
 
 	public static void clearInstance() {
+		if (DEBUG) {
+			System.out.println("Clearing TypeQualifier application cache");
+		}
 		instance.remove();
 	}
 
@@ -366,13 +370,13 @@ public class TypeQualifierApplications {
 	private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
 
-		if (DEBUG) {
+		if (DEBUG_DEFAULT_ANNOTATION) {
 			System.out.println("Checking for " + defaultAnnotation + " containing " + typeQualifierValue + " on " + o);
 		}
 		// - check to see if default annotation is present; if not, return null
 		AnnotationValue annotationValue = o.getAnnotation(defaultAnnotation);
 		if (annotationValue == null) {
-			if (DEBUG) {
+			if (DEBUG_DEFAULT_ANNOTATION) {
 				System.out.println("   ===> no " + defaultAnnotation);
 			}
 			return null;
@@ -381,7 +385,7 @@ public class TypeQualifierApplications {
 		// - get value - should be Type or array of Type
 		Object value = annotationValue.getValue("value");
 		if (value == null) {
-			if (DEBUG) {
+			if (DEBUG_DEFAULT_ANNOTATION) {
 				System.out.println("   ===> value is null");
 			}
 			return null;
@@ -396,14 +400,14 @@ public class TypeQualifierApplications {
 		// - scan through array elements; see if any match the TypeQualifierValue (including type qualifier nicknames)
 		for (Object obj : types) {
 			if (!(obj instanceof Type)) {
-				if (DEBUG) {
+				if (DEBUG_DEFAULT_ANNOTATION) {
 					System.out.println("Found a non-Type value in value array of " + defaultAnnotation.toString() + " annotation");
 				}
 				continue;
 			}
 
 			Type type = (Type) obj;
-			if (DEBUG) {
+			if (DEBUG_DEFAULT_ANNOTATION) {
 				System.out.println("  ===> checking " + type.getDescriptor());
 			}
 			if (type.getDescriptor().startsWith("[")) {
@@ -597,7 +601,7 @@ public class TypeQualifierApplications {
 			}
 		}
 	}
-
+	
 	/**
 	 * Get the effective TypeQualifierAnnotation on given method parameter.
 	 * Takes into account inherited and default (outer scope) annotations.
@@ -632,14 +636,21 @@ public class TypeQualifierApplications {
 		
 		return tqa;
 	}
+	
+	static Map<String, Throwable> checked = new HashMap<String, Throwable>();
 
 	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, XMethod xmethod, int parameter) {
 		if (DEBUG) {
-			System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
+//			System.out.println("XX: " +System.identityHashCode(typeQualifierValue));
+			if (typeQualifierValue.value != null) {
+				System.out.println("  Value is " + typeQualifierValue.value +"("+typeQualifierValue.value.getClass().toString()+")");
+			}
 		}
-
 		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map = getEffectiveParameterAnnotations().get(typeQualifierValue);
 		if (map == null) {
+			if (DEBUG) {
+				System.out.println("computeEffectiveTypeQualifierAnnotation: Creating map for " + typeQualifierValue);
+			}
 			map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
 			getEffectiveParameterAnnotations().put(typeQualifierValue, map);
 		}
@@ -649,29 +660,65 @@ public class TypeQualifierApplications {
 		if (map.containsKey(xmethod, parameter)) {
 			result = map.get(xmethod, parameter);
 		} else {
+			if (DEBUG) {
+				System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
+			}
+
+			String desc = xmethod.toString()+":"+parameter+":"+typeQualifierValue;
+			if (checked.containsKey(desc)) {
+				//throw new IllegalStateException("Repeating computation of " + desc, checked.get(desc));
+				System.out.println("Repeating computation of " + desc);
+				System.out.println("Previously computed:");
+				checked.get(desc).printStackTrace(System.out);
+				throw new IllegalStateException();
+			}
+			checked.put(desc, new Throwable().fillInStackTrace());
+
 			// Compute answer
 			TypeQualifierAnnotation tqa;
 
 			// Check direct application
+			if (DEBUG) {
+				System.out.print("  (1) Checking direct application...");
+			}
 			tqa = getDirectTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+			if (DEBUG) {
+				System.out.println(tqa != null ? "FOUND" : "none");
+			}
 
 			// If it's an instance method, check for inherited annotation
 			if (tqa == null && !xmethod.isStatic()) {
+				if (DEBUG) {
+					System.out.print("  (2) Checking inherited...");
+				}
 				tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+				if (DEBUG) {
+					System.out.println(tqa != null ? "FOUND" : "none");
+				}
 			}
 
 			// Check for default (outer scope) annotation
 			if (tqa == null) {
+				if (DEBUG) {
+					System.out.print("  (3) Checking default...");
+				}
 				tqa = getDefaultTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+				if (DEBUG) {
+					System.out.println(tqa != null ? "FOUND" : "none");
+				}
 			}
 
 			// Cache answer
 			result = tqa;
 			map.put(xmethod, parameter, result);
-		}
 
-		if (DEBUG) {
-			System.out.println("  => Answer: " + result);
+			if (DEBUG) {
+				System.out.println("  => Answer: " + result);
+			}
+		}
+		
+		if (!map.containsKey(xmethod, parameter)) {
+			throw new IllegalStateException("Did not populate cache?");
 		}
 
 		// Return cached answer
