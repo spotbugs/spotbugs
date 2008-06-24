@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.util.DualKeyHashMap;
  */
 public class TypeQualifierApplications {
 	static final boolean DEBUG = SystemProperties.getBoolean("ctq.applications.debug");
+	static final String DEBUG_METHOD = SystemProperties.getProperty("ctq.applications.method");
 	static final boolean DEBUG_DEFAULT_ANNOTATION = SystemProperties.getBoolean("ctq.applications.default.debug");
 	
 	/**
@@ -637,7 +638,7 @@ public class TypeQualifierApplications {
 		return tqa;
 	}
 	
-	static Map<String, Throwable> checked = new HashMap<String, Throwable>();
+//	static Map<String, Throwable> checked = new HashMap<String, Throwable>();
 
 	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, XMethod xmethod, int parameter) {
 		if (DEBUG) {
@@ -664,15 +665,15 @@ public class TypeQualifierApplications {
 				System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
 			}
 
-			String desc = xmethod.toString()+":"+parameter+":"+typeQualifierValue;
-			if (checked.containsKey(desc)) {
-				//throw new IllegalStateException("Repeating computation of " + desc, checked.get(desc));
-				System.out.println("Repeating computation of " + desc);
-				System.out.println("Previously computed:");
-				checked.get(desc).printStackTrace(System.out);
-				throw new IllegalStateException();
-			}
-			checked.put(desc, new Throwable().fillInStackTrace());
+//			String desc = xmethod.toString()+":"+parameter+":"+typeQualifierValue;
+//			if (checked.containsKey(desc)) {
+//				//throw new IllegalStateException("Repeating computation of " + desc, checked.get(desc));
+//				System.out.println("Repeating computation of " + desc);
+//				System.out.println("Previously computed:");
+//				checked.get(desc).printStackTrace(System.out);
+//				throw new IllegalStateException();
+//			}
+//			checked.put(desc, new Throwable().fillInStackTrace());
 
 			// Compute answer
 			TypeQualifierAnnotation tqa;
@@ -739,6 +740,9 @@ public class TypeQualifierApplications {
 			TypeQualifierValue typeQualifierValue) {
 		Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
 		getDirectApplications(applications, xmethod, parameter);
+		if (DEBUG_METHOD != null && DEBUG_METHOD.equals(xmethod.getName())) {
+			System.out.println("  Direct applications are: " + applications);
+		}
 
 		return findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 	}
