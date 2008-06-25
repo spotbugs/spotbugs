@@ -65,6 +65,7 @@ public class PrintClass {
 	}
 
 	static boolean code = false, constants = false;
+	static boolean superClasses = false;
 
 	public static void main(String argv[]) throws IOException {
 		String[] file_name = new String[argv.length];
@@ -81,6 +82,8 @@ public class PrintClass {
 					constants = true;
 				else if (argv[i].equals("-code"))
 					code = true;
+				else if (argv[i].equals("-super"))
+					superClasses = true;
 				else if (argv[i].equals("-zip"))
 					zip_file = argv[++i];
 			} else if (argv[i].endsWith(".zip") || argv[i].endsWith(".jar"))
@@ -128,6 +131,18 @@ public class PrintClass {
 		JavaClass java_class;
 		java_class = parser.parse();
 
+		if (superClasses) {
+			try {
+				while (java_class != null) {
+					System.out.print(java_class.getClassName() + "  ");
+					java_class = java_class.getSuperClass();
+				}
+			} catch (ClassNotFoundException e) {
+
+			}
+			System.out.println();
+			return;
+		}
 		if (constants || code)
 			System.out.println(java_class); // Dump the contents
 		if (constants) // Dump the constant pool ?
