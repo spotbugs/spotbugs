@@ -243,19 +243,19 @@ public class ClassParser implements ClassParserInterface {
 				data[i] = in.readUTF();
 				break;
 			case 'I':
-				data[i] = (Integer)in.readInt();
+				data[i] = in.readInt();
 				break;
 			case 'F':
 				data[i] = new Float(in.readFloat());
 				break;
 			case 'L':
-				data[i] = (Long)in.readLong();
+				data[i] = in.readLong();
 				break;
 			case 'D':
 				data[i] = new Double(in.readDouble());
 				break;
 			case 'i':
-				data[i] = (Integer)in.readUnsignedShort();
+				data[i] = in.readUnsignedShort();
 				break;
 			default: throw new IllegalStateException();
 			}

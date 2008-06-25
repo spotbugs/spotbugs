@@ -253,7 +253,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 	}
 
 	public Enumeration<TableColumn> getColumns() {
-		return Collections.enumeration(columnList);
+		return Collections.<TableColumn>enumeration(columnList);
 	}
 
 	public int getColumnIndex(Object columnIdentifier) {

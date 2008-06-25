@@ -209,7 +209,7 @@ public class Hierarchy2 {
 		}
 
 		if (!typeFrame.isValid()) {
-			return Collections.emptySet();
+			return Collections.<XMethod>emptySet();
 		}
 
 		Type receiverType;
@@ -228,7 +228,7 @@ public class Hierarchy2 {
 			int instanceStackLocation = typeFrame.getInstanceStackLocation(invokeInstruction, cpg);
 			receiverType = typeFrame.getStackValue(instanceStackLocation);
 			if (!(receiverType instanceof ReferenceType)) {
-				return Collections.emptySet();
+				return Collections.<XMethod>emptySet();
 			}
 			receiverTypeIsExact = typeFrame.isExact(instanceStackLocation);
 		}
@@ -289,7 +289,7 @@ public class Hierarchy2 {
 	        try {
 	            return Util.emptyOrNonnullSingleton(getXClass(ObjectDescriptor).findMethod(methodName, methodSig, false));
             } catch (CheckedAnalysisException e) {
-	            return Collections.emptySet();
+	            return Collections.<XMethod>emptySet();
             }
 
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
@@ -301,7 +301,7 @@ public class Hierarchy2 {
         try {
 	        xClass = getXClass(receiverDesc);
         } catch (CheckedAnalysisException e) {
-	      return Collections.emptySet();
+	      return Collections.<XMethod>emptySet();
         }
 		// Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.

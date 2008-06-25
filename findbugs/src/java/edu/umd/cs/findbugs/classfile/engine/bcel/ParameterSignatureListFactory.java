@@ -38,7 +38,7 @@ public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
 	 */
 	public ParameterSignatureListFactory() {
 		// XXX: should have a proper analysis class
-		super("parameter signature list factory", (Class<String[]>) new String[0].getClass());
+		super("parameter signature list factory", String[].class);
 	}
 
 	/* (non-Javadoc)

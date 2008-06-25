@@ -240,7 +240,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			AnalysisContext.logError("Oops", e1);
 		}
 		super.visitPUTFIELD(obj);
-		XField field = (XField) XFactory.createXField(obj, cpg);
+		XField field = XFactory.createXField(obj, cpg);
 		if (nullValueStored != null && ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION)
 			try {
 			ValueNumberFrame vnaFrameBefore = vnaDataflow.getFactAtLocation(getLocation());

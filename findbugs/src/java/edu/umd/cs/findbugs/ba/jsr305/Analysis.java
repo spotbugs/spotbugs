@@ -143,11 +143,11 @@ public class Analysis {
 					AnalysisContext.currentAnalysisContext().getSubtypes2().traverseSupertypes(xmethod.getClassDescriptor(), visitor);
 				} catch (ClassNotFoundException e) {
 					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-					return (Collection<TypeQualifierValue>) Collections.EMPTY_SET;
+					return Collections.<TypeQualifierValue>emptySet();
 				} catch (AnalysisException e) {
 					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
 						"Error getting relevant type qualifiers for " + xmethod.toString(), e);
-					return (Collection<TypeQualifierValue>) Collections.EMPTY_SET;
+					return Collections.<TypeQualifierValue>emptySet();
 				}
 			}	
 		}

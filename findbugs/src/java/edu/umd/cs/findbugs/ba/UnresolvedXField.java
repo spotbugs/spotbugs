@@ -69,14 +69,14 @@ public class UnresolvedXField extends AbstractField implements XField {
      * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotationDescriptors()
      */
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
-	    return  Collections.emptyList();
+	    return  Collections.<ClassDescriptor>emptyList();
     }
 
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject#getAnnotations()
      */
     public Collection<AnnotationValue> getAnnotations() {
-	    return Collections.emptyList();
+	    return Collections.<AnnotationValue>emptyList();
     }
 
 	/* (non-Javadoc)

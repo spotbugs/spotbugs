@@ -1182,7 +1182,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			for (Map.Entry<String, Long> entry : detectorTimings.entrySet()) {
 				String detectorName = entry.getKey();
 				long detectorTime = entry.getValue().longValue();
-				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float) total) + ") %");
+				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / total) + ") %");
 			}
 			System.out.println();
 			detectorTimings = new HashMap<String,Long>();
@@ -1265,9 +1265,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 							String detectorName = detector.getClass().getName();
 							Long total = detectorTimings.get(detectorName);
 							if (total == null)
-								total = (Long)(delta);
+								total = delta;
 							else
-								total = (Long)(total.longValue() + delta);
+								total += delta;
 							detectorTimings.put(detectorName, total);
 						}
 					}

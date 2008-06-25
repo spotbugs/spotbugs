@@ -69,7 +69,7 @@ public class AnalysisCache implements IAnalysisCache {
 	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
 
-	private Map<?,?> analysisLocals = Collections.synchronizedMap(new HashMap());
+	private Map<?,?> analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
 
 
 	public final Map<?, ?> getAnalysisLocals() {
@@ -224,10 +224,10 @@ public class AnalysisCache implements IAnalysisCache {
 
 		// Abnormal analysis result?
 		if (analysisResult instanceof AbnormalAnalysisResult) {
-			return (E) ((AbnormalAnalysisResult) analysisResult).returnOrThrow();
+			return analysisClass.cast(((AbnormalAnalysisResult) analysisResult).returnOrThrow());
 		}
 
-		return (E) analysisResult;
+		return analysisClass.cast(analysisResult);
 	}
 
 	/* (non-Javadoc)
@@ -238,7 +238,7 @@ public class AnalysisCache implements IAnalysisCache {
 		if (descriptorMap == null) {
 			return null;
 		}
-		return (E) descriptorMap.get(classDescriptor);
+		return analysisClass.cast(descriptorMap.get(classDescriptor));
 	}
 
 	String hex(Object o) {
@@ -276,7 +276,7 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 
 		if (object instanceof AbnormalAnalysisResult) {
-			return (E) ((AbnormalAnalysisResult) object).returnOrThrow();
+			return analysisClass.cast(((AbnormalAnalysisResult) object).returnOrThrow());
 		}
 
 		return analysisClass.cast(object);
@@ -425,8 +425,7 @@ public class AnalysisCache implements IAnalysisCache {
 			throw ((AbnormalAnalysisResult)database).checkedAnalysisException;
 		}
 
-		// Again, we really should be using Class.cast()
-		return (E) database;
+		return databaseClass.cast(database);
 	}
 
 	/* (non-Javadoc)

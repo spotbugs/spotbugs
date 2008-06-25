@@ -108,13 +108,13 @@ public class Util {
 	}
 	
 	public static <T>  Set<T> emptyOrNonnullSingleton(T t) {
-		if (t == null) return Collections.emptySet();
-		return Collections.singleton(t);
+		if (t == null) return Collections.<T>emptySet();
+		return Collections.<T>singleton(t);
 	}
 	public static <K,V> Map<K,V> immutableMap(Map<K,V> map) {
 		if (map.size() == 0)
-			return Collections.emptyMap();
-		return Collections.unmodifiableMap(map);
+			return Collections.<K,V>emptyMap();
+		return Collections.<K,V>unmodifiableMap(map);
 	}
 	public static int  nullSafeHashcode(@CheckForNull Object o) {
 		if (o == null) return 0;

@@ -716,7 +716,7 @@ public class Subtypes2 {
 	 * @return Collection of all XClass objects 
 	 */
 	public Collection<XClass> getXClassCollection() {
-		return Collections.unmodifiableCollection(xclassSet);
+		return Collections.<XClass>unmodifiableCollection(xclassSet);
 	}
 	
 	/**

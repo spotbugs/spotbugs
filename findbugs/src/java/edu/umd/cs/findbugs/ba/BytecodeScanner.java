@@ -56,7 +56,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 			result = (short) (value & 0x7F);
 			result |= 0x80;
 		} else {
-			result = (short) value;
+			result = value;
 		}
 		return result;
 	}

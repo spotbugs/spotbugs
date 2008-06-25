@@ -268,7 +268,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	
 	public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-		if (map == null) return Collections.emptySet();
+		if (map == null) return Collections.<ClassDescriptor>emptySet();
 		return map.keySet();
 	}
 	
@@ -280,7 +280,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	
 	public Collection<AnnotationValue> getParameterAnnotations(int param) {
 		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
-		if (map == null) return Collections.emptySet();
+		if (map == null) return Collections.<AnnotationValue>emptySet();
 		return map.values();
 	}
 	
@@ -346,7 +346,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	
 	public @CheckForNull AnnotatedObject getContainingScope() {
 		try {
-	        return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
+	        return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
 	         return null;
         }

@@ -386,7 +386,7 @@ public class UnconditionalValueDerefSet {
 	private Set<Location> getDerefLocationSet(int vn) {
 		for (Map.Entry<ValueNumber, Set<Location>> entry : derefLocationSetMap.entrySet()) {
 			if (entry.getKey().getNumber() == vn) {
-				return Collections.unmodifiableSet(entry.getValue());
+				return Collections.<Location>unmodifiableSet(entry.getValue());
 			}
 		}
 		return new HashSet<Location>();

@@ -643,8 +643,8 @@ public abstract class Frame<ValueType> {
 	 */
 	public Collection<ValueType> allSlots() {
 		if (slotList == null)
-			return Collections.EMPTY_LIST;
-		return Collections.unmodifiableCollection(slotList);
+			return Collections.<ValueType>emptyList();
+		return Collections.<ValueType>unmodifiableCollection(slotList);
 	}
 
 	/**

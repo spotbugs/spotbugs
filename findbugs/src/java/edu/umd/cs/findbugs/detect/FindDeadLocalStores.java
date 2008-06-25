@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -232,7 +233,7 @@ public class FindDeadLocalStores implements Detector {
 
 			BugInstance pendingBugReportAboutOverwrittenParameter = null;
 			try {
-				WarningPropertySet<DeadLocalStoreProperty> propertySet = new WarningPropertySet<DeadLocalStoreProperty>();
+				WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 				// Skip any instruction which is not a store
 				if (!isStore(location))
 					continue;

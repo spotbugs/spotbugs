@@ -134,9 +134,9 @@ public class TypeQualifierApplications {
 	private static Collection<AnnotationValue> getDirectAnnotation(AnnotatedObject m) {
 		Collection<AnnotationValue> result = getDirectObjectAnnotations().get(m);
 		if (result != null) return result;
-		if (m.getAnnotationDescriptors().isEmpty()) return Collections.emptyList();
+		if (m.getAnnotationDescriptors().isEmpty()) return Collections.<AnnotationValue>emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-		if (result.size() == 0) result = Collections.emptyList();
+		if (result.size() == 0) result = Collections.<AnnotationValue>emptyList();
 		getDirectObjectAnnotations().put(m, result);
 		return result;
 	}
@@ -152,9 +152,9 @@ public class TypeQualifierApplications {
 	private static Collection<AnnotationValue> getDirectAnnotation(XMethod m, int parameter) {
 		Collection<AnnotationValue> result = getDirectParameterAnnotations().get(m, parameter);
 		if (result != null) return result;
-		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.emptyList();
+		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.<AnnotationValue>emptyList();
 		result = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(parameter));
-		if (result.size() == 0) result = Collections.emptyList();
+		if (result.size() == 0) result = Collections.<AnnotationValue>emptyList();
 		getDirectParameterAnnotations().put(m, parameter, result);
 		return result;
 	}

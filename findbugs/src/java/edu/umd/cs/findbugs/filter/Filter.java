@@ -227,9 +227,9 @@ public class Filter extends OrMatcher {
 			if (DEBUG) System.out.println("Match node");
 
 			// Iterate over child elements of Match node.
-			Iterator<Element> j = matchNode.elementIterator();
+			Iterator j = matchNode.elementIterator();
 			while (j.hasNext()) {
-				Element child = j.next();
+				Element child = (Element) j.next();
 				Matcher matcher = getMatcher(child);
 				matchMatcher.addChild(matcher);
 			}
@@ -321,9 +321,9 @@ public class Filter extends OrMatcher {
 				return new FieldMatcher(nameValue, typeAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
-			Iterator<Element> i = element.elementIterator();
+			Iterator i = element.elementIterator();
 			while (i.hasNext()) {
-				orMatcher.addChild(getMatcher(i.next()));
+				orMatcher.addChild(getMatcher((Element)i.next()));
 			}
 			return orMatcher;
 		} else
@@ -363,7 +363,7 @@ public class Filter extends OrMatcher {
 		xmlOutput.openTag("FindBugsFilter");
 		 Iterator<Matcher> i = childIterator();
 		    while (i.hasNext()) {
-		    	Matcher child = (Matcher) i.next();
+		    	Matcher child = i.next();
 		    	if (!disabled.containsKey(child)) child.writeXML(xmlOutput, false);
 		    }
 		xmlOutput.closeTag("FindBugsFilter");
@@ -374,7 +374,7 @@ public class Filter extends OrMatcher {
 	public void writeBodyAsXML(XMLOutput xmlOutput) throws IOException {
 	    Iterator<Matcher> i = childIterator();
 	    while (i.hasNext()) {
-	    	Matcher child = (Matcher) i.next();
+	    	Matcher child = i.next();
 	    	child.writeXML(xmlOutput, disabled.containsKey(child));
 	    }
     }

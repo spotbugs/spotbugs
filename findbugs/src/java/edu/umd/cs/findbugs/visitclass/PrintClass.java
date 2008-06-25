@@ -43,15 +43,13 @@ public class PrintClass {
 	 */
 	static final class ZipEntryComparator implements Comparator<ZipEntry>, Serializable {
 		private static final long serialVersionUID = 1L;
-		public int compare(ZipEntry o1, ZipEntry o2) {
-			ZipEntry e1 = (ZipEntry) o1;
+		public int compare(ZipEntry e1, ZipEntry e2) {
 			String s1 = e1.getName();
 			int pos1 = s1.lastIndexOf('/');
 			String p1 = "-";
 			if (pos1 >= 0)
 				p1 = s1.substring(0, pos1);
 
-			ZipEntry e2 = (ZipEntry) o2;
 			String s2 = e2.getName();
 			int pos2 = s2.lastIndexOf('/');
 			String p2 = "-";

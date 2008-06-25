@@ -380,7 +380,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
 			if (cls.isAssignableFrom(annotation.getClass()))
-				return (T)annotation;
+				return cls.cast(annotation);
 		}
 		return null;
 	}
@@ -1664,7 +1664,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			primaryAnnotations.put(getPrimaryField(), null);
 			primaryAnnotations.put(getPrimaryMethod(), null);
 		} else {
-			primaryAnnotations = Collections.emptyMap();
+			primaryAnnotations = Collections.<BugAnnotation,Void>emptyMap();
 		}
 		
 		boolean foundSourceAnnotation = false;

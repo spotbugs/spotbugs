@@ -1785,7 +1785,7 @@ public class MainFrame extends FBFrame implements LogSync
 					label.setText(note.toString());
 			}
 			else{
-				label.setText(((BugAnnotation) value).toString());
+				label.setText(value.toString());
 			}
 		}
 

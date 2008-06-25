@@ -119,6 +119,7 @@
 						target="1.5"
 						deprecation="off"
 						debug="on">
+					<compilerarg value="-Xlint:unchecked"/>
 					<src path="${src.dir}"/>
 					<src path="${src5.dir}"/>
 					<classpath refid="findbugs.classpath"/>

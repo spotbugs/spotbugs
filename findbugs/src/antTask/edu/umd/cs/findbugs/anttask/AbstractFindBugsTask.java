@@ -240,8 +240,7 @@ public abstract class AbstractFindBugsTask extends Task {
 			}
 		}
 
-		for (SystemProperty aSystemPropertyList : systemPropertyList) {
-			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+		for (SystemProperty systemProperty : systemPropertyList) {
 			if (systemProperty.getName() == null || systemProperty.getValue() == null)
 				throw new BuildException("systemProperty elements must have name and value attributes");
 		}
@@ -267,8 +266,7 @@ public abstract class AbstractFindBugsTask extends Task {
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		// Add JVM arguments for system properties
-		for (SystemProperty aSystemPropertyList : systemPropertyList) {
-			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+		for (SystemProperty systemProperty : systemPropertyList) {
 			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
 			findbugsEngine.createJvmarg().setValue(jvmArg);
 		}

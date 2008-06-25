@@ -81,6 +81,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 
@@ -518,10 +519,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 */
 	private static class WarningWithProperties {
 		BugInstance instance;
-		WarningPropertySet propertySet;
+		WarningPropertySet<WarningProperty> propertySet;
 		Location location;
 
-		WarningWithProperties(BugInstance warning, WarningPropertySet propertySet, Location location) {
+		WarningWithProperties(BugInstance warning, WarningPropertySet<WarningProperty> propertySet, Location location) {
 			this.instance = warning;
 			this.propertySet = propertySet;
 			this.location = location;
@@ -767,7 +768,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// ?  D  high
 		// S  ?  normal
 		// ?  S  normal
-		WarningPropertySet propertySet = new WarningPropertySet();
+		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
 			propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
 		} else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
@@ -805,7 +806,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE)
 		.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 
-		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
+		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), location));
 	}
 
 	private static boolean testLikeName(String name) {

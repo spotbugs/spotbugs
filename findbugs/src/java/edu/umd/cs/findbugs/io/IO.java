@@ -92,7 +92,7 @@ public class IO {
 
 		while (maxBytes > 0 &&
 				(sz = in.read(buf, 0,
-						(int) Math.min(maxBytes, (long) buf.length)))
+						(int) Math.min(maxBytes, buf.length)))
 				> 0) {
 			total += sz;
 			maxBytes -= sz;
@@ -113,7 +113,7 @@ public class IO {
 
 		while (maxChars > 0 &&
 				(sz = in.read(buf, 0,
-						(int) Math.min(maxChars, (long) buf.length)))
+						(int) Math.min(maxChars, buf.length)))
 				> 0) {
 			total += sz;
 			maxChars -= sz;

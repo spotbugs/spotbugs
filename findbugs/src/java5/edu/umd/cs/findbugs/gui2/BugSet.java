@@ -91,7 +91,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	}
 
 	BugSet(BugCollection bugCollection) {
-		this(Collections.EMPTY_LIST);
+		this(Collections.<BugLeafNode>emptyList());
 		for(Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); )
 			mainList.add(new BugLeafNode(i.next()));
 

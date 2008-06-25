@@ -54,7 +54,7 @@ public class AbstractVertex <
 		if (o == null || o.getClass() != this.getClass()) {
 			return false;
 		}
-		ActualVertexType other = (ActualVertexType) o;
+		AbstractVertex other = (AbstractVertex) o;
 		return other.getLabel() == this.getLabel();
 	}
 	

@@ -112,7 +112,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 		 public void sawOpcode(int seen) {
 		if (state == SEEN_NOTHING) {
 			if ((seen == DCONST_0) || (seen == DCONST_1)) {
-				constValue = (double) (seen - DCONST_0);
+				constValue = seen - DCONST_0;
 				state = SEEN_DCONST;
 			}			
 			else if ((seen == LDC2_W) || (seen == LDC_W)) {

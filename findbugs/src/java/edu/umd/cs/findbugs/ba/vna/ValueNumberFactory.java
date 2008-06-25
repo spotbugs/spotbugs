@@ -75,7 +75,7 @@ public class ValueNumberFactory {
 	public void compact(int[] map, int numValuesAllocated) {
 		if (true) throw new UnsupportedOperationException();
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
-		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber)null));
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.<ValueNumber>nCopies(numValuesAllocated, null));
 
 		for (ValueNumber value : oldList) {
 			int newNumber = map[value.getNumber()];

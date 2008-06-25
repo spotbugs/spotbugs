@@ -73,13 +73,13 @@ public class CompactLocationNumbering {
 	 * @return Location corresponding to that number
 	 */
 	public Location getLocation(int number) {
-		return numberToLocationMap.get((Integer)(number));
+		return numberToLocationMap.get(number);
 	}
 
 	private void build(CFG cfg) {
 		int count = 0;
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
-			Integer number = (Integer)(count++);
+			Integer number = count++;
 			Location location = i.next();
 			locationToNumberMap.put(location, number);
 			numberToLocationMap.put(number, location);

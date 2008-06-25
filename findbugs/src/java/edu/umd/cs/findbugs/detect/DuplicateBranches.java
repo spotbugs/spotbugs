@@ -191,7 +191,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				int firstInsPosition = firstIns.getPosition();
 				switchPos[idx++] = firstInsPosition;
 				InstructionHandle prevIns = firstIns.getPrev(); // prev in bytecode, not flow
-				if (prevIns != null) prevHandle.put((Integer)firstInsPosition, prevIns);
+				if (prevIns != null) prevHandle.put(firstInsPosition, prevIns);
 			} else {
 				// hmm, this must not be a switch statement, so give up
 				return;
@@ -211,7 +211,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			if (switchPos[i]+1 >= switchPos[i+1]) continue; // why the +1 on lhs?
 
 			int endPos = switchPos[i+1];
-		   InstructionHandle last = prevHandle.get((Integer)switchPos[i+1]);
+		   InstructionHandle last = prevHandle.get(switchPos[i+1]);
 			if (last == null) {
 				// should be default case -- leave endPos as is
 			} else if (last.getInstruction() instanceof GotoInstruction) {
@@ -253,7 +253,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			values = new LinkedList<Integer>();
 			map.put(clauseAsInt,values);
 		}
-		values.add((Integer)i); // index into the sorted array
+		values.add(i); // index into the sorted array
 	}
 
 

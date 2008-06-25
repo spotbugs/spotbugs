@@ -415,7 +415,7 @@ public class PluginLoader {
 	            	throw new PluginException(engineRegistrarClass + " does not implement IAnalysisEngineRegistrar");
 	            }
 	            
-	            plugin.setEngineRegistrarClass((Class<? extends IAnalysisEngineRegistrar>) engineRegistrarClass);
+	            plugin.setEngineRegistrarClass(engineRegistrarClass.<IAnalysisEngineRegistrar>asSubclass(IAnalysisEngineRegistrar.class));
             } catch (ClassNotFoundException e) {
     			throw new PluginException("Could not instantiate analysis engine registrar class: " + e, e);
             }

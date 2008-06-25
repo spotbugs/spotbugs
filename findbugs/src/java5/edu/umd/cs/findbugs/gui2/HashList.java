@@ -141,7 +141,7 @@ public class HashList<E> extends ArrayList<E>
 	{
 		if (super.remove(o))
 		{
-			removeFromMap((E) o, indexOf(o));
+			removeFromMap(o, indexOf(o));
 			return true;
 		}
 		else
@@ -217,7 +217,7 @@ public class HashList<E> extends ArrayList<E>
 		map.get(o.hashCode()).add(index);
 	}
 
-	private void removeFromMap(E o, int index)
+	private void removeFromMap(Object o, int index)
 	{
 		if (map.get(o.hashCode()).size() == 1)
 			map.remove(o.hashCode());

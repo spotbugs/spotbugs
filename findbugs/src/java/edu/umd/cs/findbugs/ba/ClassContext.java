@@ -610,7 +610,7 @@ public class ClassContext {
 	 *         of the method's parameters
 	 */
 	public String[] getParameterSignatureList(Method method) {
-		return getMethodAnalysisNoException((Class<String[]>) new String[0].getClass(), method);// XXX
+		return getMethodAnalysisNoException(String[].class, method);// XXX
 	}
 
 	/**

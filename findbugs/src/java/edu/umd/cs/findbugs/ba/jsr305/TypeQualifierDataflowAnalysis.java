@@ -216,7 +216,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
 	 */
 	public Set<SourceSinkInfo> getSourceSinkInfoSet(Location location) {
 		Set<SourceSinkInfo> result = sourceSinkMap.get(location);
-		return result != null ? result : (Set<SourceSinkInfo>) Collections.EMPTY_SET;
+		return result != null ? result : Collections.<SourceSinkInfo>emptySet();
 	}
 	
 	/* (non-Javadoc)

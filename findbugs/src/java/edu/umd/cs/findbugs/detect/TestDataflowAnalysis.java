@@ -159,7 +159,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 	    	return;
 	    }
 	    
-	    dataflowClass = (Class<? extends Dataflow>) cls;
+	    dataflowClass = cls.<Dataflow>asSubclass(Dataflow.class);
     }
 
 }

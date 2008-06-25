@@ -696,7 +696,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	}
 
 	private void decorateWarning(Location location,
-			WarningPropertySet<?> propertySet, BugInstance warning) {
+			WarningPropertySet<WarningProperty> propertySet, BugInstance warning) {
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet,
 					classContext, method, location);
@@ -1100,7 +1100,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				location).describe("SOURCE_REDUNDANT_NULL_CHECK");
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-			WarningPropertySet propertySet = new WarningPropertySet();
+			WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 			WarningPropertyUtil.addPropertiesForLocation(propertySet,
 					classContext, method, location);
 			if (isChecked)

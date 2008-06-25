@@ -57,9 +57,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			setAvailableLoadMap(Collections.EMPTY_MAP);
-			setMergedLoads(Collections.EMPTY_MAP);
-			setPreviouslyKnownAs(Collections.EMPTY_MAP);
+			setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
+			setMergedLoads(Collections.<AvailableLoad, ValueNumber>emptyMap());
+			setPreviouslyKnownAs(Collections.<ValueNumber, AvailableLoad>emptyMap());
 		}
 	}
 
@@ -250,7 +250,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			boolean changed = false;
 			if (other.isBottom()) {
 				changed = !this.getAvailableLoadMap().isEmpty();
-				setAvailableLoadMap(Collections.EMPTY_MAP);
+				setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
 			}
 			else if (!other.isTop()) {
 				for(Map.Entry<AvailableLoad,ValueNumber[]> e : getUpdateableAvailableLoadMap().entrySet()) {
@@ -346,7 +346,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	  private void assignAvailableLoadMap(ValueNumberFrame other) {
 			Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
 			if (availableLoadMapOther instanceof HashMap) {
-				availableLoadMapOther = Collections.unmodifiableMap(availableLoadMapOther);
+				availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
 				other.setAvailableLoadMap(availableLoadMapOther);
 				setAvailableLoadMap(availableLoadMapOther);   
 				constructedUnmodifiableMap++;
@@ -359,7 +359,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private void assignPreviouslyKnownAs(ValueNumberFrame other) {
 		Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
 		if (previouslyKnownAsOther instanceof HashMap) {
-			previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
+			previouslyKnownAsOther = Collections.<ValueNumber, AvailableLoad>unmodifiableMap(previouslyKnownAsOther);
 			other.setPreviouslyKnownAs(previouslyKnownAsOther);
 			setPreviouslyKnownAs(previouslyKnownAsOther);   
 			constructedUnmodifiableMap++;

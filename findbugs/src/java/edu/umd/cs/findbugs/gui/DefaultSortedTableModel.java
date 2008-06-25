@@ -223,7 +223,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		int numRows = baseModel.getRowCount();
 		viewToModelMapping = new ArrayList<Integer>(numRows);
 		for (int i = 0; i < numRows; i++)
-			viewToModelMapping.add((Integer)(i));
+			viewToModelMapping.add(i);
 
 		Collections.sort( viewToModelMapping, new Comparator<Integer>() {
 			@SuppressWarnings("unchecked")

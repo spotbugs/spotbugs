@@ -93,7 +93,7 @@ public abstract class WarningPropertyUtil {
 	 * @param location     Location within the method
 	 */
 	private static void addReceiverObjectType(
-			WarningPropertySet propertySet,
+			WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext,
 			Method method,
 			Location location) {
@@ -128,7 +128,7 @@ public abstract class WarningPropertyUtil {
 	 * @param location     the Location
 	 */
 	private static void addRecentlyCalledMethods(
-			WarningPropertySet propertySet,
+			WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext,
 			Method method,
 			Location location) {
@@ -171,7 +171,7 @@ public abstract class WarningPropertyUtil {
 	 * @param location     the Location
 	 */
 	public static void addPropertiesForLocation(
-			WarningPropertySet propertySet,
+			WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext,
 			Method method,
 			Location location) {
@@ -189,7 +189,7 @@ public abstract class WarningPropertyUtil {
 	 * @param pc           the bytecode offset of an instruction to get properties for
 	 */
 	public static void addPropertiesForLocation(
-			WarningPropertySet propertySet,
+			WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext,
 			Method method,
 			int pc) {

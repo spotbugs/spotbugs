@@ -73,10 +73,10 @@ public class Subtypes {
 	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
         } catch (ClassNotFoundException e) {
 	        AnalysisContext.reportMissingClass(e);
-	        return Collections.emptySet();
+	        return Collections.<JavaClass>emptySet();
         } catch (CheckedAnalysisException e) {
         	 AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
- 	        return Collections.emptySet();
+ 	        return Collections.<JavaClass>emptySet();
         }
 	}
 	private  JavaClass getJavaClass(ClassDescriptor descriptor) throws CheckedAnalysisException {
@@ -150,10 +150,10 @@ public class Subtypes {
 	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
         } catch (ClassNotFoundException e) {
 	        AnalysisContext.reportMissingClass(e);
-	        return Collections.emptySet();
+	        return Collections.<JavaClass>emptySet();
         } catch (CheckedAnalysisException e) {
         	 AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
- 	        return Collections.emptySet();
+ 	        return Collections.<JavaClass>emptySet();
         }
 	}
 
@@ -175,10 +175,10 @@ public class Subtypes {
 	        return getJavaClasses(subtypes2().getTransitiveCommonSubtypes(aD, bD));
         } catch (ClassNotFoundException e) {
 	        AnalysisContext.reportMissingClass(e);
-	        return Collections.emptySet();
+	        return Collections.<JavaClass>emptySet();
         } catch (CheckedAnalysisException e) {
         	 AnalysisContext.logError("Error checking common subtypes of " + a.getClassName() + " and " + b.getClassName(), e);
- 	        return Collections.emptySet();
+ 	        return Collections.<JavaClass>emptySet();
         }
 		
 	}

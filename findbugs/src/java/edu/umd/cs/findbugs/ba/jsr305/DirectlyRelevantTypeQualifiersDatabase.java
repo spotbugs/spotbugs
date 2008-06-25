@@ -61,7 +61,7 @@ public class DirectlyRelevantTypeQualifiersDatabase {
 		Collection<TypeQualifierValue> result = methodToDirectlyRelevantQualifiersMap.get(m);
 		if (result != null) 
 			return result;
-		return Collections.emptyList();
+		return Collections.<TypeQualifierValue>emptyList();
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class DirectlyRelevantTypeQualifiersDatabase {
      * @return set of all known type qualifiers
      */
     public Set<TypeQualifierValue> getAllKnownQualifiers() {
-	    return Collections.unmodifiableSet(allKnownQualifiers);
+	    return Collections.<TypeQualifierValue>unmodifiableSet(allKnownQualifiers);
     }
 
 	/**

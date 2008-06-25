@@ -295,13 +295,13 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	public @CheckForNull AnnotatedObject getContainingScope() {
 		try {
 			if (immediateEnclosingClass != null) {
-				return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());
+				return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());
 			}
 			if (getClassName().endsWith("/package-info") || getClassName().equals("package-info")) {
 				return null;
 			}
 			ClassDescriptor p = DescriptorFactory.createClassDescriptorFromDottedClassName(getPackageName() +"."+"package-info");
-			return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
+			return Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
 		} catch (CheckedAnalysisException e) {
 			return null;
 		}

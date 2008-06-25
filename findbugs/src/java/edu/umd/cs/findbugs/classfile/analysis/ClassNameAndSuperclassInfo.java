@@ -58,7 +58,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		int majorVersion, minorVersion;
 		
 		Collection<ClassDescriptor> referencedClassDescriptorList;
-		Collection<ClassDescriptor>  calledClassDescriptorList = Collections.emptyList();
+		Collection<ClassDescriptor>  calledClassDescriptorList = Collections.<ClassDescriptor>emptyList();
 
 		public ClassNameAndSuperclassInfo build() {
 			return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,

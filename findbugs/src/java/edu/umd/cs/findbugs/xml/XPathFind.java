@@ -78,8 +78,8 @@ public abstract class XPathFind {
 					System.out.println("Element: " + element.getQualifiedName());
 					System.out.println("\tText: " + element.getText());
 					System.out.println("\tAttributes:");
-					for (Iterator<Attribute> i = element.attributeIterator(); i.hasNext(); ) {
-						Attribute attribute = i.next();
+					for (Iterator i = element.attributeIterator(); i.hasNext(); ) {
+						Attribute attribute = (Attribute) i.next();
 						System.out.println("\t\t" + attribute.getName() + "=" + attribute.getValue());
 					}
 				} else if (node instanceof Attribute) {

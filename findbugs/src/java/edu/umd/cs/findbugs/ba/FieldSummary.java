@@ -48,12 +48,12 @@ public class FieldSummary {
 			fieldsWritten.put(method, Collections.singleton(fields.iterator().next()));
 			return;
 		}
-		fieldsWritten.put(method, new HashSet(fields));
+		fieldsWritten.put(method, new HashSet<XField>(fields));
 	}
 	
 	public Set<XField> getFieldsWritten(XMethod method) {
 		Set<XField> result = fieldsWritten.get(method);
-		if (result == null) return Collections.emptySet();
+		if (result == null) return Collections.<XField>emptySet();
 		return result;
 	}
 	public boolean isWrittenOutsideOfConstructor(XField field) {

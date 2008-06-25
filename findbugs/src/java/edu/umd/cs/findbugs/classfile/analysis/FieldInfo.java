@@ -277,7 +277,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 	}
 	public @CheckForNull AnnotatedObject getContainingScope() {
 		try {
-	        return (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
+	        return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
 	         return null;
         }

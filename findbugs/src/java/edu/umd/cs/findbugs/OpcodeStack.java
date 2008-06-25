@@ -354,7 +354,7 @@ public class OpcodeStack implements Constants2
 			return m;
 		}
 		public Item(String signature, int constValue) {
-			this(signature, (Object)(Integer)constValue);
+			this(signature, Integer.valueOf(constValue));
 		 }
 
 		 public Item(String signature) {
@@ -1413,7 +1413,7 @@ public class OpcodeStack implements Constants2
 				 case I2F:
 					 it = pop();
 					 if (it.getConstant() != null) {
-						 push(new Item("F", (Float)(constantToFloat(it))));
+						 push(new Item("F", constantToFloat(it)));
 					 } else {
 						 push(new Item("F"));
 					 }
@@ -2218,11 +2218,11 @@ public void initialize() {
 			push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
 		}
 		else if (c instanceof ConstantFloat)
-			push(new Item("F", (Float)(((ConstantFloat) c).getBytes())));
+			push(new Item("F", ((ConstantFloat) c).getBytes()));
 		else if (c instanceof ConstantDouble)
-			push(new Item("D", (Double)(((ConstantDouble) c).getBytes())));
+			push(new Item("D", ((ConstantDouble) c).getBytes()));
 		else if (c instanceof ConstantLong)
-			push(new Item("J", (Long)(((ConstantLong) c).getBytes())));
+			push(new Item("J", ((ConstantLong) c).getBytes()));
 		else
 			throw new UnsupportedOperationException("Constant type not expected" );
 	 }

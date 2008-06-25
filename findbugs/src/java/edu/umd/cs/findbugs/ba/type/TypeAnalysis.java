@@ -440,7 +440,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 		// If cached results are up to date, don't recompute.
 		CachedExceptionSet cachedExceptionSet = getCachedExceptionSet(basicBlock);
-		if (cachedExceptionSet.isUpToDate((TypeFrame) result))
+		if (cachedExceptionSet.isUpToDate(result))
 			return;
 
 		// Figure out what exceptions can be thrown out
@@ -465,7 +465,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 		// Compute exceptions that can be thrown by the
 		// basic block.
-		cachedExceptionSet = computeBlockExceptionSet(basicBlock, (TypeFrame) result);
+		cachedExceptionSet = computeBlockExceptionSet(basicBlock, result);
 
 		if (exceptionEdgeCount == 1) {
 			cachedExceptionSet.setEdgeExceptionSet(lastExceptionEdge, cachedExceptionSet.getExceptionSet());
