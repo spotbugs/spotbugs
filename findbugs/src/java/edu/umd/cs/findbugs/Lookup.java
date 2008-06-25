@@ -27,12 +27,14 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup
@@ -133,8 +135,31 @@ public class Lookup
 		}
 	}
 
-	public static String
-			findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
+	public static @CheckForNull
+	XMethod findSuperImplementorAsXMethod(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+		try {
+			JavaClass c = clazz;
+			while (true) {
+				c = c.getSuperClass();
+				if (c == null)
+					return null;
+				Method m = findImplementation(c, name, signature);
+				if (m != null) {
+					if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
+						return null;
+					else
+						return XFactory.createXMethod(c, m);
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			bugReporter.reportMissingClass(e);
+			return null;
+		}
+	}
+
+	
+	public static @DottedClassName String
+			findSuperImplementor(@DottedClassName String clazz, String name, String signature, BugReporter bugReporter) {
 		try {
 			JavaClass c =
 					findImplementor(Repository.getSuperClasses(clazz),
