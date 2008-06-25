@@ -52,7 +52,7 @@ public class Subtypes {
 	 * this (deprecated) class.  Assuming that tests verify that no breakage
 	 * results, we'll go ahead and completely eliminate this class. 
 	 */
-	public static final boolean DO_NOT_USE = SystemProperties.getBoolean("subtypes.donotuse");
+	public static final boolean DO_NOT_USE = SystemProperties.getBoolean("subtypes.donotuse", true);
 	
 	public Subtypes() {
 		if (DO_NOT_USE) {
