@@ -38,8 +38,6 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -668,6 +666,9 @@ public class Subtypes2 {
 	 */
 	public boolean hasSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
 		Set<ClassDescriptor> subtypes = getDirectSubtypes(classDescriptor);
+		if (DEBUG) {
+			System.out.println("Direct subtypes of " + classDescriptor + " are " + subtypes);
+		}
 		return !subtypes.isEmpty();
 	}
 	
