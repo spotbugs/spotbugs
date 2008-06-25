@@ -1789,11 +1789,15 @@ public class OpcodeStack implements Constants2
 		 boolean servletRequestParameterTainted = false;
 		 boolean sawUnknownAppend = false;
 		 Item sbItem = null;
-		 boolean topIsTainted = getStackDepth() > 0 && getStackItem(0).isServletParameterTainted();
 		 Item topItem = null;
 		 if (getStackDepth() > 0)
 			 topItem = getStackItem(0);
 		 
+		 boolean topIsTainted = topItem!= null && topItem.isServletParameterTainted();
+		 HttpParameterInjection injection = null;
+		 if (topIsTainted)
+			 injection = topItem.injection;
+		
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
 		 if ("java/lang/StringBuffer".equals(clsName)
 		 ||  "java/lang/StringBuilder".equals(clsName)) {
@@ -1947,6 +1951,7 @@ public class OpcodeStack implements Constants2
 		        	|| methodName.equals("trim") && clsName.equals("java/lang/String")) ) {
 			Item i = pop();
 			i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
+			i.injection = injection;
 			push(i);
 		} 
 		
