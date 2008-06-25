@@ -173,15 +173,8 @@ public class AssertionMethods implements Constants {
 	public boolean isAssertionHandle(InstructionHandle handle, ConstantPoolGen cpg) {
 		Instruction ins = handle.getInstruction();
 		if (isAssertionInstruction(ins, cpg)) return true;
-		if (ins instanceof INVOKEINTERFACE) {
-			INVOKEINTERFACE iInterface = (INVOKEINTERFACE) ins;
-			String className = iInterface.getClassName(cpg);
-			String fieldName = iInterface.getMethodName(cpg);
-			if (className.equals("javax.servlet.http.HttpServletResponse") && fieldName.equals("setStatus"))
-				return true;
-		}
 
-		if (false && ins instanceof SIPUSH) {
+		if (ins instanceof SIPUSH) {
 			int v = ((SIPUSH) ins).getValue().intValue();
 			if (v == 500) {
 				Instruction next = handle.getNext().getInstruction();
