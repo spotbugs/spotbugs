@@ -147,14 +147,16 @@ public class Subtypes {
 		assert !c.getClassName().equals("java.lang.Object");
 		ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(c);
 		try {
-	        return getJavaClasses(subtypes2().getSubtypes(classDescriptor));
-        } catch (ClassNotFoundException e) {
-	        AnalysisContext.reportMissingClass(e);
-	        return Collections.<JavaClass>emptySet();
-        } catch (CheckedAnalysisException e) {
-        	 AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
- 	        return Collections.<JavaClass>emptySet();
-        }
+			Set<JavaClass> subtypes = getJavaClasses(subtypes2().getSubtypes(classDescriptor));
+			subtypes.remove(c);
+			return subtypes;
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+			return Collections.<JavaClass>emptySet();
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error checking subtypes of " + c.getClassName(), e);
+			return Collections.<JavaClass>emptySet();
+		}
 	}
 
 	/**
