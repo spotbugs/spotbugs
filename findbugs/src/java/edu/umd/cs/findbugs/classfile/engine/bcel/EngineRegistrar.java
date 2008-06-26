@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDatabase;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -112,6 +113,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
 		new ReflectionDatabaseFactory<ReturnValueNullnessPropertyDatabase>(ReturnValueNullnessPropertyDatabase.class),
 		new ReflectionDatabaseFactory<DirectlyRelevantTypeQualifiersDatabase>(DirectlyRelevantTypeQualifiersDatabase.class),
+		new ReflectionDatabaseFactory<TypeQualifierDatabase>(TypeQualifierDatabase.class),
 	};
 
 	/* (non-Javadoc)
