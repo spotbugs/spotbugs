@@ -83,11 +83,9 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final String METHOD = SystemProperties.getProperty("ctq.method");
 
 	private final BugReporter bugReporter;
-	private boolean firstTime;
 
 	public CheckTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.firstTime = true;
 	}
 	
 	/* (non-Javadoc)
