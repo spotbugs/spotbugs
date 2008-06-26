@@ -24,6 +24,7 @@ import java.util.HashMap;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -93,6 +94,14 @@ public abstract class TypeQualifierDataflowFactory
 			DataflowType dataflow = getDataflow(dfs, xmethod, cfg, vnaDataflow, cpg, analysisCache, methodDescriptor, typeQualifierValue);
 			
 			result.dataflow = dataflow;
+			
+			if (TypeQualifierDatabase.USE_DATABASE) {
+				try {
+					populateDatabase(dataflow, vnaDataflow, xmethod, typeQualifierValue);
+				} catch (DataflowAnalysisException e) {
+					analysisCache.getErrorLogger().logError("Error populating type qualifier database", e);
+				}
+			}
 		} catch (CheckedAnalysisException e) {
 			result.checkedException = e;
 		} catch (RuntimeException e) {
@@ -111,5 +120,9 @@ public abstract class TypeQualifierDataflowFactory
             IAnalysisCache analysisCache,
             MethodDescriptor methodDescriptor,
             TypeQualifierValue typeQualifierValue) throws CheckedAnalysisException;
+    
+    protected abstract void populateDatabase(
+	    DataflowType dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod, TypeQualifierValue tqv)
+	    throws CheckedAnalysisException;
 	
 }

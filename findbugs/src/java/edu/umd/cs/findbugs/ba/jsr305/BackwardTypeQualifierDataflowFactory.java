@@ -81,4 +81,11 @@ public class BackwardTypeQualifierDataflowFactory
 		
 		return dataflow;
 	}
+
+	@Override
+	protected void populateDatabase(BackwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod, TypeQualifierValue tqv) throws CheckedAnalysisException {
+		assert TypeQualifierDatabase.USE_DATABASE;
+		
+		// TODO: implement
+	}
 }

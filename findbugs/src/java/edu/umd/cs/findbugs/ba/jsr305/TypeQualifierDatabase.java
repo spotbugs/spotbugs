@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import java.util.HashMap;
@@ -32,6 +33,11 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public class TypeQualifierDatabase {
+	/**
+	 * If true, populate and use interprocedural database.
+	 */
+	public static final boolean USE_DATABASE = SystemProperties.getBoolean("ctq.usedatabase");
+	
 	private Map<MethodDescriptor, Map<TypeQualifierValue, TypeQualifierAnnotation>> returnValueMap;
 	private DualKeyHashMap<MethodDescriptor, Integer, Map<TypeQualifierValue, TypeQualifierAnnotation>> parameterMap;
 	
