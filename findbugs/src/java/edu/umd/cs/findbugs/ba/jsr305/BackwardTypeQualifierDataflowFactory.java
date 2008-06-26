@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -95,10 +94,6 @@ public class BackwardTypeQualifierDataflowFactory
 		// back to the entry of the method.
 		// This will contain the effective type qualifier
 		// annotations on the method parameters.
-		
-		CFG cfg = dataflow.getCFG();
-		
-		assert cfg == vnaDataflow.getCFG();
 		
 		BasicBlock entry = dataflow.getCFG().getEntry();
 		TypeQualifierValueSet entryFact = dataflow.getAnalysis().getResultFact(entry);
