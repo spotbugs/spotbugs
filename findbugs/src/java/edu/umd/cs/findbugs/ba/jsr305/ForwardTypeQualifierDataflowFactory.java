@@ -111,10 +111,12 @@ public class ForwardTypeQualifierDataflowFactory
 					TypeQualifierValueSet flowSet = dataflow.getFactAtLocation(loc);
 					FlowValue topFlowValue = flowSet.getValue(topVN);
 					
-					if (effectiveFlowValue == null) {
-						effectiveFlowValue = topFlowValue;
-					} else {
-						effectiveFlowValue = FlowValue.meet(effectiveFlowValue, topFlowValue);
+					if (topFlowValue != null) {
+						if (effectiveFlowValue == null) {
+							effectiveFlowValue = topFlowValue;
+						} else {
+							effectiveFlowValue = FlowValue.meet(effectiveFlowValue, topFlowValue);
+						}
 					}
 				}
 			}

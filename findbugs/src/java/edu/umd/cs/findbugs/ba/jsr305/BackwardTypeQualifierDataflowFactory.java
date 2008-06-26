@@ -19,16 +19,21 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import javax.annotation.meta.When;
 
 /**
  * Factory for BackwardTypeQualifierDataflow objects
@@ -86,6 +91,29 @@ public class BackwardTypeQualifierDataflowFactory
 	protected void populateDatabase(BackwardTypeQualifierDataflow dataflow, ValueNumberDataflow vnaDataflow, XMethod xmethod, TypeQualifierValue tqv) throws CheckedAnalysisException {
 		assert TypeQualifierDatabase.USE_DATABASE;
 		
-		// TODO: implement
+		// Get the dataflow fact that propagated
+		// back to the entry of the method.
+		// This will contain the effective type qualifier
+		// annotations on the method parameters.
+		
+		CFG cfg = dataflow.getCFG();
+		
+		assert cfg == vnaDataflow.getCFG();
+		
+		BasicBlock entry = dataflow.getCFG().getEntry();
+		TypeQualifierValueSet entryFact = dataflow.getAnalysis().getResultFact(entry);
+		
+		for (int i = 0; i < xmethod.getNumParams(); i++) {
+			// Get the value number for this parameter
+			ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValueForParameter(i);
+			
+			FlowValue paramFlowValue = entryFact.getValue(paramVN);
+			if (paramFlowValue == FlowValue.ALWAYS || paramFlowValue == FlowValue.NEVER) {
+				TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+				TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(
+					tqv, paramFlowValue == FlowValue.ALWAYS ? When.ALWAYS : When.NEVER);
+				tqdb.setParameter(xmethod.getMethodDescriptor(), i, tqv, tqa);
+			}
+		}
 	}
 }

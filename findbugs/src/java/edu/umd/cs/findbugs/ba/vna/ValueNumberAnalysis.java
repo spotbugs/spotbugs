@@ -122,8 +122,26 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		return thisValue;
 	}
 
+	/**
+	 * Get the value number assigned to the given local variable
+	 * upon entry to the method.
+	 * 
+	 * @param local local variable number
+	 * @return ValueNumber assigned to the local variable
+	 */
 	public ValueNumber getEntryValue(int local) {
 		return entryLocalValueList[local];
+	}
+
+	/**
+	 * Get the value number assigned to the given parameter
+	 * upon entry to the method.
+	 * 
+	 * @param param a parameter (0 == first parameter)
+	 * @return the ValueNumber assigned to that parameter
+	 */
+	public ValueNumber getEntryValueForParameter(int param) {
+		return getEntryValue(methodGen.isStatic() ? param : param + 1);
 	}
 
 	public ValueNumberFrame createFact() {
