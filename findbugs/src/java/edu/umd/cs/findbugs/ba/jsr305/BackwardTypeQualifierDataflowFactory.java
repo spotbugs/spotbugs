@@ -104,6 +104,11 @@ public class BackwardTypeQualifierDataflowFactory
 		TypeQualifierValueSet entryFact = dataflow.getAnalysis().getResultFact(entry);
 		
 		for (int i = 0; i < xmethod.getNumParams(); i++) {
+			if (TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, i, tqv) != null) {
+				// this parameter already has an explicit annotation
+				continue;
+			}
+			
 			// Get the value number for this parameter
 			ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValueForParameter(i);
 			
