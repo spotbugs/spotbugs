@@ -50,7 +50,6 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
@@ -58,6 +57,7 @@ import edu.umd.cs.findbugs.ba.URLClassPathRepository;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -1271,7 +1271,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 							detectorTimings.put(detectorName, total);
 						}
 					}
-				} catch (AnalysisException e) {
+				} catch (UncheckedAnalysisException e) {
 					reportRecoverableDetectorException(className, detector, e);
 				} catch (ArrayIndexOutOfBoundsException e) {
 					reportRecoverableDetectorException(className, detector, e);

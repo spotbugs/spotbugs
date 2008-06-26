@@ -35,7 +35,6 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -934,12 +933,12 @@ public class FindBugs2 implements IFindBugsEngine {
 							Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
 						} catch (CheckedAnalysisException e) {
 							logRecoverableException(classDescriptor, detector, e);
-						} catch (AnalysisException e) {
-							logRecoverableException(classDescriptor, detector, e);
-						} catch (ArrayIndexOutOfBoundsException e) {
-							logRecoverableException(classDescriptor, detector, e);
-						} catch (ClassCastException e) {
-							logRecoverableException(classDescriptor, detector, e);
+//						} catch (UncheckedAnalysisException e) {
+//							logRecoverableException(classDescriptor, detector, e);
+//						} catch (ArrayIndexOutOfBoundsException e) {
+//							logRecoverableException(classDescriptor, detector, e);
+//						} catch (ClassCastException e) {
+//							logRecoverableException(classDescriptor, detector, e);
 						} catch (RuntimeException e) {
 							logRecoverableException(classDescriptor, detector, e);
 						} finally {

@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.MapCache;
 
@@ -398,7 +399,7 @@ public class AnalysisCache implements IAnalysisCache {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
 	 */
-	public <E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException {
+	public <E> E getDatabase(Class<E> databaseClass) {
 		Object database = databaseMap.get(databaseClass);
 
 		if (database == null) {
@@ -422,7 +423,9 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 
 		if (database instanceof AbnormalAnalysisResult) {
-			throw ((AbnormalAnalysisResult)database).checkedAnalysisException;
+			throw new UncheckedAnalysisException(
+				"Error instantiating " + databaseClass.getName() + " database",
+				((AbnormalAnalysisResult)database).checkedAnalysisException);
 		}
 
 		return databaseClass.cast(database);

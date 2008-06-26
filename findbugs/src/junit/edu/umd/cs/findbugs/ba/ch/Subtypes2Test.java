@@ -26,7 +26,6 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.FindBugsTestCase;
 import edu.umd.cs.findbugs.RunnableWithExceptions;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.FindRefComparison;
 
@@ -103,11 +102,7 @@ public class Subtypes2Test extends FindBugsTestCase {
 	}
 
 	private static Subtypes2 getSubtypes2() {
-		try {
-			return Global.getAnalysisCache().getDatabase(Subtypes2.class);
-		} catch (CheckedAnalysisException e) {
-			throw new IllegalStateException();
-		}
+		return Global.getAnalysisCache().getDatabase(Subtypes2.class);
 	}
 
 	public void testStringSubtypeOfObject() throws Throwable {

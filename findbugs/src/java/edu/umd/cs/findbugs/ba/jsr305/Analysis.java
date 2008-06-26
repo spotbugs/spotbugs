@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import java.util.Iterator;
 
 /**
@@ -144,7 +145,7 @@ public class Analysis {
 				} catch (ClassNotFoundException e) {
 					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
 					return Collections.<TypeQualifierValue>emptySet();
-				} catch (AnalysisException e) {
+				} catch (UncheckedAnalysisException e) {
 					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
 						"Error getting relevant type qualifiers for " + xmethod.toString(), e);
 					return Collections.<TypeQualifierValue>emptySet();

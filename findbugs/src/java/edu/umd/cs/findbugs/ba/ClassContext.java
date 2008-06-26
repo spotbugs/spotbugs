@@ -942,16 +942,16 @@ public class ClassContext {
     	}
     }
     
-    private<Analysis> Analysis getClassAnalysisPossibleClassNotFoundException(Class<Analysis> analysisClass)
-			throws ClassNotFoundException {
-		try {
-			return Global.getAnalysisCache().getClassAnalysis(analysisClass, BCELUtil.getClassDescriptor(jclass));
-		} catch (ResourceNotFoundException e) {
-			throw e.toClassNotFoundException();
-		} catch (CheckedAnalysisException e) {
-			throw new AnalysisException("Unexpected exception", e); 
-		}
-    }
+//    private<Analysis> Analysis getClassAnalysisPossibleClassNotFoundException(Class<Analysis> analysisClass)
+//			throws ClassNotFoundException {
+//		try {
+//			return Global.getAnalysisCache().getClassAnalysis(analysisClass, BCELUtil.getClassDescriptor(jclass));
+//		} catch (ResourceNotFoundException e) {
+//			throw e.toClassNotFoundException();
+//		} catch (CheckedAnalysisException e) {
+//			throw new AnalysisException("Unexpected exception", e); 
+//		}
+//    }
 }
 
 // vim:ts=3

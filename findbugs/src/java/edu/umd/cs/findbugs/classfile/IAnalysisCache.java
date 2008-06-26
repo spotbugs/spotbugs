@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006-2007 University of Maryland
+ * Copyright (C) 2006-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -125,12 +125,19 @@ public interface IAnalysisCache {
 	/**
 	 * Get a database.
 	 * 
+	 * <em>Note</em>: an unchecked analysis exception will be
+	 * thrown if the database cannot be instantiated.
+	 * Since instantiation of most kinds of databases simply involves creating
+	 * an object (and not opening a file or other failure-prone
+	 * operation), throwing a CheckedAnalysisException creates too
+	 * great of an exception-handling burden on analyses and detectors
+	 * which use databases.
+	 * 
 	 * @param <E>           type of database
 	 * @param databaseClass Class of database
 	 * @return the database (which is created by a database factory if required)
-	 * @throws CheckedAnalysisException 
 	 */
-	public <E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
+	public <E> E getDatabase(Class<E> databaseClass);
 
 	/**
 	 * Eagerly install a database.

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -28,7 +29,7 @@ import org.apache.bcel.generic.MethodGen;
  * a fatal error in an analysis.  It would be nice to make this a
  * checked exception, but we can't throw those from BCEL visitors.
  */
-public class AnalysisException extends RuntimeException {
+public class AnalysisException extends UncheckedAnalysisException {
 	/**
 	 * 
 	 */

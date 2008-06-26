@@ -100,15 +100,16 @@ public class Hierarchy {
 	 */
 	public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
 		if (Subtypes2.ENABLE_SUBTYPES2) {
-			try {
-				Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
-				return subtypes2.isSubtype(t, possibleSupertype);
-			} catch (CheckedAnalysisException e) {
-				// Should not happen
-				IllegalStateException ise = new IllegalStateException("Should not happen");
-				ise.initCause(e);
-				throw ise;
-			}
+//			try {
+//				Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+//				return subtypes2.isSubtype(t, possibleSupertype);
+//			} catch (CheckedAnalysisException e) {
+//				// Should not happen
+//				IllegalStateException ise = new IllegalStateException("Should not happen");
+//				ise.initCause(e);
+//				throw ise;
+//			}
+			return Global.getAnalysisCache().getDatabase(Subtypes2.class).isSubtype(t, possibleSupertype);
 		} else {
 			Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
 			if (subtypes == null) {

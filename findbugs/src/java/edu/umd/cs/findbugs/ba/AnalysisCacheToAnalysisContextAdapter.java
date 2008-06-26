@@ -301,11 +301,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 * @return the database
 	 */
 	private<E> E getDatabase(Class<E> cls) {
-		try {
+//		try {
 			return Global.getAnalysisCache().getDatabase(cls);
-		} catch (CheckedAnalysisException e) {
-			throw new IllegalStateException("Could not get database " + cls.getName(), e);
-		}
+//		} catch (CheckedAnalysisException e) {
+//			throw new IllegalStateException("Could not get database " + cls.getName(), e);
+//		}
 	}
 
 	/**
@@ -333,7 +333,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		}
 		
 		if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
-			System.out.println(subtypes2.getGraph().getNumVertices() + " vertices in inheritance graph");
+			System.out.println(getSubtypes2().getGraph().getNumVertices() + " vertices in inheritance graph");
 		}
 	}
 
@@ -354,47 +354,48 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
-			return getDatabase(ReturnValueNullnessPropertyDatabase.class);
-
+		return getDatabase(ReturnValueNullnessPropertyDatabase.class);
 	}
 
-	private Subtypes2 subtypes2;
+//	private Subtypes2 subtypes2;
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes2()
 	 */
 	@Override
 	public Subtypes2 getSubtypes2() {
-		if (subtypes2 == null) {
-			try {
-				subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
-			} catch (CheckedAnalysisException e) {
-				IllegalStateException ise = new IllegalStateException("Should not happen");
-				ise.initCause(e);
-				throw ise;
-			}
-		}
-		return subtypes2;
+//		if (subtypes2 == null) {
+//			try {
+//				subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+//			} catch (CheckedAnalysisException e) {
+//				IllegalStateException ise = new IllegalStateException("Should not happen");
+//				ise.initCause(e);
+//				throw ise;
+//			}
+//		}
+//		return subtypes2;
+		return Global.getAnalysisCache().getDatabase(Subtypes2.class);
 	}
 	
-	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
+//	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDirectlyRelevantTypeQualifiersDatabase()
 	 */
 	@Override
 	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
-		if (directlyRelevantTypeQualifiersDatabase == null) {
-			try {
-				directlyRelevantTypeQualifiersDatabase =
-					Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
-			} catch (CheckedAnalysisException e) {
-				IllegalStateException ise = new IllegalStateException("Should not happen");
-				ise.initCause(e);
-				throw ise;
-			}
-		}
-		return directlyRelevantTypeQualifiersDatabase;
+//		if (directlyRelevantTypeQualifiersDatabase == null) {
+//			try {
+//				directlyRelevantTypeQualifiersDatabase =
+//					Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
+//			} catch (CheckedAnalysisException e) {
+//				IllegalStateException ise = new IllegalStateException("Should not happen");
+//				ise.initCause(e);
+//				throw ise;
+//			}
+//		}
+//		return directlyRelevantTypeQualifiersDatabase;
+		return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
 	}
 	
 }
