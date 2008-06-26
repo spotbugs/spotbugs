@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.classfile;
 
 import java.util.Map;
@@ -30,6 +29,7 @@ import javax.annotation.Nonnull;
  * @author David Hovemeyer
  */
 public interface IAnalysisCache {
+
 	/**
 	 * Register the given class analysis engine as producing the
 	 * analysis result type whose Class is given.
@@ -38,8 +38,8 @@ public interface IAnalysisCache {
 	 * @param analysisResultType  analysis result type Class object 
 	 * @param classAnalysisEngine the class analysis engine to register
 	 */
-	public<E> void registerClassAnalysisEngine(
-			Class<E> analysisResultType, IClassAnalysisEngine<E> classAnalysisEngine);
+	public <E> void registerClassAnalysisEngine(
+		Class<E> analysisResultType, IClassAnalysisEngine<E> classAnalysisEngine);
 
 	/**
 	 * Register the given method analysis engine as producing the
@@ -49,8 +49,8 @@ public interface IAnalysisCache {
 	 * @param analysisResultType   analysis result type Class object 
 	 * @param methodAnalysisEngine the method analysis engine to register
 	 */
-	public<E> void registerMethodAnalysisEngine(
-			Class<E> analysisResultType, IMethodAnalysisEngine<E> methodAnalysisEngine);
+	public <E> void registerMethodAnalysisEngine(
+		Class<E> analysisResultType, IMethodAnalysisEngine<E> methodAnalysisEngine);
 
 	/**
 	 * Get an analysis of the given class.
@@ -61,7 +61,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the class)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor)
+	public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor)
 		throws CheckedAnalysisException;
 
 	/**
@@ -72,7 +72,7 @@ public interface IAnalysisCache {
 	 * @param classDescriptor the class descriptor
 	 * @return a cached analysis result, or null if there is no cached analysis result
 	 */
-	public<E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor);
+	public <E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor);
 
 	/**
 	 * Get an analysis of the given method.
@@ -83,7 +83,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the method)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor)
+	public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
 
 	/**
@@ -95,10 +95,10 @@ public interface IAnalysisCache {
 	 * @param <E>              the type of the analysis (e.g., FoobarAnalysis)
 	 * @param analysisClass    the analysis class object (e.g., FoobarAnalysis.class)
 	 * @param methodDescriptor the descriptor of the method to analyze
-     * @param analysisObject
-     */
-    public<E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, Object analysisObject);
-	
+	 * @param analysisObject
+	 */
+	public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, Object analysisObject);
+
 	/**
 	 * Purge all analysis results for given method.
 	 * This can be called when a CFG is pruned and we want to
@@ -108,7 +108,11 @@ public interface IAnalysisCache {
 	 */
 	public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor);
 
+	/**
+	 * Purge all analysis results for all methods.
+	 */
 	public void purgeAllMethodAnalysis();
+
 	/**
 	 * Register a database factory.
 	 * 
@@ -116,7 +120,7 @@ public interface IAnalysisCache {
 	 * @param databaseClass   Class of database
 	 * @param databaseFactory the database factory
 	 */
-	public<E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory);
+	public <E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory);
 
 	/**
 	 * Get a database.
@@ -126,8 +130,8 @@ public interface IAnalysisCache {
 	 * @return the database (which is created by a database factory if required)
 	 * @throws CheckedAnalysisException 
 	 */
-	public<E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
-	
+	public <E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
+
 	/**
 	 * Eagerly install a database.
 	 * This avoids the need to register a database factory.
@@ -136,7 +140,7 @@ public interface IAnalysisCache {
 	 * @param databaseClass Class of database
 	 * @param database      database object
 	 */
-	public<E> void eagerlyPutDatabase(Class<E> databaseClass, E database);
+	public <E> void eagerlyPutDatabase(Class<E> databaseClass, E database);
 
 	/**
 	 * Get the classpath from which classes are loaded. 
@@ -153,7 +157,7 @@ public interface IAnalysisCache {
 	public IErrorLogger getErrorLogger();
 
 	/**
-	 * @return FIXME
-     */
-    public Map<?, ?> getAnalysisLocals();
+	 * Get map of analysis-local objects.
+	 */
+	public Map<?, ?> getAnalysisLocals();
 }
