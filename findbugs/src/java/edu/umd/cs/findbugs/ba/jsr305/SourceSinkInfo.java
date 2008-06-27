@@ -37,6 +37,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	private final When when;
 	private int parameter;
 	private int local;
+	private boolean interproc;
 
 	/**
 	 * Constructor.
@@ -110,6 +111,32 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 	 */
 	public int getLocal() {
 		return local;
+	}
+
+	/**
+	 * Set the SourceSinkInfo as having been created based
+	 * on the results of type qualifiers computed for a called method
+	 * (and not explicitly annotating the called method).
+	 * 
+	 * @param interproc true if the SourceSinkInfo results from
+	 *                  computed type qualifiers for a called method,
+	 *                  false otherwise
+	 */
+	public void setInterproc(boolean interproc) {
+		this.interproc = interproc;
+	}
+	
+	/**
+	 * Return whether or not the SourceSinkInfo was created
+	 * based on the results of type qualifiers computed for a called method
+	 * (and not explicitly annotating the called method).
+	 * 
+	 * @return true if the SourceSinkInfo results from
+	 *         computed type qualifiers for a called method,
+	 *         false otherwise
+	 */
+	public boolean getInterproc() {
+		return interproc;
 	}
 
 	/* (non-Javadoc)

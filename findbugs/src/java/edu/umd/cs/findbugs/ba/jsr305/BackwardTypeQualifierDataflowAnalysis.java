@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.Global;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.RETURN;
 import org.apache.bcel.generic.ReturnInstruction;
@@ -231,6 +232,19 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 				calledMethod,
 				param,
 				typeQualifierValue);
+			
+			boolean interproc = false;
+			if (TypeQualifierDatabase.USE_DATABASE && tqa == null) {
+				// See if there's an entry for this parameter
+				// in the interprocedural type qualifier database.
+				TypeQualifierDatabase tqdb =
+					Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+				tqa = tqdb.getParameter(calledMethod.getMethodDescriptor(), param, typeQualifierValue);
+				if (tqa != null) {
+					interproc = true;
+				}
+			}
+			
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 
 			ValueNumber vn = vnaFrame.getArgument(
@@ -241,6 +255,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
 			SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
 			info.setParameter(param);
+			info.setInterproc(interproc);
 
 			registerSourceSink(info);
 

@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Forward type qualifier dataflow analysis.
@@ -114,13 +115,24 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			return;
 		}
 
-
 		XMethod calledXMethod = XFactory.createXMethod(inv, cpg);
 		if (calledXMethod.isResolved()) {
 			TypeQualifierAnnotation tqa =
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledXMethod, typeQualifierValue);
+			
+			boolean interproc = false;
+			if (TypeQualifierDatabase.USE_DATABASE && tqa == null) {
+				// See if there's an entry in the interprocedural
+				// type qualifier database.
+				TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
+				tqa = tqdb.getReturnValue(calledXMethod.getMethodDescriptor(), typeQualifierValue);
+				if (tqa != null) {
+					interproc = true;
+				}
+			}
+			
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when);
+			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when, interproc);
 		}
 	}
 
@@ -130,16 +142,18 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 			TypeQualifierAnnotation tqa =
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(loadedField, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when);
+			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when, false);
 		}
 
 	}
 
-	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when) throws DataflowAnalysisException {
+	private void registerTopOfStackSource(SourceSinkType sourceSinkType, Location location, When when, boolean interproc)
+			throws DataflowAnalysisException {
 		ValueNumberFrame vnaFrameAfterInstruction = vnaDataflow.getFactAfterLocation(location);
 		if (vnaFrameAfterInstruction.isValid()) {
 			ValueNumber tosValue = vnaFrameAfterInstruction.getTopValue();
 			SourceSinkInfo sourceSinkInfo = new SourceSinkInfo(sourceSinkType, location, tosValue, when);
+			sourceSinkInfo.setInterproc(interproc);
 			registerSourceSink(sourceSinkInfo);
 		}
 	}
