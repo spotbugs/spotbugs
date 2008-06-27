@@ -158,7 +158,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
 	private void registerInstructionSinks() throws DataflowAnalysisException {
 		TypeQualifierAnnotation returnValueAnnotation = null;
-		if (xmethod.isReturnTypeReferenceType()) {
+		if (!xmethod.getSignature().endsWith(")V")) {
 			returnValueAnnotation =
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, typeQualifierValue);
 		}
@@ -199,7 +199,6 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		// Model field stores
 		XField writtenField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 		TypeQualifierAnnotation tqa =
-			//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(writtenField, typeQualifierValue);
 			TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(writtenField, typeQualifierValue);
 		When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 		
@@ -217,7 +216,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		// Model arguments to called method
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 		XMethod calledMethod = XFactory.createXMethod(inv, cpg);
-		
+
 		SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());
 		if (sigParser.getNumParameters() == 0) return;
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
@@ -227,30 +226,23 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 			return;
 		}
 		
-		for (Iterator<String> j = sigParser.parameterSignatureIterator(); j.hasNext(); ) {
-			int param = 0;
+		for (int param = 0; param < calledMethod.getNumParams(); param++) {
+			TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
+				calledMethod,
+				param,
+				typeQualifierValue);
+			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 
-			String paramSig = j.next();
+			ValueNumber vn = vnaFrame.getArgument(
+				inv,
+				cpg,
+				param,
+				sigParser);
 
-			if (SignatureParser.isReferenceType(paramSig)) {
+			SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
+			info.setParameter(param);
 
-				TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(
-						calledMethod,
-						param,
-						typeQualifierValue);
-				When when = (tqa != null) ? tqa.when : When.UNKNOWN;
-
-				ValueNumber vn = vnaFrame.getArgument(
-						inv,
-						cpg,
-						param,
-						sigParser);
-
-				SourceSinkInfo info = new SourceSinkInfo(SourceSinkType.ARGUMENT_TO_CALLED_METHOD, location, vn, when);
-				info.setParameter(param);
-
-				registerSourceSink(info);
-			}
+			registerSourceSink(info);
 
 			param++;
 		}

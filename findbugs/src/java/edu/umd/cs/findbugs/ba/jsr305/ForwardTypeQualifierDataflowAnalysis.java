@@ -107,19 +107,18 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 	}
 
 	private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
-		// Nothing to do if called method does not return a reference value
+		// Nothing to do if called method does not return a value
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 		String calledMethodSig = inv.getSignature(cpg);
-		if (!calledMethodSig.endsWith(";")) {
+		if (calledMethodSig.endsWith(")V")) {
 			return;
 		}
 
 
-		XMethod xmethod = XFactory.createXMethod(inv, cpg);
-		if (xmethod.isResolved()) {
+		XMethod calledXMethod = XFactory.createXMethod(inv, cpg);
+		if (calledXMethod.isResolved()) {
 			TypeQualifierAnnotation tqa =
-				//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
-				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, typeQualifierValue);
+				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledXMethod, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			registerTopOfStackSource(SourceSinkType.RETURN_VALUE_OF_CALLED_METHOD, location, when);
 		}
@@ -129,7 +128,6 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 		XField loadedField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
 		if (loadedField.isResolved()) {
 			TypeQualifierAnnotation tqa =
-				//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(loadedField, typeQualifierValue);
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(loadedField, typeQualifierValue);
 			When when = (tqa != null) ? tqa.when : When.UNKNOWN;
 			registerTopOfStackSource(SourceSinkType.FIELD_LOAD, location, when);
