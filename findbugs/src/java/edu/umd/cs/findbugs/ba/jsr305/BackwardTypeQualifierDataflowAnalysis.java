@@ -46,6 +46,9 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.RETURN;
+import org.apache.bcel.generic.ReturnInstruction;
 
 /**
  * Backwards type qualifier dataflow analysis.
@@ -157,21 +160,25 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 		TypeQualifierAnnotation returnValueAnnotation = null;
 		if (xmethod.isReturnTypeReferenceType()) {
 			returnValueAnnotation =
-				//TypeQualifierApplications.getApplicableApplicationConsideringSupertypes(xmethod, typeQualifierValue);
 				TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xmethod, typeQualifierValue);
 		}
 		
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			
-			short opcode = location.getHandle().getInstruction().getOpcode();
-
-			if (opcode == Constants.ARETURN) {
+			Instruction ins = location.getHandle().getInstruction();
+			
+			if (ins instanceof ReturnInstruction && !(ins instanceof RETURN)) {
+				// Return instruction which returns a value
 				modelReturn(returnValueAnnotation, location);
-			} else if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
-				modelFieldStore(location);
-			} else if (location.getHandle().getInstruction() instanceof InvokeInstruction) {
-				modelArguments(location);
+			} else {
+				short opcode = ins.getOpcode();
+
+				if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
+					modelFieldStore(location);
+				} else if (location.getHandle().getInstruction() instanceof InvokeInstruction) {
+					modelArguments(location);
+				}
 			}
 		}
 	}
