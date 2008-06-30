@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="findbugs-IDE">
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/41/freeform-config.html#runsingle) -->
+    <target name="run-selected-file-in-java5">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <ant antfile="build.xml" inheritall="false">
+            <target name="junittests"/>
+            <target name="jars"/>
+        </ant>
+        <java classname="${run.class}" failonerror="true" fork="true">
+            <classpath>
+                <pathelement path="build/classes:lib/annotations.jar:lib/ant.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0.jar:lib/asm-analysis-3.0.jar:lib/asm-commons-3.0.jar:lib/asm-tree-3.0.jar:lib/asm-util-3.0.jar:lib/asm-xml-3.0.jar:lib/bcel.jar:lib/dom4j-full.jar:lib/jsr305.jar:lib/junit.jar"/>
+            </classpath>
+        </java>
+    </target>
+</project>

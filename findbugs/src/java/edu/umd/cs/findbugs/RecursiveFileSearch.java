@@ -23,9 +23,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Recursively search a directory, its subdirectories, etc.
@@ -39,6 +41,7 @@ public class RecursiveFileSearch {
 	private FileFilter fileFilter;
 	private LinkedList<File> directoryWorkList;
 	private HashSet<String> directoriesScanned = new HashSet<String>();
+	private List<String> directoriesScannedList = new LinkedList<String>();
 	private ArrayList<String> resultList;
 
 	/**
@@ -74,6 +77,7 @@ public class RecursiveFileSearch {
 		String basePath = bestEffortCanonicalPath(baseFile);
 		directoryWorkList.add(baseFile);
 		directoriesScanned.add(basePath);
+		directoriesScannedList.add(basePath);
 
 		while (!directoryWorkList.isEmpty()) {
 			File dir = directoryWorkList.removeFirst();
@@ -88,15 +92,19 @@ public class RecursiveFileSearch {
 
 				File file = aContentList;
 
-				if (!fileFilter.accept(file))
+				if (!fileFilter.accept(file)) {
 					continue;
+				}
+				
 				if (file.isDirectory()) {
 					String myPath = bestEffortCanonicalPath(file);
-					if (myPath.startsWith(basePath) && directoriesScanned.add(myPath))
+					if (myPath.startsWith(basePath) && directoriesScanned.add(myPath)) {
+						directoriesScannedList.add(myPath);
 						directoryWorkList.add(file);
-				}
-				else
+					}
+				} else {
 					resultList.add(file.getPath());
+				}
 			}
 		}
 
@@ -109,6 +117,13 @@ public class RecursiveFileSearch {
 	 */
 	public Iterator<String> fileNameIterator() {
 		return resultList.iterator();
+	}
+	
+	/*
+	 * Get List of all directories scanned.
+	 */
+	public List<String> getDirectoriesScanned() {
+		return Collections.unmodifiableList(directoriesScannedList);
 	}
 
 }

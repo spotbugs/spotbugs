@@ -48,6 +48,19 @@
                     <target>clean</target>
                     <target>build</target>
                 </action>
+                <action name="run.single">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>run-selected-file-in-java5</target>
+                    <context>
+                        <property>run.class</property>
+                        <folder>src/java5</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
             </ide-actions>
             <view>
                 <items>
