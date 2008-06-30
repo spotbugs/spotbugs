@@ -75,120 +75,65 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 contentPanel.setLayout(new java.awt.CardLayout());
 
                 firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+                firstPanel.setLayout(null);
 
                 sourceRootLabel.setText("Top-level source directory:");
+                firstPanel.add(sourceRootLabel);
+                sourceRootLabel.setBounds(50, 220, 168, 17);
+                firstPanel.add(sourceRootBox);
+                sourceRootBox.setBounds(230, 210, 410, 27);
 
-                srcFileIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/edu/umd/cs/findbugs/gui2/source_java.png"))); // NOI18N
+                srcFileIconLabel.setIcon(new javax.swing.ImageIcon("/usr/share/icons/default.kde/128x128/mimetypes/source_java.png")); // NOI18N
+                firstPanel.add(srcFileIconLabel);
+                srcFileIconLabel.setBounds(50, 80, 128, 128);
 
-                card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+                card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
                 card1TitleLabel.setText("Where are your source files?");
+                firstPanel.add(card1TitleLabel);
+                card1TitleLabel.setBounds(230, 20, 353, 29);
 
                 browseButton.setText("Browse...");
+                firstPanel.add(browseButton);
+                browseButton.setBounds(650, 210, 70, 29);
 
-                card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14));
+                card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 card1Explanation1Label.setText("Enter the top-level directory");
+                firstPanel.add(card1Explanation1Label);
+                card1Explanation1Label.setBounds(190, 80, 193, 17);
 
-                card1Explanation2Label.setFont(new java.awt.Font("SansSerif", 0, 14));
+                card1Explanation2Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 card1Explanation2Label.setText("containing your application's");
+                firstPanel.add(card1Explanation2Label);
+                card1Explanation2Label.setBounds(190, 100, 198, 17);
 
-                card1Explanation3Label.setFont(new java.awt.Font("SansSerif", 0, 14));
+                card1Explanation3Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 card1Explanation3Label.setText("source files.");
-
-                javax.swing.GroupLayout firstPanelLayout = new javax.swing.GroupLayout(firstPanel);
-                firstPanel.setLayout(firstPanelLayout);
-                firstPanelLayout.setHorizontalGroup(
-                        firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                .addGap(39, 39, 39)
-                                .addGroup(firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(sourceRootLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(sourceRootBox, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(browseButton, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
-                                                .addGap(25, 25, 25))
-                                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                                .addGroup(firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(card1TitleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                                                .addComponent(srcFileIconLabel)
-                                                                .addGap(87, 87, 87)
-                                                                .addGroup(firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(card1Explanation3Label)
-                                                                        .addComponent(card1Explanation2Label)
-                                                                        .addComponent(card1Explanation1Label))))
-                                                .addContainerGap(229, Short.MAX_VALUE))))
-                );
-                firstPanelLayout.setVerticalGroup(
-                        firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, firstPanelLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(card1TitleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                                .addGap(18, 18, 18)
-                                                .addComponent(srcFileIconLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(firstPanelLayout.createSequentialGroup()
-                                                .addGap(55, 55, 55)
-                                                .addComponent(card1Explanation1Label)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(card1Explanation2Label)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(card1Explanation3Label)))
-                                .addGap(27, 27, 27)
-                                .addGroup(firstPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(browseButton)
-                                        .addComponent(sourceRootBox, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(sourceRootLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(72, 72, 72))
-                );
+                firstPanel.add(card1Explanation3Label);
+                card1Explanation3Label.setBounds(190, 120, 82, 17);
 
                 contentPanel.add(firstPanel, "card1");
 
+                secondPanel.setLayout(null);
+
                 jScrollPane1.setViewportView(jList1);
 
-                jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14));
+                secondPanel.add(jScrollPane1);
+                jScrollPane1.setBounds(350, 50, 258, 130);
+
+                jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 jLabel1.setText("Source directories found:");
+                secondPanel.add(jLabel1);
+                jLabel1.setBounds(350, 30, 173, 17);
 
-                jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14));
+                jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 jLabel2.setText("Click Finish to accept this");
+                secondPanel.add(jLabel2);
+                jLabel2.setBounds(90, 90, 173, 17);
 
-                jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14));
+                jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
                 jLabel3.setText("list of source directories");
-
-                javax.swing.GroupLayout secondPanelLayout = new javax.swing.GroupLayout(secondPanel);
-                secondPanel.setLayout(secondPanelLayout);
-                secondPanelLayout.setHorizontalGroup(
-                        secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, secondPanelLayout.createSequentialGroup()
-                                .addGap(40, 40, 40)
-                                .addGroup(secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel2)
-                                        .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap())
-                );
-                secondPanelLayout.setVerticalGroup(
-                        secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(secondPanelLayout.createSequentialGroup()
-                                .addGroup(secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(secondPanelLayout.createSequentialGroup()
-                                                .addGap(22, 22, 22)
-                                                .addComponent(jLabel1)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
-                                        .addGroup(secondPanelLayout.createSequentialGroup()
-                                                .addGap(94, 94, 94)
-                                                .addComponent(jLabel2)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel3)))
-                                .addContainerGap())
-                );
+                secondPanel.add(jLabel3);
+                jLabel3.setBounds(90, 110, 165, 17);
 
                 contentPanel.add(secondPanel, "card2");
 
