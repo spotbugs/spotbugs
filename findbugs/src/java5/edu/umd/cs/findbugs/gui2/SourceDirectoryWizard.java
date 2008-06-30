@@ -49,6 +49,12 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         private void initComponents() {
 
                 contentPanel = new javax.swing.JPanel();
+                secondPanel = new javax.swing.JPanel();
+                jScrollPane1 = new javax.swing.JScrollPane();
+                jList1 = new javax.swing.JList();
+                jLabel1 = new javax.swing.JLabel();
+                jLabel2 = new javax.swing.JLabel();
+                jLabel3 = new javax.swing.JLabel();
                 firstPanel = new javax.swing.JPanel();
                 sourceRootLabel = new javax.swing.JLabel();
                 sourceRootBox = new javax.swing.JTextField();
@@ -58,12 +64,6 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 card1Explanation1Label = new javax.swing.JLabel();
                 card1Explanation2Label = new javax.swing.JLabel();
                 card1Explanation3Label = new javax.swing.JLabel();
-                secondPanel = new javax.swing.JPanel();
-                jScrollPane1 = new javax.swing.JScrollPane();
-                jList1 = new javax.swing.JList();
-                jLabel1 = new javax.swing.JLabel();
-                jLabel2 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
                 previousButton = new javax.swing.JButton();
                 nextButton = new javax.swing.JButton();
                 finshButton = new javax.swing.JButton();
@@ -71,8 +71,33 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 setTitle("FindBugs Source Directory Configuration Wizard");
+                getContentPane().setLayout(null);
 
                 contentPanel.setLayout(new java.awt.CardLayout());
+
+                secondPanel.setLayout(null);
+
+                jScrollPane1.setViewportView(jList1);
+
+                secondPanel.add(jScrollPane1);
+                jScrollPane1.setBounds(350, 50, 258, 130);
+
+                jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14));
+                jLabel1.setText("Source directories found:");
+                secondPanel.add(jLabel1);
+                jLabel1.setBounds(350, 30, 173, 17);
+
+                jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14));
+                jLabel2.setText("Click Finish to accept this");
+                secondPanel.add(jLabel2);
+                jLabel2.setBounds(90, 90, 173, 17);
+
+                jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14));
+                jLabel3.setText("list of source directories");
+                secondPanel.add(jLabel3);
+                jLabel3.setBounds(90, 110, 165, 17);
+
+                contentPanel.add(secondPanel, "card2");
 
                 firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 firstPanel.setLayout(null);
@@ -87,7 +112,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 firstPanel.add(srcFileIconLabel);
                 srcFileIconLabel.setBounds(50, 80, 128, 128);
 
-                card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+                card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 card1TitleLabel.setText("Where are your source files?");
                 firstPanel.add(card1TitleLabel);
                 card1TitleLabel.setBounds(230, 20, 353, 29);
@@ -96,46 +121,25 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 firstPanel.add(browseButton);
                 browseButton.setBounds(650, 210, 70, 29);
 
-                card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+                card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation1Label.setText("Enter the top-level directory");
                 firstPanel.add(card1Explanation1Label);
                 card1Explanation1Label.setBounds(190, 80, 193, 17);
 
-                card1Explanation2Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+                card1Explanation2Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation2Label.setText("containing your application's");
                 firstPanel.add(card1Explanation2Label);
                 card1Explanation2Label.setBounds(190, 100, 198, 17);
 
-                card1Explanation3Label.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+                card1Explanation3Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation3Label.setText("source files.");
                 firstPanel.add(card1Explanation3Label);
                 card1Explanation3Label.setBounds(190, 120, 82, 17);
 
                 contentPanel.add(firstPanel, "card1");
 
-                secondPanel.setLayout(null);
-
-                jScrollPane1.setViewportView(jList1);
-
-                secondPanel.add(jScrollPane1);
-                jScrollPane1.setBounds(350, 50, 258, 130);
-
-                jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-                jLabel1.setText("Source directories found:");
-                secondPanel.add(jLabel1);
-                jLabel1.setBounds(350, 30, 173, 17);
-
-                jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-                jLabel2.setText("Click Finish to accept this");
-                secondPanel.add(jLabel2);
-                jLabel2.setBounds(90, 90, 173, 17);
-
-                jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-                jLabel3.setText("list of source directories");
-                secondPanel.add(jLabel3);
-                jLabel3.setBounds(90, 110, 165, 17);
-
-                contentPanel.add(secondPanel, "card2");
+                getContentPane().add(contentPanel);
+                contentPanel.setBounds(0, 0, 0, 0);
 
                 previousButton.setText("<< Previous");
                 previousButton.addActionListener(new java.awt.event.ActionListener() {
@@ -143,6 +147,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                                 previousButtonActionPerformed(evt);
                         }
                 });
+                getContentPane().add(previousButton);
+                previousButton.setBounds(0, 325, 92, 29);
 
                 nextButton.setText("Next >>");
                 nextButton.addActionListener(new java.awt.event.ActionListener() {
@@ -150,6 +156,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                                 nextButtonActionPerformed(evt);
                         }
                 });
+                getContentPane().add(nextButton);
+                nextButton.setBounds(100, 325, 68, 29);
 
                 finshButton.setText("Finish");
                 finshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -157,41 +165,13 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                                 finshButtonActionPerformed(evt);
                         }
                 });
+                getContentPane().add(finshButton);
+                finshButton.setBounds(200, 325, 48, 29);
 
-                errorMessageLabel.setFont(new java.awt.Font("SansSerif", 1, 14));
+                errorMessageLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
                 errorMessageLabel.setForeground(new java.awt.Color(255, 0, 0));
-
-                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-                getContentPane().setLayout(layout);
-                layout.setHorizontalGroup(
-                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(248, Short.MAX_VALUE)
-                                .addComponent(previousButton, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(84, 84, 84)
-                                .addComponent(finshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(35, 35, 35)
-                                .addComponent(errorMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 572, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(76, Short.MAX_VALUE))
-                );
-                layout.setVerticalGroup(
-                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(errorMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(nextButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(previousButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(finshButton))
-                                .addContainerGap())
-                );
+                getContentPane().add(errorMessageLabel);
+                errorMessageLabel.setBounds(0, 300, 500, 20);
 
                 pack();
         }// </editor-fold>//GEN-END:initComponents
