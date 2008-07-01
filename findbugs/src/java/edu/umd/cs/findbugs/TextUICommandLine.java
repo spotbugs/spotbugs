@@ -283,7 +283,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			// Explicitly enable or disable the selected detectors.
 			StringTokenizer tok = new StringTokenizer(argument, ",");
 			while (tok.hasMoreTokens()) {
-				String visitorName = tok.nextToken();
+				String visitorName = tok.nextToken().trim();
 				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
 				if (factory == null)
 					throw new IllegalArgumentException("Unknown detector: " + visitorName);
@@ -387,7 +387,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private void choose(String argument, String desc, Chooser chooser) {
 		StringTokenizer tok = new StringTokenizer(argument, ",");
 		while (tok.hasMoreTokens()) {
-			String what = tok.nextToken();
+			String what = tok.nextToken().trim();
 			if (!what.startsWith("+") && !what.startsWith("-"))
 				throw new IllegalArgumentException(desc + " must start with " +
 						"\"+\" or \"-\" (saw " + what + ")");
