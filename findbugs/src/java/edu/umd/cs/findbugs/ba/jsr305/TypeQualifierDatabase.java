@@ -38,6 +38,8 @@ public class TypeQualifierDatabase {
 	 */
 	public static final boolean USE_DATABASE = SystemProperties.getBoolean("ctq.usedatabase");
 	
+	public static final boolean DEBUG = SystemProperties.getBoolean("ctq.db.debug");
+	
 	private Map<MethodDescriptor, Map<TypeQualifierValue, TypeQualifierAnnotation>> returnValueMap;
 	private DualKeyHashMap<MethodDescriptor, Integer, Map<TypeQualifierValue, TypeQualifierAnnotation>> parameterMap;
 	
@@ -63,6 +65,10 @@ public class TypeQualifierDatabase {
 			returnValueMap.put(methodDesc, map);
 		}
 		map.put(tqv, tqa);
+		
+		if(DEBUG) {
+			System.out.println("tqdb: " + methodDesc + " for " + tqv + " ==> " + tqa);
+		}
 	}
 	
 	/**
@@ -79,7 +85,7 @@ public class TypeQualifierDatabase {
 		// TODO: handling of overridden methods?
 		//
 		Map<TypeQualifierValue, TypeQualifierAnnotation> map = returnValueMap.get(methodDesc);
-		if (methodDesc == null) {
+		if (map == null) {
 			return null;
 		}
 		return map.get(tqv);
@@ -100,6 +106,10 @@ public class TypeQualifierDatabase {
 			parameterMap.put(methodDesc, param, map);
 		}
 		map.put(tqv, tqa);
+
+		if(DEBUG) {
+			System.out.println("tqdb: " + methodDesc + " parameter " + param +  " for " + tqv + " ==> " + tqa);
+		}
 	}
 	
 	/**
