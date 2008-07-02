@@ -46,8 +46,8 @@
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
 <!--
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
--->
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
+-->
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="sampleoutput.dir" value="build/sampleoutput"/>
 	<property name="junittests.jar" value="build/junittests.jar"/>
@@ -217,6 +217,7 @@
 						</fileset>
 					</jar>
 		</target>
+
 	<target name="jars" depends="classes, validate,version">
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
@@ -224,9 +225,11 @@
 			<!-- Compiled classes, properties files. -->
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
+<!--
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/gui2/**"/>
 				<exclude name="${pkg.base}/sourceViewer/**"/>
+-->
 <!--
 				<exclude name="${pkg.base}/detect/**"/>
 -->
@@ -240,6 +243,17 @@
 				<include name="**/*.properties"/>
 				<include name="**/*.db"/>
 				<include name="**/*.xsl"/>
+
+				<!-- The GUI classes/resources are now housed in findbugs.jar. -->
+				<include name="${pkg.base}/sourceViewer/**/*.class"/>
+				<include name="${pkg.base}/gui/**/*.class"/>
+				<include name="${pkg.base}/gui/**/*.properties"/>
+				<include name="${pkg.base}/gui/**/*.png"/>
+				<include name="${pkg.base}/gui/**/*.html"/>
+				<include name="${pkg.base}/gui2/**/*.class"/>
+				<include name="${pkg.base}/gui2/**/*.properties"/>
+				<include name="${pkg.base}/gui2/**/*.png"/>
+				<include name="${pkg.base}/gui2/**/*.html"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
 				<include name="findbugs.xml"/>
@@ -261,6 +275,7 @@
 -->
 
 		<!-- Swing GUI jar file. -->
+<!--
 		<jar destfile="${gui.jar}"
 				manifest="etc/MANIFEST-findbugsGUI.MF">
 			<fileset dir="${classes.dir}">
@@ -275,6 +290,7 @@
 				<include name="${pkg.base}/gui2/**/*.html"/>
 			</fileset>
 		</jar>
+-->
 
 		<!-- Annotations jar file. -->
 		<jar destfile="${annotations.jar}">
@@ -691,7 +707,9 @@
 	<target name="jnlp" depends="jars">
 		<mkdir dir="${jnlp.dir}/plugin"/>
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
+<!--
 		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
+-->
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jsr305.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.1.jar"/>
@@ -813,8 +831,8 @@
 		<delete file="${engine.jar}"/>
 <!--
 		<delete file="${coreplugin.jar}"/>
--->
 		<delete file="${gui.jar}"/>
+-->
 		<delete file="${anttask.jar}"/>
 	</target>
 
