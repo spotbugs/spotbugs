@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2005,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,7 +48,7 @@ public class ShowHelp {
 		System.out.println("  -gui1            Use the older Graphical UI");
 		System.out.println("  -textui          Use the Text UI");
 		System.out.println("  -jvmArgs args    Pass args to JVM");
-		System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=384)");
+		System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=768)");
 		System.out.println("  -javahome <dir>  Specify location of JRE");
 		System.out.println("  -help            Display command line options");
 		System.out.println("  -debug           Enable debug tracing in FindBugs");
