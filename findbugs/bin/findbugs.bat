@@ -78,14 +78,14 @@ set debugArg=-Dfindbugs.debug=true
 goto shift1
 :notDebug
 
-if not "%firstArg"=="-help" goto notHelp
+if not "%firstArg%"=="-help" goto notHelp
 set launchUI=help
 set launcher=java.exe
 set start=
 goto shift1
 :notHelp
 
-if not "%firstArg"=="-version" goto notVersion
+if not "%firstArg%"=="-version" goto notVersion
 set launchUI=version
 set launcher=java.exe
 set start=
