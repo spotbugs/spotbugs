@@ -15,11 +15,11 @@ fb_launchui="2"
 #
 # Stuff we're going to pass to the JVM as JVM arguments.
 #
-jvm_user_props=""
 jvm_debug=""
 jvm_maxheap="-Xmx768m"
 jvm_ea=""
 jvm_conservespace=""
+jvm_user_props=""
 
 #
 # Process command line args until we hit one we don't recognize.
@@ -102,6 +102,20 @@ while [ $# -gt 0 ] && [ "$finishedArgs" = "false" ]; do
 
 done
 
+# Extra JVM args for MacOSX.
+if [ $fb_osname = "Darwin" ]; then
+	fb_jvmargs="$fb_jvmargs \
+		-Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/buggy.icns \
+		-Dapple.laf.useScreenMenuBar=true"
+fi
+
 #
-# TODO: launch JVM
+# Launch JVM
 #
+exec "$fb_javacmd" \
+	-classpath "$fb_appjar$fb_pathsep$CLASSPATH" \
+	-Dfindbugs.home="$findbugs_home" \
+	$jvm_debug $jvm_maxheap $jvm_ea $jvm_conservespace $jvm_user_props \
+	-Dfindbugs.launchUI=$fb_launchui \
+	-jar $FINDBUGS_HOME/lib/findbugs.jar \
+	${@:+"$@"}
