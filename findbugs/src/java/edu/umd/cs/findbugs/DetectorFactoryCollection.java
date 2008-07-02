@@ -180,12 +180,19 @@ public class DetectorFactoryCollection {
 	private void determinePlugins() {
 		if (pluginList != null)
 			return;
+		
 		String homeDir = FindBugs.getHome();
 		if (homeDir == null) {
-			System.err.println("Error: FindBugs home directory is not set");
+			// Since findbugs.home isn't set, we won't attempt
+			// to look for third-party plugins.
+			pluginList = new URL[0];
 			return;
 		}
 
+		//
+		// See what plugins are available in the ${findbugs.home}/plugin directory
+		//
+		
 		File pluginDir = new File(homeDir + File.separator + "plugin");
 		File[] contentList = pluginDir.listFiles();
 		if (contentList == null) {
@@ -268,7 +275,22 @@ public class DetectorFactoryCollection {
 		loaded = true;
 		determinePlugins();
 
-		int numLoaded = 0;
+		//
+		// Load the core plugin.
+		//
+		PluginLoader corePluginLoader = new PluginLoader();
+		try {
+			loadPlugin(corePluginLoader);
+		} catch (PluginException e) {
+			System.err.println("Warning: could not load FindBugs core plugin: " + e.toString());
+			if (FindBugs.DEBUG) {
+				e.printStackTrace();
+			}
+		}
+		
+		//
+		// Load any discovered third-party plugins.
+		//
 		for (final URL url : pluginList) {
 			try {
 				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + url.toString());
@@ -280,33 +302,7 @@ public class DetectorFactoryCollection {
 						}
 
 					});
-
-
-				Plugin plugin = pluginLoader.getPlugin();
-				pluginByIdMap.put(plugin.getPluginId(), plugin);
-
-				// Register all of the detectors that this plugin contains
-				for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator();
-					 j.hasNext();) {
-					DetectorFactory factory = j.next();
-					registerDetector(factory);
-				}
-
-				I18N i18n = I18N.instance();
-
-				// Register the BugPatterns
-				for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();) {
-					BugPattern bugPattern = j.next();
-					i18n.registerBugPattern(bugPattern);
-				}
-
-				// Register the BugCodes
-				for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext();) {
-					BugCode bugCode = j.next();
-					i18n.registerBugCode(bugCode);
-				}
-
-				++numLoaded;
+				loadPlugin(pluginLoader);
 			} catch (PluginException e) {
 				System.err.println("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
@@ -320,6 +316,33 @@ public class DetectorFactoryCollection {
 
 
 		//System.out.println("Loaded " + numLoaded + " plugins");
+	}
+
+	private void loadPlugin(PluginLoader pluginLoader) throws PluginException {
+
+
+		Plugin plugin = pluginLoader.getPlugin();
+		pluginByIdMap.put(plugin.getPluginId(), plugin);
+
+		// Register all of the detectors that this plugin contains
+		for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator(); j.hasNext();) {
+			DetectorFactory factory = j.next();
+			registerDetector(factory);
+		}
+
+		I18N i18n = I18N.instance();
+
+		// Register the BugPatterns
+		for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();) {
+			BugPattern bugPattern = j.next();
+			i18n.registerBugPattern(bugPattern);
+		}
+
+		// Register the BugCodes
+		for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext();) {
+			BugCode bugCode = j.next();
+			i18n.registerBugCode(bugCode);
+		}
 	}
 }
 

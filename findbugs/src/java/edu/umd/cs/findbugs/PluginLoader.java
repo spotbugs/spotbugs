@@ -65,7 +65,7 @@ public class PluginLoader {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
 
 	// ClassLoader used to load classes and resources
-	private URLClassLoader classLoader;
+	private ClassLoader classLoader;
 	
 	// Keep a count of how many plugins we've seen without a
 	// "pluginid" attribute, so we can assign them all unique ids.
@@ -97,6 +97,17 @@ public class PluginLoader {
 	}
 	
 	/**
+	 * Constructor.
+	 * Loads a plugin using the caller's class loader.
+	 * This constructor should only be used to load the
+	 * "core" findbugs detectors, which are built into
+	 * findbugs.jar.
+	 */
+	public PluginLoader() {
+		this.classLoader = this.getClass().getClassLoader();
+	}
+	
+	/**
      * @return Returns the classLoader.
      */
     public ClassLoader getClassLoader() {
@@ -125,10 +136,17 @@ public class PluginLoader {
 	 * @return URL for the resource, or null if it could not be found
 	 */
 	private URL getResource(String name) {
-		URL url = classLoader.findResource(name);
-		if(url == null) {
+		URL url = null;
+		
+		if (classLoader instanceof URLClassLoader) {
+			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
+			url = urlClassLoader.findResource(name);
+		}
+		
+		if (url == null) {
 			url = classLoader.getResource(name);
 		}
+
 		return url;
 	}
 

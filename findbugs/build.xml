@@ -21,6 +21,7 @@
 	<property name="plugin.dir" value="plugin"/>
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value="build/classes"/>
+	<property name="junitclasses.dir" value="build/junitclasses"/>
 	<property name="scripts.dir" value="bin"/>
 	<property name="src.dir" value="src/java"/>
 	<property name="src5.dir" value="src/java5"/>
@@ -43,7 +44,9 @@
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
+<!--
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
+-->
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="sampleoutput.dir" value="build/sampleoutput"/>
@@ -111,6 +114,8 @@
 		images, html, XSL stylesheets) that need to be part of the codebase. -->
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${junitclasses.dir}"/>
+		
 		<!-- Compile Java source files. -->
 		<echo level="info" message="compiling findbugs"/>
 		<javac 
@@ -145,7 +150,7 @@
 		<!-- Compile JUnit test cases. -->
 		<echo level="info" message="compiling junit test cases"/>
 		<javac srcdir="${junitsrc.dir}"
-				destdir="${classes.dir}"
+				destdir="${junitclasses.dir}"
 				source="1.5"
 				target="1.5"
 				deprecation="off"
@@ -222,18 +227,28 @@
 				<exclude name="${pkg.base}/gui/**"/>
 				<exclude name="${pkg.base}/gui2/**"/>
 				<exclude name="${pkg.base}/sourceViewer/**"/>
+<!--
 				<exclude name="${pkg.base}/detect/**"/>
+-->
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/antTask/**"/>
-				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
+				<!-- Exclude JUnit tests. -->
+<!--
+				<exclude name="**/*Test.class"/> 
+-->
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
 				<include name="**/*.db"/>
 				<include name="**/*.xsl"/>
 			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="findbugs.xml"/>
+				<include name="messages*.xml"/>
+			</fileset>
 		</jar>
 		
 		<!-- Core detector plugin. -->
+<!--
 		<jar destfile="${plugin.dir}/coreplugin.jar">
 			<fileset dir="etc">
 				<include name="findbugs.xml"/>
@@ -243,7 +258,8 @@
 				<include name="${pkg.base}/detect/*.class"/>
 			</fileset>
 		</jar>
-		
+-->
+
 		<!-- Swing GUI jar file. -->
 		<jar destfile="${gui.jar}"
 				manifest="etc/MANIFEST-findbugsGUI.MF">
@@ -336,9 +352,8 @@
 	<!-- JUnit test cases -->
 	<target name="junittests" depends="classes">
 		<jar destfile="${junittests.jar}">
-			<fileset dir="${classes.dir}">
-				<exclude name="${pkg.base}/detect/**"/>
-				<include name="**/*Test.class"/>
+			<fileset dir="${junitclasses.dir}">
+				<include name="**"/>
 			</fileset>
 		</jar>
 	</target>
@@ -481,7 +496,7 @@
 			<batchtest todir="build/junit">
 				<fileset dir="${junitsrc.dir}">
 					<include name="**/*Test.java"/>
-                    <include name="**/Test*.java"/>
+					<include name="**/Test*.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
@@ -684,7 +699,9 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.1.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
+<!--
 		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
+-->
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
 			<fileset dir="${jnlp.dir}">
@@ -794,7 +811,9 @@
 		<delete dir="${doc.dir}"/>
 		<delete dir="${web.dir}"/>
 		<delete file="${engine.jar}"/>
+<!--
 		<delete file="${coreplugin.jar}"/>
+-->
 		<delete file="${gui.jar}"/>
 		<delete file="${anttask.jar}"/>
 	</target>
