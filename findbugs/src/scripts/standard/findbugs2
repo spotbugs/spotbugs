@@ -1,0 +1,107 @@
+#! /bin/sh
+
+#
+# Simplified findbugs startup script.
+# This is an experiment.
+#
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+# Default UI is GUI2
+fb_launchui="2"
+
+#
+# Stuff we're going to pass to the JVM as JVM arguments.
+#
+jvm_user_props=""
+jvm_debug=""
+jvm_maxheap="-Xmx768m"
+jvm_ea=""
+jvm_conservespace=""
+
+#
+# Process command line args until we hit one we don't recognize.
+#
+finishedArgs=false
+while [ $# -gt 0 ] && [ "$finishedArgs" = "false" ]; do
+
+	arg=$1
+
+	case $arg in
+		-textui)
+			shift
+			fb_launchui="0"
+			;;
+
+		-gui)
+			shift
+			fb_launchui="2"
+			;;
+
+		-gui1)
+			shift
+			fb_launchui="1"
+			;;
+
+		-maxHeap)
+			shift
+			jvm_maxheap="-Xmx$1m"
+			shift
+			;;
+
+		-ea)
+			shift
+			jvm_ea="-ea"
+			;;
+
+		-javahome)
+			shift
+			fb_javacmd="$1/bin/java"
+			shift
+			;;
+
+		-debug)
+			shift
+			jvm_debug="-Dfindbugs.debug=true"
+			;;
+
+		-conserveSpace)
+			shift
+			jvm_conservespace="-Dfindbugs.conserveSpace=true"
+			;;
+
+		-property)
+			shift
+			jvm_user_props="-D$1 $jvm_user_props"
+			shift
+			;;
+	
+		-D*=*)
+			jvm_user_props="$1 $user_props"
+			shift
+			;;
+
+		-version)
+			shift
+			fb_launchui="version"
+			;;
+
+		-help)
+			shift
+			fb_launchui="help"
+			;;
+
+		# All arguments starting from the first unrecognized arguments
+		# are passed on to the Java app.
+		*)
+			finishedArgs=true
+			;;
+	esac
+
+done
+
+#
+# TODO: launch JVM
+#
