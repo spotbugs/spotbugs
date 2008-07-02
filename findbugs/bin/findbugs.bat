@@ -9,7 +9,7 @@ setlocal
 :: ----------------------------------------------------------------------
 :: Set up default values
 :: ----------------------------------------------------------------------
-set appjar=findbugsGUI.jar
+set appjar=findbugs.jar
 set javahome=
 set launcher=javaw.exe
 set start=start "FindBugs"
@@ -49,20 +49,17 @@ set firstArg=%~1
 set secondArg=%~2
 
 if not "%firstArg%"=="-gui" goto notGui
-set appjar=findbugsGUI.jar
 set launcher=javaw.exe
 goto shift1
 :notGui
 
 if not "%firstArg%"=="-gui1" goto notGui1
-set appjar=findbugsGUI.jar
 set javaProps=-Dfindbugs.launchUI=1 %javaProps%
 set launcher=javaw.exe
 goto shift1
 :notGui1
 
 if not "%firstArg%"=="-textui" goto notTextui
-set appjar=findbugs.jar
 set launcher=java.exe
 set start=
 goto shift1
