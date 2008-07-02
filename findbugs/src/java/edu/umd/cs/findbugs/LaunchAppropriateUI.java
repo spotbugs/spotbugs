@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,18 +24,26 @@ import java.lang.reflect.Method;
 
 /**
  * Class to launch the appropriate GUI
- * @author pugh
+ * 
+ * @author Bill Pugh
  */
 public class LaunchAppropriateUI {
+	public static final int SHOW_HELP = 1000;
+	public static final int SHOW_VERSION = 1001;
+	
 	public static void main(String args[]) throws Exception {
 		int launchProperty = getLaunchProperty();
 		// Sanity-check the loaded BCEL classes
 		if(!CheckBcel.check()) {
 			System.exit(1);
 		}
-		if (GraphicsEnvironment.isHeadless() || launchProperty == 0)
+		if (GraphicsEnvironment.isHeadless() || launchProperty == 0) {
 			FindBugs2.main(args);
-		else {
+		} else if (launchProperty == SHOW_HELP) {
+			ShowHelp.main(args);
+		} else if (launchProperty == SHOW_VERSION) {
+			Version.main(new String[]{"-release"});
+		} else {
 			String version = System.getProperty("java.version");
 
 			Class<?> launchClass = null;
@@ -55,14 +63,25 @@ public class LaunchAppropriateUI {
 
 	/** user should set -Dfindbugs.launchUI=0 for textui,
 	 *  or -Dfindbugs.launchUI=1 for the original swing gui.
+	 * -Dfindbugs.launchUI=version runs the ShowVersion main() method.
+	 * -Dfindbugs.launchUI=help runs the ShowHelp main() method.
 	 *  Any other value (or the absense of any value) will
 	 *  not change the default behavior, which is to launch
 	 *  the newer "gui2" on systems that support it.
 	 *  
-	 * @return 0, 1, or 2 (or possibly another user-set int value)
+	 * @return 0, 1, 2, SHOW_VERSION, SHOW_HELP, or possibly another user-set int value
 	 */
 	public static int getLaunchProperty() {
 		String s = System.getProperty("findbugs.launchUI", "2");
+		
+		if (s.equals("help")) {
+			return SHOW_HELP;
+		}
+		
+		if (s.equals("version")) {
+			return SHOW_VERSION;
+		}
+		
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException nfe) {
