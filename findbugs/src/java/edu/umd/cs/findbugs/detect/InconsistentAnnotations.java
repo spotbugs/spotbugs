@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.detect;
 
 import javax.annotation.meta.When;
@@ -40,12 +39,11 @@ import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
+public class InconsistentAnnotations implements Detector, UseAnnotationDatabase {
 
-public class InconsistentAnnotations implements Detector, UseAnnotationDatabase{
+	public final TypeQualifierValue nonnullTypeQualifierValue;
+	final BugReporter reporter;
 
-public final TypeQualifierValue nonnullTypeQualifierValue;
-	
-final BugReporter reporter;
 	public InconsistentAnnotations(BugReporter reporter) {
 		ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
 		this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
@@ -53,33 +51,40 @@ final BugReporter reporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-    
-    		
-    		
-    		JavaClass jclass = classContext.getJavaClass();
-    		
-    		for (Method method : jclass.getMethods()) {
-    			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-    			ParameterNullnessProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());
-    			if (nonnullParameters != null) for(int p : nonnullParameters.iterable()) {
-    				TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
-    				if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
-    					
-    					reporter.reportBug(new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", NORMAL_PRIORITY).addClassAndMethod(jclass, method).add(LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, p)));
-    					
-    					
-    				}
-    				
-    			}
-    			
-    		}
 
-	    
-    }
+
+
+		JavaClass jclass = classContext.getJavaClass();
+
+		for (Method method : jclass.getMethods()) {
+			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			ParameterNullnessProperty nonnullParameters = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().getProperty(xmethod.getMethodDescriptor());
+			if (nonnullParameters != null) {
+				for (int p : nonnullParameters.iterable()) {
+					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, p, nonnullTypeQualifierValue);
+					if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.UNKNOWN) {
+						//
+						// The LocalVariableAnnotation is constructed using the local variable
+						// number of the parameter, not the parameter number.
+						//
+						int paramLocal = xmethod.isStatic() ? p : p + 1;
+
+						reporter.reportBug(
+							new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", NORMAL_PRIORITY)
+								.addClassAndMethod(jclass, method)
+								.add(LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal))
+						);
+
+
+					}
+
+				}
+			}
+		}
+
+
+	}
 
 	public void report() {
-	    
-	    
-    }
-
+	}
 }
