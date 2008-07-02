@@ -66,6 +66,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	
 	private ClassDescriptor expectWarning;
 	private ClassDescriptor noWarning;
+	private boolean warned;
 	
 	public CheckExpectedWarnings(BugReporter bugReporter) {
 		BugReporter realBugReporter = bugReporter.getRealBugReporter();
@@ -78,6 +79,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		if (reporter == null) {
+			if (!warned) {
+				System.err.println("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
+				warned = true;
+			}
 			return;
 		}
 
