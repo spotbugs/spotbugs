@@ -19,7 +19,10 @@ set conserveSpaceArg=
 set workHardArg=
 set args=
 set javaProps=
-set maxheap=384
+set maxheap=768
+
+REM default UI is gui2
+set launchUI=2
 
 :: Try finding the default FINDBUGS_HOME directory
 :: from the directory path of this script
@@ -49,17 +52,20 @@ set firstArg=%~1
 set secondArg=%~2
 
 if not "%firstArg%"=="-gui" goto notGui
+set launchUI=2
 set launcher=javaw.exe
 goto shift1
 :notGui
 
 if not "%firstArg%"=="-gui1" goto notGui1
+set launchUI=1
 set javaProps=-Dfindbugs.launchUI=1 %javaProps%
 set launcher=javaw.exe
 goto shift1
 :notGui1
 
 if not "%firstArg%"=="-textui" goto notTextui
+set launchUI=0
 set launcher=java.exe
 set start=
 goto shift1
@@ -71,6 +77,20 @@ set start=
 set debugArg=-Dfindbugs.debug=true
 goto shift1
 :notDebug
+
+if not "%firstArg"=="-help" goto notHelp
+set launchUI=help
+set launcher=java.exe
+set start=
+goto shift1
+:notHelp
+
+if not "%firstArg"=="-version" goto notVersion
+set launchUI=version
+set launcher=java.exe
+set start=
+goto shift1
+:notVersion
 
 if "%firstArg%"=="-home" set FINDBUGS_HOME=%secondArg%
 if "%firstArg%"=="-home" goto shift2
@@ -92,8 +112,6 @@ if "%firstArg%"=="-javahome" goto shift2
 
 if "%firstArg%"=="-property" set javaProps=-D%secondArg% %javaProps%
 if "%firstArg%"=="-property" goto shift2
-
-if "%firstArg%"=="-help" goto help
 
 if "%firstArg%"=="" goto launch
 
@@ -117,25 +135,7 @@ if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
-%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
-goto end
-
-:: ----------------------------------------------------------------------
-:: Display usage information
-:: ----------------------------------------------------------------------
-:help
-echo Usage: findbugs [options]
-echo    -home dir       Use dir as FINDBUGS_HOME
-echo    -gui            Use the Graphical UI (default behavior)
-echo    -gui1           Use the older Graphical UI
-echo    -textui         Use the Text UI
-echo    -jvmArgs args   Pass args to JVM
-echo    -maxHeap size   Set maximum Java heap size in megabytes (default %maxheap%)
-echo    -javahome dir   Specify location of JRE
-echo    -help           Display this message
-echo    -debug          Enable debug tracing in FindBugs
-echo    -conserveSpace  Conserve memory at the expense of precision
-echo All other options are passed to the FindBugs application
+%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------
