@@ -338,28 +338,86 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 	private LinkedList<WorkListItem> createFindBugsLibWorkList(String jarFileName) {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+		
+		boolean found = false;
 
 		String findbugsHome = FindBugs.getHome();
 		if (findbugsHome != null) {
+			//
+			// If the findbugs.home property is set,
+			// we should be able to find the jar file in
+			// the lib subdirectory.
+			//
 			File base = new File(findbugsHome);
 			File loc1 = new File(new File(base, "lib"), jarFileName);
 			File loc2 = new File(base, jarFileName);
 			File loc = null;
 			if (loc1.exists()) {
-	            loc = loc1;
-            } else if (loc2.exists()) {
-	            loc = loc2;
-            }
+				loc = loc1;
+			} else if (loc2.exists()) {
+				loc = loc2;
+			}
 			if (loc != null) {
+				found = true;
 				ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(
 					loc.getPath());
 				workList.add(new WorkListItem(codeBaseLocator, false, ICodeBase.IN_SYSTEM_CLASSPATH));
 			}
 		}
+		
+		if (!found) {
+			if (DEBUG) {
+				System.out.println("Looking for " + jarFileName + " on classpath...");
+			}
+			//
+			// See if the required jar file is available on the class path.
+			//
+			String javaClassPath = SystemProperties.getProperty("java.class.path");
+			StringTokenizer t = new StringTokenizer(javaClassPath, File.pathSeparator);
+			while (t.hasMoreTokens()) {
+				String entry = t.nextToken();
+				if (DEBUG) {
+					System.out.print("  Checking " + entry + "...");
+				}
 
+				if (matchesJarFile(entry, jarFileName)) {
+					found = true;
+				} else if (matchesJarFile(entry, "findbugs.jar")) {
+					// See if the searched-for jar file can be found
+					// alongside findbugs.jar.
+					File findbugsJar = new File(entry);
+					File loc = new File(findbugsJar.getParent() + File.separator + jarFileName);
+					if (DEBUG) {
+						System.out.print(" [findbugs.jar, checking " + loc.getPath() + "] ");
+					}
+					if (loc.exists()) {
+						entry = loc.getPath();
+						found = true;
+					}
+				}
+				
+				if (DEBUG) {
+					System.out.println(found ? "FOUND" : "no");
+				}
+				if(found) {
+					ICodeBaseLocator codeBaseLocator = classFactory.createFilesystemCodeBaseLocator(entry);
+					workList.add(new WorkListItem(codeBaseLocator, false, ICodeBase.IN_SYSTEM_CLASSPATH));
+					break;
+				}
+
+			}
+		}
+		
 		return workList;
 	}
 
+	private boolean matchesJarFile(String entry, String jarFileName) {
+		return entry.equals(jarFileName)
+			|| entry.endsWith(File.separator + jarFileName)
+			|| entry.endsWith("/" + jarFileName);
+	}
+
+		
 	/**
 	 * Add worklist items from given system classpath.
 	 *
