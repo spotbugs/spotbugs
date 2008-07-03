@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -88,7 +89,7 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		
-		ClassInfo classInfo = analysisCache.getClassAnalysis(ClassInfo.class, classDescriptor);
+		XClass classInfo = analysisCache.getClassAnalysis(XClass.class, classDescriptor);
 		
 		// Test dataflow analysis on each method]
 		for(XMethod xMethod : classInfo.getXMethods()) {
