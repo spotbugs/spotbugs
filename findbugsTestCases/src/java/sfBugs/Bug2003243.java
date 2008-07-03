@@ -13,4 +13,12 @@ public class Bug2003243 {
 			record.field.notifyAll(); // There should not be an MWN violation here
 		}
 	}
+	
+	@NoWarning("MWN")
+	public void different() {
+		Object lock = record.field;
+		synchronized (lock) {
+			lock.notifyAll();
+		}
+	}
 }
