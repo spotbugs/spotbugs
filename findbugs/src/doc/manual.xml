@@ -149,7 +149,7 @@ This directory is the &FindBugs; home directory.  We'll refer to it as
 <para>
 This chapter describes how to build &FindBugs; from source code.  Unless you are
 interesting in modifying &FindBugs;, you will probably want to skip to the
-<link linkend="gui">next chapter</link>.
+<link linkend="running">next chapter</link>.
 </para>
 
 <sect1>
@@ -396,6 +396,21 @@ how to run each of these user interfaces.
 -->
 
 <sect1>
+	<title>Quick Start</title>
+	<para>
+		If you are running &FindBugs; on a  Windows system,
+		double-click on the file <filename>&FBHomeWin;\lib\findbugs.jar</filename> to start the &FindBugs; GUI.
+	</para>
+	
+	<para>
+		On a Unix, Linux, or Mac OS X system, run the <command>&FBHome;/bin/findbugs</command>
+		script, or run the command <screen>
+<command>java -jar &FBHome;/lib/findbugs.jar</command></screen>
+	to run the &FindBugs; GUI.
+	</para>
+</sect1>
+
+<sect1>
 	
 	<title>Executing &FindBugs;</title>
 
@@ -413,9 +428,116 @@ how to run each of these user interfaces.
 			The preferred method of running &FindBugs; is to directly execute
 			<filename>&FBHome;/lib/findbugs.jar</filename> using the <command>-jar</command>
 			command line switch of the JVM (<command>java</command>) executable.
-			Versions of &FindBugs; prior to 1.3.5 required a wrapper script
-			to invoke &FindBugs;.
+			(Versions of &FindBugs; prior to 1.3.5 required a wrapper script
+			to invoke &FindBugs;.)
 		</para>
+		
+		<para>
+			The general syntax of invoking &FindBugs; directly is the following:
+<screen>
+	<command>java <replaceable>[JVM arguments]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>command line arguments...</replaceable></command>
+</screen>
+		</para>
+
+<!--	
+		<para>
+			By default, executing <filename>findbugs.jar</filename> runs the
+			&FindBugs; graphical user interface (GUI).  On windows systems,
+			you can double-click on <filename>findbugs.jar</filename> to launch
+			the GUI.  From a command line, the command
+			<screen>
+java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
+			will launch the GUI.
+		</para>
+-->
+
+		<sect3 id="chooseUI">
+			<title>Choosing the User Interface</title>
+		
+		<para>
+			The first command line argument chooses the &FindBugs; user interface to execute.
+			Possible values are:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+				<command>-gui</command>: runs the graphical user interface (GUI)
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					<command>-textui</command>: runs the command line user interface
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+					<command>-version</command>: displays the &FindBugs; version number
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+					<command>-help</command>: displays help information for the
+					&FindBugs; command line user interface
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+					<command>-gui1</command>: executes the original (obsolete)
+					&FindBugs; graphical user interface
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		</sect3>
+		
+		<sect3 id="jvmArgs">
+			<title>Java Virtual Machine (JVM) arguments</title>
+			
+			<para>
+				Several Java Virtual Machine arguments are useful when invoking
+				&FindBugs;.
+			</para>
+			
+			<variablelist>
+				<varlistentry>
+					<term><command>-Xmx<replaceable>NN</replaceable>m</command></term>
+					<listitem>
+						<para>
+							Set the maximum Java heap size to <replaceable>NN</replaceable>
+							megabytes.  &FindBugs; generally requires a large amount of
+							memory.  For a very large project, using 1500 megabytes
+							is not unusual.
+						</para>
+					</listitem>
+				</varlistentry>
+
+				<varlistentry>
+					<term><command>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></command></term>
+					<listitem>
+						<para>
+							Set a Java system property.  For example, you might use the
+							argument <command>-Duser.language=ja</command> to display
+							GUI messages in Japanese.
+						</para>
+					</listitem>
+				</varlistentry>
+
+				<!--
+				<varlistentry>
+					<term></term>
+					<listitem>
+						<para>
+						</para>
+					</listitem>
+				</varlistentry>
+				-->
+			</variablelist>
+		</sect3>
+		
 	</sect2>
 	
 	<sect2 id="wrapperScript">
@@ -1060,7 +1182,7 @@ target defined above.
 </screen>
 
 In this case, because we saved the bug results in an XML file, we can
-use the &FindBugs; GUI to view the results; see <xref linkend="gui"/>.
+use the &FindBugs; GUI to view the results; see <xref linkend="running"/>.
 </para>
 
 </sect1>
@@ -1284,7 +1406,7 @@ using the &FindBugs; task.
        you don't need to specify any <literal>class</literal> elements,
        nor do you need to specify <literal>auxClasspath</literal> or
        <literal>sourcePath</literal> attributes.
-       See <xref linkend="gui"/> for how to create a project.
+       See <xref linkend="running"/> for how to create a project.
        </para>
     </listitem>
   </varlistentry>
