@@ -28,6 +28,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects
@@ -182,7 +183,15 @@ public class DetectorFactoryCollection {
 			return;
 		
 		String homeDir = FindBugs.getHome();
+		
 		if (homeDir == null) {
+			// Attempt to infer findbugs.home from the observed
+			// location of findbugs.jar.
+			homeDir = inferFindBugsHome();
+		}
+		
+		if (homeDir == null) {
+			
 			// Since findbugs.home isn't set, we won't attempt
 			// to look for third-party plugins.
 			pluginList = new URL[0];
@@ -219,6 +228,31 @@ public class DetectorFactoryCollection {
 		}
 		pluginList = arr.toArray(new URL[arr.size()]);
 
+	}
+
+	/**
+	 * See if the location of ${findbugs.home} can be
+	 * inferred from the location of findbugs.jar in the classpath.
+	 * 
+	 * @return inferred ${findbugs.home}, or null if 
+	 *         we can't figure it out
+	 */
+	private String inferFindBugsHome() {
+		String classpath = SystemProperties.getProperty("java.class.path", "");
+		StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);
+		while (tok.hasMoreTokens()) {
+			String t = tok.nextToken();
+			File f = new File(t);
+			if (f.getName().equals("findbugs.jar")) {
+				File libDir = f.getParentFile();
+				if (libDir.getName().equals("lib")) {
+					String fbHome = libDir.getParent();
+					FindBugs.setHome(fbHome);
+					return fbHome;
+				}
+			}
+		}
+		return null;
 	}
 
 	public void ensureLoaded() {
