@@ -32,6 +32,7 @@
   <year>2004</year>
   <year>2005</year>
   <year>2006</year>
+  <year>2008</year>
   <holder>University of Maryland</holder>
 </copyright>
 
@@ -43,7 +44,7 @@ To view a copy of this license, visit
 or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 </para>
 <para>
-The name FindBugs and the FindBugs logo is trademarked by the University of Maryland.
+The name FindBugs and the FindBugs logo are trademarked by the University of Maryland.
 </para>
 </legalnotice>
 
@@ -92,10 +93,10 @@ To analyze very large projects, more memory may be needed.</para>
 -->
 
 <chapter id="installing">
-<title>Installing and Running &FindBugs;&trade;</title>
+<title>Installing &FindBugs;&trade;</title>
 
 <para>
-This chapter explains how to install and run &FindBugs;.
+This chapter explains how to install &FindBugs;.
 </para>
 
 <sect1>
@@ -134,7 +135,298 @@ This directory is the &FindBugs; home directory.  We'll refer to it as
 </para>
 </sect1>
 
+</chapter>
+
+<!--
+   **************************************************************************
+   Compiling FindBugs from Source
+   **************************************************************************
+-->
+
+<chapter id="building">
+<title>Building &FindBugs;&trade; from Source</title>
+
+<para>
+This chapter describes how to build &FindBugs; from source code.  Unless you are
+interesting in modifying &FindBugs;, you will probably want to skip to the
+<link linkend="gui">next chapter</link>.
+</para>
+
 <sect1>
+<title>Prerequisites</title>
+
+<para>
+To compile &FindBugs; from source, you will need the following:
+<itemizedlist>
+  <listitem>
+    <para>
+      The <ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@-source.zip?download"
+      >&FindBugs; source distribution</ulink>
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 beta or later</ulink>
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.6.3 or later
+    </para>
+  </listitem>
+</itemizedlist>
+</para>
+
+<warning>
+	<para>
+		The version of &Ant; included as <filename>/usr/bin/ant</filename> on
+		Redhat Linux systems will <emphasis>not</emphasis> work for compiling
+		&FindBugs;.  We recommend you install a binary distribution of &Ant;
+		downloaded from the <ulink url="http://ant.apache.org/">&Ant; website</ulink>.
+		Make sure that when you run &Ant; your <replaceable>JAVA_HOME</replaceable>
+		environment variable points to the directory in which you installed
+		JDK 1.5 (or later).
+	</para>
+</warning>
+
+<para>
+If you want to be able to generate formatted versions of the &FindBugs; documentation,
+you will also need the following software:
+<itemizedlist>
+  <listitem>
+    <para>
+    The <ulink url="http://docbook.sourceforge.net/projects/xsl/index.html">DocBook XSL Stylesheets</ulink>.
+    These are required to convert the &FindBugs; manual into HTML format.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      The <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+      (Also required for converting the &FindBugs; manual to HTML.)
+    </para>
+  </listitem>
+<!--
+  <listitem>
+    <para>
+    </para>
+  </listitem>
+-->
+</itemizedlist>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Extracting the Source Distribution</title>
+<para>
+After you download the source distribution, you'll need to extract it into
+a working directory.  A typical command to do this is:
+
+<screen>
+<prompt>$ </prompt><command>unzip findbugs-@VERSION@-source.zip</command>
+</screen>
+
+</para>
+</sect1>
+
+<sect1>
+<title>Modifying <filename>local.properties</filename></title>
+<para>
+If you intend to build the FindBugs documentation,
+you will need to modify the <filename>local.properties</filename> file
+used by the <ulink url="http://ant.apache.org/">&Ant;</ulink>
+<filename>build.xml</filename> file to build &FindBugs;.
+If you do not want to build the FindBugs documentation, then you
+can ignore this file.
+</para>
+	
+<para>
+The <filename>local.properties</filename> overrides definitions
+in the <filename>build.properties</filename> file.
+The <filename>build.properties</filename> file looks something like this:
+<programlisting>
+<![CDATA[
+# User Configuration:
+# This section must be modified to reflect your system.
+
+local.software.home     =/export/home/daveho/linux
+
+# Set this to the directory containing the DocBook Modular XSL Stylesheets
+#  from http://docbook.sourceforge.net/projects/xsl/
+
+xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.71.1
+
+# Set this to the directory where Saxon (http://saxon.sourceforge.net/)
+# is installed. 
+
+saxon.home              =${local.software.home}/java/saxon-6.5.5
+]]>
+</programlisting>
+</para>
+
+<para>
+The <varname>xsl.stylesheet.home</varname> property specifies the full
+path to the directory where you have installed the
+<ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
+Stylesheets</ulink>.  You only need to specify this property if you will be
+generating the &FindBugs; documentation.
+</para>
+
+<para>
+The <varname>saxon.home</varname> property is the full path to the
+directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+You only need to specify this property if you will be
+generating the &FindBugs; documentation.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &Ant;</title>
+
+<para>
+Once you have extracted the source distribution,
+made sure that &Ant; is installed,
+modified <filename>build.properties</filename> (optional),
+and configured the tools (such as &Saxon;),
+you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
+of running the command
+<screen>
+<prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
+</screen>
+where <replaceable>target</replaceable> is one of the following:
+<variablelist>
+  <varlistentry>
+    <term><command>build</command></term>
+    <listitem>
+       <para>
+         This target compiles the code for &FindBugs;. It is the default target.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>docs</command></term>
+    <listitem>
+       <para>
+       This target formats the documentation.  (It also compiles some of
+       the source code as a side-effect.)
+       </para>
+    </listitem>
+  </varlistentry>
+  
+  <varlistentry>
+	<term><command>runjunit</command></term>
+	<listitem>
+		<para>
+			This target compiles and runs the internal JUnit tests included
+			in &FindBugs;.  It will print an error message if any unit
+			tests fail.
+		</para>
+	</listitem>
+  </varlistentry>
+  
+  <varlistentry>
+	<term><command>bindist</command></term>
+	<listitem>
+		<para>
+			Builds a binary distribution of &FindBugs;.
+			The target creates both <filename>.zip</filename> and
+			<filename>.tar.gz</filename> archives.
+		</para>
+	</listitem>
+  </varlistentry>
+</variablelist>
+</para>
+
+<para>
+After running an &Ant; command, you should see output similar to
+the following (after some other messages regarding the tasks that
+&Ant; is running):
+<screen>
+<computeroutput>
+BUILD SUCCESSFUL
+Total time: 17 seconds
+</computeroutput>
+</screen>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &FindBugs;&trade; from a source directory</title>
+<para>
+The &Ant; build script for &FindBugs; is written such that after 
+building the <command>build</command> target, the working directory
+is set up just like a binary distribution.  So, the information about
+running &FindBugs; in <xref linkend="running" />
+applies to source distributions, too.
+</para>
+</sect1>
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Running FindBugs
+   **************************************************************************
+-->
+
+<chapter id="running">
+<title>Running &FindBugs;&trade;</title>
+
+<para>
+&FindBugs; has two user interfaces: a graphical user interface (GUI) and a
+command line user interface.  This chapter describes 
+how to run each of these user interfaces.
+</para>
+
+	<warning>
+		<para>
+			This chapter is in the process of being re-written.
+			The rewrite is not complete yet.
+		</para>
+	</warning>
+
+<!--
+<sect1>
+<title>Executing the &FindBugs;&trade; GUI</title>
+</sect1>
+-->
+
+<sect1>
+	
+	<title>Executing &FindBugs;</title>
+
+	<para>
+		This section describes how to invoke the &FindBugs; program.
+		There are two ways to invoke &FindBugs;: directly, or using a
+		wrapper script.
+	</para>
+
+
+	<sect2 id="directInvocation">
+		<title>Direct invocation of &FindBugs;</title>
+		
+		<para>
+			The preferred method of running &FindBugs; is to directly execute
+			<filename>&FBHome;/lib/findbugs.jar</filename> using the <command>-jar</command>
+			command line switch of the JVM (<command>java</command>) executable.
+			Versions of &FindBugs; prior to 1.3.5 required a wrapper script
+			to invoke &FindBugs;.
+		</para>
+	</sect2>
+	
+	<sect2 id="wrapperScript">
+		<title>Invocation of &FindBugs; using a wrapper script</title>
+	</sect2>
+
+</sect1>
+
+<!--
+<sect2>
+
 <title>Configuration</title>
 
 <para>
@@ -162,11 +454,13 @@ directory to your <filename>PATH</filename> environment variable and then invoke
 FindBugs using the <command>findbugs</command> command.
 </para>
 
-</sect1>
+</sect2>
+-->
 
 <sect1 id="commandLineOptions">
-<title>Command Line Options</title>
+<title>Command-line Options</title>
 
+<!--
 <para>
 
 There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
@@ -181,12 +475,17 @@ The second invokes the Command Line Interface (Text UI):
 <prompt>$ </prompt><command>findbugs -textui <replaceable>[standard options]</replaceable> <replaceable>[Text UI options]</replaceable></command>
 </screen>
 </para>
-
-<sect2>
-<title>Standard options</title>
+-->
 
 <para>
-These options may be used with both the GUI and Text UI.
+	This section describes the command line options supported by &FindBugs;&trade;.
+</para>
+
+<sect2>
+<title>Common command-line options</title>
+
+<para>
+These options may be used with both the GUI and command-line interface.
 
 <variablelist>
   <varlistentry>
@@ -231,19 +530,6 @@ These options may be used with both the GUI and Text UI.
       </para>
     </listitem>
   </varlistentry>
-<!--
-  <varlistentry>
-    <term><command>-conserveSpace</command></term>
-    <listitem>
-      <para>
-      This option disables analyses that increase precision but also
-      increase memory consumption.  You may want to try this option if
-      you find that &FindBugs; runs out of memory, or takes an unusually
-      long time to complete its analysis.
-      </para>
-    </listitem>
-  </varlistentry>
--->
   <varlistentry>
     <term><command>-effort:min</command></term>
     <listitem>
@@ -526,255 +812,7 @@ These options are only accepted by the Text User Interface.
 </sect2>
 </sect1>
 
-</chapter>
 
-<!--
-   **************************************************************************
-   Compiling FindBugs from Source
-   **************************************************************************
--->
-
-<chapter id="building">
-<title>Building &FindBugs;&trade; from Source</title>
-
-<para>
-This chapter describes how to build &FindBugs; from source code.  Unless you are
-interesting in modifying &FindBugs;, you will probably want to skip to the
-<link linkend="gui">next chapter</link>.
-</para>
-
-<sect1>
-<title>Prerequisites</title>
-
-<para>
-To compile &FindBugs; from source, you will need the following:
-<itemizedlist>
-  <listitem>
-    <para>
-      The <ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@-source.zip?download"
-      >&FindBugs; source distribution</ulink>
-    </para>
-  </listitem>
-  <listitem>
-    <para>
-      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 beta or later</ulink>
-    </para>
-  </listitem>
-  <listitem>
-    <para>
-      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.6.3 or later
-    </para>
-  </listitem>
-</itemizedlist>
-</para>
-
-<warning>
-	<para>
-		The version of &Ant; included as <filename>/usr/bin/ant</filename> on
-		Redhat Linux systems will <emphasis>not</emphasis> work for compiling
-		&FindBugs;.  We recommend you install a binary distribution of &Ant;
-		downloaded from the <ulink url="http://ant.apache.org/">&Ant; website</ulink>.
-		Make sure that when you run &Ant; your <replaceable>JAVA_HOME</replaceable>
-		environment variable points to the directory in which you installed
-		JDK 1.5 (or later).
-	</para>
-</warning>
-
-<para>
-If you want to be able to generate formatted versions of the &FindBugs; documentation,
-you will also need the following software:
-<itemizedlist>
-  <listitem>
-    <para>
-    The <ulink url="http://docbook.sourceforge.net/projects/xsl/index.html">DocBook XSL Stylesheets</ulink>.
-    These are required to convert the &FindBugs; manual into HTML and PDF formats.
-    </para>
-  </listitem>
-  <listitem>
-    <para>
-      The <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
-      The file <filename>saxon.jar</filename> should be in your <envar>CLASSPATH</envar>.
-    </para>
-  </listitem>
-<!--
-  <listitem>
-    <para>
-    </para>
-  </listitem>
--->
-</itemizedlist>
-</para>
-
-</sect1>
-
-<sect1>
-<title>Extracting the Source Distribution</title>
-<para>
-After you download the source distribution, you'll need to extract it into
-a working directory.  A typical command to do this is:
-
-<screen>
-<prompt>$ </prompt><command>unzip findbugs-@VERSION@-source.zip</command>
-</screen>
-
-</para>
-</sect1>
-
-<sect1>
-<title>Modifying <filename>build.properties</filename></title>
-<para>
-If you intend to build the FindBugs documentation,
-you will need to modify the <filename>build.properties</filename> file
-used by the <ulink url="http://ant.apache.org/">&Ant;</ulink>
-<filename>build.xml</filename> file to build &FindBugs;.
-If you do not want to build the FindBugs documentation, then you
-can ignore this file.
-</para>
-	
-<para>
-The <filename>build.properties</filename> looks like this:
-<programlisting>
-<![CDATA[
-# User Configuration:
-# This section must be modified to reflect your system.
-
-local.software.home     =/export/home/daveho/linux
-
-# Set this to the directory containing the DocBook Modular XSL Stylesheets
-#  from http://docbook.sourceforge.net/projects/xsl/
-
-xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.71.1
-
-# Set this to the directory where Saxon (http://saxon.sourceforge.net/)
-# is installed. 
-
-saxon.home              =${local.software.home}/java/saxon-6.5.5
-]]>
-</programlisting>
-</para>
-
-<para>
-The <varname>xsl.stylesheet.home</varname> property specifies the full
-path to the directory where you have installed the
-<ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
-Stylesheets</ulink>.  You only need to specify this property if you will be
-generating the &FindBugs; documentation.
-</para>
-
-<para>
-The <varname>saxon.home</varname> property is the full path to the
-directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
-You only need to specify this property if you will be
-generating the &FindBugs; documentation.
-</para>
-
-</sect1>
-
-<sect1>
-<title>Running &Ant;</title>
-
-<para>
-Once you have extracted the source distribution,
-made sure that &Ant; is installed,
-modified <filename>build.properties</filename> (optional),
-and configured the tools (such as &Saxon;),
-you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
-of running the command
-<screen>
-<prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
-</screen>
-where <replaceable>target</replaceable> is one of the following:
-<variablelist>
-  <varlistentry>
-    <term><command>build</command></term>
-    <listitem>
-       <para>
-         This target compiles the code for &FindBugs;. It is the default target.
-       </para>
-    </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term><command>docs</command></term>
-    <listitem>
-       <para>
-       This target formats the documentation.  (It also compiles some of
-       the source code as a side-effect.)
-       </para>
-    </listitem>
-  </varlistentry>
-  
-  <varlistentry>
-	<term><command>runjunit</command></term>
-	<listitem>
-		<para>
-			This target compiles and runs the internal JUnit tests included
-			in &FindBugs;.  It will print an error message if any unit
-			tests fail.
-		</para>
-	</listitem>
-  </varlistentry>
-  
-  <varlistentry>
-	<term><command>bindist</command></term>
-	<listitem>
-		<para>
-			Builds a binary distribution of &FindBugs;.
-			The target creates both <filename>.zip</filename> and
-			<filename>.tar.gz</filename> archives.
-		</para>
-	</listitem>
-  </varlistentry>
-</variablelist>
-</para>
-
-<para>
-After running an &Ant; command, you should see output similar to
-the following (after some other messages regarding the tasks that
-&Ant; is running):
-<screen>
-<computeroutput>
-BUILD SUCCESSFUL
-Total time: 17 seconds
-</computeroutput>
-</screen>
-</para>
-
-</sect1>
-
-<sect1>
-<title>Running &FindBugs;&trade;</title>
-<para>
-The &Ant; build script for &FindBugs; is set up such that after 
-building the <command>build</command> target, the working directory
-is set up just like a binary distribution.  So, the information about
-installing a binary distribution of &FindBugs; in <xref linkend="installing" />
-applies to source distributions, too.
-</para>
-</sect1>
-
-</chapter>
-
-
-<!--
-   **************************************************************************
-   Using the FindBugs Graphical Interface
-   **************************************************************************
--->
-
-<chapter id="gui">
-<title>Using the &FindBugs;&trade; Graphical User Interface</title>
-
-<para>
-&FindBugs; has two user interfaces: a graphical user interface (GUI) and a
-command line user interface.  This chapter describes the graphical user interface.
-</para>
-
-<!--
-<sect1>
-<title>Executing the &FindBugs;&trade; GUI</title>
-</sect1>
--->
 
 <sect1>
 <title>Creating a Project</title>
@@ -884,17 +922,8 @@ menu option.
 
 </sect1>
 
-</chapter>
 
-
-
-<!--
-   **************************************************************************
-   Using the FindBugs Command Line Interface
-   **************************************************************************
--->
-
-<chapter id="textui">
+<sect1 id="textui">
 <title>Using the &FindBugs;&trade; Command Line Interface</title>
 
 <para>
@@ -906,13 +935,13 @@ to get only the output you're interested in.
 </para>
 
 <para>
-See <xref linkend="commandLineOptions" /> in <xref linkend="installing" /> for a description of how to invoke the
+See <xref linkend="commandLineOptions" /> for a description of how to invoke the
 Command Line Interface.
 </para>
+</sect1>
 
 
 </chapter>
-
 
 <!--
    **************************************************************************
