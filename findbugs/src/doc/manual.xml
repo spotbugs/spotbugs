@@ -408,6 +408,10 @@ how to run each of these user interfaces.
 <command>java -jar &FBHome;/lib/findbugs.jar</command></screen>
 	to run the &FindBugs; GUI.
 	</para>
+	
+	<para>
+	Refer to <xref linkend="gui"/> for information on how to use the GUI.
+	</para>
 </sect1>
 
 <sect1>
@@ -566,44 +570,15 @@ On both Unix-like and Windows systems, you can simply add the <filename><replace
 directory to your <filename>PATH</filename> environment variable and then invoke
 FindBugs using the <command>findbugs</command> command.
 </para>
-	</sect2>
 
-</sect1>
-
-<sect1 id="commandLineOptions">
-<title>Command-line Options</title>
-
-<!--
-<para>
-
-There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
-
-<screen>
-<prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>
-</screen>
-
-The second invokes the Command Line Interface (Text UI):
-
-<screen>
-<prompt>$ </prompt><command>findbugs -textui <replaceable>[standard options]</replaceable> <replaceable>[Text UI options]</replaceable></command>
-</screen>
-</para>
--->
-
-<para>
-	This section describes the command line options supported by &FindBugs;.
-	These command line options may be used when invoking &FindBugs; directly,
-	or when using a wrapper script.
-</para>
-
-<sect2>
-<title>Common command-line options</title>
-
-<para>
-These options may be used with both the GUI and command-line interface.
-
-<variablelist>
-	<!--
+	<sect3 id="wrapperOptions">
+		<title>Wrapper script command line options</title>
+		<para>The &FindBugs; wrapper scripts support the following command-line options.
+		Note that these command line options are <emphasis>not</emphasis> handled by
+		the &FindBugs; program per se; rather, they are handled by the wrapper
+		script.
+		</para>
+	<variablelist>
   <varlistentry>
     <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
     <listitem>
@@ -646,7 +621,61 @@ These options may be used with both the GUI and command-line interface.
       </para>
     </listitem>
   </varlistentry>
-  -->
+
+  <varlistentry>
+    <term><command>-property</command> <replaceable>name=value</replaceable></term>
+    <listitem>
+      <para>
+      This option sets a system property.&nbsp; &FindBugs; uses system properties
+      to configure analysis options.  See <xref linkend="analysisprops"/>.
+      You can use this option multiple times in order to set multiple properties.
+      Note: In most versions of Windows, the <replaceable>name=value</replaceable>
+      string must be in quotes.
+      </para>
+    </listitem>
+  </varlistentry>
+
+	</variablelist>
+		
+	</sect3>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="commandLineOptions">
+<title>Command-line Options</title>
+
+<!--
+<para>
+
+There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>
+</screen>
+
+The second invokes the Command Line Interface (Text UI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs -textui <replaceable>[standard options]</replaceable> <replaceable>[Text UI options]</replaceable></command>
+</screen>
+</para>
+-->
+
+<para>
+	This section describes the command line options supported by &FindBugs;.
+	These command line options may be used when invoking &FindBugs; directly,
+	or when using a wrapper script.
+</para>
+
+<sect2>
+<title>Common command-line options</title>
+
+<para>
+These options may be used with both the GUI and command-line interface.
+
+<variablelist>
   
   <varlistentry>
     <term><command>-effort:min</command></term>
@@ -669,21 +698,6 @@ These options may be used with both the GUI and command-line interface.
       </para>
     </listitem>
   </varlistentry>
-
-<!--
-  <varlistentry>
-    <term><command>-property</command> <replaceable>name=value</replaceable></term>
-    <listitem>
-      <para>
-      This option sets a system property.&nbsp; &FindBugs; uses system properties
-      to configure analysis options.  See <xref linkend="analysisprops"/>.
-      You can use this option multiple times in order to set multiple properties.
-      Note: In most versions of Windows, the <replaceable>name=value</replaceable>
-      string must be in quotes.
-      </para>
-    </listitem>
-  </varlistentry>
-  -->
 
   <varlistentry>
   <term><command>-project</command> <replaceable>project</replaceable></term>
@@ -936,7 +950,7 @@ These options are only accepted by the Text User Interface.
 </chapter>
 
 <chapter id="gui">
-	<title>Running the &FindBugs; GUI</title>
+	<title>Using the &FindBugs; GUI</title>
 
 	<para>
 		This chapter describes how to use the &FindBugs; graphical user interface (GUI).
@@ -2572,7 +2586,7 @@ API documentation</ulink> at <ulink url="http://jcip.net/">Java Concurrency in P
    **************************************************************************
 -->
 
-<chapter>
+<chapter id="rejarForAnalysis">
 <title>Using rejarForAnalysis</title>
 
 <para>
