@@ -72,6 +72,7 @@
 	
 	<path id="tools.classpath">
 		<pathelement location="${classes.dir}"/>
+		<pathelement location="${jar.dir}/findbugs.jar"/>
 		<path refid="findbugs.classpath"/>
 	</path>
 
