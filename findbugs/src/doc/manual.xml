@@ -570,39 +570,6 @@ FindBugs using the <command>findbugs</command> command.
 
 </sect1>
 
-<!--
-<sect2>
-
-<title>Configuration</title>
-
-<para>
-Once you have extracted the binary distribution, all you need to do in order
-to run &FindBugs; is to invoke the wrapper script.
-</para>
-
-<para>
-On Unix-like systems, use the following command to invoke the wrapper script:
-<screen>
-<prompt>$ </prompt><command>&FBHome;/bin/findbugs <replaceable>options...</replaceable></command>
-</screen>
-</para>
-
-<para>
-On Windows systems, the command to invoke the wrapper script is 
-<screen>
-<prompt>C:\My Directory></prompt><command>&FBHomeWin;\bin\findbugs.bat <replaceable>options...</replaceable></command>
-</screen>
-</para>
-
-<para>
-On both Unix-like and Windows systems, you can simply add the <filename><replaceable>$FINDBUGS_HOME</replaceable>/bin</filename>
-directory to your <filename>PATH</filename> environment variable and then invoke
-FindBugs using the <command>findbugs</command> command.
-</para>
-
-</sect2>
--->
-
 <sect1 id="commandLineOptions">
 <title>Command-line Options</title>
 
@@ -624,7 +591,9 @@ The second invokes the Command Line Interface (Text UI):
 -->
 
 <para>
-	This section describes the command line options supported by &FindBugs;&trade;.
+	This section describes the command line options supported by &FindBugs;.
+	These command line options may be used when invoking &FindBugs; directly,
+	or when using a wrapper script.
 </para>
 
 <sect2>
@@ -634,6 +603,7 @@ The second invokes the Command Line Interface (Text UI):
 These options may be used with both the GUI and command-line interface.
 
 <variablelist>
+	<!--
   <varlistentry>
     <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
     <listitem>
@@ -676,6 +646,8 @@ These options may be used with both the GUI and command-line interface.
       </para>
     </listitem>
   </varlistentry>
+  -->
+  
   <varlistentry>
     <term><command>-effort:min</command></term>
     <listitem>
@@ -698,6 +670,7 @@ These options may be used with both the GUI and command-line interface.
     </listitem>
   </varlistentry>
 
+<!--
   <varlistentry>
     <term><command>-property</command> <replaceable>name=value</replaceable></term>
     <listitem>
@@ -710,6 +683,7 @@ These options may be used with both the GUI and command-line interface.
       </para>
     </listitem>
   </varlistentry>
+  -->
 
   <varlistentry>
   <term><command>-project</command> <replaceable>project</replaceable></term>
@@ -959,6 +933,14 @@ These options are only accepted by the Text User Interface.
 </sect1>
 
 
+</chapter>
+
+<chapter id="gui">
+	<title>Running the &FindBugs; GUI</title>
+
+	<para>
+		This chapter describes how to use the &FindBugs; graphical user interface (GUI).
+	</para>
 
 <sect1>
 <title>Creating a Project</title>
@@ -1060,15 +1042,15 @@ file lists you specified and all bug results, choose
 "FindBugs analysis results (.xml)" from the drop-down list in the
 "Save as..." dialog.  There are also options for saving just the jar
 file lists ("FindBugs project file (.fbp)") or just the results
-("FindBugs analysis file (.fba)"), but these are rarely needed.  A
-saved file may be loaded with the
+("FindBugs analysis file (.fba)").
+A saved file may be loaded with the
 <menuchoice><guimenu>File</guimenu><guimenuitem>Open...</guimenuitem></menuchoice>
 menu option.
 </para>
 
 </sect1>
 
-
+<!--
 <sect1 id="textui">
 <title>Using the &FindBugs;&trade; Command Line Interface</title>
 
@@ -1085,7 +1067,7 @@ See <xref linkend="commandLineOptions" /> for a description of how to invoke the
 Command Line Interface.
 </para>
 </sect1>
-
+-->
 
 </chapter>
 
