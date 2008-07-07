@@ -59,13 +59,6 @@ public class LaunchAppropriateUI {
 	 * UI code for displaying command line version information.
 	 */
 	public static final int SHOW_VERSION = 1001;
-
-	/**
-	 * GUI2 is the default UI.
-	 * This means if you double-click on findbugs.jar,
-	 * GUI2 is started.
-	 */
-	public static final int DEFAULT_UI = GUI2;
 	
 	/**
 	 * Map of UI name strings to integer UI codes.
@@ -74,19 +67,38 @@ public class LaunchAppropriateUI {
 	static {
 		uiNameToCodeMap = new HashMap<String, Integer>();
 		uiNameToCodeMap.put("textui", TEXTUI);
+		uiNameToCodeMap.put("gui", GUI2);
 		uiNameToCodeMap.put("gui1", GUI1);
 		uiNameToCodeMap.put("gui2", GUI2);
 		uiNameToCodeMap.put("help", SHOW_HELP);
 		uiNameToCodeMap.put("version", SHOW_VERSION);
 	}
-	
-	public static void main(String args[]) throws Exception {
-		int launchProperty = getLaunchProperty();
 
+	// Fields
+	/** Command line arguments. */
+	private String[] args;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param args command line arguments
+	 */
+	public LaunchAppropriateUI(String[] args) {
+		this.args = args;
+	}
+
+	/**
+	 * Launch the appropriate UI.
+	 * 
+	 * @throws java.lang.Exception
+	 */
+	public void launch() throws Exception {
 		// Sanity-check the loaded BCEL classes
 		if(!CheckBcel.check()) {
 			System.exit(1);
 		}
+
+		int launchProperty = getLaunchProperty();
 
 		if (GraphicsEnvironment.isHeadless() || launchProperty == TEXTUI) {
 			FindBugs2.main(args);
@@ -114,10 +126,17 @@ public class LaunchAppropriateUI {
 			Method mainMethod = launchClass.getMethod("main", args.getClass());
 			mainMethod.invoke(null, (Object) args);
 		}
+		
 	}
-
+	
 	/**
-	 * User should set the <code>findbugs.launchUI</code> system property
+	 * Find out what UI should be launched.
+	 * 
+	 * <p> First, we check the command line arguments to see if the first
+	 * argument specifies the UI (e.g., "-textui", "-gui", etc.)
+	 * 
+	 * <p> If the first command line argument does not specify the UI,
+	 * then we check the <code>findbugs.launchUI</code> system property
 	 * to one of the following values:
 	 * 
 	 * <ul>
@@ -132,11 +151,30 @@ public class LaunchAppropriateUI {
 	 *  not change the default behavior, which is to launch
 	 *  the newer "gui2" on systems that support it.
 	 *  
+	 * @param args the command line arguments
 	 * @return an integer UI code:
 	 *         TEXTUI, GUI1, GUI2, SHOW_VERSION, SHOW_HELP,
 	 *         or possibly another user-set int value
 	 */
-	public static int getLaunchProperty() {
+	private int getLaunchProperty() {
+		// See if the first command line argument specifies the UI.
+		if (args.length > 0) {
+			String firstArg = args[0];
+			if (firstArg.startsWith("-")) {
+				String uiName = firstArg.substring(1);
+				if (uiNameToCodeMap.containsKey(uiName)) {
+					// Strip the first argument from the command line arguments.
+					String[] modifiedArgs = new String[args.length - 1];
+					System.arraycopy(args, 1, modifiedArgs, 0, args.length - 1);
+					args = modifiedArgs;
+					
+					return uiNameToCodeMap.get(uiName);
+				}
+			}
+		}
+		
+		// Check findbugs.launchUI property.
+		// "gui2" is the default if not otherwise specified.
 		String s = System.getProperty("findbugs.launchUI", "gui2");
 
 		// See if the property value is one of the human-readable
@@ -153,4 +191,15 @@ public class LaunchAppropriateUI {
 		}
 	}
 
+	/**
+	 * main() method.
+	 * This is where execution of FindBugs (any UI) starts.
+	 * 
+	 * @param args command line arguments
+	 * @throws java.lang.Exception
+	 */
+	public static void main(String args[]) throws Exception {
+		LaunchAppropriateUI launcher = new LaunchAppropriateUI(args);
+		launcher.launch();
+	}
 }
