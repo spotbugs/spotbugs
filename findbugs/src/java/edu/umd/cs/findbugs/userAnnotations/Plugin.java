@@ -28,19 +28,45 @@ import edu.umd.cs.findbugs.BugInstance;
 /**
  * Interface to allow persistence of bug user annotations using arbitrary
  * mechanisms.
- *
  */
-
 public interface Plugin {
-	
+
+	/**
+	 * Get Set of property names defining properties required
+	 * for the plugin to persist the user annotations.
+	 */
 	Set<String> getPropertyNames();
 	
+	/**
+	 * Set the key/value pairs defining properties required
+	 * for the plugin to persist the user annotations.
+	 * 
+	 * @param properties set of key/value pairs defining properties required by the plugin
+	 * @return FIXME: what does this mean?
+	 */
 	boolean setProperties(Map<String,String> properties);
-	
+
+	/**
+	 * For the given BugCollection, load the user annotations
+	 * for each BugInstance in the collection.
+	 * 
+	 * @param bugs a BugCollection
+	 */
 	void loadUserAnnotations(BugCollection bugs);
 	
+	/**
+	 * Store the user annotation for the given BugInstance.
+	 * 
+	 * @param bug a BugInstance
+	 */
 	void storeUserAnnotation(BugInstance bug);
 	
+	/**
+	 * Store the user annotation for all BugInstances in the
+	 * given BugCollection.
+	 * 
+	 * @param bugs a BugCollection
+	 */
 	void storeUserAnnotations(BugCollection bugs);
 
 }
