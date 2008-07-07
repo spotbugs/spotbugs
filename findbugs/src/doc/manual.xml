@@ -403,7 +403,7 @@ how to run each of these user interfaces.
 	</para>
 	
 	<para>
-		On a Unix, Linux, or Mac OS X system, run the <command>&FBHome;/bin/findbugs</command>
+		On a Unix, Linux, or Mac OS X system, run the <filename>&FBHome;/bin/findbugs</filename>
 		script, or run the command <screen>
 <command>java -jar &FBHome;/lib/findbugs.jar</command></screen>
 	to run the &FindBugs; GUI.
@@ -435,7 +435,7 @@ how to run each of these user interfaces.
 		<para>
 			The general syntax of invoking &FindBugs; directly is the following:
 <screen>
-	<command>java <replaceable>[JVM arguments]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>command line arguments...</replaceable></command>
+	<command>java <replaceable>[JVM arguments]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>options...</replaceable></command>
 </screen>
 		</para>
 
@@ -455,7 +455,7 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
 			<title>Choosing the User Interface</title>
 		
 		<para>
-			The first command line argument chooses the &FindBugs; user interface to execute.
+			The first command line option chooses the &FindBugs; user interface to execute.
 			Possible values are:
 		</para>
 		<itemizedlist>
@@ -542,6 +542,30 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
 	
 	<sect2 id="wrapperScript">
 		<title>Invocation of &FindBugs; using a wrapper script</title>
+
+		<para>
+			Another way to run &FindBugs; is to use a wrapper script.
+		</para>
+
+<para>
+On Unix-like systems, use the following command to invoke the wrapper script:
+<screen>
+<prompt>$ </prompt><command>&FBHome;/bin/findbugs <replaceable>options...</replaceable></command>
+</screen>
+</para>
+
+<para>
+On Windows systems, the command to invoke the wrapper script is 
+<screen>
+<prompt>C:\My Directory></prompt><command>&FBHomeWin;\bin\findbugs.bat <replaceable>options...</replaceable></command>
+</screen>
+</para>
+
+<para>
+On both Unix-like and Windows systems, you can simply add the <filename><replaceable>$FINDBUGS_HOME</replaceable>/bin</filename>
+directory to your <filename>PATH</filename> environment variable and then invoke
+FindBugs using the <command>findbugs</command> command.
+</para>
 	</sect2>
 
 </sect1>
