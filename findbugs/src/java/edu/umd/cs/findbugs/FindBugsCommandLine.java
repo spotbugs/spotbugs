@@ -54,7 +54,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		addOption("-home", "home directory", "specify FindBugs home directory");
 		addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
 				"specify list of plugin Jar files to load");
-		addSwitchWithOptionalExtraPart("-effort", "min|default|max", "set analysis effort level");
+		addSwitchWithOptionalExtraPart("-effort", "min|less|default|more|max", "set analysis effort level");
 		addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
 		addSwitch("-workHard", "ensure analysis effort is at least 'default'");
 		addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
