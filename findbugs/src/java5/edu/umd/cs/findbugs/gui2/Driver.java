@@ -19,14 +19,9 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import javax.swing.UIManager;
-
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 
 /**
  * This is where it all begins
@@ -36,13 +31,11 @@ import edu.umd.cs.findbugs.SystemProperties;
  * 
  */
 public class Driver {
+	
+	private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
 
-	private static float fontSize = 12;
-	private static boolean docking = true;
+	private static GUI2CommandLine commandLine;
 	private static SplashFrame splash;
-	private static int priority = Thread.NORM_PRIORITY-1;
-	private static Project project = null;
-	private static File saveFile = null;
 
 	public static void main(String[] args) throws Exception {
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -54,118 +47,17 @@ public class Driver {
 
 		splash = new SplashFrame();
 		splash.setVisible(true);
+		
+		commandLine = new GUI2CommandLine();
+		int remainingArgs = commandLine.parse(args, 0, 1, USAGE);
 
-
-		try {
-			Class.forName("net.infonode.docking.DockingWindow");
-			Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
-		} catch (Exception e) {
-			docking = false;
-		}
-
-		for(int i = 0; i < args.length; i++){
-			if((args[i].equals("-f")) && (i+1 < args.length)){
-				float num = 0;
-				try{
-					i++;
-					num = Integer.valueOf(args[i]);
-				}
-				catch(NumberFormatException exc){
-					num = fontSize;
-				}
-				fontSize = num;
-			}
-
-			else if(args[i].startsWith("--font=")){
-				float num = 0;
-				try{
-					num = Integer.valueOf(args[i].substring("--font=".length()));
-				}
-				catch(NumberFormatException exc){
-					num = fontSize;
-				}
-				fontSize = num;
-			}
-
-			else if(args[i].equals("-clear")){
-				GUISaveState.clear();
-				System.exit(0);
-			}
-
-			else if(args[i].equals("-priority")){
-				int num = 0;
-				try{
-					i++;
-					num = Integer.valueOf(args[i]);
-				}
-				catch(NumberFormatException exc){
-					num = Thread.NORM_PRIORITY-1;
-				}
-				priority = num;
-			}
-
-			else if (args[i].equals("-loadbugs")) {
-				i++;
-				try {
-					saveFile = new File(args[i]);
-				} catch (IndexOutOfBoundsException e) {
-					System.err.println("Option \"-loadbugs\" must be followed by a filename");
-					System.exit(1);
-				}
-				if (!saveFile.exists()) {
-					System.err.println("Bugs file \"" + args[i] + "\" could not be found");
-					System.exit(1);
-				}
-			}
-
-			else if(args[i].equals("-project")) {
-				try {
-					i++;
-					project = Project.readProject(args[i]);
-				} catch(FileNotFoundException e) {
-					System.err.println("Project file \"" + args[i] + "\" could not be found");
-					System.exit(1);
-				} catch(IndexOutOfBoundsException e) {
-					System.err.println("Option \"-project\" must be followed by a filename");
-					System.exit(1);
-				}
-			}
-			
-			else if (args[i].equals("-d") || args[i].equals("--nodock")) {
-				docking = false;
-			}
-			
-			else if (args[i].startsWith("-look:")) {
-				String arg = args[i].substring("-look:".length());
-
-				String theme = null;
-				if (arg.equals("plastic")) {
-					// You can get the Plastic look and feel from jgoodies.com:
-					//	http://www.jgoodies.com/downloads/libraries.html
-					// Just put "plastic.jar" in the lib directory, right next
-					// to the other jar files.
-					theme = "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel";
-				} else if (arg.equals("gtk")) {
-					theme = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-				} else if (arg.equals("native")) {
-					theme = UIManager.getSystemLookAndFeelClassName();
-				} else {
-					System.err.println("Style '" + arg + "' not supported");
-				}
-
-				if (theme != null) {
-					try {
-						UIManager.setLookAndFeel(theme);
-					} catch (Exception e) {
-						System.err.println("Couldn't load " + arg +
-								" look and feel: " + e.toString());
-					}
-				}
-			}
-			
-			else {
-				System.err.println("Unknown option: " + args[i]);
-				System.exit(1);
+		if (commandLine.getDocking()) {
+			// make sure docking runtime support is available
+			try {
+				Class.forName("net.infonode.docking.DockingWindow");
+				Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
+			} catch (Exception e) {
+				commandLine.setDocking(false);
 			}
 		}
 
@@ -176,6 +68,7 @@ public class Driver {
 			e.printStackTrace();	
 		}
 
+		float fontSize = commandLine.getFontSize();
 		if(fontSize == 12 && GUISaveState.getInstance().getFontSize() != 12)
 			fontSize = GUISaveState.getInstance().getFontSize();
 		else
@@ -205,26 +98,31 @@ public class Driver {
 		splash.setVisible(false);
 		splash.dispose();
 
-		if(saveFile != null) {
-			MainFrame.getInstance().openAnalysis(saveFile, SaveType.XML_ANALYSIS);
+		if(commandLine.getSaveFile() != null) {
+			MainFrame.getInstance().openAnalysis(commandLine.getSaveFile(), SaveType.XML_ANALYSIS);
 		}
-		else if(project != null) {
-			MainFrame.getInstance().setProject(project);
+		else if(commandLine.getProject() != null) {
+			MainFrame.getInstance().setProject(commandLine.getProject());
 			MainFrame.getInstance().newProject();
 			
 			MainFrame.getInstance().redoAnalysis();
 		}
 	}
+	
 	public static boolean isDocking()
 	{
-		return docking;
+		return commandLine.getDocking();
 	}
 
 	public static float getFontSize(){
-		return fontSize;
+		return commandLine.getFontSize();
 	}
 	
 	public static int getPriority() {
-		return priority;
+		return commandLine.getPriority();
+	}
+	
+	public static AnalysisFeatureSetting[] getAnalysisSettingList() {
+		return commandLine.getSettingList();
 	}
 }

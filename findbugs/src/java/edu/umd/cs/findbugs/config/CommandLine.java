@@ -174,23 +174,35 @@ public abstract class CommandLine {
 	public static class HelpRequestedException extends Exception {
 
 	}
+	
+	/**
+	 * Parse switches/options, showing usage information if they can't be parsed,
+	 * or if we have the wrong number of remaining arguments after parsing.
+	 * Calls parse(String[]).
+	 * 
+	 * @param argv     command line arguments
+	 * @param minArgs  minimum number of arguments remaining after
+	 *                 switches/options are parsed
+	 * @param maxArgs  maximum number of arguments remaining after
+	 *                 switches/options are parsed
+	 * @param usage    usage synopsis
+	 * @return number of arguments remaining after parsing switches/options
+	 */
 	@SuppressWarnings("DM_EXIT")
 	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
 		try {
-		int count = parse(argv);
-		int remaining = argv.length - count;
-		if (remaining < minArgs || remaining > maxArgs) {
-			System.out.println(usage);
-			System.out.println("Expected " +minArgs + "..." + maxArgs 
-					+ " file arguments, found " + remaining);
-			System.out.println("Options:");
-			printUsage(System.out);
-			System.exit(1);
-		}
-		return count;
+			int count = parse(argv);
+			int remaining = argv.length - count;
+			if (remaining < minArgs || remaining > maxArgs) {
+				System.out.println(usage);
+				System.out.println("Expected " + minArgs + "..." + maxArgs + " file arguments, found " + remaining);
+				System.out.println("Options:");
+				printUsage(System.out);
+				System.exit(1);
+			}
+			return count;
 		} catch (HelpRequestedException e) {
 			// fall through
-
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -202,6 +214,7 @@ public abstract class CommandLine {
 		System.exit(1);
 		return -1;
 	}
+	
 	/**
 	 * Parse a command line.
 	 * Calls down to handleOption() and handleOptionWithArgument() methods.

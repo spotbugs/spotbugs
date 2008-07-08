@@ -104,6 +104,11 @@ public class BugLoader {
 		engine.setProject(p);
 
 		engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+		
+		//
+		// Honor -effort option if one was given on the command line.
+		//
+		engine.setAnalysisFeatureSettings(Driver.getAnalysisSettingList());
 
 		return engine;
 	}

@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.gui.FindBugsFrame;
+import edu.umd.cs.findbugs.gui2.GUI2CommandLine;
 
 /**
  * Show command line help.
@@ -37,7 +38,8 @@ public class ShowHelp {
 		FindBugsFrame.showSynopsis();
 		FindBugs.showSynopsis();
 		showGeneralOptions();
-		FindBugsFrame.showCommandLineOptions();
+		System.out.println("GUI Options:");
+		new GUI2CommandLine().printUsage(System.out);
 		FindBugs.showCommandLineOptions();
 		System.exit(0);
 	}
