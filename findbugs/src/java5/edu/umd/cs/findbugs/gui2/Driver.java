@@ -211,6 +211,8 @@ public class Driver {
 		else if(project != null) {
 			MainFrame.getInstance().setProject(project);
 			MainFrame.getInstance().newProject();
+			
+			MainFrame.getInstance().redoAnalysis();
 		}
 	}
 	public static boolean isDocking()

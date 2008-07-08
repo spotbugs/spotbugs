@@ -2423,7 +2423,7 @@ public class MainFrame extends FBFrame implements LogSync
 	/**
 	 * Redo the analysis
 	 */
-	private void redoAnalysis() {
+	void redoAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		showWaitCard();
