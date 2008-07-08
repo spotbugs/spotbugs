@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,400 +19,53 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.ClassFormatException;
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.util.ClassPath;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.URLClassPath;
-import edu.umd.cs.findbugs.ba.URLClassPathRepository;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.IClassObserver;
-import edu.umd.cs.findbugs.classfile.UncheckedAnalysisException;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
-import edu.umd.cs.findbugs.plan.AnalysisPass;
-import edu.umd.cs.findbugs.plan.ExecutionPlan;
-import edu.umd.cs.findbugs.plan.OrderingConstraintException;
-import edu.umd.cs.findbugs.util.Archive;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
- * An instance of this class is used to apply the selected set of
- * analyses on some collection of Java classes.  It also implements the
- * command line interface.
+ * Static methods and fields useful for working with instances of
+ * IFindBugsEngine.
  * 
- * <p>It is no longer recommended to create instances of this class.
- * Use {@link FindBugs2} instead.  Some useful static methods remain
- * in this class, but may eventually be moved elsewhere.
- *
+ * This class was previously the main driver for FindBugs analyses,
+ * but has been replaced by {@link FindBugs2 FindBugs2}.
+ * 
  * @author Bill Pugh
  * @author David Hovemeyer
- * 
  */
-public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
-	
-
-	/* ----------------------------------------------------------------------
-	 * Helper classes
-	 * ---------------------------------------------------------------------- */
-
+public abstract class FindBugs  {
 	/**
-	 * Delegating InputStream wrapper that never closes the
-	 * underlying input stream.
+	 * Analysis settings for -effort:min.
 	 */
-	private static class NoCloseInputStream extends DataInputStream {
-		/**
-		 * Constructor.
-		 * @param in the real InputStream
-		 */
-		public NoCloseInputStream(InputStream in) {
-			super(in);
-		}
-
-		@Override
-		public void close() {
-		}
-	}
-
-	/**
-	 * Work list item specifying a file/directory/URL containing
-	 * class files to analyze.
-	 */
-	private static class ArchiveWorkListItem {
-		private String fileName;
-		private boolean explicit;
-
-		/**
-		 * Constructor.
-		 *
-		 * @param fileName file/directory/URL
-		 * @param explicit true if this source of classes appeared explicitly
-		 *                 in the project file, false if was found indirectly
-		 *                 (e.g., a nested jar file in a .war file)
-		 */
-		public ArchiveWorkListItem(String fileName, boolean explicit) {
-			this.fileName = fileName;
-			this.explicit = explicit;
-		}
-
-		/**
-		 * Get the file/directory/URL.
-		 */
-		public String getFileName() {
-			return fileName;
-		}
-
-		/**
-		 * Return whether this class source appeared explicitly in
-		 * the project file.
-		 */
-		public boolean isExplicit() {
-			return explicit;
-		}
-	}
-
-	/**
-	 * Interface for an object representing a source of class files to analyze.
-	 */
-	private interface ClassProducer {
-		/**
-		 * Get the next class to analyze.
-		 *
-		 * @return the class, or null of there are no more classes for this ClassProducer
-		 * @throws IOException          if an IOException occurs
-		 * @throws InterruptedException if the thread is interrupted
-		 */
-		public JavaClass getNextClass() throws IOException, InterruptedException;
-
-		/**
-		 * Did this class producer scan any Java source files?
-		 */
-		public boolean containsSourceFiles();
-
-		/**
-		 * Return the latest creation/modification time of any of the class files scanned. 
-		 * @return the last modification time
-		 */
-		public long getLastModificationTime();
-		/**
-		 * Close any internal files or streams.
-		 */
-		public void close();
-	}
-
-	/**
-	 * ClassProducer for single class files.
-	 */
-	private class SingleClassProducer implements ClassProducer {
-		private URL url;
-		long time = 0;
-		/**
-		 * Constructor.
-		 *
-		 * @param url the single class file to be analyzed
-		 */
-		public SingleClassProducer(URL url) {
-			this.url = url;
-		}
-
-		public JavaClass getNextClass() throws IOException, InterruptedException {
-			if (url == null)
-				return null;
-			if (Thread.interrupted())
-				throw new InterruptedException();
-
-			URL urlToParse = url;
-			url = null; // don't return it next time
-
-			// ClassScreener may veto this class.
-			if (!classScreener.matches(urlToParse.toString()))
-				return null;
-
-			try {
-				URLConnection u = urlToParse.openConnection();
-				time = u.getLastModified();
-				return parseFromStream(u.getInputStream(), urlToParse.toString());
-			} catch (ClassFormatException e) {
-				throw new ClassFormatException("Invalid class file format for " +
-						urlToParse.toString() + ": " + e.getMessage());
-			}
-		}
-
-
-		public boolean containsSourceFiles() {
-			return false;
-		}
-
-		public void close() {
-			// Nothing to do here
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLatestTimeOfClass()
-		 */
-		public long getLastModificationTime() {
-			return time;
-		}
-	}
-
-	/**
-	 * ClassProducer for zip/jar archives.
-	 */
-	private class ZipClassProducer implements ClassProducer {
-		private URL url;
-		private LinkedList<ArchiveWorkListItem> archiveWorkList;
-		private List<String> additionalAuxClasspathEntryList;
-		private ZipInputStream zipInputStream;
-		private boolean containsSourceFiles;
-		private long time = 0;
-		private long zipTime = 0;
-
-		public ZipClassProducer(URL url, LinkedList<ArchiveWorkListItem> archiveWorkList,
-				List<String> additionalAuxClasspathEntryList)
-				throws IOException {
-			this.url = url;
-			this.archiveWorkList = archiveWorkList;
-			this.additionalAuxClasspathEntryList = additionalAuxClasspathEntryList;
-			if (DEBUG) System.out.println("Opening jar/zip input stream for " + url.toString());
-			URLConnection u = url.openConnection();
-			this.zipTime = u.getLastModified();
-			this.zipInputStream = new ZipInputStream(u.getInputStream());
-			this.containsSourceFiles = false;
-		}
-
-
-		public JavaClass getNextClass() throws IOException, InterruptedException {
-			for (;;) {
-				if (Thread.interrupted())
-					throw new InterruptedException();
-
-				ZipEntry zipEntry = zipInputStream.getNextEntry();
-				if (zipEntry == null)
-					return null;
-
-				try {
-					String entryName = zipEntry.getName();
-
-					// ClassScreener may veto this class.
-					if (!classScreener.matches(entryName)) {
-						// Add archive URL to aux classpath
-						if (!additionalAuxClasspathEntryList.contains(url.toString())) {
-							//System.out.println("Adding additional aux classpath entry: " + url.toString());
-							additionalAuxClasspathEntryList.add(url.toString());
-						}
-						continue;
-					}
-
-					String fileExtension = URLClassPath.getFileExtension(entryName);
-					if (fileExtension != null) {
-						if (fileExtension.equals(".class")) {
-							long modTime = zipEntry.getTime();
-							if (modTime > time) time = modTime;
-							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
-						} else if (Archive.ARCHIVE_EXTENSION_SET.contains(fileExtension)) {
-							// Add nested archive to archive work list
-							if (url.toString().indexOf("!/") < 0) {
-							ArchiveWorkListItem nestedItem =
-								new ArchiveWorkListItem("jar:" + url.toString() + "!/" + entryName, false);
-							archiveWorkList.addFirst(nestedItem);
-							}
-						} else if (fileExtension.equals(".java")) {
-							containsSourceFiles = true;
-						}
-					}
-				} finally {
-					zipInputStream.closeEntry();
-				}
-			}
-		}
-
-		public boolean containsSourceFiles() {
-			return containsSourceFiles;
-		}
-
-		public void close() {
-			if (zipInputStream != null) {
-				try {
-					zipInputStream.close();
-				} catch (IOException ignore) {
-					// Ignore
-				}
-			}
-		}
-		static final long millisecondsInAYear = 31556926000L; 
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLastModificationTime()
-		 */
-		public long getLastModificationTime() {
-			if (time + millisecondsInAYear > zipTime) return time;
-			return zipTime;
-		}
-	}
-
-	/**
-	 * ClassProducer for directories.
-	 * The directory is scanned recursively for class files.
-	 */
-	private class DirectoryClassProducer implements ClassProducer {
-		private String dirName;
-		private List<String> additionalAuxClasspathEntryList;
-		private Iterator<String> rfsIter;
-		private boolean containsSourceFiles;
-		private long time;
-
-		public DirectoryClassProducer(String dirName,
-				List<String> additionalAuxClasspathEntryList) throws InterruptedException {
-			this.dirName = dirName;
-			this.additionalAuxClasspathEntryList = additionalAuxClasspathEntryList;
-
-			FileFilter filter = new FileFilter() {
-				public boolean accept(File file) {
-					String fileName = file.getName();
-					if (file.isDirectory() || fileName.endsWith(".class"))
-						return true;
-					if (fileName.endsWith(".java"))
-						containsSourceFiles = true;
-					return false;
-				}
-			};
-
-			// This will throw InterruptedException if the thread is
-			// interrupted.
-			RecursiveFileSearch rfs = new RecursiveFileSearch(dirName, filter).search();
-			this.rfsIter = rfs.fileNameIterator();
-			this.containsSourceFiles = false;
-		}
-
-		public JavaClass getNextClass() throws IOException, InterruptedException {
-			String fileName;
-			for (;;) {
-				if (!rfsIter.hasNext())
-					return null;
-				fileName = rfsIter.next();
-				if (classScreener.matches(fileName)) {
-					break;
-				} else {
-					// Add directory URL to aux classpath
-					String dirURL= "file:" + dirName;
-					if (!additionalAuxClasspathEntryList.contains(dirURL)) {
-						//System.out.println("Adding additional aux classpath entry: " + dirURL);
-						additionalAuxClasspathEntryList.add(dirURL);
-					}
-				}
-			}
-			try {
-				long modTime = new File(fileName).lastModified();
-				if (time < modTime) time = modTime;
-				return parseClass(new URL("file:" + fileName));
-			} catch (ClassFormatException e) {
-				throw new ClassFormatException("Invalid class file format for " +
-						fileName + ": " + e.getMessage());
-			}
-		}
-
-		public boolean containsSourceFiles() {
-			return containsSourceFiles;
-		}
-
-		public void close() {
-			// Nothing to do here
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLastModificationTime()
-		 */
-		public long getLastModificationTime() {
-			return time;
-		}
-	}
-
 	public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[]{
-			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
 	};
 
+	/**
+	 * Analysis settings for -effort:less.
+	 */
 	public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -423,20 +76,26 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
 		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
-};
-
-	public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[]{
-			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
 	};
-
+	
+	/**
+	 * Analysis settings for -effort:default.
+	 */
+	public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[]{
+		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
+	};
+	
+	/**
+	 * Analysis settings for -effort:more.
+	 */
 	public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -447,22 +106,31 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
 		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
-};
+	};
+	
+	/**
+	 * Analysis settings for -effort:max.
+	 */
 	public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[]{
-			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true),
 	};
 
+	/**
+	 * Debug tracing.
+	 */
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug");
-	public static final boolean TIMEDEBUG = SystemProperties.getBoolean("findbugs.time");
-	public static final int TIMEQUANTUM = SystemProperties.getInteger("findbugs.time.quantum", 1000);
+
+	// The following don't seem to be used...
+//	public static final boolean TIMEDEBUG = SystemProperties.getBoolean("findbugs.time");
+//	public static final int TIMEQUANTUM = SystemProperties.getInteger("findbugs.time.quantum", 1000);
 
 	/**
 	 * FindBugs home directory.
@@ -482,402 +150,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		knownURLProtocolSet.add("jar");
 	}
 
-	private ErrorCountingBugReporter bugReporter;
-	private boolean relaxedReportingMode;
-	private Project project;
-	private DetectorFactoryCollection detectorFactoryCollection;
-	private UserPreferences userPreferences;
-	private List<IClassObserver> classObserverList;
-	private ExecutionPlan executionPlan;
-	private FindBugsProgress progressCallback;
-	private IClassScreener classScreener;
-	private AnalysisContext analysisContext;
-	private String currentClass;
-	private Map<String,Long> detectorTimings;
-	private boolean useTrainingInput;
-	private boolean emitTrainingOutput;
-	private String trainingInputDir;
-	private String trainingOutputDir;
-	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
-	private String releaseName;
-	private String projectName;
-
-	private int passCount;
-	private String sourceInfoFile;
-
-	/* ----------------------------------------------------------------------
-	 * Public methods
-	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Constructor.
-	 * The setBugReporter() and setProject() methods must be called
-	 * before this object is used.
-	 * 
-	 * @deprecated You use should FindBugs2 instead.
-	 */
-	public @Deprecated FindBugs() {
-
-		this.relaxedReportingMode = false;
-
-		this.classObserverList = new LinkedList<IClassObserver>();
-
-		// Create a no-op progress callback.
-		this.progressCallback = new NoOpFindBugsProgress();
-
-		// Class screener
-		this.classScreener = new ClassScreener();
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param bugReporter the BugReporter object that will be used to report
-	 *                    BugInstance objects, analysis errors, class to source mapping, etc.
-	 * @param project     the Project indicating which files to analyze and
-	 *                    the auxiliary classpath to use; note that the FindBugs
-	 *                    object will create a private copy of the Project object
-	 *                    
-	 * @deprecated You use should FindBugs2 instead.
-	 */
-	public @Deprecated FindBugs(BugReporter bugReporter, Project project) {
-		this();
-		if (bugReporter == null)
-			throw new IllegalArgumentException("null bugReporter");
-		if (project == null)
-			throw new IllegalArgumentException("null project");
-
-		setBugReporter(bugReporter);
-		setProject(project);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setDetectorFactoryCollection(edu.umd.cs.findbugs.DetectorFactoryCollection)
-	 */
-	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection) {
-		this.detectorFactoryCollection = detectorFactoryCollection;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
-	 */
-	public BugReporter getBugReporter() {
-		return bugReporter;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
-	 */
-	public void setBugReporter(BugReporter bugReporter) {
-		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
-		addClassObserver(bugReporter);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project)
-	 */
-	public void setProject(Project project) {
-		this.project = project.duplicate();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
-	 */
-	public Project getProject() {
-		return project;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs.FindBugsProgress)
-	 */
-	public void setProgressCallback(FindBugsProgress progressCallback) {
-		this.progressCallback = progressCallback;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
-	 */
-	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
-		configureFilter(bugReporter, filterFileName, include);
-	}
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addBaselineBugs(java.lang.String)
-	 */
-    public void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException {
-		FindBugs.configureBaselineFilter(bugReporter, baselineBugs);
-		}
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
-	 */
-	public void setUserPreferences(UserPreferences userPreferences) {
-		this.userPreferences = userPreferences;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
-	 */
-	public void addClassObserver(IClassObserver classObserver) {
-		classObserverList.add(classObserver);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs.ClassScreener)
-	 */
-	public void setClassScreener(IClassScreener classScreener) {
-		this.classScreener = classScreener;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
-	 */
-	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
-		this.relaxedReportingMode = relaxedReportingMode;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
-	 */
-	public void enableTrainingOutput(String trainingOutputDir) {
-		this.emitTrainingOutput = true;
-		this.trainingOutputDir = trainingOutputDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
-	 */
-	public void enableTrainingInput(String trainingInputDir) {
-		this.useTrainingInput = true;
-		this.trainingInputDir = trainingInputDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
-	 */
-	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
-		if (settingList != null)
-			this.settingList  = settingList;
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
-	 */
-	public String getReleaseName() {
-		return releaseName;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
-	 */
-	public void setReleaseName(String releaseName) {
-		this.releaseName = releaseName;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
-	 */
-	public void setSourceInfoFile(String sourceInfoFile) {
-		this.sourceInfoFile = sourceInfoFile;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#execute()
-	 */
-	public void execute() throws java.io.IOException, InterruptedException {
-		// Configure the analysis context
-		analysisContext = AnalysisContext.create(bugReporter);
-		// We still need to call analysisContext.initDatabases(), but not until after we have set up the repository.
-		analysisContext.setSourcePath(project.getSourceDirList());
-		if (sourceInfoFile != null) {
-			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
-		}
-
-		// Enable/disable relaxed reporting mode
-		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
-
-		// Enable input/output of interprocedural property databases
-		configureTrainingDatabases(this);
-
-		// Configure analysis features
-		configureAnalysisFeatures();
-
-		// Set the release name and timestamp(s) in the BugCollection (if we are generating one).
-		configureBugCollection(this);
-
-		// Create execution plan
-		try {
-			createExecutionPlan();
-		} catch (OrderingConstraintException e) {
-			IOException ioe = new IOException("Invalid detector ordering constraints");
-			ioe.initCause(e);
-			throw ioe;
-		}
-
-		// Clear the repository of classes
-		analysisContext.clearRepository();
-
-		// Get list of files to analyze.
-		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
-		for (String fileName : project.getFileList()) {
-			archiveWorkList.add(new ArchiveWorkListItem(fileName, true));
-		}
-
-		// Report how many archives/directories/files will be analyzed,
-		// for progress dialog in GUI
-		progressCallback.reportNumberOfArchives(archiveWorkList.size());
-
-		// Keep track of the names of all classes to be analyzed
-		List<String> repositoryClassList = new LinkedList<String>();
-
-		// set the initial repository classpath.
-		setRepositoryClassPath();
-
-		// Record additional entries that should be added to
-		// the aux classpath.  These occur when one or more classes
-		// in a directory or archive are skipped, to ensure that
-		// the skipped classes can still be referenced.
-		List<String> additionalAuxClasspathEntryList = new LinkedList<String>();
-
-		// Add all classes in analyzed archives/directories/files
-		while (!archiveWorkList.isEmpty()) {
-			ArchiveWorkListItem item = archiveWorkList.removeFirst();
-			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList,
-				additionalAuxClasspathEntryList);
-		}
-
-		// Add "extra" aux classpath entries needed to ensure that
-		// skipped classes can be referenced.
-		addCollectionToClasspath(additionalAuxClasspathEntryList);
-
-		// finish up initializing analysisContext
-		analysisContext.initDatabases();
-
-		// Examine all classes for bugs.
-		// Don't examine the same class more than once.
-		// (The user might specify two jar files that contain
-		// the same class.)
-
-		if (DEBUG)
-			detectorTimings = new HashMap<String,Long>();
-
-		Iterator<AnalysisPass> i = executionPlan.passIterator();
-		if (i.hasNext()) {
-		AnalysisPass firstPass = i.next();
-		// Do this to force referenced classes to be loaded
-		Set<JavaClass> allReferencedClasses = analysisContext.getSubtypes().getAllClasses();
-		ArrayList<String> listOfReferencedClasses = new ArrayList<String>(allReferencedClasses.size());
-		for(JavaClass c : allReferencedClasses)
-			listOfReferencedClasses.add(c.getClassName());
-		executeAnalysisPass(firstPass, listOfReferencedClasses);
-
-		analysisContext.clearClassContextCache();
-		}
-		else if (DEBUG) System.err.println("execution plan has no passes");
-
-
-		// Execute each subsequent analysis pass in the execution plan
-		while (i.hasNext()) {
-			AnalysisPass analysisPass = i.next();
-			executeAnalysisPass(analysisPass, repositoryClassList);
-
-			// Clear the ClassContext cache.
-			// It may contain data that should be recomputed on the next pass.
-			analysisContext.clearClassContextCache();
-		}
-
-		// Flush any queued bug reports
-		bugReporter.finish();
-
-		// Flush any queued error reports
-		bugReporter.reportQueuedErrors();
-
-		// Free up memory for reports
-		analysisContext.clearRepository();
-
-		if (false)
-		System.out.println(analysisContext.getClassContextStats());
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
-	 */
-	public String getCurrentClass() {
-		return currentClass;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
-	 */
-	public int getBugCount() {
-		return bugReporter.getBugCount();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
-	 */
-	public int getErrorCount() {
-		return bugReporter.getErrorCount();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
-	 */
-	public int getMissingClassCount() {
-		return bugReporter.getMissingClassCount();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
-	 */
-	public boolean emitTrainingOutput() {
-		return emitTrainingOutput;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
-	 */
-	public UserPreferences getUserPreferences() {
-		if (userPreferences == null)
-			userPreferences = UserPreferences.createDefaultUserPreferences();
-		return userPreferences;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
-	 */
-	public String getTrainingInputDir() {
-		return trainingInputDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
-	 */
-	public String getTrainingOutputDir() {
-		return trainingOutputDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
-	 */
-	public boolean useTrainingInput() {
-		return useTrainingInput;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
-	 */
-	public void setScanNestedArchives(boolean scanNestedArchives) {
-		// Ignore this - we're not really going to try to do this
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
-	 */
-	public void setNoClassOk(boolean noClassOk) {
-		// Ignore for now; only implemented in FindBugs2
-	}
-
 	/**
 	 * Set the FindBugs home directory.
 	 */
@@ -892,22 +164,10 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		return home;
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Private methods
-	 * ---------------------------------------------------------------------- */
-
-	/**
-	 * Configure analysis features.
-	 */
-	private void configureAnalysisFeatures() {
-		for (AnalysisFeatureSetting setting : settingList) {
-			setting.configure(analysisContext);
-		}
-	}
-
 	/**
 	 * Configure training databases.
 	 * 
+	 * @param findBugs the IFindBugsEngine to configure
 	 * @throws IOException
 	 */
 	public static void configureTrainingDatabases(IFindBugsEngine findBugs) throws IOException {
@@ -933,37 +193,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		else {
 			AnalysisContext.currentAnalysisContext().loadDefaultInterproceduralDatabases();
 		}
-	}
-
-	/**
-	 * Create the ExecutionPlan.
-	 * 
-	 * @throws OrderingConstraintException 
-	 */
-	private void createExecutionPlan() throws OrderingConstraintException {
-		executionPlan = new ExecutionPlan();
-
-		// Only enabled detectors should be part of the execution plan
-		executionPlan.setDetectorFactoryChooser(new DetectorFactoryChooser() {
-			HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
-
-			public boolean choose(DetectorFactory factory) {
-				return FindBugs.isDetectorEnabled(FindBugs.this, factory) || forcedEnabled.contains(factory);
-			}
-			public void enable(DetectorFactory factory) {
-				forcedEnabled.add(factory);
-				factory.setEnabledButNonReporting(true);        
-			}
-		});
-
-		// Add plugins
-		for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
-			Plugin plugin = i.next();
-			executionPlan.addPlugin(plugin);
-		}
-
-		// Build the plan
-		executionPlan.build();
 	}
 
 	/**
@@ -1001,385 +230,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 
 	/**
-	 * Based on Project settings, set the classpath to be used
-	 * by the Repository when looking up classes.
-	 */
-	private void setRepositoryClassPath() {
-		// Set aux classpath entries
-		addCollectionToClasspath(project.getAuxClasspathEntryList());
-
-		// Set implicit classpath entries
-		addCollectionToClasspath(project.getImplicitClasspathEntryList());
-
-		// Add system classpath entries
-		String systemClassPath = ClassPath.getClassPath();
-		StringTokenizer tok = new StringTokenizer(systemClassPath, File.pathSeparator);
-		while (tok.hasMoreTokens()) {
-			String entry = tok.nextToken();
-			try {
-				analysisContext.addClasspathEntry(entry);
-			} catch (IOException e) {
-				bugReporter.logError("Warning: could not add URL "  +
-						entry + " to classpath", e);
-			}
-		}
-	}
-
-	/**
-	 * Add all classpath entries in given Collection to the given
-	 * URLClassPathRepository.  Missing entries are not fatal:
-	 * we'll log them as analysis errors, but the analysis can
-	 * continue.
-	 * 
-	 * @param collection classpath entries to add
-	 */
-	private void addCollectionToClasspath(Collection<String> collection) {
-		for (String entry : collection) {
-			try {
-				//repository.addURL(entry);
-				analysisContext.addClasspathEntry(entry);
-			} catch (IOException e) {
-				bugReporter.logError("Warning: could not add URL " +
-						entry + " to classpath", e);
-			}
-		}
-	}
-
-	/**
-	 * Add all classes contained in given file or directory to the BCEL Repository.
-	 *
-	 * @param item                work list item representing the file, which may be a jar/zip
-	 *                            archive, a single class file, or a directory to be recursively
-	 *                            searched for class files
-	 * @param archiveWorkList     work list of archives to analyze: this method
-	 *                            may add to the work list if it finds nested archives
-	 * @param repositoryClassList a List to which all classes found in
-	 *                            the archive or directory are added, so we later know
-	 *                            which files to analyze
-	 */
-	private void scanArchiveOrDirectory(ArchiveWorkListItem item,
-			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList,
-			List<String> additionalAuxClasspathEntryList)
-			throws IOException, InterruptedException {
-
-		String fileName = item.getFileName();
-		ClassProducer classProducer = null;
-
-		try {
-			// Create a URL for the filename.
-			// The protocol defaults to "file" if not explicitly
-			// specified in the filename.
-			String protocol = URLClassPath.getURLProtocol(fileName);
-			if (protocol == null) {
-				protocol = "file";
-				fileName = "file:" + fileName;
-			}
-			URL url = new URL(fileName);
-
-			// Figure out the file extension
-			String fileExtension = null;
-			int lastDot = fileName.lastIndexOf('.');
-			if (lastDot >= 0) {
-				fileExtension = fileName.substring(lastDot);
-			}
-
-			// Create the ClassProducer
-			if (fileExtension != null && URLClassPath.isArchiveExtension(fileExtension))
-				classProducer = new ZipClassProducer(url, archiveWorkList, additionalAuxClasspathEntryList);
-			else if (fileExtension != null && fileExtension.equals(".class"))
-				classProducer = new SingleClassProducer(url);
-			else if (protocol.equals("file")) {
-				// Assume it's a directory
-				fileName = fileName.substring("file:".length());
-				File dir = new File(fileName);
-				if (!dir.isDirectory())
-					throw new IOException("Path " + fileName + " is not an archive, class file, or directory");
-				classProducer = new DirectoryClassProducer(fileName, additionalAuxClasspathEntryList);
-			} else
-				throw new IOException("URL " + fileName + " is not an archive, class file, or directory");
-
-			if (DEBUG || URLClassPathRepository.DEBUG) {
-				System.out.println("Scanning " + url + " for classes");
-			}
-
-			// Load all referenced classes into the Repository
-			for (; ;) {
-				if (Thread.interrupted())
-					throw new InterruptedException();
-				try {
-					JavaClass jclass = classProducer.getNextClass();
-					if (jclass == null)
-						break;
-					if (DEBUG) System.out.println("Scanned " + jclass.getClassName());
-					analysisContext.addApplicationClassToRepository(jclass);
-					repositoryClassList.add(jclass.getClassName());
-				} catch (ClassFormatException e) {
-					if (DEBUG) e.printStackTrace();
-					bugReporter.logError("Invalid classfile format", e);
-				}
-			}
-
-			if (item.isExplicit())
-				progressCallback.finishArchive();
-
-			// If the archive or directory scanned contained source files,
-			// add it to the end of the source path.
-			if (classProducer.containsSourceFiles())
-				project.addSourceDir(fileName);
-			project.addTimestamp(classProducer.getLastModificationTime());
-
-		} catch (IOException e) {
-			// You'd think that the message for a FileNotFoundException would include
-			// the filename, but you'd be wrong.  So, we'll add it explicitly.
-			IOException ioe = new IOException("Could not analyze " + fileName);
-			ioe.initCause(e);
-			throw ioe;
-		} finally {
-			if (classProducer != null) {
-				classProducer.close();
-			}
-		}
-	}
-
-	/**
-	 * Execute a single AnalysisPass.
-	 * 
-	 * @param analysisPass        the AnalysisPass 
-	 * @param repositoryClassList list of application classes in the repository 
-	 * @throws InterruptedException
-	 */
-	private void executeAnalysisPass(AnalysisPass analysisPass, List<String> repositoryClassList) throws InterruptedException {
-		// Callback for progress dialog: analysis is starting
-		progressCallback.startAnalysis(repositoryClassList.size());
-
-		int thisPass = passCount++;
-		if (ExecutionPlan.DEBUG) {
-			System.out.println("************* Analysis pass " + thisPass + " *************");
-			for (Iterator<DetectorFactory> i = analysisPass.iterator(); i.hasNext();) {
-				DetectorFactory factory = i.next();
-				System.out.println("\t" + factory.getFullName());
-			}
-		}
-
-		// Create detectors
-		// XXX: we can only support BCEL-based detectors.
-		Detector[] detectors = analysisPass.instantiateDetectorsInPass(bugReporter);
-
-		// Examine each class in the application
-		Set<String> examinedClassSet = new HashSet<String>();
-		for (String className : repositoryClassList) {
-			if (examinedClassSet.add(className))
-				examineClass(detectors, className);
-		}
-
-		if (DEBUG) {
-			long total = 0;
-			for (Long aLong : detectorTimings.values()) {
-				total += aLong.longValue();
-			}
-			System.out.println();
-			System.out.println("Detector Timings");
-			for (Map.Entry<String, Long> entry : detectorTimings.entrySet()) {
-				String detectorName = entry.getKey();
-				long detectorTime = entry.getValue().longValue();
-				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / total) + ") %");
-			}
-			System.out.println();
-			detectorTimings = new HashMap<String,Long>();
-		}
-
-		// Callback for progress dialog: analysis finished
-		progressCallback.finishPerClassAnalysis();
-
-		// Force any detectors which defer work until all classes have
-		// been seen to do that work.
-		this.reportFinal(detectors);
-
-		AnalysisContext.currentAnalysisContext().updateDatabases(thisPass);
-	}
-
-	/**
-	 * Examine a single class by invoking all of the Detectors on it.
-	 *
-	 * @param detectors    the Detectors to execute on the class
-	 * @param className    the fully qualified name of the class to examine
-	 */
-	private void examineClass(Detector[] detectors, String className) throws InterruptedException {
-		if (DEBUG) System.out.println("Examining class " + className);
-		long entireClassAnalysisStart = 0;
-
-
-		if (TIMEDEBUG || DEBUG)  {
-			entireClassAnalysisStart = System.currentTimeMillis();
-		}
-		this.currentClass = className;
-
-		try {
-			JavaClass javaClass = Repository.lookupClass(className);
-
-			// Notify ClassObservers
-			for (IClassObserver aClassObserver : classObserverList) {
-				ClassDescriptor classDescriptor =
-					DescriptorFactory.instance().getClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
-				aClassObserver.observeClass(classDescriptor);
-			}
-
-			// Create a ClassContext for the class
-			ClassContext classContext = analysisContext.getClassContext(javaClass);
-
-			// Run the Detectors
-			for (Detector detector1 : detectors) {
-				if (Thread.interrupted())
-					throw new InterruptedException();
-				Detector detector = detector1;
-				// MUSTFIX: Evaluate whether this makes a difference
-				if (false && detector instanceof StatelessDetector) {
-						try {
-							detector = (Detector) ((StatelessDetector) detector).clone();
-						} catch (CloneNotSupportedException e) {
-							throw new AssertionError(e);
-						}
-				}
-
-
-				try {
-					long start = 0, end;
-
-
-					if (TIMEDEBUG || DEBUG) {
-						start = System.currentTimeMillis();
-						if (DEBUG) {
-							System.out.println("  running " + detector.getClass().getName());
-
-						}
-					}
-					detector.visitClassContext(classContext);
-
-					if (TIMEDEBUG || DEBUG) {
-						end = System.currentTimeMillis();
-						long delta = end - start;
-						entireClassAnalysisStart += delta;
-						if (delta > TIMEQUANTUM)
-							System.out.println("TIME: " + detector.getClass().getName() + " " + className + " " + delta);
-						if (DEBUG) {
-							String detectorName = detector.getClass().getName();
-							Long total = detectorTimings.get(detectorName);
-							if (total == null)
-								total = delta;
-							else
-								total += delta;
-							detectorTimings.put(detectorName, total);
-						}
-					}
-				} catch (UncheckedAnalysisException e) {
-					reportRecoverableDetectorException(className, detector, e);
-				} catch (ArrayIndexOutOfBoundsException e) {
-					reportRecoverableDetectorException(className, detector, e);
-				} catch (ClassCastException e) {
-					reportRecoverableDetectorException(className, detector, e);
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			// This should never happen unless there are bugs in BCEL.
-			bugReporter.reportMissingClass(e);
-			reportRecoverableException(className, e);
-		} catch (ClassFormatException e) {
-			reportRecoverableException(className, e);
-		}
-		catch (RuntimeException re) {
-			RuntimeException annotatedEx;
-			try {
-				String sep = SystemProperties.getProperty("line.separator");
-				Constructor<? extends RuntimeException> c = re.getClass().getConstructor(new Class[] { String.class });
-				String msg = re.getMessage();
-				msg = sep + "While finding bugs in class: " + className + ((msg == null) ? "" : (sep + msg));
-				annotatedEx = c.newInstance(new Object[] {msg});
-				annotatedEx.setStackTrace(re.getStackTrace());
-			} catch (RuntimeException e) {
-				throw re;
-			} catch (Exception e) {
-				throw re;
-			}
-			throw annotatedEx;
-		}
-		if (TIMEDEBUG || DEBUG) {
-			long classSetupTime = System.currentTimeMillis() - entireClassAnalysisStart;
-			if (classSetupTime > TIMEQUANTUM)
-				System.out.println("TIME:  setup " + className + " " + classSetupTime); 
-		}
-		progressCallback.finishClass();
-	}
-
-	private void reportRecoverableException(String className, Exception e) {
-		if (DEBUG) {
-			e.printStackTrace();
-		}
-		bugReporter.logError("Exception analyzing " + className, e);
-	}
-
-	private void reportRecoverableDetectorException(String className, Detector detector, Exception e) {
-		if (DEBUG) {
-			e.printStackTrace();
-		}
-		bugReporter.logError("Exception analyzing " + className +
-			" using detector " + detector.getClass().getName(), e);
-	}
-
-	/**
-	 * Call report() on all detectors, to give them a chance to
-	 * report any accumulated bug reports.
-	 */
-	private void reportFinal(Detector[] detectors) throws InterruptedException {
-		for (Detector detector : detectors) {
-			if (Thread.interrupted())
-				throw new InterruptedException();
-			detector.report();
-		}
-	}
-
-	/**
-	 * Parse the data for a class to create a JavaClass object.
-	 */
-	private static JavaClass parseClass(String archiveName, InputStream in, String fileName)
-			throws IOException {
-		if (DEBUG) System.out.println("About to parse " + fileName + " in " + archiveName);
-		return parseFromStream(in, fileName);
-	}
-
-	/**
-	 * Parse the data for a class to create a JavaClass object.
-	 */
-	private static JavaClass parseClass(URL url) throws IOException {
-		if (DEBUG) System.out.println("About to parse " + url.toString());
-		InputStream in = null;
-		try {
-			in = url.openStream();
-			return parseFromStream(in, url.toString());
-		} finally {
-			if (in != null)
-				in.close();
-		}
-	}
-
-	/**
-	 * Parse an input stream to produce a JavaClass object.
-	 * Makes sure that the input stream is closed no
-	 * matter what.
-	 */
-	private static JavaClass parseFromStream(InputStream in, String fileName) throws IOException {
-		try {
-			return new ClassParser(in, fileName).parse();
-		} finally {
-			try {
-				in.close();
-			} catch (IOException ignore) {
-				// Ignore
-			}
-		}
-	}
-
-
-	/**
 	 * Process -bugCategories option.
 	 * 
 	 * @param userPreferences
@@ -1388,7 +238,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 *            comma-separated list of bug categories
 	 * @return Set of categories to be used
 	 */
-	static Set<String> handleBugCategories(UserPreferences userPreferences, String categories) {
+	public static Set<String> handleBugCategories(UserPreferences userPreferences, String categories) {
 		// Parse list of bug categories
 		Set<String> categorySet = new HashSet<String>();
 		StringTokenizer tok = new StringTokenizer(categories, ",");
@@ -1396,86 +246,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			categorySet.add(tok.nextToken());
 		}
 
-//		// Enable only those detectors that can emit those categories
-//		// (and the ones that produce unknown bug patterns, just to be safe).
-//		// Skip disabled detectors, though.
-//		for (Iterator<DetectorFactory> i = DetectorFactoryCollection.instance().factoryIterator(); i.hasNext();) {
-//			DetectorFactory factory = i.next();
-//			if (!factory.isEnabledForCurrentJRE())
-//				continue;
-//			Collection<BugPattern> reported = factory.getReportedBugPatterns();
-//			boolean enable = false;
-//			if (reported.isEmpty()) {
-//				// Don't know what bug patterns are produced by this detector
-//				if (DEBUG) System.out.println("Unknown bug patterns for " + factory.getShortName());
-//				enable = true;
-//			} else {
-//				for (Iterator<BugPattern> j = reported.iterator(); j.hasNext();) {
-//					BugPattern bugPattern = j.next();
-//					if (categorySet.contains(bugPattern.getCategory())) {
-//						if (DEBUG)
-//							System.out.println("MATCH ==> " + categorySet +
-//							        " -- " + bugPattern.getCategory());
-//						enable = true;
-//						break;
-//					}
-//				}
-//			}
-//			if (DEBUG && enable) {
-//				System.out.println("Enabling " + factory.getShortName());
-//			}
-//			userPreferences.enableDetector(factory, enable);
-//		}
-
 		return categorySet;
 	}
-
-	/* ----------------------------------------------------------------------
-	 * main() method
-	 * ---------------------------------------------------------------------- */
-/*
-	public static void main(String[] argv) {
-		try {
-			TextUICommandLine commandLine = new TextUICommandLine();
-			FindBugs findBugs = createEngine(commandLine, argv);
-
-			try {
-				runMain(findBugs, commandLine);
-			} catch (RuntimeException e) {
-				System.err.println("Fatal exception: " + e.toString());
-				String currentClass = findBugs.getCurrentClass();
-				if (currentClass != null) {
-					System.err.println("\tWhile analyzing " + currentClass);
-				}
-				e.printStackTrace();
-				System.err.println("Please report the failure to " + Version.SUPPORT_EMAIL);
-				System.exit(1);
-			}
-
-		} catch (java.io.IOException e) {
-			// Probably a missing file
-			if (DEBUG) {
-				e.printStackTrace();
-			}
-			System.err.println("IO Error: " + e.getMessage());
-			System.exit(1);
-		} catch (FilterException e) {
-			System.err.println("Filter exception: " + e.getMessage());
-		} catch (IllegalArgumentException e) {
-			// Probably an illegal command line argument
-			System.err.println("Illegal argument: " + e.getMessage());
-			System.exit(1);
-		}
-	}
-
-	private static FindBugs createEngine(TextUICommandLine commandLine, String[] argv)
-			throws java.io.IOException, FilterException {
-
-		FindBugs findBugs = new FindBugs();
-		processCommandLine(commandLine, argv, findBugs);
-		return findBugs;
-	}
-*/
 	
 	/**
 	 * Process the command line.
@@ -1517,6 +289,11 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		commandLine.configureEngine(findBugs);
 	}
 
+	/**
+	 * Show -help message.
+	 * 
+	 * @param commandLine
+	 */
 	@SuppressWarnings("DM_EXIT")
 	public static void showHelp(TextUICommandLine commandLine) {
 		showSynopsis();
@@ -1525,6 +302,15 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		System.exit(1);
 	}
 
+	/**
+	 * Given a fully-configured IFindBugsEngine and the TextUICommandLine
+	 * used to configure it, execute the analysis.
+	 * 
+	 * @param findBugs    a fully-configured IFindBugsEngine
+	 * @param commandLine the TextUICommandLine used to configure the IFindBugsEngine
+	 * @throws java.io.IOException
+	 * @throws java.lang.RuntimeException
+	 */
 	@SuppressWarnings("DM_EXIT")
 	public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine)
 			throws java.io.IOException, RuntimeException {
@@ -1550,11 +336,11 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (commandLine.setExitCode()) {
 			int exitCode = 0;
 			if (errorCount > 0)
-				exitCode |= ERROR_FLAG;
+				exitCode |= ExitCodes.ERROR_FLAG;
 			if (missingClassCount > 0)
-				exitCode |= MISSING_CLASS_FLAG;
+				exitCode |= ExitCodes.MISSING_CLASS_FLAG;
 			if (bugCount > 0)
-				exitCode |= BUGS_FOUND_FLAG;
+				exitCode |= ExitCodes.BUGS_FOUND_FLAG;
 
 			System.exit(exitCode);
 		}
@@ -1567,15 +353,32 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		showCommandLineOptions(new TextUICommandLine());
 	}
 
+	/**
+	 * Print command line options synopses to stdout.
+	 * 
+	 * @param commandLine the TextUICommandLine whose options should be printed
+	 */
 	public static void showCommandLineOptions(TextUICommandLine commandLine) {
 		System.out.println("Command line options:");
 		commandLine.printUsage(System.out);
 	}
 
+	/**
+	 * Show the overall FindBugs command synopsis.
+	 */
 	public static void showSynopsis() {
 		System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
 	}
 
+	/**
+	 * Configure the (bug instance) Filter for the given DelegatingBugReporter.
+	 * 
+	 * @param bugReporter     a DelegatingBugReporter
+	 * @param filterFileName  filter file name
+	 * @param include         true if the filter is an include filter, false if it's an exclude filter
+	 * @throws java.io.IOException
+	 * @throws edu.umd.cs.findbugs.filter.FilterException
+	 */
 	public static void configureFilter(DelegatingBugReporter bugReporter, String filterFileName, boolean include)
 			throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
@@ -1583,12 +386,22 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
 		bugReporter.setDelegate(filterBugReporter);
 	}
+	
+	/**
+	 * Configure a baseline bug instance filter.
+	 * 
+	 * @param bugReporter        a DelegatingBugReporter
+	 * @param baselineFileName   filename of baseline Filter
+	 * @throws java.io.IOException
+	 * @throws org.dom4j.DocumentException
+	 */
 	public static void configureBaselineFilter(DelegatingBugReporter bugReporter, String baselineFileName)
-	throws IOException, DocumentException  {
+			throws IOException, DocumentException  {
 		BugReporter origBugReporter = bugReporter.getDelegate();
 		BugReporter filterBugReporter = new ExcludingHashesBugReporter(origBugReporter, baselineFileName);
 		bugReporter.setDelegate(filterBugReporter);
 	}
+	
 	/**
 	 * Configure the BugCollection (if the BugReporter being used
 	 * is constructing one).
@@ -1616,29 +429,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			}
 
 		}
-	}
-
-	/* (non-Javadoc)
-		* @see edu.umd.cs.findbugs.IFindBugsEngine#getProjectName()
-		*/
-	public String getProjectName() {
-		return projectName;
-	}
-
-	/* (non-Javadoc)
-		* @see edu.umd.cs.findbugs.IFindBugsEngine#setProjectName(java.lang.String)
-		*/
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
-
-	}
-
-	/* (non-Javadoc)
-		* @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
-		*/
-	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
-		// TODO Auto-generated method stub
-
 	}
 }
 
