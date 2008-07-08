@@ -66,8 +66,7 @@ The name FindBugs and the FindBugs logo are trademarked by the University of Mar
 <para> &FindBugs;&trade; is a program to find bugs in Java programs.  It looks for instances
 of "bug patterns" --- code instances that are likely to be errors.</para>
 
-<para> This document describes version @VERSION@ of &FindBugs;. This is an
-early release of the tool, so you may find problems with it. We
+<para> This document describes version @VERSION@ of &FindBugs;.We
 are very interested in getting your feedback on &FindBugs;. Please visit
 the <ulink url="@WEBSITE@">&FindBugs; web page</ulink> for
 the latest information on &FindBugs;, contact information, and support resources such
@@ -964,7 +963,7 @@ choose the <menuchoice><guimenu>File</guimenu><guimenuitem>New Project</guimenui
 menu item.  You will see a dialog which looks like this:
 <mediaobject>
 <imageobject>
-<imagedata fileref="project-dialog.png" />
+<imagedata fileref="project-dialog.png"  />
 </imageobject>
 </mediaobject>
 </para>
@@ -1017,7 +1016,7 @@ few minutes.
 When the analysis completes, you will see a screen like the following:
 <mediaobject>
   <imageobject>
-    <imagedata fileref="example-details.png" />
+    <imagedata fileref="example-details.png"  />
   </imageobject>
 </mediaobject>
 </para>
@@ -3304,7 +3303,7 @@ The reductions in builds 13 and 14 came after Sun was notified about the bugs fo
 	</para>
 <mediaobject>
 <imageobject>
-<imagedata fileref="infiniteRecursiveLoops.png" />
+<imagedata fileref="infiniteRecursiveLoops.png"  />
 </imageobject>
 </mediaobject>
 

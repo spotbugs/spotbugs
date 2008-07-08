@@ -546,13 +546,21 @@
 	<target name="docs" depends="classes,version,bugdesc,checkdocs" unless="docs.uptodate">
 		<loadproperties srcFile="${doc.props.file}"/>
 
+		<!-- Generate HTML docs (the website). -->
 		<antcall target="generatedocs">
 			<param name="docoutput.dir" value="${doc.dir}"/>
 			<param name="googleanalytics.fragment" value=""/>
 		</antcall>
+		
+		<!-- Generate HTML version of manual. -->
 		<antcall target="generatemanual">
 			<param name="docoutput.dir" value="${doc.dir}"/>
 			<param name="googleanalytics.fragment" value=""/>
+		</antcall>
+		
+		<!-- Generate PDF version of manual. -->
+		<antcall target="generatepdfmanual">
+			<param name="docoutput.dir" value="${doc.dir}"/>
 		</antcall>
 	</target>
 
@@ -659,6 +667,7 @@
 			<filter token="WEBSITE" value="${findbugs.website}"/>
 			<filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
 			<filter token="HTML_XSL_STYLESHEET" value="${xsl.stylesheet.home}/html/chunk.xsl" />
+			<filter token="FO_XSL_STYLESHEET" value="${xsl.stylesheet.home}/fo/docbook.xsl"/>
 <!--
 			<filter token="ECLIPSE_XSL_STYLESHEET" value="${eclipse.xsl.stylesheet}" />
 -->
@@ -693,6 +702,7 @@
 						(must be a child of the project root directory)
 	-->
 	<target name="generatemanual">
+		<echo>Generating HTML version of manual</echo>
 		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
 		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
 			<classpath>
@@ -702,6 +712,36 @@
 			<arg value="manual.xml" />
 			<arg value="manual.xsl" />
 		</java>
+	</target>
+	
+	<!--
+		Format the manual as PDF.
+		Apache FOP must be installed - http://xmlgraphics.apache.org/fop/
+		The fop.home property should indicate where Apache FOP is installed.
+
+		Input Params:
+		docoutput.dir - the directory containing the generated HTML/XML/XSL files
+						(must be a child of the project root directory)
+	-->
+	<target name="generatepdfmanual" if="doc.generate.pdf">
+		<echo>Generating PDF version of manual</echo>
+		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
+		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+			<classpath>
+				<pathelement location="${saxon.home}/saxon.jar"/>
+				<pathelement path="${java.class.path}"/>
+			</classpath>
+			<arg value="-o"/>
+			<arg value="manual.fo"/>
+			<arg value="manual.xml" />
+			<arg value="manual-fo.xsl" />
+		</java>
+		<exec dir="${docoutput.dir}" executable="${fop.home}/fop">
+			<arg value="-fo"/>
+			<arg value="manual.fo"/>
+			<arg value="-pdf"/>
+			<arg value="manual.pdf"/>
+		</exec>
 	</target>
 	
 	<!-- Generate jnlp jars -->
