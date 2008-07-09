@@ -127,4 +127,8 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 	public File getSaveFile() {
 		return saveFile;
 	}
+	
+	public void setSaveFile(File saveFile) {
+		this.saveFile = saveFile;
+	}
 }

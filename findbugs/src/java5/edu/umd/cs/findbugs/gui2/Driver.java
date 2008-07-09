@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.gui2;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import java.io.File;
+import java.util.Locale;
 
 /**
  * This is where it all begins
@@ -49,7 +51,26 @@ public class Driver {
 		splash.setVisible(true);
 		
 		commandLine = new GUI2CommandLine();
-		int remainingArgs = commandLine.parse(args, 0, 1, USAGE);
+		int numParsed = commandLine.parse(args, 0, 1, USAGE);
+
+		//
+		// See if an argument filename was specified after the parsed options/switches.
+		//
+		if (numParsed < args.length) {
+			String arg = args[numParsed];
+			String argLowerCase = arg.toLowerCase(Locale.ENGLISH);
+			if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
+				// Project file specified
+				commandLine.loadProject(arg);
+			} else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".fba")) {
+				// Saved analysis results specified
+				commandLine.setSaveFile(new File(arg));
+			} else {
+				System.out.println("Unknown argument: " + arg);
+				commandLine.printUsage(System.out);
+				System.exit(1);
+			}
+		}
 
 		if (commandLine.getDocking()) {
 			// make sure docking runtime support is available

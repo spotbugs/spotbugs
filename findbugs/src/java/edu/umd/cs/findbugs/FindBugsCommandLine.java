@@ -121,10 +121,20 @@ public abstract class FindBugsCommandLine extends CommandLine {
 
 			DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
-			project = Project.readProject(argument);
-			projectLoadedFromFile = true;
+			loadProject(argument);
 		} else {
 			throw new IllegalStateException();
 		}
+	}
+
+	/**
+	 * Load given project file.
+	 * 
+	 * @param arg name of project file
+	 * @throws java.io.IOException
+	 */
+	public void loadProject(String arg) throws IOException {
+		project = Project.readProject(arg);
+		projectLoadedFromFile = true;
 	}
 }
