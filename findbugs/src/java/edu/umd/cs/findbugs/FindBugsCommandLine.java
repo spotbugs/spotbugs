@@ -43,7 +43,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	/**
 	 * Project to analyze.
 	 */
-	protected Project project = new Project();
+	protected Project project;
 
 	/**
 	 * Constructor.
