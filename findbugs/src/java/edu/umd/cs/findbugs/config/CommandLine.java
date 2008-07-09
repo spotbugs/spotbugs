@@ -181,12 +181,12 @@ public abstract class CommandLine {
 	 * Calls parse(String[]).
 	 * 
 	 * @param argv     command line arguments
-	 * @param minArgs  minimum number of arguments remaining after
+	 * @param minArgs  allowed minimum number of arguments remaining after
 	 *                 switches/options are parsed
-	 * @param maxArgs  maximum number of arguments remaining after
+	 * @param maxArgs  allowed maximum number of arguments remaining after
 	 *                 switches/options are parsed
 	 * @param usage    usage synopsis
-	 * @return number of arguments remaining after parsing switches/options
+	 * @return number of arguments parsed
 	 */
 	@SuppressWarnings("DM_EXIT")
 	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
