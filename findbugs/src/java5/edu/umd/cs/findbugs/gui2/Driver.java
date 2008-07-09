@@ -105,7 +105,7 @@ public class Driver {
 			MainFrame.getInstance().setProject(commandLine.getProject());
 			MainFrame.getInstance().newProject();
 			
-			//MainFrame.getInstance().redoAnalysis();
+			MainFrame.getInstance().redoAnalysis();
 		}
 	}
 	
