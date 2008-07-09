@@ -304,6 +304,47 @@
 		</jar>
 	</target>
 	
+	<!--
+		Create one giant executable Jar file containing
+		Findbugs, textui and gui, detectors, and all required
+		libraries.
+	-->
+	<target name="fulljar" depends="classes,validate,version">
+		<jar destfile="${jar.dir}/findbugs-full-${release.number}.jar" manifest="etc/MANIFEST-findbugs-full.MF">
+			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="${pkg.base}/tools/**"/>
+				<exclude name="${pkg.base}/antTask/**"/>
+				<include name="**/*.class"/>
+				<include name="**/*.properties"/>
+				<include name="**/*.db"/>
+				<include name="**/*.xsl"/>
+				<include name="${pkg.base}/sourceViewer/**/*.class"/>
+				<include name="${pkg.base}/gui/**/*.png"/>
+				<include name="${pkg.base}/gui/**/*.html"/>
+				<include name="${pkg.base}/gui2/**/*.png"/>
+				<include name="${pkg.base}/gui2/**/*.html"/>
+			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="findbugs.xml"/>
+				<include name="messages*.xml"/>
+			</fileset>
+
+			<zipfileset src="${jar.dir}/bcel.jar" excludes="META-INF/**"/>
+			
+			<zipfileset src="${jar.dir}/asm-3.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/asm-analysis-3.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/asm-commons-3.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/asm-tree-3.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/asm-util-3.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/asm-xml-3.1.jar" excludes="META-INF/**"/>
+			
+			<zipfileset src="${jar.dir}/dom4j-1.6.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/jaxen-1.1.1.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**"/>
+		</jar>
+	</target>
+	
 	<!-- See if front-end scripts need to be regenerated. -->
 	<target name="checkscripts">
 		<condition property="scripts.uptodate">

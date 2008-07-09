@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006-2007 University of Maryland
+ * Copyright (C) 2006-2008 University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.engine.ClassParser;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserInterface;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Archive;
+import edu.umd.cs.findbugs.util.ClassPathUtil;
 
 /**
  * Implementation of IClassPathBuilder.
@@ -268,12 +269,45 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		if (!foundJavaLangObject) {
 			processWorkList(classPath, buildSystemCodebaseList(), progress);
 		}
+		
+		// If we're running findbugs-full.jar, IT contains the contents
+		// of jsr305.jar and annotations.jar.  So, add it to the classpath.
+		if (runningFindBugsFullJar()) {
+			processWorkList(classPath, buildFindBugsFullJarCodebaseList(), progress);
+			return;
+		}
+		
+		// Not running findbugs-full.jar: try to find jsr305.jar and annotations.jar.
+		
 		if (!foundFindBugsAnnotations) {
 			processWorkList(classPath, buildFindBugsAnnotationCodebaseList(), progress);
 		}
 		if (!foundJSR305Annotations) {
 			processWorkList(classPath, buildJSR305AnnotationsCodebaseList(), progress);
 		}
+	}
+	
+	private boolean runningFindBugsFullJar() {
+		String findbugsFullJar =
+			ClassPathUtil.findCodeBaseInClassPath("findbugs-full.jar", SystemProperties.getProperty("java.class.path"));
+		return findbugsFullJar != null;
+	}
+	
+	private LinkedList<WorkListItem> buildFindBugsFullJarCodebaseList() {
+		String findbugsFullJar =
+			ClassPathUtil.findCodeBaseInClassPath("findbugs-full.jar", SystemProperties.getProperty("java.class.path"));
+
+		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+		if (findbugsFullJar != null) {
+			//
+			// Found findbugs-full.jar: add it to the aux classpath.
+			// (This is a bit weird, since we only want to resolve a subset
+			// of its classes.)
+			//
+			ICodeBaseLocator loc = new FilesystemCodeBaseLocator(findbugsFullJar);
+			workList.addLast(new WorkListItem(loc, false, ICodeBase.IN_SYSTEM_CLASSPATH));
+		}
+		return workList;
 	}
 
 	/**

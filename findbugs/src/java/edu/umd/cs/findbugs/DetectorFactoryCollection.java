@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.util.ClassPathUtil;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects
@@ -229,6 +232,11 @@ public class DetectorFactoryCollection {
 		pluginList = arr.toArray(new URL[arr.size()]);
 
 	}
+	
+	private static final Pattern[] findbugsJarNames = {
+		Pattern.compile("findbugs\\.jar$"),
+		Pattern.compile("findbugs-full-.*\\.jar$"),
+	};
 
 	/**
 	 * See if the location of ${findbugs.home} can be
@@ -238,13 +246,12 @@ public class DetectorFactoryCollection {
 	 *         we can't figure it out
 	 */
 	private String inferFindBugsHome() {
-		String classpath = SystemProperties.getProperty("java.class.path", "");
-		StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);
-		while (tok.hasMoreTokens()) {
-			String t = tok.nextToken();
-			File f = new File(t);
-			if (f.getName().equals("findbugs.jar")) {
-				File libDir = f.getParentFile();
+		for (Pattern jarNamePattern : findbugsJarNames) {
+			String findbugsJarCodeBase =
+				ClassPathUtil.findCodeBaseInClassPath(jarNamePattern, SystemProperties.getProperty("java.class.path"));
+			if (findbugsJarCodeBase != null) {
+				File findbugsJar = new File(findbugsJarCodeBase);
+				File libDir = findbugsJar.getParentFile();
 				if (libDir.getName().equals("lib")) {
 					String fbHome = libDir.getParent();
 					FindBugs.setHome(fbHome);
@@ -253,6 +260,7 @@ public class DetectorFactoryCollection {
 			}
 		}
 		return null;
+		
 	}
 
 	public void ensureLoaded() {
