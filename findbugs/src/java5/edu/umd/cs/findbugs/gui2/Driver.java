@@ -101,7 +101,7 @@ public class Driver {
 		if(commandLine.getSaveFile() != null) {
 			MainFrame.getInstance().openAnalysis(commandLine.getSaveFile(), SaveType.XML_ANALYSIS);
 		}
-		else if(commandLine.getProject() != null) {
+		else if(commandLine.isProjectLoadedFromFile()) {
 			MainFrame.getInstance().setProject(commandLine.getProject());
 			MainFrame.getInstance().newProject();
 			

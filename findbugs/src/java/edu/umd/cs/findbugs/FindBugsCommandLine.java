@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
+import javax.annotation.Nonnull;
 
 /**
  * Base class for FindBugs command line classes.
@@ -43,7 +44,12 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	/**
 	 * Project to analyze.
 	 */
-	protected Project project;
+	protected Project project = new Project();
+	
+	/**
+	 * True if project was initialized by loading a project file.
+	 */
+	protected boolean projectLoadedFromFile;
 
 	/**
 	 * Constructor.
@@ -64,10 +70,13 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		return settingList;
 	}
 
-	public Project getProject() {
+	public @Nonnull Project getProject() {
 		return project;
 	}
 
+	public boolean isProjectLoadedFromFile() {
+		return projectLoadedFromFile;
+	}
 
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
@@ -113,6 +122,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 			DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
 			project = Project.readProject(argument);
+			projectLoadedFromFile = true;
 		} else {
 			throw new IllegalStateException();
 		}
