@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2005,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -344,7 +344,7 @@ public class ObligationAnalysis
 		if (last == null)
 			return null;
 
-		Type type;
+		Type type = null;
 
 		short opcode = last.getInstruction().getOpcode();
 		switch (opcode) {
@@ -356,7 +356,9 @@ public class ObligationAnalysis
 
 			Location location = new Location(last, sourceBlock);
 			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-			type = typeFrame.getTopValue();
+			if (typeFrame.isValid()) {
+				type = typeFrame.getTopValue();
+			}
 			break;
 
 /*
@@ -367,13 +369,11 @@ public class ObligationAnalysis
 			 break;
 
  */
-
-		default:
-			return null;
 		}
 
-		if (!(type instanceof ObjectType))
+		if (type == null || !(type instanceof ObjectType)) {
 			return null;
+		}
 
 		try {
 			return factory.getObligationByType((ObjectType) type);

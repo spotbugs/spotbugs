@@ -578,8 +578,8 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"
             speed="slow"
-            reports="OS_OPEN_STREAM"
-			hidden="true"
+            reports="OBL_LEAKED_OBLIGATION"
+            hidden="true"
             disabled="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" 
@@ -1133,4 +1133,5 @@
   <BugPattern abbrev="TQ" type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
+  <BugPattern abbrev="OBL" type="OBL_LEAKED_OBLIGATION" category="CORRECTNESS"/>
 </FindbugsPlugin>

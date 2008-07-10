@@ -7047,6 +7047,19 @@ public @NonNegative Integer example(@Negative Integer value) {
       ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="OBL_LEAKED_OBLIGATION">
+	  <ShortDescription>Method may fail to clean up stream or resource</ShortDescription>
+	  <LongDescription>Method {1} may fail to clean up stream or resource of type {3}</LongDescription>
+	  <Details>
+		  <![CDATA[
+		  <p>
+		  This method may fail to clean up (close, dispose of) a stream or other
+		  resource.
+		  </p>
+		  ]]>
+	  </Details>
+  </BugPattern>
   
   <!--
   **********************************************************************
@@ -7176,6 +7189,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="GC">Suspicious calls to generic container methods</BugCode>
   <BugCode abbrev="STCAL">Static use of type Calendar or DateFormat</BugCode>
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
+  <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   </MessageCollection>
 
 

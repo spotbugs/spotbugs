@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
+import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.PolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
@@ -121,13 +122,13 @@ public class FindUnsatisfiedObligation implements Detector {
 
 			ObligationAnalysis analysis =
 				new ObligationAnalysis(dfs, typeDataflow, methodGen, factory, database, bugReporter);
-			Dataflow<StateSet, ObligationAnalysis> dataflow =
-				new Dataflow<StateSet, ObligationAnalysis>(cfg, analysis);
+			ObligationDataflow dataflow =
+				new ObligationDataflow(cfg, analysis);
 
 			Profiler profiler = Profiler.getInstance();
 			profiler.start(analysis.getClass());
 			try {
-			dataflow.execute();
+				dataflow.execute();
 			} finally {
 				profiler.end(analysis.getClass());
 			}
