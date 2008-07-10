@@ -920,9 +920,9 @@ public class FindBugs2 implements IFindBugsEngine {
 
 							continue;
 						}
-						if (false && DEBUG) {
+						if (DEBUG) {
 							System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor + ", huge:" + isHuge + ", isNonReportingFirstPass: " + isNonReportingFirstPass);
-							System.out.println("foo: " + NonReportingDetector.class.isAssignableFrom(detector.getClass()) + ", bar: " + detector.getClass().getName());
+							//System.out.println("foo: " + NonReportingDetector.class.isAssignableFrom(detector.getClass()) + ", bar: " + detector.getClass().getName());
 						}
 						try {
 							profiler.start(detector.getClass());
