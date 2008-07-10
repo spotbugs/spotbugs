@@ -166,6 +166,7 @@ public class DiscoverSourceDirectories {
 				return pathname.isDirectory();
 			}
 		});
+		rfs.search();
 		progress.doneRecursiveDirectorySearch();
 		List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
 		
