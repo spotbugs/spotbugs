@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2005 University of Maryland
+ * Copyright (C) 2005,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,22 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
@@ -45,6 +43,9 @@ import edu.umd.cs.findbugs.ba.obl.PolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.bcel.CFGDetector;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -58,7 +59,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * 
  * @author David Hovemeyer
  */
-public class FindUnsatisfiedObligation implements Detector {
+public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetector {
 
 	private static final boolean ENABLE = SystemProperties.getBoolean("oa.enable");
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
@@ -75,48 +76,20 @@ public class FindUnsatisfiedObligation implements Detector {
 		this.database = buildDatabase();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
-	 */
-	public void visitClassContext(ClassContext classContext) {
-		if (!ENABLE) {
-			return;
-		}
-
-		// FIXME: prescreen class
-
-		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (Method method : methodList) {
-			if (DEBUG_METHOD != null && !method.getName().equals(DEBUG_METHOD))
-				continue;
-
-			MethodGen methodGen = classContext.getMethodGen(method);
-
-			if (methodGen != null) {
-				// FIXME: prescreen method
-				analyzeMethod(classContext, method);
-			}
-		}
-	}
-
-	/**
-	 * Analyze given method for unsatisfied obligations.
-	 * 
-	 * @param classContext the ClassContext of the class containing the method
-	 * @param method       the method
-	 */
-	private void analyzeMethod(ClassContext classContext, Method method) {
-		MethodGen methodGen = classContext.getMethodGen(method);
-		if (methodGen == null) return;
+	@Override
+	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
 		if (DEBUG) {
-			System.out.println("*** Analyzing method " +
-					SignatureConverter.convertMethodSignature(methodGen));
+			System.out.println("*** Analyzing method " + methodDescriptor);
 		}
 
 		try {
-			CFG cfg = classContext.getCFG(method);
-			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			IAnalysisCache analysisCache = Global.getAnalysisCache();
+			
+			MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
+			DepthFirstSearch dfs = 
+				analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
+			TypeDataflow typeDataflow =
+				analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
 			assert typeDataflow != null;
 
 			ObligationAnalysis analysis =
@@ -151,18 +124,14 @@ public class FindUnsatisfiedObligation implements Detector {
 
 			for (Obligation obligation : leakedObligationSet) {
 				bugReporter.reportBug(new BugInstance(this, "OBL_LEAKED_OBLIGATION", NORMAL_PRIORITY)
-						.addClassAndMethod(methodGen, classContext.getJavaClass().getSourceFileName())
+						.addClassAndMethod(methodDescriptor)
 						.addClass(obligation.getClassName()).describe("CLASS_REFTYPE")
 				);
 			}
 		} catch (CFGBuilderException e) {
-			bugReporter.logError(
-					"Error building CFG for " +
-					SignatureConverter.convertMethodSignature(methodGen), e);
+			bugReporter.logError("Error building CFG for " + methodDescriptor, e);
 		} catch (DataflowAnalysisException e) {
-			bugReporter.logError(
-					"ObligationAnalysis error while analyzing " +
-					SignatureConverter.convertMethodSignature(methodGen), e);
+			bugReporter.logError("ObligationAnalysis error while analyzing " + methodDescriptor, e);
 		}
 	}
 
