@@ -189,7 +189,9 @@ public class DiscoverSourceDirectories {
 			}
 			findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
 		} finally {
-			classPath.close();
+			if (classPath != null) {
+				classPath.close();
+			}
 		}
 	}
 
