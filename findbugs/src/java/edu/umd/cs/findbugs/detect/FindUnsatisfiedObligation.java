@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
@@ -151,7 +150,7 @@ public class FindUnsatisfiedObligation implements Detector {
 			}
 
 			for (Obligation obligation : leakedObligationSet) {
-				bugReporter.reportBug(new BugInstance(this, "OS_OPEN_STREAM", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "OBL_LEAKED_OBLIGATION", NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, classContext.getJavaClass().getSourceFileName())
 						.addClass(obligation.getClassName()).describe("CLASS_REFTYPE")
 				);
