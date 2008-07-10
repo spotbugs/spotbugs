@@ -123,36 +123,82 @@ public class DiscoverSourceDirectories {
 	private Progress progress;
 	private List<String> discoveredSourceDirectoryList;
 
+	/**
+	 * Constructor.
+	 */
 	public DiscoverSourceDirectories() {
 		this.errorLogger = new NoOpErrorLogger();
 		this.progress = new NoOpProgress();
 		this.discoveredSourceDirectoryList = new LinkedList<String>();
 	}
 
+	/**
+	 * Set the Project for which we want to find source directories.
+	 * 
+	 * @param project Project for which we want to find source directories
+	 */
 	public void setProject(Project project) {
 		this.project = project;
 	}
 
+	/**
+	 * Set the "root" source directory: we expect all of the
+	 * actual source directories to be underneath it.
+	 * 
+	 * @param rootSourceDirectory the root source directory
+	 */
 	public void setRootSourceDirectory(String rootSourceDirectory) {
 		this.rootSourceDirectory = rootSourceDirectory;
 	}
 
+	/**
+	 * Set whether or not to scan the project for nested archives (i.e.,
+	 * if there is a WAR or EAR file that contains jar files inside it.)
+	 * Default is false.
+	 * 
+	 * @param scanForNestedArchives true if nested archives should be scanned,
+	 *                              false otherwise
+	 */
 	public void setScanForNestedArchives(boolean scanForNestedArchives) {
 		this.scanForNestedArchives = scanForNestedArchives;
 	}
 
+	/**
+	 * Set the error logger to use to report errors during scanning.
+	 * By default, a no-op error logger is used.
+	 * 
+	 * @param errorLogger error logger to use to report errors during scanning
+	 */
 	public void setErrorLogger(IErrorLogger errorLogger) {
 		this.errorLogger = errorLogger;
 	}
 
+	/**
+	 * Set the progress callback to which scanning progress should be reported.
+	 * 
+	 * @param progress the progress callback
+	 */
 	public void setProgress(Progress progress) {
 		this.progress = progress;
 	}
 
+	/**
+	 * Get the list of discovered source directories.
+	 * These can be added to a Project.
+	 * 
+	 * @return list of discovered source directories.
+	 */
 	public List<String> getDiscoveredSourceDirectoryList() {
 		return Collections.unmodifiableList(discoveredSourceDirectoryList);
 	}
 
+	/**
+	 * Execute the search for source directories.
+	 * 
+	 * @throws edu.umd.cs.findbugs.classfile.CheckedAnalysisException
+	 * @throws java.io.IOException
+	 * @throws java.lang.InterruptedException
+	 */
 	public void execute() throws CheckedAnalysisException, IOException, InterruptedException {
 		File dir = new File(rootSourceDirectory);
 		if (!dir.isDirectory()) {
