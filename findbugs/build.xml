@@ -757,8 +757,8 @@
 	
 	<!--
 		Format the manual as PDF.
-		Apache FOP must be installed - http://xmlgraphics.apache.org/fop/
-		The fop.home property should indicate where Apache FOP is installed.
+		Requires dblatex http://sourceforge.net/projects/dblatex,
+		pdflatex, and perl to be installed.
 
 		Input Params:
 		docoutput.dir - the directory containing the generated HTML/XML/XSL files
@@ -766,6 +766,7 @@
 	-->
 	<target name="generatepdfmanual" if="doc.generate.pdf">
 		<echo>Generating PDF version of manual</echo>
+		<!--
 		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
 		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
 			<classpath>
@@ -782,6 +783,32 @@
 			<arg value="manual.fo"/>
 			<arg value="-pdf"/>
 			<arg value="manual.pdf"/>
+		</exec>
+		-->
+		<echo>Running dblatex...</echo>
+		<exec dir="${docoutput.dir}" executable="dblatex">
+			<arg value="-t"/>
+			<arg value="tex"/>
+			<arg value="-o"/>
+			<arg value="manual-raw.tex"/>
+			<arg value="manual.xml"/>
+		</exec>
+		<echo>Fixing dblatex output...</echo>
+		<exec dir="${docoutput.dir}" executable="/usr/bin/perl" output="${docoutput.dir}/manual.tex">
+			<arg value="-e"/>
+			<arg value="while(&lt;&gt;){s,([A-Za-z-]*\.png\}),manual/\1,g;print;}"/>
+			<arg value="manual-raw.tex"/>
+		</exec>
+		<echo>Running pdflatex...</echo>
+		<antcall target="pdflatex-manual"/>
+		<antcall target="pdflatex-manual"/>
+		<antcall target="pdflatex-manual"/>
+		<echo>Done.</echo>
+	</target>
+	
+	<target name="pdflatex-manual">
+		<exec dir="${docoutput.dir}" executable="pdflatex">
+			<arg value="manual.tex"/>
 		</exec>
 	</target>
 	
