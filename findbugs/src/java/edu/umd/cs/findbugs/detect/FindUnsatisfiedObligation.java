@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
@@ -90,10 +91,12 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 				analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
 			TypeDataflow typeDataflow =
 				analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
+			IsNullValueDataflow invDataflow =
+				analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
 			assert typeDataflow != null;
 
 			ObligationAnalysis analysis =
-				new ObligationAnalysis(dfs, typeDataflow, methodGen, factory, database, bugReporter);
+				new ObligationAnalysis(dfs, typeDataflow, invDataflow, methodGen, factory, database, bugReporter);
 			ObligationDataflow dataflow =
 				new ObligationDataflow(cfg, analysis);
 

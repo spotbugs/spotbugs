@@ -42,6 +42,8 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import org.apache.bcel.generic.ReferenceType;
@@ -61,8 +63,10 @@ public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
+	private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
 
 	private TypeDataflow typeDataflow;
+	private IsNullValueDataflow invDataflow;
 	private MethodGen methodGen;
 	private ObligationFactory factory;
 	private PolicyDatabase database;
@@ -82,12 +86,14 @@ public class ObligationAnalysis
 	public ObligationAnalysis(
 			DepthFirstSearch dfs,
 			TypeDataflow typeDataflow,
+			IsNullValueDataflow invDataflow,
 			MethodGen methodGen,
 			ObligationFactory factory,
 			PolicyDatabase database,
 			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.typeDataflow = typeDataflow;
+		this.invDataflow = invDataflow;
 		this.methodGen = methodGen;
 		this.factory = factory;
 		this.database = database;
@@ -358,25 +364,13 @@ public class ObligationAnalysis
 		switch (opcode) {
 		case Constants.IFNULL:
 		case Constants.IFNONNULL:
-			if (   (edge.getType() == EdgeTypes.IFCMP_EDGE && opcode == Constants.IFNONNULL)
-				|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE && opcode == Constants.IFNULL))
-				return null;
-
-			Location location = new Location(last, sourceBlock);
-			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-			if (typeFrame.isValid()) {
-				type = typeFrame.getTopValue();
-			}
+			type = nullCheck(opcode, edge, last, sourceBlock);
 			break;
 
-/*
-		// FIXME: handle IF_ACMPXX
-		 case Constants.IFACMP_EQ:
-		 case Constants.IFACMP_NE:
-			 // ...
-			 break;
-
- */
+		case Constants.IF_ACMPEQ:
+		case Constants.IF_ACMPNE:
+			type = acmpNullCheck(opcode, edge, last, sourceBlock);
+			break;
 		}
 
 		if (type == null || !(type instanceof ObjectType)) {
@@ -384,6 +378,7 @@ public class ObligationAnalysis
 		}
 
 		try {
+			// See if the type of value compared to null is an obligation type.
 			return factory.getObligationByType((ObjectType) type);
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
@@ -391,6 +386,58 @@ public class ObligationAnalysis
 					"Subtype query failed during ObligationAnalysis", e);
 		}
 
+	}
+
+	private Type nullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+		Type type = null;
+		if ((opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE) ||
+			(opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+			Location location = new Location(last, sourceBlock);
+			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+			if (typeFrame.isValid()) {
+				type = typeFrame.getTopValue();
+					if (DEBUG_NULL_CHECK) {
+						System.out.println("ifnull comparison of " + type + " to null at " + last);
+					}
+			}
+		}
+		return type;
+	}
+
+	private Type acmpNullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+		Type type = null;
+		//
+		// Make sure that IF a value has been compared to null,
+		// this edge is the edge on which the
+		// compared value is definitely null.
+		//
+		if ((opcode == Constants.IF_ACMPEQ && edge.getType() == EdgeTypes.IFCMP_EDGE) ||
+			(opcode == Constants.IF_ACMPNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+			//
+			// Check nullness and type of the top two stack values.
+			//
+			Location location = new Location(last, sourceBlock);
+			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+			if (invFrame.isValid() && typeFrame.isValid()) {
+				//
+				// See if exactly one of the top two stack values is definitely null
+				//
+				boolean leftIsNull = invFrame.getStackValue(1).isDefinitelyNull();
+				boolean rightIsNull = invFrame.getStackValue(0).isDefinitelyNull();
+
+				if ((leftIsNull || rightIsNull) && !(leftIsNull && rightIsNull)) {
+					//
+					// Now we can determine what type was compared to null.
+					//
+					type = typeFrame.getStackValue(leftIsNull ? 0 : 1);
+					if (DEBUG_NULL_CHECK) {
+						System.out.println("acmp comparison of " + type + " to null at " + last);
+					}
+				}
+			}
+		}
+		return type;
 	}
 }
 
