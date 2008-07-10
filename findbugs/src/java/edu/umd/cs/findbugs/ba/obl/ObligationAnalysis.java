@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import org.apache.bcel.generic.ReferenceType;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -129,7 +130,7 @@ public class ObligationAnalysis
 		endTransfer(basicBlock, end, result);
 	}
 
-	public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result)
+	private void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result)
 			throws DataflowAnalysisException {
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
@@ -156,8 +157,15 @@ public class ObligationAnalysis
 
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 
-		String className = inv.getClassName(cpg);
 		// FIXME: could prescreen class here...?
+		
+		ReferenceType type = inv.getReferenceType(cpg);
+		if (!(type instanceof ObjectType)) {
+			// We'll assume that methods called on an array object
+			// don't add or remove any obligations.
+			return null;
+		}
+		String className = ((ObjectType) type).getClassName();
 
 		String methodName = inv.getName(cpg);
 		String signature = inv.getSignature(cpg);
