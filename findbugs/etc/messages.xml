@@ -7050,7 +7050,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 
   <BugPattern type="OBL_LEAKED_OBLIGATION">
 	  <ShortDescription>Method may fail to clean up stream or resource</ShortDescription>
-	  <LongDescription>Method {1} may fail to clean up stream or resource of type {3}</LongDescription>
+	  <LongDescription>Method {1} may fail to clean up stream or resource of type {2}</LongDescription>
 	  <Details>
 		  <![CDATA[
 		  <p>
