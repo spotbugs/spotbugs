@@ -246,12 +246,8 @@ public class ObligationAnalysis
 		return a.equals(b);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge, edu.umd.cs.findbugs.ba.obl.StateSet)
-	 */
-	public void meetInto(StateSet fact, Edge edge, StateSet result)
-			throws DataflowAnalysisException {
-
+	@Override
+	public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
 		// If the edge is an exception thrown from a method that
 		// tries to discharge an obligation, then that obligation needs to
 		// be removed from all states in the input fact.
@@ -260,7 +256,6 @@ public class ObligationAnalysis
 			InstructionHandle handle = sourceBlock.getExceptionThrower();
 			Obligation obligation;
 			if ((obligation = deletesObligation(handle)) != null) {
-				fact = fact.duplicate();
 				deleteObligation(fact, obligation, handle);
 			}
 		}
@@ -272,7 +267,6 @@ public class ObligationAnalysis
 		if (isPossibleIfComparison(edge)) {
 			Obligation obligation;
 			if ((obligation = comparesObligationTypeToNull(edge)) != null) {
-				fact = fact.duplicate();
 				if (DEBUG) {
 					System.out.println("Deleting " + obligation.toString() +
 							" on edge from comparision " + edge.getSource().getLastInstruction());
@@ -280,7 +274,13 @@ public class ObligationAnalysis
 				deleteObligation(fact, obligation, edge.getSource().getLastInstruction());
 			}
 		}
+	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.Edge, edu.umd.cs.findbugs.ba.obl.StateSet)
+	 */
+	public void meetInto(StateSet fact, Edge edge, StateSet result)
+			throws DataflowAnalysisException {
 		final StateSet inputFact = fact;
 
 		// Handle easy top and bottom cases
