@@ -672,7 +672,8 @@ The second invokes the Command Line Interface (Text UI):
 <title>Common command-line options</title>
 
 <para>
-These options may be used with both the GUI and command-line interface.
+These options may be used with both the GUI and command-line interfaces.
+</para>
 
 <variablelist>
   
@@ -687,6 +688,7 @@ These options may be used with both the GUI and command-line interface.
       </para>
     </listitem>
   </varlistentry>
+  
 
   <varlistentry>
     <term><command>-effort:max</command></term>
@@ -708,9 +710,19 @@ These options may be used with both the GUI and command-line interface.
     </para>
   </listitem>
   </varlistentry>
+  
+  <!--
+  <varlistentry>
+	  <term><command></command></term>
+	  <listitem>
+		  <para>
+			  
+		  </para>
+	  </listitem>
+  </varlistentry>
+  -->
 
 </variablelist>
-</para>
 
 </sect2>
 
