@@ -171,20 +171,26 @@ public class DiscoverSourceDirectories {
 		List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
 		
 		// Build the classpath
-		IClassFactory factory = ClassFactory.instance();
-		IClassPathBuilder builder = factory.createClassPathBuilder(errorLogger);
-		IClassPath classPath = buildClassPath(builder, factory);
+		IClassPath classPath = null;
+		try {
+			IClassFactory factory = ClassFactory.instance();
+			IClassPathBuilder builder = factory.createClassPathBuilder(errorLogger);
 
-		// From the application classes, find the full list of
-		// fully-qualified source file names.
-		List<String> fullyQualifiedSourceFileNameList = findFullyQualifiedSourceFileNames(builder, classPath);
-		
-		// Attempt to find source directories for all source files,
-		// and add them to the discoveredSourceDirectoryList
-		if (DEBUG) {
-			System.out.println("looking for " + fullyQualifiedSourceFileNameList.size() + " files");
+			classPath = buildClassPath(builder, factory);
+
+			// From the application classes, find the full list of
+			// fully-qualified source file names.
+			List<String> fullyQualifiedSourceFileNameList = findFullyQualifiedSourceFileNames(builder, classPath);
+
+			// Attempt to find source directories for all source files,
+			// and add them to the discoveredSourceDirectoryList
+			if (DEBUG) {
+				System.out.println("looking for " + fullyQualifiedSourceFileNameList.size() + " files");
+			}
+			findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
+		} finally {
+			classPath.close();
 		}
-		findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
 	}
 
 	private IClassPath buildClassPath(IClassPathBuilder builder, IClassFactory factory) throws InterruptedException, IOException, CheckedAnalysisException {
