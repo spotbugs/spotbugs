@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierDatabase;
@@ -133,9 +133,9 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 			databaseFactory.registerWith(analysisCache);
 		}
 		
-		if (!Subtypes.DO_NOT_USE) {
-			new ReflectionDatabaseFactory<Subtypes>(Subtypes.class).registerWith(analysisCache);
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			new ReflectionDatabaseFactory<Subtypes>(Subtypes.class).registerWith(analysisCache);
+//		}
 	}
 
 }

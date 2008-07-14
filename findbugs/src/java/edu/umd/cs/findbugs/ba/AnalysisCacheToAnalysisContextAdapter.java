@@ -29,7 +29,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
@@ -103,13 +103,13 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#addApplicationClassToRepository(org.apache.bcel.classfile.JavaClass)
-	 */
-	@Override
-	public void addApplicationClassToRepository(JavaClass appClass) {
-		throw new UnsupportedOperationException();
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#addApplicationClassToRepository(org.apache.bcel.classfile.JavaClass)
+//	 */
+//	@Override
+//	public void addApplicationClassToRepository(JavaClass appClass) {
+//		throw new UnsupportedOperationException();
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#addClasspathEntry(java.lang.String)
@@ -238,16 +238,16 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		return getDatabase(SourceInfoMap.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes()
-	 */
-	@Override
-	public Subtypes getSubtypes() {
-		if (Subtypes.DO_NOT_USE) {
-			throw new IllegalArgumentException();
-		}
-		return getDatabase(Subtypes.class);
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getSubtypes()
+//	 */
+//	@Override
+//	public Subtypes getSubtypes() {
+//		if (Subtypes.DO_NOT_USE) {
+//			throw new IllegalArgumentException();
+//		}
+//		return getDatabase(Subtypes.class);
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getUnconditionalDerefParamDatabase()

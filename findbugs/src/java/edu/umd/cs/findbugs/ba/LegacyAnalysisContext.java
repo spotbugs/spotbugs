@@ -25,7 +25,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
@@ -46,7 +46,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private MapCache<JavaClass, ClassContext> classContextCache;
-	private Subtypes subtypes;
+//	private Subtypes subtypes;
 	private final SourceInfoMap sourceInfoMap;
 	private InnerClassAccessMap innerClassAccessMap;
 
@@ -105,7 +105,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	LegacyAnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
-		this.subtypes = new Subtypes();
+//		this.subtypes = new Subtypes();
 		this.sourceInfoMap = new SourceInfoMap();
 
 		if (originalRepository instanceof URLClassPathRepository) {
@@ -159,13 +159,13 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return sourceFinder;
 	}
 
-	@Override
-	public Subtypes getSubtypes() {
-		if (Subtypes.DO_NOT_USE) {
-			throw new IllegalArgumentException();
-		}
-		return subtypes;
-	}
+//	@Override
+//	public Subtypes getSubtypes() {
+//		if (Subtypes.DO_NOT_USE) {
+//			throw new IllegalArgumentException();
+//		}
+//		return subtypes;
+//	}
 
 	@Override
 	public void clearRepository() {
@@ -203,11 +203,11 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		repos.addURL(url);
 	}
 
-	@Override
-	public void addApplicationClassToRepository(JavaClass appClass) {
-		Repository.addClass(appClass);
-		subtypes.addApplicationClass(appClass);
-	}
+//	@Override
+//	public void addApplicationClassToRepository(JavaClass appClass) {
+//		Repository.addClass(appClass);
+//		subtypes.addApplicationClass(appClass);
+//	}
 
 	@Override
 	public JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException {

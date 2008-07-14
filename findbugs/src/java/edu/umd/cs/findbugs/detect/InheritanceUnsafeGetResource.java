@@ -31,15 +31,11 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -138,7 +134,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
      * @return adjusted priority
      */
     private int adjustPriority(int priority) {
-	    if (Subtypes.DO_NOT_USE) {
+//	    if (Subtypes.DO_NOT_USE) {
 	    	// Use Subtypes2 instead of (deprecated) Subtypes
 	    	try {
 	    		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -163,21 +159,21 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 	    	} catch (ClassNotFoundException e) {
 	    		bugReporter.reportMissingClass(e);
 	    	}
-	    } else {
-	    	Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
-	    	String myPackagename = getThisClass().getPackageName();
-	    	Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
-	    	if (mySubtypes.isEmpty()) {
-	    		priority++;
-	    	} else {
-	    		for(JavaClass c : mySubtypes) {
-	    			if (!c.getPackageName().equals(myPackagename)) {
-	    				priority--;
-	    				break;
-	    			}	
-	    		}
-	    	}
-	    }
+//	    } else {
+//	    	Subtypes subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+//	    	String myPackagename = getThisClass().getPackageName();
+//	    	Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
+//	    	if (mySubtypes.isEmpty()) {
+//	    		priority++;
+//	    	} else {
+//	    		for(JavaClass c : mySubtypes) {
+//	    			if (!c.getPackageName().equals(myPackagename)) {
+//	    				priority--;
+//	    				break;
+//	    			}	
+//	    		}
+//	    	}
+//	    }
 	    return priority;
     }
 

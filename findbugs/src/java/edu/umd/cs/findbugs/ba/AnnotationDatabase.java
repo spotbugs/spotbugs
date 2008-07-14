@@ -31,7 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -56,7 +56,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	
 	private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>();
 
-	private Subtypes subtypes;
+//	private Subtypes subtypes;
 	public AnnotationDatabase() {
 		defaultAnnotation.put(Target.ANY,
 				new HashMap<String, AnnotationEnum>());
@@ -66,9 +66,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(Target.FIELD,
 				new HashMap<String, AnnotationEnum>());
-		if (!Subtypes.DO_NOT_USE) {
-			subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
+//		}
 
 	}
 
@@ -300,9 +300,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		return oldValue;
 	}
 	protected void addDefaultMethodAnnotation(String cName, AnnotationEnum annotation) {
-		if (!Subtypes.DO_NOT_USE) {
-			subtypes.addNamedClass(cName);
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			subtypes.addNamedClass(cName);
+//		}
 
 		if (addClassOnly) return;
 
@@ -312,18 +312,18 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	}
 
 	protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
-		if (!Subtypes.DO_NOT_USE) {
-			subtypes.addNamedClass(cName);
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			subtypes.addNamedClass(cName);
+//		}
 		if (addClassOnly) return;
 		XField m = XFactory.createXField(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
 
 	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
-		if (!Subtypes.DO_NOT_USE) {
-			subtypes.addNamedClass(cName);
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			subtypes.addNamedClass(cName);
+//		}
 		if (addClassOnly) return;
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
@@ -334,9 +334,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		return true;
 	}
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
-		if (!Subtypes.DO_NOT_USE) {
-			subtypes.addNamedClass(cName);
-		}
+//		if (!Subtypes.DO_NOT_USE) {
+//			subtypes.addNamedClass(cName);
+//		}
 		if (addClassOnly) return;
 		SignatureParser parser = new SignatureParser(mSig);
 		if (param < 0 || param >= parser.getNumParameters())

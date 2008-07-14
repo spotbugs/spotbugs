@@ -33,12 +33,10 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisLocal;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.ch.Subtypes;
+//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -53,7 +51,6 @@ import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
-import edu.umd.cs.findbugs.detect.FieldItemSummary;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -285,13 +282,13 @@ public abstract class AnalysisContext {
 	 */
 	public abstract SourceFinder getSourceFinder();
 
-	/**
-	 * Get the Subtypes database.
-	 * 
-	 * @return the Subtypes database
-	 */
-	@Deprecated // use Subtypes2 instead
-	public abstract Subtypes getSubtypes();
+//	/**
+//	 * Get the Subtypes database.
+//	 * 
+//	 * @return the Subtypes database
+//	 */
+//	@Deprecated // use Subtypes2 instead
+//	public abstract Subtypes getSubtypes();
 
 	/**
 	 * Clear the BCEL Repository in preparation for analysis.
@@ -312,12 +309,12 @@ public abstract class AnalysisContext {
 	 */
 	public abstract void addClasspathEntry(String url) throws IOException;
 
-	/**
-	 * Add an application class to the repository.
-	 * 
-	 * @param appClass the application class
-	 */
-	public abstract void addApplicationClassToRepository(JavaClass appClass);
+//	/**
+//	 * Add an application class to the repository.
+//	 * 
+//	 * @param appClass the application class
+//	 */
+//	public abstract void addApplicationClassToRepository(JavaClass appClass);
 
 	/**
 	 * Return whether or not the given class is an application class.
