@@ -69,7 +69,7 @@ public class ObligationAnalysis
 	private IsNullValueDataflow invDataflow;
 	private MethodGen methodGen;
 	private ObligationFactory factory;
-	private PolicyDatabase database;
+	private ObligationPolicyDatabase database;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 
 	/**
@@ -89,7 +89,7 @@ public class ObligationAnalysis
 			IsNullValueDataflow invDataflow,
 			MethodGen methodGen,
 			ObligationFactory factory,
-			PolicyDatabase database,
+			ObligationPolicyDatabase database,
 			RepositoryLookupFailureCallback lookupFailureCallback) {
 		super(dfs);
 		this.typeDataflow = typeDataflow;
@@ -146,11 +146,11 @@ public class ObligationAnalysis
 	}
 
 	private Obligation addsObligation(InstructionHandle handle) {
-		return addsOrDeletesObligation(handle, PolicyDatabase.ADD);
+		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.ADD);
 	}
 
 	private Obligation deletesObligation(InstructionHandle handle) {
-		return addsOrDeletesObligation(handle, PolicyDatabase.DEL);
+		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.DEL);
 	}
 
 	private Obligation addsOrDeletesObligation(InstructionHandle handle, int action) {

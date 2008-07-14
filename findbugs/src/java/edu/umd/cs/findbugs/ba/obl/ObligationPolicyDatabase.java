@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  *
  * @author David Hovemeyer
  */
-public class PolicyDatabase {
+public class ObligationPolicyDatabase {
 	/** Action constant for methods which create an obligation. */
 	public static final int ADD = 0;
 
@@ -87,7 +87,7 @@ public class PolicyDatabase {
 	// FIXME: may want to figure out a way to do lookups more efficiently
 	private LinkedList<Entry> entryList;
 
-	public PolicyDatabase() {
+	public ObligationPolicyDatabase() {
 		this.entryList = new LinkedList<Entry>();
 	}
 

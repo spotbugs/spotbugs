@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
-import edu.umd.cs.findbugs.ba.obl.PolicyDatabase;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -69,7 +69,7 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 
 	private BugReporter bugReporter;
 	private ObligationFactory factory;
-	private PolicyDatabase database;
+	private ObligationPolicyDatabase database;
 
 	public FindUnsatisfiedObligation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -150,8 +150,8 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 	 * 
 	 * @return the PolicyDatabase
 	 */
-	private PolicyDatabase buildDatabase() {
-		PolicyDatabase result = new PolicyDatabase();
+	private ObligationPolicyDatabase buildDatabase() {
+		ObligationPolicyDatabase result = new ObligationPolicyDatabase();
 
 		// Create the Obligation types
 		Obligation inputStreamObligation = factory.addObligation("java.io.InputStream");
@@ -160,13 +160,13 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 		// Add the database entries describing methods that add and delete
 		// obligations.
 		result.addEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
-				PolicyDatabase.ADD, inputStreamObligation);
+				ObligationPolicyDatabase.ADD, inputStreamObligation);
 		result.addEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
-				PolicyDatabase.ADD, outputStreamObligation);
+				ObligationPolicyDatabase.ADD, outputStreamObligation);
 		result.addEntry("java.io.InputStream", "close", "()V", false,
-				PolicyDatabase.DEL, inputStreamObligation);
+				ObligationPolicyDatabase.DEL, inputStreamObligation);
 		result.addEntry("java.io.OutputStream", "close", "()V", false,
-				PolicyDatabase.DEL, outputStreamObligation);
+				ObligationPolicyDatabase.DEL, outputStreamObligation);
 
 		return result;
 	}
