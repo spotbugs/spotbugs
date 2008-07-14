@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.classfile.Method;
+//import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
@@ -100,24 +100,24 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 		result.mergeWith(fact);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + BlockTypeAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-			 */
-			@Override
-			public Dataflow<BlockType, BlockTypeAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getBlockTypeDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + BlockTypeAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
+//			/* (non-Javadoc)
+//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+//			 */
+//			@Override
+//			public Dataflow<BlockType, BlockTypeAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getBlockTypeDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=4

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -111,33 +110,33 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		result.setDepth(combined);
 	}
 
-	/**
-	 * Command line driver, for testing.
-	 */
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.out.println("Usage: " + StackDepthAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
-			@Override
-						 public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-
-				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-				CFG cfg = classContext.getCFG(method);
-
-				StackDepthAnalysis analysis = new StackDepthAnalysis(classContext.getConstantPoolGen(), dfs);
-				Dataflow<StackDepth, StackDepthAnalysis> dataflow = new Dataflow<StackDepth, StackDepthAnalysis>(cfg, analysis);
-				dataflow.execute();
-
-				return dataflow;
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	/**
+//	 * Command line driver, for testing.
+//	 */
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.out.println("Usage: " + StackDepthAnalysis.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
+//			@Override
+//						 public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//
+//				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+//				CFG cfg = classContext.getCFG(method);
+//
+//				StackDepthAnalysis analysis = new StackDepthAnalysis(classContext.getConstantPoolGen(), dfs);
+//				Dataflow<StackDepth, StackDepthAnalysis> dataflow = new Dataflow<StackDepth, StackDepthAnalysis>(cfg, analysis);
+//				dataflow.execute();
+//
+//				return dataflow;
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=4

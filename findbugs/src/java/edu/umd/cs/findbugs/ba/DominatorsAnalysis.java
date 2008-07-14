@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.BitSet;
-
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
  * Dataflow analysis to compute dominator sets for a CFG.
  *
@@ -55,38 +49,38 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 		return new ReversePostOrder(cfg, dfs);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + DominatorsAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<BitSet, DominatorsAnalysis> driver =
-			new DataflowTestDriver<BitSet, DominatorsAnalysis>() {
-
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-			 */
-			@Override
-			public Dataflow<BitSet, DominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-				CFG cfg = classContext.getCFG(method);
-				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-
-				DominatorsAnalysis analysis =
-					new DominatorsAnalysis(cfg, dfs, SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
-
-				Dataflow<BitSet, DominatorsAnalysis> dataflow =
-					new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
-
-				dataflow.execute();
-
-				return dataflow;
-			}
-
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + DominatorsAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<BitSet, DominatorsAnalysis> driver =
+//			new DataflowTestDriver<BitSet, DominatorsAnalysis>() {
+//
+//			/* (non-Javadoc)
+//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+//			 */
+//			@Override
+//			public Dataflow<BitSet, DominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				CFG cfg = classContext.getCFG(method);
+//				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+//
+//				DominatorsAnalysis analysis =
+//					new DominatorsAnalysis(cfg, dfs, SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
+//
+//				Dataflow<BitSet, DominatorsAnalysis> dataflow =
+//					new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
+//
+//				dataflow.execute();
+//
+//				return dataflow;
+//			}
+//
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=4

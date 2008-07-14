@@ -38,11 +38,9 @@ import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -801,25 +799,26 @@ public class UnconditionalValueDerefAnalysis extends
 	public void setLastUpdateTimestamp(UnconditionalValueDerefSet fact, int lastUpdate) {
 		fact.setLastUpdateTimestamp(lastUpdate);
 	}
-	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: " + UnconditionalValueDerefAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
 
-		DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> driver =
-			new DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis>() {
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-			 */
-			@Override
-			public Dataflow<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getUnconditionalValueDerefDataflow(method);
-			}
-		};
-		if (SystemProperties.getBoolean("forwardcfg")) {
-			driver.overrideIsForwards();
-		}
-		driver.execute(args[0]);
-	}
+//	public static void main(String[] args) throws Exception {
+//		if (args.length != 1) {
+//			System.err.println("Usage: " + UnconditionalValueDerefAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> driver =
+//			new DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis>() {
+//			/* (non-Javadoc)
+//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+//			 */
+//			@Override
+//			public Dataflow<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getUnconditionalValueDerefDataflow(method);
+//			}
+//		};
+//		if (SystemProperties.getBoolean("forwardcfg")) {
+//			driver.overrideIsForwards();
+//		}
+//		driver.execute(args[0]);
+//	}
 }

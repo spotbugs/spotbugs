@@ -112,44 +112,44 @@ public class CFGPrinter {
 			return bb.instructionReverseIterator();
 	}
 
-	public static void main(String[] argv) throws Exception {
-
-			if (argv.length == 0 || argv.length > 2) {
-				System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file> [outputFile]");
-				System.exit(1);
-			}
-
-			String className = argv[0];
-			JavaClass cls = new ClassParser(className).parse();
-			RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
-
-			AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
-			ClassContext classContext = analysisContext.getClassContext(cls);
-
-			Method[] methods = cls.getMethods();
-			String methodName = SystemProperties.getProperty("cfg.method");
-			PrintStream out = System.err;
-			if (argv.length == 2) 
-				out = new PrintStream(new FileOutputStream(argv[1]));
-			for (Method method : methods) {
-				MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					continue;
-
-				if (methodName != null && !method.getName().equals(methodName))
-					continue;
-
-
-				out.println();
-				out.println("----------------------------------------------------------------------------");
-				out.println("Method " + SignatureConverter.convertMethodSignature(methodGen));
-				out.println("----------------------------------------------------------------------------");
-
-				CFG cfg = classContext.getCFG(method);
-				CFGPrinter printer = new CFGPrinter(cfg);
-				printer.print(out);
-			}
-	}
+//	public static void main(String[] argv) throws Exception {
+//
+//			if (argv.length == 0 || argv.length > 2) {
+//				System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file> [outputFile]");
+//				System.exit(1);
+//			}
+//
+//			String className = argv[0];
+//			JavaClass cls = new ClassParser(className).parse();
+//			RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
+//
+//			AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
+//			ClassContext classContext = analysisContext.getClassContext(cls);
+//
+//			Method[] methods = cls.getMethods();
+//			String methodName = SystemProperties.getProperty("cfg.method");
+//			PrintStream out = System.err;
+//			if (argv.length == 2) 
+//				out = new PrintStream(new FileOutputStream(argv[1]));
+//			for (Method method : methods) {
+//				MethodGen methodGen = classContext.getMethodGen(method);
+//				if (methodGen == null)
+//					continue;
+//
+//				if (methodName != null && !method.getName().equals(methodName))
+//					continue;
+//
+//
+//				out.println();
+//				out.println("----------------------------------------------------------------------------");
+//				out.println("Method " + SignatureConverter.convertMethodSignature(methodGen));
+//				out.println("----------------------------------------------------------------------------");
+//
+//				CFG cfg = classContext.getCFG(method);
+//				CFGPrinter printer = new CFGPrinter(cfg);
+//				printer.print(out);
+//			}
+//	}
 }
 
 // vim:ts=4

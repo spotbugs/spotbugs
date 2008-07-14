@@ -24,17 +24,14 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
@@ -379,27 +376,27 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		}
 	}
 
-	/**
-	 * Test driver.
-	 */
-	public static void main(String[] argv) throws Exception {
-
-			if (argv.length != 1) {
-				System.out.println("Usage: edu.umd.cs.findbugs.ba.ValueNumberAnalysis <filename>");
-				System.exit(1);
-			}
-
-			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
-					new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
-						@Override
-										 public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
-								throws CFGBuilderException, DataflowAnalysisException {
-							return classContext.getValueNumberDataflow(method);
-						}
-					};
-
-			driver.execute(argv[0]);
-	}
+//	/**
+//	 * Test driver.
+//	 */
+//	public static void main(String[] argv) throws Exception {
+//
+//			if (argv.length != 1) {
+//				System.out.println("Usage: edu.umd.cs.findbugs.ba.ValueNumberAnalysis <filename>");
+//				System.exit(1);
+//			}
+//
+//			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
+//					new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
+//						@Override
+//										 public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
+//								throws CFGBuilderException, DataflowAnalysisException {
+//							return classContext.getValueNumberDataflow(method);
+//						}
+//					};
+//
+//			driver.execute(argv[0]);
+//	}
 
 	private ValueNumber getExceptionValueNumber(BasicBlock handlerBlock) {
 		ValueNumber valueNumber = exceptionHandlerValueNumberMap.get(handlerBlock);

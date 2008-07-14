@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.BitSet;
-
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.SystemProperties;
-
 /**
  * Dataflow analysis to compute postdominator sets for a CFG.
  *
@@ -73,38 +67,38 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 		return new ReverseDFSOrder(cfg, rdfs, dfs);
 	}
 
-	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: " + PostDominatorsAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<BitSet, PostDominatorsAnalysis> driver =
-			new DataflowTestDriver<BitSet, PostDominatorsAnalysis>() {
-
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-			 */
-			@Override
-			public Dataflow<BitSet, PostDominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-				CFG cfg = classContext.getCFG(method);
-				ReverseDepthFirstSearch rdfs = classContext.getReverseDepthFirstSearch(method);
-
-				PostDominatorsAnalysis analysis =
-					new PostDominatorsAnalysis(cfg, rdfs, classContext.getDepthFirstSearch(method), SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
-
-				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
-					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
-
-				dataflow.execute();
-
-				return dataflow;
-			}
-
-		};
-
-		driver.execute(args[0]);
-	}
+//	public static void main(String[] args) throws Exception {
+//		if (args.length != 1) {
+//			System.err.println("Usage: " + PostDominatorsAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<BitSet, PostDominatorsAnalysis> driver =
+//			new DataflowTestDriver<BitSet, PostDominatorsAnalysis>() {
+//
+//			/* (non-Javadoc)
+//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+//			 */
+//			@Override
+//			public Dataflow<BitSet, PostDominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				CFG cfg = classContext.getCFG(method);
+//				ReverseDepthFirstSearch rdfs = classContext.getReverseDepthFirstSearch(method);
+//
+//				PostDominatorsAnalysis analysis =
+//					new PostDominatorsAnalysis(cfg, rdfs, classContext.getDepthFirstSearch(method), SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
+//
+//				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
+//					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
+//
+//				dataflow.execute();
+//
+//				return dataflow;
+//			}
+//
+//		};
+//
+//		driver.execute(args[0]);
+//	}
 }
 
 // vim:ts=4

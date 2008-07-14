@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -39,11 +38,8 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -746,26 +742,26 @@ public class IsNullValueAnalysis
 		return result;
 	}
 
-	/**
-	 * Test driver.
-	 */
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + IsNullValueAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
-			@Override
-			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-
-				return classContext.getIsNullValueDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	/**
+//	 * Test driver.
+//	 */
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + IsNullValueAnalysis.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
+//			@Override
+//			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//
+//				return classContext.getIsNullValueDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 
 }
 

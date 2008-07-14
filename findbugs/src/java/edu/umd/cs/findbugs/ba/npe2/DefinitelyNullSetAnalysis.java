@@ -24,16 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.CompactLocationNumbering;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
@@ -281,23 +277,23 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		return fact1.equals(fact2);
 	}
 
-	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: " + DefinitelyNullSetAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis> driver =
-			new DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis>() {
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
-			 */
-			@Override
-			public Dataflow<DefinitelyNullSet, DefinitelyNullSetAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getDefinitelyNullSetDataflow(method);
-			}
-		};
-
-		driver.execute(args[0]);
-	}
+//	public static void main(String[] args) throws Exception {
+//		if (args.length != 1) {
+//			System.err.println("Usage: " + DefinitelyNullSetAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis> driver =
+//			new DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis>() {
+//			/* (non-Javadoc)
+//			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+//			 */
+//			@Override
+//			public Dataflow<DefinitelyNullSet, DefinitelyNullSetAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getDefinitelyNullSetDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(args[0]);
+//	}
 }

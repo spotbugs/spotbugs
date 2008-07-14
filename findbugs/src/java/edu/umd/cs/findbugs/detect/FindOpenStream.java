@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
-import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
+//import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 
 /**
@@ -481,27 +481,27 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		}
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
-			System.err.println("Usage: " + FindOpenStream.class.getName() +
-					" <class file> <method name> <bytecode offset>");
-			System.exit(1);
-		}
-
-		String classFile = argv[0];
-		String methodName = argv[1];
-		int offset = Integer.parseInt(argv[2]);
-
-		ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker> driver =
-				new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
-					@Override
-								 public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
-						return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
-					}
-				};
-
-		driver.execute(classFile, methodName, offset);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 3) {
+//			System.err.println("Usage: " + FindOpenStream.class.getName() +
+//					" <class file> <method name> <bytecode offset>");
+//			System.exit(1);
+//		}
+//
+//		String classFile = argv[0];
+//		String methodName = argv[1];
+//		int offset = Integer.parseInt(argv[2]);
+//
+//		ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker> driver =
+//				new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
+//					@Override
+//								 public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
+//						return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
+//					}
+//				};
+//
+//		driver.execute(classFile, methodName, offset);
+//	}
 
 }
 

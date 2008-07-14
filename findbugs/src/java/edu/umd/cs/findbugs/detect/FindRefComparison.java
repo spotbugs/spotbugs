@@ -63,9 +63,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
@@ -920,43 +919,43 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + FindRefComparison.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<TypeFrame, TypeAnalysis> driver =
-			new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			@Override
-			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
-			throws CFGBuilderException, DataflowAnalysisException {
-
-				RepositoryLookupFailureCallback lookupFailureCallback =
-					classContext.getLookupFailureCallback();
-				MethodGen methodGen = classContext.getMethodGen(method);
-				if (methodGen == null)
-					throw new DataflowAnalysisException("Could not get methodGen for " + method.toString());
-				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-				CFG cfg = classContext.getCFG(method);
-				ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
-
-				TypeMerger typeMerger =
-					new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
-				TypeFrameModelingVisitor visitor =
-					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-				TypeAnalysis analysis = new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger,
-						visitor, lookupFailureCallback, exceptionSetFactory);
-				Dataflow<TypeFrame, TypeAnalysis> dataflow =
-					new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
-				dataflow.execute();
-
-				return dataflow;
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + FindRefComparison.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<TypeFrame, TypeAnalysis> driver =
+//			new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+//			@Override
+//			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+//			throws CFGBuilderException, DataflowAnalysisException {
+//
+//				RepositoryLookupFailureCallback lookupFailureCallback =
+//					classContext.getLookupFailureCallback();
+//				MethodGen methodGen = classContext.getMethodGen(method);
+//				if (methodGen == null)
+//					throw new DataflowAnalysisException("Could not get methodGen for " + method.toString());
+//				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+//				CFG cfg = classContext.getCFG(method);
+//				ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
+//
+//				TypeMerger typeMerger =
+//					new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
+//				TypeFrameModelingVisitor visitor =
+//					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
+//				TypeAnalysis analysis = new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger,
+//						visitor, lookupFailureCallback, exceptionSetFactory);
+//				Dataflow<TypeFrame, TypeAnalysis> dataflow =
+//					new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
+//				dataflow.execute();
+//
+//				return dataflow;
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 
 
 

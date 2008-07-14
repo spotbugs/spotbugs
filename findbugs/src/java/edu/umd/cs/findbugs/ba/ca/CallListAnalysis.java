@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -32,11 +31,8 @@ import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
@@ -128,31 +124,31 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		return fact.isValid();
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + CallListAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<CallList, CallListAnalysis> driver =
-			new DataflowTestDriver<CallList, CallListAnalysis>() {
-				@Override
-								 public Dataflow<CallList, CallListAnalysis> createDataflow(
-						ClassContext classContext,
-						Method method) throws CFGBuilderException, DataflowAnalysisException {
-					CallListAnalysis analysis = new CallListAnalysis(
-							classContext.getCFG(method),
-							classContext.getDepthFirstSearch(method),
-							classContext.getConstantPoolGen());
-					Dataflow<CallList, CallListAnalysis> dataflow =
-						new Dataflow<CallList, CallListAnalysis>(analysis.cfg, analysis);
-
-					dataflow.execute();
-
-					return dataflow;
-				}
-			};
-
-		driver.execute(argv[0]);	
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + CallListAnalysis.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<CallList, CallListAnalysis> driver =
+//			new DataflowTestDriver<CallList, CallListAnalysis>() {
+//				@Override
+//								 public Dataflow<CallList, CallListAnalysis> createDataflow(
+//						ClassContext classContext,
+//						Method method) throws CFGBuilderException, DataflowAnalysisException {
+//					CallListAnalysis analysis = new CallListAnalysis(
+//							classContext.getCFG(method),
+//							classContext.getDepthFirstSearch(method),
+//							classContext.getConstantPoolGen());
+//					Dataflow<CallList, CallListAnalysis> dataflow =
+//						new Dataflow<CallList, CallListAnalysis>(analysis.cfg, analysis);
+//
+//					dataflow.execute();
+//
+//					return dataflow;
+//				}
+//			};
+//
+//		driver.execute(argv[0]);	
+//	}
 }

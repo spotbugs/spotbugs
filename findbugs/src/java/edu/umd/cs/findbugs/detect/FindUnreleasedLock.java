@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ResourceTracker;
 import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
-import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
+//import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
@@ -403,39 +403,39 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		if (DEBUG) System.out.println("numAcquires=" + numAcquires);
 	}
 
-	/* ----------------------------------------------------------------------
-	 * Test main() driver
-	 * ---------------------------------------------------------------------- */
-
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
-			System.err.println("Usage: " + FindUnreleasedLock.class.getName() + " <class file> <method name> <bytecode offset>");
-			System.exit(1);
-		}
-
-		String classFile = argv[0];
-		String methodName = argv[1];
-		int offset = Integer.parseInt(argv[2]);
-		final FindUnreleasedLock detector = new FindUnreleasedLock(null);
-
-		ResourceValueAnalysisTestDriver<Lock, LockResourceTracker> driver =
-			new ResourceValueAnalysisTestDriver<Lock, LockResourceTracker>() {
-				@Override
-				public LockResourceTracker createResourceTracker(ClassContext classContext, Method method)
-						throws CFGBuilderException, DataflowAnalysisException {
-
-					RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
-
-					return detector.new LockResourceTracker(
-								lookupFailureCallback,
-								classContext.getCFG(method),
-								classContext.getValueNumberDataflow(method),
-								classContext.getIsNullValueDataflow(method));
-				}
-		};
-
-		driver.execute(classFile, methodName, offset);
-	}
+//	/* ----------------------------------------------------------------------
+//	 * Test main() driver
+//	 * ---------------------------------------------------------------------- */
+//
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 3) {
+//			System.err.println("Usage: " + FindUnreleasedLock.class.getName() + " <class file> <method name> <bytecode offset>");
+//			System.exit(1);
+//		}
+//
+//		String classFile = argv[0];
+//		String methodName = argv[1];
+//		int offset = Integer.parseInt(argv[2]);
+//		final FindUnreleasedLock detector = new FindUnreleasedLock(null);
+//
+//		ResourceValueAnalysisTestDriver<Lock, LockResourceTracker> driver =
+//			new ResourceValueAnalysisTestDriver<Lock, LockResourceTracker>() {
+//				@Override
+//				public LockResourceTracker createResourceTracker(ClassContext classContext, Method method)
+//						throws CFGBuilderException, DataflowAnalysisException {
+//
+//					RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
+//
+//					return detector.new LockResourceTracker(
+//								lookupFailureCallback,
+//								classContext.getCFG(method),
+//								classContext.getValueNumberDataflow(method),
+//								classContext.getIsNullValueDataflow(method));
+//				}
+//		};
+//
+//		driver.execute(classFile, methodName, offset);
+//	}
 }
 
 // vim:ts=4

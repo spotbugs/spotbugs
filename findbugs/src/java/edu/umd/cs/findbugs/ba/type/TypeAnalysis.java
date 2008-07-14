@@ -50,11 +50,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -62,7 +60,6 @@ import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -925,22 +922,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		return exceptionTypeSet;
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			@Override
-			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getTypeDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
+//			@Override
+//			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getTypeDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=3

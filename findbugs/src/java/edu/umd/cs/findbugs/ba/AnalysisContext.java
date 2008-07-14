@@ -141,18 +141,18 @@ public abstract class AnalysisContext {
 		databaseOutputDir = null;
 	}
 
-	/**
-	 * Create a new AnalysisContext.
-	 * 
-	 * @param lookupFailureCallback the RepositoryLookupFailureCallback that
-	 *                               the AnalysisContext should use to report errors
-	 * @return a new AnalysisContext
-	 */
-	public static AnalysisContext create(RepositoryLookupFailureCallback lookupFailureCallback) {
-		AnalysisContext analysisContext = new LegacyAnalysisContext(lookupFailureCallback);
-		setCurrentAnalysisContext(analysisContext);
-		return analysisContext;
-	}
+//	/**
+//	 * Create a new AnalysisContext.
+//	 * 
+//	 * @param lookupFailureCallback the RepositoryLookupFailureCallback that
+//	 *                               the AnalysisContext should use to report errors
+//	 * @return a new AnalysisContext
+//	 */
+//	public static AnalysisContext create(RepositoryLookupFailureCallback lookupFailureCallback) {
+//		AnalysisContext analysisContext = new LegacyAnalysisContext(lookupFailureCallback);
+//		setCurrentAnalysisContext(analysisContext);
+//		return analysisContext;
+//	}
 
 	/** Instantiate the CheckReturnAnnotationDatabase.
 	 *  Do this after the repository has been set up.

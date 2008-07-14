@@ -187,27 +187,27 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 		return fact.get(local + killedByStoreOffset);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + LiveLocalStoreAnalysis.class.getName() +
-				" <classfile>");
-			System.exit(1);
-		}
-
-		String filename = argv[0];
-
-		DataflowTestDriver<BitSet,LiveLocalStoreAnalysis> driver =
-			new DataflowTestDriver<BitSet, LiveLocalStoreAnalysis>() {
-
-			@Override
-						 public Dataflow<BitSet, LiveLocalStoreAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getLiveLocalStoreDataflow(method);
-			}
-		};
-
-		driver.execute(filename);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + LiveLocalStoreAnalysis.class.getName() +
+//				" <classfile>");
+//			System.exit(1);
+//		}
+//
+//		String filename = argv[0];
+//
+//		DataflowTestDriver<BitSet,LiveLocalStoreAnalysis> driver =
+//			new DataflowTestDriver<BitSet, LiveLocalStoreAnalysis>() {
+//
+//			@Override
+//						 public Dataflow<BitSet, LiveLocalStoreAnalysis> createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getLiveLocalStoreDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(filename);
+//	}
 }
 
 // vim:ts=4

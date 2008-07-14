@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 
 public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> implements EdgeTypes {
@@ -74,23 +73,23 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 		result.mergeWith(fact);
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + ReturnPathAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
-			@Override
-						 public Dataflow<ReturnPath, ReturnPathAnalysis>
-					createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getReturnPathDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + ReturnPathAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
+//			@Override
+//						 public Dataflow<ReturnPath, ReturnPathAnalysis>
+//					createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getReturnPathDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=4

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -131,22 +130,22 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		return true;
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + LockAnalysis.class.getName() + " <classfile>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
-			@Override
-						 public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
-					throws CFGBuilderException, DataflowAnalysisException {
-				return classContext.getLockDataflow(method);
-			}
-		};
-
-		driver.execute(argv[0]);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + LockAnalysis.class.getName() + " <classfile>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
+//			@Override
+//						 public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
+//					throws CFGBuilderException, DataflowAnalysisException {
+//				return classContext.getLockDataflow(method);
+//			}
+//		};
+//
+//		driver.execute(argv[0]);
+//	}
 }
 
 // vim:ts=4

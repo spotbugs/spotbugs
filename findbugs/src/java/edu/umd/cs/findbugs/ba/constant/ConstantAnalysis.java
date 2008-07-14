@@ -18,16 +18,12 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
@@ -100,25 +96,25 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		resultFrame.setValue(slot, value);
 	}
 
-	/*
-	 * Test driver.
-	 */
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + ConstantAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-
-		DataflowTestDriver<ConstantFrame, ConstantAnalysis> driver =
-			new DataflowTestDriver<ConstantFrame, ConstantAnalysis>() {
-				@Override
-								 public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
-						ClassContext classContext,
-						Method method) throws CFGBuilderException, DataflowAnalysisException {
-					return classContext.getConstantDataflow(method);
-				}
-			};
-
-		driver.execute(argv[0]);
-	}
+//	/*
+//	 * Test driver.
+//	 */
+//	public static void main(String[] argv) throws Exception {
+//		if (argv.length != 1) {
+//			System.err.println("Usage: " + ConstantAnalysis.class.getName() + " <class file>");
+//			System.exit(1);
+//		}
+//
+//		DataflowTestDriver<ConstantFrame, ConstantAnalysis> driver =
+//			new DataflowTestDriver<ConstantFrame, ConstantAnalysis>() {
+//				@Override
+//								 public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
+//						ClassContext classContext,
+//						Method method) throws CFGBuilderException, DataflowAnalysisException {
+//					return classContext.getConstantDataflow(method);
+//				}
+//			};
+//
+//		driver.execute(argv[0]);
+//	}
 }
