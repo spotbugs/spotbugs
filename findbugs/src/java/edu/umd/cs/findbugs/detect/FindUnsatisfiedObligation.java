@@ -87,6 +87,14 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				State state = i.next();
 				for (int id = 0; id < database.getFactory().getMaxObligationTypes(); ++id) {
 					if (state.getObligationSet().getCount(id) > 0) {
+						
+						// FIXME: check the path for this state to
+						// account for:
+						//   1. null checks
+						//   2. field assignments
+						//   3. return statements
+						
+						
 						leakedObligationSet.add(database.getFactory().getObligationById(id));
 					}
 				}
