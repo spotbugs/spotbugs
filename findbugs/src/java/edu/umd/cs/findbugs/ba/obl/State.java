@@ -66,16 +66,16 @@ public class State {
 	}
 
 	@Override
-		 public boolean equals(Object o) {
-		if (o == null || o.getClass() != this.getClass())
+	public boolean equals(Object o) {
+		if (o == null || o.getClass() != this.getClass()) {
 			return false;
+		}
 		State other = (State) o;
-		return this.obligationSet.equals(other.obligationSet)
-			|| this.path.equals(other.path);
+		return this.obligationSet.equals(other.obligationSet) || this.path.equals(other.path);
 	}
 
 	@Override
-		 public int hashCode() {
+	public int hashCode() {
 		return obligationSet.hashCode() + (1009 * path.hashCode());
 	}
 
