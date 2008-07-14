@@ -113,7 +113,7 @@ public class ObligationSet {
 			++count;
 		}
 		buf.append("}");
-		buf.append("@" + System.identityHashCode(this));
+		//buf.append("@" + System.identityHashCode(this));
 		return buf.toString();
 	}
 	

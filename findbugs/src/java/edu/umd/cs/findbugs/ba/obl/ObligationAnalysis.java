@@ -120,11 +120,11 @@ public class ObligationAnalysis
 		if ((obligation = addsObligation(handle)) != null) {
 			// Add obligation to all states
 			if (DEBUG) { System.out.println("Adding obligation " + obligation.toString()); }
-			fact.addObligation(obligation);
+			fact.addObligation(obligation, basicBlock.getLabel());
 		} else if ((obligation = deletesObligation(handle)) != null) {
 			// Delete obligation from all states
 			if (DEBUG) { System.out.println("Deleting obligation " + obligation.toString()); }
-			deleteObligation(fact, obligation, handle);
+			fact.deleteObligation(obligation, basicBlock.getLabel());
 		}
 
 	}
@@ -196,19 +196,19 @@ public class ObligationAnalysis
 
 	}
 
-	/**
-	 * Delete Obligation from all states, throwing a DataflowAnalysisException
-	 * if any of the states doesn't contain that Obligation.
-	 * 
-	 * @param fact       the StateSet to remove the Obligation from
-	 * @param obligation the Obligation
-	 * @param handle     the instruction which deletes the obligation
-	 * @throw DataflowAnalysisException if any State doesn't contain the obligation
-	 */
-	private void deleteObligation(StateSet fact, Obligation obligation, InstructionHandle handle)
-			throws DataflowAnalysisException {
-		fact.deleteObligation(obligation);
-	}
+//	/**
+//	 * Delete Obligation from all states, throwing a DataflowAnalysisException
+//	 * if any of the states doesn't contain that Obligation.
+//	 * 
+//	 * @param fact       the StateSet to remove the Obligation from
+//	 * @param obligation the Obligation
+//	 * @param handle     the instruction which deletes the obligation
+//	 * @throw DataflowAnalysisException if any State doesn't contain the obligation
+//	 */
+//	private void deleteObligation(StateSet fact, Obligation obligation, InstructionHandle handle)
+//			throws DataflowAnalysisException {
+//		fact.deleteObligation(obligation);
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
@@ -246,6 +246,10 @@ public class ObligationAnalysis
 	public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
 		// FIXME: runtime exceptions should be ignored: set fact to TOP?
 		
+		// We don't want to handle null checks here.
+		// They should be handled in a separate post-processing step.
+		
+		/*
 		// If the edge is an exception thrown from a method that
 		// tries to discharge an obligation, then that obligation needs to
 		// be removed from all states in the input fact.
@@ -272,6 +276,7 @@ public class ObligationAnalysis
 				deleteObligation(fact, obligation, edge.getSource().getLastInstruction());
 			}
 		}
+		*/
 	}
 
 	/* (non-Javadoc)
@@ -325,11 +330,11 @@ public class ObligationAnalysis
 				} else if (stateInInputFact != null) {
 					stateToAdd = stateInInputFact.duplicate();
 				} else {
-					if (stateInResultFact == null ) {
-						System.out.println("Missing ObligationSet : " + obligationSet);
-						System.out.println("  input fact : " + inputFact);
-						System.out.println("  result fact: " + result);
-					}
+//					if (stateInResultFact == null ) {
+//						System.out.println("Missing ObligationSet : " + obligationSet);
+//						System.out.println("  input fact : " + inputFact);
+//						System.out.println("  result fact: " + result);
+//					}
 					stateToAdd = stateInResultFact.duplicate();
 				}
 				
@@ -386,6 +391,7 @@ public class ObligationAnalysis
 		}
 	}
 
+	/*
 	private boolean isPossibleIfComparison(Edge edge) {
 		return edge.getType() == EdgeTypes.IFCMP_EDGE
 			|| edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
@@ -479,6 +485,7 @@ public class ObligationAnalysis
 		}
 		return type;
 	}
+	*/
 }
 
 // vim:ts=4

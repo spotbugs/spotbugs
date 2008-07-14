@@ -149,11 +149,13 @@ public class StateSet {
 	 * Add an obligation to every State in the StateSet.
 	 * 
 	 * @param obligation the obligation to add
+	 * @param basicBlockId the id of the basic block (path component) adding the obligation
 	 */
-	public void addObligation(final Obligation obligation) {
+	public void addObligation(final Obligation obligation, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
 		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
 		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
 			State state = i.next();
+			checkCircularity(state, basicBlockId);
 			state.getObligationSet().add(obligation);
 			updatedStateMap.put(state.getObligationSet(), state);
 		}
@@ -164,16 +166,31 @@ public class StateSet {
 	 * Remove an Obligation from every State in the StateSet.
 	 * 
 	 * @param obligation the obligation to remove
+	 * @param basicBlockId the id of the basic block (path component) removing the obligation
 	 * @throws NonexistentObligationException
 	 */
-	public void deleteObligation(final Obligation obligation) {
+	public void deleteObligation(final Obligation obligation, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
 		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
 		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
 			State state = i.next();
+			checkCircularity(state, basicBlockId);
 			state.getObligationSet().remove(obligation);
 			updatedStateMap.put(state.getObligationSet(), state);
 		}
 		replaceMap(updatedStateMap);
+	}
+
+	/**
+	 * Bail out of the analysis is an obligation is
+	 * acquired or released in a loop.
+	 * 
+	 * @param state a State to which an obligation is being added or removed
+	 * @param basicBlockId  the id of the BasicBlock adding or removing the obligation
+	 */
+	private void checkCircularity(State state, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
+		if (state.getPath().hasComponent(basicBlockId)) {
+			throw new ObligationAcquiredOrReleasedInLoopException();
+		}
 	}
 	
 	/**

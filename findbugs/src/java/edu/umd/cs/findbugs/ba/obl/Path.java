@@ -50,6 +50,15 @@ public class Path {
 		++length;
 		invalidate();
 	}
+	
+	public boolean hasComponent(int blockId) {
+		for (int i = 0; i < length; i++) {
+			if (blockIdList[i] == blockId) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public int getBlockIdAt(int index) {
 		return blockIdList[index];
@@ -87,7 +96,7 @@ public class Path {
 	}
 
 	@Override
-		 public int hashCode() {
+	public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < this.length; ++i) {
@@ -99,7 +108,7 @@ public class Path {
 	}
 
 	@Override
-		 public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		Path other = (Path) o;
