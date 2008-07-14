@@ -38,23 +38,23 @@ public class ObligationSet {
 	private final ObligationFactory factory;
 	private int cachedHashCode;
 
-	public ObligationSet(int maxObligationTypes, ObligationFactory factory) {
-		this.countList = new short[maxObligationTypes];
+	public ObligationSet(/*int maxObligationTypes, */ObligationFactory factory) {
+		this.countList = new short[factory.getMaxObligationTypes()];
 		this.factory = factory;
 		invalidate();
 	}
 
-	public int getMaxObligationTypes() {
-		return countList.length;
-	}
+//	public int getMaxObligationTypes() {
+//		return countList.length;
+//	}
 
 	public void add(Obligation obligation) {
 		invalidate();
 		countList[obligation.getId()]++;
 	}
 
-	public void remove(Obligation obligation) throws NonexistentObligationException {
-		short count = countList[obligation.getId()];
+	public void remove(Obligation obligation) /*throws NonexistentObligationException*/ {
+//		short count = countList[obligation.getId()];
 
 		// It is possible to remove a nonexistent obligation.
 		// Generally this indicates buggy code, e.g.
@@ -68,7 +68,7 @@ public class ObligationSet {
 //			throw new NonexistentObligationException(obligation);
 
 		invalidate();
-		countList[obligation.getId()] = (short)(count - 1);
+		countList[obligation.getId()]--;  // = (short)(count - 1);
 	}
 
 	public int getCount(int id) {
@@ -113,12 +113,18 @@ public class ObligationSet {
 			++count;
 		}
 		buf.append("}");
+		buf.append("@" + System.identityHashCode(this));
 		return buf.toString();
+	}
+	
+	public void copyFrom(ObligationSet other) {
+		System.arraycopy(other.countList, 0, this.countList, 0, other.countList.length);
+		invalidate();
 	}
 
 	public ObligationSet duplicate() {
-		ObligationSet dup = new ObligationSet(countList.length, factory);
-		System.arraycopy(this.countList, 0, dup.countList, 0, countList.length);
+		ObligationSet dup = new ObligationSet(/*countList.length, */factory);
+		dup.copyFrom(this);
 		return dup;
 	}
 

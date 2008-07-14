@@ -41,12 +41,13 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
@@ -71,7 +72,6 @@ public class ObligationAnalysis
 	private MethodGen methodGen;
 	private ObligationFactory factory;
 	private ObligationPolicyDatabase database;
-	//private RepositoryLookupFailureCallback lookupFailureCallback;
 	private IErrorLogger errorLogger;
 
 	/**
@@ -99,7 +99,6 @@ public class ObligationAnalysis
 		this.methodGen = methodGen;
 		this.factory = factory;
 		this.database = database;
-		//this.lookupFailureCallback = lookupFailureCallback;
 		this.errorLogger = errorLogger;
 	}
 
@@ -111,7 +110,7 @@ public class ObligationAnalysis
 	public boolean isFactValid(StateSet fact) {
 		return fact.isValid();
 	}
-
+	
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
@@ -208,13 +207,7 @@ public class ObligationAnalysis
 	 */
 	private void deleteObligation(StateSet fact, Obligation obligation, InstructionHandle handle)
 			throws DataflowAnalysisException {
-		try {
-			fact.deleteObligation(obligation);
-		} catch (NonexistentObligationException e) {
-			throw new DataflowAnalysisException(
-					"Removing nonexistent obligation of type " + obligation.toString(),
-					methodGen, handle, e);
-		}
+		fact.deleteObligation(obligation);
 	}
 
 	/* (non-Javadoc)
@@ -231,19 +224,13 @@ public class ObligationAnalysis
 		fact.initEntryFact(factory);
 	}
 
-//	/* (non-Javadoc)
-//	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initResultFact(edu.umd.cs.findbugs.ba.obl.StateSet)
-//	 */
-//	public void initResultFact(StateSet fact) {
-//		fact.setTop();
-//	}
-
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(edu.umd.cs.findbugs.ba.obl.StateSet)
 	 */
 	public void makeFactTop(StateSet fact) {
 		fact.setTop();
 	}
+
 	public boolean isTop(StateSet fact) {
 		return fact.isTop();
 	}
@@ -257,6 +244,8 @@ public class ObligationAnalysis
 
 	@Override
 	public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
+		// FIXME: runtime exceptions should be ignored: set fact to TOP?
+		
 		// If the edge is an exception thrown from a method that
 		// tries to discharge an obligation, then that obligation needs to
 		// be removed from all states in the input fact.
@@ -298,54 +287,102 @@ public class ObligationAnalysis
 		} else if (inputFact.isBottom() || result.isTop()) {
 			copy(inputFact, result);
 		} else {
-			// Various things need to happen here
-			// - Match up states with equal ObligationSets
-			// - Paths with multiple occurences of a program point,
-			//   but different obligation sets on different passes
-			//   (i.e., obligation created inside a loop but not deleted)
-			//   (how do we detect this?)
-
 			// We will destructively replace the state map of the result fact
 			// we're building.
 			final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
 
-			// Get all of the States from the input fact that don't
-			// have matching states.  These will be copied verbatim
-			// into the result fact.
-			for (Iterator<State> i = inputFact.stateIterator(); i.hasNext(); ) {
-				State otherState = i.next();
-				if (result.getStateWithObligationSet(otherState.getObligationSet()) == null) {
-					// Input fact has a State with an ObligationSet not in
-					// the result fact.  Add a duplicate of it.
-					State dup = otherState.duplicate();
-					updatedStateMap.put(dup.getObligationSet(), dup);
-				}
-			}
-
-			// Find states from the input fact that have obligation sets
-			// which match a State in the result fact, and combine them
-			// into a single State.
-			StateSet.StateCallback callback = new StateSet.StateCallback() {
-				public void apply(State state) throws NonexistentObligationException {
-					// Find state in other fact with same obligation set (if any).
-					State matchingState = inputFact.getStateWithObligationSet(state.getObligationSet());
-					if (matchingState != null) {
-						// Combine the states by using the shorter of the two paths.
-						if (state.getPath().getLength() > matchingState.getPath().getLength()) {
-							state.getPath().copyFrom(matchingState.getPath());
-						}
+			// Build a Set of all ObligationSets.
+			Set<ObligationSet> allObligationSets = new HashSet<ObligationSet>();
+			allObligationSets.addAll(inputFact.getAllObligationSets());
+			allObligationSets.addAll(result.getAllObligationSets());
+			
+			// Go through set of all ObligationsSets.
+			// When both inputFact and result fact have a State
+			// with a common ObligationSet, we combine them into
+			// a single State.
+			for (Iterator<ObligationSet> i = allObligationSets.iterator(); i.hasNext(); ) {
+				ObligationSet obligationSet = i.next();
+				
+				State stateInInputFact = inputFact.getStateWithObligationSet(obligationSet);
+				State stateInResultFact = result.getStateWithObligationSet(obligationSet);
+				
+				State stateToAdd;
+				
+				if (stateInInputFact != null && stateInResultFact != null) {
+					// Combine the two states,
+					// using the shorter path as the basis
+					// of the new state's path.
+					// If both paths are the same length, we arbitrarily choose
+					// the path from the result fact.
+					Path path = stateInResultFact.getPath();
+					if (stateInInputFact.getPath().getLength() < path.getLength()) {
+						path = stateInInputFact.getPath();
 					}
-					updatedStateMap.put(state.getObligationSet(), state);
+					
+					stateToAdd = new State(factory);
+					stateToAdd.getObligationSet().copyFrom(obligationSet);
+					stateToAdd.getPath().copyFrom(path);
+				} else if (stateInInputFact != null) {
+					stateToAdd = stateInInputFact.duplicate();
+				} else {
+					if (stateInResultFact == null ) {
+						System.out.println("Missing ObligationSet : " + obligationSet);
+						System.out.println("  input fact : " + inputFact);
+						System.out.println("  result fact: " + result);
+					}
+					stateToAdd = stateInResultFact.duplicate();
 				}
-			};
-
-			try {
-				result.applyToAllStatesAndUpdateMap(callback, updatedStateMap);
-			} catch (NonexistentObligationException e) {
-				// This can't happen, since we're not removing an obligation.
-				// But we'll propagate the exception just to be cautious.
-				throw new DataflowAnalysisException("This shouldn't happen", e);
+				
+				updatedStateMap.put(stateToAdd.getObligationSet(), stateToAdd);
 			}
+			
+			result.replaceMap(updatedStateMap);
+			
+
+//			// Various things need to happen here
+//			// - Match up states with equal ObligationSets
+//			// - Paths with multiple occurences of a program point,
+//			//   but different obligation sets on different passes
+//			//   (i.e., obligation created inside a loop but not deleted)
+//			//   (how do we detect this?)
+//
+//			// Get all of the States from the input fact that don't
+//			// have matching states.  These will be copied verbatim
+//			// into the result fact.
+//			for (Iterator<State> i = inputFact.stateIterator(); i.hasNext(); ) {
+//				State otherState = i.next();
+//				if (result.getStateWithObligationSet(otherState.getObligationSet()) == null) {
+//					// Input fact has a State with an ObligationSet not in
+//					// the result fact.  Add a duplicate of it.
+//					State dup = otherState.duplicate();
+//					updatedStateMap.put(dup.getObligationSet(), dup);
+//				}
+//			}
+
+//			// Find states from the input fact that have obligation sets
+//			// which match a State in the result fact, and combine them
+//			// into a single State.
+//			StateSet.StateCallback callback = new StateSet.StateCallback() {
+//				public void apply(State state) throws NonexistentObligationException {
+//					// Find state in other fact with same obligation set (if any).
+//					State matchingState = inputFact.getStateWithObligationSet(state.getObligationSet());
+//					if (matchingState != null) {
+//						// Combine the states by using the shorter of the two paths.
+//						if (state.getPath().getLength() > matchingState.getPath().getLength()) {
+//							state.getPath().copyFrom(matchingState.getPath());
+//						}
+//					}
+//					updatedStateMap.put(state.getObligationSet(), state);
+//				}
+//			};
+//
+//			try {
+//				result.applyToAllStatesAndUpdateMap(callback, updatedStateMap);
+//			} catch (NonexistentObligationException e) {
+//				// This can't happen, since we're not removing an obligation.
+//				// But we'll propagate the exception just to be cautious.
+//				throw new DataflowAnalysisException("This shouldn't happen", e);
+//			}
 		}
 	}
 

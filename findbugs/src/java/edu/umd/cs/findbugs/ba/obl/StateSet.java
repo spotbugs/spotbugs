@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A dataflow fact used in ObligationAnalysis.
@@ -39,10 +41,6 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public class StateSet {
-	public interface StateCallback {
-		public void apply(State state) throws NonexistentObligationException;
-	}
-
 	private boolean isTop;
 	private boolean isBottom;
 	private Map<ObligationSet, State> stateMap;
@@ -57,6 +55,7 @@ public class StateSet {
 	public void setTop() {
 		this.isTop = true;
 		this.isBottom = false;
+		this.stateMap.clear();
 	}
 
 	public boolean isTop() {
@@ -84,6 +83,15 @@ public class StateSet {
 	public Iterator<State> stateIterator() {
 		return stateMap.values().iterator();
 	}
+	
+	/**
+	 * Get Set of all ObligationsSets in this StateSet.
+	 * 
+	 * @return Set of all ObligationsSets in this StateSet
+	 */
+	public Set<ObligationSet> getAllObligationSets() {
+		return Collections.unmodifiableSet(stateMap.keySet());
+	}
 
 	/**
 	 * Get the State which has the given ObligationSet.
@@ -107,7 +115,7 @@ public class StateSet {
 		this.stateMap.clear();
 
 		// Add initial fact: empty obligations, empty path
-		State initState = new State(factory.getMaxObligationTypes(), factory);
+		State initState = new State(factory);
 		this.stateMap.put(initState.getObligationSet(), initState);
 	}
 
@@ -143,19 +151,13 @@ public class StateSet {
 	 * @param obligation the obligation to add
 	 */
 	public void addObligation(final Obligation obligation) {
-		final Map<ObligationSet, State> updatedStateMap =
-			new HashMap<ObligationSet, State>();
-
-		try {
-			applyToAllStatesAndUpdateMap(new StateCallback() {
-				public void apply(State state) {
-					state.getObligationSet().add(obligation);
-					updatedStateMap.put(state.getObligationSet(), state);
-				}
-			}, updatedStateMap);
-		} catch (NonexistentObligationException e) {
-			// This can't actually happen.
+		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
+		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
+			State state = i.next();
+			state.getObligationSet().add(obligation);
+			updatedStateMap.put(state.getObligationSet(), state);
 		}
+		replaceMap(updatedStateMap);
 	}
 
 	/**
@@ -164,21 +166,24 @@ public class StateSet {
 	 * @param obligation the obligation to remove
 	 * @throws NonexistentObligationException
 	 */
-	public void deleteObligation(final Obligation obligation)
-			throws NonexistentObligationException {
-		final Map<ObligationSet, State> updatedStateMap =
-			new HashMap<ObligationSet, State>();
-
-		applyToAllStatesAndUpdateMap(new StateCallback() {
-			/* (non-Javadoc)
-			 * @see edu.umd.cs.findbugs.ba.obl.StateSet.StateCallback#apply(edu.umd.cs.findbugs.ba.obl.State)
-			 */
-			public void apply(State state)
-					throws NonexistentObligationException {
-				state.getObligationSet().remove(obligation);
-				updatedStateMap.put(state.getObligationSet(), state);
-			}
-		}, updatedStateMap);
+	public void deleteObligation(final Obligation obligation) {
+		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
+		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
+			State state = i.next();
+			state.getObligationSet().remove(obligation);
+			updatedStateMap.put(state.getObligationSet(), state);
+		}
+		replaceMap(updatedStateMap);
+	}
+	
+	/**
+	 * Replace the map of ObligationSets to States with
+	 * the given one.
+	 * 
+	 * @param stateMap enw map of ObligationSets to States
+	 */
+	public void replaceMap(Map<ObligationSet, State> stateMap) {
+		this.stateMap = stateMap;
 	}
 
 	@Override
@@ -223,33 +228,6 @@ public class StateSet {
 	 */
 	public Map<ObligationSet, State> createEmptyMap() {
 		return new HashMap<ObligationSet, State>();
-	}
-
-	/**
-	 * Apply a callback to all States and replace the
-	 * ObligationSet -&gt; State map with the one given
-	 * (which is assumed to be updated by the callback.)
-	 * 
-	 * @param callback        the callback
-	 * @param updatedStateMap updated map of ObligationSets to States
-	 */
-	public void applyToAllStatesAndUpdateMap(StateCallback callback,
-			Map<ObligationSet, State> updatedStateMap)
-			throws NonexistentObligationException {
-		applyToAllStates(callback);
-		this.stateMap = updatedStateMap;
-	}
-
-	/**
-	 * Apply a callback to all States in the StateSet.
-	 * 
-	 * @param callback
-	 */
-	public void applyToAllStates(StateCallback callback)
-			throws NonexistentObligationException {
-		for (State state : stateMap.values()) {
-			callback.apply(state);
-		}
 	}
 }
 

@@ -99,7 +99,7 @@ public class ObligationFactory {
 //	}
 
 	public ObligationSet createObligationSet() {
-		return new ObligationSet(getMaxObligationTypes(), this);
+		return new ObligationSet(/*getMaxObligationTypes(), */this);
 	}
 }
 
