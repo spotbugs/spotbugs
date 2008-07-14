@@ -160,6 +160,14 @@ applied to method parameters and uses of those method parameters. </p>
       ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase">
+	  <Details>
+		  <![CDATA[
+		  <p>Builds the database of obligation types and methods used by the FindUnsatisfiedObligation detector.
+		  ]]>
+	  </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>

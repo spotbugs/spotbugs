@@ -25,29 +25,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.generic.MethodGen;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
-import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
-import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
-import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * Find unsatisfied obligations in Java methods.
@@ -60,21 +51,15 @@ import edu.umd.cs.findbugs.log.Profiler;
  * 
  * @author David Hovemeyer
  */
-public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetector {
+public class FindUnsatisfiedObligation extends CFGDetector {
 
-	private static final boolean ENABLE = SystemProperties.getBoolean("oa.enable");
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
-	private static final boolean DEBUG_PRINTCFG = SystemProperties.getBoolean("oa.printcfg");
 	private static final String DEBUG_METHOD = SystemProperties.getProperty("oa.method");
 
 	private BugReporter bugReporter;
-	private ObligationFactory factory;
-	private ObligationPolicyDatabase database;
 
 	public FindUnsatisfiedObligation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		this.factory = new ObligationFactory();
-		this.database = buildDatabase();
 	}
 
 	@Override
@@ -82,45 +67,27 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 		if (DEBUG) {
 			System.out.println("*** Analyzing method " + methodDescriptor);
 		}
+		
+		if (DEBUG_METHOD != null && !methodDescriptor.getName().equals(DEBUG_METHOD)) {
+			return;
+		}
 
 		try {
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
+
+			ObligationDataflow dataflow = analysisCache.getMethodAnalysis(ObligationDataflow.class, methodDescriptor);
 			
-			MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
-			DepthFirstSearch dfs = 
-				analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-			TypeDataflow typeDataflow =
-				analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
-			IsNullValueDataflow invDataflow =
-				analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
-			assert typeDataflow != null;
-
-			ObligationAnalysis analysis =
-				new ObligationAnalysis(dfs, typeDataflow, invDataflow, methodGen, factory, database, bugReporter);
-			ObligationDataflow dataflow =
-				new ObligationDataflow(cfg, analysis);
-
-			Profiler profiler = Profiler.getInstance();
-			profiler.start(analysis.getClass());
-			try {
-				dataflow.execute();
-			} finally {
-				profiler.end(analysis.getClass());
-			}
-
-			if (DEBUG_PRINTCFG) {
-				System.out.println("Dataflow CFG:");
-				DataflowCFGPrinter.printCFG(dataflow, System.out);
-			}
-
+			// The ObligationPolicyDatabase contains the ObligationFactory
+			ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
+			
 			// See if there are any states with nonempty obligation sets
 			StateSet factAtExit = dataflow.getStartFact(cfg.getExit());
 			Set<Obligation> leakedObligationSet = new HashSet<Obligation>();
 			for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
 				State state = i.next();
-				for (int id = 0; id < factory.getMaxObligationTypes(); ++id) {
+				for (int id = 0; id < database.getFactory().getMaxObligationTypes(); ++id) {
 					if (state.getObligationSet().getCount(id) > 0) {
-						leakedObligationSet.add(factory.getObligationById(id));
+						leakedObligationSet.add(database.getFactory().getObligationById(id));
 					}
 				}
 			}
@@ -143,32 +110,6 @@ public class FindUnsatisfiedObligation /*implements Detector*/ extends CFGDetect
 	 */
 	public void report() {
 		// Nothing to do here
-	}
-
-	/**
-	 * Create the PolicyDatabase.
-	 * 
-	 * @return the PolicyDatabase
-	 */
-	private ObligationPolicyDatabase buildDatabase() {
-		ObligationPolicyDatabase result = new ObligationPolicyDatabase();
-
-		// Create the Obligation types
-		Obligation inputStreamObligation = factory.addObligation("java.io.InputStream");
-		Obligation outputStreamObligation = factory.addObligation("java.io.OutputStream");
-
-		// Add the database entries describing methods that add and delete
-		// obligations.
-		result.addEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.ADD, inputStreamObligation);
-		result.addEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.ADD, outputStreamObligation);
-		result.addEntry("java.io.InputStream", "close", "()V", false,
-				ObligationPolicyDatabase.DEL, inputStreamObligation);
-		result.addEntry("java.io.OutputStream", "close", "()V", false,
-				ObligationPolicyDatabase.DEL, outputStreamObligation);
-
-		return result;
 	}
 
 }

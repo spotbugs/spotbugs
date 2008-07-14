@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
@@ -70,7 +71,8 @@ public class ObligationAnalysis
 	private MethodGen methodGen;
 	private ObligationFactory factory;
 	private ObligationPolicyDatabase database;
-	private RepositoryLookupFailureCallback lookupFailureCallback;
+	//private RepositoryLookupFailureCallback lookupFailureCallback;
+	private IErrorLogger errorLogger;
 
 	/**
 	 * Constructor.
@@ -80,7 +82,7 @@ public class ObligationAnalysis
 	 * @param factory   the ObligationFactory defining the obligation types
 	 * @param database  the PolicyDatabase defining the methods which
 	 *                  add and delete obligations
-	 * @param lookupFailureCallback callback to use when reporting
+	 * @param errorLogger callback to use when reporting
 	 *                              missing classes
 	 */
 	public ObligationAnalysis(
@@ -90,14 +92,15 @@ public class ObligationAnalysis
 			MethodGen methodGen,
 			ObligationFactory factory,
 			ObligationPolicyDatabase database,
-			RepositoryLookupFailureCallback lookupFailureCallback) {
+			/*RepositoryLookupFailureCallback lookupFailureCallback*/IErrorLogger errorLogger) {
 		super(dfs);
 		this.typeDataflow = typeDataflow;
 		this.invDataflow = invDataflow;
 		this.methodGen = methodGen;
 		this.factory = factory;
 		this.database = database;
-		this.lookupFailureCallback = lookupFailureCallback;
+		//this.lookupFailureCallback = lookupFailureCallback;
+		this.errorLogger = errorLogger;
 	}
 
 	public StateSet createFact() {
@@ -188,7 +191,7 @@ public class ObligationAnalysis
 			return database.lookup(
 				className, methodName, signature, isStatic, action);
 		} catch (ClassNotFoundException e) {
-			lookupFailureCallback.reportMissingClass(e);
+			errorLogger.reportMissingClass(e);
 			return null;
 		}
 

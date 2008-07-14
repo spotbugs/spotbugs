@@ -83,12 +83,19 @@ public class ObligationPolicyDatabase {
 			return obligation;
 		}
 	}
+	
+	private ObligationFactory factory;
 
 	// FIXME: may want to figure out a way to do lookups more efficiently
 	private LinkedList<Entry> entryList;
 
 	public ObligationPolicyDatabase() {
+		this.factory = new ObligationFactory();
 		this.entryList = new LinkedList<Entry>();
+	}
+
+	public ObligationFactory getFactory() {
+		return factory;
 	}
 
 	public void addEntry(
