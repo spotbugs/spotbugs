@@ -74,7 +74,8 @@ public class TestDataflowAnalysis implements Detector2, NonReportingDetector {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
-	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+	@SuppressWarnings("unchecked")
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		if (dataflowClassName == null) {
 			return;
 		}

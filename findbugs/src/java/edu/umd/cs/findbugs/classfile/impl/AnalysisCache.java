@@ -157,7 +157,8 @@ public class AnalysisCache implements IAnalysisCache {
 			AnalysisContext.logError("Unable to purge method analysis" , e);
 		}
 	}
-	private  <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass)
+	@SuppressWarnings("unchecked")
+    private  <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass)
 	throws CheckedAnalysisException {
 		Map<ClassDescriptor, Object> descriptorMap =
 			findOrCreateDescriptorMap(classAnalysisMap, (Map)classAnalysisEngineMap, analysisClass);
@@ -167,7 +168,8 @@ public class AnalysisCache implements IAnalysisCache {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
-	public <E> E getClassAnalysis(Class<E> analysisClass,
+	@SuppressWarnings("unchecked")
+    public <E> E getClassAnalysis(Class<E> analysisClass,
 			ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		if (classDescriptor == null)
 			throw new NullPointerException("classDescriptor is null");
@@ -292,6 +294,7 @@ public class AnalysisCache implements IAnalysisCache {
      * @return the computed analysis object for the method
 	 * @throws CheckedAnalysisException
      */
+    @SuppressWarnings("unchecked")
     private <E> E analyzeMethod(
     		ClassContext classContext,
     		Class<E> analysisClass,

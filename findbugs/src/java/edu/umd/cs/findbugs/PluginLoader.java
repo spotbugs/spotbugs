@@ -150,7 +150,8 @@ public class PluginLoader {
 		return url;
 	}
 
-	private void init() throws PluginException {
+	@SuppressWarnings("unchecked")
+    private void init() throws PluginException {
 		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
 		// the bug detectors and bug patterns that the plugin provides.
 		Document pluginDescriptor;

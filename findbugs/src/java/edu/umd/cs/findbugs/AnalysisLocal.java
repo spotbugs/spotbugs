@@ -26,7 +26,8 @@ public class AnalysisLocal<T> {
 		return null;
 	}
 
-	protected Map <AnalysisLocal<T>, T> getMap() {
+	@SuppressWarnings("unchecked")
+    protected Map <AnalysisLocal<T>, T> getMap() {
 		Map<?,?> m = Global.getAnalysisCache().getAnalysisLocals();
 		return (Map<AnalysisLocal<T>, T>) m;
 	}

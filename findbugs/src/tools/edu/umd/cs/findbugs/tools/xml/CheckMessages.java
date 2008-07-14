@@ -73,7 +73,8 @@ public class CheckMessages {
 		 * Get iterator over Nodes selected by
 		 * given XPath expression.
 		 */
-		public Iterator<Node> xpathIterator(String xpath) {
+		@SuppressWarnings("unchecked")
+        public Iterator<Node> xpathIterator(String xpath) {
 			return document.selectNodes(xpath).iterator();
 		}
 

@@ -68,7 +68,8 @@ public class TigerSubstitutes {
 			return result;
 		}
 
-	  public static <U> Class<? extends U> asSubclass(Class<?> base, Class<U> clazz) {
+	  @SuppressWarnings("unchecked")
+    public static <U> Class<? extends U> asSubclass(Class<?> base, Class<U> clazz) {
 		  if (clazz.isAssignableFrom(base))
 			  return (Class<? extends U>) base;
 		  else

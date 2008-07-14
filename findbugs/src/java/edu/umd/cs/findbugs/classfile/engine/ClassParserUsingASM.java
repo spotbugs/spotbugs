@@ -258,10 +258,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); )
 								System.out.println("   " + i.next());
 							AnnotationValue value = new AnnotationValue(desc);
-//							if (!NO_SHIFT_INNER_CLASS_CTOR && isInnerClass && methodName.equals("<init>")) {
-//								parameter++;
-//							}
-							// System.out.println(isInnerClass + " parameter " + parameter + " of " + slashedClassName+"." + methodName +methodDesc + " is annotated " + desc);
+							if (false &&  isInnerClass && methodName.equals("<init>")) {
+								parameter++;
+ 							}
+							if (false) 
+								System.out.println(isInnerClass + " parameter " + parameter + " of " + slashedClassName+"." + methodName +methodDesc + " is annotated " + desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
 							return value.getAnnotationVisitor();
 						}};

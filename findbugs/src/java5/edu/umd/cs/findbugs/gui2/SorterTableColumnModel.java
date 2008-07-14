@@ -238,7 +238,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 
 		orderUpdate();
 
-		for (TableColumnModelListener w:(ArrayList<TableColumnModelListener>)watchers.clone())
+		for (TableColumnModelListener w: new ArrayList<TableColumnModelListener>(watchers))
 		{
 			w.columnMoved(new TableColumnModelEvent(this,fromIndex,toIndex));
 		}

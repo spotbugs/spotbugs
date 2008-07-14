@@ -34,7 +34,8 @@ public class InstructionHandleMap<ValueType> {
 		map = new Object[methodGen.getMethod().getCode().getLength()];
 	}
 	
-	public ValueType get(InstructionHandle handle) {
+	@SuppressWarnings("unchecked")
+    public ValueType get(InstructionHandle handle) {
 		return (ValueType) map[handle.getPosition()];
 	}
 	

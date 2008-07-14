@@ -680,7 +680,8 @@ public class FindInconsistentSync2 implements Detector {
 	 * @param classContext the ClassContext for the class containing the method
 	 * @param method       the method
 	 */
-	public static boolean isGetterMethod(ClassContext classContext, Method method) {
+	@SuppressWarnings("unchecked")
+    public static boolean isGetterMethod(ClassContext classContext, Method method) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return false;
 		InstructionList il = methodGen.getInstructionList();

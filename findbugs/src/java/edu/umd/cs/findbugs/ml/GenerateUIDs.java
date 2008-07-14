@@ -64,7 +64,8 @@ public class GenerateUIDs {
 		this.outputFilename = outputFilename;
 	}
 
-	public void execute() throws IOException, DocumentException {
+	@SuppressWarnings("unchecked")
+    public void execute() throws IOException, DocumentException {
 		InputStream in;
 		if (inputFilename.equals("-")) {
 			in = System.in;

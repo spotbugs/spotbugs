@@ -693,7 +693,8 @@ public class ConvertToARFF {
 			return UNCLASSIFIED;
 	}
 
-	private List<Element> getBugInstanceList(Document document) {
+	@SuppressWarnings("unchecked")
+    private List<Element> getBugInstanceList(Document document) {
 		List <Element>bugInstanceList = document.selectNodes(nodeSelectionXpath);
 		if (dropUnclassifiedWarnings) {
 			for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
