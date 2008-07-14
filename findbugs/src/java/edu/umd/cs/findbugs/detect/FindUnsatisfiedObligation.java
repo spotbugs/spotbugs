@@ -101,7 +101,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			}
 
 			for (Obligation obligation : leakedObligationSet) {
-				bugReporter.reportBug(new BugInstance(this, "OBL_LEAKED_OBLIGATION", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY)
 						.addClassAndMethod(methodDescriptor)
 						.addClass(obligation.getClassName()).describe("CLASS_REFTYPE")
 				);
