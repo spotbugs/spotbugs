@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2005,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,17 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 
 /**
  * Policy database which defines which methods create and remove
@@ -35,6 +43,8 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  * @author David Hovemeyer
  */
 public class ObligationPolicyDatabase {
+	public static final boolean DEBUG = SystemProperties.getBoolean("obl.debug.db");
+	
 	/** Action constant for methods which create an obligation. */
 	public static final int ADD = 0;
 
@@ -118,6 +128,46 @@ public class ObligationPolicyDatabase {
 		}
 
 		return null;
+	}
+
+	public Obligation addsObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
+		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabase.ADD);
+	}
+
+	public Obligation deletesObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
+		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabase.DEL);
+	}
+
+	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, int action) throws ClassNotFoundException {
+		Instruction ins = handle.getInstruction();
+
+		if (!(ins instanceof InvokeInstruction))
+			return null;
+
+		InvokeInstruction inv = (InvokeInstruction) ins;
+		
+		ReferenceType type = inv.getReferenceType(cpg);
+		if (!(type instanceof ObjectType)) {
+			// We'll assume that methods called on an array object
+			// don't add or remove any obligations.
+			return null;
+		}
+		String className = ((ObjectType) type).getClassName();
+
+		String methodName = inv.getName(cpg);
+		String signature = inv.getSignature(cpg);
+		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+
+		if (DEBUG) {
+			System.out.println("Checking instruction: " + handle);
+			System.out.println("  class    =" + className);
+			System.out.println("  method   =" + methodName);
+			System.out.println("  signature=" + signature);
+		}
+
+		return this.lookup(
+			className, methodName, signature, isStatic, action);
+
 	}
 }
 

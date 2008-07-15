@@ -22,13 +22,8 @@ package edu.umd.cs.findbugs.ba.obl;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -37,10 +32,10 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.bcel.generic.ReferenceType;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -57,7 +52,7 @@ public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
-	private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
+//	private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
 
 //	private TypeDataflow typeDataflow;
 //	private IsNullValueDataflow invDataflow;
@@ -109,14 +104,18 @@ public class ObligationAnalysis
 
 		Obligation obligation;
 
-		if ((obligation = addsObligation(handle)) != null) {
+		try {
+		if ((obligation = database.addsObligation(handle, methodGen.getConstantPool())) != null) {
 			// Add obligation to all states
 			if (DEBUG) { System.out.println("Adding obligation " + obligation.toString()); }
 			fact.addObligation(obligation, basicBlock.getLabel());
-		} else if ((obligation = deletesObligation(handle)) != null) {
+		} else if ((obligation = database.deletesObligation(handle, methodGen.getConstantPool())) != null) {
 			// Delete obligation from all states
 			if (DEBUG) { System.out.println("Deleting obligation " + obligation.toString()); }
 			fact.deleteObligation(obligation, basicBlock.getLabel());
+		}
+		} catch (ClassNotFoundException e) {
+			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
 		}
 
 	}
@@ -139,54 +138,54 @@ public class ObligationAnalysis
 		}
 	}
 
-	private Obligation addsObligation(InstructionHandle handle) {
-		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.ADD);
-	}
-
-	private Obligation deletesObligation(InstructionHandle handle) {
-		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.DEL);
-	}
-
-	private Obligation addsOrDeletesObligation(InstructionHandle handle, int action) {
-		Instruction ins = handle.getInstruction();
-
-		if (!(ins instanceof InvokeInstruction))
-			return null;
-
-		InvokeInstruction inv = (InvokeInstruction) ins;
-
-		ConstantPoolGen cpg = methodGen.getConstantPool();
-
-		// FIXME: could prescreen class here...?
-		
-		ReferenceType type = inv.getReferenceType(cpg);
-		if (!(type instanceof ObjectType)) {
-			// We'll assume that methods called on an array object
-			// don't add or remove any obligations.
-			return null;
-		}
-		String className = ((ObjectType) type).getClassName();
-
-		String methodName = inv.getName(cpg);
-		String signature = inv.getSignature(cpg);
-		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-
-		if (DEBUG) {
-			System.out.println("Checking instruction: " + handle);
-			System.out.println("  class    =" + className);
-			System.out.println("  method   =" + methodName);
-			System.out.println("  signature=" + signature);
-		}
-
-		try {
-			return database.lookup(
-				className, methodName, signature, isStatic, action);
-		} catch (ClassNotFoundException e) {
-			errorLogger.reportMissingClass(e);
-			return null;
-		}
-
-	}
+//	private Obligation addsObligation(InstructionHandle handle) {
+//		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.ADD);
+//	}
+//
+//	private Obligation deletesObligation(InstructionHandle handle) {
+//		return addsOrDeletesObligation(handle, ObligationPolicyDatabase.DEL);
+//	}
+//
+//	private Obligation addsOrDeletesObligation(InstructionHandle handle, int action) {
+//		Instruction ins = handle.getInstruction();
+//
+//		if (!(ins instanceof InvokeInstruction))
+//			return null;
+//
+//		InvokeInstruction inv = (InvokeInstruction) ins;
+//
+//		ConstantPoolGen cpg = methodGen.getConstantPool();
+//
+//		// FIXME: could prescreen class here...?
+//		
+//		ReferenceType type = inv.getReferenceType(cpg);
+//		if (!(type instanceof ObjectType)) {
+//			// We'll assume that methods called on an array object
+//			// don't add or remove any obligations.
+//			return null;
+//		}
+//		String className = ((ObjectType) type).getClassName();
+//
+//		String methodName = inv.getName(cpg);
+//		String signature = inv.getSignature(cpg);
+//		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+//
+//		if (DEBUG) {
+//			System.out.println("Checking instruction: " + handle);
+//			System.out.println("  class    =" + className);
+//			System.out.println("  method   =" + methodName);
+//			System.out.println("  signature=" + signature);
+//		}
+//
+//		try {
+//			return database.lookup(
+//				className, methodName, signature, isStatic, action);
+//		} catch (ClassNotFoundException e) {
+//			errorLogger.reportMissingClass(e);
+//			return null;
+//		}
+//
+//	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
