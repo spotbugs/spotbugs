@@ -21,9 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
