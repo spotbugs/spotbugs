@@ -23,6 +23,8 @@ import edu.umd.cs.findbugs.SystemProperties;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.util.ExactStringMatcher;
+import edu.umd.cs.findbugs.util.StringMatcher;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -59,13 +61,18 @@ public class ObligationPolicyDatabase {
 
 	private static class Entry {
 		private final String className;
-		private final String methodName;
-		private final String signature;
+//		private final String methodName;
+//		private final String signature;
+//		private final StringMatcher className;
+		private final StringMatcher methodName;
+		private final StringMatcher signature;
 		private final boolean isStatic;
 		private final Action action;
 		private final Obligation obligation;
 
-		public Entry(String className, String methodName, String signature,
+		public Entry(//String className, //String methodName, String signature,
+					String className,
+					StringMatcher methodName, StringMatcher signature,
 					boolean isStatic,
 					Action action,
 					Obligation obligation) {
@@ -81,11 +88,11 @@ public class ObligationPolicyDatabase {
 			return className;
 		}
 
-		public String getMethodName() {
+		public StringMatcher getMethodName() {
 			return methodName;
 		}
 
-		public String getSignature() {
+		public StringMatcher getSignature() {
 			return signature;
 		}
 
@@ -119,7 +126,14 @@ public class ObligationPolicyDatabase {
 	public void addEntry(
 			String className, String methodName, String signature, boolean isStatic,
 			Action action, Obligation obligation) {
-		entryList.add(new Entry(className, methodName, signature, isStatic, action, obligation));
+		entryList.add(new Entry(className,
+			//methodName,
+			//signature,
+			new ExactStringMatcher(methodName),
+			new ExactStringMatcher(signature),
+			isStatic,
+			action,
+			obligation));
 	}
 
 	public Obligation lookup(
@@ -128,8 +142,10 @@ public class ObligationPolicyDatabase {
 		for (Entry entry : entryList) {
 			if (isStatic == entry.isStatic()
 					&& action == entry.getAction()
-					&& methodName.equals(entry.getMethodName())
-					&& signature.equals(entry.getSignature())
+					//&& methodName.equals(entry.getMethodName())
+					//&& signature.equals(entry.getSignature())
+					&& entry.getMethodName().matches(methodName)
+					&& entry.getSignature().matches(signature)
 					&& Hierarchy.isSubtype(className, entry.getClassName())) {
 				return entry.getObligation();
 			}
