@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.util.Arrays;
+
 
 /**
  * A multiset of obligations that must be cleaned up by
@@ -35,38 +37,23 @@ public class ObligationSet {
 	private static final int INVALID_HASH_CODE = -1;
 
 	private final short[] countList;
+	private final short[] whereCreated;
 	private final ObligationFactory factory;
 	private int cachedHashCode;
 
 	public ObligationSet(/*int maxObligationTypes, */ObligationFactory factory) {
 		this.countList = new short[factory.getMaxObligationTypes()];
+		this.whereCreated = new short[factory.getMaxObligationTypes()];
 		this.factory = factory;
 		invalidate();
 	}
-
-//	public int getMaxObligationTypes() {
-//		return countList.length;
-//	}
 
 	public void add(Obligation obligation) {
 		invalidate();
 		countList[obligation.getId()]++;
 	}
 
-	public void remove(Obligation obligation) /*throws NonexistentObligationException*/ {
-//		short count = countList[obligation.getId()];
-
-		// It is possible to remove a nonexistent obligation.
-		// Generally this indicates buggy code, e.g.
-		//     InputStream in = null;
-		//     try {
-		//       in = new FileInputStream(...);
-		//     } catch (IOException e) {
-		//        in.close(); // in might be null!
-		//     }
-//		if (count <= 0)
-//			throw new NonexistentObligationException(obligation);
-
+	public void remove(Obligation obligation) {
 		invalidate();
 		countList[obligation.getId()]--;  // = (short)(count - 1);
 	}
@@ -79,6 +66,34 @@ public class ObligationSet {
 //		return getCount(obligation.getId());
 //	}
 
+	/**
+	 * Called upon the first creation of given kind of obligation on path.
+	 * 
+	 * @param obligation    an Obligation
+	 * @param basicBlockId  BasicBlock id of first creation of the given obligation type
+	 */
+	public void setWhereCreated(Obligation obligation, int basicBlockId) {
+		assert getCount(obligation.getId()) == 1;
+		invalidate();
+
+		if (basicBlockId > Short.MAX_VALUE) {
+			whereCreated[obligation.getId()] = -1;
+			return;
+		}
+		
+		whereCreated[obligation.getId()] = (short) basicBlockId;
+	}
+	
+	/**
+	 * Find out where the first instance of given obligation type was created.
+	 * 
+	 * @param obligation an obligation
+	 * @return id of basic block where created, or -1 if the basic block couldn't be stored
+	 */
+	public int getWhereCreated(Obligation obligation) {
+		return whereCreated[obligation.getId()];
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
@@ -86,12 +101,9 @@ public class ObligationSet {
 
 		ObligationSet other = (ObligationSet) o;
 
-		if (this.countList.length != other.countList.length)
+		if (!Arrays.equals(this.countList, other.countList)
+			|| !Arrays.equals(this.whereCreated, other.whereCreated)) {
 			return false;
-
-		for (int i = 0; i < this.countList.length; ++i) {
-			if (this.countList[i] != other.countList[i])
-				return false;
 		}
 
 		return true;
@@ -119,6 +131,7 @@ public class ObligationSet {
 	
 	public void copyFrom(ObligationSet other) {
 		System.arraycopy(other.countList, 0, this.countList, 0, other.countList.length);
+		System.arraycopy(other.whereCreated, 0, this.whereCreated, 0, other.whereCreated.length);
 		invalidate();
 	}
 
@@ -133,7 +146,7 @@ public class ObligationSet {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < countList.length; ++i) {
-				value += (13 * i * countList[i]);
+				value += (13 * i * (countList[i] + whereCreated[i]));
 			}
 			cachedHashCode = value;
 		}
