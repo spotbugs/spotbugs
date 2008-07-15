@@ -27,6 +27,7 @@ import java.util.Set;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -49,6 +50,10 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -139,15 +144,19 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
 			subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
 
+			//Set<Obligation> leakedObligations = new HashSet<Obligation>();
+			Map<Obligation, List<State>> leakedObligations = new HashMap<Obligation, List<State>>();
+
 			//
 			// Main loop: looking at the StateSet at the exit block of the CFG,
 			// see if there are any states with nonempty obligation sets.
 			//
 			StateSet factAtExit = dataflow.getStartFact(cfg.getExit());
-			Set<Obligation> leakedObligations = new HashSet<Obligation>();
 			for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
 				State state = i.next();
+
 				for (int id = 0; id < database.getFactory().getMaxObligationTypes(); ++id) {
+					Obligation obligation = database.getFactory().getObligationById(id);
 					// If the raw count produced by the analysis
 					// for this obligation type is 0,
 					// assume everything is ok on this state's path.
@@ -169,16 +178,60 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 
 					if (leakCount > 0) {
-						Obligation obligation = database.getFactory().getObligationById(id);
-						leakedObligations.add(obligation);
+						//leakedObligations.add(obligation);
+						List<State> leakingStateList = leakedObligations.get(obligation);
+						if (leakingStateList == null) {
+							leakingStateList = new LinkedList<State>();
+							leakedObligations.put(obligation, leakingStateList);
+						}
+						leakingStateList.add(state);
 					}
 					// TODO: if the leak count is less than 0, then a nonexistent resource was closed
 				}
 			}
 
-			for (Obligation obligation : leakedObligations) {
-				bugReporter.reportBug(
-					new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY).addClassAndMethod(methodDescriptor).addClass(obligation.getClassName()).describe("CLASS_REFTYPE"));
+//			for (Obligation obligation : leakedObligations) {
+//				bugReporter.reportBug(
+//					new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY).addClassAndMethod(methodDescriptor).addClass(obligation.getClassName()).describe("CLASS_REFTYPE"));
+//			}
+			for (Map.Entry<Obligation, List<State>> entry : leakedObligations.entrySet()) {
+				Obligation obligation = entry.getKey();
+				List<State> stateList = entry.getValue();
+				
+				BugInstance bugInstance =
+					new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY).addClassAndMethod(methodDescriptor)
+					.addClass(obligation.getClassName())
+					.describe("CLASS_REFTYPE");
+				
+				// FIXME:
+				// For now, just report the first resource creation point
+				// along each path where a leak was detected.
+				// In the future, might want to try to convey some path information.
+				for (State state : stateList) {
+					int blockId = state.getObligationSet().getWhereCreated(obligation);
+					if (blockId > 0) {
+						BasicBlock creationBlock = cfg.lookupBlockByLabel(blockId);
+						
+						// Figure out which instruction actually creates
+						// the obligation
+						for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
+							InstructionHandle handle = i.next();
+							try {
+								Obligation created = database.addsObligation(handle, cpg);
+								if (created != null && created.equals(obligation)) {
+									bugInstance
+										.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
+										.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+								}
+							} catch (ClassNotFoundException e) {
+								bugReporter.reportMissingClass(e);
+							}
+						}
+					}
+							
+				}
+				
+				bugReporter.reportBug(bugInstance);
 			}
 			// TODO: closing of nonexistent resources
 
