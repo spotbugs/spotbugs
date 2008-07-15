@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003-2007 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -227,6 +227,23 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 			Edge edge = i.next();
 			if (edge.getId() == id)
 				return edge;
+		}
+		return null;
+	}
+	
+	/**
+	 * Look up a BasicBlock by its unique label.
+	 * 
+	 * @param blockLabel the label of a BasicBlock
+	 * @return the BasicBlock with the given label,
+	 *         or null if there is no such BasicBlock
+	 */
+	public BasicBlock lookupBlockByLabel(int blockLabel) {
+		for (Iterator<BasicBlock> i = blockIterator(); i.hasNext(); ) {
+			BasicBlock basicBlock = i.next();
+			if (basicBlock.getLabel() == blockLabel) {
+				return basicBlock;
+			}
 		}
 		return null;
 	}
