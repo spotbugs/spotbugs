@@ -144,7 +144,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 	 */
 	@Override
 	public void visit(Field aField) {
-		if (!aField.isStatic()) return;
+		String superclassName = getSuperclassName();
+		if (!aField.isStatic()  && !superclassName.equals("java/lang/Enum")) return;
 		if (!aField.isPublic() && !aField.isProtected()) return;
 		ClassDescriptor classOfField = DescriptorFactory.createClassDescriptorFromFieldSignature(aField.getSignature());
 		String tBugType = null;
