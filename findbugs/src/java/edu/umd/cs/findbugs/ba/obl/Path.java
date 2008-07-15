@@ -83,6 +83,7 @@ public class Path {
 	 * @return the id of the BasicBlock at the given index
 	 */
 	public int getBlockIdAt(int index) {
+		assert index < length;
 		return blockIdList[index];
 	}
 
