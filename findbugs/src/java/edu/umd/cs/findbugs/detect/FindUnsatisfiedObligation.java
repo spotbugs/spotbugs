@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
+import edu.umd.cs.findbugs.ba.obl.ObligationAcquiredOrReleasedInLoopException;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
@@ -75,7 +76,17 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		try {
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
 
-			ObligationDataflow dataflow = analysisCache.getMethodAnalysis(ObligationDataflow.class, methodDescriptor);
+			ObligationDataflow dataflow;
+			
+			try {
+				dataflow = analysisCache.getMethodAnalysis(ObligationDataflow.class, methodDescriptor);
+			} catch (ObligationAcquiredOrReleasedInLoopException e) {
+				// It is not possible to analyze this method.
+				if (DEBUG) {
+					System.out.println("FindUnsatisifedObligation: " +methodDescriptor + ": " + e.getMessage());
+				}
+				return;
+			}
 			
 			// The ObligationPolicyDatabase contains the ObligationFactory
 			ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
@@ -86,17 +97,22 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
 				State state = i.next();
 				for (int id = 0; id < database.getFactory().getMaxObligationTypes(); ++id) {
-					if (state.getObligationSet().getCount(id) > 0) {
-						
-						// FIXME: check the path for this state to
-						// account for:
-						//   1. null checks
-						//   2. field assignments
-						//   3. return statements
-						
-						
-						leakedObligationSet.add(database.getFactory().getObligationById(id));
-					}
+//					int leakCount = state.getObligationSet().getCount(id);
+					
+					int leakCount = getLeakCount(state, id, methodDescriptor);
+//					
+//					if (state.getObligationSet().getCount(id) > 0) {
+//						
+//						// FIXME: check the path for this state to
+//						// account for:
+//						//   1. null checks
+//						//   2. field assignments
+//						//   3. return statements
+//						
+//						if (checkLeakPath(state, database.getFactory().getObligationById(id), methodDescriptor)) {
+//							leakedObligationSet.add(database.getFactory().getObligationById(id));
+//						}
+//					}
 				}
 			}
 
@@ -111,6 +127,28 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError("ObligationAnalysis error while analyzing " + methodDescriptor, e);
 		}
+	}
+	/**
+	 * Get the leak count for the given State and obligation type.
+	 * Use heuristics to account for:
+	 * <ul>
+	 *   <li> null checks (count the number of times the supposedly leaked obligation
+	 *        is compared to null, and subtract those from the leak count)</li>
+	 *   <li> field assignments (count number of times obligation type is
+	 *        assigned to a field, and subtract those from the leak count)</li>
+	 *   <li> return statements (if an instance of the obligation type is
+	 *        returned from the method, subtract one from leak count) </li>
+	 * </ul>
+	 * 
+	 * @return the leak count (positive if leaked obligation, negative if
+	 *          attempt to release an un-acquired obligation)
+	 */
+	private int getLeakCount(State state, int obligationId, MethodDescriptor methodDescriptor) {
+		int leakCount = state.getObligationSet().getCount(obligationId);
+		
+		// TODO: implement heuristics 
+		
+		return leakCount;
 	}
 
 	/* (non-Javadoc)

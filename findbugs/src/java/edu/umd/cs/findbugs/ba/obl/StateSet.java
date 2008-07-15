@@ -155,7 +155,7 @@ public class StateSet {
 		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
 		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
 			State state = i.next();
-			checkCircularity(state, basicBlockId);
+			checkCircularity(state, obligation, basicBlockId);
 			state.getObligationSet().add(obligation);
 			updatedStateMap.put(state.getObligationSet(), state);
 		}
@@ -173,7 +173,7 @@ public class StateSet {
 		Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
 		for (Iterator<State> i = stateIterator(); i.hasNext(); ) {
 			State state = i.next();
-			checkCircularity(state, basicBlockId);
+			checkCircularity(state, obligation, basicBlockId);
 			state.getObligationSet().remove(obligation);
 			updatedStateMap.put(state.getObligationSet(), state);
 		}
@@ -185,11 +185,12 @@ public class StateSet {
 	 * acquired or released in a loop.
 	 * 
 	 * @param state a State to which an obligation is being added or removed
+	 * @param obligation  the Obligation being added or removed
 	 * @param basicBlockId  the id of the BasicBlock adding or removing the obligation
 	 */
-	private void checkCircularity(State state, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
+	private void checkCircularity(State state, Obligation obligation, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
 		if (state.getPath().hasComponent(basicBlockId)) {
-			throw new ObligationAcquiredOrReleasedInLoopException();
+			throw new ObligationAcquiredOrReleasedInLoopException(obligation);
 		}
 	}
 	

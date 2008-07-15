@@ -52,17 +52,17 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
 		MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
 		DepthFirstSearch dfs =
 			analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-		TypeDataflow typeDataflow =
-			analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
-		IsNullValueDataflow invDataflow =
-			analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
-		assert typeDataflow != null;
+//		TypeDataflow typeDataflow =
+//			analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
+//		IsNullValueDataflow invDataflow =
+//			analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
+//		assert typeDataflow != null;
 
 		ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
 		ObligationFactory factory = database.getFactory();
 
 		ObligationAnalysis analysis =
-			new ObligationAnalysis(dfs, typeDataflow, invDataflow, methodGen, factory, database, analysisCache.getErrorLogger());
+			new ObligationAnalysis(dfs, /*typeDataflow, invDataflow,*/ methodGen, factory, database, analysisCache.getErrorLogger());
 		ObligationDataflow dataflow =
 			new ObligationDataflow(cfg, analysis);
 
