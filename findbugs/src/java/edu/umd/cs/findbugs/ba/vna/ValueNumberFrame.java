@@ -423,6 +423,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		  return v1.equals(v2);
 	}
 
+	public boolean veryFuzzyMatch(ValueNumber v1, ValueNumber v2) {
+		if (REDUNDANT_LOAD_ELIMINATION)
+		  return v1.equals(v2) || fromMatchingFields(v1, v2) || haveMatchingFlags(v1, v2); 
+		else
+		  return v1.equals(v2);
+	}
 	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
 		AvailableLoad load1 = getLoad(v1);
 		if (load1 == null) load1 = getPreviouslyKnownAs().get(v1);
@@ -433,6 +439,22 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return load1.equals(load2);
 	}
 
+	public boolean fromMatchingFields(ValueNumber v1, ValueNumber v2) {
+		AvailableLoad load1 = getLoad(v1);
+		if (load1 == null) load1 = getPreviouslyKnownAs().get(v1);
+		if (load1 == null) return false;
+		AvailableLoad load2 = getLoad(v2);
+		if (load2 == null) load2 = getPreviouslyKnownAs().get(v2);
+		if (load2 == null) return false;
+		if (load1.equals(load2)) return true;
+		if (load1.getField().equals(load2.getField())) {
+			ValueNumber source1 = load1.getReference();
+			ValueNumber source2 = load2.getReference();
+			if (!this.contains(source1)) return true;
+			if (!this.contains(source2)) return true;
+		}
+		return false;
+	}
 	/**
 	 * @param v1
 	 * @param v2

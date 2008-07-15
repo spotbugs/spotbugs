@@ -506,6 +506,13 @@ public abstract class Frame<ValueType> {
 		return slotList.size();
 	}
 
+	public boolean contains(ValueType value) {
+		if (!isValid())
+			throw new IllegalStateException("accessing top or bottom frame");
+		for(ValueType v : slotList)
+			if (v.equals(value)) return true;
+		return false;
+	}
 	/**
 	 * Get the value at the <i>n</i>th slot.
 	 *
