@@ -1,0 +1,74 @@
+public class sfBugs.Bug1926409 extends java.lang.Object
+filename		Bug1926409.class
+compiled from		Bug1926409.java
+compiler version	49.0
+access flags		33
+constant pool		31 entries
+ACC_SUPER flag		true
+
+Attribute(s):
+	SourceFile(Bug1926409.java)
+
+2 methods:
+	public void <init>()
+	public static void foo(String arg0)
+		throws java.io.IOException
+
+public void <init>()
+Code(max_stack = 1, max_locals = 1, code_length = 5)
+0:    aload_0
+1:    invokespecial	java.lang.Object.<init> ()V (1)
+4:    return
+
+Attribute(s) = 
+LineNumber(0, 8)
+
+public static void foo(String arg0)
+		throws java.io.IOException
+Code(max_stack = 3, max_locals = 5, code_length = 56)
+0:    aconst_null
+1:    astore_1
+2:    new		<java.io.FileOutputStream> (2)
+5:    dup
+6:    aload_0
+7:    invokespecial	java.io.FileOutputStream.<init> (Ljava/lang/String;)V (3)
+10:   astore_1
+11:   aload_1
+12:   iconst_0
+13:   invokevirtual	java.io.OutputStream.write (I)V (4)
+16:   aload_1
+17:   astore_2
+18:   aconst_null
+19:   astore_1
+20:   aload_2
+21:   invokevirtual	java.io.OutputStream.close ()V (5)
+24:   aload_1
+25:   ifnull		#55
+28:   aload_1
+29:   invokevirtual	java.io.OutputStream.close ()V (5)
+32:   goto		#55
+35:   astore_2
+36:   goto		#55
+39:   astore_3
+40:   aload_1
+41:   ifnull		#53
+44:   aload_1
+45:   invokevirtual	java.io.OutputStream.close ()V (5)
+48:   goto		#53
+51:   astore		%4
+53:   aload_3
+54:   athrow
+55:   return
+
+Exception handler(s) = 
+From	To	Handler	Type
+28	32	35	java.io.IOException(6)
+2	24	39	<Any exception>(0)
+44	48	51	java.io.IOException(6)
+39	40	39	<Any exception>(0)
+
+Attribute(s) = 
+LineNumber(0, 11), LineNumber(2, 13), LineNumber(11, 15), LineNumber(16, 16), 
+LineNumber(18, 17), LineNumber(20, 18), LineNumber(24, 21), LineNumber(55, 23)
+
+

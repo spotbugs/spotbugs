@@ -8,14 +8,21 @@ public class Bug2003243 {
 	static Bug2003243 record = new Bug2003243();
 
 	@NoWarning("MWN")
-	public void foo() {
+	public static void foo() {
 		synchronized (record.field) {
 			record.field.notifyAll(); // There should not be an MWN violation here
 		}
 	}
 	
 	@NoWarning("MWN")
-	public void different() {
+	public void foo2() {
+		synchronized (field) {
+			field.notifyAll(); // There should not be an MWN violation here
+		}
+	}
+
+	@NoWarning("MWN")
+	public static void different() {
 		Object lock = record.field;
 		synchronized (lock) {
 			lock.notifyAll();
