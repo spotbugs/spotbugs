@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
@@ -70,12 +73,15 @@ public class UsagesRequiringNonNullValues {
 	}
 
 	public @CheckForNull
-	PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
+	PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
 		// PointerUsageRequiringNonNullValue secondBest = null;
+		MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
 		for (Pair p : map.get(loc)) {
 			if (p.vn.equals(vn))
 				return p.pu;
-			// else secondBest = p.pu;
+			if (!p.vn.hasFlag(ValueNumber.PHI_NODE)) continue;
+			BitSet inputs = mergeTree.getTransitiveInputSet(p.vn);
+			if (inputs.get(vn.getNumber())) return p.pu;
 		}
 		return null;
 	}

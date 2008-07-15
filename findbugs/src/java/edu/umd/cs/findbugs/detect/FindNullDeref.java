@@ -97,6 +97,7 @@ import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
@@ -155,6 +156,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	private Method method;
 
 	private IsNullValueDataflow invDataflow;
+	
+	private ValueNumberDataflow vnaDataflow;
 
 	private BitSet previouslyDeadBlocks;
 
@@ -229,7 +232,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		// Get the IsNullValueDataflow for the method from the ClassContext
 		invDataflow = classContext.getIsNullValueDataflow(method);
-
+		
+		vnaDataflow = classContext.getValueNumberDataflow(method);
+		
 		// Create a NullDerefAndRedundantComparisonFinder object to do the
 		// actual
 		// work. It will call back to report null derefs and redundant null
@@ -1264,7 +1269,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			PointerUsageRequiringNonNullValue pu = null;
 			try {
 				UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
-				pu = usages.get(loc, refValue);
+				pu = usages.get(loc, refValue, vnaDataflow);
 			} catch (DataflowAnalysisException e) {
 			   AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
 			} catch (CFGBuilderException e) {
@@ -1399,7 +1404,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		PointerUsageRequiringNonNullValue pu;
 		try {
 			UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
-			pu = usages.get(loc, refValue);
+			pu = usages.get(loc, refValue, vnaDataflow);
 			if (pu == null)  return "SOURCE_LINE_DEREF";
 			return pu.getDescription();
 		} catch (DataflowAnalysisException e) {
