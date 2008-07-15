@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2004, University of Maryland
+ * Copyright (C) 2004,2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,12 +38,21 @@ public class Path {
 	private int length;
 	private int cachedHashCode;
 
+	/**
+	 * Constructor.
+	 * Creates an empty Path.
+	 */
 	public Path() {
 		this.blockIdList = new int[DEFAULT_CAPACITY];
 		this.length = 0;
 		invalidate();
 	}
 
+	/**
+	 * Append given BasicBlock id to the path.
+	 * 
+	 * @param id a BasicBlock id (label)
+	 */
 	public void append(int id) {
 		grow(length);
 		blockIdList[length] = id;
@@ -51,6 +60,13 @@ public class Path {
 		invalidate();
 	}
 	
+	/**
+	 * Determine whether or not the id of the given BasicBlock appears
+	 * anywhere in the path.
+	 * 
+	 * @param blockId the id (label) of a BasicBlock
+	 * @return true if the BasicBlock's id appears in the path, false if not
+	 */
 	public boolean hasComponent(int blockId) {
 		for (int i = 0; i < length; i++) {
 			if (blockIdList[i] == blockId) {
@@ -60,10 +76,21 @@ public class Path {
 		return false;
 	}
 
+	/**
+	 * Get the BasicBlock id at the given index in the path.
+	 * 
+	 * @param index an index in the Path (0 is the first component)
+	 * @return the id of the BasicBlock at the given index
+	 */
 	public int getBlockIdAt(int index) {
 		return blockIdList[index];
 	}
 
+	/**
+	 * Get the number of components (BasicBlock ids) in the Path.
+	 * 
+	 * @return number of components in the Path
+	 */
 	public int getLength() {
 		return length;
 	}
