@@ -44,23 +44,31 @@ import org.apache.bcel.generic.ReferenceType;
  */
 public class ObligationPolicyDatabase {
 	public static final boolean DEBUG = SystemProperties.getBoolean("obl.debug.db");
-	
-	/** Action constant for methods which create an obligation. */
-	public static final int ADD = 0;
 
-	public static final int DEL = 1;
+	/**
+	 * Enumeration describing possible actions
+	 * for policy database entries.
+	 */
+	public enum Action {
+		/** Add an obligation (e.g., acquire a resource). */
+		ADD,
+		
+		/** Delete an obligation (e.g., release a resource). */
+		DEL;
+	}
 
 	private static class Entry {
 		private final String className;
 		private final String methodName;
 		private final String signature;
 		private final boolean isStatic;
-		private final int action;
+		private final Action action;
 		private final Obligation obligation;
 
 		public Entry(String className, String methodName, String signature,
 					boolean isStatic,
-					int action, Obligation obligation) {
+					Action action,
+					Obligation obligation) {
 			this.className = className;
 			this.methodName = methodName;
 			this.signature = signature;
@@ -85,7 +93,7 @@ public class ObligationPolicyDatabase {
 			return isStatic;
 		}
 
-		public int getAction() {
+		public Action getAction() {
 			return action;
 		}
 
@@ -110,13 +118,13 @@ public class ObligationPolicyDatabase {
 
 	public void addEntry(
 			String className, String methodName, String signature, boolean isStatic,
-			int action, Obligation obligation) {
+			Action action, Obligation obligation) {
 		entryList.add(new Entry(className, methodName, signature, isStatic, action, obligation));
 	}
 
 	public Obligation lookup(
 			String className, String methodName, String signature, boolean isStatic,
-			int action) throws ClassNotFoundException {
+			Action action) throws ClassNotFoundException {
 		for (Entry entry : entryList) {
 			if (isStatic == entry.isStatic()
 					&& action == entry.getAction()
@@ -131,14 +139,14 @@ public class ObligationPolicyDatabase {
 	}
 
 	public Obligation addsObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabase.ADD);
+		return addsOrDeletesObligation(handle, cpg, Action.ADD);
 	}
 
 	public Obligation deletesObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabase.DEL);
+		return addsOrDeletesObligation(handle, cpg, Action.DEL);
 	}
 
-	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, int action) throws ClassNotFoundException {
+	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, Action action) throws ClassNotFoundException {
 		Instruction ins = handle.getInstruction();
 
 		if (!(ins instanceof InvokeInstruction))
