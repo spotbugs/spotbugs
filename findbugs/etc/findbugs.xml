@@ -253,6 +253,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" 
             speed="fast"
             reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
+  <Detector class="edu.umd.cs.findbugs.detect.DuplicateConditionals" 
+            speed="fast"
+            reports="TESTING"
+		/>
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"

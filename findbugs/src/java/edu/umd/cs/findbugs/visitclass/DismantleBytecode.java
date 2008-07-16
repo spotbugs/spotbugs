@@ -931,6 +931,35 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		}
 	}
 
+	public static boolean areOppositeBranches(int opcode1, int opcode2) {
+		if (!isBranch(opcode1)) throw new IllegalArgumentException(OPCODE_NAMES[opcode1] + " isn't a branch");
+		if (!isBranch(opcode2)) throw new IllegalArgumentException(OPCODE_NAMES[opcode2] + " isn't a branch");
+		switch(opcode1) {
+		case IF_ACMPEQ:
+		case IF_ACMPNE:
+		case IF_ICMPEQ:
+		case IF_ICMPNE:
+		case IF_ICMPLT:
+		case IF_ICMPLE:
+		case IF_ICMPGT:
+		case IF_ICMPGE:
+		case IFNE:
+		case IFEQ:
+		case IFLT:
+		case IFLE:
+		case IFGT:
+		case IFGE:
+			return ((opcode1 +1) ^ 1) == opcode2+1;
+		case IFNONNULL:
+			return opcode2 == IFNULL;
+		case IFNULL:
+			return opcode2 == IFNONNULL;
+		default:
+			 return false;
+		
+			
+		}
+	}
 	public boolean isRegisterStore(int opcode) {
 		switch(opcode) {
 		case ISTORE_0:

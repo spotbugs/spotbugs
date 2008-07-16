@@ -411,6 +411,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedInstructionRange(
 			ClassContext classContext, PreorderVisitor visitor, int startPC, int endPC) {
+		if (startPC > endPC) throw new IllegalArgumentException("Start pc " + startPC + " greater than end pc " + endPC);
+		
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
 		String className = visitor.getDottedClassName();
 		String sourceFile = visitor.getSourceFile();

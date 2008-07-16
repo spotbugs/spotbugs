@@ -414,6 +414,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.DuplicateConditionals">
+    <Details>
+<![CDATA[
+<p> This detector looks for code containing duplicated conditions, such as (x == 5 || x == 5). 
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[

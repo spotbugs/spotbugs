@@ -2047,6 +2047,9 @@ public class OpcodeStack implements Constants2
         }}
 
 	
+	 public boolean isJumpTarget(int pc) {
+		 return jumpEntryLocations.get(pc);
+	 }
 	 
 	 private void addJumpValue(int from, int target) {
 		 if (DEBUG)

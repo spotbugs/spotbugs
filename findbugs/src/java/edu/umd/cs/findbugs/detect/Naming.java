@@ -78,7 +78,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		return null;
 	}
 
-	public static boolean confusingMethodNames(XMethod m1, XMethod m2) {
+	public static boolean confusingMethodNamesWrongCapitalization(XMethod m1, XMethod m2) {
 		if (m1.isStatic() != m2.isStatic())
 			return false;
 		if (m1.getClassName().equals(m2.getClassName()))
@@ -129,7 +129,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			return false;
 		for (XMethod m2 : others) {
 			try {
-				if ((confusingMethodNames(m, m2) || confusingMethodNamesWrongPackage(m,m2)) 
+				if ((confusingMethodNamesWrongCapitalization(m, m2) || confusingMethodNamesWrongPackage(m,m2)) 
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
 					WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
 
@@ -216,7 +216,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>"))
 			return false;
 		for (XMethod m2 : others) {
-			if (confusingMethodNames(m, m2)) {
+			if (confusingMethodNamesWrongCapitalization(m, m2)) {
 				XMethod mm1 = m;
 				XMethod mm2 = m2;
 				if (m.compareTo(m2) < 0) {
