@@ -63,6 +63,10 @@ public class MatchObligationParametersEntry implements ObligationPolicyDatabaseE
 		
 		// See if any of the method's parameters are obligation types.
 		Type[] paramTypes = Type.getArgumentTypes(signature);
+		if (paramTypes.length == 0) {
+			// no parameters
+			return;
+		}
 		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
@@ -72,7 +76,7 @@ public class MatchObligationParametersEntry implements ObligationPolicyDatabaseE
 			System.out.println("Check call to " + receiverType + "." + methodName + ":" + signature);
 		}
 		
-		// For known Obligation types...
+		// FoAdded header comment, javadocr known Obligation types...
 		LinkedList<ObligationPolicyDatabaseAction> toAdd = new LinkedList<ObligationPolicyDatabaseAction>();
 		for (Iterator<Obligation> i = database.getFactory().obligationIterator(); i.hasNext(); ) {
 			Obligation obligation = i.next();
