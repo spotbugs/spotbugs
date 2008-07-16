@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
+import edu.umd.cs.findbugs.ba.obl.MatchObligationParametersEntry;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
@@ -30,6 +31,8 @@ import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.util.AnyTypeMatcher;
+import edu.umd.cs.findbugs.util.ContainsCamelCaseWordStringMatcher;
 
 /**
  * Build the ObligationPolicyDatabase used by ObligationAnalysis.
@@ -89,6 +92,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		database.addEntry(new MatchMethodEntry("java.io.OutputStream", "close", "()V", false,
 				ObligationPolicyDatabaseActionType.DEL, outputStreamObligation));
 		
-		// Experiment: assume that 
+		// Experiment: assume that any method with the word "close" in
+		// its camel-cased identifier taking an obligation type
+		// as a parameter deletes an instance of that obligation.
+		// The hope is that this will at least partially handle wrapper
+		// methods for closing resouces.
+		database.addEntry(new MatchObligationParametersEntry(
+			new AnyTypeMatcher(),
+			new ContainsCamelCaseWordStringMatcher("close"),
+			ObligationPolicyDatabaseActionType.DEL));
 	}
 }
