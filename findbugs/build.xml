@@ -44,10 +44,8 @@
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
-<!--
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
--->
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="sampleoutput.dir" value="build/sampleoutput"/>
 	<property name="junittests.jar" value="build/junittests.jar"/>
@@ -938,10 +936,8 @@
 		<delete dir="${doc.dir}"/>
 		<delete dir="${web.dir}"/>
 		<delete file="${engine.jar}"/>
-<!--
 		<delete file="${coreplugin.jar}"/>
 		<delete file="${gui.jar}"/>
--->
 		<delete file="${anttask.jar}"/>
 	</target>
 
