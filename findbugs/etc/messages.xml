@@ -1768,6 +1768,20 @@ another field.</p>
    </BugPattern>
 
 
+  <BugPattern type="RpC_REPEATED_CONDITIONAL_TEST">
+    <ShortDescription>Repeated conditional tests</ShortDescription>
+    <LongDescription>Repeated conditional test in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>The code contains a conditional test is performed twice, one right after the other
+(e.g., <code>x == 0 || x == 0</code). Perhaps the second occurrence is intended to be something else
+(e.g., <code>x == 0 || y == 0</code). 
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="TESTING">
     <ShortDescription>Testing</ShortDescription>
     <LongDescription>Test warning generated in {1}</LongDescription>
@@ -1778,6 +1792,8 @@ bug detectors.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="UNKNOWN">
     <ShortDescription>Unknown bug pattern</ShortDescription>
     <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
@@ -7138,6 +7154,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="HRS" >HTTP Response splitting vulnerability</BugCode>
   <BugCode abbrev="XSS" >Cross site scripting vulnerabilitity</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
+  <BugCode abbrev="RpC" >Repeated conditional test</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
   <BugCode abbrev="UCF">Useless control flow</BugCode>

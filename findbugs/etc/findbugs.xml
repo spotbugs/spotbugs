@@ -253,9 +253,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" 
             speed="fast"
             reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
-  <Detector class="edu.umd.cs.findbugs.detect.DuplicateConditionals" 
+  <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals" 
             speed="fast"
-            reports="TESTING"
+            reports="RpC_REPEATED_CONDITIONAL_TEST"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
@@ -790,7 +790,7 @@
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
   <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
-  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" />
+  <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS" />
   <BugPattern abbrev="TEST" type="UNKNOWN" category="CORRECTNESS" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 

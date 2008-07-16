@@ -31,11 +31,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class DuplicateConditionals extends OpcodeStackDetector {
+public class RepeatedConditionals extends OpcodeStackDetector {
 
 	BugReporter bugReporter;
 
-	public DuplicateConditionals(BugReporter bugReporter) {
+	public RepeatedConditionals(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		reset();
 	}
@@ -118,7 +118,7 @@ public class DuplicateConditionals extends OpcodeStackDetector {
 						priority++;
 					}
 					
-					BugInstance bug = new BugInstance(this, "TESTING", priority).addClassAndMethod(this)
+					BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
 					.add(firstSourceLine).add(secondSourceLine);
 					bugReporter.reportBug(bug);
 				}
