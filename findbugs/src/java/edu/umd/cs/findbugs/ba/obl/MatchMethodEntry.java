@@ -1,6 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2008, University of Maryland
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.umd.cs.findbugs.ba.obl;
 
@@ -13,8 +27,10 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
- *
- * @author daveho
+ * An ObligationPolicyDatabaseEntry which creates or deletes
+ * an obligation based on a call to a specified method.
+ * 
+ * @author David Hovemeyer
  */
 public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
@@ -25,6 +41,16 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	private final ObligationPolicyDatabaseActionType action;
 	private final Obligation obligation;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param receiverType the method receiver type (or class containing a static method)
+	 * @param methodName   exact name of the method
+	 * @param signature    exact method signature
+	 * @param isStatic     true if matched method must be static, false otherwise
+	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
+	 * @param obligation   Obligation to be added or deleted
+	 */
 	public MatchMethodEntry(
 			String receiverType,
 			String methodName,
@@ -42,6 +68,16 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 			obligation);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param receiverType TypeMatcher to match the receiver type (or class containing static method)
+	 * @param methodName   StringMatcher to match name of called method
+	 * @param signature    StringMatcher to match signature of called method
+	 * @param isStatic     true if matched method must be static, false otherwise
+	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
+	 * @param obligation   Obligation to be added or deleted
+	 */
 	public MatchMethodEntry(
 			TypeMatcher receiverType,
 			StringMatcher methodName, StringMatcher signature,
