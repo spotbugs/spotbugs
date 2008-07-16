@@ -40,6 +40,8 @@ import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAcquiredOrReleasedInLoopException;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseAction;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
 import edu.umd.cs.findbugs.ba.obl.Path;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
@@ -48,6 +50,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -214,16 +217,34 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						// the obligation
 						for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
 							InstructionHandle handle = i.next();
-							try {
+//							try {
+								/*
 								Obligation created = database.addsObligation(handle, cpg);
 								if (created != null && created.equals(obligation)) {
 									bugInstance
 										.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
 										.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
 								}
-							} catch (ClassNotFoundException e) {
-								bugReporter.reportMissingClass(e);
-							}
+								*/
+//								ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
+//								database.getActions(handle, cpg, actionList);
+//								for (ObligationPolicyDatabaseAction action : actionList) {
+//									if (action.getActionType() == ObligationPolicyDatabaseActionType.ADD
+//										&& action.getObligation().equals(obligation)) {
+//										bugInstance
+//											.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
+//											.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+//									}
+//								}
+								if (database.addsObligation(handle, cpg, obligation)) {
+										bugInstance
+											.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
+											.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+									
+								}
+//							} catch (ClassNotFoundException e) {
+//								bugReporter.reportMissingClass(e);
+//							}
 						}
 					}
 							
@@ -305,8 +326,11 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						BasicBlock sourceBlock = edge.getSource();
 						InstructionHandle handle = sourceBlock.getExceptionThrower();
 						
-						Obligation deletedObligation = database.deletesObligation(handle, cpg);
-						if (deletedObligation != null && deletedObligation.equals(obligation)) {
+//						Obligation deletedObligation = database.deletesObligation(handle, cpg);
+//						if (deletedObligation != null && deletedObligation.equals(obligation)) {
+//							leakCount--;
+//						}
+						if (database.deletesObligation(handle, cpg, obligation)) {
 							leakCount--;
 						}
 					}

@@ -22,9 +22,11 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -78,14 +80,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
 		// Add the database entries describing methods that add and delete
 		// obligations.
-		database.addEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.ActionType.ADD, inputStreamObligation);
-		database.addEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.ActionType.ADD, outputStreamObligation);
-		database.addEntry("java.io.InputStream", "close", "()V", false,
-				ObligationPolicyDatabase.ActionType.DEL, inputStreamObligation);
-		database.addEntry("java.io.OutputStream", "close", "()V", false,
-				ObligationPolicyDatabase.ActionType.DEL, outputStreamObligation);
+		database.addEntry(new MatchMethodEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
+				ObligationPolicyDatabaseActionType.ADD, inputStreamObligation));
+		database.addEntry(new MatchMethodEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
+				ObligationPolicyDatabaseActionType.ADD, outputStreamObligation));
+		database.addEntry(new MatchMethodEntry("java.io.InputStream", "close", "()V", false,
+				ObligationPolicyDatabaseActionType.DEL, inputStreamObligation));
+		database.addEntry(new MatchMethodEntry("java.io.OutputStream", "close", "()V", false,
+				ObligationPolicyDatabaseActionType.DEL, outputStreamObligation));
 		
 		// Experiment: assume that 
 	}

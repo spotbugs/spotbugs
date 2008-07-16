@@ -20,19 +20,15 @@
 package edu.umd.cs.findbugs.ba.obl;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.util.ExactStringMatcher;
-import edu.umd.cs.findbugs.util.StringMatcher;
-import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
-import edu.umd.cs.findbugs.util.TypeMatcher;
+import java.util.Collection;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
@@ -49,179 +45,231 @@ import org.apache.bcel.generic.ReferenceType;
 public class ObligationPolicyDatabase {
 	public static final boolean DEBUG = SystemProperties.getBoolean("obl.debug.db");
 
-	/**
-	 * Enumeration describing possible actions
-	 * for policy database entries.
-	 */
-	public enum ActionType {
-		/** Add an obligation (e.g., acquire a resource). */
-		ADD,
-		
-		/** Delete an obligation (e.g., release a resource). */
-		DEL;
-	}
-
-	private static class Entry {
-//		private final String className;
-//		private final String methodName;
-//		private final String signature;
-//		private final StringMatcher className;
-		private final TypeMatcher receiverType;
-		private final StringMatcher methodName;
-		private final StringMatcher signature;
-		private final boolean isStatic;
-		private final ActionType action;
-		private final Obligation obligation;
-
-		public Entry(//String className, //String methodName, String signature,
-					//String className,
-					TypeMatcher receiverType,
-					StringMatcher methodName, StringMatcher signature,
-					boolean isStatic,
-					ActionType action,
-					Obligation obligation) {
-//			this.className = className;
-			this.receiverType = receiverType;
-			this.methodName = methodName;
-			this.signature = signature;
-			this.isStatic = isStatic;
-			this.action = action;
-			this.obligation = obligation;
-		}
-
-		public TypeMatcher getReceiverType() {
-			return receiverType;
-		}
-
-//		public String getClassName() {
-//			return className;
-//		}
-
-		public StringMatcher getMethodName() {
-			return methodName;
-		}
-
-		public StringMatcher getSignature() {
-			return signature;
-		}
-
-		public boolean isStatic() {
-			return isStatic;
-		}
-
-		public ActionType getAction() {
-			return action;
-		}
-
-		public Obligation getObligation() {
-			return obligation;
-		}
-	}
-	
 	private ObligationFactory factory;
-
-	// FIXME: may want to figure out a way to do lookups more efficiently
-	private LinkedList<Entry> entryList;
-
+	private LinkedList<ObligationPolicyDatabaseEntry> entryList;
+	
 	public ObligationPolicyDatabase() {
 		this.factory = new ObligationFactory();
-		this.entryList = new LinkedList<Entry>();
+		this.entryList = new LinkedList<ObligationPolicyDatabaseEntry>();
 	}
 
 	public ObligationFactory getFactory() {
 		return factory;
 	}
-
-	public void addEntry(
-			String className, String methodName, String signature, boolean isStatic,
-			ActionType action, Obligation obligation) {
-		addEntry(//className,
-			new SubtypeTypeMatcher(new ObjectType(className)),
-			new ExactStringMatcher(methodName),
-			new ExactStringMatcher(signature),
-			isStatic,
-			action,
-			obligation);
+	
+	public void addEntry(ObligationPolicyDatabaseEntry entry) {
+		entryList.add(entry);
 	}
 	
-	public void addEntry(
-		//String className,
-		TypeMatcher receiverType,
-		StringMatcher methodName, StringMatcher signature, boolean isStatic,
-		ActionType action, Obligation obligation) {
-		entryList.add(new Entry(
-			//className,
-			receiverType,
-			methodName,
-			signature,
-			isStatic,
-			action,
-			obligation));
-	}
-
-	public Obligation lookup(
-			//String className,
-			ReferenceType receiverType,
-			String methodName, String signature, boolean isStatic,
-			ActionType action) throws ClassNotFoundException {
-		for (Entry entry : entryList) {
-			if (isStatic == entry.isStatic()
-					&& action == entry.getAction()
-					//&& methodName.equals(entry.getMethodName())
-					//&& signature.equals(entry.getSignature())
-					&& entry.getMethodName().matches(methodName)
-					&& entry.getSignature().matches(signature)
-					//&& Hierarchy.isSubtype(className, entry.getClassName())
-					&& entry.getReceiverType().matches(receiverType)
-					) {
-				return entry.getObligation();
-			}
+	public void getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic, Collection<ObligationPolicyDatabaseAction> actionList) {
+		for (ObligationPolicyDatabaseEntry entry : entryList) {
+			entry.getActions(receiverType, methodName, signature, isStatic, actionList);
 		}
-
-		return null;
 	}
 
-	public Obligation addsObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, ActionType.ADD);
-	}
-
-	public Obligation deletesObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, ActionType.DEL);
-	}
-
-	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, ActionType action) throws ClassNotFoundException {
+	public void getActions(InstructionHandle handle, ConstantPoolGen cpg, Collection<ObligationPolicyDatabaseAction> actionList) {
 		Instruction ins = handle.getInstruction();
 
 		if (!(ins instanceof InvokeInstruction))
-			return null;
+			return;
 
 		InvokeInstruction inv = (InvokeInstruction) ins;
 		
 		ReferenceType receiverType = inv.getReferenceType(cpg);
-//		if (!(receiverType instanceof ObjectType)) {
-//			// We'll assume that methods called on an array object
-//			// don't add or remove any obligations.
-//			return null;
-//		}
-//		String className = ((ObjectType) receiverType).getClassName();
-
 		String methodName = inv.getName(cpg);
 		String signature = inv.getSignature(cpg);
 		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
 
-//		if (DEBUG) {
-//			System.out.println("Checking instruction: " + handle);
-//			System.out.println("  class    =" + className);
-//			System.out.println("  method   =" + methodName);
-//			System.out.println("  signature=" + signature);
-//		}
-
-		return this.lookup(
-			//className,
-			receiverType,
-			methodName, signature, isStatic, action);
-
+		for (ObligationPolicyDatabaseEntry entry : entryList){ 
+			entry.getActions(receiverType, methodName, signature, isStatic, actionList);
+		}
 	}
+
+	public boolean addsObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
+		return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.ADD);
+	}
+
+	public boolean deletesObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
+		return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.DEL);
+	}
+
+	private boolean hasAction(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation, ObligationPolicyDatabaseActionType actionType) {
+		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
+		getActions(handle, cpg, actionList);
+		for (ObligationPolicyDatabaseAction action : actionList) {
+			if (action.getActionType() == actionType
+				&& action.getObligation().equals(obligation)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//										bugInstance
+//											.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
+//											.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+	
+//	private static class Entry {
+////		private final String className;
+////		private final String methodName;
+////		private final String signature;
+////		private final StringMatcher className;
+//		private final TypeMatcher receiverType;
+//		private final StringMatcher methodName;
+//		private final StringMatcher signature;
+//		private final boolean isStatic;
+//		private final ObligationPolicyDatabaseActionType action;
+//		private final Obligation obligation;
+//
+//		public Entry(//String className, //String methodName, String signature,
+//					//String className,
+//					TypeMatcher receiverType,
+//					StringMatcher methodName, StringMatcher signature,
+//					boolean isStatic,
+//					ObligationPolicyDatabaseActionType action,
+//					Obligation obligation) {
+////			this.className = className;
+//			this.receiverType = receiverType;
+//			this.methodName = methodName;
+//			this.signature = signature;
+//			this.isStatic = isStatic;
+//			this.action = action;
+//			this.obligation = obligation;
+//		}
+//
+//		public TypeMatcher getReceiverType() {
+//			return receiverType;
+//		}
+//
+////		public String getClassName() {
+////			return className;
+////		}
+//
+//		public StringMatcher getMethodName() {
+//			return methodName;
+//		}
+//
+//		public StringMatcher getSignature() {
+//			return signature;
+//		}
+//
+//		public boolean isStatic() {
+//			return isStatic;
+//		}
+//
+//		public ObligationPolicyDatabaseActionType getAction() {
+//			return action;
+//		}
+//
+//		public Obligation getObligation() {
+//			return obligation;
+//		}
+//	}
+//	
+//	private ObligationFactory factory;
+//
+//	// FIXME: may want to figure out a way to do lookups more efficiently
+//	private LinkedList<Entry> entryList;
+//
+//	public ObligationPolicyDatabase() {
+//		this.factory = new ObligationFactory();
+//		this.entryList = new LinkedList<Entry>();
+//	}
+//
+//	public ObligationFactory getFactory() {
+//		return factory;
+//	}
+//
+//	public void addEntry(
+//			String className, String methodName, String signature, boolean isStatic,
+//			ObligationPolicyDatabaseActionType action, Obligation obligation) {
+//		addEntry(//className,
+//			new SubtypeTypeMatcher(new ObjectType(className)),
+//			new ExactStringMatcher(methodName),
+//			new ExactStringMatcher(signature),
+//			isStatic,
+//			action,
+//			obligation);
+//	}
+//	
+//	public void addEntry(
+//		//String className,
+//		TypeMatcher receiverType,
+//		StringMatcher methodName, StringMatcher signature, boolean isStatic,
+//		ObligationPolicyDatabaseActionType action, Obligation obligation) {
+//		entryList.add(new Entry(
+//			//className,
+//			receiverType,
+//			methodName,
+//			signature,
+//			isStatic,
+//			action,
+//			obligation));
+//	}
+//
+//	public Obligation lookup(
+//			//String className,
+//			ReferenceType receiverType,
+//			String methodName, String signature, boolean isStatic,
+//			ObligationPolicyDatabaseActionType action) throws ClassNotFoundException {
+//		for (Entry entry : entryList) {
+//			if (isStatic == entry.isStatic()
+//					&& action == entry.getAction()
+//					//&& methodName.equals(entry.getMethodName())
+//					//&& signature.equals(entry.getSignature())
+//					&& entry.getMethodName().matches(methodName)
+//					&& entry.getSignature().matches(signature)
+//					//&& Hierarchy.isSubtype(className, entry.getClassName())
+//					&& entry.getReceiverType().matches(receiverType)
+//					) {
+//				return entry.getObligation();
+//			}
+//		}
+//
+//		return null;
+//	}
+//
+//	public Obligation addsObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
+//		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabaseActionType.ADD);
+//	}
+//
+//	public Obligation deletesObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
+//		return addsOrDeletesObligation(handle, cpg, ObligationPolicyDatabaseActionType.DEL);
+//	}
+//
+//	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, ObligationPolicyDatabaseActionType action) throws ClassNotFoundException {
+//		Instruction ins = handle.getInstruction();
+//
+//		if (!(ins instanceof InvokeInstruction))
+//			return null;
+//
+//		InvokeInstruction inv = (InvokeInstruction) ins;
+//		
+//		ReferenceType receiverType = inv.getReferenceType(cpg);
+////		if (!(receiverType instanceof ObjectType)) {
+////			// We'll assume that methods called on an array object
+////			// don't add or remove any obligations.
+////			return null;
+////		}
+////		String className = ((ObjectType) receiverType).getClassName();
+//
+//		String methodName = inv.getName(cpg);
+//		String signature = inv.getSignature(cpg);
+//		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+//
+////		if (DEBUG) {
+////			System.out.println("Checking instruction: " + handle);
+////			System.out.println("  class    =" + className);
+////			System.out.println("  method   =" + methodName);
+////			System.out.println("  signature=" + signature);
+////		}
+//
+//		return this.lookup(
+//			//className,
+//			receiverType,
+//			methodName, signature, isStatic, action);
+//
+//	}
 }
 
 // vim:ts=4

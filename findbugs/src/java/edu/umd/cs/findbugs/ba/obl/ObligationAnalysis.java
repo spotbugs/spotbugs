@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -94,23 +95,17 @@ public class ObligationAnalysis
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
+		//
+		// FIXME: it would be better to do this lookup once per Location
+		// and cache the result.  For now, just repeat the lookup
+		// every time.
+		//
 
-		Obligation obligation;
-
-		try {
-		if ((obligation = database.addsObligation(handle, methodGen.getConstantPool())) != null) {
-			// Add obligation to all states
-			if (DEBUG) { System.out.println("Adding obligation " + obligation.toString()); }
-			fact.addObligation(obligation, basicBlock.getLabel());
-		} else if ((obligation = database.deletesObligation(handle, methodGen.getConstantPool())) != null) {
-			// Delete obligation from all states
-			if (DEBUG) { System.out.println("Deleting obligation " + obligation.toString()); }
-			fact.deleteObligation(obligation, basicBlock.getLabel());
+		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
+		database.getActions(handle, methodGen.getConstantPool(), actionList);
+		for (ObligationPolicyDatabaseAction action : actionList) {
+			action.apply(fact, basicBlock.getLabel());
 		}
-		} catch (ClassNotFoundException e) {
-			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
-		}
-
 	}
 
 	/* (non-Javadoc)
