@@ -67,43 +67,6 @@ public class ObligationPolicyDatabase {
 		}
 	}
 
-	public void getActions(InstructionHandle handle, ConstantPoolGen cpg, Collection<ObligationPolicyDatabaseAction> actionList) {
-		Instruction ins = handle.getInstruction();
-
-		if (!(ins instanceof InvokeInstruction))
-			return;
-
-		InvokeInstruction inv = (InvokeInstruction) ins;
-		
-		ReferenceType receiverType = inv.getReferenceType(cpg);
-		String methodName = inv.getName(cpg);
-		String signature = inv.getSignature(cpg);
-		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-
-		for (ObligationPolicyDatabaseEntry entry : entryList){ 
-			entry.getActions(receiverType, methodName, signature, isStatic, actionList);
-		}
-	}
-
-	public boolean addsObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
-		return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.ADD);
-	}
-
-	public boolean deletesObligation(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation) {
-		return hasAction(handle, cpg, obligation, ObligationPolicyDatabaseActionType.DEL);
-	}
-
-	private boolean hasAction(InstructionHandle handle, ConstantPoolGen cpg, Obligation obligation, ObligationPolicyDatabaseActionType actionType) {
-		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
-		getActions(handle, cpg, actionList);
-		for (ObligationPolicyDatabaseAction action : actionList) {
-			if (action.getActionType() == actionType
-				&& action.getObligation().equals(obligation)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 //										bugInstance
 //											.addSourceLine(methodDescriptor, new Location(handle, creationBlock))

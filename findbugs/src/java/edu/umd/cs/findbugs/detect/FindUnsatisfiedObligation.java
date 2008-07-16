@@ -236,7 +236,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 //											.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
 //									}
 //								}
-								if (database.addsObligation(handle, cpg, obligation)) {
+								//if (database.addsObligation(handle, cpg, obligation)) {
+							if (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation)) {
 										bugInstance
 											.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
 											.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
@@ -330,7 +331,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 //						if (deletedObligation != null && deletedObligation.equals(obligation)) {
 //							leakCount--;
 //						}
-						if (database.deletesObligation(handle, cpg, obligation)) {
+						//if (database.deletesObligation(handle, cpg, obligation)) {
+						if (dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation)) {
 							leakCount--;
 						}
 					}

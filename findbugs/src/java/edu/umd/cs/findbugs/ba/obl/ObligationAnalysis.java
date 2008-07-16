@@ -32,9 +32,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,6 +57,7 @@ public class ObligationAnalysis
 	private ObligationFactory factory;
 	private ObligationPolicyDatabase database;
 	private IErrorLogger errorLogger;
+	private InstructionActionCache actionCache;
 
 	/**
 	 * Constructor.
@@ -81,6 +81,11 @@ public class ObligationAnalysis
 		this.factory = factory;
 		this.database = database;
 		this.errorLogger = errorLogger;
+		this.actionCache = new InstructionActionCache(database);
+	}
+
+	public InstructionActionCache getActionCache() {
+		return actionCache;
 	}
 
 	public StateSet createFact() {
@@ -101,8 +106,9 @@ public class ObligationAnalysis
 		// every time.
 		//
 
-		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
-		database.getActions(handle, methodGen.getConstantPool(), actionList);
+//		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
+//		database.getActions(handle, methodGen.getConstantPool(), actionList);
+		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, methodGen.getConstantPool());
 		for (ObligationPolicyDatabaseAction action : actionList) {
 			action.apply(fact, basicBlock.getLabel());
 		}
