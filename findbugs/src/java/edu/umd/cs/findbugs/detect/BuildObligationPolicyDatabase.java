@@ -79,12 +79,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		// Add the database entries describing methods that add and delete
 		// obligations.
 		database.addEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.Action.ADD, inputStreamObligation);
+				ObligationPolicyDatabase.ActionType.ADD, inputStreamObligation);
 		database.addEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabase.Action.ADD, outputStreamObligation);
+				ObligationPolicyDatabase.ActionType.ADD, outputStreamObligation);
 		database.addEntry("java.io.InputStream", "close", "()V", false,
-				ObligationPolicyDatabase.Action.DEL, inputStreamObligation);
+				ObligationPolicyDatabase.ActionType.DEL, inputStreamObligation);
 		database.addEntry("java.io.OutputStream", "close", "()V", false,
-				ObligationPolicyDatabase.Action.DEL, outputStreamObligation);
+				ObligationPolicyDatabase.ActionType.DEL, outputStreamObligation);
+		
+		// Experiment: assume that 
 	}
 }

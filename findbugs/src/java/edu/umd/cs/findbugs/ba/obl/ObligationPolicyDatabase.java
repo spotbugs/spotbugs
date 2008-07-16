@@ -53,7 +53,7 @@ public class ObligationPolicyDatabase {
 	 * Enumeration describing possible actions
 	 * for policy database entries.
 	 */
-	public enum Action {
+	public enum ActionType {
 		/** Add an obligation (e.g., acquire a resource). */
 		ADD,
 		
@@ -70,7 +70,7 @@ public class ObligationPolicyDatabase {
 		private final StringMatcher methodName;
 		private final StringMatcher signature;
 		private final boolean isStatic;
-		private final Action action;
+		private final ActionType action;
 		private final Obligation obligation;
 
 		public Entry(//String className, //String methodName, String signature,
@@ -78,7 +78,7 @@ public class ObligationPolicyDatabase {
 					TypeMatcher receiverType,
 					StringMatcher methodName, StringMatcher signature,
 					boolean isStatic,
-					Action action,
+					ActionType action,
 					Obligation obligation) {
 //			this.className = className;
 			this.receiverType = receiverType;
@@ -109,7 +109,7 @@ public class ObligationPolicyDatabase {
 			return isStatic;
 		}
 
-		public Action getAction() {
+		public ActionType getAction() {
 			return action;
 		}
 
@@ -134,7 +134,7 @@ public class ObligationPolicyDatabase {
 
 	public void addEntry(
 			String className, String methodName, String signature, boolean isStatic,
-			Action action, Obligation obligation) {
+			ActionType action, Obligation obligation) {
 		addEntry(//className,
 			new SubtypeTypeMatcher(new ObjectType(className)),
 			new ExactStringMatcher(methodName),
@@ -148,7 +148,7 @@ public class ObligationPolicyDatabase {
 		//String className,
 		TypeMatcher receiverType,
 		StringMatcher methodName, StringMatcher signature, boolean isStatic,
-		Action action, Obligation obligation) {
+		ActionType action, Obligation obligation) {
 		entryList.add(new Entry(
 			//className,
 			receiverType,
@@ -163,7 +163,7 @@ public class ObligationPolicyDatabase {
 			//String className,
 			ReferenceType receiverType,
 			String methodName, String signature, boolean isStatic,
-			Action action) throws ClassNotFoundException {
+			ActionType action) throws ClassNotFoundException {
 		for (Entry entry : entryList) {
 			if (isStatic == entry.isStatic()
 					&& action == entry.getAction()
@@ -182,14 +182,14 @@ public class ObligationPolicyDatabase {
 	}
 
 	public Obligation addsObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, Action.ADD);
+		return addsOrDeletesObligation(handle, cpg, ActionType.ADD);
 	}
 
 	public Obligation deletesObligation(InstructionHandle handle, ConstantPoolGen cpg) throws ClassNotFoundException {
-		return addsOrDeletesObligation(handle, cpg, Action.DEL);
+		return addsOrDeletesObligation(handle, cpg, ActionType.DEL);
 	}
 
-	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, Action action) throws ClassNotFoundException {
+	private Obligation addsOrDeletesObligation(InstructionHandle handle, ConstantPoolGen cpg, ActionType action) throws ClassNotFoundException {
 		Instruction ins = handle.getInstruction();
 
 		if (!(ins instanceof InvokeInstruction))
