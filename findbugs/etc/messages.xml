@@ -1563,9 +1563,7 @@ for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more 
 vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously 
-consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
-as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+consider using a commercial static analysis or pen-testing tool.
 </p>
 
 ]]>
@@ -1583,9 +1581,7 @@ for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more 
 vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously 
-consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
-as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+consider using a commercial static analysis or pen-testing tool.
 </p>
 
 ]]>
@@ -1602,9 +1598,7 @@ for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
-consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
-as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+consider using a commercial static analysis or pen-testing tool.
 </p>
 
 ]]>
@@ -1623,9 +1617,7 @@ for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
-consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project. If your software is open source, Fortify will scan your code for free
-as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+consider using a commercial static analysis or pen-testing tool.
 </p>
 
 ]]>
@@ -1643,9 +1635,7 @@ for more information.</p>
 <p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
 If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
-consider using a commercial static analysis or pen-testing tool, such as those provided by <a href="http://www.fortify.com/">Fortify Software</a>,
-a sponsor of the FindBugs project.  If your software is open source, Fortify will scan your code for free
-as part of the <a href="http://opensource.fortifysoftware.com/welcome.html">JOR (Java Open Review)</a> effort.
+consider using a commercial static analysis or pen-testing tool.
 </p>
 ]]>
     </Details>
