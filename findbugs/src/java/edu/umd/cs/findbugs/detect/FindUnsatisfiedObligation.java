@@ -49,9 +49,11 @@ import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -75,6 +77,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 	private static final String DEBUG_METHOD = SystemProperties.getProperty("oa.method");
 	private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
+	
+	private static final boolean REPORT_PATH = SystemProperties.getBoolean("oa.reportpath");
+	private static final boolean REPORT_PATH_DEBUG = SystemProperties.getBoolean("oa.reportpath.debug");
 
 	private BugReporter bugReporter;
 	private ObligationPolicyDatabase database;
@@ -143,7 +148,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
 
 			//Set<Obligation> leakedObligations = new HashSet<Obligation>();
-			Map<Obligation, List<State>> leakedObligations = new HashMap<Obligation, List<State>>();
+			//Map<Obligation, List<State>> leakedObligations = new HashMap<Obligation, List<State>>();
+			Map<Obligation, State> leakedObligationMap = new HashMap<Obligation, State>();
 
 			//
 			// Main loop: looking at the StateSet at the exit block of the CFG,
@@ -177,54 +183,74 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 					if (leakCount > 0) {
 						//leakedObligations.add(obligation);
-						List<State> leakingStateList = leakedObligations.get(obligation);
-						if (leakingStateList == null) {
-							leakingStateList = new LinkedList<State>();
-							leakedObligations.put(obligation, leakingStateList);
-						}
-						leakingStateList.add(state);
+//						List<State> leakingStateList = leakedObligations.get(obligation);
+//						if (leakingStateList == null) {
+//							leakingStateList = new LinkedList<State>();
+//							leakedObligations.put(obligation, leakingStateList);
+//						}
+//						leakingStateList.add(state);
+						leakedObligationMap.put(obligation, state);
 					}
 					// TODO: if the leak count is less than 0, then a nonexistent resource was closed
 				}
 			}
 
-			for (Map.Entry<Obligation, List<State>> entry : leakedObligations.entrySet()) {
+//			for (Map.Entry<Obligation, List<State>> entry : leakedObligations.entrySet()) {
+			for (Map.Entry<Obligation, State> entry : leakedObligationMap.entrySet()) {
 				Obligation obligation = entry.getKey();
-				List<State> stateList = entry.getValue();
+				//List<State> stateList = entry.getValue();
+				State state = entry.getValue();
 				
 				BugInstance bugInstance =
 					new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY).addClassAndMethod(methodDescriptor)
 					.addClass(obligation.getClassName())
 					.describe("CLASS_REFTYPE");
-				
-				// FIXME:
-				// For now, just report the first resource creation point
-				// along each path where a leak was detected.
-				// In the future, might want to try to convey some path information.
-				for (State state : stateList) {
-					int blockId = state.getObligationSet().getWhereCreated(obligation);
-					if (blockId > 0) {
-						BasicBlock creationBlock = cfg.lookupBlockByLabel(blockId);
-						
-						// Figure out which instruction actually creates
-						// the obligation
-						for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
-							InstructionHandle handle = i.next();
-							if (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation)) {
-								bugInstance
-									.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
-									.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
-
-							}
-						}
-					}
+				annotateWarningWithSourceLineInformation(state, obligation, bugInstance);
 							
-				}
+				//}
 				
 				bugReporter.reportBug(bugInstance);
 			}
 			// TODO: closing of nonexistent resources
 
+		}
+
+		private void annotateWarningWithSourceLineInformation(State state, Obligation obligation, BugInstance bugInstance) {
+
+			// FIXME:
+			// For now, just report the first resource creation point
+			// along each path where a leak was detected.
+			// In the future, might want to try to convey some path information.
+			//for (State state : stateList) {
+			
+			int blockId = state.getObligationSet().getWhereCreated(obligation);
+			if (blockId > 0) {
+				BasicBlock creationBlock = cfg.lookupBlockByLabel(blockId);
+
+				// Figure out which instruction actually creates
+				// the obligation
+				for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
+					InstructionHandle handle = i.next();
+					if (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation)) {
+//						bugInstance
+//							.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
+//							.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+						SourceLineAnnotation sourceLine =
+							SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, creationBlock));
+						sourceLine.setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+						bugInstance.add(sourceLine);
+						if (REPORT_PATH_DEBUG) {
+							System.out.println("  ==> " + sourceLine);
+						}
+						if (REPORT_PATH) {
+							// Report the rest of the source lines in the path
+							reportPath(bugInstance, creationBlock, i, state, sourceLine);
+						}
+					}
+				}
+			}
+
+			//}
 		}
 
 		/**
@@ -424,6 +450,54 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				}
 			}
 			return type;
+		}
+
+		private void reportPath(BugInstance bugInstance, BasicBlock creationBlock, Iterator<InstructionHandle> i, State state,
+			SourceLineAnnotation lastSourceLine) {
+			Path path = state.getPath();
+			
+			// Find the BasicBlock where the resource was created
+			int index;
+			for (index = 0; index < path.getLength(); index++) {
+				if (path.getBlockIdAt(index) == creationBlock.getLabel()) {
+					break;
+				}
+			}
+			BasicBlock basicBlock = creationBlock;
+			
+			// Keep adding SourceLineAnnotations for the rest of the
+			// BasicBlocks in the path to the CFG exit
+			while (true) {
+				// Add source lines for all instructions.
+				while (i.hasNext()) {
+					InstructionHandle handle = i.next();
+					SourceLineAnnotation sourceLine = 
+						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, basicBlock));
+					
+					boolean isInteresting = sourceLine.getStartLine() > 0 && !sourceLine.equals(lastSourceLine);
+					
+					if (REPORT_PATH_DEBUG) {
+						System.out.println("  --> " + sourceLine + (isInteresting ? " **" : ""));
+					}
+					if (isInteresting) {
+						sourceLine.setDescription(SourceLineAnnotation.ROLE_PATH_CONTINUES);
+						bugInstance.add(sourceLine);
+						lastSourceLine = sourceLine;
+					}
+				}
+
+				// Continue to next basic block (if any).
+				index++;
+			
+				// Reached end of path?
+				if (index >= path.getLength()) {
+					break;
+				}
+				
+				basicBlock = cfg.lookupBlockByLabel(path.getBlockIdAt(index));
+				assert basicBlock != null;
+				i = basicBlock.instructionIterator();
+			}
 		}
 	}
 

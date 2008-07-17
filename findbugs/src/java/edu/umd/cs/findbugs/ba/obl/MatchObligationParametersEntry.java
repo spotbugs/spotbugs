@@ -76,7 +76,7 @@ public class MatchObligationParametersEntry implements ObligationPolicyDatabaseE
 			System.out.println("Check call to " + receiverType + "." + methodName + ":" + signature);
 		}
 		
-		// FoAdded header comment, javadocr known Obligation types...
+		// For known Obligation types...
 		LinkedList<ObligationPolicyDatabaseAction> toAdd = new LinkedList<ObligationPolicyDatabaseAction>();
 		for (Iterator<Obligation> i = database.getFactory().obligationIterator(); i.hasNext(); ) {
 			Obligation obligation = i.next();

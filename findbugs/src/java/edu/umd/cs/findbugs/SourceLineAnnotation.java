@@ -63,6 +63,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static final String ROLE_ANOTHER_INSTANCE = "SOURCE_LINE_ANOTHER_INSTANCE";
 	public static final String ROLE_GENERATED_AT = "SOURCE_LINE_GENERATED_AT";
 	public static final String ROLE_OBLIGATION_CREATED = "SOURCE_LINE_OBLIGATION_CREATED";
+	public static final String ROLE_PATH_CONTINUES = "SOURCE_LINE_PATH_CONTINUES";
 
 
 	/**
