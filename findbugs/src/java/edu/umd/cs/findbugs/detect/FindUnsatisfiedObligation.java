@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.obl.ObligationAcquiredOrReleasedInLoopException;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.Path;
+import edu.umd.cs.findbugs.ba.PathVisitor;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -238,7 +239,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						}
 						if (REPORT_PATH) {
 							// Report the rest of the source lines in the path
-							reportPath(bugInstance, creationBlock, i, state, sourceLine);
+							reportPath(bugInstance, creationBlock, /*i,*/handle, state, sourceLine);
 						}
 					}
 				}
@@ -446,27 +447,27 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			return type;
 		}
 
-		private void reportPath(BugInstance bugInstance, BasicBlock creationBlock, Iterator<InstructionHandle> i, State state,
-			SourceLineAnnotation lastSourceLine) {
+		private void reportPath(
+			final BugInstance bugInstance,
+			BasicBlock creationBlock,
+			/*Iterator<InstructionHandle> i,*/
+			InstructionHandle creationLoc,
+			State state,
+			final SourceLineAnnotation creationSourceLine) {
+			
 			Path path = state.getPath();
 			
-			// Find the BasicBlock where the resource was created
-			int index;
-			for (index = 0; index < path.getLength(); index++) {
-				if (path.getBlockIdAt(index) == creationBlock.getLabel()) {
-					break;
+			PathVisitor visitor = new PathVisitor() {
+				SourceLineAnnotation lastSourceLine = creationSourceLine;
+				BasicBlock curBlock;
+
+				public void visitBasicBlock(BasicBlock basicBlock) {
+					curBlock = basicBlock;
 				}
-			}
-			BasicBlock basicBlock = creationBlock;
-			
-			// Keep adding SourceLineAnnotations for the rest of the
-			// BasicBlocks in the path to the CFG exit
-			while (true) {
-				// Add source lines for all instructions.
-				while (i.hasNext()) {
-					InstructionHandle handle = i.next();
+
+				public void visitInstructionHandle(InstructionHandle handle) {
 					SourceLineAnnotation sourceLine = 
-						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, basicBlock));
+						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, curBlock));
 					
 					boolean isInteresting = sourceLine.getStartLine() > 0 && !sourceLine.equals(lastSourceLine);
 					
@@ -480,18 +481,53 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 				}
 
-				// Continue to next basic block (if any).
-				index++;
-			
-				// Reached end of path?
-				if (index >= path.getLength()) {
-					break;
+				public void visitEdge(Edge edge) {
 				}
-				
-				basicBlock = cfg.lookupBlockByLabel(path.getBlockIdAt(index));
-				assert basicBlock != null;
-				i = basicBlock.instructionIterator();
-			}
+			};
+			path.acceptVisitorStartingFromLocation(cfg, visitor, creationBlock, creationLoc);
+			
+//			// Find the BasicBlock where the resource was created
+//			int index;
+//			for (index = 0; index < path.getLength(); index++) {
+//				if (path.getBlockIdAt(index) == creationBlock.getLabel()) {
+//					break;
+//				}
+//			}
+//			BasicBlock basicBlock = creationBlock;
+//			
+//			// Keep adding SourceLineAnnotations for the rest of the
+//			// BasicBlocks in the path to the CFG exit
+//			while (true) {
+//				// Add source lines for all instructions.
+//				while (i.hasNext()) {
+//					InstructionHandle handle = i.next();
+//					SourceLineAnnotation sourceLine = 
+//						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, basicBlock));
+//					
+//					boolean isInteresting = sourceLine.getStartLine() > 0 && !sourceLine.equals(lastSourceLine);
+//					
+//					if (REPORT_PATH_DEBUG) {
+//						System.out.println("  " + handle.getPosition() + " --> " + sourceLine + (isInteresting ? " **" : ""));
+//					}
+//					if (isInteresting) {
+//						sourceLine.setDescription(SourceLineAnnotation.ROLE_PATH_CONTINUES);
+//						bugInstance.add(sourceLine);
+//						lastSourceLine = sourceLine;
+//					}
+//				}
+//
+//				// Continue to next basic block (if any).
+//				index++;
+//			
+//				// Reached end of path?
+//				if (index >= path.getLength()) {
+//					break;
+//				}
+//				
+//				basicBlock = cfg.lookupBlockByLabel(path.getBlockIdAt(index));
+//				assert basicBlock != null;
+//				i = basicBlock.instructionIterator();
+//			}
 		}
 	}
 
