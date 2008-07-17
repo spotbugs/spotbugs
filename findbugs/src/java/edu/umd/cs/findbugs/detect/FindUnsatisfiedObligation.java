@@ -245,6 +245,95 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				}
 			}
 		}
+		
+		private class PostProcessingPathVisitor implements PathVisitor {
+			Obligation obligation;
+			int adjustedLeakCount;
+			BasicBlock curBlock;
+			boolean couldNotAnalyze;
+
+			public PostProcessingPathVisitor(Obligation obligation, int initialLeakCount) {
+				this.adjustedLeakCount = initialLeakCount;
+			}
+
+			public int getAdjustedLeakCount() {
+				return adjustedLeakCount;
+			}
+
+			public boolean couldNotAnalyze() {
+				return couldNotAnalyze;
+			}
+
+			public void visitBasicBlock(BasicBlock basicBlock) {
+				curBlock = basicBlock;
+			}
+
+			public void visitInstructionHandle(InstructionHandle handle) {
+				try {
+					Instruction ins = handle.getInstruction();
+					short opcode = ins.getOpcode();
+
+					if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC || opcode == Constants.ARETURN) {
+						//
+						// A value is being assigned to a field or returned from
+						// the method.
+						//
+						Location loc = new Location(handle, curBlock);
+						TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
+						if (!typeFrame.isValid()) {
+							// dead code?
+							couldNotAnalyze = true;
+						}
+						Type tosType = typeFrame.getTopValue();
+						if (tosType instanceof ObjectType && isPossibleInstanceOfObligationType(subtypes2, (ObjectType) tosType, obligation.getType())) {
+							// Remove one obligation of this type
+							adjustedLeakCount--;
+						}
+					}
+				} catch (ClassNotFoundException e) {
+					bugReporter.reportMissingClass(e);
+					couldNotAnalyze = true;
+				} catch (DataflowAnalysisException e) {
+					couldNotAnalyze = true;
+				}
+			}
+
+			public void visitEdge(Edge edge) {
+				try {
+					// If the edge is an exception thrown from a method that
+					// tries to discharge an obligation, then that obligation needs to
+					// be removed from all states in the input fact.
+					if (edge.isExceptionEdge()) {
+						BasicBlock sourceBlock = edge.getSource();
+						InstructionHandle handle = sourceBlock.getExceptionThrower();
+
+						if (dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation)) {
+							if (DEBUG_FP) {
+								System.out.println(handle + ": Exception thrown from discharge method");
+							}
+							adjustedLeakCount--;
+						}
+					}
+
+					// Similarly, if the incoming edge is from a reference comparision
+					// which has established that a reference of an obligation type
+					// is null, then we remove one occurrence of that type of
+					// obligation from all states.
+					if (isPossibleIfComparison(edge)) {
+						Obligation comparedObligation= comparesObligationTypeToNull(edge);
+						if (comparedObligation != null && comparedObligation.equals(obligation)) {
+							if (DEBUG) {
+								System.out.println("Deleting " + obligation.toString() +
+									" on edge from comparision " + edge.getSource().getLastInstruction());
+							}
+							adjustedLeakCount--;
+						}
+					}
+				} catch (DataflowAnalysisException e) {
+					couldNotAnalyze = true;
+				}
+			}
+		}
 
 		/**
 		 * Get the adjusted leak count for the given State and obligation type.
@@ -264,83 +353,19 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		private int getAdjustedLeakCount(
 			State state, int obligationId) throws DataflowAnalysisException, ClassNotFoundException {
 			
-			Obligation obligation = database.getFactory().getObligationById(obligationId);
+			final Obligation obligation = database.getFactory().getObligationById(obligationId);
 			
-			int leakCount = state.getObligationSet().getCount(obligationId);
+			final int initialLeakCount = state.getObligationSet().getCount(obligationId);
 
 			Path path = state.getPath();
-			for (int j = 0; j < path.getLength(); j++) {
-				int blockId = path.getBlockIdAt(j);
-				BasicBlock basicBlock = cfg.lookupBlockByLabel(blockId);
-				assert basicBlock != null;
-
-				for (Iterator<InstructionHandle> i = basicBlock.instructionIterator(); i.hasNext();) {
-					Location loc = new Location(i.next(), basicBlock);
-
-					Instruction ins = loc.getHandle().getInstruction();
-					short opcode = ins.getOpcode();
-
-					if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC || opcode == Constants.ARETURN) {
-						//
-						// A value is being assigned to a field or returned from
-						// the method.
-						//
-						TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
-						if (!typeFrame.isValid()) {
-							// dead code?
-							return 0;
-						}
-						Type tosType = typeFrame.getTopValue();
-						if (tosType instanceof ObjectType && isPossibleInstanceOfObligationType(subtypes2, (ObjectType) tosType, obligation.getType())) {
-							// Remove one obligation of this type
-							leakCount--;
-						}
-					}
-				}
-
-				if (j < path.getLength() - 1) {
-					// Examine the edge from one basic block to the next
-					// to see if it's a possible null check,
-					// or if the edge is an exception thrown from a method
-					// which attempts to discharge the obligation.
-					BasicBlock target = cfg.lookupBlockByLabel(path.getBlockIdAt(j + 1));
-					assert target != null;
-					Edge edge = cfg.lookupEdge(basicBlock, target);
-					assert edge != null;
-
-					// If the edge is an exception thrown from a method that
-					// tries to discharge an obligation, then that obligation needs to
-					// be removed from all states in the input fact.
-					if (edge.isExceptionEdge()) {
-						BasicBlock sourceBlock = edge.getSource();
-						InstructionHandle handle = sourceBlock.getExceptionThrower();
-						
-						if (dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation)) {
-							if (DEBUG_FP) {
-								System.out.println(handle + ": Exception thrown from discharge method");
-							}
-							leakCount--;
-						}
-					}
-
-					// Similarly, if the incoming edge is from a reference comparision
-					// which has established that a reference of an obligation type
-					// is null, then we remove one occurrence of that type of
-					// obligation from all states.
-					if (isPossibleIfComparison(edge)) {
-						Obligation comparedObligation= comparesObligationTypeToNull(edge);
-						if (comparedObligation != null && comparedObligation.equals(obligation)) {
-							if (DEBUG) {
-								System.out.println("Deleting " + obligation.toString() +
-									" on edge from comparision " + edge.getSource().getLastInstruction());
-							}
-							leakCount--;
-						}
-					}
-				}
+			PostProcessingPathVisitor visitor = new PostProcessingPathVisitor(obligation, initialLeakCount);
+			path.acceptVisitor(cfg, visitor);
+			
+			if (visitor.couldNotAnalyze()) {
+				return 0;
+			} else {
+				return visitor.getAdjustedLeakCount();
 			}
-
-			return leakCount;
 		}
 
 		private boolean isPossibleInstanceOfObligationType(Subtypes2 subtypes2, ObjectType type, ObjectType obligationType) throws ClassNotFoundException {
@@ -485,49 +510,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				}
 			};
 			path.acceptVisitorStartingFromLocation(cfg, visitor, creationBlock, creationLoc);
-			
-//			// Find the BasicBlock where the resource was created
-//			int index;
-//			for (index = 0; index < path.getLength(); index++) {
-//				if (path.getBlockIdAt(index) == creationBlock.getLabel()) {
-//					break;
-//				}
-//			}
-//			BasicBlock basicBlock = creationBlock;
-//			
-//			// Keep adding SourceLineAnnotations for the rest of the
-//			// BasicBlocks in the path to the CFG exit
-//			while (true) {
-//				// Add source lines for all instructions.
-//				while (i.hasNext()) {
-//					InstructionHandle handle = i.next();
-//					SourceLineAnnotation sourceLine = 
-//						SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, basicBlock));
-//					
-//					boolean isInteresting = sourceLine.getStartLine() > 0 && !sourceLine.equals(lastSourceLine);
-//					
-//					if (REPORT_PATH_DEBUG) {
-//						System.out.println("  " + handle.getPosition() + " --> " + sourceLine + (isInteresting ? " **" : ""));
-//					}
-//					if (isInteresting) {
-//						sourceLine.setDescription(SourceLineAnnotation.ROLE_PATH_CONTINUES);
-//						bugInstance.add(sourceLine);
-//						lastSourceLine = sourceLine;
-//					}
-//				}
-//
-//				// Continue to next basic block (if any).
-//				index++;
-//			
-//				// Reached end of path?
-//				if (index >= path.getLength()) {
-//					break;
-//				}
-//				
-//				basicBlock = cfg.lookupBlockByLabel(path.getBlockIdAt(index));
-//				assert basicBlock != null;
-//				i = basicBlock.instructionIterator();
-//			}
 		}
 	}
 
