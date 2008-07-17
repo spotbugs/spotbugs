@@ -42,7 +42,7 @@ import org.apache.bcel.generic.Type;
  * @author David Hovemeyer
  */
 public class MatchObligationParametersEntry implements ObligationPolicyDatabaseEntry {
-	private static final boolean DEBUG = SystemProperties.getBoolean("obl.debug.db.entry");
+	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug.db.entry");
 	
 	private TypeMatcher receiverType;
 	private StringMatcher methodName;
