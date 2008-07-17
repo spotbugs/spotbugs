@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.ba.Path;
 import java.util.Iterator;
 import java.util.Map;
 

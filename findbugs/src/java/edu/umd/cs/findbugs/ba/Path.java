@@ -17,16 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.ba.obl;
+package edu.umd.cs.findbugs.ba;
 
 /**
- * A Path is a sequence of program statements.
- * For our purposes, basic blocks are considered statements.
- *
- * <p>See Weimer and Necula,
- * <a href="http://doi.acm.org/10.1145/1028976.1029011"
- * >Finding and preventing run-time error handling mistakes</a>,
- * OOPSLA 2004.</p>
+ * A Path is a sequence of basic blocks.
  *
  * @author David Hovemeyer
  */

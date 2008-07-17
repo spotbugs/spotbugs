@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.ba.Path;
+
 /**
  * Error-handling obligation analysis state.
  * This is a set of obligations and a program path on which
