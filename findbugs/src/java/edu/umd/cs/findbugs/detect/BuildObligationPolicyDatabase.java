@@ -33,6 +33,10 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.util.AnyTypeMatcher;
 import edu.umd.cs.findbugs.util.ContainsCamelCaseWordStringMatcher;
+import edu.umd.cs.findbugs.util.ExactStringMatcher;
+import edu.umd.cs.findbugs.util.RegexStringMatcher;
+import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
+import org.apache.bcel.generic.ObjectType;
 
 /**
  * Build the ObligationPolicyDatabase used by ObligationAnalysis.
@@ -75,22 +79,12 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	}
 
 	private void addBuiltInPolicies(ObligationPolicyDatabase database) {
-		ObligationFactory factory = database.getFactory();
-
-		// Create the Obligation types
-		Obligation inputStreamObligation = factory.addObligation("java.io.InputStream");
-		Obligation outputStreamObligation = factory.addObligation("java.io.OutputStream");
-
 		// Add the database entries describing methods that add and delete
 		// obligations.
-		database.addEntry(new MatchMethodEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabaseActionType.ADD, inputStreamObligation));
-		database.addEntry(new MatchMethodEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
-				ObligationPolicyDatabaseActionType.ADD, outputStreamObligation));
-		database.addEntry(new MatchMethodEntry("java.io.InputStream", "close", "()V", false,
-				ObligationPolicyDatabaseActionType.DEL, inputStreamObligation));
-		database.addEntry(new MatchMethodEntry("java.io.OutputStream", "close", "()V", false,
-				ObligationPolicyDatabaseActionType.DEL, outputStreamObligation));
+		addFileStreamEntries(database, "InputStream");
+		addFileStreamEntries(database, "OutputStream");
+		addFileStreamEntries(database, "Reader");
+		addFileStreamEntries(database, "Writer");
 		
 		// Experiment: assume that any method with the word "close" in
 		// its camel-cased identifier taking an obligation type
@@ -101,5 +95,24 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new AnyTypeMatcher(),
 			new ContainsCamelCaseWordStringMatcher("close"),
 			ObligationPolicyDatabaseActionType.DEL));
+	}
+
+	/**
+	 * General method for adding entries for File InputStream/OutputStream/Reader/Writer classes.
+	 */
+	private void addFileStreamEntries(ObligationPolicyDatabase database, String kind) {
+		Obligation obligation = database.getFactory().addObligation("java.io." + kind);
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.io.File" + kind)),
+			new ExactStringMatcher("<init>"),
+			new RegexStringMatcher(".*"),
+			false, ObligationPolicyDatabaseActionType.ADD,
+			obligation));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.io." + kind)),
+			new ExactStringMatcher("close"),
+			new ExactStringMatcher("()V"),
+			false,
+			ObligationPolicyDatabaseActionType.DEL, obligation));
 	}
 }

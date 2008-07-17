@@ -18,12 +18,9 @@
  */
 package edu.umd.cs.findbugs.ba.obl;
 
-import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.StringMatcher;
-import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import edu.umd.cs.findbugs.util.TypeMatcher;
 import java.util.Collection;
-import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
 /**
@@ -40,33 +37,6 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	private final boolean isStatic;
 	private final ObligationPolicyDatabaseActionType action;
 	private final Obligation obligation;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param receiverType the method receiver type (or class containing a static method)
-	 * @param methodName   exact name of the method
-	 * @param signature    exact method signature
-	 * @param isStatic     true if matched method must be static, false otherwise
-	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
-	 * @param obligation   Obligation to be added or deleted
-	 */
-	public MatchMethodEntry(
-			String receiverType,
-			String methodName,
-			String signature,
-			boolean isStatic,
-			ObligationPolicyDatabaseActionType action,
-			Obligation obligation
-		) {
-		this(
-			new SubtypeTypeMatcher(new ObjectType(receiverType)),
-			new ExactStringMatcher(methodName),
-			new ExactStringMatcher(signature),
-			isStatic,
-			action,
-			obligation);
-	}
 
 	/**
 	 * Constructor.
