@@ -507,6 +507,15 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				}
 
 				public void visitEdge(Edge edge) {
+					if (REPORT_PATH_DEBUG) {
+						System.out.println("Edge of type " + Edge.edgeTypeToString(edge.getType()) + " to " + edge.getTarget().getLabel());
+						if (edge.getTarget().getFirstInstruction() != null) {
+							System.out.println("  First instruction in target: " + edge.getTarget().getFirstInstruction());
+						}
+						if (edge.getTarget().isExceptionThrower()) {
+							System.out.println("  exception thrower for " + edge.getTarget().getExceptionThrower());
+						}
+					}
 				}
 			};
 			path.acceptVisitorStartingFromLocation(cfg, visitor, creationBlock, creationLoc);
