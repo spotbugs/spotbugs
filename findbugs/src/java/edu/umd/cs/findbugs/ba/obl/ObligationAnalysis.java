@@ -132,6 +132,17 @@ public class ObligationAnalysis
 		}
 	}
 
+	@Override
+	public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
+		//
+		// Ignore all exception edges except those on which
+		// checked exceptions are thrown.
+		//
+		if (edge.isExceptionEdge() && !edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
+			fact.setTop();
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#copy(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)
 	 */
