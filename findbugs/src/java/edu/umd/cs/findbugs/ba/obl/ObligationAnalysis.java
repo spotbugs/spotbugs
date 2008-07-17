@@ -182,6 +182,18 @@ public class ObligationAnalysis
 	public void meetInto(StateSet fact, Edge edge, StateSet result)
 			throws DataflowAnalysisException {
 		final StateSet inputFact = fact;
+		
+		if (DEBUG && inputFact.isValid()) {
+			for (Iterator<State> i = inputFact.stateIterator(); i.hasNext();) {
+				State state = i.next();
+				Path path = state.getPath();
+				if (path.getLength() > 0) {
+					if (path.getBlockIdAt(path.getLength() - 1) != edge.getSource().getLabel()) {
+						throw new IllegalStateException("on edge " + edge + ": state " + state + " missing source label in path");
+					}
+				}
+			}
+		}
 
 		// Handle easy top and bottom cases
 		if (inputFact.isTop() || result.isBottom()) {

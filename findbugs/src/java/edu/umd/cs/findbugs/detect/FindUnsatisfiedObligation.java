@@ -152,9 +152,16 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			// Main loop: looking at the StateSet at the exit block of the CFG,
 			// see if there are any states with nonempty obligation sets.
 			//
-			StateSet factAtExit = dataflow.getStartFact(cfg.getExit());
+			StateSet factAtExit = dataflow.getResultFact(cfg.getExit());
 			for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
 				State state = i.next();
+				
+				if (DEBUG) {
+					Path path = state.getPath();
+					if (path.getLength() > 0 && path.getBlockIdAt(path.getLength() - 1) != cfg.getExit().getLabel()) {
+						throw new IllegalStateException("path " + path + " at cfg exit has no label for exit block");
+					}
+				}
 
 				for (int id = 0; id < database.getFactory().getMaxObligationTypes(); ++id) {
 					Obligation obligation = database.getFactory().getObligationById(id);
