@@ -260,6 +260,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			boolean couldNotAnalyze;
 
 			public PostProcessingPathVisitor(Obligation obligation, int initialLeakCount) {
+				this.obligation = obligation;
 				this.adjustedLeakCount = initialLeakCount;
 			}
 
@@ -306,6 +307,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			}
 
 			public void visitEdge(Edge edge) {
+				if (DEBUG_FP) {
+					System.out.println("visit edge " + edge);
+				}
 				try {
 					// If the edge is an exception thrown from a method that
 					// tries to discharge an obligation, then that obligation needs to
@@ -314,10 +318,11 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						BasicBlock sourceBlock = edge.getSource();
 						InstructionHandle handle = sourceBlock.getExceptionThrower();
 
-						if (dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation)) {
-							if (DEBUG_FP) {
-								System.out.println(handle + ": Exception thrown from discharge method");
-							}
+						boolean dischargeAttempt = dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation);
+						if (DEBUG_FP) {
+							System.out.println("on edge " + edge + " thrower " + handle + (dischargeAttempt ? " DOES" : " does not") + " discharge " + obligation);
+						}
+						if (dischargeAttempt) {
 							adjustedLeakCount--;
 						}
 					}
