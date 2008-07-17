@@ -58,4 +58,10 @@ public class ObligationPolicyDatabaseAction {
 				assert false;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "[" + actionType + " " + obligation + "]";
+	}
+	
 }

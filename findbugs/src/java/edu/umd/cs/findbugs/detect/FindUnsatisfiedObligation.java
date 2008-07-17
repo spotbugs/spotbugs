@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -49,11 +50,7 @@ import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -77,8 +74,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 	private static final String DEBUG_METHOD = SystemProperties.getProperty("oa.method");
 	private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
+	private static final boolean DEBUG_FP = SystemProperties.getBoolean("oa.debug.fp");
 	
-	private static final boolean REPORT_PATH = SystemProperties.getBoolean("oa.reportpath");
+	private static final boolean REPORT_PATH = SystemProperties.getBoolean("oa.reportpath", true);
 	private static final boolean REPORT_PATH_DEBUG = SystemProperties.getBoolean("oa.reportpath.debug");
 
 	private BugReporter bugReporter;
@@ -119,12 +117,12 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		}
 		
 		public void analyzeMethod() throws CheckedAnalysisException {
-			if (DEBUG) {
-				System.out.println("*** Analyzing method " + methodDescriptor);
-			}
-
 			if (DEBUG_METHOD != null && !methodDescriptor.getName().equals(DEBUG_METHOD)) {
 				return;
+			}
+
+			if (DEBUG) {
+				System.out.println("*** Analyzing method " + methodDescriptor);
 			}
 
 			analysisCache = Global.getAnalysisCache();
@@ -147,8 +145,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
 			subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
 
-			//Set<Obligation> leakedObligations = new HashSet<Obligation>();
-			//Map<Obligation, List<State>> leakedObligations = new HashMap<Obligation, List<State>>();
 			Map<Obligation, State> leakedObligationMap = new HashMap<Obligation, State>();
 
 			//
@@ -182,32 +178,30 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 
 					if (leakCount > 0) {
-						//leakedObligations.add(obligation);
-//						List<State> leakingStateList = leakedObligations.get(obligation);
-//						if (leakingStateList == null) {
-//							leakingStateList = new LinkedList<State>();
-//							leakedObligations.put(obligation, leakingStateList);
-//						}
-//						leakingStateList.add(state);
 						leakedObligationMap.put(obligation, state);
 					}
 					// TODO: if the leak count is less than 0, then a nonexistent resource was closed
 				}
 			}
 
-//			for (Map.Entry<Obligation, List<State>> entry : leakedObligations.entrySet()) {
+			// Report a separate BugInstance for each Obligation,State pair.
+			// (Two different obligations may be leaked in the same state.)
 			for (Map.Entry<Obligation, State> entry : leakedObligationMap.entrySet()) {
 				Obligation obligation = entry.getKey();
-				//List<State> stateList = entry.getValue();
 				State state = entry.getValue();
 				
 				BugInstance bugInstance =
 					new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY).addClassAndMethod(methodDescriptor)
 					.addClass(obligation.getClassName())
 					.describe("CLASS_REFTYPE");
+				
+				// Report how many instances of the obligation are remaining
+				bugInstance
+					.addInt(state.getObligationSet().getCount(obligation.getId()))
+					.describe(IntAnnotation.INT_OBLIGATIONS_REMAINING);
+				
+				// Add source line information
 				annotateWarningWithSourceLineInformation(state, obligation, bugInstance);
-							
-				//}
 				
 				bugReporter.reportBug(bugInstance);
 			}
@@ -221,7 +215,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			// For now, just report the first resource creation point
 			// along each path where a leak was detected.
 			// In the future, might want to try to convey some path information.
-			//for (State state : stateList) {
 			
 			int blockId = state.getObligationSet().getWhereCreated(obligation);
 			if (blockId > 0) {
@@ -232,15 +225,16 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
 					InstructionHandle handle = i.next();
 					if (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation)) {
-//						bugInstance
-//							.addSourceLine(methodDescriptor, new Location(handle, creationBlock))
-//							.describe(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
+						// Add source line for the resource creation point
 						SourceLineAnnotation sourceLine =
 							SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, creationBlock));
 						sourceLine.setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
 						bugInstance.add(sourceLine);
+						
+						// Optional: report the path from the resource creation point
+						// to the end of the method.
 						if (REPORT_PATH_DEBUG) {
-							System.out.println("  ==> " + sourceLine);
+							System.out.println("  "+handle.getPosition()+" ==> " + sourceLine);
 						}
 						if (REPORT_PATH) {
 							// Report the rest of the source lines in the path
@@ -249,8 +243,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 				}
 			}
-
-			//}
 		}
 
 		/**
@@ -272,7 +264,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			State state, int obligationId) throws DataflowAnalysisException, ClassNotFoundException {
 			
 			Obligation obligation = database.getFactory().getObligationById(obligationId);
-			
 			
 			int leakCount = state.getObligationSet().getCount(obligationId);
 
@@ -324,6 +315,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						InstructionHandle handle = sourceBlock.getExceptionThrower();
 						
 						if (dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, obligation)) {
+							if (DEBUG_FP) {
+								System.out.println(handle + ": Exception thrown from discharge method");
+							}
 							leakCount--;
 						}
 					}
@@ -477,7 +471,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					boolean isInteresting = sourceLine.getStartLine() > 0 && !sourceLine.equals(lastSourceLine);
 					
 					if (REPORT_PATH_DEBUG) {
-						System.out.println("  --> " + sourceLine + (isInteresting ? " **" : ""));
+						System.out.println("  " + handle.getPosition() + " --> " + sourceLine + (isInteresting ? " **" : ""));
 					}
 					if (isInteresting) {
 						sourceLine.setDescription(SourceLineAnnotation.ROLE_PATH_CONTINUES);

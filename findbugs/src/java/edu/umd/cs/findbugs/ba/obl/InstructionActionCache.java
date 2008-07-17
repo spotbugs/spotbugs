@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,8 @@ import org.apache.bcel.generic.ReferenceType;
  * @author David Hovemeyer
  */
 public class InstructionActionCache {
+	private static final boolean DEBUG_LOOKUP = SystemProperties.getBoolean("oa.debug.lookup");
+	
 	private ObligationPolicyDatabase database;
 	private Map<InstructionHandle, Collection<ObligationPolicyDatabaseAction>> actionCache;
 	
@@ -67,6 +70,10 @@ public class InstructionActionCache {
 				database.getActions(receiverType, methodName, signature, isStatic, actionList);
 				if (actionList.isEmpty()) {
 					actionList = Collections.emptyList();
+				}
+		
+				if (DEBUG_LOOKUP && !actionList.isEmpty()) {
+					System.out.println("  At " + handle +": " + actionList);
 				}
 			}
 			
