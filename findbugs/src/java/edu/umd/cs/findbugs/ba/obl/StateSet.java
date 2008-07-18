@@ -159,12 +159,12 @@ public class StateSet {
 			state.getObligationSet().add(obligation);
 			updatedStateMap.put(state.getObligationSet(), state);
 			
-			if (state.getObligationSet().getCount(obligation.getId()) == 1) {
-				// This is the first addition of this kind of obligation.
-				// Make a note so we can use the information to report source
-				// line info.
-				state.getObligationSet().setWhereCreated(obligation, basicBlockId);
-			}
+//			if (state.getObligationSet().getCount(obligation.getId()) == 1) {
+//				// This is the first addition of this kind of obligation.
+//				// Make a note so we can use the information to report source
+//				// line info.
+//				state.getObligationSet().setWhereCreated(obligation, basicBlockId);
+//			}
 		}
 		replaceMap(updatedStateMap);
 	}

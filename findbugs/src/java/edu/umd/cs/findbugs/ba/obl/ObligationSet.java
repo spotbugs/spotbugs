@@ -37,13 +37,13 @@ public class ObligationSet {
 	private static final int INVALID_HASH_CODE = -1;
 
 	private final short[] countList;
-	private final short[] whereCreated;
+//	private final short[] whereCreated;
 	private final ObligationFactory factory;
 	private int cachedHashCode;
 
 	public ObligationSet(/*int maxObligationTypes, */ObligationFactory factory) {
 		this.countList = new short[factory.getMaxObligationTypes()];
-		this.whereCreated = new short[factory.getMaxObligationTypes()];
+//		this.whereCreated = new short[factory.getMaxObligationTypes()];
 		this.factory = factory;
 		invalidate();
 	}
@@ -66,33 +66,33 @@ public class ObligationSet {
 //		return getCount(obligation.getId());
 //	}
 
-	/**
-	 * Called upon the first creation of given kind of obligation on path.
-	 * 
-	 * @param obligation    an Obligation
-	 * @param basicBlockId  BasicBlock id of first creation of the given obligation type
-	 */
-	public void setWhereCreated(Obligation obligation, int basicBlockId) {
-		assert getCount(obligation.getId()) == 1;
-		invalidate();
-
-		if (basicBlockId > Short.MAX_VALUE) {
-			whereCreated[obligation.getId()] = -1;
-			return;
-		}
-		
-		whereCreated[obligation.getId()] = (short) basicBlockId;
-	}
+//	/**
+//	 * Called upon the first creation of given kind of obligation on path.
+//	 * 
+//	 * @param obligation    an Obligation
+//	 * @param basicBlockId  BasicBlock id of first creation of the given obligation type
+//	 */
+//	public void setWhereCreated(Obligation obligation, int basicBlockId) {
+//		assert getCount(obligation.getId()) == 1;
+//		invalidate();
+//
+//		if (basicBlockId > Short.MAX_VALUE) {
+//			whereCreated[obligation.getId()] = -1;
+//			return;
+//		}
+//		
+//		whereCreated[obligation.getId()] = (short) basicBlockId;
+//	}
 	
-	/**
-	 * Find out where the first instance of given obligation type was created.
-	 * 
-	 * @param obligation an obligation
-	 * @return id of basic block where created, or -1 if the basic block couldn't be stored
-	 */
-	public int getWhereCreated(Obligation obligation) {
-		return whereCreated[obligation.getId()];
-	}
+//	/**
+//	 * Find out where the first instance of given obligation type was created.
+//	 * 
+//	 * @param obligation an obligation
+//	 * @return id of basic block where created, or -1 if the basic block couldn't be stored
+//	 */
+//	public int getWhereCreated(Obligation obligation) {
+//		return whereCreated[obligation.getId()];
+//	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -102,7 +102,7 @@ public class ObligationSet {
 		ObligationSet other = (ObligationSet) o;
 
 		if (!Arrays.equals(this.countList, other.countList)
-			|| !Arrays.equals(this.whereCreated, other.whereCreated)) {
+			/*|| !Arrays.equals(this.whereCreated, other.whereCreated)*/) {
 			return false;
 		}
 
@@ -131,7 +131,7 @@ public class ObligationSet {
 	
 	public void copyFrom(ObligationSet other) {
 		System.arraycopy(other.countList, 0, this.countList, 0, other.countList.length);
-		System.arraycopy(other.whereCreated, 0, this.whereCreated, 0, other.whereCreated.length);
+//		System.arraycopy(other.whereCreated, 0, this.whereCreated, 0, other.whereCreated.length);
 		invalidate();
 	}
 
@@ -146,7 +146,7 @@ public class ObligationSet {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < countList.length; ++i) {
-				value += (13 * i * (countList[i] + whereCreated[i]));
+				value += (13 * i * (countList[i]/* + whereCreated[i]*/));
 			}
 			cachedHashCode = value;
 		}

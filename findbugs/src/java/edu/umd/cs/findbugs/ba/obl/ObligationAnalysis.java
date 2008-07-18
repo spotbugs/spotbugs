@@ -129,6 +129,9 @@ public class ObligationAnalysis
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
 			State state = i.next();
+			if (state.getPath().hasComponent(basicBlock.getLabel())) {
+				throw new DataflowAnalysisException("creation of cyclic path");
+			}
 			state.getPath().append(basicBlock.getLabel());
 		}
 	}
