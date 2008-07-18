@@ -20,6 +20,26 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.ListModel;
+import javax.swing.filechooser.FileFilter;
+
+import edu.umd.cs.findbugs.DiscoverSourceDirectories;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IErrorLogger;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Wizard dialog to automatically find and configure
@@ -32,9 +52,12 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
     private static final int MIN_STEP = 1;
     private static final int MAX_STEP = 2;
     
-    /** Creates new form SourceDirectoryWizard */
-    public SourceDirectoryWizard(java.awt.Frame parent, boolean modal) {
+    /** Creates new form SourceDirectoryWizard 
+     * @param parentGUI */
+    public SourceDirectoryWizard(java.awt.Frame parent, boolean modal, Project project, NewProjectWizard parentGUI) {
         super(parent, modal);
+        this.parentGUI = parentGUI;
+        this.project = project;
         initComponents();
         setStep(1);
     }
@@ -48,10 +71,14 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
         private void initComponents() {
 
+    	  		foundModel = new DefaultListModel();
+    	  		progressModel = new DefaultListModel();
                 contentPanel = new javax.swing.JPanel();
                 secondPanel = new javax.swing.JPanel();
                 jScrollPane1 = new javax.swing.JScrollPane();
+                jScrollPane2 = new javax.swing.JScrollPane();
                 jList1 = new javax.swing.JList();
+                jList2 = new javax.swing.JList();
                 jLabel1 = new javax.swing.JLabel();
                 jLabel2 = new javax.swing.JLabel();
                 jLabel3 = new javax.swing.JLabel();
@@ -60,6 +87,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 sourceRootBox = new javax.swing.JTextField();
                 srcFileIconLabel = new javax.swing.JLabel();
                 card1TitleLabel = new javax.swing.JLabel();
+                chooser = new JFileChooser();
                 browseButton = new javax.swing.JButton();
                 card1Explanation1Label = new javax.swing.JLabel();
                 card1Explanation2Label = new javax.swing.JLabel();
@@ -68,11 +96,15 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 nextButton = new javax.swing.JButton();
                 finshButton = new javax.swing.JButton();
                 errorMessageLabel = new javax.swing.JLabel();
-
+                Dimension d= new Dimension(825,400);
+                this.setPreferredSize(d);
+                this.setResizable(true);
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 setTitle("FindBugs Source Directory Configuration Wizard");
                 getContentPane().setLayout(null);
-
+                
+                jList2.setModel(progressModel);
+                
                 contentPanel.setLayout(new java.awt.CardLayout());
 
                 secondPanel.setLayout(null);
@@ -99,6 +131,11 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
                 contentPanel.add(secondPanel, "card2");
 
+                jScrollPane2.setViewportView(jList2);
+
+                firstPanel.add(jScrollPane2);
+                jScrollPane2.setBounds(275, 250, 250, 50);
+                
                 firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 firstPanel.setLayout(null);
 
@@ -115,31 +152,53 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 card1TitleLabel.setText("Where are your source files?");
                 firstPanel.add(card1TitleLabel);
-                card1TitleLabel.setBounds(230, 20, 353, 29);
+                card1TitleLabel.setBounds(250, 20, 353, 29);
 
                 browseButton.setText("Browse...");
                 firstPanel.add(browseButton);
-                browseButton.setBounds(650, 210, 70, 29);
+                
+                browseButton.addActionListener(new ActionListener()
+        		{
+        			public void actionPerformed(ActionEvent evt)
+        			{
+        				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        				chooser.setMultiSelectionEnabled(true);
+        				chooser.setApproveButtonText("Choose");
+        				chooser.setDialogTitle("Choose the directory");   			
+        			        				
+        				if (chooser.showOpenDialog(SourceDirectoryWizard.this) == JFileChooser.APPROVE_OPTION)
+        				{
+        					File[] selectedFiles = chooser.getSelectedFiles();
+        					for(File selectedFile : selectedFiles)
+        					{
+        						sourceRootBox.setText(selectedFile.getAbsolutePath());
+        					}
+        					nextButton.setEnabled(!sourceRootBox.getText().equals(""));
+        				}
+        			}
+        		});
+                
+                browseButton.setBounds(650, 210, 100, 29);
 
                 card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation1Label.setText("Enter the top-level directory");
                 firstPanel.add(card1Explanation1Label);
-                card1Explanation1Label.setBounds(190, 80, 193, 17);
+                card1Explanation1Label.setBounds(230, 80, 193, 17);
 
                 card1Explanation2Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation2Label.setText("containing your application's");
                 firstPanel.add(card1Explanation2Label);
-                card1Explanation2Label.setBounds(190, 100, 198, 17);
+                card1Explanation2Label.setBounds(230, 100, 198, 17);
 
                 card1Explanation3Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation3Label.setText("source files.");
                 firstPanel.add(card1Explanation3Label);
-                card1Explanation3Label.setBounds(190, 120, 82, 17);
+                card1Explanation3Label.setBounds(230, 120, 82, 17);
 
                 contentPanel.add(firstPanel, "card1");
 
                 getContentPane().add(contentPanel);
-                contentPanel.setBounds(0, 0, 0, 0);
+                contentPanel.setBounds(0, 0, 750, 300);
 
                 previousButton.setText("<< Previous");
                 previousButton.addActionListener(new java.awt.event.ActionListener() {
@@ -148,16 +207,27 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(previousButton);
-                previousButton.setBounds(0, 325, 92, 29);
+                previousButton.setBounds(250, 325, 100, 29);
 
                 nextButton.setText("Next >>");
                 nextButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                nextButtonActionPerformed(evt);
+                                try {
+	                                nextButtonActionPerformed(evt);
+                                } catch (CheckedAnalysisException e) {
+	                                // TODO Auto-generated catch block
+	                                e.printStackTrace();
+                                } catch (IOException e) {
+	                                // TODO Auto-generated catch block
+	                                e.printStackTrace();
+                                } catch (InterruptedException e) {
+	                                // TODO Auto-generated catch block
+	                                e.printStackTrace();
+                                }
                         }
                 });
                 getContentPane().add(nextButton);
-                nextButton.setBounds(100, 325, 68, 29);
+                nextButton.setBounds(350, 325, 100, 29);
 
                 finshButton.setText("Finish");
                 finshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -166,7 +236,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(finshButton);
-                finshButton.setBounds(200, 325, 48, 29);
+                finshButton.setBounds(450, 325, 100, 29);
 
                 errorMessageLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
                 errorMessageLabel.setForeground(new java.awt.Color(255, 0, 0));
@@ -180,16 +250,99 @@ private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     if (step > MIN_STEP) {
         setStep(step - 1);
     }
+	foundModel.removeAllElements();
 }//GEN-LAST:event_previousButtonActionPerformed
 
-private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
-    if (step < MAX_STEP) {
-        setStep(step + 1);
-    }
+private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) throws CheckedAnalysisException, IOException, InterruptedException {//GEN-FIRST:event_nextButtonActionPerformed
+   
+	
+	IErrorLogger errorLogger = new IErrorLogger() {
+
+		public void reportMissingClass(ClassNotFoundException ex) {
+			String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
+			if (className != null) {
+				logError("Missing class: " + className);
+			} else {
+				logError("Missing class: " + ex);
+			}
+		}
+
+		public void reportMissingClass(ClassDescriptor classDescriptor) {
+			logError("Missing class: " + classDescriptor.toDottedClassName());
+		}
+
+		public void logError(String message) {
+			System.err.println("Error: " + message);
+		}
+
+		public void logError(String message, Throwable e) {
+			logError(message + ": " + e.getMessage());
+		}
+
+		public void reportSkippedAnalysis(MethodDescriptor method) {
+			logError("Skipped analysis of method " + method.toString());
+		}
+	};
+	
+	DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
+
+		public void startRecursiveDirectorySearch() {
+			progressModel.addElement("Scanning directories...");
+		}
+
+		public void doneRecursiveDirectorySearch() {
+			progressModel.addElement("done");
+		}
+
+		public void startScanningArchives(int numArchivesToScan) {
+			progressModel.addElement("Scanning " + numArchivesToScan + " archives..");
+		}
+
+		public void doneScanningArchives() {
+			progressModel.addElement("done");
+		}
+
+		public void startScanningClasses(int numClassesToScan) {
+			progressModel.addElement("Scanning " + numClassesToScan + " classes...");
+		}
+
+		public void finishClass() {
+		}
+
+		public void doneScanningClasses() {
+			progressModel.addElement("done");
+		}
+
+		public void finishArchive() {
+		}
+	};
+	
+	DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
+	discoverSourceDirectories.setProject(project);
+	discoverSourceDirectories.setRootSourceDirectory(sourceRootBox.getText());
+	discoverSourceDirectories.setErrorLogger(errorLogger);
+	discoverSourceDirectories.setProgress(progress);
+	
+	discoverSourceDirectories.execute();
+	jList1.setModel(foundModel);
+
+	for (String srcDir : discoverSourceDirectories.getDiscoveredSourceDirectoryList()) {	
+		foundModel.addElement(srcDir);
+	}
+	
+	if (step < MAX_STEP) {
+	       setStep(step + 1);
+	}
+	    
+	
 }//GEN-LAST:event_nextButtonActionPerformed
 
 private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finshButtonActionPerformed
-// TODO add your handling code here:
+	if(parentGUI != null)
+	{
+		parentGUI.setSourceDirecs(foundModel);
+	}
+	dispose();
 }//GEN-LAST:event_finshButtonActionPerformed
     
     /**
@@ -198,7 +351,7 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true);
+                SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(), null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -209,7 +362,13 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             }
         });
     }
-    
+    	private JFileChooser chooser;
+    	private Project project;
+    	private NewProjectWizard parentGUI;
+    	private DefaultListModel foundModel;
+    	private DefaultListModel progressModel;
+    	private JList jList2;
+    	
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton browseButton;
         private javax.swing.JLabel card1Explanation1Label;
@@ -225,6 +384,7 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         private javax.swing.JLabel jLabel3;
         private javax.swing.JList jList1;
         private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JScrollPane jScrollPane2;
         private javax.swing.JButton nextButton;
         private javax.swing.JButton previousButton;
         private javax.swing.JPanel secondPanel;
@@ -241,9 +401,10 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
         this.step = step;
         previousButton.setEnabled(step != MIN_STEP);
-        nextButton.setEnabled(step != MAX_STEP);
-        
+        nextButton.setEnabled(step != MAX_STEP && !sourceRootBox.getText().equals(""));
+
         CardLayout cards = (CardLayout) contentPanel.getLayout();
         cards.show(contentPanel, "card" + step);
+        
     }
 }

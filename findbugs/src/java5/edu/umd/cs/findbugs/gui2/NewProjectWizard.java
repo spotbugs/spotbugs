@@ -124,12 +124,12 @@ public class NewProjectWizard extends FBDialog
 
 
 		wizardComponents[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
-				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Class Archives and Directories to Analyze");
+				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Class Archives and Directories to Analyze", false);
 
 		wizardComponents[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
-				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories");
+				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories", false);
 
-		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories");
+		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true);
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -295,7 +295,7 @@ public class NewProjectWizard extends FBDialog
 	 */
 	private JPanel createFilePanel(final String label, final JList list, 
 			final DefaultListModel listModel, final int fileSelectionMode, final FileFilter filter,
-			final String dialogTitle) {
+			final String dialogTitle, boolean wizard) {
 		JPanel myPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -331,6 +331,30 @@ public class NewProjectWizard extends FBDialog
 		myPanel.add(removeButton, gbc);
 		gbc.gridx = 1;
 		gbc.gridy = 3;
+		final JButton wizardButton = new JButton("Wizard");
+		if (wizard)
+		{
+			final NewProjectWizard thisGUI = this;
+			myPanel.add(wizardButton, gbc);
+			wizardButton.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent evt)
+				{
+					final Project tempProject = new Project();
+					for (int i = 0; i < analyzeModel.getSize(); i++)
+						tempProject.addFile((String) analyzeModel.get(i));
+					for (int i = 0; i < auxModel.getSize(); i++)
+						tempProject.addAuxClasspathEntry((String) auxModel.get(i));
+					
+					java.awt.EventQueue.invokeLater(new Runnable() {
+			            public void run() {
+			                SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, tempProject, thisGUI);
+			                dialog.setVisible(true);
+			            }
+			        });
+				}
+			});
+		}
 		gbc.insets = new Insets(0, 0, 0, 0);
 		myPanel.add(Box.createGlue(), gbc);
 		myPanel.setBorder(border);
@@ -379,6 +403,7 @@ public class NewProjectWizard extends FBDialog
 		});
 		return myPanel;
 	}
+
 	/*
 	private void loadPanel(final int index)
 	{
@@ -431,4 +456,14 @@ public class NewProjectWizard extends FBDialog
 		setSize(new Dimension(width, 500));
 		setLocationRelativeTo(MainFrame.getInstance());
 	}
+
+	/**
+     * @param foundModel
+     */
+    public void setSourceDirecs(DefaultListModel foundModel) {
+	    for(int i = 0; i < foundModel.size(); i++)
+	    {
+	    	this.sourceModel.addElement(foundModel.getElementAt(i));
+	    }
+    }
 }
