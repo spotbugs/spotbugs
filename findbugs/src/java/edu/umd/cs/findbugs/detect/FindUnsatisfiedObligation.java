@@ -235,40 +235,11 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		}
 
 		private void annotateWarningWithSourceLineInformation(State state, Obligation obligation, BugInstance bugInstance) {
-//			int blockId = state.getObligationSet().getWhereCreated(obligation);
-//			if (blockId > 0) {
-//				BasicBlock creationBlock = cfg.lookupBlockByLabel(blockId);
-//
-//				// Figure out which instruction actually creates
-//				// the obligation
-//				for (Iterator<InstructionHandle> i = creationBlock.instructionIterator(); i.hasNext();) {
-//					InstructionHandle handle = i.next();
-//					if (dataflow.getAnalysis().getActionCache().addsObligation(handle, cpg, obligation)) {
-//						// Add source line for the resource creation point
-//						SourceLineAnnotation sourceLine =
-//							SourceLineAnnotation.fromVisitedInstruction(methodDescriptor, new Location(handle, creationBlock));
-//						sourceLine.setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED);
-//						bugInstance.add(sourceLine);
-//						
-//						// Optional: report the path from the resource creation point
-//						// to the end of the method.
-//						if (REPORT_PATH_DEBUG) {
-//							System.out.println("  "+handle.getPosition()+" ==> " + sourceLine);
-//						}
-						if (REPORT_PATH) {
-							// Report the rest of the source lines in the path
-							reportPath(
-								bugInstance,
-								//creationBlock,
-								///*i,*/handle,
-								obligation,
-								state//,
-								//sourceLine
-								);
-						}
-//					}
-//				}
-//			}
+			// The reportPath() method currently does all reporting
+			// of source line information.
+			if (REPORT_PATH) {
+				reportPath(bugInstance, obligation, state);
+			}
 		}
 		
 		private class PostProcessingPathVisitor implements PathVisitor {
@@ -504,16 +475,13 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 		private void reportPath(
 			final BugInstance bugInstance,
-			//BasicBlock creationBlock,
-			/*Iterator<InstructionHandle> i,*/
-			//InstructionHandle creationLoc,
 			final Obligation obligation,
-			State state//,
-			//final SourceLineAnnotation creationSourceLine
-			) {
+			State state) {
 			
 			Path path = state.getPath();
 			
+			// This PathVisitor will traverse the Path and add appropriate
+			// SourceLineAnnotations to the BugInstance.
 			PathVisitor visitor = new PathVisitor() {
 				boolean sawFirstCreation;
 				SourceLineAnnotation lastSourceLine;// = creationSourceLine;
@@ -562,7 +530,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 				}
 			};
-			//path.acceptVisitorStartingFromLocation(cfg, visitor, creationBlock, creationLoc);
+
+			// Visit the Path
 			path.acceptVisitor(cfg, visitor);
 		}
 	}
