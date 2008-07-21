@@ -62,7 +62,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 		this.obligation = obligation;
 	}
 
-	public void getActions(
+	public boolean getActions(
 			ReferenceType receiverType,
 			String methodName,
 			String signature,
@@ -73,6 +73,13 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 			&& this.signature.matches(signature)
 			&& this.isStatic == isStatic) {
 			actionList.add(new ObligationPolicyDatabaseAction(action, obligation));
+			return true;
 		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + receiverType + "," + methodName + "," + signature + "," + isStatic + "," + action + "," + obligation + ")";
 	}
 }

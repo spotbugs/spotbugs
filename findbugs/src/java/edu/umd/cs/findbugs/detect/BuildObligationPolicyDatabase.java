@@ -22,15 +22,23 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
 import edu.umd.cs.findbugs.ba.obl.MatchObligationParametersEntry;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.ml.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.util.AnyTypeMatcher;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.ContainsCamelCaseWordStringMatcher;
 import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.RegexStringMatcher;
@@ -48,52 +56,77 @@ import org.apache.bcel.generic.ObjectType;
  */
 public class BuildObligationPolicyDatabase implements Detector2, NonReportingDetector {
 	
+	private static final boolean INFER_CLOSE_METHODS = SystemProperties.getBoolean("oa.inferclose", true);
+	private static final boolean DEBUG_ANNOTATIONS = SystemProperties.getBoolean("oa.debug.annotations");
+	
 	private BugReporter reporter;
-	private boolean createdDatabase;
+	private ObligationPolicyDatabase database;
+	
+	private ClassDescriptor willClose;
+//	private ClassDescriptor willNotClose;
+//	private ClassDescriptor willCloseWhenClosed;
 	
 	public BuildObligationPolicyDatabase(BugReporter bugReporter) {
 		this.reporter = bugReporter;
-		this.createdDatabase = false;
+		this.willClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillClose");
+//		this.willNotClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillNotClose");
+//		this.willCloseWhenClosed = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillClose");
 	}
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-		if (!createdDatabase) {
+		if (database == null) {
 			// Create and install the database
 			
-			ObligationPolicyDatabase database = new ObligationPolicyDatabase();
-			addBuiltInPolicies(database);
+			database = new ObligationPolicyDatabase();
+			addBuiltInPolicies();
 			
 			Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
 		}
 		
-		// TODO: scan methods for uses of obligation-related annotations
+		// Scan methods for uses of obligation-related annotations
+		XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
+		for (XMethod xmethod : xclass.getXMethods()) {
+			for (int i = 0; i < xmethod.getNumParams(); i++) {
+				if (xmethod.getParameterAnnotation(i, willClose) != null) {
+					addParameterDeletesObligationDatabaseEntry(xmethod, i);
+				}
+			}
+		}
 	}
 
 	public void finishPass() {
-		// nothing to do
+		if (ObligationPolicyDatabase.DEBUG) {
+			System.out.println("======= Completed ObligationPolicyDatabase ======= ");
+			for (ObligationPolicyDatabaseEntry entry : database.getEntries()) {
+				System.out.println("  * " + entry);
+			}
+			System.out.println("================================================== ");
+		}
 	}
 
 	public String getDetectorClassName() {
 		return this.getClass().getName();
 	}
 
-	private void addBuiltInPolicies(ObligationPolicyDatabase database) {
+	private void addBuiltInPolicies() {
 		// Add the database entries describing methods that add and delete
 		// file stream/reader obligations.
-		addFileStreamEntries(database, "InputStream");
-		addFileStreamEntries(database, "OutputStream");
-		addFileStreamEntries(database, "Reader");
-		addFileStreamEntries(database, "Writer");
+		addFileStreamEntries("InputStream");
+		addFileStreamEntries("OutputStream");
+		addFileStreamEntries("Reader");
+		addFileStreamEntries("Writer");
 		
-		// Experiment: assume that any method with the word "close" in
-		// its camel-cased identifier taking an obligation type
-		// as a parameter deletes an instance of that obligation.
-		// The hope is that this will at least partially handle wrapper
-		// methods for closing resouces.
-		database.addEntry(new MatchObligationParametersEntry(
-			new AnyTypeMatcher(),
-			new ContainsCamelCaseWordStringMatcher("close"),
-			ObligationPolicyDatabaseActionType.DEL));
+		if (INFER_CLOSE_METHODS) {
+			// Experiment: assume that any method with the word "close" in
+			// its camel-cased identifier taking an obligation type
+			// as a parameter deletes an instance of that obligation.
+			// The hope is that this will at least partially handle wrapper
+			// methods for closing resouces.
+			database.addEntry(new MatchObligationParametersEntry(
+				new AnyTypeMatcher(),
+				new ContainsCamelCaseWordStringMatcher("close"),
+				ObligationPolicyDatabaseActionType.DEL));
+		}
 		
 		// Database obligation types
 		Obligation connection = database.getFactory().addObligation("java.sql.Connection");
@@ -157,7 +190,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	/**
 	 * General method for adding entries for File InputStream/OutputStream/Reader/Writer classes.
 	 */
-	private void addFileStreamEntries(ObligationPolicyDatabase database, String kind) {
+	private void addFileStreamEntries(String kind) {
 		Obligation obligation = database.getFactory().addObligation("java.io." + kind);
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.io.File" + kind)),
@@ -171,5 +204,62 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new ExactStringMatcher("()V"),
 			false,
 			ObligationPolicyDatabaseActionType.DEL, obligation));
+	}
+
+	/**
+	 * Add an appropriate policy database entry for
+	 * parameters marked with the WillClose annotation.
+	 * 
+	 * @param xmethod a method
+	 * @param i       a parameter of the method (marked with a WillClose annotation)
+	 */
+	private void addParameterDeletesObligationDatabaseEntry(XMethod xmethod, int i) {
+		if (INFER_CLOSE_METHODS) {
+			// We're automatically inferring close methods based on the
+			// method name, so don't do anything if this is one of those
+			// methods.
+			SplitCamelCaseIdentifier splitter = new SplitCamelCaseIdentifier(xmethod.getName());
+			if (splitter.split().contains("close")) {
+				return;
+			}
+		}
+
+		// Find the type of the i'th parameter
+		String sig = xmethod.getSignature();
+		SignatureParser sigParser = new SignatureParser(sig);
+		String paramSig = sigParser.getParameter(i);
+		if (!paramSig.startsWith("L") || !paramSig.endsWith(";")) {
+			// Hmm...not a class type.
+			// Probably should complain about this somehow.
+			return;
+		}
+		ObjectType paramType = ObjectType.getInstance(ClassName.toDottedClassName(paramSig.substring(1, paramSig.length() - 1)));
+		
+		if (DEBUG_ANNOTATIONS) {
+			System.out.println("Method " + xmethod.toString() + " param " + i + " discharges obligation");
+		}
+		
+		try {
+			// See if the parameter is of an obligation type.
+			// FIXME: should complain somehow if it's not
+			Obligation obligation = database.getFactory().getObligationByType(paramType);			
+			if (obligation != null) {
+				// Add a policy database entry noting that this method
+				// will delete one instance of the obligation type.
+				ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(
+					new SubtypeTypeMatcher(ObjectType.getInstance(xmethod.getClassDescriptor().toDottedClassName())),
+					new ExactStringMatcher(xmethod.getName()),
+					new ExactStringMatcher(xmethod.getSignature()),
+					xmethod.isStatic(),
+					ObligationPolicyDatabaseActionType.DEL,
+					obligation);
+				database.addEntry(entry);
+				if (DEBUG_ANNOTATIONS) {
+					System.out.println("Added entry: " + entry);
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			reporter.reportMissingClass(e);
+		}
 	}
 }

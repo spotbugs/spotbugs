@@ -54,18 +54,18 @@ public class MatchObligationParametersEntry implements ObligationPolicyDatabaseE
 		this.actionType = actionType;
 	}
 
-	public void getActions(ReferenceType receiverType,
+	public boolean getActions(ReferenceType receiverType,
 			String methodName, String signature, boolean isStatic, Collection<ObligationPolicyDatabaseAction> actionList) {
 		if (!this.receiverType.matches(receiverType)
 			|| !this.methodName.matches(methodName)) {
-			return;
+			return false;
 		}
 		
 		// See if any of the method's parameters are obligation types.
 		Type[] paramTypes = Type.getArgumentTypes(signature);
 		if (paramTypes.length == 0) {
 			// no parameters
-			return;
+			return false;
 		}
 		
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
@@ -113,6 +113,13 @@ public class MatchObligationParametersEntry implements ObligationPolicyDatabaseE
 //		if (receiverType.getSignature().contains("IOUtilities") && toAdd.isEmpty()) {
 //			throw new IllegalStateException();
 //		}
+		
+		return !toAdd.isEmpty();
+	}
+
+	@Override
+	public String toString() {
+		return "(" + receiverType + "," + "parameters of " + methodName + "," + actionType + ")";
 	}
 
 }

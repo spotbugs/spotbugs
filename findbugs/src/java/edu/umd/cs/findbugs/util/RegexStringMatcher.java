@@ -45,4 +45,9 @@ public class RegexStringMatcher implements StringMatcher {
 		return m.matches();
 	}
 
+	@Override
+	public String toString() {
+		return pattern.toString();
+	}
+	
 }

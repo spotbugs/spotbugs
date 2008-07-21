@@ -59,4 +59,8 @@ public class SubtypeTypeMatcher implements TypeMatcher {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "+" + supertype.toString();
+	}
 }

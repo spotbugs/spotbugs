@@ -40,4 +40,8 @@ public class ExactStringMatcher implements StringMatcher {
 		return this.expected.equals(s);
 	}
 
+	@Override
+	public String toString() {
+		return expected;
+	}
 }

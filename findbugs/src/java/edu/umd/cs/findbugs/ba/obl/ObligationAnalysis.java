@@ -102,8 +102,17 @@ public class ObligationAnalysis
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
 		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, methodGen.getConstantPool());
+		if (DEBUG && actionList.size() > 0) {
+			System.out.println("Applying actions at " + handle + " to " + fact);
+		}
 		for (ObligationPolicyDatabaseAction action : actionList) {
+			if (DEBUG) {
+				System.out.print("  " + action + "...");
+			}
 			action.apply(fact, basicBlock.getLabel());
+			if (DEBUG) {
+				System.out.println(fact);
+			}
 		}
 	}
 

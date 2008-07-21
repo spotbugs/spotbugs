@@ -51,4 +51,9 @@ public class ContainsCamelCaseWordStringMatcher implements StringMatcher {
 		Collection<String> components = splitter.split();
 		return components.contains(expected);
 	}
+
+	@Override
+	public String toString() {
+		return "camel-case id contains " + expected;
+	}
 }

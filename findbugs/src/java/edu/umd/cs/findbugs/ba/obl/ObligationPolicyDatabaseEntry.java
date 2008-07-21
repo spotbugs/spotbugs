@@ -39,7 +39,8 @@ public interface ObligationPolicyDatabaseEntry {
 	 * @param isStatic     true if called method is static, false otherwise
 	 * @param actionList   List of ObligationPolicyDatabaseActions to be applied
 	 *                     when a called method is matched by this entry
+	 * @returns true if one or more actions were added, false if no actions were added
 	 */
-	public void getActions(ReferenceType receiverType,
+	public boolean getActions(ReferenceType receiverType,
 			String methodName, String signature, boolean isStatic, Collection<ObligationPolicyDatabaseAction> actionList);
 }
