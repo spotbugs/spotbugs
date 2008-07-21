@@ -180,78 +180,26 @@
 					</h1>
 					<p> The current version of FindBugs is s @VERSION@.</p>
 
-					<p> Changes since version 1.3.3</p>
-
+					<p>
+						Changes since version 1.3.4
+					</p>
 					<ul>
-					  <li>FindBugs base</li>
-					  <ul>
-					    <li>New Reports:</li>
-					    <ul>
-					      <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC:
-					      equals method overrides equals in superclass and may not be symmetric</li>
-					      <li>EQ_ALWAYS_TRUE:
-					      equals method always returns true</li>
-					      <li>EQ_ALWAYS_FALSE:
-					      equals method always returns false</li>
-					      <li>EQ_COMPARING_CLASS_NAMES:
-					      equals method compares class names rather than class objects</li>
-					      <li>EQ_UNUSUAL: Unusual equals method</li>
-					      <li>EQ_GETCLASS_AND_CLASS_CONSTANT:
-					      equals method fails for subtypes</li>
-					      <li>SE_READ_RESOLVE_IS_STATIC:
-					      The readResolve method must not be declared as a static method.</li>
-					      <li>SE_PRIVATE_READ_RESOLVE_NOT_INHERITED:
-					      private readResolve method not inherited by subclasses</li>
-					      <li>MSF_MUTABLE_SERVLET_FIELD: Mutable servlet field</li>
-					      <li>XSS_REQUEST_PARAMETER_TO_SEND_ERROR:
-					      Servlet reflected cross site scripting vulnerability</li>
-					      <li>SKIPPED_CLASS_TOO_BIG: Class too big for analysis</li>
-					    </ul>
-					    <li>Other:</li>
-					    <ul>
-					      <li>Value-number analysis now more space-efficient</li>
-					      <li>Enhancements to reduce memory overhead when
-					          analyzing very large classes</li>
-					      <li>Now skips very large classes that would otherwise
-					          take too much time and memory to analyze</li>
-					      <li>Infrastructure for tracking effectively-constant/
-					          effectively-final fields</li>
-					      <li>Added more cweids</li>
-					      <li>Enhanced taint tracking for taint-based detectors</li>
-					      <li>Ignore doomed calls to equals if result is used
-					          as an argument to assertFalse</li>
-					      <li>EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC handles compareTo</li>
-					      <li>Priority tweak for ICAST_INTEGER_MULTIPLY_CAST_TO_LONG 
-					          (only low priority if multiplying by 1000)</li>
-					      <li>Improved tracking of fields across method calls</li>
-					    </ul>
-					    <li>Fixes:</li>
-					    <ul>
-					      <li>[ 1941450 ] DLS_DEAD_LOCAL_STORE not reported</li>
-					      <li>[ 1953323 ] Omitted break statement in SynchronizeAndNullCheckField</li>
-					      <li>[ 1942620 ] Source Directories selection dialog interface confusion (partial)</li>
-					      <li>[ 1948275 ] Unhelpful "Load of known null"</li>
-					      <li>[ 1933922 ] MWM error in findbugs</li>
-					      <li>[ 1934772 ] 1.3.3 appears to rely on JDK 1.6, JNLP still specifies 1.5</li>
-					      <li>[ 1933945 ] -loadbugs doesn't work</li>
-					      <li>Fixed problems for class names starting with '$'</li>
-					      <li>Fixed bugs and incomplete handling of annotations in
-					          VersionInsensitiveBugComparator</li>
-					    </ul>
-					    <li>Patches:</li>
-					    <ul>
-					      <li>[ 1955106 ] Javadoc fixes</li>
-					      <li>[ 1951930 ] Superfluous import statements (thanks to Jerry James)</li>
-					      <li>[ 1951907 ] Missing @Deprecated annotations (thanks to Jerry James)</li>
-					      <li>[ 1951876 ] Infonode Docking Windows compile fix (thanks to Jerry James)</li>
-					      <li>[ 1936055 ] bugfix for findbugs.de.comment not working (thanks to Peter Fokkinga)
-					    </ul>
-					  </ul>
-					  <li>FindBugs BlueJ plugin</li>
-					  <ul>
-					    <li>Updated to use FindBugs 1.3.4 (first new release since 1.1.3)</li>
-                      </ul>
-                    </ul>
+						<li>New reports:</li>
+						<ul>
+							<li>OBL_UNSATISFIED_OBLIGATION: method fails to close
+							a stream, database object, or other resource.
+							This bug pattern is reported by the
+							new FindUnsatisfiedObligation detector,
+							which improves upon the analysis performed
+							by the FindOpenStream detector.</li>
+						</ul>
+						<li>Other:</li>
+						<ul>
+							
+						</ul>
+						<li>Fixes</li>
+					</ul>
+					
 					
 					<p>
 						<a href="Changes.html">Older versions...</a>
