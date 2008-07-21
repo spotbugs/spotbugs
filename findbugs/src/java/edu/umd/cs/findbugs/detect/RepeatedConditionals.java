@@ -82,10 +82,14 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 					int endOfSecondSegment = oldPC;
 					int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
 					int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
+					
 					if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond))
 						break check;
 					if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO)
 						break check;
+					if (opcodeAtEndOfFirst != opcodeAtEndOfSecond 
+							&& !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) break check;
+					
 					byte[] code = getCode().getCode();
 					if (first == endOfFirstSegment) break check;
 					for (int i = first; i < endOfFirstSegment; i++) {
@@ -103,7 +107,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 					SourceLineAnnotation secondSourceLine =
 						SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, second, endOfSecondSegment-1);
 					
-					int priority = NORMAL_PRIORITY;
+					int priority = HIGH_PRIORITY;
 					if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine())
 						priority++;
 					if (stack.isJumpTarget(second))
@@ -112,10 +116,11 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 					Integer secondTarget = branchTargets.get(endOfSecondSegment);
 					if (firstTarget == null || secondTarget == null) break check;
 					if (firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
-							|| firstTarget.intValue() == getPC() && areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
+							|| firstTarget.intValue() == getPC()) {
 						// identical checks;
 					} else {
-						priority++;
+						// opposite checks
+						priority+=2;
 					}
 					
 					BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
