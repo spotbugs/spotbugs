@@ -588,8 +588,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"
             speed="slow"
-            reports="OBL_UNSATISFIED_OBLIGATION"
-            hidden="true"/>
+            reports="OBL_UNSATISFIED_OBLIGATION"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.UnnecessaryMath" 
   			speed="fast"
