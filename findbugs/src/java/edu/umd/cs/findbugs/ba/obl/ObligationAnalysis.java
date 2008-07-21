@@ -101,14 +101,6 @@ public class ObligationAnalysis
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
-		//
-		// FIXME: it would be better to do this lookup once per Location
-		// and cache the result.  For now, just repeat the lookup
-		// every time.
-		//
-
-//		ArrayList<ObligationPolicyDatabaseAction> actionList = new ArrayList<ObligationPolicyDatabaseAction>();
-//		database.getActions(handle, methodGen.getConstantPool(), actionList);
 		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, methodGen.getConstantPool());
 		for (ObligationPolicyDatabaseAction action : actionList) {
 			action.apply(fact, basicBlock.getLabel());
@@ -129,9 +121,6 @@ public class ObligationAnalysis
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
 			State state = i.next();
-//			if (state.getPath().hasComponent(basicBlock.getLabel())) {
-//				throw new DataflowAnalysisException("creation of cyclic path");
-//			}
 			state.getPath().append(basicBlock.getLabel());
 		}
 	}
