@@ -190,12 +190,26 @@
 							a stream, database object, or other resource.
 							This bug pattern is reported by the
 							new FindUnsatisfiedObligation detector,
-							which improves upon the analysis performed
-							by the FindOpenStream detector.</li>
+							which uses a more powerful analysis
+							than the FindOpenStream detector.
+							See Weimer and Necula,
+							<a href="http://doi.acm.org/10.1145/1028976.1029011"
+							>Finding and preventing run-time error handling mistakes</a>.</li>
 						</ul>
 						<li>Other:</li>
 						<ul>
+							<li>The CheckTypeQualifiers detector works harder
+							to determine when a method requires analysis
+							to check values annotated with 
+							<a href="http://jcp.org/en/jsr/detail?id=305"
+							>JSR-305</a> type qualifiers.</li>
 							
+							<li>The CheckTypeQualifiers detector checks
+							exclusive and exhaustive type qualifiers.</li>
+							
+							<li>The CheckTypeQualifiers detector does
+							limited interprocedural checking of uses
+							of JSR-305 type qualifiers.</li>
 						</ul>
 						<li>Fixes</li>
 					</ul>
