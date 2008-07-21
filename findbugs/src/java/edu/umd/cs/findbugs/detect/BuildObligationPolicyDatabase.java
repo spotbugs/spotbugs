@@ -25,7 +25,6 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
 import edu.umd.cs.findbugs.ba.obl.MatchObligationParametersEntry;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
-import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -80,7 +79,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
 	private void addBuiltInPolicies(ObligationPolicyDatabase database) {
 		// Add the database entries describing methods that add and delete
-		// obligations.
+		// file stream/reader obligations.
 		addFileStreamEntries(database, "InputStream");
 		addFileStreamEntries(database, "OutputStream");
 		addFileStreamEntries(database, "Reader");
@@ -95,6 +94,64 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new AnyTypeMatcher(),
 			new ContainsCamelCaseWordStringMatcher("close"),
 			ObligationPolicyDatabaseActionType.DEL));
+		
+		// Database obligation types
+		Obligation connection = database.getFactory().addObligation("java.sql.Connection");
+		Obligation statement = database.getFactory().addObligation("java.sql.Statement");
+		Obligation resultSet = database.getFactory().addObligation("java.sql.ResultSet");
+		
+		// Add factory method entries for database obligation types
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.DriverManager")),
+			new ExactStringMatcher("getConnection"),
+			new RegexStringMatcher("^.*\\)Ljava/sql/Connection;$"),
+			false,
+			ObligationPolicyDatabaseActionType.ADD,
+			connection));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new ExactStringMatcher("createStatement"),
+			new RegexStringMatcher("^.*\\)Ljava/sql/Statement;$"),
+			false,
+			ObligationPolicyDatabaseActionType.ADD,
+			statement));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new ExactStringMatcher("prepareStatement"),
+			new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"),
+			false,
+			ObligationPolicyDatabaseActionType.ADD,
+			statement));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
+			new ExactStringMatcher("executeQuery"),
+			new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"),
+			false,
+			ObligationPolicyDatabaseActionType.ADD,
+			resultSet));
+		
+		// Add close method entries for database obligation types
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
+			new ExactStringMatcher("close"),
+			new ExactStringMatcher("()V"),
+			false,
+			ObligationPolicyDatabaseActionType.DEL,
+			connection));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
+			new ExactStringMatcher("close"),
+			new ExactStringMatcher("()V"),
+			false,
+			ObligationPolicyDatabaseActionType.DEL,
+			statement));
+		database.addEntry(new MatchMethodEntry(
+			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.ResultSet")),
+			new ExactStringMatcher("close"),
+			new ExactStringMatcher("()V"),
+			false,
+			ObligationPolicyDatabaseActionType.DEL,
+			resultSet));
 	}
 
 	/**
