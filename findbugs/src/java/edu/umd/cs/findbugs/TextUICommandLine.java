@@ -559,6 +559,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				throw new IllegalStateException();
 			}
 			((IFindBugsEngine2)findBugs).loadUserAnnotationPlugin(userAnnotationPlugin, userAnnotationPluginProperties);
+			((IFindBugsEngine2)findBugs).setUserAnnotationSync(userAnnotationSync);
 		}
 	}
 

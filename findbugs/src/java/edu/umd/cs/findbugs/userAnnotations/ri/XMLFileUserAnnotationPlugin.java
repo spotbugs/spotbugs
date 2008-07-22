@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.userAnnotations.Plugin;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,6 +57,8 @@ import org.dom4j.io.XMLWriter;
  * @author David Hovemeyer
  */
 public class XMLFileUserAnnotationPlugin implements Plugin {
+	public static final boolean DEBUG = SystemProperties.getBoolean("ua.debug");
+	
 	private Map<String, String> properties;
 	
 	public XMLFileUserAnnotationPlugin() {
@@ -76,7 +79,13 @@ public class XMLFileUserAnnotationPlugin implements Plugin {
 
 	public void loadUserAnnotations(BugCollection bugs) {
 		try {
+			if (DEBUG) {
+				System.out.println("Loading user annotations from " + properties.get("filename") + "...");
+			}
 			Document document = readXMLFile();
+			if (DEBUG) {
+				System.out.println("   Read XML file successfully");
+			}
 			
 			// Build map of instance hashes to BugInstances
 			Map<String, BugInstance> instanceHashToBugInstanceMap = new HashMap<String, BugInstance>();
@@ -103,6 +112,12 @@ public class XMLFileUserAnnotationPlugin implements Plugin {
 				
 				BugInstance bugInstance = instanceHashToBugInstanceMap.get(instanceHash);
 				if (bugInstance != null) {
+					if (DEBUG ) {
+						System.out.println("Updating user annotations for " + instanceHash);
+						System.out.println("  designationKey=" + designationKey);
+						System.out.println("  annotationText=" + annotationText);
+					}
+					
 					BugDesignation bugDesignation = bugInstance.getNonnullUserDesignation();
 					bugDesignation.setDesignationKey(designationKey);
 					bugDesignation.setAnnotationText(annotationText);

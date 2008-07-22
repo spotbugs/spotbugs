@@ -80,6 +80,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
+	
+	private static final boolean DEBUG_UA = SystemProperties.getBoolean("ua.debug");
 
 	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
@@ -492,6 +494,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 	public void loadUserAnnotationPlugin(String userAnnotationPluginClassName, Map<String,String> configurationProperties)
 			throws IOException {
+		if (DEBUG_UA) {
+			System.out.println("Attempting to load user annotation plugin " + userAnnotationPluginClassName + "...");
+		}
+		
 		try {
 			// FIXME: need to think of how to specify what codebase
 			// the user annotation plugin should be loaded from.
@@ -506,6 +512,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
 				edu.umd.cs.findbugs.userAnnotations.Plugin.class.cast(instance);
 			
 			this.userAnnotationPlugin.setProperties(configurationProperties);
+			
+			if (DEBUG_UA) {
+				System.out.println("  Successfully loaded and configured " + userAnnotationPluginClassName);
+			}
 
 		} catch (ClassNotFoundException e) {
 			throw new IOException("Could not load user annotation plugin", e);
@@ -517,6 +527,9 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	}
 
 	public void setUserAnnotationSync(boolean userAnnotationSync) {
+		if (DEBUG_UA) {
+			System.out.println("Will synchronize user annotations");
+		}
 		this.userAnnotationSync = userAnnotationSync;
 	}
 
@@ -1063,9 +1076,13 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	}
 
 	private void syncUserAnnotations() {
+		if (DEBUG_UA) {
+			System.out.println("About to sync user annotations...");
+		}
+		
 		BugReporter realBugReporter = bugReporter.getRealBugReporter();
 
-		if (!(realBugReporter instanceof BugCollection)) {
+		if (!(realBugReporter instanceof BugCollectionBugReporter)) {
 			bugReporter.logError("Cannot load user annotations because there is no BugCollection: use -xml output option");
 		} else {
 			BugCollection bugCollection = ((BugCollectionBugReporter) realBugReporter).getBugCollection();
