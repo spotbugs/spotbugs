@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
+import java.util.Map;
 
 /**
  * FindBugs driver class.
@@ -73,7 +74,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  *
  * @author David Hovemeyer
  */
-public class FindBugs2 implements IFindBugsEngine {
+public class FindBugs2 implements IFindBugsEngine2 {
 	private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
 
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
@@ -104,6 +105,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	private IClassScreener classScreener;
 	private boolean scanNestedArchives;
 	private boolean noClassOk;
+	private edu.umd.cs.findbugs.userAnnotations.Plugin userAnnotationPlugin;
+	private boolean userAnnotationSync;
 
 	/**
 	 * Constructor.
@@ -485,6 +488,36 @@ public class FindBugs2 implements IFindBugsEngine {
 	 */
 	public void setNoClassOk(boolean noClassOk) {
 		this.noClassOk = noClassOk;
+	}
+
+	public void loadUserAnnotationPlugin(String userAnnotationPluginClassName, Map<String,String> configurationProperties)
+			throws IOException {
+		try {
+			// FIXME: need to think of how to specify what codebase
+			// the user annotation plugin should be loaded from.
+			Class<?> cls = Class.forName(userAnnotationPluginClassName);
+			if (!edu.umd.cs.findbugs.userAnnotations.Plugin.class.isAssignableFrom(cls)) {
+				throw new IOException("Class " + userAnnotationPluginClassName + " is not a user annotation plugin");
+			}
+
+			Object instance = cls.newInstance();
+			
+			this.userAnnotationPlugin =
+				edu.umd.cs.findbugs.userAnnotations.Plugin.class.cast(instance);
+			
+			this.userAnnotationPlugin.setProperties(configurationProperties);
+
+		} catch (ClassNotFoundException e) {
+			throw new IOException("Could not load user annotation plugin", e);
+		} catch (InstantiationException e) {
+			throw new IOException("Could not create instance of user annotation plugin object", e);
+		} catch (IllegalAccessException e) {
+			throw new IOException("Could not create instance of user annotation plugin object", e);
+		}
+	}
+
+	public void setUserAnnotationSync(boolean userAnnotationSync) {
+		this.userAnnotationSync = userAnnotationSync;
 	}
 
 	/**
@@ -966,6 +999,13 @@ public class FindBugs2 implements IFindBugsEngine {
 			// if (baselineBugs != null) new Update().removeBaselineBugs(baselineBugs, bugReporter.);
 			// Flush any queued error reports
 			bugReporter.reportQueuedErrors();
+			
+			// If the user requested it,
+			// try to load user annotations from the loaded
+			// user annotation plugin.
+			if (userAnnotationPlugin != null && userAnnotationSync) {
+				syncUserAnnotations();
+			}
 		} finally {
 			profiler.end(this.getClass());
 		}
@@ -1020,6 +1060,22 @@ public class FindBugs2 implements IFindBugsEngine {
 	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
 		abridgedMessages = xmlWithAbridgedMessages;
 
+	}
+
+	private void syncUserAnnotations() {
+		BugReporter realBugReporter = bugReporter.getRealBugReporter();
+
+		if (!(realBugReporter instanceof BugCollection)) {
+			bugReporter.logError("Cannot load user annotations because there is no BugCollection: use -xml output option");
+		} else {
+			BugCollection bugCollection = ((BugCollectionBugReporter) realBugReporter).getBugCollection();
+
+			try {
+				userAnnotationPlugin.loadUserAnnotations(bugCollection);
+			} catch (Exception e) {
+				bugReporter.logError("Could not sync user annotations using plugin", e);
+			}
+		}
 	}
 
 

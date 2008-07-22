@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -318,25 +318,25 @@ public class SortedBugCollection implements BugCollection {
 		project.writeXML(xmlOutput);
 	}
 
-	private String getQuickInstanceHash(BugInstance bugInstance) {
-		String hash = bugInstance.getInstanceHash();
-		if (hash != null) return hash;
-		MessageDigest digest = null;
-		try { digest = MessageDigest.getInstance("MD5");
-		} catch (Exception e2) {
-			// OK, we won't digest
-			assert true;
-		}
-		hash = bugInstance.getInstanceKey();
-		if (digest != null) {
-			byte [] data = digest.digest(hash.getBytes());
-			String tmp = new BigInteger(1,data).toString(16);
-			if (false) System.out.println(hash + " -> " + tmp);
-			hash = tmp;
-		}
-		bugInstance.setInstanceHash(hash);
-		return hash;
-	}
+//	private String getQuickInstanceHash(BugInstance bugInstance) {
+//		String hash = bugInstance.getInstanceHash();
+//		if (hash != null) return hash;
+//		MessageDigest digest = null;
+//		try { digest = MessageDigest.getInstance("MD5");
+//		} catch (Exception e2) {
+//			// OK, we won't digest
+//			assert true;
+//		}
+//		hash = bugInstance.getInstanceKey();
+//		if (digest != null) {
+//			byte [] data = digest.digest(hash.getBytes());
+//			String tmp = new BigInteger(1,data).toString(16);
+//			if (false) System.out.println(hash + " -> " + tmp);
+//			hash = tmp;
+//		}
+//		bugInstance.setInstanceHash(hash);
+//		return hash;
+//	}
 
 	public void computeBugHashes() {
 		if (preciseHashOccurrenceNumbersAvailable) return;
