@@ -1005,13 +1005,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 				passCount++;
 			}
-
-			// Flush any queued bug reports
-			bugReporter.finish();
-
-			// if (baselineBugs != null) new Update().removeBaselineBugs(baselineBugs, bugReporter.);
-			// Flush any queued error reports
-			bugReporter.reportQueuedErrors();
 			
 			// If the user requested it,
 			// try to load user annotations from the loaded
@@ -1019,6 +1012,13 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			if (userAnnotationPlugin != null && userAnnotationSync) {
 				syncUserAnnotations();
 			}
+
+			// Flush any queued bug reports
+			bugReporter.finish();
+
+			// if (baselineBugs != null) new Update().removeBaselineBugs(baselineBugs, bugReporter.);
+			// Flush any queued error reports
+			bugReporter.reportQueuedErrors();
 		} finally {
 			profiler.end(this.getClass());
 		}
