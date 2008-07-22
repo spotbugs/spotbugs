@@ -56,6 +56,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	 * Adds shared options/switches.
 	 */
 	public FindBugsCommandLine() {
+		startOptionGroup("General FindBugs options:");
 		addOption("-project", "project", "analyze given project");
 		addOption("-home", "home directory", "specify FindBugs home directory");
 		addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",

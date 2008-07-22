@@ -98,9 +98,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	 */
 	public TextUICommandLine() {
 
-		addSwitch("-showPlugins", "show list of available plugins");
-		addSwitch("-timestampNow", "set timestamp of results to be current time");
+		addSwitch("-showPlugins", "show list of available detector plugins");
 
+		startOptionGroup("Output options:");
+		addSwitch("-timestampNow", "set timestamp of results to be current time");
 		addSwitch("-quiet", "suppress error messages");
 		addSwitch("-longBugCodes", "report long bug codes");
 		addSwitch("-progress", "display progress in terminal window");
@@ -128,12 +129,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-outputFile", "filename", "Save output in named file");
 		addOption("-output", "filename", "Save output in named file");
 		makeOptionUnlisted("-outputFile");
+		
+		startOptionGroup("Detector (visitor) configuration options:");
 		addOption("-visitors", "v1[,v2...]", "run only named visitors");
 		addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
 		addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
 		addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
 		addOption("-adjustPriority", "v1=(raise|lower)[,...]",
 				"raise/lower priority of warnings for given visitor(s)");
+
+		startOptionGroup("Output filtering options:");
 		addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
 		addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 		addOption("-excludeBugs", "baseline bugs", "exclude bugs that are also reported in the baseline xml output");
@@ -141,6 +146,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-include", "filter file", "include only bugs matching given filter");
 		addSwitchWithOptionalExtraPart("-nested", "true|false",
 				"analyze nested jar/zip archives (default=true)");
+
+		startOptionGroup("Project configuration options:");
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 		addOption("-sourcepath", "source path", "set source path for analyzed classes");
 		addSwitch("-exitcode", "set exit code of process");
