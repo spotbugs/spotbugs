@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
 import java.io.IOException;
 
 /**
@@ -28,6 +30,7 @@ import java.io.IOException;
  *
  * @author David Hovemeyer
  */
+@CleanupObligation
 public interface XMLOutput {
 	/**
 	 * Begin the XML document.
@@ -121,6 +124,7 @@ public interface XMLOutput {
 	 * exception.  Therefore, a call to this method should
 	 * be performed in a finally block.
 	 */
+	@DischargesObligation
 	public void finish() throws IOException;
 }
 

@@ -190,7 +190,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @param in      the InputStream
 	 * @param project the Project
 	 */
-	public void readXML(InputStream in, Project project, File base)
+	public void readXML(@WillClose InputStream in, Project project, File base)
 			throws IOException, DocumentException {
 		if (in == null) throw new IllegalArgumentException();
 
@@ -389,7 +389,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @param xmlOutput the XMLOutput object
 	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(XMLOutput xmlOutput, @NonNull Project project) throws IOException {
+	public void writeXML(@WillClose XMLOutput xmlOutput, @NonNull Project project) throws IOException {
 		if (project == null) throw new NullPointerException("No project");
 		try {
 			writePrologue(xmlOutput, project);

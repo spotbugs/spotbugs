@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
@@ -38,9 +39,9 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.ml.SplitCamelCaseIdentifier;
 import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.RegexStringMatcher;
-import edu.umd.cs.findbugs.util.StringMatcher;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
-import edu.umd.cs.findbugs.util.TypeMatcher;
+import java.util.Collection;
+import java.util.Iterator;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -65,6 +66,9 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	private ClassDescriptor willClose;
 	private ClassDescriptor willNotClose;
 	private ClassDescriptor willCloseWhenClosed;
+	private ClassDescriptor cleanupObligation;
+	private ClassDescriptor createsObligation;
+	private ClassDescriptor dischargesObligation;
 	
 	/**
 	 * Did we see any WillClose, WillNotClose, or WillCloseWhenClosed annotations
@@ -76,7 +80,10 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		this.reporter = bugReporter;
 		this.willClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillClose");
 		this.willNotClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillNotClose");
-		this.willCloseWhenClosed = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillClose");
+		this.willCloseWhenClosed = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillCloseWhenClosed");
+		this.cleanupObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CleanupObligation");
+		this.createsObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CreatesObligation");
+		this.dischargesObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DischargesObligation");
 	}
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
@@ -85,32 +92,44 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 
 			database = new ObligationPolicyDatabase();
 			addBuiltInPolicies();
+			scanForResourceTypes();
 
 			Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
 		}
 
-		// Scan methods for uses of obligation-related annotations
 		XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
+		
+		// Is this class an obligation type?
+		Obligation thisClassObligation = database.getFactory().getObligationByType(xclass.getClassDescriptor());
+
+		// Scan methods for uses of obligation-related annotations
 		for (XMethod xmethod : xclass.getXMethods()) {
+			// Is this method marked with @CreatesObligation?
+			if (thisClassObligation != null) {
+				if (xmethod.getAnnotation(createsObligation) != null) {
+					database.addEntry(new MatchMethodEntry(
+						xmethod,
+						ObligationPolicyDatabaseActionType.ADD,
+						thisClassObligation,
+						ObligationPolicyDatabaseEntryType.STRONG));
+				}
+
+				// Is this method marked with @DischargesObligation?
+				if (xmethod.getAnnotation(dischargesObligation) != null) {
+					database.addEntry(new MatchMethodEntry(
+						xmethod,
+						ObligationPolicyDatabaseActionType.DEL,
+						thisClassObligation,
+						ObligationPolicyDatabaseEntryType.STRONG));
+				}
+			}
 
 			// See what obligation parameters there are
 			Obligation[] paramObligationTypes = database.getFactory().getParameterObligationTypes(xmethod);
-
-			if (xmethod.getAnnotation(willCloseWhenClosed) != null) {
-				//
-				// Calling this method deletes a parameter obligation and
-				// creates a new obligation for the object returned by
-				// the method.
-				//
-				handleWillCloseWhenClosed(xmethod, paramObligationTypes);
-				sawAnnotationsInApplicationCode = true;
-				continue;
-			}
 			
 			//
-			// Check for @WillClose, @WillNotClose, or other
-			// indications of how obligation parameters are
-			// handled.
+			// Check for @WillCloseWhenClosed, @WillClose, @WillNotClose, or other
+			// indications of how obligation parameters are handled.
 			//
 
 			boolean methodHasCloseInName = false;
@@ -120,8 +139,14 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			}
 
 			for (int i = 0; i < xmethod.getNumParams(); i++) {
-
-				if (xmethod.getParameterAnnotation(i, willClose) != null) {
+				if (xmethod.getParameterAnnotation(i, willCloseWhenClosed) != null) {
+					//
+					// Calling this method deletes a parameter obligation and
+					// creates a new obligation for the object returned by
+					// the method.
+					//
+					handleWillCloseWhenClosed(xmethod, paramObligationTypes[i]);
+				} else if (xmethod.getParameterAnnotation(i, willClose) != null) {
 					if (paramObligationTypes[i] == null) {
 						// Hmm...
 						if (DEBUG_ANNOTATIONS) {
@@ -292,10 +317,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		// Add a policy database entry noting that this method
 		// will delete one instance of the obligation type.
 		ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(
-			new SubtypeTypeMatcher(ObjectType.getInstance(xmethod.getClassDescriptor().toDottedClassName())),
-			new ExactStringMatcher(xmethod.getName()),
-			new ExactStringMatcher(xmethod.getSignature()),
-			xmethod.isStatic(),
+			xmethod,
 			ObligationPolicyDatabaseActionType.DEL,
 			obligation,
 			entryType);
@@ -306,73 +328,78 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	}
 
 	/**
-	 * Handle a method with a WillCloseWhenClosed annotation.
+	 * Handle a method with a WillCloseWhenClosed parameter annotation.
 	 */
-	private void handleWillCloseWhenClosed(XMethod xmethod, Obligation[] paramObligationTypes) {
-		// See what obligation the return type is.
-		Obligation createdObligation = null;
-		Type returnType = Type.getReturnType(xmethod.getSignature());
-		if (returnType instanceof ObjectType) {
-			try {
-				createdObligation = database.getFactory().getObligationByType((ObjectType) returnType);
-			} catch (ClassNotFoundException e) {
-				reporter.reportMissingClass(e);
-				return;
+	private void handleWillCloseWhenClosed(XMethod xmethod, Obligation deletedObligation) {
+		if (deletedObligation == null)  {
+			if (DEBUG_ANNOTATIONS) {
+				System.out.println("Method " + xmethod.toString() + " is marked @WillCloseWhenClosed, "
+					+ "but its parameter is not an obligation");
 			}
+			return;
 		}
+		
+		// See what type of obligation is being created.
+		Obligation createdObligation = null;
+		if (xmethod.getName().equals("<init>")) {
+			// Constructor - obligation type is the type of object being created
+			// (or some supertype)
+			createdObligation = database.getFactory().getObligationByType(xmethod.getClassDescriptor());
+		} else {
+			// Factory method - obligation type is the return type
+			Type returnType = Type.getReturnType(xmethod.getSignature());
+			if (returnType instanceof ObjectType) {
+				try {
+					createdObligation = database.getFactory().getObligationByType((ObjectType) returnType);
+				} catch (ClassNotFoundException e) {
+					reporter.reportMissingClass(e);
+					return;
+				}
+			}
 
+		}
 		if (createdObligation == null) {
 			if (DEBUG_ANNOTATIONS) {
 				System.out.println("Method " + xmethod.toString() + " is marked @WillCloseWhenClosed, "
 					+ "but its return type is not an obligation");
 			}
-		}
-
-		// See what Obligation parameters there are.
-		// Hopefully, there's just one - if so, that obligation is assumed to be discharged
-		// by the method.
-		Obligation discharged = null;
-		for (Obligation paramObligation : paramObligationTypes) {
-			if (paramObligation == null) {
-				// this parameter isn't an obligation
-				continue;
-			}
-			
-			if (discharged != null) {
-				// whoops - this method has at least TWO obligation parameters
-				// don't know which one is being closed
-				if (DEBUG_ANNOTATIONS) {
-					System.out.println("Method " + xmethod.toString() + " is marked @WillCloseWhenClosed, "
-						+ "but has two obligation parameters: "
-						+ discharged + " and " + paramObligation);
-				}
-				return;
-			}
-			
-			discharged = paramObligation;
+			return;
 		}
 		
-		// Add database entries
-		TypeMatcher typeMatcher = new SubtypeTypeMatcher(ObjectType.getInstance(xmethod.getClassDescriptor().toDottedClassName()));
-		StringMatcher nameMatcher = new ExactStringMatcher(xmethod.getName());
-		StringMatcher signatureMatcher = new ExactStringMatcher(xmethod.getSignature());
-		// parameter obligation is deleted
+		// Add database entries:
+		// - parameter obligation is deleted
+		// - return value obligation is added
 		database.addEntry(new MatchMethodEntry(
-			typeMatcher,
-			nameMatcher,
-			signatureMatcher,
-			xmethod.isStatic(),
+			xmethod,
 			ObligationPolicyDatabaseActionType.DEL,
-			discharged,
+			deletedObligation,
 			ObligationPolicyDatabaseEntryType.STRONG));
-		// return value obligation is added
 		database.addEntry(new MatchMethodEntry(
-			typeMatcher,
-			nameMatcher,
-			signatureMatcher,
-			xmethod.isStatic(),
+			xmethod,
 			ObligationPolicyDatabaseActionType.ADD,
 			createdObligation,
 			ObligationPolicyDatabaseEntryType.STRONG));
+	}
+
+	private void scanForResourceTypes() {
+
+		Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
+		Collection<XClass> knownClasses = subtypes2.getXClassCollection();
+		
+		for (XClass xclass : knownClasses) {
+			// Is this class a resource type?
+			if (xclass.getAnnotation(cleanupObligation) != null) {
+				// Add it as an obligation type
+				database.getFactory().addObligation(xclass.getClassDescriptor().toDottedClassName());
+			}
+		}
+		
+		if (DEBUG_ANNOTATIONS) {
+			System.out.println("After scanning for resource types:");
+			for (Iterator<Obligation> i = database.getFactory().obligationIterator(); i.hasNext(); ) {
+				Obligation obligation = i.next();
+				System.out.println("  " + obligation);
+			}
+		}
 	}
 }

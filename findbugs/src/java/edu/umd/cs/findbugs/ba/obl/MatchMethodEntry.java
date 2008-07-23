@@ -18,7 +18,10 @@
  */
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.StringMatcher;
+import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import edu.umd.cs.findbugs.util.TypeMatcher;
 import java.util.Collection;
 import org.apache.bcel.generic.ReferenceType;
@@ -38,6 +41,28 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	private final ObligationPolicyDatabaseActionType action;
 	private final Obligation obligation;
 	private final ObligationPolicyDatabaseEntryType entryType;
+	
+	/**
+	 * Constructor.
+	 * Creates an entry which matches the given XMethod.
+	 * 
+	 * @param xmethod      an XMethod
+	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
+	 * @param obligation   Obligation to be added or deleted
+	 * @param entryType    entry type
+	 */
+	public MatchMethodEntry(
+			XMethod xmethod,
+			ObligationPolicyDatabaseActionType action,
+			Obligation obligation,
+			ObligationPolicyDatabaseEntryType entryType) {
+		this(
+			new SubtypeTypeMatcher(xmethod.getClassDescriptor()),
+			new ExactStringMatcher(xmethod.getName()),
+			new ExactStringMatcher(xmethod.getSignature()),
+			xmethod.isStatic(),
+			action, obligation, entryType);
+	}
 
 	/**
 	 * Constructor.

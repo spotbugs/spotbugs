@@ -130,7 +130,7 @@ public class Util {
 		return o1.equals(o2);
 	}
 
-	public static Reader getReader(InputStream in) throws UnsupportedEncodingException {
+	public static Reader getReader(@WillCloseWhenClosed InputStream in) throws UnsupportedEncodingException {
 		return new InputStreamReader(in, "UTF-8");
 	}
 	public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {

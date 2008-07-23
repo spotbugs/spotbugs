@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2006, University of Maryland
+ * Copyright (C) 2003-2008, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
 import java.util.Iterator;
+import javax.annotation.WillClose;
 
 /**
  * Base class for BugReporters which provides convenient formatting
@@ -53,7 +54,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	 * 
 	 * @param outputStream the PrintStream to write bug output to
 	 */
-	public void setOutputStream(PrintStream outputStream) {
+	public void setOutputStream(@WillClose PrintStream outputStream) {
 		this.outputStream = outputStream;
 	}
 

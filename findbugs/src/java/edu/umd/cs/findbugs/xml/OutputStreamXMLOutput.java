@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import javax.annotation.WillCloseWhenClosed;
 
 /**
  * Write XML to an output stream.
@@ -60,20 +62,27 @@ public class OutputStreamXMLOutput implements XMLOutput {
 	private int nestingLevel;
 	private boolean newLine;
 	private String stylesheet;
+
 	/**
 	 * Constructor.
 	 * @param os OutputStream to write XML output to
 	 */
-	public OutputStreamXMLOutput(OutputStream os) {
+	public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
 		this(os, null);
 	}
 
-	public OutputStreamXMLOutput(OutputStream os, String stylesheet) {
+	/**
+	 * Constructor.
+	 * @param os OutputStream to write XML output to
+	 * @param stylesheet name of stylesheet
+	 */
+	public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
 		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 		this.nestingLevel = 0;
 		this.newLine = true;
 		this.stylesheet = stylesheet;
 	}
+
 	public void beginDocument() throws IOException {
 		out.write(OPENING);
 		out.write(getStylesheetCode(stylesheet));
@@ -157,6 +166,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		newLine = false;
 	}
 
+	@DischargesObligation
 	public void finish() throws IOException {
 		out.close();
 	}

@@ -38,6 +38,7 @@ public class Obligation {
 	private final String className;
 	private final ObjectType type;
 	private final int id;
+	private boolean userObligationType;
 
 	public Obligation(String className, int id) {
 		this.className = className;
@@ -55,6 +56,14 @@ public class Obligation {
 
 	public int getId() {
 		return id;
+	}
+
+	public boolean isUserObligationType() {
+		return userObligationType;
+	}
+
+	public void setUserObligationType(boolean userObligationType) {
+		this.userObligationType = userObligationType;
 	}
 
 	@Override

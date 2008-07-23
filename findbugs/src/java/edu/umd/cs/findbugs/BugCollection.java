@@ -29,6 +29,7 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import javax.annotation.WillClose;
 
 public interface BugCollection
 {
@@ -226,7 +227,7 @@ public interface BugCollection
 	 * @param in      the InputStream
 	 * @param project the Project
 	 */
-	public void readXML(InputStream in, Project project)
+	public void readXML(@WillClose InputStream in, Project project)
 			throws IOException, DocumentException;
 
 	/**
@@ -245,7 +246,7 @@ public interface BugCollection
 	 * @param out     the OutputStream to write to
 	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(OutputStream out, Project project) throws IOException;
+	public void writeXML(@WillClose OutputStream out, Project project) throws IOException;
 
 	/**
 	 * Write the BugCollection to an XMLOutput object.
@@ -260,7 +261,7 @@ public interface BugCollection
 	 * @param xmlOutput the XMLOutput object
 	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException;
+	public void writeXML(@WillClose XMLOutput xmlOutput, Project project) throws IOException;
 
 	/**
 	 * Return an Iterator over all the BugInstance objects in

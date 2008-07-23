@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -42,6 +44,16 @@ public class SubtypeTypeMatcher implements TypeMatcher {
 	 */
 	public SubtypeTypeMatcher(ReferenceType supertype) {
 		this.supertype = supertype;
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param supertype a ClassDescriptor naming a class: this TypeMatcher will test whether
+	 *                  or not candidate Types are subtypes of the class
+	 */
+	public SubtypeTypeMatcher(ClassDescriptor classDescriptor) {
+		this(ObjectType.getInstance(classDescriptor.toDottedClassName()));
 	}
 
 	public boolean matches(Type t) {

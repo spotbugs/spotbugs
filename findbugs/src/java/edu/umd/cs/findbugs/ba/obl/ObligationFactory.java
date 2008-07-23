@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,6 +30,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.generic.Type;
 
 /**
@@ -51,6 +53,27 @@ public class ObligationFactory {
 		return classNameToObligationMap.size();
 	}
 
+	/**
+	 * Determine whether class named by given ClassDescriptor is
+	 * an Obligation type.
+	 * 
+	 * @param classDescriptor a class
+	 * @return true if the class is an Obligation type, false otherwise
+	 */
+	public boolean isObligationType(ClassDescriptor classDescriptor) {
+		try {
+			return getObligationByType(ObjectType.getInstance(classDescriptor.toDottedClassName())) != null;
+		} catch (ClassNotFoundException e) {
+			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
+			return false;
+		}
+	}
+
+	/**
+	 * Get an Iterator over known Obligation types.
+	 * 
+	 * @return Iterator over known Obligation types
+	 */
 	public Iterator<Obligation> obligationIterator() {
 		return classNameToObligationMap.values().iterator();
 	}
@@ -74,6 +97,26 @@ public class ObligationFactory {
 				return obligation;
 		}
 		return null;
+	}
+
+	/**
+	 * Look up an Obligation by type.
+	 * This returns the first Obligation that is a supertype
+	 * of the type given (meaning that the given type could
+	 * be an instance of the returned Obligation).
+	 * 
+	 * @param classDescriptor a ClassDescriptor naming a class type
+	 * @return an Obligation that is a supertype of the given type,
+	 *         or null if there is no such Obligation
+	 * @throws ClassNotFoundException
+	 */
+	public Obligation getObligationByType(ClassDescriptor classDescriptor) {
+		try {
+			return getObligationByType(ObjectType.getInstance(classDescriptor.toDottedClassName()));
+		} catch (ClassNotFoundException e) {
+			Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
+			return null;
+		}
 	}
 
 	/**
@@ -101,7 +144,7 @@ public class ObligationFactory {
 		return result;
 	}
 
-	public Obligation addObligation(String className) {
+	public Obligation addObligation(@DottedClassName String className) {
 		int nextId = classNameToObligationMap.size();
 		Obligation obligation = new Obligation(className, nextId);
 		if (classNameToObligationMap.put(className, obligation) != null) {
