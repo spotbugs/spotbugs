@@ -206,4 +206,10 @@ public class Util {
     	if (lastDot == -1) return "";
     	return name.substring(lastDot+1).toLowerCase();
     }
+	
+	public static void throwIOException(String msg, Throwable cause) throws IOException {
+		IOException e = new IOException(msg);
+		e.initCause(cause);
+		throw e;
+	}
 }

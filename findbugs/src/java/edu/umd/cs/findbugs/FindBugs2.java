@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 import java.util.Map;
 
@@ -518,11 +519,11 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			}
 
 		} catch (ClassNotFoundException e) {
-			throw new IOException("Could not load user annotation plugin", e);
+			Util.throwIOException("Could not load user annotation plugin", e);
 		} catch (InstantiationException e) {
-			throw new IOException("Could not create instance of user annotation plugin object", e);
+			Util.throwIOException("Could not create instance of user annotation plugin object", e);
 		} catch (IllegalAccessException e) {
-			throw new IOException("Could not create instance of user annotation plugin object", e);
+			Util.throwIOException("Could not create instance of user annotation plugin object", e);
 		}
 	}
 
