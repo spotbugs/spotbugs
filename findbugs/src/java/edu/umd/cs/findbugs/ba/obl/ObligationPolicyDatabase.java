@@ -43,6 +43,7 @@ public class ObligationPolicyDatabase {
 
 	private ObligationFactory factory;
 	private LinkedList<ObligationPolicyDatabaseEntry> entryList;
+	private boolean strictChecking;
 	
 	public ObligationPolicyDatabase() {
 		this.factory = new ObligationFactory();
@@ -55,6 +56,14 @@ public class ObligationPolicyDatabase {
 	
 	public void addEntry(ObligationPolicyDatabaseEntry entry) {
 		entryList.add(entry);
+	}
+
+	public void setStrictChecking(boolean strictChecking) {
+		this.strictChecking = strictChecking;
+	}
+
+	public boolean isStrictChecking() {
+		return strictChecking;
 	}
 	
 	public void getActions(ReferenceType receiverType, String methodName, String signature, boolean isStatic, Collection<ObligationPolicyDatabaseAction> actionList) {

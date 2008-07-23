@@ -27,6 +27,9 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.Global;
+import org.apache.bcel.generic.Type;
 
 /**
  * Factory for Obligation and ObligationSet objects to be
@@ -71,6 +74,31 @@ public class ObligationFactory {
 				return obligation;
 		}
 		return null;
+	}
+
+	/**
+	 * Get array of Obligation types corresponding to
+	 * the parameters of the given method.
+	 * 
+	 * @param xmethod a method
+	 * @return array of Obligation types for each of the method's parameters;
+	 *         a null element means the corresponding parameter is not
+	 *         an Obligation type
+	 */
+	public Obligation[] getParameterObligationTypes(XMethod xmethod) {
+		Type[] paramTypes = Type.getArgumentTypes(xmethod.getSignature());
+		Obligation[] result = new Obligation[paramTypes.length];
+		for (int i = 0; i < paramTypes.length; i++) {
+			if (!(paramTypes[i] instanceof ObjectType)) {
+				continue;
+			}
+			try {
+				result[i] = getObligationByType((ObjectType) paramTypes[i]);
+			} catch (ClassNotFoundException e) {
+				Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
+			}
+		}
+		return result;
 	}
 
 	public Obligation addObligation(String className) {

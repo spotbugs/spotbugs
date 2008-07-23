@@ -30,6 +30,11 @@ import org.apache.bcel.generic.ReferenceType;
  */
 public interface ObligationPolicyDatabaseEntry {
 	/**
+	 * Get the type of entry (STRONG or WEAK).
+	 */
+	public ObligationPolicyDatabaseEntryType getEntryType();
+	
+	/**
 	 * Get the ObligationPolicyDatabaseActions that should be applied
 	 * when the method described by the parameters is called.
 	 * 
