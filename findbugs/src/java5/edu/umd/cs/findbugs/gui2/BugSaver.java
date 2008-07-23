@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.WillClose;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.Project;
 public class BugSaver {
 
 	private static String lastPlaceSaved;
-	public static void saveBugs(OutputStream out, BugCollection data, Project p)
+	public static void saveBugs(@WillClose OutputStream out, BugCollection data, Project p)
 	{
 
 

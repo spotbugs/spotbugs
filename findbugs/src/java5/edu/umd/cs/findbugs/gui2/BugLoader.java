@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.WillClose;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -142,7 +143,7 @@ public class BugLoader {
 		}	
 		return null;
 	}
-	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, InputStream in)
+	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, @WillClose InputStream in)
 	{
 			try 
 			{

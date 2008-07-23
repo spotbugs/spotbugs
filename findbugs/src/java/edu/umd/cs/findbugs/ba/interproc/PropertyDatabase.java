@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.WillClose;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
@@ -118,7 +120,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 	 * @throws IOException
 	 * @throws MethodPropertyDatabaseFormatException
 	 */
-	public void read(InputStream in) throws IOException, PropertyDatabaseFormatException {
+	public void read(@WillClose InputStream in) throws IOException, PropertyDatabaseFormatException {
 		BufferedReader reader = null;
 
 		try {
@@ -181,7 +183,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 	 * @param out the OutputStream
 	 * @throws IOException
 	 */
-	public void write(OutputStream out) throws IOException {
+	public void write(@WillClose OutputStream out) throws IOException {
 		BufferedWriter writer = null;
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 

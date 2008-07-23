@@ -99,6 +99,7 @@ public class GenerateUIDs {
 		}
 		XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		xmlWriter.write(document);
+		xmlWriter.close();
 	}
 
 	public static void main(String[] args) throws IOException, DocumentException {

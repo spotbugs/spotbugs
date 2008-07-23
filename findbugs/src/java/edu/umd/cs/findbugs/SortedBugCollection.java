@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
+import javax.annotation.WillClose;
 import javax.xml.transform.TransformerException;
 
 import org.dom4j.Document;
@@ -200,13 +201,13 @@ public class SortedBugCollection implements BugCollection {
 			in.close();
 		}
 	}
-	public void readXML(InputStream in, Project project)
+	public void readXML(@WillClose InputStream in, Project project)
 			throws IOException, DocumentException {
 			doReadXML(in, project, null);
 
 	}
 
-	private void doReadXML(InputStream in, Project project, File base) throws IOException, DocumentException {
+	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
 
 		checkInputStream(in);
 
@@ -295,7 +296,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @param out     the OutputStream to write to
 	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(OutputStream out, Project project) throws IOException {
+	public void writeXML(@WillClose OutputStream out, Project project) throws IOException {
 		XMLOutput xmlOutput;
 		if (project == null) throw new NullPointerException("No project");
 		if (withMessages) xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");

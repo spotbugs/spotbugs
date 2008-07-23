@@ -28,6 +28,8 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import javax.annotation.WillClose;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -282,7 +284,7 @@ public class SourceInfoMap {
 	 * @param inputStream  the InputStream
 	 * @throws IOException if an I/O error occurs, or if the format is invalid
 	 */
-	public void read(InputStream inputStream) throws IOException {
+	public void read(@WillClose InputStream inputStream) throws IOException {
 		BufferedReader reader = new BufferedReader(Util.getReader(inputStream));
 
 		int lineNumber = 0;

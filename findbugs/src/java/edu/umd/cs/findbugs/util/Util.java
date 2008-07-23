@@ -42,6 +42,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.WillClose;
+import javax.annotation.WillCloseWhenClosed;
+import javax.annotation.WillNotClose;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -135,7 +139,7 @@ public class Util {
 	public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
 		return getReader(new FileInputStream(filename));
 	}
-	public static Writer getWriter(OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
+	public static Writer getWriter(@WillCloseWhenClosed OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
 		return new OutputStreamWriter(out, "UTF-8");
 	}
 
@@ -143,21 +147,21 @@ public class Util {
 		return  getWriter(new FileOutputStream(filename));
 	}
 	
-	public static void closeSilently(InputStream in) {
+	public static void closeSilently(@WillClose InputStream in) {
 		try {
 			in.close();
 		} catch (IOException e) {
 			assert true;
 		}
 	}
-	public static void closeSilently(Reader in) {
+	public static void closeSilently(@WillClose Reader in) {
 		try {
 			in.close();
 		} catch (IOException e) {
 			assert true;
 		}
 	}
-	public static void closeSilently(OutputStream out) {
+	public static void closeSilently(@WillClose OutputStream out) {
 		try {
 			out.close();
 		} catch (IOException e) {
@@ -165,7 +169,7 @@ public class Util {
 		}
 	}
 	static final Pattern tag = Pattern.compile("^\\s*<(\\w+)");
-	public static String getXMLType(InputStream in) throws IOException {
+	public static String getXMLType(@WillNotClose InputStream in) throws IOException {
 		if (!in.markSupported())
 			throw new IllegalArgumentException("Input stream does not support mark");
 

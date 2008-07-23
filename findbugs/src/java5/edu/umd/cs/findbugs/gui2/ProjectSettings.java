@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.WillClose;
+
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
@@ -83,13 +85,13 @@ public class ProjectSettings implements Serializable
 	 */
 	private int maxSizeOfPreviousComments;
 
-	public static void loadInstance(InputStream in)
+	public static void loadInstance(@WillClose InputStream in)
 	{
 		try
 		{
 			instance = (ProjectSettings) new ObjectInputStream(in).readObject();
 			PreferencesFrame.getInstance().updateFilterPanel();
-			in.close();
+
 		}
 		catch (ClassNotFoundException e)
 		{
@@ -101,10 +103,16 @@ public class ProjectSettings implements Serializable
 			if (MainFrame.DEBUG) System.err.println("IO error in deserializing Settings:");
 			Debug.println(e);
 			instance=newInstance();
+		} finally {
+			try {
+	            in.close();
+            } catch (IOException e) {
+	            assert false;
+            }
 		}
 	}
 
-	public void save(OutputStream out)
+	public void save(@WillClose OutputStream out)
 	{
 		try
 		{

@@ -57,6 +57,7 @@ import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -106,7 +107,6 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -2373,7 +2373,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param file
 	 * @return
 	 */
-	private void loadAnalysisFromInputStream(final InputStream in, final Object source) {
+	private void loadAnalysisFromInputStream(final @WillClose InputStream in, final Object source) {
 
 		Runnable runnable = new Runnable(){
 			public void run()

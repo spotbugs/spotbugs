@@ -46,6 +46,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.annotation.WillClose;
+
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -142,7 +144,7 @@ public class UserPreferences implements Cloneable {
 	 * @param in the InputStream
 	 * @throws IOException
 	 */
-	public void read(InputStream in) throws IOException {
+	public void read(@WillClose InputStream in) throws IOException {
 		BufferedInputStream prefStream = null;
 		Properties props = new Properties();
 		try {
@@ -230,7 +232,7 @@ public class UserPreferences implements Cloneable {
 	 * @param out the OutputStream
 	 * @throws IOException
 	 */
-	public void write(OutputStream out) throws IOException {
+	public void write(@WillClose OutputStream out) throws IOException {
 
 		Properties props = new SortedProperties();
 

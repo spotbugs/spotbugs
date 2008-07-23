@@ -61,20 +61,25 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 		this.file = file;
 		setLastModifiedTime(file.lastModified());
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-		ZipEntry ze;
-		if (DEBUG) {
-	        System.out.println("Reading zip input stream " + file);
-        }
-		int count = 0;
-		while ((ze = zis.getNextEntry()) != null) {
-			if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
-				entries.add(ze.getName());
-				if (ze.getName().equals("META-INF/MANIFEST.MF")) {
-	                map.put(ze.getName(), build(zis, ze));
-                }
-			}
-			zis.closeEntry();
+		try {
+			ZipEntry ze;
 
+			if (DEBUG) {
+				System.out.println("Reading zip input stream " + file);
+			}
+			int count = 0;
+			while ((ze = zis.getNextEntry()) != null) {
+				if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
+					entries.add(ze.getName());
+					if (ze.getName().equals("META-INF/MANIFEST.MF")) {
+						map.put(ze.getName(), build(zis, ze));
+					}
+				}
+				zis.closeEntry();
+
+			}
+		} finally {
+			zis.close();
 		}
 		if (DEBUG) {
 	        System.out.println("Done with zip input stream " + file);
@@ -101,22 +106,27 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 	            return z;
             }
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-			ZipEntry ze;
-			boolean found = false;
-			int countDown = 20;
-			while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
-				if (ze.getName().equals(resourceName)) {
-	                found = true;
-                }
-				if (found) {
-					countDown--;
-					if (map.containsKey(ze.getName())) {
-	                    continue;
-                    }
-					z = build(zis, ze);
-					map.put(ze.getName(), z);
+			try {
+				ZipEntry ze;
+
+				boolean found = false;
+				int countDown = 20;
+				while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
+					if (ze.getName().equals(resourceName)) {
+						found = true;
+					}
+					if (found) {
+						countDown--;
+						if (map.containsKey(ze.getName())) {
+							continue;
+						}
+						z = build(zis, ze);
+						map.put(ze.getName(), z);
+					}
+					zis.closeEntry();
 				}
-				zis.closeEntry();
+			} finally {
+				zis.close();
 			}
 			z = map.get(resourceName);
 			if (z == null) {
