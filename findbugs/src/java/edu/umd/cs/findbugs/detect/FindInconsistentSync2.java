@@ -386,7 +386,7 @@ public class FindInconsistentSync2 implements Detector {
 //				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
 			}
 			
-			if (stats.isServletField() && numWriteUnlocked == 0 && numWriteUnlocked == 0) 
+			if (stats.isServletField() && numWriteLocked == 0 && numWriteUnlocked == 0) 
 				continue;
 
 			if (DEBUG) {
