@@ -128,6 +128,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				return;
 			}
 
+			if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main") 
+					&& methodDescriptor.getSignature().equals("([Ljava/lang/String;)V")) return;
+			
 			if (DEBUG) {
 				System.out.println("*** Analyzing method " + methodDescriptor);
 			}
