@@ -548,6 +548,9 @@
 			<jvmarg value="-Dfindbugs.home=."/>
 			<formatter type="xml"/>   <!-- Hudson reads generated xml -->
 			<classpath refid="tools.classpath"/>
+			<classpath>
+				<pathelement path="${junitclasses.dir}"/>
+			</classpath>
 			<!-- junit needs fileset to point to .java files (not .class) -->
 			<batchtest todir="build/junit">
 				<fileset dir="${junitsrc.dir}">
