@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import javax.annotation.WillClose;
 
 /**
  * Statistics resulting from analyzing a project.
@@ -259,7 +260,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	/**
 	 * Report statistics as an XML document to given output stream.
 	 */
-	public void reportSummary(OutputStream out) throws IOException {
+	public void reportSummary(@WillClose OutputStream out) throws IOException {
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 		writeXML(xmlOutput);
 		xmlOutput.finish();
