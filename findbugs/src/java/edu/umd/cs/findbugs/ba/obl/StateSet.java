@@ -104,20 +104,20 @@ public class StateSet {
 		return stateMap.get(obligationSet);
 	}
 
-	/**
-	 * Initialize this object as the entry fact for a method:
-	 * a single state with empty obligation set and path.
-	 * 
-	 * @param factory the ObligationFactory used for the analysis
-	 */
-	public void initEntryFact(ObligationFactory factory) {
-		this.isTop = this.isBottom = false;
-		this.stateMap.clear();
-
-		// Add initial fact: empty obligations, empty path
-		State initState = new State(factory);
-		this.stateMap.put(initState.getObligationSet(), initState);
-	}
+//	/**
+//	 * Initialize this object as the entry fact for a method:
+//	 * a single state with empty obligation set and path.
+//	 * 
+//	 * @param factory the ObligationFactory used for the analysis
+//	 */
+//	public void initEntryFact(ObligationFactory factory) {
+//		this.isTop = this.isBottom = false;
+//		this.stateMap.clear();
+//
+//		// Add initial fact: empty obligations, empty path
+//		State initState = new State(factory);
+//		this.stateMap.put(initState.getObligationSet(), initState);
+//	}
 
 	/**
 	 *  Make this StateSet an exact copy of the given StateSet.

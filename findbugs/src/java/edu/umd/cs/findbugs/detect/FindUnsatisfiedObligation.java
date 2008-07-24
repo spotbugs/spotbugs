@@ -98,6 +98,12 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	private static final boolean REPORT_PATH = SystemProperties.getBoolean("oa.reportpath", true);
 	
 	private static final boolean REPORT_PATH_DEBUG = SystemProperties.getBoolean("oa.reportpath.debug");
+	
+	/**
+	 * Report the final obligation set as part of the BugInstance.
+	 * For debugging.
+	 */
+	private static final boolean REPORT_OBLIGATION_SET = SystemProperties.getBoolean("oa.report.obligationset");
 
 	private BugReporter bugReporter;
 	private ObligationPolicyDatabase database;
@@ -282,6 +288,10 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 			// Add source line information
 			annotateWarningWithSourceLineInformation(state, obligation, bugInstance);
+			
+			if (REPORT_OBLIGATION_SET) {
+				bugInstance.addString(state.getObligationSet().toString());
+			}
 
 			bugReporter.reportBug(bugInstance);
 		}
@@ -393,29 +403,17 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						
 						// We will assume that a method invocation might transfer
 						// an obligation from one type to another if
+						// 1. at least one instance of the leaked obligation exists
+						//    at the point of the transfer, and
+						// 2. either:
 						//    - it's a constructor where the constructed
 						//      type and exactly one param type
-						//      are obligation types
+						//      are obligation types, or
 						//   - it's a method where the return type and
 						//      exactly one param type are obligation types
 						
-						String methodName = inv.getMethodName(cpg);
-						Type producedType = methodName.equals("<init>") ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
-						if (producedType instanceof ObjectType) {
-							Obligation produced = database.getFactory().getObligationByType((ObjectType) producedType);
-							
-							if (produced != null) {
-								Obligation[] params = database.getFactory().getParameterObligationTypes(xmethod);
-								for (Obligation consumed : params) {
-									if (consumed != null) {
-										transferList.add(new PossibleObligationTransfer(consumed, produced));
-										if (DEBUG_FP) {
-											System.out.println("Possible transfer of " + consumed + " to " +
-												produced + " at " + handle);
-										}
-									}
-								}
-							}
+						if (state.getObligationSet().getCount(possiblyLeakedObligation.getId()) > 1) {
+							checkForPossibleObligationTransfer(inv, handle);
 						}
 					}
 				} catch (ClassNotFoundException e) {
@@ -423,6 +421,26 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					couldNotAnalyze = true;
 				} catch (DataflowAnalysisException e) {
 					couldNotAnalyze = true;
+				}
+			}
+
+			private void checkForPossibleObligationTransfer(InvokeInstruction inv, InstructionHandle handle) throws ClassNotFoundException {
+				String methodName = inv.getMethodName(cpg);
+				Type producedType = methodName.equals("<init>") ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
+				if (producedType instanceof ObjectType) {
+					Obligation produced = database.getFactory().getObligationByType((ObjectType) producedType);
+
+					if (produced != null) {
+						Obligation[] params = database.getFactory().getParameterObligationTypes(xmethod);
+						for (Obligation consumed : params) {
+							if (consumed != null) {
+								transferList.add(new PossibleObligationTransfer(consumed, produced));
+								if (DEBUG_FP) {
+									System.out.println("Possible transfer of " + consumed + " to " + produced + " at " + handle);
+								}
+							}
+						}
+					}
 				}
 			}
 
@@ -604,7 +622,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		private void reportPath(
 			final BugInstance bugInstance,
 			final Obligation obligation,
-			State state) {
+			final State state) {
 			
 			Path path = state.getPath();
 			
@@ -617,6 +635,27 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 				public void visitBasicBlock(BasicBlock basicBlock) {
 					curBlock = basicBlock;
+					
+					// See if the initial instance of the leaked resource
+					// is in the  entry fact due to a @WillClose annotation.
+					if (curBlock == cfg.getEntry()) {
+						// Get the entry fact - it should have precisely one state
+						StateSet entryFact = dataflow.getResultFact(curBlock);
+						Iterator<State> i = entryFact.stateIterator();
+						if (i.hasNext()) {
+							State entryState = i.next();
+							if (entryState.getObligationSet().getCount(obligation.getId()) > 0) {
+								lastSourceLine = SourceLineAnnotation.forFirstLineOfMethod(methodDescriptor);
+								lastSourceLine.setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
+								bugInstance.add(lastSourceLine);
+								sawFirstCreation = true;
+
+								if (REPORT_PATH_DEBUG) {
+									System.out.println("  " + obligation + " created by @WillClose parameter at " + lastSourceLine);
+								}
+							}
+						}
+					}
 				}
 
 				public void visitInstructionHandle(InstructionHandle handle) {

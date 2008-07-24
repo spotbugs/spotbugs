@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -63,6 +64,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static final String ROLE_ANOTHER_INSTANCE = "SOURCE_LINE_ANOTHER_INSTANCE";
 	public static final String ROLE_GENERATED_AT = "SOURCE_LINE_GENERATED_AT";
 	public static final String ROLE_OBLIGATION_CREATED = "SOURCE_LINE_OBLIGATION_CREATED";
+	public static final String ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER = "SOURCE_LINE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER";
 	public static final String ROLE_PATH_CONTINUES = "SOURCE_LINE_PATH_CONTINUES";
 
 
@@ -81,15 +83,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 	final private int endBytecode;
 	private boolean synthetic;
 
-	/**
-     * 
-     */
-    public static final String DESCRIPTION_LAST_CHANGE = "SOURCE_LINE_LAST_CHANGE";
-
-	/**
-     * 
-     */
-    public static final String DESCRIPTION_LOOP_BOTTOM = "SOURCE_LINE_LOOP_BOTTOM	";
+	public static final String DESCRIPTION_LAST_CHANGE = "SOURCE_LINE_LAST_CHANGE";
+	public static final String DESCRIPTION_LOOP_BOTTOM = "SOURCE_LINE_LOOP_BOTTOM";
 
 	/**
 	 * Constructor.
@@ -268,6 +263,50 @@ public class SourceLineAnnotation implements BugAnnotation {
 		} else {
 			return forEntireMethod(javaClass, m.getMethod());
 		}
+	}
+
+	/**
+	 * Make a best-effort attempt to 
+	 * create a SourceLineAnnotation for the first line of a method.
+	 * 
+	 * @param methodDescriptor a method
+	 * @return SourceLineAnnotation describing the first line of the method
+	 *         (insofar as we can actually figure that out from the bytecode)
+	 */
+	public static SourceLineAnnotation forFirstLineOfMethod(MethodDescriptor methodDescriptor) {
+		SourceLineAnnotation result = null;
+		try {
+			Method m = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
+			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, methodDescriptor.getClassDescriptor());
+			LineNumberTable lnt = m.getLineNumberTable();
+			if (lnt != null) {
+				int firstLine = Integer.MAX_VALUE;
+				int bytecode = 0;
+				LineNumber[] entries = lnt.getLineNumberTable();
+				for (LineNumber entry : entries) {
+					if (entry.getLineNumber() < firstLine) {
+						firstLine = entry.getLineNumber();
+						bytecode = entry.getStartPC();
+					}
+				}
+				if (firstLine < Integer.MAX_VALUE) {
+					result = new SourceLineAnnotation(
+						methodDescriptor.getClassDescriptor().toDottedClassName(),
+						xclass.getSource(),
+						firstLine,
+						firstLine,
+						bytecode,
+						bytecode);
+				}
+			}
+		} catch (CheckedAnalysisException e) {
+			// ignore
+		}
+		
+		if (result == null) {
+			result = createUnknown(methodDescriptor.getClassDescriptor().toDottedClassName());
+		}
+		return result;
 	}
 
 	/**

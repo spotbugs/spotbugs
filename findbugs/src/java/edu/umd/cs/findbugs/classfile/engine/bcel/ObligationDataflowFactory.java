@@ -22,17 +22,17 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
-import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 /**
  * Analysis factory which creates instances of ObligationDataflow.
@@ -49,20 +49,16 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
 
 	public ObligationDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
 		CFG cfg = analysisCache.getMethodAnalysis(CFG.class, methodDescriptor);
-		MethodGen methodGen = analysisCache.getMethodAnalysis(MethodGen.class, methodDescriptor);
 		DepthFirstSearch dfs =
 			analysisCache.getMethodAnalysis(DepthFirstSearch.class, methodDescriptor);
-//		TypeDataflow typeDataflow =
-//			analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
-//		IsNullValueDataflow invDataflow =
-//			analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
-//		assert typeDataflow != null;
+		XMethod xmethod = XFactory.createXMethod(methodDescriptor);
+		ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
 
 		ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
 		ObligationFactory factory = database.getFactory();
 
 		ObligationAnalysis analysis =
-			new ObligationAnalysis(dfs, /*typeDataflow, invDataflow,*/ methodGen, factory, database, analysisCache.getErrorLogger());
+			new ObligationAnalysis(dfs, xmethod, cpg, factory, database, analysisCache.getErrorLogger());
 		ObligationDataflow dataflow =
 			new ObligationDataflow(cfg, analysis);
 

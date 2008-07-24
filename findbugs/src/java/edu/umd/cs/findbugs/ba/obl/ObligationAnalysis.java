@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -33,10 +32,15 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -54,17 +58,20 @@ public class ObligationAnalysis
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 
-	private MethodGen methodGen;
+	private XMethod xmethod;
+	private ConstantPoolGen cpg;
 	private ObligationFactory factory;
 	private ObligationPolicyDatabase database;
 	private IErrorLogger errorLogger;
 	private InstructionActionCache actionCache;
+	private StateSet cachedEntryFact;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param dfs       a DepthFirstSearch on the method to be analyzed
-	 * @param methodGen the MethodGen of the method being analyzed
+	 * @param xmethod   method to analyze
+	 * @param cpg       ConstantPoolGen of the method to be analyzed
 	 * @param factory   the ObligationFactory defining the obligation types
 	 * @param database  the PolicyDatabase defining the methods which
 	 *                  add and delete obligations
@@ -73,12 +80,14 @@ public class ObligationAnalysis
 	 */
 	public ObligationAnalysis(
 			DepthFirstSearch dfs,
-			MethodGen methodGen,
+			XMethod xmethod,
+			ConstantPoolGen cpg,
 			ObligationFactory factory,
 			ObligationPolicyDatabase database,
 			IErrorLogger errorLogger) {
 		super(dfs);
-		this.methodGen = methodGen;
+		this.xmethod = xmethod;
+		this.cpg = cpg;
 		this.factory = factory;
 		this.database = database;
 		this.errorLogger = errorLogger;
@@ -101,7 +110,7 @@ public class ObligationAnalysis
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
-		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, methodGen.getConstantPool());
+		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.getActions(handle, cpg);
 		if (DEBUG && actionList.size() > 0) {
 			System.out.println("Applying actions at " + handle + " to " + fact);
 		}
@@ -156,7 +165,31 @@ public class ObligationAnalysis
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#initEntryFact(edu.umd.cs.findbugs.ba.obl.StateSet)
 	 */
 	public void initEntryFact(StateSet fact) throws DataflowAnalysisException {
-		fact.initEntryFact(factory);
+		if (cachedEntryFact == null) {
+			cachedEntryFact = new StateSet(factory);
+			
+			//
+			// Initial state - create obligations for each parameter
+			// marked with a @WillClose annotation.
+			//
+			
+			State state = new State(factory);
+			ClassDescriptor willClose = DescriptorFactory.createClassDescriptor("javax/annotation/WillClose");
+			Obligation[] paramObligations = factory.getParameterObligationTypes(xmethod);
+
+			for (int i = 0; i < paramObligations.length; i++) {
+				if (paramObligations[i] != null && xmethod.getParameterAnnotation(i, willClose) != null) {
+					state.getObligationSet().add(paramObligations[i]);
+				}
+			}
+			
+			// Add the state
+			HashMap<ObligationSet, State> map = new HashMap<ObligationSet, State>();
+			map.put(state.getObligationSet(), state);
+			cachedEntryFact.replaceMap(map);
+		}
+		
+		fact.copyFrom(cachedEntryFact);
 	}
 
 	/* (non-Javadoc)
