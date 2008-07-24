@@ -613,17 +613,18 @@ public class Project implements XMLWriteable {
 	public static Project readXML(File f) throws IOException, DocumentException, SAXException {
 		Project project = new Project();
 		InputStream in = new BufferedInputStream(new FileInputStream(f));
-		String tag = Util.getXMLType(in);
-		SAXBugCollectionHandler handler;
-		if (tag.equals("Project")) {
-			handler = new SAXBugCollectionHandler(project, f);
-		} else if (tag.equals("BugCollection")) {
-			SortedBugCollection bugs = new SortedBugCollection();
-			handler = new SAXBugCollectionHandler(bugs, project, f);
-		} else {
-			throw new IOException("Can't load a project from a " + tag + " file");
-		}
 		try {
+			String tag = Util.getXMLType(in);
+			SAXBugCollectionHandler handler;
+			if (tag.equals("Project")) {
+				handler = new SAXBugCollectionHandler(project, f);
+			} else if (tag.equals("BugCollection")) {
+				SortedBugCollection bugs = new SortedBugCollection();
+				handler = new SAXBugCollectionHandler(bugs, project, f);
+			} else {
+				throw new IOException("Can't load a project from a " + tag + " file");
+			}
+
 			XMLReader xr = null;
 			if (true) {
 				try {
