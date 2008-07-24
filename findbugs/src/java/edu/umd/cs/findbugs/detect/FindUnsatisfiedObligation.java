@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -353,11 +354,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						// (wrapper or wrapped) was the opposite of what
 						// we expected.
 						//
-						// FIXME: if there was a @WillClosedWhenClosed
-						// annotation involved in the transfer,
-						// then the obligation count for the "wrapped"
-						// object will be 0.  Need to think about.
-						//
 						
 						for (PossibleObligationTransfer transfer : transferList) {
 							if (transfer.matches(possiblyLeakedObligation) && transfer.balanced(state)) {
@@ -399,22 +395,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 					
 					if (COMPUTE_TRANSFERS && ins instanceof InvokeInstruction) {
-						InvokeInstruction inv = (InvokeInstruction) ins;
-						
-						// We will assume that a method invocation might transfer
-						// an obligation from one type to another if
-						// 1. at least one instance of the leaked obligation exists
-						//    at the point of the transfer, and
-						// 2. either:
-						//    - it's a constructor where the constructed
-						//      type and exactly one param type
-						//      are obligation types, or
-						//   - it's a method where the return type and
-						//      exactly one param type are obligation types
-						
-						if (state.getObligationSet().getCount(possiblyLeakedObligation.getId()) > 1) {
-							checkForPossibleObligationTransfer(inv, handle);
-						}
+						checkForPossibleObligationTransfer((InvokeInstruction) ins, handle);
 					}
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
@@ -425,18 +406,76 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			}
 
 			private void checkForPossibleObligationTransfer(InvokeInstruction inv, InstructionHandle handle) throws ClassNotFoundException {
+				//
+				// We will assume that a method invocation might transfer
+				// an obligation from one type to another if
+				// 1. either
+				//    - it's a constructor where the constructed
+				//      type and exactly one param type
+				//      are obligation types, or
+				//   - it's a method where the return type and
+				//      exactly one param type are obligation types
+				// 2. at least one instance of the resource "consumed"
+				//    by the transfer exists at the point of the transfer.
+				//    E.g., if we see a transfer of InputStream->Reader,
+				//    there must be an instance of InputStream at
+				//    the transfer point.
+				//
+				
+				if (DEBUG_FP) {
+					System.out.println("Checking " + handle + " as possible obligation transfer...:");
+				}
+				
+				// Find the State which is a prefix of the error state
+				// at the location of this (possible) transfer.
+				State transferState = getTransferState(handle);
+				if (transferState == null) {
+					if (DEBUG_FP) {
+						System.out.println("No transfer state???");
+					}
+					return;
+				}
+				
 				String methodName = inv.getMethodName(cpg);
 				Type producedType = methodName.equals("<init>") ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
+				
+				if (DEBUG_FP && !(producedType instanceof ObjectType)) {
+					System.out.println("Produced type " + producedType + " not an ObjectType");
+				}
+				
 				if (producedType instanceof ObjectType) {
 					Obligation produced = database.getFactory().getObligationByType((ObjectType) producedType);
+					
+					if (DEBUG_FP && produced == null) {
+						System.out.println("Produced type  " + producedType + " not an obligation type");
+					}
 
 					if (produced != null) {
-						Obligation[] params = database.getFactory().getParameterObligationTypes(xmethod);
-						for (Obligation consumed : params) {
+						//Obligation[] params = database.getFactory().getParameterObligationTypes(xmethod);
+						
+						XMethod calledMethod = XFactory.createXMethod(inv, cpg);
+						Obligation[] params = database.getFactory().getParameterObligationTypes(calledMethod);
+						
+						for (int i = 0; i < params.length; i++) {
+							Obligation consumed = params[i];
+							
+							if (consumed == null) {
+								System.out.println("Param " + i + " not an obligation type");
+							}
+							
 							if (consumed != null) {
-								transferList.add(new PossibleObligationTransfer(consumed, produced));
-								if (DEBUG_FP) {
-									System.out.println("Possible transfer of " + consumed + " to " + produced + " at " + handle);
+								// See if an instance of the consumed obligation type
+								// exists here.
+								if (transferState.getObligationSet().getCount(consumed.getId()) > 0) {
+									transferList.add(new PossibleObligationTransfer(consumed, produced));
+									if (DEBUG_FP) {
+										System.out.println("Possible transfer of " + consumed + " to " + produced + " at " + handle);
+									}
+								} else if (DEBUG_FP) {
+									System.out.println(handle + " not a transfer " +
+										"of " + consumed + "->" + produced +
+										" because no instances of " + consumed);
+									System.out.println("I see " + transferState.getObligationSet());
 								}
 							}
 						}
@@ -482,6 +521,28 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				} catch (DataflowAnalysisException e) {
 					couldNotAnalyze = true;
 				}
+			}
+
+			private State getTransferState(InstructionHandle handle) {
+				StateSet stateSet;
+				try {
+					stateSet = dataflow.getFactAtLocation(new Location(handle, curBlock));
+				} catch (DataflowAnalysisException e) {
+					bugReporter.logError("Error checking obligation state at " + handle, e);
+					return null;
+				}
+
+				List<State> prefixes = stateSet.getPrefixStates(state.getPath());
+				if (prefixes.size() != 1) {
+					// Could this happen?
+					if (DEBUG_FP) {
+						System.out.println("at " + handle + " in " + xmethod
+							+ " found " + prefixes.size() + " states which are prefixes of error state");
+					}
+					return null;
+				}
+				
+				return prefixes.get(0);
 			}
 		}
 

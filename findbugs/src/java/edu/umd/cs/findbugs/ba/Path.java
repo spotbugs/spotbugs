@@ -189,6 +189,24 @@ public class Path {
 		}
 	}
 
+	/**
+	 * Determine whether or not given Path is a prefix of this one.
+	 * 
+	 * @param path another Path
+	 * @return true if this Path is a prefix of the other Path, false otherwise
+	 */
+	public boolean isPrefixOf(Path path) {
+		if (this.getLength() > path.getLength()) {
+			return false;
+		}
+		for (int i = 0; i < getLength(); i++) {
+			if (this.getBlockIdAt(i) != path.getBlockIdAt(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void invalidate() {
 		this.cachedHashCode = INVALID_HASH_CODE;
 	}

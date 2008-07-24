@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.ba.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -209,6 +212,22 @@ public class StateSet {
 	 */
 	public void replaceMap(Map<ObligationSet, State> stateMap) {
 		this.stateMap = stateMap;
+	}
+
+	/**
+	 * Get all States that have Paths which are prefixes of the given Path.
+	 * 
+	 * @param path a Path
+	 * @return Collection of States that have Paths which are prefixes of the given Path
+	 */
+	public List<State> getPrefixStates(Path path) {
+		List<State> result = new LinkedList<State>();
+		for (State state : stateMap.values()) {
+			if (state.getPath().isPrefixOf(path)) {
+				result.add(state);
+			}
+		}
+		return result;
 	}
 
 	@Override
