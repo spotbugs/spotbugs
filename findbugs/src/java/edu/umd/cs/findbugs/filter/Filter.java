@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import javax.annotation.WillClose;
 
 /**
  * Filter to match a subset of BugInstances.
@@ -345,7 +346,7 @@ public class Filter extends OrMatcher {
 		}
 	}
 
-	public void writeAsXML(OutputStream out) throws IOException{
+	public void writeAsXML(@WillClose OutputStream out) throws IOException{
 
 			XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 			
@@ -355,7 +356,7 @@ public class Filter extends OrMatcher {
 			xmlOutput.closeTag("FindBugsFilter");
 			xmlOutput.finish();
 		}
-	public void writeEnabledMatchersAsXML(OutputStream out) throws IOException{
+	public void writeEnabledMatchersAsXML(@WillClose OutputStream out) throws IOException{
 
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 		
