@@ -144,7 +144,7 @@ public class Hierarchy {
 	 * exception (RuntimeException or Error).
 	 */
 	public static boolean isUncheckedException(ObjectType type) throws ClassNotFoundException {
-		return isSubtype(type, RUNTIME_EXCEPTION_TYPE) || isSubtype(type, ERROR_TYPE);
+		return isSubtype(type, RUNTIME_EXCEPTION_TYPE) || isSubtype(type, ERROR_TYPE) || type.equals(Type.THROWABLE);
 	}
 
 	/**
