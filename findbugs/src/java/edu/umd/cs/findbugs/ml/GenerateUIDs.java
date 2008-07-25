@@ -66,7 +66,8 @@ public class GenerateUIDs {
 
 	@SuppressWarnings("unchecked")
     public void execute() throws IOException, DocumentException {
-		InputStream in;
+		InputStream in = null;
+		try {
 		if (inputFilename.equals("-")) {
 			in = System.in;
 		} else {
@@ -75,8 +76,12 @@ public class GenerateUIDs {
 				in = new GZIPInputStream(in);
 		}
 
-		bugCollection.readXML(in, project);
 
+		bugCollection.readXML(in, project);
+		in = null;
+		} finally {
+			if (in != null) in.close();
+		}
 		Document document = DocumentFactory.getInstance().createDocument();
 		Dom4JXMLOutput xmlOutput = new Dom4JXMLOutput(document);
 		bugCollection.writeXML(xmlOutput, project);

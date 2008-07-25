@@ -40,9 +40,13 @@ public class ZipCodeBaseFactory {
 			return new ZipFileCodeBase(codeBaseLocator, file);
 		int zipEntries = 0;
 		ZipInputStream in = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
-		for(ZipEntry e; (e = in.getNextEntry()) != null && zipEntries < 30000; ) 
+		try {
+			for(ZipEntry e; (e = in.getNextEntry()) != null && zipEntries < 30000; ) 
+
 			zipEntries++;
-		in.close();
+		} finally {
+			in.close();
+		}
 		if (zipEntries < 30000)
 			return new ZipFileCodeBase(codeBaseLocator, file);
 		return new ZipInputStreamCodeBase(codeBaseLocator, file);
