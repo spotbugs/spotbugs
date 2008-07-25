@@ -345,48 +345,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					// We're at the CFG exit.
 					
 					if (adjustedLeakCount == 1) {
-						//
-						// See if we recorded any possible obligation transfers
-						// that might have created a "wrapper" object.
-						// In many cases, it is correct to close either
-						// the "wrapped" or "wrapper" object.
-						// So, if we see a possible transfer, and we see
-						// a +1/-1 obligation count for the pair
-						// (consumed and produced obligation types),
-						// rather than 0/0,
-						// then we will assume that which resource was closed
-						// (wrapper or wrapped) was the opposite of what
-						// we expected.
-						//
-						
-						for (PossibleObligationTransfer transfer : transferList) {
-							if (DEBUG_FP) {
-								System.out.println("Checking possible transfer " + transfer + "...");
-							}
-							
-							boolean matches = transfer.matches(possiblyLeakedObligation);
-							
-							if (DEBUG_FP) {
-								System.out.println("  matches: " + possiblyLeakedObligation);
-							}
-							
-							if (matches) {
-								boolean balanced = transfer.balanced(state);
-								if (DEBUG_FP) {
-									System.out.println("  balanced: "+ balanced + " in " + state.getObligationSet());
-								}
-								if (balanced) {
-									if (DEBUG_FP) {
-										System.out.println("  Suppressing path because "
-											+ "a transfer appears to result in balanced "
-											+ "outstanding obligations");
-									}
-
-									adjustedLeakCount = 0;
-									break;
-								}
-							}
-						}
+						applyPossibleObligationTransfers();
 					}
 				}
 			}
@@ -422,6 +381,50 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					couldNotAnalyze = true;
 				} catch (DataflowAnalysisException e) {
 					couldNotAnalyze = true;
+				}
+			}
+
+			private void applyPossibleObligationTransfers() {
+				//
+				// See if we recorded any possible obligation transfers
+				// that might have created a "wrapper" object.
+				// In many cases, it is correct to close either
+				// the "wrapped" or "wrapper" object.
+				// So, if we see a possible transfer, and we see
+				// a +1/-1 obligation count for the pair
+				// (consumed and produced obligation types),
+				// rather than 0/0,
+				// then we will assume that which resource was closed
+				// (wrapper or wrapped) was the opposite of what
+				// we expected.
+				//
+				for (PossibleObligationTransfer transfer : transferList) {
+					if (DEBUG_FP) {
+						System.out.println("Checking possible transfer " + transfer + "...");
+					}
+
+					boolean matches = transfer.matches(possiblyLeakedObligation);
+
+					if (DEBUG_FP) {
+						System.out.println("  matches: " + possiblyLeakedObligation);
+					}
+
+					if (matches) {
+						boolean balanced = transfer.balanced(state);
+						if (DEBUG_FP) {
+							System.out.println("  balanced: " + balanced + " in " + state.getObligationSet());
+						}
+						if (balanced) {
+							if (DEBUG_FP) {
+								System.out.println("  Suppressing path because "
+									+ "a transfer appears to result in balanced "
+									+ "outstanding obligations");
+							}
+
+							adjustedLeakCount = 0;
+							break;
+						}
+					}
 				}
 			}
 
@@ -471,8 +474,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					}
 
 					if (produced != null) {
-						//Obligation[] params = database.getFactory().getParameterObligationTypes(xmethod);
-						
 						XMethod calledMethod = XFactory.createXMethod(inv, cpg);
 						Obligation[] params = database.getFactory().getParameterObligationTypes(calledMethod);
 						
