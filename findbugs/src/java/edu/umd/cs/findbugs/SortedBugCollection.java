@@ -60,8 +60,6 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
@@ -71,6 +69,8 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -176,8 +176,14 @@ public class SortedBugCollection implements BugCollection {
 			throws IOException, DocumentException {
 		project.setCurrentWorkingDirectory(file.getParentFile());
 		InputStream in = new BufferedInputStream(new FileInputStream(file));
-		if (file.getName().endsWith(".gz"))
-			in = new GZIPInputStream(in);
+		if (file.getName().endsWith(".gz")) {
+			try {
+				in = new GZIPInputStream(in);
+			} catch (IOException e) {
+				in.close();
+				throw e;
+			}
+		}
 		readXML(in, project, file);
 	}
 
@@ -192,10 +198,12 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void readXML(@WillClose InputStream in, Project project, File base)
 			throws IOException, DocumentException {
-		if (in == null) throw new IllegalArgumentException();
+		//if (in == null) throw new IllegalArgumentException();
+		assert in != null;
+		assert project != null;
 
 		try {
-			if (project == null) throw new IllegalArgumentException();
+			//if (project == null) throw new IllegalArgumentException();
 			doReadXML(in, project, base);
 		} finally {
 			in.close();
@@ -208,23 +216,18 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
-
-		checkInputStream(in);
-
 		try {
+			checkInputStream(in);
+
 			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
 
 
 			XMLReader xr = null;
-			if (true) try { 
+			try {
 				xr = XMLReaderFactory.createXMLReader();
-			  } catch (SAXException e) {
-				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
-			  }
-
-//			if (xr == null) {
-//				xr = new org.dom4j.io.aelfred.SAXDriver();
-//				}
+			} catch (SAXException e) {
+				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
+			}
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
@@ -232,13 +235,11 @@ public class SortedBugCollection implements BugCollection {
 
 			xr.parse(new InputSource(reader));
 		} catch (SAXParseException e) {
-			throw new DocumentException("Parse error at line " + e.getLineNumber()
-					+ " : " + e.getColumnNumber(), e);
+			throw new DocumentException("Parse error at line " + e.getLineNumber() + " : " + e.getColumnNumber(), e);
 		} catch (SAXException e) {
 			// FIXME: throw SAXException from method?
 			throw new DocumentException("Sax error ", e);
-		}
-		finally {
+		} finally {
 			in.close();
 		}
 
@@ -274,8 +275,10 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project the Project from which the BugCollection was generated
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
-	public Document toDocument(Project project) {
-		if (project == null) throw new NullPointerException("No project");
+	public Document toDocument(@Nonnull Project project) {
+		//if (project == null) throw new NullPointerException("No project");
+		assert project != null;
+		
 		DocumentFactory docFactory = new DocumentFactory();
 		Document document = docFactory.createDocument();
 		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
@@ -296,11 +299,17 @@ public class SortedBugCollection implements BugCollection {
 	 * @param out     the OutputStream to write to
 	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose OutputStream out, Project project) throws IOException {
+	public void writeXML(@WillClose OutputStream out, @Nonnull Project project) throws IOException {
+		assert project != null;
+		
 		XMLOutput xmlOutput;
-		if (project == null) throw new NullPointerException("No project");
-		if (withMessages) xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
-		else xmlOutput= new OutputStreamXMLOutput(out);
+		//if (project == null) throw new NullPointerException("No project");
+		
+		if (withMessages) {
+			xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
+		} else {
+			xmlOutput= new OutputStreamXMLOutput(out);
+		}
 
 		writeXML(xmlOutput, project);
 	}
@@ -389,8 +398,9 @@ public class SortedBugCollection implements BugCollection {
 	 * @param xmlOutput the XMLOutput object
 	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose XMLOutput xmlOutput, @NonNull Project project) throws IOException {
-		if (project == null) throw new NullPointerException("No project");
+	public void writeXML(@WillClose XMLOutput xmlOutput, @Nonnull Project project) throws IOException {
+		//if (project == null) throw new NullPointerException("No project");
+		assert project != null;
 		try {
 			writePrologue(xmlOutput, project);
 			if (withMessages) {

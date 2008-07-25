@@ -262,8 +262,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 */
 	public void reportSummary(@WillClose OutputStream out) throws IOException {
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
-		writeXML(xmlOutput);
-		xmlOutput.finish();
+		try {
+			writeXML(xmlOutput);
+		} finally {
+			xmlOutput.finish();
+		}
 	}
 
 	/**

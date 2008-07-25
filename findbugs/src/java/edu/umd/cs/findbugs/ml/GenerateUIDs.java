@@ -65,7 +65,7 @@ public class GenerateUIDs {
 	}
 
 	@SuppressWarnings("unchecked")
-    public void execute() throws IOException, DocumentException {
+	public void execute() throws IOException, DocumentException {
 		InputStream in = null;
 		try {
 		if (inputFilename.equals("-")) {
@@ -102,9 +102,13 @@ public class GenerateUIDs {
 		} else {
 			out = new BufferedOutputStream(new FileOutputStream(outputFilename));
 		}
+		
 		XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
-		xmlWriter.write(document);
-		xmlWriter.close();
+		try {
+			xmlWriter.write(document);
+		} finally {
+			xmlWriter.close();
+		}
 	}
 
 	public static void main(String[] args) throws IOException, DocumentException {

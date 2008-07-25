@@ -347,28 +347,36 @@ public class Filter extends OrMatcher {
 	}
 
 	public void writeAsXML(@WillClose OutputStream out) throws IOException{
+		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
 
-			XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
-			
+		try {
 			xmlOutput.beginDocument();
 			xmlOutput.openTag("FindBugsFilter");
 			writeBodyAsXML(xmlOutput);
 			xmlOutput.closeTag("FindBugsFilter");
+		} finally {
 			xmlOutput.finish();
 		}
-	public void writeEnabledMatchersAsXML(@WillClose OutputStream out) throws IOException{
+	}
+
+	public void writeEnabledMatchersAsXML(@WillClose OutputStream out) throws IOException {
 
 		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
-		
-		xmlOutput.beginDocument();
-		xmlOutput.openTag("FindBugsFilter");
-		 Iterator<Matcher> i = childIterator();
-		    while (i.hasNext()) {
-		    	Matcher child = i.next();
-		    	if (!disabled.containsKey(child)) child.writeXML(xmlOutput, false);
-		    }
-		xmlOutput.closeTag("FindBugsFilter");
-		xmlOutput.finish();
+
+		try {
+			xmlOutput.beginDocument();
+			xmlOutput.openTag("FindBugsFilter");
+			Iterator<Matcher> i = childIterator();
+			while (i.hasNext()) {
+				Matcher child = i.next();
+				if (!disabled.containsKey(child)) {
+					child.writeXML(xmlOutput, false);
+				}
+			}
+			xmlOutput.closeTag("FindBugsFilter");
+		} finally {
+			xmlOutput.finish();
+		}
 	}
 
 
