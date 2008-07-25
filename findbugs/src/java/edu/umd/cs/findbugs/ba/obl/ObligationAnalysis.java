@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.bcel.generic.ConstantPoolGen;
 
@@ -145,12 +146,32 @@ public class ObligationAnalysis
 
 	@Override
 	public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
-		//
-		// Ignore all exception edges except those on which
-		// checked exceptions are thrown.
-		//
-		if (edge.isExceptionEdge() && !edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
-			fact.setTop();
+		if (edge.isExceptionEdge()) {
+			if (!edge.isFlagSet(Edge.CHECKED_EXCEPTIONS_FLAG)) {
+				//
+				// Ignore all exception edges except those on which
+				// checked exceptions are thrown.
+				//
+				fact.setTop();
+			} else {
+				//
+				// If the edge is an exception thrown from a method that
+				// tries to discharge an obligation, then that obligation needs to
+				// be removed from all states.
+				//
+				if (edge.isExceptionEdge()) {
+					BasicBlock sourceBlock = edge.getSource();
+					InstructionHandle handle = sourceBlock.getExceptionThrower();
+
+					// Apply only the actions which delete obligations
+					Collection<ObligationPolicyDatabaseAction> actions = actionCache.getActions(handle, cpg);
+					for (ObligationPolicyDatabaseAction action : actions) {
+						if (action.getActionType() == ObligationPolicyDatabaseActionType.DEL) {
+							action.apply(fact, edge.getTarget().getLabel());
+						}
+					}
+				}
+			}
 		}
 	}
 

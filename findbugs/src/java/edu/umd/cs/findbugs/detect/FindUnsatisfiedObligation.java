@@ -151,6 +151,11 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		private boolean matches(Obligation possiblyLeakedObligation) {
 			return consumed.equals(possiblyLeakedObligation) || produced.equals(possiblyLeakedObligation);
 		}
+
+		@Override
+		public String toString() {
+			return consumed + " -> " + produced;
+		}
 	}
 	
 	/**
@@ -355,15 +360,31 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						//
 						
 						for (PossibleObligationTransfer transfer : transferList) {
-							if (transfer.matches(possiblyLeakedObligation) && transfer.balanced(state)) {
+							if (DEBUG_FP) {
+								System.out.println("Checking possible transfer " + transfer + "...");
+							}
+							
+							boolean matches = transfer.matches(possiblyLeakedObligation);
+							
+							if (DEBUG_FP) {
+								System.out.println("  matches: " + possiblyLeakedObligation);
+							}
+							
+							if (matches) {
+								boolean balanced = transfer.balanced(state);
 								if (DEBUG_FP) {
-									System.out.println("  Suppressing path because "
-										+ "a transfer appears to result in balanced "
-										+ "outstanding obligations");
+									System.out.println("  balanced: "+ balanced + " in " + state.getObligationSet());
 								}
-								
-								adjustedLeakCount = 0;
-								break;
+								if (balanced) {
+									if (DEBUG_FP) {
+										System.out.println("  Suppressing path because "
+											+ "a transfer appears to result in balanced "
+											+ "outstanding obligations");
+									}
+
+									adjustedLeakCount = 0;
+									break;
+								}
 							}
 						}
 					}
@@ -462,13 +483,17 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 								System.out.println("Param " + i + " not an obligation type");
 							}
 							
-							if (consumed != null) {
+							if (DEBUG_FP && consumed != null && consumed.equals(produced)) {
+								System.out.println("Consumed type is the same as produced type");
+							}
+							
+							if (consumed != null && !consumed.equals(produced)) {
 								// See if an instance of the consumed obligation type
 								// exists here.
 								if (transferState.getObligationSet().getCount(consumed.getId()) > 0) {
 									transferList.add(new PossibleObligationTransfer(consumed, produced));
 									if (DEBUG_FP) {
-										System.out.println("Possible transfer of " + consumed + " to " + produced + " at " + handle);
+										System.out.println("===> Possible transfer of " + consumed + " to " + produced + " at " + handle);
 									}
 								} else if (DEBUG_FP) {
 									System.out.println(handle + " not a transfer " +
@@ -487,23 +512,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 					System.out.println("visit edge " + edge);
 				}
 				try {
-					// If the edge is an exception thrown from a method that
-					// tries to discharge an obligation, then that obligation needs to
-					// be removed from all states in the input fact.
-					if (edge.isExceptionEdge()) {
-						BasicBlock sourceBlock = edge.getSource();
-						InstructionHandle handle = sourceBlock.getExceptionThrower();
-
-						boolean dischargeAttempt = dataflow.getAnalysis().getActionCache().deletesObligation(handle, cpg, possiblyLeakedObligation);
-						if (DEBUG_FP) {
-							System.out.println("on edge " + edge + " thrower " + handle + (dischargeAttempt ? " DOES" : " does not") + " discharge " + possiblyLeakedObligation);
-						}
-						if (dischargeAttempt) {
-							adjustedLeakCount--;
-						}
-					}
-
-					// Similarly, if the incoming edge is from a reference comparision
+					// FIXME: consider moving this to the dataflow analysis?
+					
+					// If the incoming edge is from a reference comparision
 					// which has established that a reference of an obligation type
 					// is null, then we remove one occurrence of that type of
 					// obligation from all states.
