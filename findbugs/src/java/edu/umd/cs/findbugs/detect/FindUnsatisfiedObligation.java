@@ -766,6 +766,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						if (edge.getTarget().isExceptionThrower()) {
 							System.out.println("  exception thrower for " + edge.getTarget().getExceptionThrower());
 						}
+						if (edge.isExceptionEdge()) {
+							System.out.println("  exceptions thrown: " + typeDataflow.getEdgeExceptionSet(edge));
+						}
 					}
 				}
 			};
