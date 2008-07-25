@@ -24,10 +24,12 @@ import edu.umd.cs.findbugs.ba.DataflowCFGPrinter;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationAnalysis;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
 import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -55,10 +57,14 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
 		ConstantPoolGen cpg = analysisCache.getClassAnalysis(ConstantPoolGen.class, methodDescriptor.getClassDescriptor());
 
 		ObligationPolicyDatabase database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
+		
+		TypeDataflow typeDataflow = analysisCache.getMethodAnalysis(TypeDataflow.class, methodDescriptor);
+		IsNullValueDataflow invDataflow = analysisCache.getMethodAnalysis(IsNullValueDataflow.class, methodDescriptor);
+		
 		ObligationFactory factory = database.getFactory();
 
 		ObligationAnalysis analysis =
-			new ObligationAnalysis(dfs, xmethod, cpg, factory, database, analysisCache.getErrorLogger());
+			new ObligationAnalysis(dfs, xmethod, cpg, factory, database, typeDataflow, invDataflow, analysisCache.getErrorLogger());
 		ObligationDataflow dataflow =
 			new ObligationDataflow(cfg, analysis);
 
