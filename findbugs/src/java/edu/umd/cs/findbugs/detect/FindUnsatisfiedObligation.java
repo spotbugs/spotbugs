@@ -459,7 +459,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 						for (int i = 0; i < params.length; i++) {
 							Obligation consumed = params[i];
 							
-							if (consumed == null) {
+							if (DEBUG_FP && consumed == null) {
 								System.out.println("Param " + i + " not an obligation type");
 							}
 							
