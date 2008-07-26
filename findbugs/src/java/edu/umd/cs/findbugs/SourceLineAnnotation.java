@@ -275,11 +275,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation forFirstLineOfMethod(MethodDescriptor methodDescriptor) {
 		SourceLineAnnotation result = null;
+		
 		try {
 			Method m = Global.getAnalysisCache().getMethodAnalysis(Method.class, methodDescriptor);
 			XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, methodDescriptor.getClassDescriptor());
 			LineNumberTable lnt = m.getLineNumberTable();
-			if (lnt != null) {
+			String sourceFile = xclass.getSource();
+			if (sourceFile != null && lnt != null) {
 				int firstLine = Integer.MAX_VALUE;
 				int bytecode = 0;
 				LineNumber[] entries = lnt.getLineNumberTable();
@@ -290,9 +292,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 					}
 				}
 				if (firstLine < Integer.MAX_VALUE) {
+					
 					result = new SourceLineAnnotation(
 						methodDescriptor.getClassDescriptor().toDottedClassName(),
-						xclass.getSource(),
+						sourceFile,
 						firstLine,
 						firstLine,
 						bytecode,
