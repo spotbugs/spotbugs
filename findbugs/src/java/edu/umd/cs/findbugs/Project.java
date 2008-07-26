@@ -625,18 +625,8 @@ public class Project implements XMLWriteable {
 				throw new IOException("Can't load a project from a " + tag + " file");
 			}
 
-			XMLReader xr = null;
-			if (true) {
-				try {
-					xr = XMLReaderFactory.createXMLReader();
-				} catch (SAXException e) {
-					AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
-				}
-			}
-
-//			if (xr == null) {
-//				xr = new org.dom4j.io.aelfred.SAXDriver();
-//			}
+			XMLReader xr = XMLReaderFactory.createXMLReader();
+	
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
