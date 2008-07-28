@@ -348,7 +348,14 @@ public class NewProjectWizard extends FBDialog
 					
 					java.awt.EventQueue.invokeLater(new Runnable() {
 			            public void run() {
-			                SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, tempProject, thisGUI);
+			                final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, tempProject, thisGUI);
+			                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+			                    @Override
+			                    public void windowClosing(java.awt.event.WindowEvent e) {
+			                        if(dialog.discover.isAlive())
+			                        	dialog.discover.interrupt();
+			                    }
+			                });
 			                dialog.setVisible(true);
 			            }
 			        });

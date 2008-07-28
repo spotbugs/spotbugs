@@ -31,6 +31,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.ListModel;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import edu.umd.cs.findbugs.DiscoverSourceDirectories;
@@ -96,7 +97,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 nextButton = new javax.swing.JButton();
                 finshButton = new javax.swing.JButton();
                 errorMessageLabel = new javax.swing.JLabel();
-                Dimension d= new Dimension(825,400);
+                Dimension d= new Dimension(825,425);
                 this.setPreferredSize(d);
                 this.setResizable(true);
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -134,7 +135,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 jScrollPane2.setViewportView(jList2);
 
                 firstPanel.add(jScrollPane2);
-                jScrollPane2.setBounds(275, 250, 250, 50);
+                jScrollPane2.setBounds(275, 250, 250, 75);
                 
                 firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 firstPanel.setLayout(null);
@@ -207,7 +208,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(previousButton);
-                previousButton.setBounds(250, 325, 100, 29);
+                previousButton.setBounds(250, 350, 100, 29);
 
                 nextButton.setText("Next >>");
                 nextButton.addActionListener(new java.awt.event.ActionListener() {
@@ -227,7 +228,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(nextButton);
-                nextButton.setBounds(350, 325, 100, 29);
+                nextButton.setBounds(350, 350, 100, 29);
 
                 finshButton.setText("Finish");
                 finshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +237,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(finshButton);
-                finshButton.setBounds(450, 325, 100, 29);
+                finshButton.setBounds(450, 350, 100, 29);
 
                 errorMessageLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
                 errorMessageLabel.setForeground(new java.awt.Color(255, 0, 0));
@@ -250,91 +251,91 @@ private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     if (step > MIN_STEP) {
         setStep(step - 1);
     }
+    progressModel.removeAllElements();
 	foundModel.removeAllElements();
 }//GEN-LAST:event_previousButtonActionPerformed
 
 private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) throws CheckedAnalysisException, IOException, InterruptedException {//GEN-FIRST:event_nextButtonActionPerformed
-   
 	
-	IErrorLogger errorLogger = new IErrorLogger() {
+	discover = new Thread(){
+		@Override
+        public void run(){
+			IErrorLogger errorLogger = new IErrorLogger() {
+				public void reportMissingClass(ClassNotFoundException ex) {
+					String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
+					if (className != null) {
+						logError("Missing class: " + className);
+					} else {
+						logError("Missing class: " + ex);
+					}
+				}
+				public void reportMissingClass(ClassDescriptor classDescriptor) {
+					logError("Missing class: " + classDescriptor.toDottedClassName());
+				}
+				public void logError(String message) {
+					System.err.println("Error: " + message);
+				}
+				public void logError(String message, Throwable e) {
+					logError(message + ": " + e.getMessage());
+				}
+				public void reportSkippedAnalysis(MethodDescriptor method) {
+					logError("Skipped analysis of method " + method.toString());
+				}
+			};
+			
+			DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
 
-		public void reportMissingClass(ClassNotFoundException ex) {
-			String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
-			if (className != null) {
-				logError("Missing class: " + className);
-			} else {
-				logError("Missing class: " + ex);
+				public void startRecursiveDirectorySearch() {
+					progressModel.addElement("Scanning directories...");
+				}
+				public void doneRecursiveDirectorySearch() {
+				}
+				public void startScanningArchives(int numArchivesToScan) {
+					progressModel.addElement("Scanning " + numArchivesToScan + " archives..");
+				}
+				public void doneScanningArchives() {
+				}
+				public void startScanningClasses(int numClassesToScan) {
+					progressModel.addElement("Scanning " + numClassesToScan + " classes...");
+				}
+				public void finishClass() {
+				}
+				public void doneScanningClasses() {
+				}
+				public void finishArchive() {
+				}
+			};
+			DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
+			discoverSourceDirectories.setProject(project);
+			discoverSourceDirectories.setRootSourceDirectory(sourceRootBox.getText());
+			discoverSourceDirectories.setErrorLogger(errorLogger);
+			discoverSourceDirectories.setProgress(progress);
+
+			try {
+	            discoverSourceDirectories.execute();
+            } catch (CheckedAnalysisException e1) {
+	            // TODO Auto-generated catch block
+	            e1.printStackTrace();
+            } catch (IOException e1) {
+	            // TODO Auto-generated catch block
+	            e1.printStackTrace();
+            } catch (InterruptedException e1) {
+	            // TODO Auto-generated catch block
+	            e1.printStackTrace();
+            }
+			
+			jList1.setModel(foundModel);
+			
+			for (String srcDir : discoverSourceDirectories.getDiscoveredSourceDirectoryList()) {	
+				foundModel.addElement(srcDir);
+			}	
+			
+			if (step < MAX_STEP) {
+			    setStep(step + 1);
 			}
 		}
-
-		public void reportMissingClass(ClassDescriptor classDescriptor) {
-			logError("Missing class: " + classDescriptor.toDottedClassName());
-		}
-
-		public void logError(String message) {
-			System.err.println("Error: " + message);
-		}
-
-		public void logError(String message, Throwable e) {
-			logError(message + ": " + e.getMessage());
-		}
-
-		public void reportSkippedAnalysis(MethodDescriptor method) {
-			logError("Skipped analysis of method " + method.toString());
-		}
 	};
-	
-	DiscoverSourceDirectories.Progress progress = new DiscoverSourceDirectories.Progress() {
-
-		public void startRecursiveDirectorySearch() {
-			progressModel.addElement("Scanning directories...");
-		}
-
-		public void doneRecursiveDirectorySearch() {
-			progressModel.addElement("done");
-		}
-
-		public void startScanningArchives(int numArchivesToScan) {
-			progressModel.addElement("Scanning " + numArchivesToScan + " archives..");
-		}
-
-		public void doneScanningArchives() {
-			progressModel.addElement("done");
-		}
-
-		public void startScanningClasses(int numClassesToScan) {
-			progressModel.addElement("Scanning " + numClassesToScan + " classes...");
-		}
-
-		public void finishClass() {
-		}
-
-		public void doneScanningClasses() {
-			progressModel.addElement("done");
-		}
-
-		public void finishArchive() {
-		}
-	};
-	
-	DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
-	discoverSourceDirectories.setProject(project);
-	discoverSourceDirectories.setRootSourceDirectory(sourceRootBox.getText());
-	discoverSourceDirectories.setErrorLogger(errorLogger);
-	discoverSourceDirectories.setProgress(progress);
-	
-	discoverSourceDirectories.execute();
-	jList1.setModel(foundModel);
-
-	for (String srcDir : discoverSourceDirectories.getDiscoveredSourceDirectoryList()) {	
-		foundModel.addElement(srcDir);
-	}
-	
-	if (step < MAX_STEP) {
-	       setStep(step + 1);
-	}
-	    
-	
+	discover.start();
 }//GEN-LAST:event_nextButtonActionPerformed
 
 private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finshButtonActionPerformed
@@ -342,6 +343,8 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 	{
 		parentGUI.setSourceDirecs(foundModel);
 	}
+	if(discover.isAlive())
+    	discover.stop();
 	dispose();
 }//GEN-LAST:event_finshButtonActionPerformed
     
@@ -351,11 +354,12 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(), null);
+                final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(), null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
+                    	if(dialog.discover.isAlive())
+                        	dialog.discover.stop();
                     }
                 });
                 dialog.setVisible(true);
@@ -368,7 +372,7 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     	private DefaultListModel foundModel;
     	private DefaultListModel progressModel;
     	private JList jList2;
-    	
+    	public Thread discover;
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton browseButton;
         private javax.swing.JLabel card1Explanation1Label;
