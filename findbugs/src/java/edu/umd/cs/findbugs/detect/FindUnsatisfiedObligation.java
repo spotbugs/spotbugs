@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -98,9 +99,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	
 	/**
 	 * Report the final obligation set as part of the BugInstance.
-	 * For debugging.
 	 */
-	private static final boolean REPORT_OBLIGATION_SET = SystemProperties.getBoolean("oa.report.obligationset");
+	private static final boolean REPORT_OBLIGATION_SET = SystemProperties.getBoolean("oa.report.obligationset", true);
 
 	private BugReporter bugReporter;
 	private ObligationPolicyDatabase database;
@@ -292,7 +292,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 			annotateWarningWithSourceLineInformation(state, obligation, bugInstance);
 			
 			if (REPORT_OBLIGATION_SET) {
-				bugInstance.addString(state.getObligationSet().toString());
+				bugInstance.addString(state.getObligationSet().toString()).describe(StringAnnotation.REMAINING_OBLIGATIONS_ROLE);
 			}
 
 			bugReporter.reportBug(bugInstance);

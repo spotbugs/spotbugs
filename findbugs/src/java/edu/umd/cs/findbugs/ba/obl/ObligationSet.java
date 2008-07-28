@@ -109,6 +109,11 @@ public class ObligationSet {
 		return true;
 	}
 
+	/*
+	 * NOTE: this string is incorporated into a StringAnnotation when
+	 * reporting OBL_ warnings, so the output needs to be
+	 * user-friendly.
+	 */
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
@@ -120,7 +125,7 @@ public class ObligationSet {
 			if (count > 0)
 				buf.append(",");
 			buf.append(factory.getObligationById(i).toString());
-			buf.append("*");
+			buf.append(" x ");
 			buf.append(countList[i]);
 			++count;
 		}

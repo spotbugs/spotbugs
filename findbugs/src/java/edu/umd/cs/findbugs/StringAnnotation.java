@@ -37,6 +37,7 @@ public class StringAnnotation implements BugAnnotation {
 	public static final String STRING_CONSTANT_ROLE = "STRING_CONSTANT";
 	public static final String PARAMETER_NAME_ROLE = "STRING_PARAMETER_NAME";
 	public static final String TYPE_QUALIFIER_ROLE = "STRING_TYPE_QUALIFIER";
+	public static final String REMAINING_OBLIGATIONS_ROLE = "STRING_REMAINING_OBLIGATIONS";
 
 	final private String value;
 	 private String description;
