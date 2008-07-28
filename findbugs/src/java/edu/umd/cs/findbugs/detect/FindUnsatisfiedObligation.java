@@ -85,7 +85,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	 * suppressing false positives due to "wrapper" objects.
 	 * Not quite ready for prime time.
 	 */
-	private static final boolean COMPUTE_TRANSFERS = SystemProperties.getBoolean("oa.transfers", false);
+	private static final boolean COMPUTE_TRANSFERS = SystemProperties.getBoolean("oa.transfers", true);
 
 	/**
 	 * Report path information from point of resource creation
