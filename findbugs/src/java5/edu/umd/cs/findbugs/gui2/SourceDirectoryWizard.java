@@ -31,7 +31,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.ListModel;
-import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 
 import edu.umd.cs.findbugs.DiscoverSourceDirectories;
@@ -355,13 +354,6 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(), null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                    	if(dialog.discover.isAlive())
-                        	dialog.discover.stop();
-                    }
-                });
                 dialog.setVisible(true);
             }
         });
