@@ -447,6 +447,14 @@ public class Update {
 				else {
 					throw e2;
 				}
+			} catch (DocumentException e) {
+				DocumentException e2 = new DocumentException("Error parsing " + newFilename);
+				e2.initCause(e);
+				if (verbose)
+					e2.printStackTrace();
+				else {
+					throw e2;
+				}
 			}
 		}
 
