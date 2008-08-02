@@ -19,11 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import edu.umd.cs.findbugs.ba.Path;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -34,6 +41,8 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.ba.Path;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -42,14 +51,6 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other
@@ -241,8 +242,7 @@ public class ObligationAnalysis
 			return database.getFactory().getObligationByType((ObjectType) type);
 		} catch (ClassNotFoundException e) {
 			errorLogger.reportMissingClass(e);
-			throw new DataflowAnalysisException(
-				"Subtype query failed during ObligationAnalysis", e);
+			throw new MissingClassException(e);
 		}
 
 	}
