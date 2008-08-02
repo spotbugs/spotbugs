@@ -440,10 +440,13 @@ public class Update {
 				origCollection = mergeCollections(origCollection,
 						newCollection, true, false);
 			} catch (IOException e) {
+				IOException e2 = new IOException("Error parsing " + newFilename);
+				e2.initCause(e);
 				if (verbose)
-					System.out.println(e);
-				else
-					throw e;
+					e2.printStackTrace();
+				else {
+					throw e2;
+				}
 			}
 		}
 
