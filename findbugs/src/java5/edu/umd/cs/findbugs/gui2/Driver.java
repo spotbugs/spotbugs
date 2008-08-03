@@ -89,11 +89,8 @@ public class Driver {
 			e.printStackTrace();	
 		}
 
-		float fontSize = commandLine.getFontSize();
-		if(fontSize == 12 && GUISaveState.getInstance().getFontSize() != 12)
-			fontSize = GUISaveState.getInstance().getFontSize();
-		else
-			GUISaveState.getInstance().setFontSize(fontSize);
+		if (commandLine.isFontSizeSpecified())
+			GUISaveState.getInstance().setFontSize(commandLine.getFontSize());
 
 		// System.setProperty("findbugs.home",".."+File.separator+"findbugs");
 		DetectorFactoryCollection.instance();

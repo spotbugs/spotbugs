@@ -31,6 +31,7 @@ import javax.swing.UIManager;
  */
 public class GUI2CommandLine extends FindBugsCommandLine {
 	private float fontSize = 12;
+	private boolean fontSizeSpecified = false;
 	private boolean docking = true;
 	private int priority = Thread.NORM_PRIORITY-1;
 	private File saveFile;
@@ -88,6 +89,7 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 		if (option.equals("-f")) {
 			try {
 				fontSize = Float.parseFloat(argument);
+				fontSizeSpecified = true;
 			} catch (NumberFormatException e) {
 				// ignore
 			}
@@ -110,6 +112,9 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 
 	public float getFontSize() {
 		return fontSize;
+	}
+	public boolean isFontSizeSpecified() {
+		return fontSizeSpecified;
 	}
 	
 	public boolean getDocking() {
