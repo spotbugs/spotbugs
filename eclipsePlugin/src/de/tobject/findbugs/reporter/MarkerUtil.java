@@ -177,15 +177,11 @@ public final class MarkerUtil {
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
 	 *
-	 * @param bug
-	 *            the BugInstance
-	 * @param project
-	 *            the project
-	 * @param sla
-	 *            the SourceLineAnnotation to get the resource for. If null, use
+	 * @param bug  the BugInstance
+	 * @param project  the project
+	 * @param sla  the SourceLineAnnotation to get the resource for. If null, use
 	 *            the primary source line annotation.
 	 * @return the IResource representing the Java class
-	 * @throws JavaModelException
 	 */
 	private static @CheckForNull
 	IResource getUnderlyingResource(BugInstance bug, IJavaProject project,
@@ -237,6 +233,16 @@ public final class MarkerUtil {
 		} else {
 			// second argument is required to find also secondary types
 			type =  project.findType(qualifiedClassName.replace('$','.'), (IProgressMonitor)null);
+
+			// for inner classes, some detectors does not properly report source lines:
+			// instead of reporting the first line of inner class, they report first line of parent class
+			// in this case we will try to fix this here and point to the right start line
+			if(type != null && type.isMember()){
+				SourceLineAnnotation sourceLines = bug.getPrimaryClass().getSourceLines();
+				if(sourceLines == null || sourceLines.getStartLine() <= 1) {
+					completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
+				}
+			}
 		}
 
 		// reassign it as it may be changed for inner classes
@@ -294,11 +300,6 @@ public final class MarkerUtil {
 		}
 	}
 
-	/**
-	 * @param innerName
-	 * @param type
-	 * @throws JavaModelException
-	 */
 	private static void completeInnerClassInfo(String qualifiedClassName,
 			String innerName, IType type, BugInstance bug) throws JavaModelException {
 		int lineNbr = findChildSourceLine(type, innerName);
@@ -320,9 +321,7 @@ public final class MarkerUtil {
 	}
 
 	/**
-	 * @param source
 	 * @return start line of given type, or 1 if line could not be found
-	 * @throws JavaModelException
 	 */
 	private static int getLineStart(SourceType source) throws JavaModelException {
 		IOpenable op = source.getOpenable();
@@ -339,7 +338,6 @@ public final class MarkerUtil {
 	 * @param source must be not null
 	 * @return may return null, otherwise an initialized scanner which may answer which
 	 * source offset index belongs to which source line
-	 * @throws JavaModelException
 	 */
 	private static IScanner initScanner(IJavaElement source) throws JavaModelException {
 		IOpenable op = source.getOpenable();
@@ -386,10 +384,6 @@ public final class MarkerUtil {
 		return -1;
 	}
 
-	/**
-	 * @param javaElement
-	 * @return
-	 */
 	private static int findInnerAnonymousClassSourceLine(IJavaElement javaElement, int innerNumber) {
 		IOpenable op = javaElement.getOpenable();
 		if (!(op instanceof CompilationUnit)) {
@@ -411,7 +405,7 @@ public final class MarkerUtil {
 				if (tokenID != ITerminalSymbols.TokenNameIdentifier) {
 					continue;
 				}
-				tokenID = scanner.getNextToken();
+				tokenID = skipUntil(scanner, ITerminalSymbols.TokenNameLPAREN);
 				if (tokenID != ITerminalSymbols.TokenNameLPAREN) {
 					continue;
 				}
@@ -437,12 +431,17 @@ public final class MarkerUtil {
 	}
 
 	/**
-	 * @param javaElement
-	 * @param name
-	 * @param elemName
-	 * @return
-	 * @throws JavaModelException
+	 * Fix for bug 2032970: reads all tokens until given one or EOF is reached. This is
+	 * required if sourcecode of anonymous class contains generics definitions
 	 */
+	private static int skipUntil(IScanner scanner, int endToken) throws InvalidInputException{
+		int tokenID = scanner.getNextToken();
+		while (tokenID != endToken && tokenID != ITerminalSymbols.TokenNameEOF){
+			tokenID = scanner.getNextToken();
+		}
+		return tokenID;
+	}
+
 	private static int findInnerClassSourceLine(IJavaElement javaElement,
 			String name) throws JavaModelException {
 		String elemName = javaElement.getElementName();
@@ -469,7 +468,6 @@ public final class MarkerUtil {
 	 * Remove all FindBugs problem markers for given resource.
 	 *
 	 * @param res the resource
-	 * @throws CoreException
 	 */
 	public static void removeMarkers(IResource res) throws CoreException {
 		// remove any markers added by our builder
