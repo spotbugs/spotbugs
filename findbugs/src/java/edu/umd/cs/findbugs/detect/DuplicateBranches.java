@@ -140,6 +140,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		if ((thenFinishPos - thenStartPos) != (elseFinishPos - elseStartPos))
 			return;
 
+		if (thenFinishPos <= thenStartPos)
+			return;
+
 		byte[] thenBytes = getCodeBytes(method, thenStartPos, thenFinishPos);
 		byte[] elseBytes = getCodeBytes(method, elseStartPos, elseFinishPos);
 
