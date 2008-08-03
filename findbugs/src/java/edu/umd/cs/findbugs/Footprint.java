@@ -24,6 +24,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.util.List;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+
 /**
 * Class to maintain a snapshot of a processes's time and memory usage.
 * 
@@ -114,10 +116,14 @@ public class Footprint {
 			// problem: sum of the peaks is not necessarily the peak of the sum.
 			// For example, objects migrate from the 'eden' to the 'survivor' area.
 			for (MemoryPoolMXBean mpBean : mlist) {
-				java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
-				if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
-				// System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
-				//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+				try {
+					java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
+					if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
+					// System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
+					//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+				} catch (RuntimeException e) {
+					AnalysisContext.logError("Error getting peak usage", e);
+				}
 			}
 			// System.out.println();
 			return sum;
