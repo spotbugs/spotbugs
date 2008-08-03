@@ -39,13 +39,11 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
-	private CFG cfg;
 	private DepthFirstSearch dfs;
 	//private ConstantPoolGen cpg;
 	private Map<InstructionHandle, Call> callMap;
 
 	public CallListAnalysis(CFG cfg, DepthFirstSearch dfs, ConstantPoolGen cpg) {
-		this.cfg = cfg;
 		this.dfs = dfs;
 		//this.cpg = cpg;
 		this.callMap = buildCallMap(cfg, cpg);
