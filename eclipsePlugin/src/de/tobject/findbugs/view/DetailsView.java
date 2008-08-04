@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -95,7 +96,7 @@ public class DetailsView extends AbstractFindbugsView {
 
 	private DefaultInformationControl.IInformationPresenterExtension presenter;
 
-	private TextPresentation presentation;
+	private final TextPresentation presentation;
 
 	@CheckForNull
 	private Browser browser;
@@ -182,6 +183,17 @@ public class DetailsView extends AbstractFindbugsView {
 				if (elt instanceof IMarker) {
 					theMarker = (IMarker) elt;
 				}
+
+				// bug 2030157: selections in problems view are not reflected in our views
+				// we cannot use MarkerItem because this is new Eclipse 3.4 API.
+				/* else if (elt instanceof MarkerItem){
+					theMarker = ((MarkerItem)elt).getMarker();
+				}*/
+				// the code below is the workaroound compatible with both 3.3 and 3.4 API
+				else if (elt instanceof IAdaptable) {
+					theMarker = (IMarker) ((IAdaptable)elt).getAdapter(IMarker.class);
+				}
+
 				if (theMarker != null) {
 					selectMarker(theMarker);
 				}

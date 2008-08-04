@@ -22,6 +22,7 @@ package de.tobject.findbugs.view;
 import java.util.Calendar;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -155,6 +156,17 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 				if (elt instanceof IMarker) {
 					theMarker = (IMarker) elt;
 				}
+
+				// bug 2030157: selections in problems view are not reflected in our views
+				// we cannot use MarkerItem because this is new Eclipse 3.4 API.
+				/* else if (elt instanceof MarkerItem){
+					theMarker = ((MarkerItem)elt).getMarker();
+				}*/
+				// the code below is the workaroound compatible with both 3.3 and 3.4 API
+				else if (elt instanceof IAdaptable) {
+					theMarker = (IMarker) ((IAdaptable)elt).getAdapter(IMarker.class);
+				}
+
 				if (theMarker != null) {
 					selectMarker(theMarker);
 				}
