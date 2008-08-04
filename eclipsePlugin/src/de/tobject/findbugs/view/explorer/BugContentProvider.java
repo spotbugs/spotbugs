@@ -20,9 +20,11 @@ package de.tobject.findbugs.view.explorer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -34,6 +36,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -41,6 +44,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.navigator.CommonViewer;
 
 import de.tobject.findbugs.FindbugsPlugin;
@@ -53,13 +57,13 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 public class BugContentProvider implements ITreeContentProvider {
 
 	private CommonViewer viewer;
-	private IResourceChangeListener resourceListener;
-	private Map<String, BugPatternGroup> groups;
+	private final IResourceChangeListener resourceListener;
+	private final Map<String, BugPatternGroup> groups;
 	private final static Object[] EMPTY = new Object[0];
 
 	private static final int SHORT_DELAY = 100;
 	private static final int LONG_DELAY = 1000;
-	private RefreshJob refreshJob;
+	private final RefreshJob refreshJob;
 
 	public BugContentProvider() {
 		super();
@@ -114,7 +118,8 @@ public class BugContentProvider implements ITreeContentProvider {
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 	 */
 	public boolean hasChildren(Object element) {
-		return element instanceof IResource || element instanceof BugPatternGroup;
+		return element instanceof IResource || element instanceof BugPatternGroup
+		 || element instanceof IWorkingSet;
 	}
 
 	/*
@@ -126,6 +131,9 @@ public class BugContentProvider implements ITreeContentProvider {
 		if (inputElement instanceof IWorkspaceRoot) {
 			return getWorkspaceRootChildren((IWorkspaceRoot) inputElement);
 		}
+		if (inputElement instanceof IWorkingSet) {
+			return getWorkingSetChildren((IWorkingSet) inputElement);
+		}
 		if (inputElement instanceof IResource) {
 			IResource resource = (IResource) inputElement;
 			return getResourceChildren(resource);
@@ -135,6 +143,22 @@ public class BugContentProvider implements ITreeContentProvider {
 			return groupElement.getChildren();
 		}
 		return EMPTY;
+	}
+
+	/*
+	 * Bug 2030167: no working set content shown
+	 */
+	private Object[] getWorkingSetChildren(IWorkingSet workingSet) {
+		IAdaptable[] elements = workingSet.getElements();
+		Set<IResource> resources = new HashSet<IResource>();
+		// elements may contain NON-resource elements, which we have to convert to resources
+		for (IAdaptable adaptable : elements) {
+			IResource resource = (IResource) adaptable.getAdapter(IResource.class);
+			if(resource != null){
+				resources.add(resource);
+			}
+		}
+		return resources.toArray();
 	}
 
 	private Object[] getResourceChildren(IResource resource) {
