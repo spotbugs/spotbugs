@@ -21,7 +21,6 @@ package de.tobject.findbugs.actions;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -106,7 +105,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 * Run a FindBugs analysis on the given resource, displaying a progress
 	 * monitor.
 	 *
-	 * @param resource The resource to run the analysis on.
+	 * @param resources The resource to run the analysis on.
 	 */
 	protected final void work(final IProject project, final List<IResource> resources) {
 
@@ -122,6 +121,14 @@ public class FindBugsAction implements IObjectActionDelegate {
 					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
+			}
+
+			/**
+			 * Overriden to be able to control the max number of running FB jobs
+			 */
+			@Override
+			public boolean belongsTo(Object family) {
+				return MutexSchedulingRule.class == family;
 			}
 		};
 
