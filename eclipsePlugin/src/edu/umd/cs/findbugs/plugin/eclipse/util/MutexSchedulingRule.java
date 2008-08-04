@@ -20,6 +20,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.util;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 
 /** a simple scheduling rule for mutually exclusivity, more-or-less copied from:
  *  http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/runtime_jobs_rules.htm
@@ -28,6 +29,8 @@ public class MutexSchedulingRule implements ISchedulingRule {
 
 	// enable multicore
 	private static final boolean MULTICORE = Runtime.getRuntime().availableProcessors() > 1;
+
+	private static final int MAX_JOBS = Runtime.getRuntime().availableProcessors();
 
 	private final IProject project;
 
@@ -40,11 +43,23 @@ public class MutexSchedulingRule implements ISchedulingRule {
 		if(rule instanceof MutexSchedulingRule) {
 			MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
 			if(MULTICORE) {
-				return mRule.project.equals(project);
+				return mRule.project.equals(project) || tooManyJobsThere();
 			}
 			return true;
 		}
 		return false;
+	}
+
+	private static boolean tooManyJobsThere() {
+		Job[] fbJobs = Job.getJobManager().find(MutexSchedulingRule.class);
+		int runningCount = 0;
+		for (Job job : fbJobs) {
+			if(job.getState() == Job.RUNNING){
+				runningCount ++;
+			}
+		}
+		// TODO made this condition configurable
+		return runningCount > MAX_JOBS;
 	}
 
 	public boolean contains(ISchedulingRule rule) {
