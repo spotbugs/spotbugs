@@ -2,17 +2,17 @@
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004,2005 Dave Brosius <dbrosius@qis.net>
  * Copyright (C) 2004,2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -104,7 +104,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Create default UserPreferences.
-	 * 
+	 *
 	 * @return default UserPreferences
 	 */
 	public static UserPreferences createDefaultUserPreferences() {
@@ -115,7 +115,7 @@ public class UserPreferences implements Cloneable {
 	 * Get UserPreferences singleton.
 	 * This should only be used if there is a single set of user
 	 * preferences to be used for all projects.
-	 * 
+	 *
 	 * @return the UserPreferences
 	 */
 	public static UserPreferences getUserPreferences() {
@@ -123,7 +123,7 @@ public class UserPreferences implements Cloneable {
 	}
 
 	/**
-	 * Read persistent global UserPreferences from file in 
+	 * Read persistent global UserPreferences from file in
 	 * the user's home directory.
 	 */
 	public void read() {
@@ -140,7 +140,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Read user preferences from given input stream.
 	 * The InputStream is guaranteed to be closed by this method.
-	 * 
+	 *
 	 * @param in the InputStream
 	 * @throws IOException
 	 */
@@ -212,7 +212,7 @@ public class UserPreferences implements Cloneable {
 	}
 
 	/**
-	 * Write persistent global UserPreferences to file 
+	 * Write persistent global UserPreferences to file
 	 * in user's home directory.
 	 */
 	public void write() {
@@ -228,7 +228,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Write UserPreferences to given OutputStream.
 	 * The OutputStream is guaranteed to be closed by this method.
-	 * 
+	 *
 	 * @param out the OutputStream
 	 * @throws IOException
 	 */
@@ -260,7 +260,7 @@ public class UserPreferences implements Cloneable {
 		writeFilters(props, INCLUDE_FILTER_KEY, includeFilterFiles);
 		writeFilters(props, EXCLUDE_FILTER_KEY, excludeFilterFiles);
 		writeFilters(props, EXCLUDE_BUGS_KEY, excludeBugsFiles);
-		
+
 		OutputStream prefStream = null;
 		try {
 			prefStream = new BufferedOutputStream(out);
@@ -277,7 +277,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Get List of recent project filenames.
-	 * 
+	 *
 	 * @return List of recent project filenames
 	 */
 	public List<String> getRecentProjects() {
@@ -287,7 +287,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Add given project filename to the front of the recently-used
 	 * project list.
-	 * 
+	 *
 	 * @param projectName project filename
 	 */
 	public void useProject(String projectName) {
@@ -299,7 +299,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Remove project filename from the recently-used project list.
-	 * 
+	 *
 	 * @param projectName project filename
 	 */
 	public void removeProject(String projectName) {
@@ -314,7 +314,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Set the enabled/disabled status of given Detector.
-	 * 
+	 *
 	 * @param factory the DetectorFactory for the Detector to be enabled/disabled
 	 * @param enable  true if the Detector should be enabled,
 	 *                false if it should be Disabled
@@ -325,7 +325,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Get the enabled/disabled status of given Detector.
-	 * 
+	 *
 	 * @param factory the DetectorFactory of the Detector
 	 * @return true if the Detector is enabled, false if not
 	 */
@@ -344,7 +344,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Enable or disable all known Detectors.
-	 * 
+	 *
 	 * @param enable true if all detectors should be enabled,
 	 *               false if they should all be disabled
 	 */
@@ -360,7 +360,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Set the ProjectFilterSettings.
-	 * 
+	 *
 	 * @param filterSettings the ProjectFilterSettings
 	 */
 	public void setProjectFilterSettings(ProjectFilterSettings filterSettings) {
@@ -369,7 +369,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Get ProjectFilterSettings.
-	 * 
+	 *
 	 * @return the ProjectFilterSettings
 	 */
 	public ProjectFilterSettings getFilterSettings() {
@@ -378,7 +378,7 @@ public class UserPreferences implements Cloneable {
 
 	/**
 	 * Get the detector threshold (min severity to report a warning).
-	 * 
+	 *
 	 * @return the detector threshold
 	 */
 	public int getUserDetectorThreshold() {
@@ -386,8 +386,8 @@ public class UserPreferences implements Cloneable {
 	}
 
 	/**
-	 * Set the detector threshold  (min severity to report a warning). 
-	 * 
+	 * Set the detector threshold  (min severity to report a warning).
+	 *
 	 * @param threshold the detector threshold
 	 */
 	public void setUserDetectorThreshold(int threshold) {
@@ -396,8 +396,8 @@ public class UserPreferences implements Cloneable {
 	}
 
 	/**
-	 * Set the detector threshold  (min severity to report a warning). 
-	 * 
+	 * Set the detector threshold  (min severity to report a warning).
+	 *
 	 * @param threshold the detector threshold
 	 */
 	public void setUserDetectorThreshold(String threshold) {
@@ -411,15 +411,19 @@ public class UserPreferences implements Cloneable {
 
 		UserPreferences other = (UserPreferences) obj;
 
-		return recentProjectsList.equals(other.recentProjectsList) && detectorEnablementMap.equals(other.detectorEnablementMap)
-		        && filterSettings.equals(other.filterSettings) && effort.equals(other.effort)
-		        && includeFilterFiles.equals(other.includeFilterFiles) && excludeFilterFiles.equals(other.excludeFilterFiles);
+		return recentProjectsList.equals(other.recentProjectsList)
+			&& detectorEnablementMap.equals(other.detectorEnablementMap)
+			&& filterSettings.equals(other.filterSettings)
+			&& effort.equals(other.effort)
+			&& includeFilterFiles.equals(other.includeFilterFiles)
+			&& excludeFilterFiles.equals(other.excludeFilterFiles)
+			&& excludeBugsFiles.equals(other.excludeBugsFiles);
 	}
 
 	@Override
 	public int hashCode() {
 		return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-		        + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode();
+				+ includeFilterFiles.hashCode() + excludeFilterFiles.hashCode();
 	}
 
 	@Override
@@ -463,7 +467,7 @@ public class UserPreferences implements Cloneable {
 		}
 		this.includeFilterFiles = includeFilterFiles;
 	}
-	
+
 	public Collection<String> getExcludeBugsFiles() {
 		return excludeBugsFiles;
 	}
@@ -488,7 +492,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Helper method to read array of strings out of the properties file, using
 	 * a Findbugs style format.
-	 * 
+	 *
 	 * @param props
 	 *            The properties file to read the array from.
 	 * @param keyPrefix
@@ -515,7 +519,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Helper method to write array of strings out of the properties file, using
 	 * a Findbugs style format.
-	 * 
+	 *
 	 * @param props
 	 *            The properties file to write the array to.
 	 * @param keyPrefix
@@ -546,7 +550,7 @@ public class UserPreferences implements Cloneable {
 	/**
 	 * Returns the effort level as an array of feature settings as expected by
 	 * FindBugs.
-	 * 
+	 *
 	 * @return The array of feature settings corresponding to the current effort
 	 *         setting.
 	 */
