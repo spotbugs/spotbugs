@@ -486,6 +486,9 @@
 			   <adapt
 					 type="org.eclipse.core.resources.IResource">
 			   </adapt>
+			   <adapt
+					 type="org.eclipse.jdt.core.IJavaElement">
+			   </adapt>
 			</or>
 		 </possibleChildren>
 
@@ -506,7 +509,7 @@
 			activeByDefault="true">
 		 <filterExpression>
 			<and>
-				<instanceof value="org.eclipse.core.resources.IProject"/>
+				<adapt type="org.eclipse.core.resources.IProject"/>
 				<test property="org.eclipse.core.resources.open" value="false"/>
 			</and>
 		 </filterExpression>
@@ -519,7 +522,7 @@
 			activeByDefault="true">
 		 <filterExpression>
 			<and>
-				<instanceof value="org.eclipse.core.resources.IProject"/>
+				<adapt type="org.eclipse.core.resources.IProject"/>
 				<or>
 					<test property="org.eclipse.core.resources.open" value="false"/>
 					<not>
