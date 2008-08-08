@@ -219,6 +219,12 @@
 
 	<target name="jars" depends="classes, validate,version">
 		<!-- Main engine and command line jar file. -->
+	    <copy todir="classesEclipse/">
+			<fileset dir="${etc.dir}">
+				<include name="findbugs.xml"/>
+				<include name="messages*.xml"/>
+			</fileset>
+		</copy>
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
 			<!-- Compiled classes, properties files. -->
