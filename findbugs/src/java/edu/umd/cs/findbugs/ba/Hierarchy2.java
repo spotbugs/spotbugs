@@ -168,6 +168,29 @@ public class Hierarchy2 {
 		
 	}
 
+	public static Set<XMethod> findSuperMethods(XMethod m) {
+		Set<XMethod> result = new HashSet<XMethod>();
+		
+		findSuperMethods(m.getClassDescriptor(), m,result);
+		return result;
+		
+	}
+	private static  void findSuperMethods(@CheckForNull ClassDescriptor c, XMethod m, Set<XMethod> accumulator) {
+		if (c == null) return;
+		try {
+			XClass xc = getXClass(c);
+			XMethod xm = xc.findMatchingMethod(m.getMethodDescriptor());
+			if (xm != null && !accumulator.add(xm)) return;
+			findSuperMethods(xc.getSuperclassDescriptor(), m, accumulator);
+			for(ClassDescriptor i : xc.getInterfaceDescriptorList())
+				findSuperMethods(i, m, accumulator);
+			if (!accumulator.add(m)) return;
+
+		} catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error finding super methods for " + m, e);
+		}
+	}
+
 	public static @CheckForNull XMethod findMethod(ClassDescriptor classDescriptor, String methodName, String methodSig, boolean isStatic) {
 		try {
 	        return getXClass(classDescriptor).findMethod(methodName, methodSig, isStatic);

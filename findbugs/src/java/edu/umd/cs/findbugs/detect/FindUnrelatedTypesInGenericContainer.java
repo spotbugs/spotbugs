@@ -21,9 +21,12 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -55,10 +58,13 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
@@ -159,6 +165,26 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
 		String indexSignature = "(Ljava/lang/Object;)I";
 
+		if (false) {
+			// Collection<E>
+			addToCollectionsMap(Collection.class.getName(), "contains", basicSignature, 0);
+			//addToCollectionsMap(Collection.class.getName(), "equals",   basicSignature, 0);
+			addToCollectionsMap(Collection.class.getName(), "remove",   basicSignature, 0);
+
+			//addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
+			//addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
+			//addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
+
+			// List<E>
+			addToCollectionsMap(List.class.getName(), "indexOf", indexSignature, 0);
+			addToCollectionsMap(List.class.getName(), "lastIndexOf", indexSignature, 0);
+
+			// Map<K,V>
+			addToCollectionsMap(Map.class.getName(), "containsKey", basicSignature, 0);
+			addToCollectionsMap(Map.class.getName(), "containsValue", basicSignature, 1);
+
+
+		}
 		// Collection<E>
 		addToCollectionsMap(collectionMembers, "contains", basicSignature, 0);
 		//addToCollectionsMap(collectionMembers, "equals",   basicSignature, 0);
@@ -269,6 +295,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			InvokeInstruction inv = (InvokeInstruction)ins;
 
+			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
+			if (DEBUG) {
+				Set<XMethod> superMethods = Hierarchy2.findSuperMethods(primaryXMethod);
+				for(XMethod m : superMethods) {
+					System.out.println(m);
+				}
+			}
 			// check the relevance of this instruction
 			String [] itriplet = getInstructionTriplet(inv, cpg);
 			String [] triplet = getRelevantTriplet(itriplet);
@@ -376,6 +409,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		return new String[] { className, methodName, methodSignature };
 	}
 
+
+	/**
+	 * Given a triplet representing the className, methodName, and methodSignature
+	 * of an instruction, check to see if it is in our collectionsMap. <p>
+	 * [Not Implemented] If not, search harder to see if one of the super classes 
+	 * of className is in our collectionMap
+	 */
+	private @CheckForNull XMethod getRelevantTriplet(XMethod m) {
+		m.getClassDescriptor();
+		return null;
+	}
 	/**
 	 * Given a triplet representing the className, methodName, and methodSignature
 	 * of an instruction, check to see if it is in our collectionsMap. <p>

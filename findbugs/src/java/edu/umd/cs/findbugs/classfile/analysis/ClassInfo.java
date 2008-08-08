@@ -202,6 +202,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		if (!descriptor.getClassDescriptor().equals(this)) {
 			throw new IllegalArgumentException();
 		}
+		return findMatchingMethod(descriptor);
+	}
+
+	
+	public XMethod findMatchingMethod(MethodDescriptor descriptor) {
 		return findMethod(descriptor.getName(), descriptor.getSignature(), descriptor.isStatic());
 	}
 

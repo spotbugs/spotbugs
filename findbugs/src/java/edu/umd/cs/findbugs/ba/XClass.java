@@ -96,6 +96,14 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	 * @return matching XMethod, or null if there is no matching method
 	 */
 	public XMethod findMethod(MethodDescriptor descriptor);
+	/**
+	 * Find XMethod matching the name and signature of the supplied method MethodDescriptor.
+	 * The class descriptor of the argument is ignored.
+	 * 
+	 * @param descriptor a MethodDescriptor
+	 * @return matching XMethod, or null if there is no matching method
+	 */
+	public XMethod findMatchingMethod(MethodDescriptor descriptor);
 
 	/**
 	 * Find an XField matching given parameters.
