@@ -422,6 +422,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod">
+    <Details>
+<![CDATA[
+<p> This detector looks for calls to methods that are unsupported.
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -1522,6 +1530,17 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
 	<p>This class is bigger than can be effectively handled, and was not fully analyzed for errors.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_UNSUPPORTED_METHOD">
+    <ShortDescription>Call to unsupported method</ShortDescription>
+    <LongDescription>Call to unsupported method {2} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>All targets of this method invocation throw an UnsupportedOperationException.
 </p>
 
 ]]>

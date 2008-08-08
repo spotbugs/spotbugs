@@ -257,6 +257,10 @@
             speed="fast"
             reports="RpC_REPEATED_CONDITIONAL_TEST"
 		/>
+  <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" 
+            speed="fast"
+            reports="DMI_UNSUPPORTED_METHOD"
+		/>
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -812,9 +816,10 @@
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
-          <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
-          <BugPattern abbrev="Dm" type="DMI_EMPTY_DB_PASSWORD" category="SECURITY" cweid="259"/>
-          <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE" />
+  <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
+  <BugPattern abbrev="Dm" type="DMI_EMPTY_DB_PASSWORD" category="SECURITY" cweid="259"/>
+  <BugPattern abbrev="Dm" type="DMI_UNSUPPORTED_METHOD" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE" />
   <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION" category="CORRECTNESS" />
