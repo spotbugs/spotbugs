@@ -1,0 +1,23 @@
+<project name="findbugs test" default="findbugs" basedir=".">
+ <target name="init">
+  <property name="sourceDir" value="src" /> 
+  <property name="outputDir" value="classes" /> 
+  <property name="findbugs.home" value="lib/findbugs" /> 
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar" /> 
+  </target>
+<target name="clean" depends="init">
+  <delete dir="${outputDir}" /> 
+  </target>
+<target name="prepare" depends="clean">
+  <mkdir dir="${outputDir}" /> 
+  </target>
+<target name="compile" depends="prepare">
+  <javac srcdir="${sourceDir}" destdir="${outputDir}" /> 
+  </target>
+<target name="findbugs" depends="compile">
+	<findbugs home="${findbugs.home}" output="xml" outputFile="findbugs.xml">
+  <sourcePath path="${sourceDir}" /> 
+  <class location="${outputDir}" /> 
+  </findbugs>
+  </target>
+  </project>

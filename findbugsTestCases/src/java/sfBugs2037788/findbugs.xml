@@ -1,0 +1,15 @@
+ <?xml version="1.0" encoding="UTF-8" ?> 
+  <BugCollection version="1.3.4" sequence="0" timestamp="1217869071938" analysisTimestamp="1217869074619" release="">
+  <Project filename="<<unnamed project>>" projectName="">
+  <Jar>/home/terminal/findbugstest/classes</Jar> 
+  <SrcDir>/home/terminal/findbugstest/src</SrcDir> 
+  </Project>
+  <Errors /> 
+  <FindBugsSummary timestamp="Mon, 4 Aug 2008 09:57:51 -0700" total_classes="1" total_bugs="0" total_size="4" num_packages="1" cpu_seconds="3.41" clock_seconds="3.42" peak_mbytes="22.04" alloc_mbytes="508.06" gc_seconds="0.67">
+  <PackageStats package="" total_bugs="0" total_types="1" total_size="4">
+  <ClassStats class="test" sourceFile="<Unknown>" interface="false" size="4" bugs="0" /> 
+  </PackageStats>
+  </FindBugsSummary>
+  <ClassFeatures /> 
+  <History /> 
+  </BugCollection>
