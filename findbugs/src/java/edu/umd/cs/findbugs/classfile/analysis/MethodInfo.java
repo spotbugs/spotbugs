@@ -57,6 +57,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		String [] exceptions;
 		String methodSourceSignature;
 		boolean isUnconditionalThrower;
+		boolean isUnsupported;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
 
@@ -93,17 +94,18 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public MethodInfo build() {
-			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, exceptions, methodAnnotations, 
-				 methodParameterAnnotations);
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, exceptions, 
+				 methodAnnotations, methodParameterAnnotations);
 		}
 
-		/**
-         * 
-         */
         public void setIsUnconditionalThrower() {
 	       isUnconditionalThrower = true;
 	        
         }
+        public void setUnsupported() {
+ 	       isUnsupported = true;
+ 	        
+         }
 	}
 
 	final int accessFlags;
@@ -117,16 +119,19 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
 	static IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
+	static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
+
 	/**
 	 * @param className
 	 * @param methodName
 	 * @param methodSignature
 	 * @param methodSourceSignature
+	 * @param isUnsupported 
 	 * @param isStatic
 	 */
 	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        boolean isUnsupported, @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -137,6 +142,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		this.methodAnnotations = Util.immutableMap(methodAnnotations);
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
 		if (isUnconditionalThrower) unconditionalThrowers.put(this, null);
+		if (isUnsupported) unsupportedMethods.put(this, null);
 		if (false && exceptions != null && exceptions.length > 0)
 			System.out.println(this + " throws " + Arrays.asList(exceptions));
 	}
@@ -147,6 +153,10 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 public boolean isUnconditionalThrower() {
 		 return unconditionalThrowers.containsKey(this);
 	 }
+	 public boolean isUnsupported() {
+		 return unsupportedMethods.containsKey(this);
+	 }
+
 	public int getNumParams() {
 		return new SignatureParser(getSignature()).getNumParameters();
 	}

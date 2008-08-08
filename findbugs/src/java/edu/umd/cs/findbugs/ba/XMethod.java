@@ -57,9 +57,14 @@ public interface XMethod extends ClassMember, AnnotatedObject {
     public String[] getThrownExceptions();
     
     /**
-     * @return does this mention unconditionally throw an exception? 
+     * @return does this method unconditionally throw an exception? 
      */
     public boolean isUnconditionalThrower();
+    /**
+     * @return does this method unconditionally throw an UnsupportedOperationException? 
+     */
+    public boolean isUnsupported();
+
 	/**
      * @return true if method's return type is a reference type, false otherwise
      */

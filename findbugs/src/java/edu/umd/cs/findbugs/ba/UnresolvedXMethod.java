@@ -121,6 +121,10 @@ class UnresolvedXMethod extends AbstractMethod implements XMethod {
         return false;
     }
 
+    public boolean isUnsupported() {
+        return false;
+    }
+
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#isAbstract()
      */

@@ -170,15 +170,21 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						int variable;
 						boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
 						boolean sawThrow = false;
+						boolean sawNonUnsupportedThrow = false;
 						boolean sawSystemExit = false;
 						boolean sawBranch = false;
+						boolean justSawInitializationOfUnsupportedOperationException;
 						State state = State.INITIAL;
 
 
 						@Override
 						public void visitInsn(int opcode) {
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
-							else if (opcode == Opcodes.ATHROW) sawThrow = true;
+							else if (opcode == Opcodes.ATHROW) {
+								if (!justSawInitializationOfUnsupportedOperationException)
+									sawNonUnsupportedThrow = true;
+								sawThrow = true;
+							}
 							resetState();
 						}
 
@@ -231,6 +237,9 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							owner = ClassName.fromSignature(owner);
 							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit"))
 								sawSystemExit = true;
+							justSawInitializationOfUnsupportedOperationException 
+							   = opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/UnsupportedOperationException") 
+							   && name.equals("<init>");
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
 							if (desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
 							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
@@ -246,7 +255,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						}
 						public void visitEnd() {
-							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) mBuilder.setIsUnconditionalThrower();
+							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
+								mBuilder.setIsUnconditionalThrower();
+								if (!sawNonUnsupportedThrow)
+									mBuilder.setUnsupported();
+							}
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									methodInfo);
