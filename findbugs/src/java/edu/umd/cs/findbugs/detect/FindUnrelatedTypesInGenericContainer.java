@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -65,12 +66,17 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author Nat Ayewah
@@ -90,122 +96,47 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	 * 
 	 * Get the String key by calling getCollectionsMapKey()
 	 */
-	private Map<String, int []> collectionsMap = new HashMap<String, int[]>();
+	
+	
+	private Map<String, ClassDescriptor> nameToInterfaceMap = new HashMap<String,ClassDescriptor>();
+	private Map<String, Integer> nameToTypeArgumentIndex = new HashMap<String,Integer>();
+	
 
-	/**
-	 * @param triplet a variable arity parameter intended to receive three
-	 *        arguments.  The three arguments are:
-	 *        <ol>
-	 *          <li>className: the name of the collection; e.g.,
-	 *            {@code java.util.List}</li>
-	 *          <li>methodName: the name of the method; e.g.,
-	 *            {@code contains}</li>
-	 *          <li>methodSignature: the signature of the method; e.g.,
-	 *            {@code (Ljava/lang/Object;)Z}</li>
-	 *        </ol>
-	 * @return the key for the method in collectionsMap
-	 */
-	public static String getCollectionsMapKey(String...triplet) {
-		return triplet[0] + "??" + triplet[1] + "???" + triplet[2];
-	}
+	private void addToCollectionsMap(@DottedClassName String className, String methodName, 
+			int argumentParameterIndex) {
+		ClassDescriptor c = DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
+		nameToInterfaceMap.put(methodName, c);
+		nameToTypeArgumentIndex.put(methodName, argumentParameterIndex);
+		}
 
-	private void addToCollectionsMap(String className, String methodName, 
-			String methodSignature, int... argumentParameterIndex) {
-		collectionsMap.put(
-				getCollectionsMapKey(className, methodName, methodSignature), 
-				argumentParameterIndex);
-	}
-
-	private void addToCollectionsMap(String [] classNames, String methodName, 
-			String methodSignature, int... argumentParameterIndex) {
-		for (String className : classNames)
-			addToCollectionsMap(
-					className, methodName, methodSignature, 
-					argumentParameterIndex);
-	}
-
-	String [] collectionMembers = new String [] {
-			"java.util.Collection",
-			"java.util.AbstractCollection",
-			"java.util.List",
-			"java.util.AbstractList",
-			"java.util.ArrayList",
-			"java.util.LinkedList",
-			"java.util.Set",
-			"java.util.SortedSet",
-			"java.util.LinkedHashSet",
-			"java.util.HashSet",
-			"java.util.TreeSet"	
-	};
-
-	String [] mapMembers = new String [] {
-			"java.util.Map",
-			"java.util.AbstractMap",
-			"java.util.SortedMap",
-			"java.util.TreeMap",
-			"java.util.HashMap",
-			"java.util.LinkedHashMap",
-			"java.util.concurrent.ConcurrentHashMap",
-			"java.util.EnumMap",
-			"java.util.Hashtable",
-			"java.util.IdentityHashMap",
-			"java.util.WeakHashMap"
-	};
-
-	String [] listMembers = new String [] {
-			"java.util.List",
-			"java.util.AbstractList",
-			"java.util.ArrayList",
-			"java.util.LinkedList"
-	};
-
+	
 	public FindUnrelatedTypesInGenericContainer(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		String basicSignature = "(Ljava/lang/Object;)Z";
 		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
 		String indexSignature = "(Ljava/lang/Object;)I";
 
-		if (false) {
 			// Collection<E>
-			addToCollectionsMap(Collection.class.getName(), "contains", basicSignature, 0);
-			//addToCollectionsMap(Collection.class.getName(), "equals",   basicSignature, 0);
-			addToCollectionsMap(Collection.class.getName(), "remove",   basicSignature, 0);
+			addToCollectionsMap(Collection.class.getName(), "contains", 0);
+			addToCollectionsMap(Collection.class.getName(), "remove",   0);
 
 			//addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
 			//addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
 			//addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
 
 			// List<E>
-			addToCollectionsMap(List.class.getName(), "indexOf", indexSignature, 0);
-			addToCollectionsMap(List.class.getName(), "lastIndexOf", indexSignature, 0);
+			addToCollectionsMap(List.class.getName(), "indexOf", 0);
+			addToCollectionsMap(List.class.getName(), "lastIndexOf", 0);
 
 			// Map<K,V>
-			addToCollectionsMap(Map.class.getName(), "containsKey", basicSignature, 0);
-			addToCollectionsMap(Map.class.getName(), "containsValue", basicSignature, 1);
+			addToCollectionsMap(Map.class.getName(), "containsKey", 0);
+			addToCollectionsMap(Map.class.getName(), "containsValue", 1);
 
+			// Map<K,V>
+			addToCollectionsMap(Map.class.getName(), "get", 0);
+			addToCollectionsMap(Map.class.getName(), "remove", 0);
 
-		}
-		// Collection<E>
-		addToCollectionsMap(collectionMembers, "contains", basicSignature, 0);
-		//addToCollectionsMap(collectionMembers, "equals",   basicSignature, 0);
-		addToCollectionsMap(collectionMembers, "remove",   basicSignature, 0);
-
-		//addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
-		//addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
-		//addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
-
-		// List<E>
-		addToCollectionsMap(listMembers, "indexOf", indexSignature, 0);
-		addToCollectionsMap(listMembers, "lastIndexOf", indexSignature, 0);
-
-		// Map<K,V>
-		addToCollectionsMap(mapMembers, "containsKey", basicSignature, 0);
-		addToCollectionsMap(mapMembers, "containsValue", basicSignature, 1);
-
-		// XXX these do not work, to support these need changeable return types
-		addToCollectionsMap(mapMembers, "get", basicSignature, 0);
-		addToCollectionsMap(mapMembers, "remove", basicSignature, 0);
-	}
+			}
 
 	/**
 	 * Visit the class context
@@ -295,23 +226,25 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			InvokeInstruction inv = (InvokeInstruction)ins;
 
-			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
-			if (DEBUG) {
-				Set<XMethod> superMethods = Hierarchy2.findSuperMethods(primaryXMethod);
-				for(XMethod m : superMethods) {
-					System.out.println(m);
-				}
-			}
-			// check the relevance of this instruction
-			String [] itriplet = getInstructionTriplet(inv, cpg);
-			String [] triplet = getRelevantTriplet(itriplet);
-			if (triplet == null)
-				continue;
-
-			// get the list of parameter indexes for each argument position
-			int [] argumentParameterIndex = 
-				collectionsMap.get( getCollectionsMapKey(triplet) );
-
+			XMethod m = XFactory.createXMethod(inv, cpg);
+			
+			ClassDescriptor interfaceOfInterest = nameToInterfaceMap.get(m.getName());
+			if (interfaceOfInterest == null) continue;
+			String argSignature = m.getSignature();
+			argSignature = argSignature.substring(0,argSignature.indexOf(')')+1);
+			if (!argSignature.equals("(Ljava/lang/Object;)")) continue;
+			
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			try {
+	            if (!subtypes2.isSubtype(m.getClassDescriptor(), interfaceOfInterest)) continue;
+            } catch (ClassNotFoundException e) {
+	           AnalysisContext.reportMissingClass(e);
+	           continue;
+            }
+			// OK, we've fold a method call of interest
+			
+			int typeArgument = nameToTypeArgumentIndex.get(m.getName());
+			
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (!frame.isValid()) {
 				// This basic block is probably dead
@@ -336,115 +269,37 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			int numArguments = frame.getNumArguments(inv, cpg);
 
-			if (numArguments <= 0 || argumentParameterIndex.length != numArguments)
+			if (numArguments != 1)
 				continue; 
 
 			// compare containers type parameters to corresponding arguments
-			boolean match = true;
-			IncompatibleTypes [] matches = new IncompatibleTypes [numArguments];
-			for (int i=0; i<numArguments; i++) matches[i] = IncompatibleTypes.SEEMS_OK;
 			SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 
-			for (int ii=0; ii < numArguments; ii++) {
-				if (argumentParameterIndex[ii] < 0) continue; // not relevant argument
-				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
-					continue; // should never happen
+			Type parmType = operand.getParameterAt(typeArgument);
+			Type argType = frame.getArgument(inv, cpg, 0, sigParser);
+			IncompatibleTypes  matchResult = compareTypes(parmType, argType);
 
-				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
-				Type argType = frame.getArgument(inv, cpg, ii, sigParser);
-				matches[ii] = compareTypes(parmType, argType);
-
-				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
-			}
-
-			if (match)
-				continue; // no bug
+			if (matchResult == IncompatibleTypes.SEEMS_OK) continue;
 
 			// Prepare bug report
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 			.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
 			// Report a bug that mentions each of the failed arguments in matches
-			for (int i=0; i<numArguments; i++) {
-				if (matches[i] == IncompatibleTypes.SEEMS_OK) continue;
 
-				Type parmType = operand.getParameterAt(argumentParameterIndex[i]);
-				if (parmType instanceof GenericObjectType)
-					parmType = ((GenericObjectType)parmType).getUpperBound();
-				Type argType = frame.getArgument(inv, cpg, i, sigParser);
+			if (parmType instanceof GenericObjectType)
+				parmType = ((GenericObjectType)parmType).getUpperBound();
 
-				accumulator.accumulateBug(new BugInstance(this,
-						"GC_UNRELATED_TYPES", matches[i].getPriority())
-						.addClassAndMethod(methodGen, sourceFile)					
-						//.addString(GenericUtilities.getString(parmType))
-						//.addString(GenericUtilities.getString(argType))
-						.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
-						.addCalledMethod(methodGen, (InvokeInstruction) ins)
-						,sourceLineAnnotation);
-			}
-
+			accumulator.accumulateBug(new BugInstance(this,
+					"GC_UNRELATED_TYPES", matchResult.getPriority())
+			.addClassAndMethod(methodGen, sourceFile)					
+			//.addString(GenericUtilities.getString(parmType))
+			//.addString(GenericUtilities.getString(argType))
+			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
+			.addCalledMethod(methodGen, (InvokeInstruction) ins)
+			,sourceLineAnnotation);
 		}
-
 		accumulator.reportAccumulatedBugs();
-	}
-
-	/**
-	 * Get a String triplet representing the information in this instruction:
-	 * the className, methodName, and methodSignature
-	 */
-	private String [] getInstructionTriplet(InvokeInstruction inv, ConstantPoolGen cpg) {
-
-		// get the class name
-		ConstantCP ref = (ConstantCP) cpg.getConstant( inv.getIndex() );
-		String className = ref.getClass(cpg.getConstantPool());
-
-		// get the method name
-		ConstantNameAndType refNT = 
-			(ConstantNameAndType) cpg.getConstant( ref.getNameAndTypeIndex() );
-		String methodName = refNT.getName(cpg.getConstantPool());
-
-		// get the method signature
-		String methodSignature = refNT.getSignature(cpg.getConstantPool());
-
-		return new String[] { className, methodName, methodSignature };
-	}
-
-
-	/**
-	 * Given a triplet representing the className, methodName, and methodSignature
-	 * of an instruction, check to see if it is in our collectionsMap. <p>
-	 * [Not Implemented] If not, search harder to see if one of the super classes 
-	 * of className is in our collectionMap
-	 */
-	private @CheckForNull XMethod getRelevantTriplet(XMethod m) {
-		m.getClassDescriptor();
-		return null;
-	}
-	/**
-	 * Given a triplet representing the className, methodName, and methodSignature
-	 * of an instruction, check to see if it is in our collectionsMap. <p>
-	 * [Not Implemented] If not, search harder to see if one of the super classes 
-	 * of className is in our collectionMap
-	 */
-	private @CheckForNull String [] getRelevantTriplet(String [] instructionTriplet) {
-		if (collectionsMap.containsKey( getCollectionsMapKey(instructionTriplet) ))
-			return instructionTriplet;
-
-		// HARDCODES
-		// Map "get" and "remove"
-		if (Arrays.asList(mapMembers).contains(instructionTriplet[0])) {
-			if ( "get"   .equals(instructionTriplet[1]) || 
-				 "remove".equals(instructionTriplet[1]) ) {
-				addToCollectionsMap(instructionTriplet[0], 
-						instructionTriplet[1], instructionTriplet[2], 0);
-				return instructionTriplet;
-			}
-		}
-
-		// XXX The rest not implemented
-
-		// Not found
-		return null;
 	}
 
 	/**
