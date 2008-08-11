@@ -71,6 +71,8 @@ import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.TestCaseDetector;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 import edu.umd.cs.findbugs.ba.type.StandardTypeMerger;
@@ -592,12 +594,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		// Add method-wide properties to BugInstances
 		final boolean sawEquals = sawCallToEquals;
+		final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
 		decorateWarnings(stringComparisonList, new WarningDecorator(){
 			public void decorate(WarningWithProperties warn) {
 				if (sawEquals) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
 				}
 
+				if (likelyTestcase)
+					warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
+				
 				if (false && !(method.isPublic() || method.isProtected())) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
 				}

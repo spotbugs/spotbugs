@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -64,6 +65,7 @@ import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.TestCaseDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -290,8 +292,12 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			if (parmType instanceof GenericObjectType)
 				parmType = ((GenericObjectType)parmType).getUpperBound();
 
+			int priority = matchResult.getPriority();
+			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			if (TestCaseDetector.likelyTestCase(xmethod))
+				priority = Priorities.LOW_PRIORITY;
 			accumulator.accumulateBug(new BugInstance(this,
-					"GC_UNRELATED_TYPES", matchResult.getPriority())
+					"GC_UNRELATED_TYPES", priority)
 			.addClassAndMethod(methodGen, sourceFile)					
 			//.addString(GenericUtilities.getString(parmType))
 			//.addString(GenericUtilities.getString(argType))

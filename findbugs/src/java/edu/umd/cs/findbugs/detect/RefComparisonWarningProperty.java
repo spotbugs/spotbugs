@@ -37,6 +37,9 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 	/** Method is private (or package-protected). */
 	public static final RefComparisonWarningProperty PRIVATE_METHOD =
 		new RefComparisonWarningProperty("PRIVATE_METHOD", PriorityAdjustment.LOWER_PRIORITY);
+	/** Compare inside test case */
+	public static final RefComparisonWarningProperty COMPARE_IN_TEST_CASE =
+		new RefComparisonWarningProperty("COMPARE_IN_TEST_CASE", PriorityAdjustment.FALSE_POSITIVE);
 	/** Comparing static strings using equals operator. */
 	public static final RefComparisonWarningProperty COMPARE_STATIC_STRINGS =
 		new RefComparisonWarningProperty("COMPARE_STATIC_STRINGS", PriorityAdjustment.FALSE_POSITIVE);
