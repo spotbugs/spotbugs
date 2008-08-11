@@ -567,7 +567,7 @@
 		</junit>
 	</target>
 
-	<target name="smoketest" depends="clean,findbugscheck,runjunit,validatesampleoutput,scripts"/>
+	<target name="smoketest" depends="clean,scripts,findbugscheck,runjunit,validatesampleoutput"/>
 
 
 	<!-- Get version properties.  -->
