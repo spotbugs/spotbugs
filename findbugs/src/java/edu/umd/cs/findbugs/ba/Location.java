@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class Location implements Comparable<Location> {
 	private final InstructionHandle handle;
 	private final BasicBlock basicBlock;
+	private int hash;
 
 	/**
 	 * Constructor.
@@ -104,18 +105,16 @@ public class Location implements Comparable<Location> {
 	}
 
 	public int compareTo(Location other) {
-		int cmp = basicBlock.getLabel() - other.basicBlock.getLabel();
-		if (false && cmp != 0)
-			return cmp;
-
 		int pos = handle.getPosition() - other.handle.getPosition();
-		if (pos != 0) return pos;
-		return cmp;
+		return pos;
 	}
 
 	@Override
 	public int hashCode() {
-		return System.identityHashCode(basicBlock) + handle.getPosition();
+		if(hash == 0){
+			return hash = System.identityHashCode(basicBlock) + handle.getPosition();
+		}
+		return hash;
 	}
 
 	@Override

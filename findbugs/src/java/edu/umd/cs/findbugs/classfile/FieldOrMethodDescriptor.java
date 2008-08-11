@@ -105,10 +105,10 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 			return false;
 		}
 		FieldOrMethodDescriptor other = (FieldOrMethodDescriptor) obj;
-		return this.slashedClassName.equals(other.slashedClassName)
+		return this.isStatic == other.isStatic
+			&& this.slashedClassName.equals(other.slashedClassName)
 			&& this.name.equals(other.name)
-			&& this.signature.equals(other.signature)
-			&& this.isStatic == other.isStatic;
+			&& this.signature.equals(other.signature);
 	}
 
 	/* (non-Javadoc)

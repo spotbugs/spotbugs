@@ -60,13 +60,14 @@ public class DescriptorFactory {
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
 		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
-	MapCache<String, String> stringCache = new MapCache<String, String>(10000);
+	// MapCache<String, String> stringCache = new MapCache<String, String>(10000);
 	public static String canonicalizeString(String s) {
-		if (s == null) return null;
+		/*
 		DescriptorFactory instance = instance();
 		String result = instance.stringCache.get(s);
 		if (result != null) return result;
 		instance.stringCache.put(s,s);
+		*/
 		return s;
 	}
 
@@ -160,7 +161,6 @@ public class DescriptorFactory {
 	public void canonicalize(MethodDescriptor m) {
 		MethodDescriptor existing = methodDescriptorMap.get(m);
 		if (m != existing) {
-			methodDescriptorMap.remove(m);
 			methodDescriptorMap.put(m, m);
 		}
 
@@ -168,7 +168,6 @@ public class DescriptorFactory {
 	public void canonicalize(FieldDescriptor m) {
 		FieldDescriptor existing = fieldDescriptorMap.get(m);
 		if (m != existing) {
-			fieldDescriptorMap.remove(m);
 			fieldDescriptorMap.put(m, m);
 		}
 

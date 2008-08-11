@@ -61,16 +61,23 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	private static final int MAX_CLASS_RESULTS_TO_CACHE = 5000;
 
+	private static final boolean assertionsEnabled;
+	
+	static {
+		boolean check = false;
+		assert check = true;
+		assertionsEnabled = check;
+	}
 	// Fields
-	private IClassPath classPath;
-	private IErrorLogger errorLogger;
-	private Map<Class<?>, IClassAnalysisEngine<?>> classAnalysisEngineMap;
-	private Map<Class<?>, IMethodAnalysisEngine<?>> methodAnalysisEngineMap;
-	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
-	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
-	private Map<Class<?>, Object> databaseMap;
+	private final IClassPath classPath;
+	private final IErrorLogger errorLogger;
+	private final Map<Class<?>, IClassAnalysisEngine<?>> classAnalysisEngineMap;
+	private final Map<Class<?>, IMethodAnalysisEngine<?>> methodAnalysisEngineMap;
+	private final Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
+	private final Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
+	private final Map<Class<?>, Object> databaseMap;
 
-	private Map<?,?> analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
+	private final Map<?,?> analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
 
 
 	public final Map<?, ?> getAnalysisLocals() {
@@ -117,6 +124,13 @@ public class AnalysisCache implements IAnalysisCache {
 
 	static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult();
 
+	@SuppressWarnings("unchecked")
+    static <E> E checkedCast(Class<E> analysisClass,
+			Object o) {
+		if (assertionsEnabled) 
+			return analysisClass.cast(o);
+		return (E) o;
+	}
 	/**
 	 * Constructor.
 	 *
@@ -227,10 +241,10 @@ public class AnalysisCache implements IAnalysisCache {
 
 		// Abnormal analysis result?
 		if (analysisResult instanceof AbnormalAnalysisResult) {
-			return analysisClass.cast(((AbnormalAnalysisResult) analysisResult).returnOrThrow());
+			return checkedCast(analysisClass,((AbnormalAnalysisResult) analysisResult).returnOrThrow());
 		}
 
-		return analysisClass.cast(analysisResult);
+		return checkedCast(analysisClass,analysisResult);
 	}
 
 	/* (non-Javadoc)
@@ -241,7 +255,7 @@ public class AnalysisCache implements IAnalysisCache {
 		if (descriptorMap == null) {
 			return null;
 		}
-		return analysisClass.cast(descriptorMap.get(classDescriptor));
+		return checkedCast(analysisClass, descriptorMap.get(classDescriptor));
 	}
 
 	String hex(Object o) {
@@ -279,10 +293,10 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 
 		if (object instanceof AbnormalAnalysisResult) {
-			return analysisClass.cast(((AbnormalAnalysisResult) object).returnOrThrow());
+			return checkedCast(analysisClass, ((AbnormalAnalysisResult) object).returnOrThrow());
 		}
 
-		return analysisClass.cast(object);
+		return checkedCast(analysisClass, object);
 	}
 
 	/**
