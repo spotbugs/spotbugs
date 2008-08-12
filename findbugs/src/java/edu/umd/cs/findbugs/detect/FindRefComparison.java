@@ -592,6 +592,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					typeDataflow, location);
 		}
 
+		if (stringComparisonList.isEmpty() && refComparisonList.isEmpty()) 
+			return;
 		// Add method-wide properties to BugInstances
 		final boolean sawEquals = sawCallToEquals;
 		final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
@@ -611,6 +613,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		});
 		decorateWarnings(refComparisonList, new WarningDecorator() {
 			public void decorate(WarningWithProperties warn) {
+				if (likelyTestcase)
+					warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
+				
 				if (sawEquals) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
 				}

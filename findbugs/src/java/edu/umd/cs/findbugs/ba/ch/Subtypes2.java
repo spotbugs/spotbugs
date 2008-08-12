@@ -314,8 +314,17 @@ public class Subtypes2 {
 	public boolean isSubtype(ClassDescriptor subDesc, ClassDescriptor superDesc) throws ClassNotFoundException {
 		assert subDesc != null;
 		assert superDesc != null;
+		if (subDesc.equals(superDesc)) return true;
+		try {
 		SupertypeQueryResults supertypeQueryResults = getSupertypeQueryResults(subDesc);
 		return supertypeQueryResults.containsType(superDesc);
+		} catch (ClassNotFoundException e) {
+			XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
+			if (xclass.getSuperclassDescriptor().equals(superDesc)) 
+				return true;
+			throw e;
+			
+		}
 	}
 	/**
 	 * Determine whether or not a given ObjectType is a subtype of another.
