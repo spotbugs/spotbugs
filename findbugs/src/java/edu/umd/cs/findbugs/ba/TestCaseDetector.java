@@ -36,7 +36,7 @@ public class TestCaseDetector {
 		if (m.getAnnotation(JUNIT4TEST) != null) return true;
 		
 		ClassDescriptor c = m.getClassDescriptor();
-		if (m.getName().startsWith("test")) {
+		if (m.getName().startsWith("test") || m.getName().startsWith("assert")) {
 			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
 			try {

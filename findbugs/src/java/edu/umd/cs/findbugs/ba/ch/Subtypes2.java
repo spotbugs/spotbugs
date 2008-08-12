@@ -934,7 +934,7 @@ public class Subtypes2 {
 	 * @return SupertypeQueryResults for the class named by the ClassDescriptor
 	 * @throws ClassNotFoundException
 	 */
-	public SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+	public SupertypeQueryResults getSupertypeQueryResults(ClassDescriptor classDescriptor)  {
 		SupertypeQueryResults supertypeQueryResults = supertypeSetMap.get(classDescriptor);
 		if (supertypeQueryResults == null) {
 			supertypeQueryResults = computeSupertypes(classDescriptor);
@@ -950,13 +950,14 @@ public class Subtypes2 {
 	 * @return SupertypeQueryResults containing known supertypes of the class
 	 * @throws ClassNotFoundException if the class can't be found
 	 */
-	private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
+	private SupertypeQueryResults computeSupertypes(ClassDescriptor classDescriptor) // throws ClassNotFoundException 
+	{
 		if (DEBUG_QUERIES) {
 			System.out.println("Computing supertypes for " + classDescriptor.toDottedClassName());
 		}
 
 		// Try to fully resolve the class and its superclasses/superinterfaces.
-		ClassVertex typeVertex = resolveClassVertex(classDescriptor);
+		ClassVertex typeVertex = optionallyResolveClassVertex(classDescriptor);
 
 		// Create new empty SupertypeQueryResults.
 		SupertypeQueryResults supertypeSet = new SupertypeQueryResults();
@@ -968,11 +969,11 @@ public class Subtypes2 {
 		workList.addLast(typeVertex);
 		while (!workList.isEmpty()) {
 			ClassVertex vertex = workList.removeFirst();
+			supertypeSet.addSupertype(vertex.getClassDescriptor());
 			if (vertex.isResolved()) {
 				if (DEBUG_QUERIES) {
 					System.out.println("  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
 				}
-				supertypeSet.addSupertype(vertex.getClassDescriptor());
 			} else {
 				if (DEBUG_QUERIES) {
 					System.out.println(
@@ -1002,7 +1003,22 @@ public class Subtypes2 {
 	 * @throws ClassNotFoundException if the class named by the ClassDescriptor does not exist
 	 */
 	private ClassVertex resolveClassVertex(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-		ClassVertex typeVertex = classDescriptorToVertexMap.get(classDescriptor);
+		ClassVertex typeVertex = optionallyResolveClassVertex(classDescriptor);
+
+		if (!typeVertex.isResolved()) {
+			ClassDescriptor.throwClassNotFoundException(classDescriptor);
+		}
+
+		assert typeVertex.isResolved();
+		return typeVertex;
+	}
+
+	/**
+     * @param classDescriptor
+     * @return
+     */
+    private ClassVertex optionallyResolveClassVertex(ClassDescriptor classDescriptor) {
+	    ClassVertex typeVertex = classDescriptorToVertexMap.get(classDescriptor);
 		if (typeVertex == null) {
 			// We have never tried to resolve this ClassVertex before.
 			// Try to find the XClass for this class.
@@ -1017,14 +1033,8 @@ public class Subtypes2 {
 				typeVertex = addClassAndGetClassVertex(xclass);
 			}
 		}
-
-		if (!typeVertex.isResolved()) {
-			ClassDescriptor.throwClassNotFoundException(classDescriptor);
-		}
-
-		assert typeVertex.isResolved();
-		return typeVertex;
-	}
+	    return typeVertex;
+    }
 
 	/**
 	 * Add supertype edges to the InheritanceGraph
