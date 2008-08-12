@@ -517,7 +517,7 @@ public class XFactory {
 	 * @return an XClass object providing information about the class, or null
 	 *         if the class cannot be found
 	 */
-	public XClass getXClass(ClassDescriptor classDescriptor) {
+	public @CheckForNull XClass getXClass(ClassDescriptor classDescriptor) {
 		try {
 			IAnalysisCache analysisCache = Global.getAnalysisCache();
 			return analysisCache.getClassAnalysis(XClass.class, classDescriptor);

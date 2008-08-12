@@ -320,7 +320,7 @@ public class Subtypes2 {
 		return supertypeQueryResults.containsType(superDesc);
 		} catch (ClassNotFoundException e) {
 			XClass xclass = AnalysisContext.currentXFactory().getXClass(subDesc);
-			if (superDesc.equals(xclass.getSuperclassDescriptor())) 
+			if (xclass != null && superDesc.equals(xclass.getSuperclassDescriptor())) 
 				return true;
 			throw e;
 			
