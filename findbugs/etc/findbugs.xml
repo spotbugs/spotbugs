@@ -953,7 +953,7 @@
   <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="BAD_PRACTICE" />
-   <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="BAD_PRACTICE" />
+   <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_INNER_CLASS" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_BAD_FIELD_INNER_CLASS" category="BAD_PRACTICE" />
