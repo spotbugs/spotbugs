@@ -44,6 +44,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	private ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
 	
 	boolean isCloneable,hasCloneMethod;
+	boolean cloneIsDeprecated;
 	MethodAnnotation cloneMethodAnnotation;
 	boolean referencesCloneMethod;
 	boolean invokesSuperClone;
@@ -147,7 +148,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 			bugReporter.reportBug(new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", priority)
 					.addClass(this)
 					.addMethod(cloneMethodAnnotation));
-		} else if (hasCloneMethod && !isCloneable && !cloneOnlyThrowsException && !obj.isAbstract()) {
+		} else if (hasCloneMethod && !isCloneable && !cloneOnlyThrowsException && !cloneIsDeprecated && !obj.isAbstract()) {
 			int priority = Priorities.NORMAL_PRIORITY;
 			if (referencesCloneMethod) priority--;
 			
@@ -174,6 +175,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		if (!getMethodName().equals("clone")) return;
 		if (!getMethodSig().startsWith("()")) return;
 		hasCloneMethod = true;
+		cloneIsDeprecated = getXMethod().isDeprecated();
 		cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
 		cloneOnlyThrowsException = 
 			PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(XFactory.createXMethod(this));
