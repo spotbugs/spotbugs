@@ -399,12 +399,12 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project   the Project from which the BugCollection was generated
 	 */
 	public void writeXML(@WillClose XMLOutput xmlOutput, @Nonnull Project project) throws IOException {
-		//if (project == null) throw new NullPointerException("No project");
 		assert project != null;
 		try {
 			writePrologue(xmlOutput, project);
 			if (withMessages) {
 				computeBugHashes();
+				getProjectStats().computeFileStats(this);
 				String commonBase = null;
 				for(String s : project.getSourceDirList()) {
 					if (commonBase == null) commonBase = s;
@@ -419,7 +419,9 @@ public class SortedBugCollection implements BugCollection {
 						SourceLineAnnotation.generateRelativeSource(base, project);
 				}
 			}
-
+			if (earlyStats)
+				getProjectStats().writeXML(xmlOutput,withMessages);
+			
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
 				bugInstance.writeXML(xmlOutput, withMessages, false);
@@ -438,6 +440,7 @@ public class SortedBugCollection implements BugCollection {
 		while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos)) pos++;
 		return pos;
 	}
+	boolean earlyStats = false;
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
 		if (withMessages) {
 			writeBugCategories( xmlOutput);
@@ -447,8 +450,11 @@ public class SortedBugCollection implements BugCollection {
 		// Errors, missing classes
 		emitErrors(xmlOutput);
 
-		// Statistics
-		getProjectStats().writeXML(xmlOutput);
+		if (!earlyStats) {
+			// Statistics
+			getProjectStats().writeXML(xmlOutput, withMessages);
+		}
+		
 
 //		// Class and method hashes
 //		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);

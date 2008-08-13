@@ -45,6 +45,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.workflow.FileBugHash;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -210,10 +211,20 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 		
 	}
+	FileBugHash fileBugHashes;
+	public void computeFileStats(BugCollection bugs) {
+		fileBugHashes = FileBugHash.compute(bugs);
+	}
 	/**
 	 * Output as XML.
 	 */
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		writeXML(xmlOutput, true);
+	}
+	/**
+	 * Output as XML.
+	 */
+	public void writeXML(XMLOutput xmlOutput, boolean withMessages) throws IOException {
 		xmlOutput.startTag("FindBugsSummary");
 
 		xmlOutput.addAttribute("timestamp",
@@ -249,11 +260,25 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
 
 		xmlOutput.stopTag(false);
+		
+		if (withMessages) {
+		if (fileBugHashes != null) {
+			for(String sourceFile : fileBugHashes.getSourceFiles()) {
+				xmlOutput.startTag("FileStats");
+				xmlOutput.addAttribute("path", sourceFile);
+				xmlOutput.addAttribute("bugCount", String.valueOf(fileBugHashes.getBugCount(sourceFile)));
+				String hash = fileBugHashes.getHash(sourceFile);
+				if (hash != null)
+					xmlOutput.addAttribute("bugHash", hash);
+				xmlOutput.stopTag(true);
+				
+			}
+		}
 
 		for (PackageStats stats : packageStatsMap.values()) {
 			stats.writeXML(xmlOutput);
 		}
-
+		}
 		xmlOutput.closeTag("FindBugsSummary");
 	}
 
