@@ -112,8 +112,10 @@ public class CallToUnsupportedMethod implements Detector  {
 				if (!m.isUnsupported()) 
 					continue locationLoop;
 			}
-			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(classContext.getMethodGen(method), inv)
-			.addSourceLine(classContext, method, location);
+			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", NORMAL_PRIORITY)
+				.addClassAndMethod(classContext.getJavaClass(), method)
+				.addCalledMethod(classContext.getConstantPoolGen(), inv)
+				.addSourceLine(classContext, method, location);
 			bugReporter.reportBug(bug);
 			
 		}
