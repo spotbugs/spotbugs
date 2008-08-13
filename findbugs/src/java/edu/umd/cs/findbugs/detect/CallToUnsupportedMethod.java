@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -91,6 +92,9 @@ public class CallToUnsupportedMethod implements Detector  {
 			// Only consider invoke instructions
 			if (!(ins instanceof InvokeInstruction))
 				continue;
+			if (ins instanceof INVOKEINTERFACE) 
+				continue;
+			
 			InvokeInstruction inv = (InvokeInstruction) ins;
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			
