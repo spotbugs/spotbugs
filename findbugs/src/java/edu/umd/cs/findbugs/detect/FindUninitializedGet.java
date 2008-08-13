@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.ba.XField;
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
 	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
+	Set<FieldAnnotation> containerFields = new HashSet<FieldAnnotation>();
 	Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
 	boolean inConstructor;
 	boolean thisOnTOS = false;
@@ -60,6 +62,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 	public void visit(JavaClass obj) {
 		pendingBugs.clear();
 		declaredFields.clear();
+		containerFields.clear();
 		super.visit(obj);
 	}
 
@@ -68,7 +71,17 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 		super.visit(obj);
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
 		declaredFields.add(f);
+		
 
+	}
+	@Override
+	public void visitAnnotation(String annotationClass,
+			Map<String, Object> map, boolean runtimeVisible) {
+		if (!visitingField()) return;
+		if (UnreadFields.isInjectionAttribute(annotationClass)) {
+			containerFields.add(FieldAnnotation.fromVisitedField(this));
+		}
+	
 	}
 
 	@Override
@@ -124,7 +137,8 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 			// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
 			if (nextOpcode != POP
 					&& !initializedFields.contains(f) 
-					&& declaredFields.contains(f)) {
+					&& declaredFields.contains(f)
+					&& !containerFields.contains(f)) {
 				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addField(f)
