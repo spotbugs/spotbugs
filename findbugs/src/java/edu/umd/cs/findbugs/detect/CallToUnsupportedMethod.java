@@ -82,6 +82,7 @@ public class CallToUnsupportedMethod implements Detector  {
      * @param method
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException, DataflowAnalysisException {
+    	if (method.isSynthetic()) return;
     	CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		locationLoop: for (Iterator<Location> iter = cfg.locationIterator(); iter.hasNext();) {
