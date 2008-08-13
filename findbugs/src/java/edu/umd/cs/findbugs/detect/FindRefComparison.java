@@ -851,19 +851,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 
 		String methodName = method.getName();
-		boolean looksLikeTestCase = methodName.startsWith("test") && method.isPublic() 
-		&& method.getSignature().equals("()V")
-		|| testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
+		boolean looksLikeTestCase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(methodGen));
 		int priorityModifier = 0;
-		if (looksLikeTestCase) {
-			priorityModifier = 1;
-			try {
-				if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
-					priorityModifier=2;
-			} catch (ClassNotFoundException e) { 
-				AnalysisContext.reportMissingClass(e);
-			}
-		}
+		if (looksLikeTestCase) priorityModifier = 2;
 
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
 			if (rhsType_.getType() == T_NULL) {	
@@ -894,7 +884,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
-			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
@@ -917,13 +907,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE 
 				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) 
-			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.UNRELATED_INTERFACES) 
-			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
