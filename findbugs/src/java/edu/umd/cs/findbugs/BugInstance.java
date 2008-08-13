@@ -1226,14 +1226,26 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param inv       the InvokeInstruction
 	 * @return this object
 	 */
-	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
-		ConstantPoolGen cpg = methodGen.getConstantPool();
+	public BugInstance addCalledMethod(ConstantPoolGen cpg, InvokeInstruction inv) {
 		String className = inv.getClassName(cpg);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
 		addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
 		describe("METHOD_CALLED");
 		return this;
+	}
+
+	/**
+	 * Add a method annotation for the method which is called by given
+	 * instruction.
+	 *
+	 * @param methodGen the method containing the call
+	 * @param inv       the InvokeInstruction
+	 * @return this object
+	 */
+	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
+		ConstantPoolGen cpg = methodGen.getConstantPool();
+		return addCalledMethod(cpg, inv);
 	}
 
 	/**

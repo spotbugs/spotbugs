@@ -661,7 +661,7 @@ public class OpcodeStack implements Constants2
 		if (!needToMerge) return;
 		needToMerge = false;
 		if (dbc.getPC() == zeroOneComing)  {
-			 Item oldItem = pop();
+			 pop();
 			 top = false;
 			 OpcodeStack.Item item = new Item("I");
 			 if (oneMeansNull) item.setSpecialKind(Item.NONZERO_MEANS_NULL);
