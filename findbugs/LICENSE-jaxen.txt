@@ -1,5 +1,5 @@
 /*
- $Id: LICENSE.txt,v 1.5 2006/02/05 21:49:04 elharo Exp $
+ $Id: LICENSE-jaxen.txt,v 1.1 2008/06/18 18:54:23 wpugh Exp $
 
  Copyright 2003-2006 The Werken Company. All Rights Reserved.
  
