@@ -96,9 +96,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 nextButton = new javax.swing.JButton();
                 finshButton = new javax.swing.JButton();
                 errorMessageLabel = new javax.swing.JLabel();
-                Dimension d= new Dimension(825,425);
+                Dimension d= new Dimension(600,425);
                 this.setPreferredSize(d);
-                this.setResizable(true);
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 setTitle("FindBugs Source Directory Configuration Wizard");
                 getContentPane().setLayout(null);
@@ -112,38 +111,38 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 jScrollPane1.setViewportView(jList1);
 
                 secondPanel.add(jScrollPane1);
-                jScrollPane1.setBounds(350, 50, 258, 130);
+                jScrollPane1.setBounds(250, 50, 258, 130);
 
                 jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14));
                 jLabel1.setText("Source directories found:");
                 secondPanel.add(jLabel1);
-                jLabel1.setBounds(350, 30, 173, 17);
+                jLabel1.setBounds(250, 30, 173, 17);
 
                 jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14));
                 jLabel2.setText("Click Finish to accept this");
                 secondPanel.add(jLabel2);
-                jLabel2.setBounds(90, 90, 173, 17);
+                jLabel2.setBounds(40, 90, 173, 17);
 
                 jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14));
                 jLabel3.setText("list of source directories");
                 secondPanel.add(jLabel3);
-                jLabel3.setBounds(90, 110, 165, 17);
+                jLabel3.setBounds(40, 110, 165, 17);
 
                 contentPanel.add(secondPanel, "card2");
 
                 jScrollPane2.setViewportView(jList2);
 
                 firstPanel.add(jScrollPane2);
-                jScrollPane2.setBounds(275, 250, 250, 75);
+                jScrollPane2.setBounds(200, 250, 250, 75);
                 
                 firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 firstPanel.setLayout(null);
 
                 sourceRootLabel.setText("Top-level source directory:");
                 firstPanel.add(sourceRootLabel);
-                sourceRootLabel.setBounds(50, 220, 168, 17);
+                sourceRootLabel.setBounds(30, 220, 168, 17);
                 firstPanel.add(sourceRootBox);
-                sourceRootBox.setBounds(230, 210, 410, 27);
+                sourceRootBox.setBounds(200, 210, 250, 29);
 
                 srcFileIconLabel.setIcon(new javax.swing.ImageIcon("/usr/share/icons/default.kde/128x128/mimetypes/source_java.png")); // NOI18N
                 firstPanel.add(srcFileIconLabel);
@@ -152,7 +151,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                 card1TitleLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 card1TitleLabel.setText("Where are your source files?");
                 firstPanel.add(card1TitleLabel);
-                card1TitleLabel.setBounds(250, 20, 353, 29);
+                card1TitleLabel.setBounds(150, 20, 353, 29);
 
                 browseButton.setText("Browse...");
                 firstPanel.add(browseButton);
@@ -178,7 +177,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         			}
         		});
                 
-                browseButton.setBounds(650, 210, 100, 29);
+                browseButton.setBounds(450, 210, 100, 28);
 
                 card1Explanation1Label.setFont(new java.awt.Font("SansSerif", 0, 14));
                 card1Explanation1Label.setText("Enter the top-level directory");
@@ -207,7 +206,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(previousButton);
-                previousButton.setBounds(250, 350, 100, 29);
+                previousButton.setBounds(150, 350, 100, 29);
 
                 nextButton.setText("Next >>");
                 nextButton.addActionListener(new java.awt.event.ActionListener() {
@@ -227,7 +226,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(nextButton);
-                nextButton.setBounds(350, 350, 100, 29);
+                nextButton.setBounds(250, 350, 100, 29);
 
                 finshButton.setText("Finish");
                 finshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +235,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
                         }
                 });
                 getContentPane().add(finshButton);
-                finshButton.setBounds(450, 350, 100, 29);
+                finshButton.setBounds(350, 350, 100, 29);
 
                 errorMessageLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
                 errorMessageLabel.setForeground(new java.awt.Color(255, 0, 0));
@@ -342,7 +341,7 @@ private void finshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 	{
 		parentGUI.setSourceDirecs(foundModel);
 	}
-	if(discover.isAlive())
+	if(discover != null && discover.isAlive())
     	discover.stop();
 	dispose();
 }//GEN-LAST:event_finshButtonActionPerformed

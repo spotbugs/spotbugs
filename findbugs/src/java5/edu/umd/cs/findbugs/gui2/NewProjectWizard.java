@@ -352,7 +352,7 @@ public class NewProjectWizard extends FBDialog
 			                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 			                    @Override
 			                    public void windowClosing(java.awt.event.WindowEvent e) {
-			                        if(dialog.discover.isAlive())
+			                        if(dialog.discover != null && dialog.discover.isAlive())
 			                        	dialog.discover.interrupt();
 			                    }
 			                });
