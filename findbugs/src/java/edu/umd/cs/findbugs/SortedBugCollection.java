@@ -440,7 +440,7 @@ public class SortedBugCollection implements BugCollection {
 		while (pos < s1.length() && pos < s2.length() && s1.charAt(pos) == s2.charAt(pos)) pos++;
 		return pos;
 	}
-	boolean earlyStats = false;
+	boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException {
 		if (withMessages) {
 			writeBugCategories( xmlOutput);
