@@ -42,6 +42,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -813,8 +814,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 					}
 			}
 		} catch (IOException e) {
-			System.out.println("Got IO Exception:");
-			e.printStackTrace();
+			AnalysisContext.logError("Error while dismantling bytecode", e);
+			assert false ;
 		}
 
 		try {

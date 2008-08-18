@@ -161,10 +161,8 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 				}
 
 			} catch (DataflowAnalysisException e) {
-				e.printStackTrace();
 				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
 			} catch (CFGBuilderException e) {
-				e.printStackTrace();
 				bugReporter.logError("Error getting analysis for " + getFullyQualifiedMethodName(), e);
 			}
 

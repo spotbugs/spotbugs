@@ -442,13 +442,10 @@ public class OpcodeStack implements Constants2
 		 /** Returns null for primitive and arrays */
 		 public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
 			 String baseSig;
-			 try {
-
 
 			 if (isPrimitive() || isArray())
 				 return null;
-
-			 
+	 
 			baseSig = signature;
 
 			 if (baseSig.length() == 0)
@@ -456,10 +453,6 @@ public class OpcodeStack implements Constants2
 			 baseSig = baseSig.substring(1, baseSig.length() - 1);
 			 baseSig = baseSig.replace('/', '.');
 			 return Repository.lookupClass(baseSig);
-			 } catch (RuntimeException e) {
-				 e.printStackTrace();
-				 throw e;
-			 }
 		 }
 
 		 public boolean isArray() {
