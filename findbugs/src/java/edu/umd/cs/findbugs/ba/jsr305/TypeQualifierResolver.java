@@ -46,6 +46,7 @@ public class TypeQualifierResolver {
     .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 	static ClassDescriptor elementTypeDescriptor = DescriptorFactory
     .createClassDescriptor(java.lang.annotation.ElementType.class);
+	static ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
 
 	/**
 	 * Resolve an AnnotationValue into a list of AnnotationValues
@@ -87,15 +88,21 @@ public class TypeQualifierResolver {
 	 */
 	private static void resolveTypeQualifierNicknames(AnnotationValue value, LinkedList<AnnotationValue> result,
 	        LinkedList<ClassDescriptor> onStack) {
-		if (onStack.contains(value.getAnnotationClass())) {
+		ClassDescriptor annotationClass = value.getAnnotationClass();
+		
+		if (onStack.contains(annotationClass)) {
 			AnalysisContext.logError("Cycle found in type nicknames: " + onStack);
 			return;
 		}
 		try {
-			onStack.add(value.getAnnotationClass());
+			onStack.add(annotationClass);
 			
 			try {
-				XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, value.getAnnotationClass());
+				if (annotationClass.equals(googleNullable)) {
+					resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
+					return;
+				}
+				XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
 				if (c.getAnnotationDescriptors().contains(typeQualifierNickname)) {
 					for (ClassDescriptor d : c.getAnnotationDescriptors())
 						if (!c.equals(typeQualifierNickname))
@@ -111,7 +118,7 @@ public class TypeQualifierResolver {
 //				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
 				return;
 			} catch (CheckedAnalysisException e) {
-				AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
+				AnalysisContext.logError("Error resolving " + annotationClass, e);
 				return;
 			}
 			

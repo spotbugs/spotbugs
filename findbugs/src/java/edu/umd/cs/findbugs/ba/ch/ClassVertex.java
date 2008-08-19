@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.graph.AbstractVertex;
