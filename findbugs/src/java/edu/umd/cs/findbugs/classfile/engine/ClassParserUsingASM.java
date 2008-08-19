@@ -235,7 +235,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								return;
 							}
 							owner = ClassName.fromSignature(owner);
-							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit"))
+							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit") && !sawReturn)
 								sawSystemExit = true;
 							justSawInitializationOfUnsupportedOperationException 
 							   = opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/UnsupportedOperationException") 
@@ -257,7 +257,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						public void visitEnd() {
 							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 								mBuilder.setIsUnconditionalThrower();
-								if (!sawNonUnsupportedThrow)
+								if (!sawReturn && !sawNonUnsupportedThrow)
 									mBuilder.setUnsupported();
 							}
 							MethodInfo methodInfo = mBuilder.build();
