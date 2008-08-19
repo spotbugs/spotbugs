@@ -818,7 +818,7 @@
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
   <BugPattern abbrev="Dm" type="DMI_EMPTY_DB_PASSWORD" category="SECURITY" cweid="259"/>
-  <BugPattern abbrev="Dm" type="DMI_UNSUPPORTED_METHOD" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DMI_UNSUPPORTED_METHOD" category="STYLE" />
   <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE" />
   <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="PERFORMANCE" />
