@@ -186,20 +186,15 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		if (seen == IF_ACMPEQ || seen == IF_ACMPNE) {
 			checkForComparingClasses();
 		}
-		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals(EQUALS_NAME)
-		        && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
+		if (callToInvoke(seen)) {
 			equalsCalls++;
 			checkForComparingClasses();
-		}
-		
-		if (dangerDanger && seen == INVOKEVIRTUAL && getNameConstantOperand().equals(EQUALS_NAME)
-		        && getSigConstantOperand().equals(EQUALS_SIGNATURE)) {
-			bugReporter.reportBug(new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
-			
+			if (dangerDanger) 
+				bugReporter.reportBug(new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 		}
 		
 		if ((seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) 
-				&& getNameConstantOperand().equals("comapre") && stack.getStackDepth() >=2) {
+				&& getNameConstantOperand().equals("compare") && stack.getStackDepth() >=2) {
 			Item left = stack.getStackItem(1);
 	    	Item right = stack.getStackItem(0);
 	    	if (left.getRegisterNumber()+right.getRegisterNumber() == 1)
@@ -262,6 +257,16 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		}
 
 	}
+
+
+	/**
+     * @param seen
+     * @return
+     */
+    private boolean callToInvoke(int seen) {
+	    return (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals(EQUALS_NAME)
+		        && getSigConstantOperand().equals(EQUALS_SIGNATURE);
+    }
 
 
 	/**
