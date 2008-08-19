@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -111,20 +113,24 @@ public class CallToUnsupportedMethod implements Detector  {
             }
 			if (targets.isEmpty()) 
 				continue locationLoop;
+			int priority = targets.size() == 1 ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY;
 			for(XMethod m : targets) {
 				if (!m.isUnsupported()) 
 					continue locationLoop;
 				XClass xc = AnalysisContext.currentXFactory().getXClass(m.getClassDescriptor());
+				if (!(inv instanceof INVOKESTATIC) && !(m.isFinal() || xc.isFinal()))
+					priority = Priorities.NORMAL_PRIORITY;
 				if (xc == null || xc.isAbstract()) {
 					try {
 	                    if (!AnalysisContext.currentAnalysisContext().getSubtypes2().hasSubtypes(m.getClassDescriptor()))
 	                    	continue locationLoop;
                     } catch (ClassNotFoundException e) {
 	                    AnalysisContext.reportMissingClass(e);
+	                    continue locationLoop;
                     }
 				}
 			}
-			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
 				.addClassAndMethod(classContext.getJavaClass(), method)
 				.addCalledMethod(classContext.getConstantPoolGen(), inv)
 				.addSourceLine(classContext, method, location);
