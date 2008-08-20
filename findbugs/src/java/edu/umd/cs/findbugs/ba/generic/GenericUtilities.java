@@ -212,8 +212,6 @@ public class GenericUtilities {
 		if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
 			throw new IllegalArgumentException("the following signature does not " +
 					"contain exactly one type: " + signature);
-		if (signature.equals("Ljava/util/LinkedList<TE;>.ListItr;"))
-			System.out.println("Found " + signature);
 		int index = 0;
 
 		if (signature.startsWith("L")) {
