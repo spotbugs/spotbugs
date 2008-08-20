@@ -182,12 +182,19 @@ public class GenericUtilities {
 		if (s.indexOf('<') == -1) return s;
 		StringBuilder result = new StringBuilder(s.length());
 		int nesting = 0;
+		boolean seenLeftBracket = false;
 		for(int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
-			if (c == '<') nesting++;
+			if (c == '<') {
+				nesting++;
+				seenLeftBracket = true;
+			}
 			else if (c == '>') nesting--;
-			else if (nesting == 0)
-				result.append(c);
+			else if (nesting == 0) {
+				if (seenLeftBracket && c == '.')
+					result.append('$');
+				else result.append(c);
+			}
 		}
 		return result.toString();
 	}
@@ -205,7 +212,8 @@ public class GenericUtilities {
 		if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
 			throw new IllegalArgumentException("the following signature does not " +
 					"contain exactly one type: " + signature);
-
+		if (signature.equals("Ljava/util/LinkedList<TE;>.ListItr;"))
+			System.out.println("Found " + signature);
 		int index = 0;
 
 		if (signature.startsWith("L")) {
