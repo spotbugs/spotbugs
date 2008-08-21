@@ -704,8 +704,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	}
 
 	private boolean isEqualsMethod(String methodName, String methodSig) {
-		return (methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
-		|| (methodName.equals("equalIgnoreCases") && methodSig.equals("(Ljava/lang/String;)Z"));
+		return ( (methodName.equals("equals") && methodSig.equals("(Ljava/lang/Object;)Z"))
+		|| (methodName.equals("equalIgnoreCases") && methodSig.equals("(Ljava/lang/String;)Z"))
+			|| (methodName.equals("compareTo") && methodSig.equals("(Ljava/lang/String;)I"))) ;
 	}
 
 	private void checkRefComparison(
