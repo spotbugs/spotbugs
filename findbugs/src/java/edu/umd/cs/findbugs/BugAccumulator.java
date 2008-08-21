@@ -96,6 +96,14 @@ public class BugAccumulator {
 			}
 			reporter.reportBug(bug);
 		}
-		map.clear();
+		clearBugs();
 	}
+
+	/**
+     * Clear all accumulated bugs without reporting them
+     */
+    public void clearBugs() {
+    	map.clear();
+	    
+    }
 }

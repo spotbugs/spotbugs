@@ -69,6 +69,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Check JSR-305 type qualifiers.
@@ -79,6 +80,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ctq.debug");
 	private static final boolean DEBUG_DATAFLOW = SystemProperties.getBoolean("ctq.dataflow.debug");
 	private static final String DEBUG_DATAFLOW_MODE = SystemProperties.getProperty("ctq.dataflow.debug.mode", "both");
+	private static final String NONNULL_ANNOTATION = "javax/annotation/Nonnull";
 	
 	private static final String METHOD = SystemProperties.getProperty("ctq.method");
 
@@ -87,6 +89,8 @@ public class CheckTypeQualifiers extends CFGDetector {
 	public CheckTypeQualifiers(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
+	boolean checked;
+	boolean shouldRunAnalysis;
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
@@ -94,7 +98,23 @@ public class CheckTypeQualifiers extends CFGDetector {
 	@Override
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		
-		super.visitClass(classDescriptor);
+		if (!checked) {
+			checked = true;
+			Collection<TypeQualifierValue> allKnownTypeQualifiers = TypeQualifierValue.getAllKnownTypeQualifiers();
+			int size = allKnownTypeQualifiers.size();
+			if (size == 1) {
+				TypeQualifierValue value = Util.first(allKnownTypeQualifiers);
+				if (!value.typeQualifier.getClassName().equals(NONNULL_ANNOTATION))
+					shouldRunAnalysis = true;
+
+			}
+			else if (size > 1)
+				shouldRunAnalysis = true;
+		}
+
+
+		if (shouldRunAnalysis)
+			super.visitClass(classDescriptor);
 	}
 
 	/* (non-Javadoc)
@@ -124,7 +144,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 		}
 
 		for (TypeQualifierValue typeQualifierValue : relevantQualifiers) {
-			if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals("javax/annotation/Nonnull")) {
+			if (typeQualifierValue.getTypeQualifierClassDescriptor().getClassName().equals(NONNULL_ANNOTATION)) {
 				// Checking @Nonnull annotations is the bailiwick of FindNullDeref.
 				continue;
 			}
