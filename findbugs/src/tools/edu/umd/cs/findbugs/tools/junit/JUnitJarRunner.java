@@ -30,6 +30,7 @@ import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
@@ -87,7 +88,7 @@ public class JUnitJarRunner {
 
 				}});
 
-		Class<?> testCaseClass = cl.loadClass("junit.framework.TestCase");
+		Class<junit.framework.TestCase> testCaseClass = (Class<TestCase>) cl.loadClass("junit.framework.TestCase");
 
 		JarFile jarFile = new JarFile(jarFileName);
 		Enumeration<JarEntry> e = jarFile.entries();
@@ -101,7 +102,7 @@ public class JUnitJarRunner {
 					continue;
 				System.out.println("Loading test class: " + className);
 				System.out.flush();
-				Class<?> jarClass = cl.loadClass(className);
+				Class<junit.framework.TestCase> jarClass = (Class<TestCase>) cl.loadClass(className);
 				if (testCaseClass.isAssignableFrom(jarClass))
 					suite.addTestSuite(jarClass);
 			}

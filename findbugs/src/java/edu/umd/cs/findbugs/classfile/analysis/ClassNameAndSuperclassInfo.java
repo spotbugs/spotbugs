@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
+
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -136,15 +138,17 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	 *            class's access flags
 	 */
 	 ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
-	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, Collection<ClassDescriptor> referencedClassDescriptorList, 
-	        Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
+	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, 
+	        /* TODO: We aren't doing anything with this */
+	        Collection<ClassDescriptor> referencedClassDescriptorList, 
+	        @Nonnull Collection<ClassDescriptor> calledClassDescriptorList, int majorVersion, int minorVersion) {
 		super(classDescriptor.getClassName());
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
 		this.accessFlags = accessFlags;
 		if (calledClassDescriptorList == null)
-			throw new NullPointerException("calledCBelassDescriptorList must not be null");
+			throw new NullPointerException("calledClassDescriptorList must not be null");
 		this.calledClassDescriptorList = calledClassDescriptorList;
 		this.majorVersion = majorVersion;
 		this.minorVersion = minorVersion;

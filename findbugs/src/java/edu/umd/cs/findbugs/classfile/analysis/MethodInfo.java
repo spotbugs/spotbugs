@@ -143,8 +143,6 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
 		if (isUnconditionalThrower) unconditionalThrowers.put(this, null);
 		if (isUnsupported) unsupportedMethods.put(this, null);
-		if (false && exceptions != null && exceptions.length > 0)
-			System.out.println(this + " throws " + Arrays.asList(exceptions));
 	}
 
 	 public @CheckForNull String [] getThrownExceptions() {

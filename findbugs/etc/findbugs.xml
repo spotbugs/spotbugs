@@ -37,10 +37,6 @@
 		<Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
 	</SplitPass>
 	<SplitPass>
-		<Earlier class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph"/>
-		<Later class="edu.umd.cs.findbugs.detect.CheckTypeQualifiers"/>
-	</SplitPass>
-	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"/>
 	</SplitPass>
@@ -136,6 +132,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.BuildInterproceduralCallGraph" 
 	        speed="fast"
 	        reports=""
+		disabled="true"
 			hidden="true" /> 
 
   <Detector class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" speed="fast" reports="" hidden="true"/>

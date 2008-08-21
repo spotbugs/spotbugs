@@ -101,7 +101,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 	 * @see edu.umd.cs.findbugs.bcel.CFGDetector#visitMethodCFG(edu.umd.cs.findbugs.classfile.MethodDescriptor, edu.umd.cs.findbugs.ba.CFG)
 	 */
 	@Override
-	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
+	protected void visitMethodCFG(MethodDescriptor methodDescriptor,  CFG cfg) throws CheckedAnalysisException {
 		if (METHOD != null && !methodDescriptor.getName().equals(METHOD)) {
 			return;
 		}
@@ -118,7 +118,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 		ValueNumberDataflow vnaDataflow =
 			analysisCache.getMethodAnalysis(ValueNumberDataflow.class, methodDescriptor);
 
-		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor);
+		Collection<TypeQualifierValue> relevantQualifiers = Analysis.getRelevantTypeQualifiers(methodDescriptor, cfg);
 		if (DEBUG) {
 			System.out.println("  Relevant type qualifiers are " + relevantQualifiers);
 		}
