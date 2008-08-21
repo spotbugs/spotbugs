@@ -261,8 +261,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 
 		xmlOutput.stopTag(false);
 		
-		if (withMessages) {
-		if (fileBugHashes != null) {
+		if (withMessages && fileBugHashes != null) {
 			for(String sourceFile : fileBugHashes.getSourceFiles()) {
 				xmlOutput.startTag("FileStats");
 				xmlOutput.addAttribute("path", sourceFile);
@@ -274,11 +273,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 				
 			}
 		}
-
+		
 		for (PackageStats stats : packageStatsMap.values()) {
 			stats.writeXML(xmlOutput);
 		}
-		}
+
 		xmlOutput.closeTag("FindBugsSummary");
 	}
 
