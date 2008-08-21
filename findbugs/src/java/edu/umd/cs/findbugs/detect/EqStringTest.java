@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -31,11 +32,12 @@ import edu.umd.cs.findbugs.TypeAnnotation;
 public class EqStringTest extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean constantOnTOS = false;
 	boolean callToInternSeen = false;
-	private BugReporter bugReporter;
+	boolean callToEqualsSeen = false;
+	private BugAccumulator bugAccumulator;
 	// String stringOnTop;
 
 	public EqStringTest(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);;
 	}
 
 
@@ -43,8 +45,13 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 	@Override
 		 public void visit(Method obj) {
 		super.visit(obj);
+		if (callToEqualsSeen)
+			bugAccumulator.clearBugs();
+		else
+			bugAccumulator.reportAccumulatedBugs();
 		constantOnTOS = false;
 		callToInternSeen = false;
+		callToEqualsSeen = false;
 	}
 
 
@@ -58,17 +65,18 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			// stringOnTop = stringConstant;
 			return;
 		case INVOKEVIRTUAL:
-			if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;")
-					|| getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
+			if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;"))
 				callToInternSeen = true;
+			if (getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z")
+				    || getRefConstantOperand().equals("java.lang.String.compareTo : (Ljava.lang.String;)I"))
+				callToEqualsSeen = true;
 			break;
 		case IF_ACMPEQ:
 		case IF_ACMPNE:
 			if (constantOnTOS && !callToInternSeen)
-				bugReporter.reportBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+				bugAccumulator.accumulateBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
-						.addSourceLine(this, getPC()));
+						.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE), this);
 			break;
 		default:
 			break;
