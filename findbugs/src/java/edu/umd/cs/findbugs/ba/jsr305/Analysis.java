@@ -63,7 +63,7 @@ public class Analysis {
 	 * This step uses an interprocedural call graph.
 	 */
 	public static final boolean FIND_EFFECTIVE_RELEVANT_QUALIFIERS = 
-		true; //SystemProperties.getBoolean("ctq.findeffective");
+		SystemProperties.getBoolean("ctq.findeffective");
 	public static final boolean DEBUG_FIND_EFFECTIVE_RELEVANT_QUALIFIERS =
 		FIND_EFFECTIVE_RELEVANT_QUALIFIERS && SystemProperties.getBoolean("ctq.findeffective.debug");
 
