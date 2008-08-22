@@ -131,7 +131,7 @@ public class GenericObjectType extends ObjectType {
 		if (index < getNumParameters())
 			return parameters.get(index);
 		else 
-			throw new IndexOutOfBoundsException("The index " + index + " is too large");
+			throw new IndexOutOfBoundsException("The index " + index + " is too large for " + this);
 	}
 
 	public List<? extends ReferenceType> getParameters() {
