@@ -39,6 +39,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 		stack = new OpcodeStack();
 		stack.resetForMethodEntry(this);
 		super.visit(obj);
+		stack = null;
 	}
 	@Override
 	public boolean beforeOpcode(int seen) {
