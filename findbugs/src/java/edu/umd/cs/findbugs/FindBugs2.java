@@ -968,7 +968,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 							continue;
 						}
 						if (DEBUG) {
-							System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor + ", huge:" + isHuge + ", isNonReportingFirstPass: " + isNonReportingFirstPass);
+							System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 							//System.out.println("foo: " + NonReportingDetector.class.isAssignableFrom(detector.getClass()) + ", bar: " + detector.getClass().getName());
 						}
 						try {
@@ -980,12 +980,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 							Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
 						} catch (CheckedAnalysisException e) {
 							logRecoverableException(classDescriptor, detector, e);
-//						} catch (UncheckedAnalysisException e) {
-//							logRecoverableException(classDescriptor, detector, e);
-//						} catch (ArrayIndexOutOfBoundsException e) {
-//							logRecoverableException(classDescriptor, detector, e);
-//						} catch (ClassCastException e) {
-//							logRecoverableException(classDescriptor, detector, e);
 						} catch (RuntimeException e) {
 							logRecoverableException(classDescriptor, detector, e);
 						} finally {
