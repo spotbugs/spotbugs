@@ -33,7 +33,7 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 
 	/** There is a call to equals() in the method. */
 	public static final RefComparisonWarningProperty SAW_CALL_TO_EQUALS =
-		new RefComparisonWarningProperty("SAW_CALL_TO_EQUALS", PriorityAdjustment.LOWER_PRIORITY);
+		new RefComparisonWarningProperty("SAW_CALL_TO_EQUALS", PriorityAdjustment.AT_MOST_LOW);
 	/** Method is private (or package-protected). */
 	public static final RefComparisonWarningProperty PRIVATE_METHOD =
 		new RefComparisonWarningProperty("PRIVATE_METHOD", PriorityAdjustment.LOWER_PRIORITY);

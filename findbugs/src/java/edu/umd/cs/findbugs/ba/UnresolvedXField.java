@@ -37,12 +37,16 @@ public class UnresolvedXField extends AbstractField implements XField {
 
 	protected UnresolvedXField(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
+		if (methodSig.charAt(0) == '(')
+			throw new IllegalArgumentException("Bad signature: " + methodSig);
 		if (XFactory.DEBUG_UNRESOLVED) {
 			System.out.println("Unresolved xmethod: " + this);
 		}
 	}
 	protected UnresolvedXField(FieldDescriptor m) {
 		super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 0);
+		if (m.getSignature().charAt(0) == '(')
+			throw new IllegalArgumentException("Bad signature: " + m.getSignature());
 		if (XFactory.DEBUG_UNRESOLVED) {
 			System.out.println("Unresolved xmethod: " + this);
 		}

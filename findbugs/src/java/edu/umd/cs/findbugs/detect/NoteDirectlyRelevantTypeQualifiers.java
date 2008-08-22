@@ -99,12 +99,12 @@ public class NoteDirectlyRelevantTypeQualifiers
 			// that will build an interprocedural call graph which
 			// we'll use at a later point to find relevant qualifiers
 			// stemming from called methods.
-			if (!Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
+
 				XMethod m = XFactory.createReferencedXMethod(this);
 				updateApplicableAnnotations(m);
 
-				break;
-			}
+
+			break;
 		
 		case GETSTATIC:
 		case PUTSTATIC:

@@ -33,8 +33,11 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -353,6 +356,9 @@ public class XFactory {
 	}
 
 	public static XField createReferencedXField(DismantleBytecode visitor) {
+		int seen = visitor.getOpcode();
+		if (seen != Opcodes.GETFIELD &&  seen != Opcodes.GETSTATIC && seen != Opcodes.PUTFIELD && seen != Opcodes.PUTSTATIC)
+			throw new IllegalArgumentException("Not at a field reference");
 		return createXField(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor
 		        .getSigConstantOperand(), visitor.getRefFieldIsStatic());
 	}

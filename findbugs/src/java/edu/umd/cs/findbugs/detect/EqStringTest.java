@@ -58,6 +58,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 	@Override
 		 public void sawOpcode(int seen) {
 
+		
 		switch (seen) {
 		case LDC:
 		case LDC_W:
@@ -65,10 +66,12 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			// stringOnTop = stringConstant;
 			return;
 		case INVOKEVIRTUAL:
-			if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;"))
+			String refConstantOperand = getRefConstantOperand();
+			System.out.println(refConstantOperand);
+			if (refConstantOperand.equals("java.lang.String.intern : ()Ljava.lang.String;"))
 				callToInternSeen = true;
-			if (getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z")
-				    || getRefConstantOperand().equals("java.lang.String.compareTo : (Ljava.lang.String;)I"))
+			if (refConstantOperand.equals("java.lang.String.equals : (Ljava.lang.Object;)Z")
+				    || refConstantOperand.equals("java.lang.String.compareTo : (Ljava.lang.String;)I"))
 				callToEqualsSeen = true;
 			break;
 		case IF_ACMPEQ:
