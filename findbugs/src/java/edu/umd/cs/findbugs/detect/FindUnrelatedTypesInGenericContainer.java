@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -239,11 +240,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 			try {
 	            if (!subtypes2.isSubtype(m.getClassDescriptor(), interfaceOfInterest)) continue;
-            } catch (ClassNotFoundException e) {
+	        } catch (ClassNotFoundException e) {
 	           AnalysisContext.reportMissingClass(e);
 	           continue;
             }
 			// OK, we've fold a method call of interest
+           
+            
 			
 			int typeArgument = nameToTypeArgumentIndex.get(m.getName());
 			
@@ -269,6 +272,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			// ... containers
 			if (!operand.hasParameters()) continue;
 
+			int expectedParameters = 1;
+			if (interfaceOfInterest.getSimpleName().equals("Map")) expectedParameters = 2;
+			if (operand.getNumParameters() != expectedParameters) continue;
+			
 			int numArguments = frame.getNumArguments(inv, cpg);
 
 			if (numArguments != 1)
