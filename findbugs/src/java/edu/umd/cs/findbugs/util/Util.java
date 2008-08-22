@@ -48,6 +48,7 @@ import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 
 /**
  * @author William Pugh
@@ -212,4 +213,14 @@ public class Util {
 		e.initCause(cause);
 		throw e;
 	}
+
+	/**
+     * @param iterable
+     * @return first element of iterable
+     */
+    public static <E> E first(Iterable<E> i) {
+	   Iterator<E> iterator = i.iterator();
+	   if (!iterator.hasNext()) throw new IllegalArgumentException("iterator has no elements");
+	   return iterator.next();
+    }
 }
