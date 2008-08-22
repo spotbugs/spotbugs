@@ -23,11 +23,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.util.Util;
 
 public class FieldSummary {
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
@@ -38,14 +40,14 @@ public class FieldSummary {
 	public OpcodeStack.Item getSummary(XField field) {
 		OpcodeStack.Item result = summary.get(field);
 		if (result == null)
-			return new OpcodeStack.Item();
+			return new OpcodeStack.Item(field.getSignature());
 		return result;
 	}
 
 	public void setFieldsWritten(XMethod method, Collection<XField> fields) {
 		if (fields.isEmpty()) return;
 		if (fields.size() == 1) {
-			fieldsWritten.put(method, Collections.singleton(fields.iterator().next()));
+			fieldsWritten.put(method, Collections.singleton(Util.first(fields)));
 			return;
 		}
 		fieldsWritten.put(method, new HashSet<XField>(fields));
@@ -77,13 +79,31 @@ public class FieldSummary {
 			summary.put(fieldOperand, mergeValue);
     }
 
+	
 	/**
      * @param complete The complete to set.
      */
     public void setComplete(boolean complete) {
+    	int fields = 0;
+    	int removed = 0;
+    	int retained = 0;
 	    this.complete = complete;
+	    if (isComplete()) {
+	    	for(Iterator<Map.Entry<XField, OpcodeStack.Item>> i =  summary.entrySet().iterator(); i.hasNext(); ) {
+	    		Map.Entry<XField, OpcodeStack.Item> entry = i.next();
+	    		OpcodeStack.Item defaultItem = new OpcodeStack.Item(entry.getKey().getSignature());
+	    		fields++;
+	    		Item value = entry.getValue();
+	    		value.makeCrossMethod();
+				if (defaultItem.equals(value)) {
+	    			i.remove();
+	    			removed++;
+	    		} else {
+	    			retained++;
+	    		}
+	    	}
+	    }
     }
-
 	/**
      * @return Returns the complete.
      */

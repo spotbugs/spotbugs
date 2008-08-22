@@ -148,6 +148,11 @@ public class OpcodeStack implements Constants2
 		private HttpParameterInjection injection = null;
 		private int fieldLoadedFromRegister = -1;
 
+		public void makeCrossMethod() {
+			pc = -1;
+			registerNumber = -1;
+			fieldLoadedFromRegister = -1;
+		}
 
 		public int getSize() {
 			if (signature.equals("J") || signature.equals("D")) return 2;
