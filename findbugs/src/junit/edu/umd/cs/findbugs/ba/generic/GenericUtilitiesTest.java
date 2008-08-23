@@ -48,8 +48,7 @@ public class GenericUtilitiesTest extends TestCase {
 		System.out.println(parameters);
 		assertEquals(2,parameters.size());
 		ReferenceType t = parameters.get(0);
-		
-		assertEquals("com.google.common.util.WeakIdentityHashMap.IdentityWeakReference",t.toString());
+		assertEquals("com.google.common.util.WeakIdentityHashMap$IdentityWeakReference",t.toString());
 	}
 	
 	public void testMapSignature() {
