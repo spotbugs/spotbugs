@@ -34,13 +34,15 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
 	protected OpcodeStack stack;
 	
+	
 	@Override
-	public void visit(Code obj) {
+	public void visitCode(Code obj) {
 		stack = new OpcodeStack();
 		stack.resetForMethodEntry(this);
-		super.visit(obj);
+		super.visitCode(obj);
 		stack = null;
 	}
+	
 	@Override
 	public boolean beforeOpcode(int seen) {
 		stack.mergeJumps(this);
