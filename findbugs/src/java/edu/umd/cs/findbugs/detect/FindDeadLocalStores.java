@@ -78,6 +78,7 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -104,6 +105,7 @@ public class FindDeadLocalStores implements Detector {
 
 	private static final boolean DO_EXCLUDE_LOCALS = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
 	static {
+		EXCLUDED_LOCALS.add("gxp_locale");
 		// Get the value of the property...
 		String exclLocalsProperty = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
 
@@ -167,6 +169,7 @@ public class FindDeadLocalStores implements Detector {
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
+
 		Method[] methodList = javaClass.getMethods();
 			
 
@@ -493,7 +496,9 @@ public class FindDeadLocalStores implements Detector {
 					propertySet.addProperty(DeadLocalStoreProperty.CLONED_STORE);
 				if (javaClass.getClassName().endsWith("_jsp"))
 					propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
-					
+				String sourceFile = javaClass.getSourceFileName();
+				if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java"))
+					propertySet.addProperty(DeadLocalStoreProperty.NOT_JAVA);
 				
 				int priority = propertySet.computePriority(NORMAL_PRIORITY);
 				if (priority <= Detector.EXP_PRIORITY) {
