@@ -16,6 +16,9 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** A store in a JSP page */
 	public static final DeadLocalStoreProperty IN_JSP_PAGE = new DeadLocalStoreProperty(
 			"IN_JSP_PAGE", PriorityAdjustment.FALSE_POSITIVE);
+	/** A store in non Java page */
+	public static final DeadLocalStoreProperty NOT_JAVA = new DeadLocalStoreProperty(
+			"IN_JSP_PAGE", PriorityAdjustment.AT_MOST_LOW);
 
 	/** A store that seemed to have been cloned (an inlined finally block or JSR? */
 	public static final DeadLocalStoreProperty CLONED_STORE = new DeadLocalStoreProperty(

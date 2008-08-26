@@ -494,11 +494,15 @@ public class FindDeadLocalStores implements Detector {
 						pc).size();
 				if (occurrences > 2 || sourceLineAnnotation.getStartLine() > 0 && linesMentionedMultipleTimes.get(sourceLineAnnotation.getStartLine()))
 					propertySet.addProperty(DeadLocalStoreProperty.CLONED_STORE);
+				String sourceFile = javaClass.getSourceFileName();
 				if (javaClass.getClassName().endsWith("_jsp"))
 					propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
-				String sourceFile = javaClass.getSourceFileName();
-				if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java"))
+				else if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java")) {
+					String lvName = lvAnnotation.getName();
+					if (sourceFile.endsWith(".gxp") && (lvName.startsWith("gxp$" ) || lvName.startsWith("gxp_"))) 
+						continue;
 					propertySet.addProperty(DeadLocalStoreProperty.NOT_JAVA);
+				}
 				
 				int priority = propertySet.computePriority(NORMAL_PRIORITY);
 				if (priority <= Detector.EXP_PRIORITY) {
