@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
@@ -147,7 +149,9 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
 	}
 
-	public boolean sourceIsTopOfLoop(Set<Integer> positions) {
+	public boolean sourceIsTopOfLoop(@Nonnull Set<Integer> positions) {
+		if (positions == null)
+			throw new NullPointerException("positions can't be null");
 		BasicBlock source = getSource();
 
 		InstructionHandle sourceInstruction = source.getLastInstruction();

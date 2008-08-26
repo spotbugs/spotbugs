@@ -60,15 +60,15 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	private static final boolean DEBUG_ANNOTATIONS = SystemProperties.getBoolean("oa.debug.annotations");
 	private static final boolean DUMP_DB = SystemProperties.getBoolean("oa.dumpdb");
 	
-	private BugReporter reporter;
-	private ObligationPolicyDatabase database;
+	private final BugReporter reporter;
+	private final ObligationPolicyDatabase database;
 	
-	private ClassDescriptor willClose;
-	private ClassDescriptor willNotClose;
-	private ClassDescriptor willCloseWhenClosed;
-	private ClassDescriptor cleanupObligation;
-	private ClassDescriptor createsObligation;
-	private ClassDescriptor dischargesObligation;
+	private final ClassDescriptor willClose;
+	private final ClassDescriptor willNotClose;
+	private final ClassDescriptor willCloseWhenClosed;
+	private final ClassDescriptor cleanupObligation;
+	private final ClassDescriptor createsObligation;
+	private final ClassDescriptor dischargesObligation;
 	
 	/**
 	 * Did we see any WillClose, WillNotClose, or WillCloseWhenClosed annotations
@@ -84,18 +84,15 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		this.cleanupObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CleanupObligation");
 		this.createsObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CreatesObligation");
 		this.dischargesObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DischargesObligation");
+	
+		database = new ObligationPolicyDatabase();
+		addBuiltInPolicies();
+		scanForResourceTypes();
+
+		Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
 	}
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-		if (database == null) {
-			// Create and install the database
-
-			database = new ObligationPolicyDatabase();
-			addBuiltInPolicies();
-			scanForResourceTypes();
-
-			Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);
-		}
 
 		XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
 		

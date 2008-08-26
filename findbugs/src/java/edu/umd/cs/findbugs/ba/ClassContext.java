@@ -452,15 +452,18 @@ public class ClassContext {
 				return result;
 	}
 
-	@CheckForNull static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
+	@NonNull static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
 		XMethod xmethod = XFactory.createXMethod(methodGen);
 		if (cachedLoopExits.containsKey(xmethod)) {
-			return cachedLoopExits.get(xmethod);
+			Set<Integer> result = cachedLoopExits.get(xmethod);
+			assert result != null;
+			return result;
 		}
 		Code code = method.getCode();
+		assert code != null;
 		if (code == null)
-			return null;
+			return Collections.<Integer>emptySet();;
 
 		byte[] instructionList = code.getCode();
 
