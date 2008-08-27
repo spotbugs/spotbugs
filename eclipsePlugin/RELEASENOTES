@@ -1,10 +1,12 @@
 Release 1.3.5 - FindBugs team
+- feature: FB plugin will start only limited number (by CPU cores + 1) of parallel jobs
 - fixed bug 2032970: Eclipse plugin confused which generics in inner class declarations (Andrei Loskutov)
 - fix for FB warnings reported on inner classes but shown at parent class declaration (Andrei Loskutov)
 - fix for bug 2030157: problem selection is broken on 3.4 (Andrei Loskutov)
 - fix for bug 2023146: annotate from Problems View is broken on 3.4 (Andrei Loskutov)
 - fix for bug 2030167: no working set content shown (Andrei Loskutov)
 - fix for bug 1982455: exclude baseline bugs setting not saved in preferences (Andrei Loskutov)
+- fix for "The following classes needed for FindBugs analysis were missing:" issue on plugin projects (Andrei Loskutov)
 
 Release 1.3.3 - FindBugs team
 - new feature: export basic FindBugs numbers for projects via File->Export->Java->BugCounts (Andrei Loskutov)

@@ -49,7 +49,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.launching.JavaRuntime;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -77,10 +76,10 @@ public class FindBugsWorker {
 	/** Controls debugging. */
 	public static boolean DEBUG;
 
-	private IProgressMonitor monitor;
+	private final IProgressMonitor monitor;
 	private UserPreferences userPrefs;
-	private IProject project;
-	private IJavaProject javaProject;
+	private final IProject project;
+	private final IJavaProject javaProject;
 
 	/**
 	 * Creates a new worker.
@@ -452,14 +451,7 @@ public class FindBugsWorker {
 	 * @return array with required class directories / libs on the classpath
 	 */
 	private String[] createAuxClasspath() {
-		String[] classPath = new String[0];
-		try {
-			// doesn't return jre libraries
-			classPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Could not compute aux. classpath for project " + javaProject);
-		}
+		String[] classPath = PDEClassPathGenerator.computeClassPath(javaProject);
 		return classPath;
 	}
 
