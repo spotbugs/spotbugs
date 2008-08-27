@@ -618,7 +618,7 @@ public class FindInconsistentSync2 implements Detector {
 					}
 					// Note: instance type can be Null,
 					// in which case we won't adjust the field type.
-					if (instanceType != TypeFrame.getNullType()) {
+					if (instanceType != TypeFrame.getNullType() && instanceType != TypeFrame.getBottomType()) {
 						if (!(instanceType instanceof ObjectType)) {
 							throw new DataflowAnalysisException("Field accessed through non-object reference " + instanceType,
 									methodGen, handle);
