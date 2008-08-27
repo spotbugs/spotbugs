@@ -2482,18 +2482,27 @@ public void initialize() {
 	 }
 
 	 private void pushByLocalLoad(String signature, int register) {
-		Item it = getLVValue(register);
+		Item oldItem = getLVValue(register);
 
-		if (it == null) {
-			Item item = new Item(signature);
-			item.registerNumber = register;
-			push(item);
-		}
-		else if (it.getRegisterNumber() >= 0)
-			push(it);
-		else  {
-			push(new Item(it, register));
+		Item newItem;
+		if (oldItem == null) {
+			newItem = new Item(signature);
+			newItem.registerNumber = register;
+		} else {
+			newItem = oldItem;
+			if (newItem.signature.equals("Ljava/lang/Object;")) {
+				newItem = new Item(oldItem);
+				newItem.signature = signature;
 			}
+			if (newItem.getRegisterNumber() < 0) {
+				if (newItem == oldItem)
+					newItem = new Item(oldItem);
+				newItem.registerNumber = register;
+			}
+		}
+
+		push(newItem);
+
 	 }
 
 	 private void setLVValue(int index, Item value ) {
