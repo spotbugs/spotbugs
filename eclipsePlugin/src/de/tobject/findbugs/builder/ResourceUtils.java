@@ -35,6 +35,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.internal.core.subscribers.ChangeSet;
 
@@ -53,6 +54,17 @@ public class ResourceUtils {
 
 	private ResourceUtils() {
 		// forbidden
+	}
+
+	public static IPath getOutputLocation(IClasspathEntry classpathEntry, IPath defaultOutputLocation){
+		IPath outputLocation = classpathEntry.getOutputLocation();
+		if(outputLocation != null) {
+			// this location is workspace relative and starts with project dir
+			outputLocation = relativeToAbsolute(outputLocation);
+		} else {
+			outputLocation = defaultOutputLocation;
+		}
+		return outputLocation;
 	}
 
 	public static final class RecurseFileCollector implements FileFilter {

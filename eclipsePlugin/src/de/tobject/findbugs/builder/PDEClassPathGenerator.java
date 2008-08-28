@@ -19,11 +19,13 @@
 package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -80,40 +82,49 @@ public class PDEClassPathGenerator {
 	}
 
 	private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
+		String[] javaClassPath = createJavaClasspath(javaProject);
 		IPluginModelBase model = PluginRegistry.findModel(javaProject.getProject());
 		if (model == null || model.getPluginBase().getId() == null){
-			return createJavaClasspath(javaProject);
+			return javaClassPath;
 		}
+		List<String> pdeClassPath = new ArrayList<String>();
+		pdeClassPath.addAll(Arrays.asList(javaClassPath));
 
 		BundleDescription target = model.getBundleDescription();
 
 		Set<BundleDescription> bundles = new HashSet<BundleDescription>();
 		addDependentBundles(target, bundles);
 
-		Set<IClasspathEntry> cpes = new HashSet<IClasspathEntry>();
+		// get the default location => relative to wsp
+		IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject
+				.getOutputLocation());
 
 		for (BundleDescription bd : bundles){
 			IPluginModelBase model2 = PluginRegistry.findModel(bd);
 			ArrayList<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
 			ClasspathUtilCore.addLibraries(model2, classpathEntries);
+
 			for (IClasspathEntry cpe : classpathEntries) {
-				if(!cpes.contains(cpe)){
-					cpes.add(cpe);
+				IPath location;
+				if (cpe.getEntryKind() == IClasspathEntry.CPE_SOURCE){
+					location = ResourceUtils.getOutputLocation(cpe, defaultOutputLocation);
+				} else {
+					location = cpe.getPath();
 				}
-			}
-		}
-
-		List<String> pdeClassPath = new ArrayList<String>();
-		for (IClasspathEntry cpe: cpes) {
-			String location = cpe.getPath().toOSString();
-			pdeClassPath.add(location);
-		}
-
-		// TODO re-check if this is needed. My paranoia says yes, but my brain says no...
-		String[] javaClassPath = createJavaClasspath(javaProject);
-		for (String cpe : javaClassPath) {
-			if(!pdeClassPath.contains(cpe)){
-				pdeClassPath.add(cpe);
+				if(location == null){
+					continue;
+				}
+				String locationStr = location.toOSString();
+				if (!pdeClassPath.contains(locationStr)) {
+					if(location.toFile().exists()){
+						pdeClassPath.add(locationStr);
+					} else {
+						location = ResourceUtils.relativeToAbsolute(location);
+						if(location.toFile().exists()){
+							pdeClassPath.add(location.toOSString());
+						}
+					}
+				}
 			}
 		}
 

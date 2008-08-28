@@ -473,13 +473,8 @@ public class FindBugsWorker {
 		for (int i = 0; i < entries.length; i++) {
 			IClasspathEntry classpathEntry = entries[i];
 			if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-				IPath outputLocation = classpathEntry.getOutputLocation();
-				if(outputLocation != null) {
-					// this location is workspace relative and starts with project dir
-					outputLocation = ResourceUtils.relativeToAbsolute(outputLocation);
-				} else {
-					outputLocation = defaultOutputLocation;
-				}
+				IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry,
+						defaultOutputLocation);
 				// TODO not clear if it is absolute in workspace or in global FS
 				IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
 				srcToOutputMap.put(srcLocation, outputLocation);
