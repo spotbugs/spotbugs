@@ -52,12 +52,11 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
 	 */
 	int oldPC;
 
-	int oldBranchTarget;
 	LinkedList<Integer> emptyStackLocations = new LinkedList<Integer>();
 
 	LinkedList<Integer> prevOpcodeLocations = new LinkedList<Integer>();
@@ -69,7 +68,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		if (isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC 
+		if (isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC
 				|| seen == INVOKEVIRTUAL || seen == PUTFIELD || seen == PUTSTATIC) {
 			reset();
 		}
@@ -83,16 +82,22 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 					int endOfSecondSegment = oldPC;
 					int opcodeAtEndOfFirst = getCodeByte(endOfFirstSegment);
 					int opcodeAtEndOfSecond = getCodeByte(endOfSecondSegment);
-					
-					if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond))
-						break check;
-					if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO)
-						break check;
-					if (opcodeAtEndOfFirst != opcodeAtEndOfSecond 
-							&& !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) break check;
-					
+
+					if (!isBranch(opcodeAtEndOfFirst) || !isBranch(opcodeAtEndOfSecond)) {
+	                    break check;
+                    }
+					if (opcodeAtEndOfFirst == Opcodes.GOTO || opcodeAtEndOfSecond == Opcodes.GOTO) {
+	                    break check;
+                    }
+					if (opcodeAtEndOfFirst != opcodeAtEndOfSecond
+							&& !areOppositeBranches(opcodeAtEndOfFirst, opcodeAtEndOfSecond)) {
+	                    break check;
+                    }
+
 					byte[] code = getCode().getCode();
-					if (first == endOfFirstSegment) break check;
+					if (first == endOfFirstSegment) {
+	                    break check;
+                    }
 					for (int i = first; i < endOfFirstSegment; i++) {
 						if (code[i] != code[i - first + second]) {
 							break check;
@@ -107,15 +112,19 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 						SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, first, endOfFirstSegment-1);
 					SourceLineAnnotation secondSourceLine =
 						SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, second, endOfSecondSegment-1);
-					
+
 					int priority = HIGH_PRIORITY;
-					if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine())
-						priority++;
-					if (stack.isJumpTarget(second))
-						priority++;
+					if (firstSourceLine.getStartLine() == -1 || firstSourceLine.getStartLine() != secondSourceLine.getEndLine()) {
+	                    priority++;
+                    }
+					if (stack.isJumpTarget(second)) {
+	                    priority++;
+                    }
 					Integer firstTarget = branchTargets.get(endOfFirstSegment);
 					Integer secondTarget = branchTargets.get(endOfSecondSegment);
-					if (firstTarget == null || secondTarget == null) break check;
+					if (firstTarget == null || secondTarget == null) {
+	                    break check;
+                    }
 					if (firstTarget.equals(secondTarget) && opcodeAtEndOfFirst == opcodeAtEndOfSecond
 							|| firstTarget.intValue() == getPC()) {
 						// identical checks;
@@ -123,7 +132,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 						// opposite checks
 						priority+=2;
 					}
-					
+
 					BugInstance bug = new BugInstance(this, "RpC_REPEATED_CONDITIONAL_TEST", priority).addClassAndMethod(this)
 					.add(firstSourceLine).add(secondSourceLine);
 					bugReporter.reportBug(bug);
@@ -140,12 +149,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 	    emptyStackLocations.clear();
 	    prevOpcodeLocations.clear();
 	    branchTargets.clear();
-		oldBranchTarget = -1;
 		oldPC = -1;
     }
-
-	private void emitWarning() {
-		System.out.println("Warn about " + getMethodName()); // TODO
-	}
 
 }

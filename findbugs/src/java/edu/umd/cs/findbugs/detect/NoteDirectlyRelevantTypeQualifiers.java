@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2008, University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,24 +52,24 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 public class NoteDirectlyRelevantTypeQualifiers
 	extends DismantleBytecode
 	implements Detector, NonReportingDetector {
-	
-	private BugReporter bugReporter;
+
 	private DirectlyRelevantTypeQualifiersDatabase qualifiers;
 
 	public NoteDirectlyRelevantTypeQualifiers(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
 		if (qualifiers == null) {
 			qualifiers = AnalysisContext.currentAnalysisContext().getDirectlyRelevantTypeQualifiersDatabase();
 		}
-		
+
 		JavaClass javaClass = classContext.getJavaClass();
-		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
+		if  (!BCELUtil.preTiger(javaClass)) {
+	        javaClass.accept(this);
+        }
 	}
 
-	
+
 	HashSet<TypeQualifierValue> applicableApplications;
 	@Override
 	public void visit(Code m) {
@@ -86,7 +86,7 @@ public class NoteDirectlyRelevantTypeQualifiers
 			qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<TypeQualifierValue>(applicableApplications));
 		}
 	}
-	
+
 	@Override
 	public void sawOpcode(int seen) {
 		switch(seen) {
@@ -105,7 +105,7 @@ public class NoteDirectlyRelevantTypeQualifiers
 
 
 			break;
-		
+
 		case GETSTATIC:
 		case PUTSTATIC:
 		case GETFIELD:
