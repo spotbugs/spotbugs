@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -51,9 +52,11 @@ public class RejarClassesForAnalysis {
 		int maxClasses = 29999;
 		long maxAge = Long.MIN_VALUE;
 		public String inputFileList;
+		public String auxFileList;
 		RejarClassesForAnalysisCommandLine() {
 			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this)");
 			addOption("-inputFileList", "filename", "text file containing names of jar files");
+			addOption("-auxFileList", "filename", "text file containing names of jar files for aux class path");
 
 
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
@@ -76,6 +79,8 @@ public class RejarClassesForAnalysis {
         	if (option.equals("-prefix")) prefix = argument;
         	else if (option.equals("-inputFileList"))
 				inputFileList = argument;
+        	else if (option.equals("-auxFileList"))
+				auxFileList = argument;
 			else if (option.equals("-maxClasses"))
         		maxClasses = Integer.parseInt(argument);
         	else if (option.equals("-maxAge"))
@@ -145,8 +150,12 @@ public class RejarClassesForAnalysis {
 			fileList = readFromStandardInput();
 		else
 			fileList = Arrays.asList(args).subList(argCount, args.length);
+		List<String> auxFileList = Collections.emptyList();
+		if (commandLine.auxFileList != null)
+			auxFileList = readFrom(new FileReader(commandLine.auxFileList));
 		
 		List<File> inputZipFiles = new ArrayList<File>(fileList.size());
+		List<File> auxZipFiles = new ArrayList<File>(fileList.size());
 		int filesToAnalyze = 0;
 		for(String fInName : fileList) {
 
