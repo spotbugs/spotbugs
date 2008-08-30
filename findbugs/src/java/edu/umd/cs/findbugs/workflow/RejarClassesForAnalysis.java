@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.workflow;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,45 +50,71 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
 		public String prefix = "";
+
 		int maxClasses = 29999;
+
 		long maxAge = Long.MIN_VALUE;
+
 		public String inputFileList;
+
 		public String auxFileList;
+
 		RejarClassesForAnalysisCommandLine() {
 			addOption("-maxAge", "days", "maximum age in days (ignore jar files older than this)");
 			addOption("-inputFileList", "filename", "text file containing names of jar files");
 			addOption("-auxFileList", "filename", "text file containing names of jar files for aux class path");
 
-
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
 			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed (e.g., edu.umd.cs.)");
 		}
 
-		/* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
-         */
-        @Override
-        protected void handleOption(String option, String optionExtraPart) throws IOException {
-        	throw new IllegalArgumentException("Unknown option : " + option);
-        }
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String,
+		 * java.lang.String)
+		 */
+		@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			throw new IllegalArgumentException("Unknown option : " + option);
+		}
 
-		/* (non-Javadoc)
-         * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
-         */
-        @Override
-        protected void handleOptionWithArgument(String option, String argument) throws IOException {
-        	if (option.equals("-prefix")) prefix = argument;
-        	else if (option.equals("-inputFileList"))
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java
+		 * .lang.String, java.lang.String)
+		 */
+		@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			if (option.equals("-prefix"))
+				prefix = argument;
+			else if (option.equals("-inputFileList"))
 				inputFileList = argument;
-        	else if (option.equals("-auxFileList"))
+			else if (option.equals("-auxFileList"))
 				auxFileList = argument;
 			else if (option.equals("-maxClasses"))
-        		maxClasses = Integer.parseInt(argument);
-        	else if (option.equals("-maxAge"))
-        		maxAge = System.currentTimeMillis() - (24*60*60*1000L)*Integer.parseInt(argument);
-        	else throw new IllegalArgumentException("Unknown option : " + option);
-        }
-		
+				maxClasses = Integer.parseInt(argument);
+			else if (option.equals("-maxAge"))
+				maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
+			else
+				throw new IllegalArgumentException("Unknown option : " + option);
+		}
+
+	}
+
+	final RejarClassesForAnalysisCommandLine commandLine;
+
+	final int argCount;
+
+	final String[] args;
+
+	public RejarClassesForAnalysis(RejarClassesForAnalysisCommandLine commandLine, int argCount, String[] args) {
+		this.commandLine = commandLine;
+		this.argCount = argCount;
+		this.args = args;
 	}
 
 	public static List<String> readFromStandardInput() throws IOException {
@@ -105,43 +132,61 @@ public class RejarClassesForAnalysis {
 			}
 			lst.add(s);
 		}
-		
 
 	}
-	
-	static int analysisCount = 1;
-	static int auxilaryCount = 1;
-	
 
+	int analysisCount = 1;
 
-	static String getNextAuxilaryFileOutput(RejarClassesForAnalysisCommandLine commandLine) {
+	int auxilaryCount = 1;
+
+	String getNextAuxilaryFileOutput() {
 		String result;
-		if (auxilaryCount== 1) result = "auxilary.jar";
-		else result =  "auxilary" + (auxilaryCount) + ".jar";
+		if (auxilaryCount == 1)
+			result = "auxilary.jar";
+		else
+			result = "auxilary" + (auxilaryCount) + ".jar";
 		auxilaryCount++;
 		System.out.println("Starting " + result);
 		return result;
 	}
-	static String getNextAnalyzeFileOutput(RejarClassesForAnalysisCommandLine commandLine) {
+
+	String getNextAnalyzeFileOutput() {
 		String result;
-		if (analysisCount== 1) result = "analyze.jar";
-		else result =  "analyze" + (analysisCount) + ".jar";
+		if (analysisCount == 1)
+			result = "analyze.jar";
+		else
+			result = "analyze" + (analysisCount) + ".jar";
 		analysisCount++;
 		System.out.println("Starting " + result);
 		return result;
 	}
-	
+
+	Set<String> copied = new HashSet<String>();
+
+	int filesToAnalyze = 0;
+
 	public static void main(String args[]) throws Exception {
-		
 		RejarClassesForAnalysisCommandLine commandLine = new RejarClassesForAnalysisCommandLine();
 		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + RejarClassesForAnalysis.class.getName()
-				+ " [options] [<jarFile>+] ");
-		ZipOutputStream analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput(commandLine))));
-		String classPrefix = commandLine.prefix;
-		int analysisClassCount = 0;
-		int auxilaryClassCount = 0;
-			
-		Set<String> copied = new HashSet<String>();
+		        + " [options] [<jarFile>+] ");
+		RejarClassesForAnalysis doit = new RejarClassesForAnalysis(commandLine, argCount, args);
+		doit.execute();
+	}
+
+	int analysisClassCount = 0;
+
+	int auxilaryClassCount = 0;
+
+	ZipOutputStream analyzeOut;
+
+	ZipOutputStream auxilaryOut;
+
+	final byte buffer[] = new byte[8192];
+
+	public void execute() throws IOException {
+
+		analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput())));
+
 		List<String> fileList;
 
 		if (commandLine.inputFileList != null)
@@ -153,34 +198,43 @@ public class RejarClassesForAnalysis {
 		List<String> auxFileList = Collections.emptyList();
 		if (commandLine.auxFileList != null)
 			auxFileList = readFrom(new FileReader(commandLine.auxFileList));
-		
-		List<File> inputZipFiles = new ArrayList<File>(fileList.size());
-		List<File> auxZipFiles = new ArrayList<File>(fileList.size());
-		int filesToAnalyze = 0;
-		for(String fInName : fileList) {
 
+		List<File> inputZipFiles = new ArrayList<File>(fileList.size());
+		List<File> auxZipFiles = new ArrayList<File>(auxFileList.size());
+		for (String fInName : fileList) {
 			File f = new File(fInName);
 			if (f.lastModified() < commandLine.maxAge) {
-				System.err.println("Skipping " + fInName + ", too old ("+new Date(f.lastModified())+")");
+				System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
 				continue;
 			}
-			ZipFile zipInputFile;
-			try {
-				zipInputFile = new ZipFile(f);
-				for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
-					ZipEntry ze = e.nextElement();
-					if (!ze.isDirectory() && ze.getName().endsWith(".class"))
-						if (copied.add(ze.getName()) && ze.getName().replace('/', '.').startsWith(classPrefix))
-								filesToAnalyze++;
-				}
-				inputZipFiles.add(f);
-				zipInputFile.close();
-				} catch (IOException e) {
-					e.printStackTrace(System.out);
-				}
 
+			int oldSize = copied.size();
+			if (processZipEntries(f, new ZipElementHandler() {
+				public void handle(ZipFile file, ZipEntry ze) {
+					if (copied.add(ze.getName()) && ze.getName().replace('/', '.').startsWith(commandLine.prefix))
+						filesToAnalyze++;
+				}
+			}) && oldSize < copied.size())
+				inputZipFiles.add(f);
 		}
+		for (String fInName : auxFileList) {
+			File f = new File(fInName);
+			if (f.lastModified() < commandLine.maxAge) {
+				System.err.println("Skipping " + fInName + ", too old (" + new Date(f.lastModified()) + ")");
+				continue;
+			}
+			int oldSize = copied.size();
+
+			if (processZipEntries(f, new ZipElementHandler() {
+				public void handle(ZipFile file, ZipEntry ze) {
+					copied.add(ze.getName());
+				}
+			}) && oldSize < copied.size())
+				auxZipFiles.add(f);
+		}
+
 		System.out.println("# Zip/jar files: " + inputZipFiles.size());
+		System.out.println("# aux Zip/jar files: " + auxZipFiles.size());
 		if (filesToAnalyze == copied.size())
 
 			System.out.println("Unique class files: " + filesToAnalyze);
@@ -188,86 +242,135 @@ public class RejarClassesForAnalysis {
 			System.out.println("Unique class files: " + copied.size());
 			System.out.println("  files to analyze: " + filesToAnalyze);
 		}
-		
-		ZipOutputStream auxilaryOut = null;
-		if (classPrefix.length() > 0 || filesToAnalyze > commandLine.maxClasses  )
-			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput(commandLine))));
-		
+
+		if (commandLine.prefix.length() > 0 || filesToAnalyze > commandLine.maxClasses)
+			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
+			        getNextAuxilaryFileOutput())));
+
 		copied.clear();
-		for(File f : inputZipFiles) {
+
+		for (File f : inputZipFiles) {
 			System.err.println("Opening " + f);
-			ZipFile zipInputFile;
-			try {
-				zipInputFile = new ZipFile(f);
-			} catch(IOException e) {
-				e.printStackTrace();
-				continue;
-			}
+			processZipEntries(f, new ZipElementHandler() {
 
-			byte buffer[] = new byte[8192];
-			for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
-				ZipEntry ze = e.nextElement();
+				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
+					String name = ze.getName();
+					if (!copied.add(name)) {
+						System.err.println("Skipping duplicate of " + name);
+						return;
 
-				if (ze == null)
-					break;
-				if (ze.isDirectory())
-					continue;
+					}
+					boolean writeToAnalyzeOut = false;
+					boolean writeToAuxilaryOut = false;
+					if (name.replace('/', '.').startsWith(commandLine.prefix)) {
+						writeToAnalyzeOut = true;
+						if (filesToAnalyze > commandLine.maxClasses)
+							writeToAuxilaryOut = true;
+						analysisClassCount++;
+						if (analysisClassCount > commandLine.maxClasses) {
+							advanceAnalyzeOut();
+						}
 
-				String name = ze.getName();
-				if (!name.endsWith(".class")) continue;
-				if (copied.contains(name)) {
-					System.err.println("Skipping duplicate of " + name);
-					continue;
-				}
-				copied.add(name);
-				boolean writeToAnalyzeOut  = false;
-				boolean writeToAuxilaryOut = false;
-				if (name.replace('/', '.').startsWith(classPrefix) ) {
-					writeToAnalyzeOut = true;
-					if (filesToAnalyze > commandLine.maxClasses)
-						writeToAuxilaryOut = true;
-					analysisClassCount++;
-					if (analysisClassCount > commandLine.maxClasses) {
-						analysisClassCount = 0;
-						analyzeOut.close();
-						analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput(commandLine))));
+					} else
+						writeToAuxilaryOut = auxilaryOut != null;
+
+					if (writeToAnalyzeOut)
+						analyzeOut.putNextEntry(new ZipEntry(name));
+					if (writeToAuxilaryOut) {
+						auxilaryClassCount++;
+						if (auxilaryClassCount > commandLine.maxClasses) {
+							auxilaryClassCount = 0;
+							advanceAuxilaryOut();
+						}
+						auxilaryOut.putNextEntry(new ZipEntry(name));
 					}
 
+					copyEntry(zipInputFile, ze, writeToAnalyzeOut, writeToAuxilaryOut);
 				}
-				else writeToAuxilaryOut = auxilaryOut != null;
-				
-				if (writeToAnalyzeOut)
-					analyzeOut.putNextEntry(new ZipEntry(name));
-				if (writeToAuxilaryOut) {
+
+			});
+		}
+
+		for (File f : auxZipFiles) {
+			System.err.println("Opening aux file " + f);
+			processZipEntries(f, new ZipElementHandler() {
+
+				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
+					String name = ze.getName();
+					if (!copied.add(name)) {
+						System.err.println("Skipping duplicate of " + name);
+						return;
+					}
 					auxilaryClassCount++;
 					if (auxilaryClassCount > commandLine.maxClasses) {
 						auxilaryClassCount = 0;
-						auxilaryOut.close();
-						auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput(commandLine))));
+						advanceAuxilaryOut();
 					}
 					auxilaryOut.putNextEntry(new ZipEntry(name));
-				}
-					
 
-				InputStream zipIn = zipInputFile.getInputStream(ze);
-
-				while (true) {
-					int bytesRead = zipIn.read(buffer);
-					if (bytesRead < 0)
-						break;
-					if (writeToAnalyzeOut)
-						analyzeOut.write(buffer, 0, bytesRead);
-					if (writeToAuxilaryOut)
-						auxilaryOut.write(buffer, 0, bytesRead);
+					copyEntry(zipInputFile, ze, false, true);
 				}
-				if (writeToAnalyzeOut)
-					analyzeOut.closeEntry();
-				if (writeToAuxilaryOut)
-					auxilaryOut.closeEntry();
+
+			});
+		}
+
+		analyzeOut.close();
+		if (auxilaryOut != null)
+			auxilaryOut.close();
+
+	}
+
+	private void copyEntry(ZipFile zipInputFile, ZipEntry ze, boolean writeToAnalyzeOut, boolean writeToAuxilaryOut)
+	        throws IOException {
+		InputStream zipIn = zipInputFile.getInputStream(ze);
+
+		while (true) {
+			int bytesRead = zipIn.read(buffer);
+			if (bytesRead < 0)
+				break;
+			if (writeToAnalyzeOut)
+				analyzeOut.write(buffer, 0, bytesRead);
+			if (writeToAuxilaryOut)
+				auxilaryOut.write(buffer, 0, bytesRead);
+		}
+		if (writeToAnalyzeOut)
+			analyzeOut.closeEntry();
+		if (writeToAuxilaryOut)
+			auxilaryOut.closeEntry();
+		zipIn.close();
+	}
+
+	private void advanceAuxilaryOut() throws IOException, FileNotFoundException {
+		auxilaryOut.close();
+		auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput())));
+	}
+
+	private void advanceAnalyzeOut() throws IOException, FileNotFoundException {
+		analysisClassCount = 0;
+		analyzeOut.close();
+		analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput())));
+	}
+
+	boolean processZipEntries(File f, ZipElementHandler handler) {
+		ZipFile zipInputFile;
+		try {
+			zipInputFile = new ZipFile(f);
+			for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
+				ZipEntry ze = e.nextElement();
+				if (!ze.isDirectory() && ze.getName().endsWith(".class"))
+					handler.handle(zipInputFile, ze);
+
 			}
 			zipInputFile.close();
+		} catch (IOException e) {
+			e.printStackTrace(System.out);
+			return false;
 		}
-		analyzeOut.close();
-		if (auxilaryOut != null) auxilaryOut.close();
+		return true;
+
+	}
+
+	interface ZipElementHandler {
+		void handle(ZipFile file, ZipEntry ze) throws IOException;
 	}
 }
