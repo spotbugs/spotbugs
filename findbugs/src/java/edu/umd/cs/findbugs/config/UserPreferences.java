@@ -70,11 +70,15 @@ public class UserPreferences implements Cloneable {
 
 	private static final String FILTER_SETTINGS2_KEY = "filter_settings_neg";
 
+	private static final String RUN_AT_FULL_BUILD = "run_at_full_build";
+
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
 
 	private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
 
 	private ProjectFilterSettings filterSettings;
+
+	private boolean runAtFullBuild = true;
 
 	private static UserPreferences preferencesSingleton = new UserPreferences();
 
@@ -128,8 +132,9 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void read() {
 		File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
-		if (!prefFile.exists() || !prefFile.isFile())
-			return;
+		if (!prefFile.exists() || !prefFile.isFile()) {
+	        return;
+        }
 		try {
 			read(new FileInputStream(prefFile));
 		} catch (IOException e) {
@@ -152,20 +157,23 @@ public class UserPreferences implements Cloneable {
 			props.load(prefStream);
 		} finally {
 			try {
-				if (prefStream != null)
-					prefStream.close();
+				if (prefStream != null) {
+	                prefStream.close();
+                }
 			} catch (IOException ioe) {
 				// Ignore
 			}
 		}
 
-		if (props.size() == 0)
-			return;
+		if (props.size() == 0) {
+	        return;
+        }
 		for (int i = 0; i < MAX_RECENT_FILES; i++) {
 			String key = "recent" + i;
 			String projectName = (String) props.get(key);
-			if (projectName != null)
-				recentProjectsList.add(projectName);
+			if (projectName != null) {
+	            recentProjectsList.add(projectName);
+            }
 		}
 
 		for (Map.Entry<?, ?> e : props.entrySet()) {
@@ -204,6 +212,9 @@ public class UserPreferences implements Cloneable {
 			// populate the hidden bug categories in the project filter settings
 			ProjectFilterSettings.hiddenFromEncodedString(filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
 		}
+		if (props.get(RUN_AT_FULL_BUILD) != null) {
+			runAtFullBuild = Boolean.parseBoolean(props.getProperty(RUN_AT_FULL_BUILD));
+		}
 		effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
 		includeFilterFiles = readFilters(props, INCLUDE_FILTER_KEY);
 		excludeFilterFiles = readFilters(props, EXCLUDE_FILTER_KEY);
@@ -220,8 +231,9 @@ public class UserPreferences implements Cloneable {
 			File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
 			write(new FileOutputStream(prefFile));
 		} catch (IOException e) {
-			if (FindBugs.DEBUG)
-				e.printStackTrace(); // Ignore
+			if (FindBugs.DEBUG) {
+	            e.printStackTrace(); // Ignore
+            }
 		}
 	}
 
@@ -256,6 +268,7 @@ public class UserPreferences implements Cloneable {
 		// This will allow the properties file to work with older versions
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
+		props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
 		props.setProperty(EFFORT_KEY, effort);
 		writeFilters(props, INCLUDE_FILTER_KEY, includeFilterFiles);
 		writeFilters(props, EXCLUDE_FILTER_KEY, excludeFilterFiles);
@@ -268,8 +281,9 @@ public class UserPreferences implements Cloneable {
 			prefStream.flush();
 		} finally {
 			try {
-				if (prefStream != null)
-					prefStream.close();
+				if (prefStream != null) {
+	                prefStream.close();
+                }
 			} catch (IOException ioe) {
 			}
 		}
@@ -293,8 +307,9 @@ public class UserPreferences implements Cloneable {
 	public void useProject(String projectName) {
 		removeProject(projectName);
 		recentProjectsList.addFirst(projectName);
-		while (recentProjectsList.size() > MAX_RECENT_FILES)
-			recentProjectsList.removeLast();
+		while (recentProjectsList.size() > MAX_RECENT_FILES) {
+	        recentProjectsList.removeLast();
+        }
 	}
 
 	/**
@@ -307,8 +322,9 @@ public class UserPreferences implements Cloneable {
 		Iterator<String> it = recentProjectsList.iterator();
 		while (it.hasNext()) {
 			//LinkedList, so remove() via iterator is faster than remove(index).
-			if (projectName.equals(it.next()))
-				it.remove();
+			if (projectName.equals(it.next())) {
+	            it.remove();
+            }
 		}
 	}
 
@@ -396,6 +412,26 @@ public class UserPreferences implements Cloneable {
 	}
 
 	/**
+	 * Set the enabled/disabled status of running findbugs automatically
+	 * for full builds.
+	 *
+	 * @param enable  true if running FindBugs at full builds should be enabled,
+	 *                false if it should be Disabled
+	 */
+	public void setRunAtFullBuild(boolean enable) {
+		this.runAtFullBuild = enable;
+	}
+
+	/**
+	 * Get the enabled/disabled status of runAtFullBuild
+	 *
+	 * @return true if the running for full builds is enabled, false if not
+	 */
+	public boolean isRunAtFullBuild() {
+		return runAtFullBuild;
+	}
+
+	/**
 	 * Set the detector threshold  (min severity to report a warning).
 	 *
 	 * @param threshold the detector threshold
@@ -406,12 +442,14 @@ public class UserPreferences implements Cloneable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass())
-			return false;
+		if (obj == null || obj.getClass() != this.getClass()) {
+	        return false;
+        }
 
 		UserPreferences other = (UserPreferences) obj;
 
-		return recentProjectsList.equals(other.recentProjectsList)
+		return runAtFullBuild == other.runAtFullBuild
+		 	&& recentProjectsList.equals(other.recentProjectsList)
 			&& detectorEnablementMap.equals(other.detectorEnablementMap)
 			&& filterSettings.equals(other.filterSettings)
 			&& effort.equals(other.effort)
@@ -423,7 +461,8 @@ public class UserPreferences implements Cloneable {
 	@Override
 	public int hashCode() {
 		return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-				+ includeFilterFiles.hashCode() + excludeFilterFiles.hashCode();
+				+ includeFilterFiles.hashCode() + excludeFilterFiles.hashCode()
+				+ (runAtFullBuild ? 1 : 0);
 	}
 
 	@Override
@@ -438,7 +477,7 @@ public class UserPreferences implements Cloneable {
 			dup.detectorEnablementMap.putAll(this.detectorEnablementMap);
 
 			dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
-
+			dup.runAtFullBuild = runAtFullBuild;
 			return dup;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
