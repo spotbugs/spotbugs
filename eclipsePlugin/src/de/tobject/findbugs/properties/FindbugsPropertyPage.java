@@ -81,6 +81,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private IProject project;
 
 	private Button chkEnableFindBugs;
+	private Button chkRunAtFullBuild;
 	private Button restoreDefaultsButton;
 	private ComboViewer effortViewer;
 	private EffortPlaceHolder defaultEffortLevel;
@@ -88,7 +89,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private DetectorConfigurationTab detectorTab;
 	private FilterFilesTab filterFilesTab;
 	private ReportConfigurationTab reportConfigurationTab;
-	private Map<DetectorFactory, Boolean> visibleDetectors;
+	private final Map<DetectorFactory, Boolean> visibleDetectors;
 
 	/**
 	 * Constructor for FindbugsPropertyPage.
@@ -162,7 +163,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	private void createGlobalElements(Composite parent) {
 		Composite globalGroup = new Composite(parent, SWT.TOP);
-		GridLayout layout = new GridLayout(2,false);
+		GridLayout layout = new GridLayout(3,false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		globalGroup.setLayout(layout);
@@ -178,7 +179,32 @@ public class FindbugsPropertyPage extends PropertyPage {
 		chkEnableFindBugs = new Button(globalGroup, SWT.CHECK);
 		chkEnableFindBugs.setText(getMessage("property.runAuto"));
 		chkEnableFindBugs.setSelection(initialEnabled);
-		chkEnableFindBugs.setToolTipText("Enable / disable FindBugs project builder (disabled by default)");
+		chkEnableFindBugs.setToolTipText(getMessage("property.runAuto.tip"));
+
+		chkEnableFindBugs.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+					boolean enabled = chkEnableFindBugs.getSelection();
+					chkRunAtFullBuild.setEnabled(enabled);
+//					chkRunAtFullBuild.setSelection(enabled);
+				}
+			});
+
+		chkRunAtFullBuild = new Button(globalGroup, SWT.CHECK);
+		chkRunAtFullBuild.setText(getMessage("property.runFull"));
+		chkRunAtFullBuild.setSelection(origUserPreferences.isRunAtFullBuild());
+		chkRunAtFullBuild.setToolTipText(getMessage("property.runFull.tip"));
+		chkRunAtFullBuild.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				boolean selection = chkRunAtFullBuild.getSelection();
+
+				currentUserPreferences.setRunAtFullBuild(selection);
+			}
+		});
+		chkRunAtFullBuild.setEnabled(chkEnableFindBugs.getSelection());
+
 
 		Composite prioGroup = new Composite(globalGroup, SWT.NONE);
 		GridLayout prioLayout = new GridLayout(2, false);

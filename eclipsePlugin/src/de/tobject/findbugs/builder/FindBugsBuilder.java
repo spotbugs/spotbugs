@@ -31,6 +31,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import de.tobject.findbugs.FindbugsPlugin;
+
 /**
  * The <code>FindBugsBuilder</code> performs a FindBugs run on a subset of the
  * current project. It will either check all classes in a project or just the
@@ -57,10 +59,14 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		monitor.subTask("Running FindBugs...");
 		switch (kind) {
 		case IncrementalProjectBuilder.FULL_BUILD: {
-			if (DEBUG) {
-				System.out.println("FULL BUILD");
+			if (FindbugsPlugin.getUserPreferences(getProject()).isRunAtFullBuild()){
+				if (DEBUG) {
+					System.out.println("FULL BUILD");
+				}
+				doBuild(args, monitor, kind);
+			} else {
+				// TODO probably worth to cleanup? MarkerUtil.removeMarkers(getProject());
 			}
-			doBuild(args, monitor, kind);
 			break;
 		}
 		case IncrementalProjectBuilder.INCREMENTAL_BUILD: {
