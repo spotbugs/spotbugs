@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -241,12 +242,15 @@ public class FindInconsistentSync2 implements Detector {
 		public boolean isServletField() {
 			return servletField;
 		}
+		public boolean hasAnySynchronizedAccesses() {
+			return interesting && !syncAccessList.isEmpty();
+		}
 		public void addAccess(MethodDescriptor method, InstructionHandle handle, boolean isLocked) {
 			if (!interesting) return;
 			if (!SYNC_ACCESS && isLocked)
 				return;
 
-			if (!servletField && !isLocked && syncAccessList.size() == 0 && unsyncAccessList.size() > 10) {
+			if (!servletField && !isLocked && syncAccessList.size() == 0 && unsyncAccessList.size() > 6) {
 				interesting = false;
 				syncAccessList = null;
 				unsyncAccessList = null;
@@ -333,6 +337,13 @@ public class FindInconsistentSync2 implements Detector {
 			} catch (DataflowAnalysisException e) {
 				bugReporter.logError("Error analyzing method", e);
 			}
+		}
+		for(Field f : javaClass.getFields()) if (f.isPrivate()) {
+			XField xf = XFactory.getExactXField(classContext.getClassDescriptor().getClassName(), f);
+			FieldStats stats = statMap.get(xf);
+			if (stats == null) continue;
+			if (!stats.isServletField() && !stats.hasAnySynchronizedAccesses())
+				statMap.remove(xf);
 		}
 	}
 
