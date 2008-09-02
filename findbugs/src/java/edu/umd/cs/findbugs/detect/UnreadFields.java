@@ -91,6 +91,12 @@ public class UnreadFields extends OpcodeStackDetector  {
 	Set<XField> allMyFields = new TreeSet<XField>();
 	Set<XField> myFields = new TreeSet<XField>();
 	Set<XField> writtenFields = new HashSet<XField>();
+	/**
+	 * Only for fields that are either:
+	 *   * read only
+	 *   * written only
+	 *   * written null and read
+	 */
 	Map<XField,SourceLineAnnotation> fieldAccess = new HashMap<XField, SourceLineAnnotation>();
 	Set<XField> writtenNonNullFields = new HashSet<XField>();
 	Set<String> calledFromConstructors = new HashSet<String>();
@@ -542,11 +548,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 					&& seen == GETFIELD ) {
 				writtenFields.add(f);
 				writtenNonNullFields.add(f);
-
 			}
 			if (DEBUG) System.out.println("get: " + f);
-			// readFields.add(f);
-			if (!fieldAccess.containsKey(f))
+			if (writtenFields.contains(f))	
+				fieldAccess.remove(f);
+			else if (!fieldAccess.containsKey(f))
 				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
 		} else if ((seen == PUTFIELD || seen == PUTSTATIC) && !selfAssignment) {
 			XField f = XFactory.createReferencedXField(this);
@@ -556,16 +562,18 @@ public class UnreadFields extends OpcodeStackDetector  {
 				if (!item.isNull()) nullTested.add(f);
 			}
 			writtenFields.add(f);
-			if (!fieldAccess.containsKey(f))
-				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
-			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO )  {
+			
+			boolean writtingNonNull = previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO;
+			if (writtingNonNull)  {
 				writtenNonNullFields.add(f);
-				if (f == null) 
-					System.out.println("Added null 2");
 				if (DEBUG) System.out.println("put nn: " + f);
 			}
 			else if (DEBUG) System.out.println("put: " + f);
-
+			if (writtingNonNull && readFields.contains(f))
+				fieldAccess.remove(f);
+			else if (!fieldAccess.containsKey(f))
+				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
+			
 			if ( getMethod().isStatic() == f.isStatic() && (
 					calledFromConstructors.contains(getMethodName()+":"+getMethodSig())
 					|| getMethodName().equals("<init>") 
@@ -575,7 +583,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 					|| getMethodName().equals("<clinit>") 
 					|| getMethod().isPrivate())) {
 				writtenInConstructorFields.add(f);
-				if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) 
+				if (writtingNonNull ) 
 					assumedNonNull.remove(f);
 			} else {
 				writtenOutsideOfConstructorFields.add(f);
@@ -854,7 +862,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 								.addClass(className));
 					}
 				}
-			} else {
+			} else if (f.isResolved() ){
 				if (constantFields.contains(f)) {
 					if (!f.isStatic())
 						bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
@@ -862,7 +870,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 								NORMAL_PRIORITY), f));
 				} else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
-				} else if (!writtenFields.contains(f) && f.isResolved())
+				} else if (!writtenFields.contains(f))
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 							.addClass(className)
 							.addField(f).lowerPriorityIfDeprecated());
@@ -881,6 +889,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 	 * @return
 	 */
 	private BugInstance addClassFieldAndAccess(BugInstance instance, XField f) {
+		if (writtenNonNullFields.contains(f) && readFields.contains(f)) 
+			throw new IllegalArgumentException("No information for fields that are both read and written nonnull");
+
 		instance.addClass(f.getClassName()).addField(f);
 		if (fieldAccess.containsKey(f))
 			instance.add(fieldAccess.get(f));
