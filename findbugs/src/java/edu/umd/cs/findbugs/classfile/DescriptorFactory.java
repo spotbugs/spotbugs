@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
@@ -192,6 +193,10 @@ public class DescriptorFactory {
 			existing = fieldDescriptor;
 		}
 		return existing;
+	}
+	public FieldDescriptor getFieldDescriptor(@SlashedClassName String className, Field  ma) {
+		return getFieldDescriptor(className, ma.getName(), ma.getSignature(), ma.isStatic());
+
 	}
 	public FieldDescriptor getFieldDescriptor(FieldAnnotation ma) {
 		return getFieldDescriptor(ClassName.toSlashedClassName(ma.getClassName()), ma.getFieldName(), ma.getFieldSignature(), ma.isStatic());

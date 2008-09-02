@@ -33,8 +33,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.objectweb.asm.Opcodes;
@@ -53,6 +51,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -410,12 +409,16 @@ public class XFactory {
 	 * @return XField exactly matching class name, field name, and field
 	 *         signature
 	 */
-	public static XField getExactXField(String className, String name, String signature, boolean isStatic) {
+	public static XField getExactXField(@SlashedClassName String className, String name, String signature, boolean isStatic) {
 		FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className),
 		        name, signature, isStatic);
 		return getExactXField(fieldDesc);
 	}
 
+	public static @Nonnull XField getExactXField(@SlashedClassName String className, Field f) {
+		FieldDescriptor fd = DescriptorFactory.instance().getFieldDescriptor(className, f);
+		return getExactXField(fd);
+	}
 	public static @Nonnull XField getExactXField(FieldDescriptor desc) {
 		XFactory xFactory = AnalysisContext.currentXFactory();
 
