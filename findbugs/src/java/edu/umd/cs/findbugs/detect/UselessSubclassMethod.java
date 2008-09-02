@@ -63,7 +63,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
 
 	@Override
-		 public void visitClassContext(ClassContext classContext) {
+	public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
 			superclassName = cls.getSuperclassName();
@@ -91,27 +91,27 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	}
 
 	@Override
-		 public void visitMethod(Method obj) {
+	public void visitMethod(Method obj) {
 		if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
 			String curDetail = obj.getName() + obj.getSignature();
 			for (String infMethodDetail : interfaceMethods) {
 				if (curDetail.equals(infMethodDetail))
 					bugReporter.reportBug(new BugInstance(this, "USM_USELESS_ABSTRACT_METHOD", LOW_PRIORITY)
-							.addClassAndMethod(getClassContext().getJavaClass(), obj));
+					.addClassAndMethod(getClassContext().getJavaClass(), obj));
 			}
 		}
 		super.visitMethod(obj);
 	}
 
 	@Override
-		 public void visitCode(Code obj)
+	public void visitCode(Code obj)
 	{
 		try {
 			String methodName = getMethodName();
 
 			if (!methodName.equals("<init>")
-			&&  !methodName.equals("clone")
-			&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
+					&&  !methodName.equals("clone")
+					&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
 
 				/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
 				Attribute[] atts = getMethod().getAttributes();
@@ -134,8 +134,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 						return;
 
 					bugReporter.reportBug( new BugInstance( this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY )
-						.addClassAndMethod(this)
-						.addSourceLine(this, invokePC));
+					.addClassAndMethod(this)
+					.addSourceLine(this, invokePC));
 				}
 			}
 		}
@@ -145,78 +145,78 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	}
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		switch (state) {
-			case SEEN_NOTHING:
-				if (seen == ALOAD_0) {
-					argTypes = Type.getArgumentTypes(this.getMethodSig()); 
-					curParm = 0;
-					curParmOffset = 1;
-					if (argTypes.length > 0)
-						state = SEEN_PARM;
-					else
-						state = SEEN_LAST_PARM;
-				} else
-					state = SEEN_INVALID;	
-			break;
-
-			case SEEN_PARM:
-				if (curParm >= argTypes.length)
-					state = SEEN_INVALID;
-				else {
-					String signature = argTypes[curParm++].getSignature();
-					char typeChar0 = signature.charAt(0);
-					if ((typeChar0 == 'L') || (typeChar0 == '[')) {
-						checkParm(seen, ALOAD_0, ALOAD, 1);
-					}
-					else if (typeChar0 == 'D') {
-						checkParm(seen, DLOAD_0, DLOAD, 2);
-					}
-					else if (typeChar0 == 'F') {
-						checkParm(seen, FLOAD_0, FLOAD, 1);
-					}
-					else if (typeChar0 == 'I') {
-						checkParm(seen, ILOAD_0, ILOAD, 1);
-					}
-					else if (typeChar0 == 'J') {
-						checkParm(seen, LLOAD_0, LLOAD, 2);
-					}
-					if ((state != SEEN_INVALID) && (curParm >= argTypes.length))
-						state = SEEN_LAST_PARM;
-
-				}
-			break;
-
-			case SEEN_LAST_PARM:
-				if ((seen == INVOKENONVIRTUAL) && getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())) {
-					invokePC = getPC();
-					state = SEEN_INVOKE;
-				}
+		case SEEN_NOTHING:
+			if (seen == ALOAD_0) {
+				argTypes = Type.getArgumentTypes(this.getMethodSig()); 
+				curParm = 0;
+				curParmOffset = 1;
+				if (argTypes.length > 0)
+					state = SEEN_PARM;
 				else
-					state = SEEN_INVALID;
+					state = SEEN_LAST_PARM;
+			} else
+				state = SEEN_INVALID;	
 			break;
 
-			case SEEN_INVOKE:
-				Type returnType = getMethod().getReturnType();
-				char retSigChar0 = returnType.getSignature().charAt(0);
-				if ((retSigChar0 == 'V') && (seen == RETURN))
-					state = SEEN_RETURN;
-				else if (((retSigChar0 == 'L') || (retSigChar0 == '[')) && (seen == ARETURN))
-					state = SEEN_RETURN;
-				else if ((retSigChar0 == 'D') && (seen == DRETURN))
-					state = SEEN_RETURN;
-				else if ((retSigChar0 == 'F') && (seen == FRETURN))
-					state = SEEN_RETURN;
-				else if ((retSigChar0 == 'I' || retSigChar0 == 'S'  || retSigChar0 == 'C'  || retSigChar0 == 'B'  || retSigChar0 == 'Z' ) && (seen == IRETURN))
-					state = SEEN_RETURN;
-				else if ((retSigChar0 == 'J') && (seen == LRETURN))
-					state = SEEN_RETURN;
-				else
-					state = SEEN_INVALID;
-			break;
-
-			case SEEN_RETURN:
+		case SEEN_PARM:
+			if (curParm >= argTypes.length)
 				state = SEEN_INVALID;
+			else {
+				String signature = argTypes[curParm++].getSignature();
+				char typeChar0 = signature.charAt(0);
+				if ((typeChar0 == 'L') || (typeChar0 == '[')) {
+					checkParm(seen, ALOAD_0, ALOAD, 1);
+				}
+				else if (typeChar0 == 'D') {
+					checkParm(seen, DLOAD_0, DLOAD, 2);
+				}
+				else if (typeChar0 == 'F') {
+					checkParm(seen, FLOAD_0, FLOAD, 1);
+				}
+				else if (typeChar0 == 'I') {
+					checkParm(seen, ILOAD_0, ILOAD, 1);
+				}
+				else if (typeChar0 == 'J') {
+					checkParm(seen, LLOAD_0, LLOAD, 2);
+				}
+				if ((state != SEEN_INVALID) && (curParm >= argTypes.length))
+					state = SEEN_LAST_PARM;
+
+			}
+			break;
+
+		case SEEN_LAST_PARM:
+			if ((seen == INVOKENONVIRTUAL) && getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())) {
+				invokePC = getPC();
+				state = SEEN_INVOKE;
+			}
+			else
+				state = SEEN_INVALID;
+			break;
+
+		case SEEN_INVOKE:
+			Type returnType = getMethod().getReturnType();
+			char retSigChar0 = returnType.getSignature().charAt(0);
+			if ((retSigChar0 == 'V') && (seen == RETURN))
+				state = SEEN_RETURN;
+			else if (((retSigChar0 == 'L') || (retSigChar0 == '[')) && (seen == ARETURN))
+				state = SEEN_RETURN;
+			else if ((retSigChar0 == 'D') && (seen == DRETURN))
+				state = SEEN_RETURN;
+			else if ((retSigChar0 == 'F') && (seen == FRETURN))
+				state = SEEN_RETURN;
+			else if ((retSigChar0 == 'I' || retSigChar0 == 'S'  || retSigChar0 == 'C'  || retSigChar0 == 'B'  || retSigChar0 == 'Z' ) && (seen == IRETURN))
+				state = SEEN_RETURN;
+			else if ((retSigChar0 == 'J') && (seen == LRETURN))
+				state = SEEN_RETURN;
+			else
+				state = SEEN_INVALID;
+			break;
+
+		case SEEN_RETURN:
+			state = SEEN_INVALID;
 			break;
 		}
 	}
@@ -237,36 +237,36 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	}
 
 	private Method findSuperclassMethod(String superclassName, Method subclassMethod) 
-		throws ClassNotFoundException {
+	throws ClassNotFoundException {
 
 		String methodName = subclassMethod.getName();
 		Type[] subArgs = null;
 		JavaClass superClass = Repository.lookupClass(superclassName);
 		Method[] methods = superClass.getMethods();
 		outer:
-		for (Method m : methods) {
-			if (m.getName().equals(methodName)) {
-				if (subArgs == null)
-					subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
-				Type[] superArgs = Type.getArgumentTypes(m.getSignature());
-				if (subArgs.length == superArgs.length) {
-					for (int j = 0; j < subArgs.length; j++) {
-						if (!superArgs[j].equals(subArgs[j]))
-							continue outer;
+			for (Method m : methods) {
+				if (m.getName().equals(methodName)) {
+					if (subArgs == null)
+						subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
+					Type[] superArgs = Type.getArgumentTypes(m.getSignature());
+					if (subArgs.length == superArgs.length) {
+						for (int j = 0; j < subArgs.length; j++) {
+							if (!superArgs[j].equals(subArgs[j]))
+								continue outer;
+						}
+						return m;
 					}
-					return m;
 				}
 			}
-		}
 
 		if(!superclassName.equals("Object")) {
 			String superSuperClassName = superClass.getSuperclassName();
 			if (superSuperClassName.equals(superclassName)) {
 				throw new ClassNotFoundException(
-					"superclass of " + superclassName + " is itself");
-				}
-			return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
+						"superclass of " + superclassName + " is itself");
 			}
+			return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
+		}
 
 		return null;
 	}
