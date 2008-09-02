@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
  * 
  * @author David Hovemeyer
  */
-public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
+public class ZipInputStreamCodeBaseEntry extends AbstractScannableCodeBaseEntry {
 	private final ZipInputStreamCodeBase codeBase;
 	private final ZipEntry zipEntry;
 	private final byte [] bytes;

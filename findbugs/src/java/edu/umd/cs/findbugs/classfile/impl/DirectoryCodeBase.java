@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
  *
  * @author David Hovemeyer
  */
-public class DirectoryCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
+public class DirectoryCodeBase extends AbstractScannableCodeBase  {
 	private class DirectoryCodeBaseIterator implements ICodeBaseIterator {
 
 		Iterator<String> fileNameIterator = rfs.fileNameIterator();

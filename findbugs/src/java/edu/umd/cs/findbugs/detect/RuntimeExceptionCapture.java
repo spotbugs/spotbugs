@@ -70,7 +70,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public class RuntimeExceptionCapture extends OpcodeStackDetector implements Detector, StatelessDetector {
+public class RuntimeExceptionCapture extends OpcodeStackDetector implements StatelessDetector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("rec.debug");
 
 	private BugReporter bugReporter;

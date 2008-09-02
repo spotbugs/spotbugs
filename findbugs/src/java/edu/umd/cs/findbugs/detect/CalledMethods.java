@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 /**
  * Detector to find private methods that are never called.
  */
-public class CalledMethods extends BytecodeScanningDetector implements Detector, NonReportingDetector {
+public class CalledMethods extends BytecodeScanningDetector implements  NonReportingDetector {
 	boolean emptyArrayOnTOS;
 	HashSet<XField> emptyArray = new HashSet<XField>();
 	HashSet<XField> nonEmptyArray = new HashSet<XField>();

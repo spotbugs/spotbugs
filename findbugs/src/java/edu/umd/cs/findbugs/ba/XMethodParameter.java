@@ -50,7 +50,8 @@ public class XMethodParameter implements Comparable<XMethodParameter>{
 		 public int hashCode() {
 		return method.hashCode() + parameter;
 	}
-	public int compareTo(XMethodParameter mp2) {
+	@SuppressWarnings("unchecked")
+    public int compareTo(XMethodParameter mp2) {
 		int result = method.compareTo(mp2.method);
 		if (result != 0) return result;
 		return parameter - mp2.parameter;

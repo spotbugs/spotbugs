@@ -161,7 +161,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					}
 
 					XFactory xFactory = AnalysisContext.currentXFactory();
-					if (m3 == null && AnalysisContext.currentXFactory().isCalled(m))
+					if (m3 == null && xFactory.isCalled(m))
 						propertySet.addProperty(NamingProperty.METHOD_IS_CALLED);
 					else if (m.isDeprecated() || m2.isDeprecated())
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
@@ -210,7 +210,8 @@ public class Naming extends PreorderVisitor implements Detector {
 		return false;
 	}
 
-	private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
+	@SuppressWarnings("unchecked")
+    private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
 		if (m.isStatic())
 			return false;
 		if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>"))

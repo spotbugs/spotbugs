@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
  *
  * @author David Hovemeyer
  */
-public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
+public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry  {
 	private final DirectoryCodeBase codeBase;
 	private final String realResourceName;
 

@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 /**
  * Detector to find private methods that are never called.
  */
-public class ReflectiveClasses extends BytecodeScanningDetector implements Detector, NonReportingDetector {
+public class ReflectiveClasses extends BytecodeScanningDetector implements NonReportingDetector {
 
 	public ReflectiveClasses(BugReporter bugReporter) {
 

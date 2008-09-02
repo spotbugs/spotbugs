@@ -86,7 +86,8 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 		return field;
 	}
 
-	public int compareTo(AvailableLoad other) {
+	@SuppressWarnings("unchecked")
+    public int compareTo(AvailableLoad other) {
 		int cmp = field.compareTo(other.field);
 		if (cmp != 0)
 			return cmp;

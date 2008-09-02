@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * Returns some kind of reasonable default answer to questions
  * that can't be answered (e.g., what are the access flags).
  */
-class UnresolvedXMethod extends AbstractMethod implements XMethod {
+class UnresolvedXMethod extends AbstractMethod  {
 	protected UnresolvedXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 		if (XFactory.DEBUG_UNRESOLVED) {

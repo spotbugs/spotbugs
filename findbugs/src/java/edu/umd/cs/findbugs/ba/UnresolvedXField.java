@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 /**
  * @author pugh
  */
-public class UnresolvedXField extends AbstractField implements XField {
+public class UnresolvedXField extends AbstractField  {
 
 	protected UnresolvedXField(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);

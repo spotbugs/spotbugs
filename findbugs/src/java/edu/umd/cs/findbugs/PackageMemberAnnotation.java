@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines implements BugAnnotation {
+public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines  {
 	private static final long serialVersionUID = -8208567669352996892L;
 
 	protected final @DottedClassName String className;

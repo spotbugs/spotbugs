@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.io.IO;
  *
  * @author David Hovemeyer
  */
-public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
+public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 	private ICodeBase parentCodeBase;
 	private String resourceName;
 	private File tempFile;
