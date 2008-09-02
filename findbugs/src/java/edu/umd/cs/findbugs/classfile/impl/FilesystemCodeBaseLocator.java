@@ -34,8 +34,13 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	private final String pathName;
 
 	public FilesystemCodeBaseLocator(String pathName) {
+		 File file = new File(pathName);
+		 if (!file.exists())
+			 throw new IllegalArgumentException("File doesn't exist " + pathName);
+		 if (!file.canRead())
+			 throw new IllegalArgumentException("Can't read " + pathName);
 		try {
-	        pathName = new File(pathName).getCanonicalPath();
+	       pathName = file.getCanonicalPath();
         } catch (IOException e) {
 	      assert true;
         }
