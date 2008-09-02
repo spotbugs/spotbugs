@@ -34,17 +34,13 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	private final String pathName;
 
 	public FilesystemCodeBaseLocator(String pathName) {
-		 File file = new File(pathName);
-		 if (!file.exists())
-			 throw new IllegalArgumentException("File doesn't exist " + pathName);
-		 if (!file.canRead())
-			 throw new IllegalArgumentException("Can't read " + pathName);
+		File file = new File(pathName);
 		try {
-	       pathName = file.getCanonicalPath();
-        } catch (IOException e) {
-	      assert true;
-        }
-        this.pathName = pathName;
+			pathName = file.getCanonicalPath();
+		} catch (IOException e) {
+			assert true;
+		}
+		this.pathName = pathName;
 	}
 
 	/**
@@ -54,8 +50,12 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		return pathName;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator
+	 * (java.lang.String)
 	 */
 	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
 		File path = new File(pathName);
@@ -66,14 +66,18 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		return new FilesystemCodeBaseLocator(relativeFile.getPath());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
 	 */
 	public ICodeBase openCodeBase() throws IOException {
 		return ClassFactory.createFilesystemCodeBase(this);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -81,7 +85,9 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		return "filesystem:" + pathName;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -93,7 +99,9 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		return this.pathName.equals(other.pathName);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
