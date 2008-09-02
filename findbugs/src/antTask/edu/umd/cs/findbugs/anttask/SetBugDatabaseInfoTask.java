@@ -32,7 +32,7 @@ import org.apache.tools.ant.BuildException;
  */
 public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 	
-	private File outputFile;
+	private String outputFile;
     private String name;
 	private String timestamp;
 	private String source;
@@ -40,21 +40,13 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
     private String suppress;
     private String withMessages;
     private String resetSource;
-	private DataFile inputFile;
+	private String inputFile;
 
 	public SetBugDatabaseInfoTask() {
     	super("edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo");
     	setFailOnError(true);
     }
-	
-	public DataFile createDataFile() {
-		if (inputFile != null) {
-			throw new BuildException("only one dataFile element is allowed", getLocation());
-		}
-		inputFile = new DataFile();
-		return inputFile;
-	}
-	
+		
     public void setName(String arg) {
         this.name = arg;
     }
@@ -63,13 +55,12 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
         this.timestamp = arg;
     }
 
-    public void setOutput(File output) {
+    public void setOutput(String output) {
 		this.outputFile = output;
 	}
 	
 	public void setInput(String input) {
-		this.inputFile = new DataFile();
-		this.inputFile.name = input;
+		this.inputFile = input;
 	}
             
     public void setSuppress(String arg) {
@@ -148,11 +139,11 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 		if(resetSource != null && resetSource.equals("true")) {
             addArg("-resetSource");
 		}
-		addArg(inputFile.getName());
+		addArg(inputFile);
 		if(outputFile != null) {
-			// Don't use .getName() because it discards path
-	        addArg(outputFile.getAbsolutePath());
+	        addArg(outputFile);
 		}
+		System.out.println("XXX " + getFindbugsEngine().getCommandLine());
 	}
 
 	/* (non-Javadoc)
