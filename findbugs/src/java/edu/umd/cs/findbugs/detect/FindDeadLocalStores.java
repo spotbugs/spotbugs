@@ -383,6 +383,8 @@ public class FindDeadLocalStores implements Detector {
 						}
 					}
 					if (foundDeadClassInitialization) {
+						if (classContext.getJavaClass().getSuperclassName().equals(
+								"org.apache.axis.client.Stub")) continue;
 						BugInstance bugInstance = new BugInstance(this,  "DLS_DEAD_STORE_OF_CLASS_LITERAL", 
 								Priorities.NORMAL_PRIORITY).addClassAndMethod(
 										methodGen,
