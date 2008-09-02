@@ -170,6 +170,7 @@ public class FindSelfComparison2 implements Detector {
 		ValueNumber v0 = frame.getStackValue(0);
 		ValueNumber v1 = frame.getStackValue(offset);
 		if (!v1.equals(v0)) return;
+		if (v0.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) || v0.hasFlag(ValueNumber.CONSTANT_VALUE)) return;
 
 		int priority = HIGH_PRIORITY;
 		if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)

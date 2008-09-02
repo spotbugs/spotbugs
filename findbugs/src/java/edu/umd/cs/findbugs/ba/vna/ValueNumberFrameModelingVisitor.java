@@ -466,7 +466,7 @@ public class ValueNumberFrameModelingVisitor
 		} else {
 			value = constantValueMap.get(constantValue);
 			if (value == null) {
-				value = factory.createFreshValue();
+				value = factory.createFreshValue(ValueNumber.CONSTANT_VALUE);
 				constantValueMap.put(constantValue, value);
 
 				// Keep track of String constants

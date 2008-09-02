@@ -87,6 +87,8 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	public static final int CONSTANT_CLASS_OBJECT = 4;
 
 	public static final int PHI_NODE = 8;
+	
+	public static final int CONSTANT_VALUE = 16;
 
 	/**
 	 * Constructor.
