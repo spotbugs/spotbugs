@@ -15,9 +15,59 @@
 				<td align="left" valign="top">
 
 					<h1>
-						FindBugs Change Log, Version 1.3.4
+						FindBugs Change Log, Version 1.3.5
 					</h1>
 
+					<p> Changes since version 1.3.4</p>
+					<ul>
+						<li>FindBugs base</li>
+						<ul>
+						<li>About 15% faster
+						</ul>
+						<li>Bugs closed:</li>
+						<p>
+<table border="1">
+<tr><td>2073871<td> Findbugs datamining: setBugDatabaseInfo.output ignores Path<td>   2008-08-25 11:47<td> 5<td>Closed<td>wpugh<td>glohmann
+<tr><td> 2037788<td> Warnings are not linked back to sourceFile in 1.3.4<td>   2008-08-04 13:07<td> 5<td>Closed<td>nobody<td>deathbob
+<tr><td> 2032970<td> Eclipse plugin confused which $1 inner class causes error<td>* 2008-07-30 13:20<td> 5<td>Closed<td>andyandy<td>chrisdolan
+<tr><td> 2031441<td> ICAST_IDIV_CAST_TO_DOUBLE<td>* 2008-07-29 09:19<td> 5<td>Closed<td>wpugh<td>zeisss
+<tr><td> 2030541<td> Application crashing for jars more than 5mb in size<td>* 2008-07-28 13:52<td> 5<td>Closed<td>nobody<td>sequaliter
+<tr><td> 2030167<td> Working Set Filtering Does Not Work on Bug Explorer View<td>* 2008-07-28 06:03<td> 5<td>Closed<td>andyandy<td>kuniss
+<tr><td> 2030157<td> No Update on Bug Views on Clicking Warning Item<td>* 2008-07-28 05:54<td> 5<td>Closed<td>andyandy<td>kuniss
+<tr><td> 2026021<td> ant task fails after installing findbugs version 1.3.4<td>* 2008-07-23 15:13<td> 5<td>Closed<td>nobody<td>tpalmeri
+<tr><td> 2024625<td> textui crash with bad input<td>* 2008-07-22 08:41<td> 5<td>Closed<td>wpugh<td>davidcok
+<tr><td> 2023897<td> computeBugHistory - java.lang.IllegalArgumentException<td>* 2008-07-21 16:09<td> 5<td>Closed<td>nobody<td>tpalmeri
+<tr><td> 2023691<td> Failure with IBM 1.6 JDK<td>* 2008-07-21 11:53<td> 5<td>Closed<td>wpugh<td>tdeboer
+<tr><td> 2023150<td> Plugin: Filtering not working<td>* 2008-07-20 21:37<td> 5<td>Closed<td>andyandy<td>davidcok
+<tr><td> 2023146<td> Plugin: annotate from Problems View or Editor<td>* 2008-07-20 21:35<td> 5<td>Closed<td>andyandy<td>davidcok
+<tr><td> 2012727<td> STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE not checking enums<td>* 2008-07-07 14:01<td> 5<td>Closed<td>wpugh<td>anurupjoseph
+<tr><td> 2010163<td> show bug pattern description<td>* 2008-07-03 19:40<td> 1<td>Closed<td>nobody<td>davidcok
+<tr><td> 2003267<td> NP_NULL_PARAM_DEREF confused with NP_NULL_ON_SOME_PATH<td>* 2008-06-26 12:23<td> 5<td>Closed<td>wpugh<td>npiguet
+<tr><td> 2003253<td> NP_STORE_INTO_NONNULL_FIELD doesn't check @NonNull<td>* 2008-06-26 11:59<td> 5<td>Closed<td>nobody<td>npiguet
+<tr><td> 2003243<td> False "Mismatched notify()" warning<td>* 2008-06-26 11:45<td> 5<td>Closed<td>wpugh<td>gopi-reddy
+<tr><td> 2000839<td> Issue with jsr305 annotations in Eclipse plugin<td>* 2008-06-23 09:59<td> 5<td>Closed<td>andyandy<td>kukuba
+<tr><td> 1995271<td> x || x logic expression should cause a warning<td>* 2008-06-16 11:46<td> 5<td>Closed<td>wpugh<td>marcust
+<tr><td> 1994945<td> "Transient field that isn't set ..." on Externalizable<td>* 2008-06-16 05:22<td> 5<td>Closed<td>wpugh<td>g_korland
+<tr><td> 1992566<td> "Method ignores exceptional return value" warning is bogus<td>* 2008-06-12 22:00<td> 5<td>Closed<td>daveho<td>snakeeyes
+<tr><td> 1987100<td> Check LDC_W too<td>* 2008-06-07 00:36<td> 5<td>Closed<td>wpugh<td>dbrosius
+<tr><td> 1983674<td> Should have caught JDK NPE bug<td>* 2008-06-03 12:01<td> 5<td>Closed<td>wpugh<td>wpugh
+<tr><td> 1983103<td> NM_CONFUSING description not in synch with the detector<td>* 2008-06-03 03:08<td> 5<td>Closed<td>wpugh<td>egirau
+<tr><td> 1982509<td> Baseline bug collection can't be smaller than 200 bytes<td>* 2008-06-02 14:51<td> 5<td>Closed<td>timothy_meyer<td>imfurry
+<tr><td> 1982455<td> Exclude baseline bugs setting not saved in preferences dialo<td>* 2008-06-02 13:56<td> 5<td>Closed<td>andyandy<td>imfurry
+<tr><td> 1978215<td> SC misses Thread.start() in a Runnable impl<td>* 2008-05-29 14:55<td> 4<td>Closed<td>wpugh<td>chrisdolan
+<tr><td> 1970352<td> Exception in XDocsBugReporter<td>* 2008-05-23 07:25<td> 5<td>Closed<td>nobody<td>nielsbnielsen
+<tr><td> 1968650<td> NonNull not working<td>* 2008-05-21 07:54<td> 5<td>Closed<td>wpugh<td>virtualwarp
+<tr><td> 1968008<td> warnings not cleared on recompile<td>* 2008-05-20 10:44<td> 5<td>Closed<td>andyandy<td>lpurvis
+<tr><td> 1966694<td> Opcode stack misses semi in signature<td>* 2008-05-18 21:31<td> 5<td>Closed<td>nobody<td>dbrosius
+<tr><td> 1966690<td> Opcode stack misses semi in signature<td>* 2008-05-18 21:17<td> 5<td>Closed<td>wpugh<td>dbrosius
+<tr><td> 1965452<td> False Positive NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS<td>* 2008-05-16 11:55<td> 5<td>Closed<td>wpugh<td>kukuba
+<tr><td> 1963857<td> -xdocs option throws StringIndexOutOfBoundsException<td>* 2008-05-14 10:38<td> 5<td>Closed<td>nobody<td>tommy9i
+<tr><td> 1963488<td> Redundant nullcheck in SWITCH_TABLE<td>* 2008-05-13 20:55<td> 5<td>Closed<td>ben_langmead<td>ben_langmead
+<tr><td> 1963095<td> Manual typo in title: "12.3. Ant exemple"<td>* 2008-05-13 09:47<td> 1<td>Closed<td>nobody<td>apa3a
+<tr><td> 1959524<td> findbugs error with debug<td>* 2008-05-07 09:36<td> 5<td>Closed<td>ben_langmead<td>ben_langmead
+</table>
+</ul>
+ 
 					<p> Changes since version 1.3.3</p>
 
 					<ul>
