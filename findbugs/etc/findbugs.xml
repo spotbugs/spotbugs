@@ -258,6 +258,11 @@
             speed="fast"
             reports="DMI_UNSUPPORTED_METHOD"
 		/>
+  <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" 
+            speed="fast"
+            reports="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED,VA_FORMAT_STRING_ILLEGAL,VA_FORMAT_STRING_MISSING_ARGUMENT,VA_FORMAT_STRING_BAD_ARGUMENT"
+	    disabled="true"
+             />
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -1014,6 +1019,10 @@
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="BAD_PRACTICE" />
   <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG" category="CORRECTNESS"/>
   <BugPattern abbrev="VA" type="VA_FORMAT_STRING_ARG_MISMATCH" category="CORRECTNESS"/>
+  <BugPattern abbrev="VA" type="VA_FORMAT_STRING_BAD_ARGUMENT" category="CORRECTNESS"/>
+  <BugPattern abbrev="VA" type="VA_FORMAT_STRING_MISSING_ARGUMENT" category="CORRECTNESS"/>
+  <BugPattern abbrev="VA" type="VA_FORMAT_STRING_ILLEGAL" category="CORRECTNESS"/>
+  <BugPattern abbrev="VA" type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>

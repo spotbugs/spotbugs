@@ -430,6 +430,14 @@ This does not help the garbage collector in any way, the nulling out of fields h
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker">
+    <Details>
+<![CDATA[
+<p> Checks for incorrect format strings.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -6322,6 +6330,74 @@ author intended.
 ]]>
  	</Details>
   </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
+    <ShortDescription>More arguments are passed that are actually used in the format string</ShortDescription>
+    <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+A format-string method with a variable number of arguments is called,
+but more arguments are passed than are actually used by the format string.
+This won't cause a runtime exception, but the code may be silently omitting 
+information that was intended to be included in the formatted string.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_ILLEGAL">
+    <ShortDescription>Illegal format string</ShortDescription>
+    <LongDescription>Illegal format string "{3}" in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The format string is syntactically invalid, 
+and a runtime exception will occur when 
+this statement is executed.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
+    <ShortDescription>Format string references missing argument</ShortDescription>
+    <LongDescription>format string "{3}" needs argument {5} but only {6} are provided {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+Not enough arguments are passed to satisfy a placeholder in the format string.
+A runtime exception will occur when 
+this statement is executed.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_BAD_ARGUMENT">
+    <ShortDescription>Format string placeholder incompatible with passed argument</ShortDescription>
+    <LongDescription>The placeholder {4} is incompatible with 
+corresponding argument in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The format string placeholder is incompatible with the corresponding
+argument. For example,
+<code>
+  System.out.println("%d\n", "hello");
+</code>
+<p>The %d placeholder requires a numeric argument, but a string value is
+passed instead. 
+A runtime exception will occur when 
+this statement is executed.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+
+
+
 
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
