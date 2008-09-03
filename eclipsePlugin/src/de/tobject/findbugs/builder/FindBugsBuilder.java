@@ -106,10 +106,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		List<IResource> files;
 		if(incremental) {
 			IResourceDelta resourceDelta = getDelta(project);
-			if (resourceDelta != null
-					&& resourceDelta.findMember(new Path(".project")) == null
-					&& resourceDelta.findMember(new Path(".classpath")) == null
-					&& resourceDelta.findMember(new Path(".fbprefs")) == null) {
+			if (shouldRunIncremental(resourceDelta)) {
 				files = ResourceUtils.collectIncremental(resourceDelta);
 			} else {
 				files = new ArrayList<IResource>();
@@ -122,4 +119,17 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		worker.work(files);
 	}
 
+	/**
+	 * @return true if we should run incremental build (no config change OR full build is
+	 *         disabled)
+	 */
+	private boolean shouldRunIncremental(IResourceDelta resourceDelta)
+			throws CoreException {
+		boolean configUnchanged = resourceDelta != null
+				&& resourceDelta.findMember(new Path(".project")) == null
+				&& resourceDelta.findMember(new Path(".classpath")) == null
+				&& resourceDelta.findMember(new Path(".fbprefs")) == null;
+		return configUnchanged
+				|| !FindbugsPlugin.getUserPreferences(getProject()).isRunAtFullBuild();
+	}
 }
