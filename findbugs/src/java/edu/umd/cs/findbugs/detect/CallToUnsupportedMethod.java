@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
@@ -89,6 +90,8 @@ public class CallToUnsupportedMethod implements Detector  {
     	if (method.isSynthetic()) return;
     	CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		ConstantPoolGen constantPoolGen = classContext.getConstantPoolGen();
+		
 		locationLoop: for (Iterator<Location> iter = cfg.locationIterator(); iter.hasNext();) {
 			Location location = iter.next();
 			InstructionHandle handle = location.getHandle();
@@ -103,10 +106,13 @@ public class CallToUnsupportedMethod implements Detector  {
 			InvokeInstruction inv = (InvokeInstruction) ins;
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			
+			String methodName = inv.getMethodName(constantPoolGen);
+			if (methodName.toLowerCase().indexOf("unsupported") >= 0) 
+				continue;
 			Set<XMethod> targets;
             try {
 	            
-				targets = Hierarchy2.resolveMethodCallTargets(inv, frame, classContext.getConstantPoolGen());
+				targets = Hierarchy2.resolveMethodCallTargets(inv, frame, constantPoolGen);
             } catch (ClassNotFoundException e) {
 	            AnalysisContext.reportMissingClass(e);
 	            continue locationLoop;
@@ -132,7 +138,7 @@ public class CallToUnsupportedMethod implements Detector  {
 			}
 			BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
 				.addClassAndMethod(classContext.getJavaClass(), method)
-				.addCalledMethod(classContext.getConstantPoolGen(), inv)
+				.addCalledMethod(constantPoolGen, inv)
 				.addSourceLine(classContext, method, location);
 			bugReporter.reportBug(bug);
 			
