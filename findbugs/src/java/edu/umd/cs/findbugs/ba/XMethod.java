@@ -65,6 +65,12 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      */
     public boolean isUnsupported();
 
+    /**
+     * @return is this a var args method?
+     */
+    public boolean isVarArgs();
+
+    
 	/**
      * @return true if method's return type is a reference type, false otherwise
      */

@@ -146,5 +146,12 @@ class UnresolvedXMethod extends AbstractMethod  {
 	    // TODO Auto-generated method stub
 	    return false;
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
+     */
+    public boolean isVarArgs() {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 
 }
