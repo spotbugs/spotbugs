@@ -71,7 +71,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		        && getMethodSig().equals(EQUALS_SIGNATURE)) {
 			sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals = sawGoodEqualsClass = sawBadEqualsClass = dangerDanger 
 			= sawInstanceOfSupertype
-				= alwaysTrue = alwaysFalse = false;
+				= alwaysTrue = alwaysFalse = sawStaticDelegate = false;
 			sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
 			equalsCalls = 0;
 			super.visit(obj);
@@ -90,7 +90,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS : KindOfEquals.GETCLASS_GOOD_EQUALS;
 			else if (sawGetClass && sawBadEqualsClass) 
 					kind = KindOfEquals.GETCLASS_BAD_EQUALS;
-			else if (equalsCalls == 1)
+			else if (equalsCalls == 1 || sawStaticDelegate)
 				kind = KindOfEquals.DELEGATE_EQUALS;
 			else if (sawInitialIdentityCheck)
 				kind = KindOfEquals.TRIVIAL_EQUALS;
@@ -159,6 +159,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	boolean sawGoodEqualsClass, sawBadEqualsClass;
 	boolean sawCompare;
 	boolean dangerDanger = false;
+	boolean sawStaticDelegate;
 
 	private EnumMap<KindOfEquals, Integer> count = new EnumMap<KindOfEquals, Integer> (KindOfEquals.class);
 	
@@ -173,6 +174,11 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			// System.out.println(OPCODE_NAMES[seen]);
 			sawInitialIdentityCheck = false;
 		}
+		if (getPC() == 2 && seen == INVOKESTATIC && getCode().getCode().length == 6 
+				&& (getPrevOpcode(1) == ALOAD_0 && getPrevOpcode(2) == ALOAD_1
+						|| getPrevOpcode(1) == ALOAD_1 && getPrevOpcode(2) == ALOAD_0))
+			sawStaticDelegate = true;
+			
 		if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_0 ) {
 			alwaysFalse = true;
 			bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(this));
