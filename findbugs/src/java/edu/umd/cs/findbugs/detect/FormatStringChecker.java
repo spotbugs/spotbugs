@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 import org.apache.bcel.classfile.Code;
@@ -104,12 +105,19 @@ public class FormatStringChecker extends OpcodeStackDetector {
 		}  else if (state == FormatState.READY_FOR_FORMAT
 		        && (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKESTATIC || seen == INVOKEINTERFACE)
 		        && stack.getStackDepth() == stackDepth) {
+			
 			String cl = getClassConstantOperand();
 			String nm = getNameConstantOperand();
-			if ("java/util/Formatter".equals(cl) && "format".equals(nm) || "java/lang/String".equals(cl) && "format".equals(nm)
-			        || "java/io/PrintStream".equals(cl) && "format".equals(nm) || "java/io/PrintStream".equals(cl)
-			        && "printf".equals(nm) || "java/io/PrintWriter".equals(cl) && "format".equals(nm)
-			        || "java/io/PrintWriter".equals(cl) && "printf".equals(nm)) {
+			String sig = getSigConstantOperand();
+			XMethod m = getXMethodOperand();
+			if ((m == null || m.isVarArgs()) && sig.indexOf("Ljava/lang/String;[java/lang/Object;)") > 0
+					&& ("java/util/Formatter".equals(cl) && "format".equals(nm) 
+							|| "java/lang/String".equals(cl) && "format".equals(nm)
+							|| "java/io/PrintStream".equals(cl) && "format".equals(nm) 
+							|| "java/io/PrintStream".equals(cl)  && "printf".equals(nm) 
+							|| cl.endsWith("Writer") && "format".equals(nm)
+							|| cl.endsWith("Writer") && "printf".equals(nm))
+							|| cl.endsWith("Logger") && nm.endsWith("fmt")) {
 
 				try {
 					FormatSpecifier[] formats = parse(formatString);
