@@ -270,7 +270,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
      * @return
      */
     private boolean callToInvoke(int seen) {
-	    return (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && getNameConstantOperand().equals(EQUALS_NAME)
+	    return (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL) && getNameConstantOperand().startsWith(EQUALS_NAME)
 		        && getSigConstantOperand().equals(EQUALS_SIGNATURE);
     }
 
