@@ -151,6 +151,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 					dangerousToStoreIntoField = true;
 					// System.out.println("Found dangerous value from parameter " + reg);
 				}
+				break;
 			default:
 			}
 		} else if (staticMethod) {
@@ -164,6 +165,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 					//r = reg;
 					dangerousToStoreIntoField = true;
 				}
+				break;
 			default:
 			}
 		}
