@@ -705,7 +705,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 		cmp = startLine - other.startLine;
 		if (cmp != 0)
 			return cmp;
-		return endLine - other.endLine;
+		cmp = startBytecode - other.startBytecode;
+		if (cmp != 0)
+			return cmp;
+		return endBytecode - other.endBytecode;
 	}
 
 	@Override
