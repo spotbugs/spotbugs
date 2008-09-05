@@ -13,6 +13,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
@@ -30,12 +31,14 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 public class FindNonSerializableStoreIntoSession implements Detector {
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	private static final boolean DEBUG = false;
 
 	public FindNonSerializableStoreIntoSession(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -53,6 +56,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 			} catch (DataflowAnalysisException e) {
 				// bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
 			}
+			bugAccumulator.reportAccumulatedBugs();
 		}
 	}
 
@@ -124,17 +128,16 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 							.fromVisitedInstruction(classContext, methodGen,
 									sourceFile, handle);
 
-					bugReporter
-							.reportBug(new BugInstance(
+					bugAccumulator
+							.accumulateBug(new BugInstance(
 									this,
 									"J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
 									isSerializable < 0.15 ? HIGH_PRIORITY
 											: isSerializable > 0.5 ? LOW_PRIORITY
 													: NORMAL_PRIORITY)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addClass(DeepSubtypeAnalysis.getComponentClass(refSig))
-									.addSourceLine(sourceLineAnnotation)
-									);
+									.addClass(DeepSubtypeAnalysis.getComponentClass(refSig)), sourceLineAnnotation);
+									
 				}
 			} catch (ClassNotFoundException e) {
 				// ignore

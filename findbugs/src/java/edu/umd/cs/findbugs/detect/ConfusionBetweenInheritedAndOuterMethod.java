@@ -19,22 +19,25 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+
 public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDetector {
 
 
 	BugReporter bugReporter;
+	BugAccumulator bugAccumulator;
 	public ConfusionBetweenInheritedAndOuterMethod(BugReporter bugReporter) {
 		this.bugReporter =  bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -42,7 +45,10 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		 public void visitJavaClass(JavaClass obj) {
 		hasThisDollarZero = false;
 		// totally skip methods not defined in inner classes
-		if (obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
+		if (obj.getClassName().indexOf('$') >= 0) {
+			super.visitJavaClass(obj);
+			bugAccumulator.reportAccumulatedBugs();
+		}
 
 	}
 
@@ -91,11 +97,10 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 					 priority+=2;
 				 if (invokedMethod.getName().equals(getMethodName())) priority++;
 
-				 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
+				 bugAccumulator.accumulateBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
 						.addClassAndMethod(this)
 						  .addMethod(invokedMethod).describe("METHOD_INHERITED")
-						.addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
-						.addSourceLine(this, getPC()));
+						.addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET"), this);
 				 break;
 			 }
 		 }

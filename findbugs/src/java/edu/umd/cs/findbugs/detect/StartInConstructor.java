@@ -25,6 +25,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -38,9 +39,11 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	public StartInConstructor(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -55,7 +58,10 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
 	@Override
 		 public void visit(Code obj) {
-		if (getMethodName().equals("<init>")) super.visit(obj);
+		if (getMethodName().equals("<init>")) {
+			super.visit(obj);
+			bugAccumulator.reportAccumulatedBugs();
+		}
 	}
 
 	@Override
@@ -74,7 +80,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 		                		bug.addClass(sub).describe(ClassAnnotation.SUBCLASS_ROLE);
 		                	bug.setPriority(Priorities.HIGH_PRIORITY);
 		                }
-					bugReporter.reportBug(bug.addSourceLine(this));
+					bugAccumulator.accumulateBug(bug, this);
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);

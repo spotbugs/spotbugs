@@ -20,16 +20,18 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import java.util.BitSet;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.LineNumber;
-import org.apache.bcel.classfile.LineNumberTable;
-
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
+
+import java.util.BitSet;
 
 /**
  * A Detector to look for useless control flow.  For example,
@@ -68,13 +70,18 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 		ifInstructionSet.set(Constants.IFNONNULL);
 	}
 
-	private BugReporter bugReporter;
+	private BugAccumulator bugAccumulator;
 
 	public FindUselessControlFlow(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
+	@Override
+	public void visit(Code obj) {
+		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
+	}
 	@Override
 		 public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
@@ -90,9 +97,8 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 					if (branchLineNumber +1 == targetLineNumber || branchLineNumber  == targetLineNumber && nextLine == branchLineNumber+1) priority = HIGH_PRIORITY;
 					else if (branchLineNumber +2 < Math.max(targetLineNumber, nextLine)) priority = LOW_PRIORITY;
 				} else priority = LOW_PRIORITY;
-				bugReporter.reportBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
+						.addClassAndMethod(this), this);
 			}
 		}
 	}

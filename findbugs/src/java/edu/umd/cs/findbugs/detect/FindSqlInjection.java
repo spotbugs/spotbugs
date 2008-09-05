@@ -38,9 +38,11 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -135,9 +137,11 @@ public class FindSqlInjection implements Detector {
 	}
 
 	BugReporter bugReporter;
+	BugAccumulator bugAccumulator;
 
 	public FindSqlInjection(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -452,12 +456,12 @@ public class FindSqlInjection implements Detector {
 					if (prev == null || !isSafeValue(prev, cpg)) {
 						BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(),
 								stringAppendState);
-						bug.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
-						bugReporter.reportBug(bug);
+						bugAccumulator.accumulateBug(bug, SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle()));
 					}
 				}
 			}
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	public void report() {

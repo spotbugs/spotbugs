@@ -19,35 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ATHROW;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IFNULL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionTargeter;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.ReturnInstruction;
-
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -97,7 +69,6 @@ import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
@@ -108,6 +79,35 @@ import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.Util;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.ReturnInstruction;
+
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.annotation.CheckForNull;
 
 /**
  * A Detector to find instructions where a NullPointerException might be raised.
@@ -143,7 +143,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			.getProperty("fnd.class");
 
 	// Fields
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	// Cached database stuff
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
@@ -165,6 +166,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -199,7 +201,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				bugReporter.logError("While analyzing " + currentMethod
 						+ ": FindNullDeref caught cfgb exception", e);
 			}
-
+			bugAccumulator.reportAccumulatedBugs();
 		}
 	}
 
@@ -499,11 +501,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				priority = NORMAL_PRIORITY;
 			}
 			BugInstance warning = new BugInstance(this, bugPattern, priority)
-					.addClassAndMethod(classContext.getJavaClass(), method).addOptionalAnnotation(variable).addSourceLine(
-							classContext, method,
-							location);
-
-			bugReporter.reportBug(warning);
+					.addClassAndMethod(classContext.getJavaClass(), method).addOptionalAnnotation(variable);
+			bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(classContext, method,
+							location));
 		}
 	}
 	private boolean hasManyPreceedingNullTests(int pc) {
@@ -1101,9 +1101,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (wouldHaveBeenAKaboom)
 			bugInstance.addSourceLine(classContext, method,
 					locationOfKaBoom);
-		bugInstance.addSourceLine(classContext, method,
-				location).describe("SOURCE_REDUNDANT_NULL_CHECK");
-
+		
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 			WarningPropertyUtil.addPropertiesForLocation(propertySet,
@@ -1121,8 +1119,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			priority = propertySet.computePriority(NORMAL_PRIORITY);
 			bugInstance.setPriority(priority);
 		}
-
-		bugReporter.reportBug(bugInstance);
+		
+		SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
+				location);
+		sourceLine.setDescription("SOURCE_REDUNDANT_NULL_CHECK");
+		bugAccumulator.accumulateBug(bugInstance, sourceLine);
 	}
 
 
@@ -1313,7 +1314,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			else
 				bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
 
-			if (deref.isMethodReturnValue())
+			if (deref.isReadlineValue())
+				bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
+			else if (deref.isMethodReturnValue())
 				bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
 
 		}
@@ -1345,15 +1348,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		bugInstance.addOptionalAnnotation(variableAnnotation);
 		if (variableAnnotation instanceof FieldAnnotation)
 			bugInstance.describe("FIELD_CONTAINS_VALUE");
-		for (Location loc : derefLocationSet)
-			bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
-
-		for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
-			bugInstance.add(sourceLineAnnotation).describe(
-			"SOURCE_LINE_KNOWN_NULL");
-		}
-
-
+		
 		// If all deref locations are doomed
 		// (i.e., locations where a normal return is not possible),
 		// add a warning property indicating such.
@@ -1376,10 +1371,30 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (uncallable)
 			propertySet.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
 		propertySet.decorateBugInstance(bugInstance);
+		
+		if (bugType.equals("NP_DEREFERENCE_OF_READLINE_VALUE")) {
 
+			int source = -9999;
+			if (knownNullLocations.size() == 1)
+				source = knownNullLocations.iterator().next().getEndBytecode();
+			for (Location loc : derefLocationSet) {
+				int pos = loc.getHandle().getPosition();
+				if (pos != source+3) // immediate dereferences are handled by another detector
+					bugAccumulator.accumulateBug(bugInstance, SourceLineAnnotation.fromVisitedInstruction(classContext, method, loc));
+			}
 
-		// Report it
-		bugReporter.reportBug(bugInstance);
+		} else {
+			for (Location loc : derefLocationSet)
+				bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
+
+			for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
+				bugInstance.add(sourceLineAnnotation).describe(
+				"SOURCE_LINE_KNOWN_NULL");
+			}
+
+			// Report it
+			bugReporter.reportBug(bugInstance);
+		}
 	}
 
 	private boolean isDoomed(Location loc) {

@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ResourceCollection;
 import edu.umd.cs.findbugs.ResourceTrackingDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
@@ -445,10 +446,10 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(this, pos.bugType, pos.priority)
+			bugAccumulator.accumulateBug(new BugInstance(this, pos.bugType, pos.priority)
 					.addClassAndMethod(methodGen, sourceFile)
-					.addTypeOfNamedClass(stream.getStreamBase()).describe(TypeAnnotation.CLOSEIT_ROLE)
-					.addSourceLine(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
+					.addTypeOfNamedClass(stream.getStreamBase()).describe(TypeAnnotation.CLOSEIT_ROLE), 
+					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
 		}
 	}
 

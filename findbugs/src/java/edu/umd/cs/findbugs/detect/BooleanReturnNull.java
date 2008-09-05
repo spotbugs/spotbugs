@@ -19,22 +19,23 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+
+import org.apache.bcel.classfile.Code;
 
 /**
  * @author alison
  */
 public class BooleanReturnNull extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+	BugAccumulator bugAccumulator;
 
 	public BooleanReturnNull(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -45,6 +46,7 @@ public class BooleanReturnNull extends OpcodeStackDetector {
 		boolean interesting = "Ljava/lang/Boolean;".equals(sp.getReturnTypeSignature());
 		if (interesting)  {
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
+			bugAccumulator.reportAccumulatedBugs();
 		}
 	}
 
@@ -54,9 +56,9 @@ public class BooleanReturnNull extends OpcodeStackDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == ARETURN && getPrevOpcode(1) == ACONST_NULL)
-			bugReporter.reportBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL", NORMAL_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this));
+			bugAccumulator.accumulateBug(new BugInstance(this, "NP_BOOLEAN_RETURN_NULL", NORMAL_PRIORITY)
+			.addClassAndMethod(this), this);
+
 
 
 	}
