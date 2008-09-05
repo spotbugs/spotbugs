@@ -4197,6 +4197,18 @@ variable is null should have been a check to see if it was nonnull).
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_DEREFERENCE_OF_READLINE_VALUE">
+    <ShortDescription>Dereference of the result of readLine() without nullcheck</ShortDescription>
+    <LongDescription>Dereference of the result of readLine() without nullcheck in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The result of invoking readLine() is dereferenced without checking to see if the result is null. If there are no more lines of text
+to read, readLine() will return null and dereferencing that will generate a null pointer exception.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE">
     <ShortDescription>Immediate dereference of the result of readLine()</ShortDescription>
     <LongDescription>Immediate dereference of the result of readLine() in {1}</LongDescription>

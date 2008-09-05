@@ -71,8 +71,10 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	/** Value is (potentially) null because of a value returned from a called method. */
 	private static final int RETURN_VAL = 4 << FLAG_SHIFT;
 	private static final int FIELD_VAL = 8 << FLAG_SHIFT;
+	/** Value is (potentially) null because of a value returned from a called method. */
+	private static final int READLINE_VAL = (16 << FLAG_SHIFT) | RETURN_VAL;
 
-	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL; 
+	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL | READLINE_VAL; 
 
 	private static final int[][] mergeMatrix = {
 		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NO_KABOOM_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
@@ -171,10 +173,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public boolean isReturnValue() {
 		return (kind & RETURN_VAL) != 0;
 	}
+	public boolean isReadlineValue() {
+		return (kind & READLINE_VAL) != 0;
+	}
 
-		public boolean isFieldValue() {
-			return (kind & FIELD_VAL) != 0;
-		}
+	public boolean isFieldValue() {
+		return (kind & FIELD_VAL) != 0;
+	}
 	/**
 	 * Was this value marked as a possibly null parameter?
 	 */
@@ -214,8 +219,11 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	 * @param methodInvoked TODO
 	 */
 	public IsNullValue markInformationAsComingFromReturnValueOfMethod(XMethod methodInvoked) {
-		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | RETURN_VAL, locationOfKaBoom);
-		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
+		int flag = RETURN_VAL;
+		if (methodInvoked.getName().equals("readLine") && methodInvoked.getSignature().equals("()Ljava/lang/String;"))
+			flag = READLINE_VAL;
+		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | flag, locationOfKaBoom);
+		return instanceByFlagsList[(getFlags() | flag) >> FLAG_SHIFT][getBaseKind()];
 	}
 	/**
 	 * Convert to a value known because it was returned from a method

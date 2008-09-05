@@ -14,6 +14,7 @@ public class NullValueUnconditionalDeref {
 	private boolean alwaysOnExceptionPath;
 	private boolean alwaysFieldValue;
 	private boolean alwaysMethodReturnValue;
+	private boolean alwaysReadlineValue;
 	private Set<Location> derefLocationSet;
 	private Set<IsNullValue> values = new HashSet<IsNullValue>();
 
@@ -21,6 +22,7 @@ public class NullValueUnconditionalDeref {
 		this.alwaysOnExceptionPath = true;
 		this.alwaysMethodReturnValue = true;
 		this.alwaysFieldValue = true;
+		this.alwaysReadlineValue = true;
 		this.derefLocationSet = new HashSet<Location>();
 	}
 
@@ -36,6 +38,9 @@ public class NullValueUnconditionalDeref {
 			alwaysFieldValue = false;
 		if (!isNullValue.isReturnValue()) { 
 			alwaysMethodReturnValue = false;
+		}
+		if (!isNullValue.isReadlineValue()) {
+			alwaysReadlineValue = false;
 		}
 		values.add(isNullValue);
 		derefLocationSet.addAll(unconditionalDerefLocationSet);
@@ -59,6 +64,12 @@ public class NullValueUnconditionalDeref {
 	 */
 	public boolean isMethodReturnValue() {
 		return alwaysMethodReturnValue;
+	}
+	/**
+	 * @return Returns the alwaysMethodReturnValue.
+	 */
+	public boolean isReadlineValue() {
+		return alwaysReadlineValue;
 	}
 	/**
 	 * @return Returns the alwaysFieldValue.
