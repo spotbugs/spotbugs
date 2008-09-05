@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.LinkedList;
-
 import edu.umd.cs.findbugs.util.MultiMap;
+
+import java.util.TreeSet;
 
 /**
  * Accumulate warnings that may occur at multiple source locations,
@@ -42,7 +42,7 @@ public class BugAccumulator {
 	 */
 	public BugAccumulator(BugReporter reporter) {
 		this.reporter = reporter;
-		this.map = new MultiMap<BugInstance, SourceLineAnnotation>(LinkedList.class);
+		this.map = new MultiMap<BugInstance, SourceLineAnnotation>(TreeSet.class);
 	}
 
 	/**
