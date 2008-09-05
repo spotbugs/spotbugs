@@ -47,7 +47,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	private static final String EQUALS_NAME = "equals";
 
 	private static final String EQUALS_SIGNATURE = "(Ljava/lang/Object;)Z";
+	private static final String STATIC_EQUALS_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
 
+	
 	static enum KindOfEquals {
 		OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN };
 		
@@ -270,8 +272,15 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
      * @return
      */
     private boolean callToInvoke(int seen) {
-	    return (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL) && getNameConstantOperand().startsWith(EQUALS_NAME)
-		        && getSigConstantOperand().equals(EQUALS_SIGNATURE);
+	    if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL) 
+	    	return getNameConstantOperand().startsWith(EQUALS_NAME) &&  getSigConstantOperand().equals(EQUALS_SIGNATURE);
+	    if (seen == INVOKESTATIC) {
+	    	String sig = getSigConstantOperand();
+	    	return getNameConstantOperand().startsWith(EQUALS_NAME) && sig.endsWith("Ljava/lang/Object;)Z");
+	    }
+		     
+	    return false;
+		        
     }
 
 
