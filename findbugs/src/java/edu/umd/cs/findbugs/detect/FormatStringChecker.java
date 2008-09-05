@@ -132,7 +132,16 @@ public class FormatStringChecker extends OpcodeStackDetector {
 						);
                 } catch (MissingFormatArgumentException e) {
                 
-                	bugReporter.reportBug(
+                	if (e.pos < 0)
+                		bugReporter.reportBug(
+							new BugInstance(this, "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addString(formatString)
+							.addString(e.formatSpecifier.toString())
+							.addSourceLine(this)
+						);
+                	else bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
@@ -142,6 +151,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 							.addSourceLine(this)
 						);
+   
                 } catch (ExtraFormatArgumentsException e) {
                 	bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED", NORMAL_PRIORITY)

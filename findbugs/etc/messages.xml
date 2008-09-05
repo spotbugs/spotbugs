@@ -6316,6 +6316,24 @@ If the object is, indeed, non-serializable, an error will result.
     </Details>
   </BugPattern>
 
+  <BugPattern type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT">
+    <ShortDescription>No previous argument for format string</ShortDescription>
+    <LongDescription>No previous argument for format string argument to {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The format string specifies a relative index to request that the argument for the previous format specifier
+be reused. However, there is no previous argument.
+For example, 
+</p>
+<p><code>formatter.format("%<s %s", "a", "b")</code>
+</p>
+<p>would throw a MissingFormatArgumentException when executed.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
   <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
     <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
     <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
