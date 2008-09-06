@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Debug;
@@ -61,13 +62,9 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	private static final int MAX_CLASS_RESULTS_TO_CACHE = 5000;
 
-	private static final boolean assertionsEnabled;
-	
-	static {
-		boolean check = false;
-		assert check = true;
-		assertionsEnabled = check;
-	}
+	private static final boolean ASSERTIONS_ENABLED = SystemProperties.ASSERTIONS_ENABLED;
+
+
 	// Fields
 	private final IClassPath classPath;
 	private final IErrorLogger errorLogger;
@@ -127,8 +124,9 @@ public class AnalysisCache implements IAnalysisCache {
 	@SuppressWarnings("unchecked")
     static <E> E checkedCast(Class<E> analysisClass,
 			Object o) {
-		if (assertionsEnabled) 
-			return analysisClass.cast(o);
+		if (ASSERTIONS_ENABLED) {
+	        return analysisClass.cast(o);
+        }
 		return (E) o;
 	}
 	/**
@@ -161,8 +159,9 @@ public class AnalysisCache implements IAnalysisCache {
 			Map<ClassDescriptor, ClassContext> map = getAllClassAnalysis(ClassContext.class);
 			Collection<?> allClassContexts = map.values();
 			for(Object c : allClassContexts) {
-				if (c instanceof ClassContext)
-					((ClassContext)c).purgeAllMethodAnalyses();
+				if (c instanceof ClassContext) {
+	                ((ClassContext)c).purgeAllMethodAnalyses();
+                }
 			}
 		}
 		catch (ClassCastException e) {
@@ -185,8 +184,9 @@ public class AnalysisCache implements IAnalysisCache {
 	@SuppressWarnings("unchecked")
     public <E> E getClassAnalysis(Class<E> analysisClass,
 			ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-		if (classDescriptor == null)
-			throw new NullPointerException("classDescriptor is null");
+		if (classDescriptor == null) {
+	        throw new NullPointerException("classDescriptor is null");
+        }
 		// Get the descriptor->result map for this analysis class,
 		// creating if necessary
 		Map<ClassDescriptor, Object> descriptorMap =
@@ -196,8 +196,9 @@ public class AnalysisCache implements IAnalysisCache {
 		Object analysisResult = descriptorMap.get(classDescriptor);
 		if (analysisResult == null) {
 			// No cached result - compute (or recompute)
-			if (false && analysisClass == ClassContext.class)
-				System.out.println("ZZZ Generating " + analysisClass.getSimpleName() + " for " + classDescriptor);
+			if (false && analysisClass == ClassContext.class) {
+	            System.out.println("ZZZ Generating " + analysisClass.getSimpleName() + " for " + classDescriptor);
+            }
 			IAnalysisEngine<ClassDescriptor, E> engine = (IAnalysisEngine<ClassDescriptor, E>) classAnalysisEngineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
@@ -232,8 +233,9 @@ public class AnalysisCache implements IAnalysisCache {
 				profiler.end(engine.getClass());
 			}
 
-			if (false && analysisClass == ClassContext.class)
-				System.out.println("ZZZ Generated " + hex(analysisResult) + " for " + classDescriptor);
+			if (false && analysisClass == ClassContext.class) {
+	            System.out.println("ZZZ Generated " + hex(analysisResult) + " for " + classDescriptor);
+            }
 
 			// Save the result
 			descriptorMap.put(classDescriptor, analysisResult);
@@ -266,8 +268,9 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public <E> E getMethodAnalysis(Class<E> analysisClass,
 			MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-		if (methodDescriptor == null)
-			throw new NullPointerException("methodDescriptor is null");
+		if (methodDescriptor == null) {
+	        throw new NullPointerException("methodDescriptor is null");
+        }
 		ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 		Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
 
@@ -284,8 +287,10 @@ public class AnalysisCache implements IAnalysisCache {
 			}
 
 			classContext.putMethodAnalysis(analysisClass, methodDescriptor, object);
-			if (false) System.out.println("ZZZ updated to " + classContext.getObjectMap(analysisClass).keySet()
-					+ " in " + Integer.toString(System.identityHashCode(classContext.getObjectMap(analysisClass)),16));
+			if (false) {
+	            System.out.println("ZZZ updated to " + classContext.getObjectMap(analysisClass).keySet()
+	            		+ " in " + Integer.toString(System.identityHashCode(classContext.getObjectMap(analysisClass)),16));
+            }
 
 		}
 		if (Debug.VERIFY_INTEGRITY && object == null) {
@@ -347,7 +352,9 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
 		try {
-			if (false) System.out.println("ZZZ purging analysis for " + methodDescriptor);
+			if (false) {
+	            System.out.println("ZZZ purging analysis for " + methodDescriptor);
+            }
 	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 	        classContext.purgeMethodAnalyses(methodDescriptor);
         } catch (CheckedAnalysisException e) {
@@ -376,14 +383,15 @@ public class AnalysisCache implements IAnalysisCache {
 			// Create a MapCache that allows the analysis engine to
 			// decide that analysis results should be retained indefinitely.
 			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
-			if (analysisClass.equals(JavaClass.class))
-				descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
-			else if (analysisClass.equals(ClassContext.class))
-				descriptorMap = new MapCache<DescriptorType, Object>(10);
-			else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute())
-				descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
-			else
-				descriptorMap = new HashMap<DescriptorType, Object>();
+			if (analysisClass.equals(JavaClass.class)) {
+	            descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
+            } else if (analysisClass.equals(ClassContext.class)) {
+	            descriptorMap = new MapCache<DescriptorType, Object>(10);
+            } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) {
+	            descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
+            } else {
+	            descriptorMap = new HashMap<DescriptorType, Object>();
+            }
 
 			analysisClassToDescriptorMapMap.put(analysisClass, descriptorMap);
 		}
