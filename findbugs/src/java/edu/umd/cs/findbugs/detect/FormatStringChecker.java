@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
@@ -26,13 +32,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-
-import org.apache.bcel.classfile.Code;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FormatStringChecker extends OpcodeStackDetector {
 	private static final boolean VAMISMATCH_DEBUG = SystemProperties.getBoolean("vamismatch.debug");
@@ -68,7 +67,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
 	 */
 	@Override
@@ -81,16 +80,16 @@ public class FormatStringChecker extends OpcodeStackDetector {
 		}
 		if (seen == ANEWARRAY && stack.getStackDepth() >= 2) {
 			Object size = stack.getStackItem(0).getConstant();
-			Object formatString = stack.getStackItem(1).getConstant();
-			if (size instanceof Integer && formatString instanceof String) {
+			Object formatStr = stack.getStackItem(1).getConstant();
+			if (size instanceof Integer && formatStr instanceof String) {
 				arguments = new OpcodeStack.Item[(Integer) size];
-				this.formatString = (String) formatString;
+				this.formatString = (String) formatStr;
 				state = FormatState.READY_FOR_FORMAT;
 				stackDepth = stack.getStackDepth();
 			}
-		} else if (state == FormatState.READY_FOR_FORMAT && seen == DUP)
-			state = FormatState.EXPECTING_ASSIGNMENT;
-		else if (state == FormatState.EXPECTING_ASSIGNMENT && stack.getStackDepth() == stackDepth + 3 && seen == AASTORE) {
+		} else if (state == FormatState.READY_FOR_FORMAT && seen == DUP) {
+	        state = FormatState.EXPECTING_ASSIGNMENT;
+        } else if (state == FormatState.EXPECTING_ASSIGNMENT && stack.getStackDepth() == stackDepth + 3 && seen == AASTORE) {
 			Object pos = stack.getStackItem(1).getConstant();
 			OpcodeStack.Item value = stack.getStackItem(0);
 			if (pos instanceof Integer) {
@@ -98,23 +97,25 @@ public class FormatStringChecker extends OpcodeStackDetector {
 				if (index >= 0 && index < arguments.length) {
 					arguments[index] = value;
 					state = FormatState.READY_FOR_FORMAT;
-				} else
-					state = FormatState.NONE;
-			} else
-				state = FormatState.NONE;
+				} else {
+	                state = FormatState.NONE;
+                }
+			} else {
+	            state = FormatState.NONE;
+            }
 		}  else if (state == FormatState.READY_FOR_FORMAT
 		        && (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKESTATIC || seen == INVOKEINTERFACE)
 		        && stack.getStackDepth() == stackDepth) {
-			
+
 			String cl = getClassConstantOperand();
 			String nm = getNameConstantOperand();
 			String sig = getSigConstantOperand();
 			XMethod m = getXMethodOperand();
 			if ((m == null || m.isVarArgs()) && sig.indexOf("Ljava/lang/String;[java/lang/Object;)") > 0
-					&& ("java/util/Formatter".equals(cl) && "format".equals(nm) 
+					&& ("java/util/Formatter".equals(cl) && "format".equals(nm)
 							|| "java/lang/String".equals(cl) && "format".equals(nm)
-							|| "java/io/PrintStream".equals(cl) && "format".equals(nm) 
-							|| "java/io/PrintStream".equals(cl)  && "printf".equals(nm) 
+							|| "java/io/PrintStream".equals(cl) && "format".equals(nm)
+							|| "java/io/PrintStream".equals(cl)  && "printf".equals(nm)
 							|| cl.endsWith("Writer") && "format".equals(nm)
 							|| cl.endsWith("Writer") && "printf".equals(nm))
 							|| cl.endsWith("Logger") && nm.endsWith("fmt")) {
@@ -131,9 +132,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addSourceLine(this)
 						);
                 } catch (MissingFormatArgumentException e) {
-                
-                	if (e.pos < 0)
-                		bugReporter.reportBug(
+
+                	if (e.pos < 0) {
+	                    bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
@@ -141,17 +142,19 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addString(e.formatSpecifier.toString())
 							.addSourceLine(this)
 						);
-                	else bugReporter.reportBug(
-							new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
-							.addClassAndMethod(this)
-							.addCalledMethod(this)
-							.addString(formatString)
-							.addString(e.formatSpecifier.toString())
-							.addInt(e.pos+1)
-							.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
-							.addSourceLine(this)
-						);
-   
+                    } else {
+	                    bugReporter.reportBug(
+	                    		new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
+	                    		.addClassAndMethod(this)
+	                    		.addCalledMethod(this)
+	                    		.addString(formatString)
+	                    		.addString(e.formatSpecifier.toString())
+	                    		.addInt(e.pos+1)
+	                    		.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
+	                    		.addSourceLine(this)
+	                    	);
+                    }
+
                 } catch (ExtraFormatArgumentsException e) {
                 	bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED", NORMAL_PRIORITY)
@@ -167,12 +170,10 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
 		}
 	}
-	
-    // %[argument_index$][flags][width][.precision][t]conversion
-    private static final String formatSpecifier
-        = "%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])";
 
-    private static Pattern fsPattern = Pattern.compile(formatSpecifier);
+    // %[argument_index$][flags][width][.precision][t]conversion
+    private static Pattern fsPattern =
+    	Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
 
 
     static class FormatSpecifier{
@@ -185,9 +186,13 @@ public class FormatStringChecker extends OpcodeStackDetector {
          private final char c;
 
     	static int parseWidth(String n) {
-    		if (n == null) return -1;
+    		if (n == null) {
+	            return -1;
+            }
     		int value = Integer.parseInt(n);
-    		if (value < 0) throw new IllegalArgumentException("Illegal value: " + value);
+    		if (value < 0) {
+	            throw new IllegalArgumentException("Illegal value: " + value);
+            }
 			return value;
     	}
 
@@ -199,33 +204,38 @@ public class FormatStringChecker extends OpcodeStackDetector {
         	this.fullPattern = fullPattern;
         	int idx = 0;
         	String indexString = sa[idx++];
-        	
+
         	flags = sa[idx++];
             width = parseWidth(sa[idx++]);
             String precisionWidthString = sa[idx++];
-            if (precisionWidthString == null)
-            	precision = -1;
-            else precision = parseWidth(precisionWidthString.substring(1));
-            
+            if (precisionWidthString == null) {
+	            precision = -1;
+            } else {
+	            precision = parseWidth(precisionWidthString.substring(1));
+            }
+
 
             if (sa[idx++] != null) {
                 dt = true;
-         
-            } else
-            	dt = false;
+
+            } else {
+	            dt = false;
+            }
             c = sa[idx++].charAt(0);
-            
-            if (c == '%' || c == 'n')
-            	index = -2;
-            else if (flags.indexOf('<') >= 0)
-            	index = -1;
-            else if (indexString == null)
-        		index = 0;
-        	else index = Integer.parseInt(indexString.substring(0, indexString.length()-1));
-        	
+
+            if (c == '%' || c == 'n') {
+	            index = -2;
+            } else if (flags.indexOf('<') >= 0) {
+	            index = -1;
+            } else if (indexString == null) {
+	            index = 0;
+            } else {
+	            index = Integer.parseInt(indexString.substring(0, indexString.length()-1));
+            }
+
 
         }};
-    
+
     private FormatSpecifier[] parse(String s) {
         ArrayList<FormatSpecifier> al = new ArrayList<FormatSpecifier>();
         Matcher m = fsPattern.matcher(s);
@@ -258,15 +268,15 @@ public class FormatStringChecker extends OpcodeStackDetector {
                 break;
             }
         }
-        return (FormatSpecifier[]) al.toArray(new FormatSpecifier[0]);
+        return al.toArray(new FormatSpecifier[0]);
     }
     public void check(FormatSpecifier[] fsa, OpcodeStack.Item [] args) throws MissingFormatArgumentException, ExtraFormatArgumentsException {
- 
+
         // index of last argument referenced
         int last = -1;
         // last ordinary index
         int lasto = -1;
-        
+
         int maxIndex = -1;
 
         for (int i = 0; i < fsa.length; i++) {
@@ -278,36 +288,40 @@ public class FormatStringChecker extends OpcodeStackDetector {
                     // ignore
                     break;
                 case -1:  // relative index
-                    if (last < 0 || (last > args.length - 1))
-                        throw new MissingFormatArgumentException(last, fs);
+                    if (last < 0 || (last > args.length - 1)) {
+	                    throw new MissingFormatArgumentException(last, fs);
+                    }
                     // check fs against args[last]
                     maxIndex = Math.max(maxIndex, last);
                     break;
                 case 0:  // ordinary index
                     lasto++;
                     last = lasto;
-                    if (lasto > args.length - 1)
-                        throw new MissingFormatArgumentException(lasto, fs);
+                    if (lasto > args.length - 1) {
+	                    throw new MissingFormatArgumentException(lasto, fs);
+                    }
                     // check fs against args[lasto]
                     maxIndex = Math.max(maxIndex, lasto);
                     break;
                 default:  // explicit index
                     last = index - 1;
-                    if (last > args.length - 1)
-                        throw new MissingFormatArgumentException(last, fs);
+                    if (last > args.length - 1) {
+	                    throw new MissingFormatArgumentException(last, fs);
+                    }
                     // check fs against args[last]
                     maxIndex = Math.max(maxIndex, last);
                     break;
                 }
-          
+
         }
-        if (maxIndex < args.length -1)
-        	throw new ExtraFormatArgumentsException(args.length, maxIndex+1);
+        if (maxIndex < args.length -1) {
+	        throw new ExtraFormatArgumentsException(args.length, maxIndex+1);
+        }
 
     }
 
-    
-    
+
+
     private void checkText(String s) {
         int idx;
         // If there are any '%' in the given string, we got a bad format
@@ -319,7 +333,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
     }
 
 
-    class MissingFormatArgumentException extends Exception {
+    static class MissingFormatArgumentException extends Exception {
     	final int pos;
     	final FormatSpecifier formatSpecifier;
     	MissingFormatArgumentException(int pos, FormatSpecifier formatSpecifier) {
@@ -327,8 +341,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
     		this.formatSpecifier = formatSpecifier;
     	}
     }
-    
-    class ExtraFormatArgumentsException extends Exception {
+
+    static class ExtraFormatArgumentsException extends Exception {
     	final int provided;
     	final int used;
     	ExtraFormatArgumentsException(int provided, int used) {
@@ -337,6 +351,6 @@ public class FormatStringChecker extends OpcodeStackDetector {
     	}
     }
 
-	
+
 
 }

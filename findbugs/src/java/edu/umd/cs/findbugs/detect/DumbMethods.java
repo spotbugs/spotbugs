@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -56,8 +56,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	private static final ObjectType CONDITION_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Condition");
 
-	private HashSet<String> alreadyReported = new HashSet<String>();
-	private BugReporter bugReporter;
+	private final HashSet<String> alreadyReported = new HashSet<String>();
+	private final BugReporter bugReporter;
 	private boolean sawCurrentTimeMillis;
 	private BugInstance gcInvocationBugReport;
 	private int gcInvocationPC;
@@ -78,9 +78,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 	private int randomNextIntState;
 	private boolean checkForBitIorofSignedByte;
 
-	private boolean jdk15ChecksEnabled;
+	private final boolean jdk15ChecksEnabled;
 
-	private BugAccumulator accumulator;
+	private final BugAccumulator accumulator;
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		accumulator = new BugAccumulator(bugReporter);
@@ -88,17 +88,20 @@ public class DumbMethods extends OpcodeStackDetector  {
 	}
 
 
-	
+
 	boolean isSynthetic;
 	@Override
 	public void visit(JavaClass obj) {
 		String superclassName = obj.getSuperclassName();
 		isSynthetic = superclassName.equals("java.rmi.server.RemoteStub");
 		Attribute[] attributes = obj.getAttributes();
-		if (attributes != null)
-			for(Attribute a : attributes) 
-			if (a instanceof Synthetic)
-				isSynthetic = true;
+		if (attributes != null) {
+			for(Attribute a : attributes) {
+				if (a instanceof Synthetic) {
+					isSynthetic = true;
+				}
+			}
+		}
 
 	}
 	@Override
@@ -111,16 +114,18 @@ public class DumbMethods extends OpcodeStackDetector  {
 	@Override
 		 public void visit(Method method) {
 		String cName = getDottedClassName();
-		
+
 		isPublicStaticVoidMain = method.isPublic() && method.isStatic()
 				&& getMethodName().equals("main")
 				|| cName.toLowerCase().indexOf("benchmark") >= 0;
 		prevOpcodeWasReadLine = false;
 		Code code = method.getCode();
-		if (code != null)
+		if (code != null) {
 			this.exceptionTable = code.getExceptionTable();
-		if (this.exceptionTable == null)
+		}
+		if (this.exceptionTable == null) {
 			this.exceptionTable = new CodeException[0];
+		}
 		primitiveObjCtorSeen = null;
 		ctorSeen = false;
 		randomNextIntState = 0;
@@ -137,18 +142,22 @@ public class DumbMethods extends OpcodeStackDetector  {
 	int opcodesSincePendingAbsoluteValueBug;
 	BugInstance pendingAbsoluteValueBug;
 	SourceLineAnnotation pendingAbsoluteValueBugSourceLine;
-	
+
 	boolean freshRandomOnTos = false;
 	boolean freshRandomOneBelowTos = false;
 	static boolean isPowerOfTwo(int i) {
-		if (i <= 0) return false;
-		if ((i | (i-1))+1 == 2*i) return true;
+		if (i <= 0) {
+			return false;
+		}
+		if ((i | (i-1))+1 == 2*i) {
+			return true;
+		}
 		return false;
 	}
+
 	@Override
-		 public void sawOpcode(int seen) {
-		String opcodeName = OPCODE_NAMES[seen];
-		
+	public void sawOpcode(int seen) {
+
 		if (pendingAbsoluteValueBug != null) {
 			if (opcodesSincePendingAbsoluteValueBug == 0) {
 				opcodesSincePendingAbsoluteValueBug++;
@@ -156,15 +165,16 @@ public class DumbMethods extends OpcodeStackDetector  {
 				if (seen == IREM) {
 					OpcodeStack.Item top = stack.getStackItem(0);
 					Object constantValue = top.getConstant();
-					if (constantValue instanceof Number && isPowerOfTwo(((Number) constantValue).intValue()))
+					if (constantValue instanceof Number && isPowerOfTwo(((Number) constantValue).intValue())) {
 						pendingAbsoluteValueBug.setPriority(Priorities.LOW_PRIORITY);
+					}
 				}
 				accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
 				pendingAbsoluteValueBug = null;
 				pendingAbsoluteValueBugSourceLine = null;
 			}
 		}
-		
+
 		if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
 				&& getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
 			SignatureParser parser = new SignatureParser(getSigConstantOperand());
@@ -173,12 +183,13 @@ public class DumbMethods extends OpcodeStackDetector  {
 				String parameter = i.next();
 				if (parameter.equals("Ljava/lang/Runnable;")) {
 					OpcodeStack.Item item = stack.getStackItem(parser.getNumParameters() - 1 - count);
-					if ("Ljava/lang/Thread;".equals(item.getSignature()))
-					accumulator.accumulateBug(new BugInstance(this,
-							"DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED", NORMAL_PRIORITY)
-							.addClassAndMethod(this)
-							.addCalledMethod(this),this);
-							
+					if ("Ljava/lang/Thread;".equals(item.getSignature())) {
+						accumulator.accumulateBug(new BugInstance(this,
+								"DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED", NORMAL_PRIORITY)
+								.addClassAndMethod(this)
+								.addCalledMethod(this),this);
+					}
+
 				}
 			}
 
@@ -186,25 +197,26 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 		if (prevOpcode == I2L && seen == INVOKESTATIC
 			&& getClassConstantOperand().equals("java/lang/Double") && getNameConstantOperand()
-			.equals("longBitsToDouble"))
+			.equals("longBitsToDouble")) {
 			accumulator.accumulateBug(new BugInstance(this,
 					"DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT", HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addCalledMethod(this), this);
-					
+		}
 
-		if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL 
+
+		if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/Random") ) {
 			accumulator.accumulateBug(new BugInstance(this,
 					"DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addCalledMethod(this), this);
-					
+
 		}
 
 		freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-		freshRandomOnTos = seen == INVOKESPECIAL 
-					&& getClassConstantOperand().equals("java/util/Random") 
+		freshRandomOnTos = seen == INVOKESPECIAL
+					&& getClassConstantOperand().equals("java/util/Random")
 					&& getNameConstantOperand().equals("<init>");
 
 
@@ -222,11 +234,12 @@ public class DumbMethods extends OpcodeStackDetector  {
 						&& getClassConstantOperand().equals("java/util/Set") && getNameConstantOperand()
 						.equals("contains"))) {
 			OpcodeStack.Item top = stack.getStackItem(0);
-			if (top.getSignature().equals("Ljava/net/URL;"))
+			if (top.getSignature().equals("Ljava/net/URL;")) {
 				accumulator.accumulateBug(new BugInstance(this,
 						"DMI_COLLECTION_OF_URLS", HIGH_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+			}
+
 		}
 
 
@@ -235,21 +248,25 @@ public class DumbMethods extends OpcodeStackDetector  {
 					&& getSigConstantOperand().equals("()Ljava/lang/Class;")
 					) {
 				OpcodeStack.Item item = stack.getStackItem(0);
-				if (item.getRegisterNumber() == 1) sawInstanceofCheck = true;
+				if (item.getRegisterNumber() == 1) {
+					sawInstanceofCheck = true;
+				}
 			} else if  (seen ==  INVOKESPECIAL && getNameConstantOperand().equals("equals")
 					&& getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
 				OpcodeStack.Item item0 = stack.getStackItem(0);
 				OpcodeStack.Item item1 = stack.getStackItem(1);
-				if (item1.getRegisterNumber() + item0.getRegisterNumber()  == 1)
-					 sawInstanceofCheck = true;
+				if (item1.getRegisterNumber() + item0.getRegisterNumber()  == 1) {
+					sawInstanceofCheck = true;
+				}
 			} else if (seen == CHECKCAST && !sawInstanceofCheck) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				if (item.getRegisterNumber() == 1) {
-					if (getSizeOfSurroundingTryBlock(getPC()) == Integer.MAX_VALUE)
-					accumulator.accumulateBug(new BugInstance(this, "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS", 
-							 NORMAL_PRIORITY)
-						.addClassAndMethod(this), this);
-						
+					if (getSizeOfSurroundingTryBlock(getPC()) == Integer.MAX_VALUE) {
+						accumulator.accumulateBug(new BugInstance(this, "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS",
+								 NORMAL_PRIORITY)
+							.addClassAndMethod(this), this);
+					}
+
 
 					reportedBadCastInEquals = true;
 				}
@@ -260,54 +277,59 @@ public class DumbMethods extends OpcodeStackDetector  {
 		if (seen ==  IF_ICMPGT || seen ==  IF_ICMPLE) {
 			OpcodeStack.Item rhs = stack.getStackItem(0);
 			Object rhsConstant = rhs.getConstant();
-			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MAX_VALUE)
+			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MAX_VALUE) {
 				foundVacuousComparison = true;
+			}
 			OpcodeStack.Item lhs = stack.getStackItem(1);
 			Object lhsConstant = lhs.getConstant();
-			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MIN_VALUE)
+			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MIN_VALUE) {
 				foundVacuousComparison = true;
+			}
 
 		}
 		if (seen ==  IF_ICMPLT || seen ==  IF_ICMPGE) {
 			OpcodeStack.Item rhs = stack.getStackItem(0);
 			Object rhsConstant = rhs.getConstant();
-			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MIN_VALUE)
+			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MIN_VALUE) {
 				foundVacuousComparison = true;
+			}
 			OpcodeStack.Item lhs = stack.getStackItem(1);
 			Object lhsConstant = lhs.getConstant();
-			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MAX_VALUE)
+			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MAX_VALUE) {
 				foundVacuousComparison = true;
+			}
 
 			}
-		if (foundVacuousComparison) 
-			accumulator.accumulateBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", 
+		if (foundVacuousComparison) {
+			accumulator.accumulateBug(new BugInstance(this, "INT_VACUOUS_COMPARISON",
 					getBranchOffset() < 0 ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(this), this);
-				
 		}
 
-		if (seen == INVOKESTATIC && 
+		}
+
+		if (seen == INVOKESTATIC &&
 				( getClassConstantOperand().equals("java/lang/Math") || getClassConstantOperand().equals("java/lang/StrictMath"))
 				&& getNameConstantOperand().equals("abs")
 				&& getSigConstantOperand().equals("(I)I")) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			int special = item0.getSpecialKind();
 			if (special == OpcodeStack.Item.RANDOM_INT) {
-				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT", 
+				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT",
 						 HIGH_PRIORITY)
 					.addClassAndMethod(this);
 				pendingAbsoluteValueBugSourceLine = SourceLineAnnotation.fromVisitedInstruction(this);
 				opcodesSincePendingAbsoluteValueBug = 0;
 			}
-					
+
 			else if (special == OpcodeStack.Item.HASHCODE_INT)  {
-				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE", 
+				pendingAbsoluteValueBug = new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE",
 						 HIGH_PRIORITY)
 					.addClassAndMethod(this);
 				pendingAbsoluteValueBugSourceLine = SourceLineAnnotation.fromVisitedInstruction(this);
 				opcodesSincePendingAbsoluteValueBug = 0;
 			}
-					
+
 		}
 
 		try {
@@ -318,13 +340,13 @@ public class DumbMethods extends OpcodeStackDetector  {
 				case OpcodeStack.Item.HASHCODE_INT_REMAINDER:
 					accumulator.accumulateBug(new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
 					.addClassAndMethod(this), this);
-					
+
 					break;
 				case OpcodeStack.Item.RANDOM_INT:
 				case OpcodeStack.Item.RANDOM_INT_REMAINDER:
 					accumulator.accumulateBug(new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
 					.addClassAndMethod(this), this);
-					
+
 					break;
 				}
 
@@ -332,12 +354,11 @@ public class DumbMethods extends OpcodeStackDetector  {
 			if (seen == IREM) {
 				OpcodeStack.Item item0 = stack.getStackItem(0);
 				Object constant0 = item0.getConstant();
-				OpcodeStack.Item item1 = stack.getStackItem(1);
-				int special = item1.getSpecialKind();
-				if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
+				if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1) {
 					accumulator.accumulateBug(new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
 					.addClassAndMethod(this), this);
-					
+				}
+
 			}
 
 		if (stack.getStackDepth() >= 1 && (seen == LOOKUPSWITCH || seen == TABLESWITCH)) {
@@ -347,97 +368,104 @@ public class DumbMethods extends OpcodeStackDetector  {
 				int [] switchOffsets = getSwitchOffsets();
 				for(int i = 0; i < switchLabels.length; i++) {
 					int v = switchLabels[i];
-					if (v <= -129 || v >= 128)
-						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
+					if (v <= -129 || v >= 128) {
+						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",
 								HIGH_PRIORITY)
 									.addClassAndMethod(this)
-									.addInt(v).describe(IntAnnotation.INT_VALUE), 
+									.addInt(v).describe(IntAnnotation.INT_VALUE),
 									SourceLineAnnotation.fromVisitedInstruction(this,  getPC() + switchOffsets[i]));
+					}
 
 				}
 			}
 		}
 		// check for use of signed byte where is it assumed it can be out of the -128...127 range
-		if (stack.getStackDepth() >= 2) switch (seen) {
-		case IF_ICMPEQ:
-		case IF_ICMPNE:
-		case IF_ICMPLT:
-		case IF_ICMPLE:
-		case IF_ICMPGE:
-		case IF_ICMPGT:
-			OpcodeStack.Item item0 = stack.getStackItem(0);
-			OpcodeStack.Item item1 = stack.getStackItem(1);
-			int seen2 = seen;
-			if (item0.getConstant() != null) {
-				OpcodeStack.Item tmp = item0;
-				item0 = item1;
-				item1 = tmp;
-				switch(seen) {
-				case IF_ICMPLT: 
-					seen2 = IF_ICMPGT; break;
-				case IF_ICMPGE:
-					seen2 = IF_ICMPLE; break;
-				case IF_ICMPGT: 
-					seen2 = IF_ICMPLT; break;
-				case IF_ICMPLE: 
-					seen2 = IF_ICMPGE; break;
+		if (stack.getStackDepth() >= 2) {
+			switch (seen) {
+			case IF_ICMPEQ:
+			case IF_ICMPNE:
+			case IF_ICMPLT:
+			case IF_ICMPLE:
+			case IF_ICMPGE:
+			case IF_ICMPGT:
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
+				int seen2 = seen;
+				if (item0.getConstant() != null) {
+					OpcodeStack.Item tmp = item0;
+					item0 = item1;
+					item1 = tmp;
+					switch(seen) {
+					case IF_ICMPLT:
+						seen2 = IF_ICMPGT; break;
+					case IF_ICMPGE:
+						seen2 = IF_ICMPLE; break;
+					case IF_ICMPGT:
+						seen2 = IF_ICMPLT; break;
+					case IF_ICMPLE:
+						seen2 = IF_ICMPGE; break;
+
+					}
+				}
+				Object constant1 = item1.getConstant();
+				if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE
+						&& constant1 instanceof Number) {
+					int v1 = ((Number)constant1).intValue();
+					if (v1 <= -129 || v1 >= 128 || v1 == 127 && !(seen2 == IF_ICMPEQ || seen2 == IF_ICMPNE
+
+							)) {
+						int priority = HIGH_PRIORITY;
+						if (v1 == 127) {
+							switch(seen2) {
+							case IF_ICMPGT: // 127 > x
+								priority = LOW_PRIORITY; break;
+							case IF_ICMPGE: // 127 >= x : always true
+								priority = HIGH_PRIORITY; break;
+							case IF_ICMPLT: // 127 < x : never true
+								priority = HIGH_PRIORITY; break;
+							case IF_ICMPLE: // 127 <= x
+								priority = LOW_PRIORITY; break;
+							}
+						} else if (v1 == 128) {
+							switch(seen2) {
+							case IF_ICMPGT: // 128 > x
+								priority = NORMAL_PRIORITY; break;
+							case IF_ICMPGE: // 128 >= x
+								priority = HIGH_PRIORITY; break;
+							case IF_ICMPLT: // 128 < x
+								priority = HIGH_PRIORITY; break;
+							case IF_ICMPLE: // 128 <= x
+								priority = HIGH_PRIORITY; break;
+							}
+						} else if (v1 <= -129) {
+							priority = NORMAL_PRIORITY;
+						}
+
+
+						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
+									.addClassAndMethod(this)
+									.addInt(v1).describe(IntAnnotation.INT_VALUE), this);
+
+					}
+				}	else       if (item0.getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE
+						&& constant1 instanceof Number) {
+					int v1 = ((Number)constant1).intValue();
+					if (v1 < 0) {
+						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE", HIGH_PRIORITY)
+										.addClassAndMethod(this)
+										.addInt(v1).describe(IntAnnotation.INT_VALUE), this);
+					}
+
 
 				}
+
 			}
-			Object constant1 = item1.getConstant();
-			if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE
-					&& constant1 instanceof Number) {
-				int v1 = ((Number)constant1).intValue();
-				if (v1 <= -129 || v1 >= 128 || v1 == 127 && !(seen2 == IF_ICMPEQ || seen2 == IF_ICMPNE 
-
-						)) {
-					int priority = HIGH_PRIORITY;
-					if (v1 == 127) {
-						switch(seen2) {
-						case IF_ICMPGT: // 127 > x
-							priority = LOW_PRIORITY; break;
-						case IF_ICMPGE: // 127 >= x : always true
-							priority = HIGH_PRIORITY; break;
-						case IF_ICMPLT: // 127 < x : never true
-							priority = HIGH_PRIORITY; break;
-						case IF_ICMPLE: // 127 <= x 
-							priority = LOW_PRIORITY; break;
-						}
-					} else if (v1 == 128) {
-						switch(seen2) {
-						case IF_ICMPGT: // 128 > x
-							priority = NORMAL_PRIORITY; break;
-						case IF_ICMPGE: // 128 >= x 
-							priority = HIGH_PRIORITY; break;
-						case IF_ICMPLT: // 128 < x
-							priority = HIGH_PRIORITY; break;
-						case IF_ICMPLE: // 128 <= x 
-							priority = HIGH_PRIORITY; break;
-						}
-					} else if (v1 <= -129) priority = NORMAL_PRIORITY;
-
-
-					accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
-								.addClassAndMethod(this)
-								.addInt(v1).describe(IntAnnotation.INT_VALUE), this);
-								
-				}
-			}	else       if (item0.getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE
-					&& constant1 instanceof Number) {
-				int v1 = ((Number)constant1).intValue();
-				if (v1 < 0)  accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE", HIGH_PRIORITY)
-								.addClassAndMethod(this)
-								.addInt(v1).describe(IntAnnotation.INT_VALUE), this);
-								
-
-			}   
-
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
-			  accumulator.accumulateBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
+			  accumulator.accumulateBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE",
 					prevOpcode == LOR ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+
 			  checkForBitIorofSignedByte = false;
 		} else if ((seen == IOR || seen == LOR) && stack.getStackDepth() >= 2) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -445,30 +473,34 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 			int special0 = item0.getSpecialKind();
 			int special1 = item1.getSpecialKind();
-			if  (special0 == OpcodeStack.Item.SIGNED_BYTE  
+			if  (special0 == OpcodeStack.Item.SIGNED_BYTE
 					&& special1 == OpcodeStack.Item.LOW_8_BITS_CLEAR
-					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.SIGNED_BYTE )
+					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.SIGNED_BYTE ) {
 				checkForBitIorofSignedByte = true;
-			else checkForBitIorofSignedByte = false;
-		} else checkForBitIorofSignedByte = false;
+			} else {
+				checkForBitIorofSignedByte = false;
+			}
+		} else {
+			checkForBitIorofSignedByte = false;
+		}
 
 	if (prevOpcodeWasReadLine && sinceBufferedInputStreamReady >= 100 && seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/lang/String")
 		&& getSigConstantOperand().startsWith("()")) {
-		String method = getNameConstantOperand();
-		String sig = getSigConstantOperand();
-	  accumulator.accumulateBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)
-		.addClassAndMethod(this), this);
+		accumulator.accumulateBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)
+			.addClassAndMethod(this), this);
 		}
 
 
-	if 
+	if
 		(seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/io/BufferedReader")
 		&& getNameConstantOperand().equals("ready")
-		&& getSigConstantOperand().equals("()Z"))
+		&& getSigConstantOperand().equals("()Z")) {
 		sinceBufferedInputStreamReady = 0;
-	else sinceBufferedInputStreamReady++;
+	} else {
+		sinceBufferedInputStreamReady++;
+	}
 
 	prevOpcodeWasReadLine =
 		(seen == INVOKEVIRTUAL||seen == INVOKEINTERFACE)
@@ -483,8 +515,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getNameConstantOperand().equals("nextDouble")
 			   || seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
-				&& getNameConstantOperand().equals("random"))
-			  randomNextIntState = 1;
+				&& getNameConstantOperand().equals("random")) {
+				randomNextIntState = 1;
+			}
 			break;
 		case 1:
 			if (seen == D2I) {
@@ -492,22 +525,33 @@ public class DumbMethods extends OpcodeStackDetector  {
 					.addClassAndMethod(this), this);
 			  randomNextIntState = 0;
 			  }
-			else if (seen == DMUL) randomNextIntState = 4;
-			else randomNextIntState = 2;
+			else if (seen == DMUL) {
+				randomNextIntState = 4;
+			} else {
+				randomNextIntState = 2;
+			}
 			break;
 		case 2:
-			if (seen == I2D) randomNextIntState = 3;
-			else if (seen == DMUL) randomNextIntState = 4;
-			else randomNextIntState = 0;
+			if (seen == I2D) {
+				randomNextIntState = 3;
+			} else if (seen == DMUL) {
+				randomNextIntState = 4;
+			} else {
+				randomNextIntState = 0;
+			}
 			break;
 		case 3:
-			if (seen == DMUL) randomNextIntState = 4;
-			else randomNextIntState = 0;
+			if (seen == DMUL) {
+				randomNextIntState = 4;
+			} else {
+				randomNextIntState = 0;
+			}
 			break;
 		case 4:
-			if (seen == D2I) 
-			  accumulator.accumulateBug(new BugInstance(this, "DM_NEXTINT_VIA_NEXTDOUBLE", NORMAL_PRIORITY)
-					.addClassAndMethod(this), this);
+			if (seen == D2I) {
+				accumulator.accumulateBug(new BugInstance(this, "DM_NEXTINT_VIA_NEXTDOUBLE", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
+			}
 			randomNextIntState = 0;
 			break;
 		default:
@@ -520,10 +564,11 @@ public class DumbMethods extends OpcodeStackDetector  {
 				|| getNameConstantOperand().equals("pack")
 				&& getSigConstantOperand().equals("()V")
 				|| getNameConstantOperand().equals("setVisible")
-				&& getSigConstantOperand().equals("(Z)V")))
+				&& getSigConstantOperand().equals("(Z)V"))) {
 			accumulator.accumulateBug(new BugInstance(this, "SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY)
 					.addClassAndMethod(this), this);
-					
+		}
+
 
 //		if ((seen == INVOKEVIRTUAL)
 //				&& getClassConstantOperand().equals("java/lang/String")
@@ -549,14 +594,15 @@ public class DumbMethods extends OpcodeStackDetector  {
 			Object value = item.getConstant();
 			if (value instanceof String) {
 				String annotationClassName = (String) value;
-				boolean lacksClassfileRetention 
+				boolean lacksClassfileRetention
 				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().lacksClassfileRetention(
 						annotationClassName.replace('/','.'));
-				if (lacksClassfileRetention) 
+				if (lacksClassfileRetention) {
 					accumulator.accumulateBug(new BugInstance(this, "DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION",
 						HIGH_PRIORITY)
 						.addClassAndMethod(this).addCalledMethod(this), this);
-						
+				}
+
 			}
 
 		}
@@ -579,28 +625,33 @@ public class DumbMethods extends OpcodeStackDetector  {
 		if ((seen == INVOKESPECIAL)
 				&& getClassConstantOperand().equals("java/lang/String")
 				&& getNameConstantOperand().equals("<init>")
-				&& getSigConstantOperand().equals("(Ljava/lang/String;)V"))
-			if (alreadyReported.add(getRefConstantOperand()))
+				&& getSigConstantOperand().equals("(Ljava/lang/String;)V")) {
+			if (alreadyReported.add(getRefConstantOperand())) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+			}
+		}
+
 		if (seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& getNameConstantOperand().equals("runFinalizersOnExit")
 			|| seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/lang/Runtime")
-				&& getNameConstantOperand().equals("runFinalizersOnExit"))
-				accumulator.accumulateBug(new BugInstance(this, "DM_RUN_FINALIZERS_ON_EXIT", HIGH_PRIORITY)
-						.addClassAndMethod(this), this);
-					
+				&& getNameConstantOperand().equals("runFinalizersOnExit")) {
+			accumulator.accumulateBug(new BugInstance(this, "DM_RUN_FINALIZERS_ON_EXIT", HIGH_PRIORITY)
+					.addClassAndMethod(this), this);
+		}
+
 		if ((seen == INVOKESPECIAL)
 				&& getClassConstantOperand().equals("java/lang/String")
 				&& getNameConstantOperand().equals("<init>")
-				&& getSigConstantOperand().equals("()V"))
-			if (alreadyReported.add(getRefConstantOperand()))
+				&& getSigConstantOperand().equals("()V")) {
+			if (alreadyReported.add(getRefConstantOperand())) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_STRING_VOID_CTOR", NORMAL_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+			}
+		}
+
 		if (!isPublicStaticVoidMain && seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& getNameConstantOperand().equals("exit")
@@ -612,11 +663,12 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getMethodName().indexOf("Crash") == -1
 				&& getMethodName().indexOf("die") == -1
 				&& getMethodName().indexOf("Die") == -1
-				&& getMethodName().indexOf("main") == -1)
-			accumulator.accumulateBug(new BugInstance(this, "DM_EXIT", 
+				&& getMethodName().indexOf("main") == -1) {
+			accumulator.accumulateBug(new BugInstance(this, "DM_EXIT",
 				getMethod().isStatic() ? LOW_PRIORITY : NORMAL_PRIORITY)
-					.addClassAndMethod(this), 
+					.addClassAndMethod(this),
 						SourceLineAnnotation.fromVisitedInstruction(this));
+		}
 		if (((seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/System"))
 				|| (seen == INVOKEVIRTUAL
@@ -625,14 +677,16 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getSigConstantOperand().equals("()V")
 				&& !getDottedClassName().startsWith("java.lang")
 				&& !getMethodName().startsWith("gc")
-				&& !getMethodName().endsWith("gc"))
+				&& !getMethodName().endsWith("gc")) {
 			if (alreadyReported.add(getRefConstantOperand())) {
 				// System.out.println("Saw call to GC");
 				if (isPublicStaticVoidMain) {
 					// System.out.println("Skipping GC complaint in main method");
 					return;
 				}
-				if (isTestMethod(getMethod())) return;
+				if (isTestMethod(getMethod())) {
+					return;
+				}
 				// Just save this report in a field; it will be flushed
 				// IFF there were no calls to System.currentTimeMillis();
 				// in the method.
@@ -642,39 +696,46 @@ public class DumbMethods extends OpcodeStackDetector  {
 				gcInvocationPC = getPC();
 				//System.out.println("GC invocation at pc " + PC);
 			}
+		}
 		if (!isSynthetic && (seen == INVOKESPECIAL)
 				&& getClassConstantOperand().equals("java/lang/Boolean")
 				&& getNameConstantOperand().equals("<init>")
 				&& !getClassName().equals("java/lang/Boolean")
 				&& alreadyReported.add(getRefConstantOperand())) {
 			int majorVersion = getThisClass().getMajor();
-			if (majorVersion >= MAJOR_1_4)
+			if (majorVersion >= MAJOR_1_4) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
 				.addClassAndMethod(this), this);
-				
+			}
+
 		}
 		if ((seen == INVOKESTATIC)
 				&& getClassConstantOperand().equals("java/lang/System")
 				&& (getNameConstantOperand().equals("currentTimeMillis")
-				   || getNameConstantOperand().equals("nanoTime")))
+				   || getNameConstantOperand().equals("nanoTime"))) {
 			sawCurrentTimeMillis = true;
+		}
 		if ((seen == INVOKEVIRTUAL)
 				&& getClassConstantOperand().equals("java/lang/String")
 				&& getNameConstantOperand().equals("toString")
-				&& getSigConstantOperand().equals("()Ljava/lang/String;"))
-			if (alreadyReported.add(getRefConstantOperand()))
+				&& getSigConstantOperand().equals("()Ljava/lang/String;")) {
+			if (alreadyReported.add(getRefConstantOperand())) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_STRING_TOSTRING", NORMAL_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+			}
+		}
+
 		if ((seen == INVOKEVIRTUAL)
 				&& getClassConstantOperand().equals("java/lang/String")
 				&& (getNameConstantOperand().equals("toUpperCase")
 				||  getNameConstantOperand().equals("toLowerCase"))
-				&& getSigConstantOperand().equals("()Ljava/lang/String;"))
-			if (alreadyReported.add(getRefConstantOperand()))
+				&& getSigConstantOperand().equals("()Ljava/lang/String;")) {
+			if (alreadyReported.add(getRefConstantOperand())) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_CONVERT_CASE", LOW_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+			}
+		}
+
 
 		if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
 			String cls = getClassConstantOperand();
@@ -692,22 +753,22 @@ public class DumbMethods extends OpcodeStackDetector  {
 				primitiveObjCtorSeen = null;
 			}
 		} else if ((primitiveObjCtorSeen != null)
-			   &&  (seen == INVOKEVIRTUAL) 
+			   &&  (seen == INVOKEVIRTUAL)
 			   &&   getNameConstantOperand().equals("toString")
 			   &&   getClassConstantOperand().equals(primitiveObjCtorSeen)
 			   &&   getSigConstantOperand().equals("()Ljava/lang/String;")) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", LOW_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+
+			primitiveObjCtorSeen = null;
+		} else {
 			primitiveObjCtorSeen = null;
 		}
-		else
-			primitiveObjCtorSeen = null;
 
 		if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals("<init>")) {
 			ctorSeen = true;
-		} else if (ctorSeen 
-				&& (seen == INVOKEVIRTUAL) 
+		} else if (ctorSeen
+				&& (seen == INVOKEVIRTUAL)
 				&& getClassConstantOperand().equals("java/lang/Object")
 				&& getNameConstantOperand().equals("getClass")
 				&& getSigConstantOperand().equals("()Ljava/lang/Class;")) {
@@ -725,18 +786,19 @@ public class DumbMethods extends OpcodeStackDetector  {
 		}
 
 
-		if ((seen == INVOKESPECIAL) 
+		if ((seen == INVOKESPECIAL)
 		&&  getNameConstantOperand().equals("<init>")
 		&&  getClassConstantOperand().equals("java/lang/Thread")) {
 			String sig = getSigConstantOperand();
 			if (sig.equals("()V")
 			||  sig.equals("(Ljava/lang/String;)V")
-			||  sig.equals("(Ljava/lang/ThreadGroup;Ljava/lang/String;)V"))
+			||  sig.equals("(Ljava/lang/ThreadGroup;Ljava/lang/String;)V")) {
 				if (!getMethodName().equals("<init>") || (getPC() > 20)) {
 					accumulator.accumulateBug(new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY)
 							.addClassAndMethod(this), this);
-							
+
 				}
+			}
 		}
 
 
@@ -747,7 +809,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	/**
 	 * Return index of stack entry that must be nonnegative.
-	 * 
+	 *
 	 * Return -1 if no stack entry is required to be nonnegative.
 	 * @param seen
 	 * @return
@@ -789,11 +851,13 @@ public class DumbMethods extends OpcodeStackDetector  {
 	private int getStackEntryOfListCallThatMustBeNonnegative() {
 		String name = getNameConstantOperand();
 		if ((name.equals("add") || name.equals("set"))
-			&& getSigConstantOperand().startsWith("(I"))
+			&& getSigConstantOperand().startsWith("(I")) {
 			return 1;
+		}
 		if ((name.equals("get") || name.equals("remove"))
-				&& getSigConstantOperand().startsWith("(I)"))
-				return 0;
+				&& getSigConstantOperand().startsWith("(I)")) {
+			return 0;
+		}
 		return -1;
 	}
 	private void checkMonitorWait() {
@@ -801,21 +865,23 @@ public class DumbMethods extends OpcodeStackDetector  {
 			TypeDataflow typeDataflow = getClassContext().getTypeDataflow(getMethod());
 			TypeDataflow.LocationAndFactPair pair = typeDataflow.getLocationAndFactForInstruction(getPC());
 
-			if (pair == null)
+			if (pair == null) {
 				return;
+			}
 
 			Type receiver = pair.frame.getInstance(
 					pair.location.getHandle().getInstruction(),
 					getClassContext().getConstantPoolGen()
 			);
 
-			if (!(receiver instanceof ReferenceType))
+			if (!(receiver instanceof ReferenceType)) {
 				return;
+			}
 
 			if (Hierarchy.isSubtype((ReferenceType) receiver, CONDITION_TYPE)) {
 				accumulator.accumulateBug(new BugInstance(this, "DM_MONITOR_WAIT_ON_CONDITION", HIGH_PRIORITY)
 						.addClassAndMethod(this), this);
-						
+
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
@@ -834,7 +900,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 	@Override
 	public void visit(Code obj) {
-		
+
 		super.visit(obj);
 		flush();
 	}
@@ -852,7 +918,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 			accumulator.accumulateBug(pendingAbsoluteValueBug, pendingAbsoluteValueBugSourceLine);
 			pendingAbsoluteValueBug = null;
 			pendingAbsoluteValueBugSourceLine = null;
-			
+
 		}
 		if (gcInvocationBugReport != null && !sawCurrentTimeMillis) {
 			// Make sure the GC invocation is not in an exception handler
@@ -860,8 +926,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 			boolean outOfMemoryHandler = false;
 			for (CodeException handler : exceptionTable) {
 				if (gcInvocationPC < handler.getHandlerPC() ||
-						gcInvocationPC > handler.getHandlerPC() + OOM_CATCH_LEN)
+						gcInvocationPC > handler.getHandlerPC() + OOM_CATCH_LEN) {
 					continue;
+				}
 				int catchTypeIndex = handler.getCatchType();
 				if (catchTypeIndex > 0) {
 					ConstantPool cp = getThisClass().getConstantPool();
@@ -876,8 +943,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 				}
 			}
 
-			if (!outOfMemoryHandler)
+			if (!outOfMemoryHandler) {
 				bugReporter.reportBug(gcInvocationBugReport);
+			}
 		}
 
 		sawCurrentTimeMillis = false;
