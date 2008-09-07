@@ -214,8 +214,9 @@
 
     <!-- "Show Details" context menu entry for each type of FindBugs markers in the Problems view -->
       <objectContribution
-            objectClass="org.eclipse.core.resources.IMarker"
-            id="de.tobject.findbugs.showDescription">
+            adaptable="true"
+            id="de.tobject.findbugs.showDescription"
+            objectClass="org.eclipse.core.resources.IMarker">
          <action
                label="Show Bug Details"
                icon="icons/detailsView.png"
@@ -302,23 +303,41 @@
              </adapt>
       </enablement>
    </objectContribution>
-   <!-- <objectContribution
-         id="de.tobject.findbugs.ignoreBug"
+   <objectContribution
+         adaptable="true"
+         id="de.tobject.findbugs.copyMarkerBug"
          objectClass="org.eclipse.core.resources.IMarker">
       <action
-            class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
-            enablesFor="1"
-            icon="icons/detailsView.png"
-            id="de.tobject.findbugs.showDescription"
-            label="Show Bug Details"
+            class="de.tobject.findbugs.actions.CopyMarkerDetailsAction"
+            definitionId="FindBugs.command.copy2"
+            enablesFor="+"
+            icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
+            id="de.tobject.findbugs.copyBug"
+            label="Copy Bug Details"
             menubarPath="additions">
       </action>
       <filter
             name="superType"
             value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
       </filter>
-   </objectContribution> -->
+   </objectContribution>
+   <objectContribution
+         adaptable="true"
+         id="de.tobject.findbugs.copyGroupBugs"
+         objectClass="de.tobject.findbugs.view.explorer.BugPatternGroup">
+      <action
+            class="de.tobject.findbugs.actions.CopyMarkerDetailsAction"
+            definitionId="FindBugs.command.copy"
+            enablesFor="+"
+            icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
+            id="de.tobject.findbugs.copyBug"
+            label="Copy Bug Details"
+            menubarPath="additions">
+      </action>
+   </objectContribution>
    </extension>
+
+
 
     <!-- Details view -->
    <extension
@@ -340,14 +359,13 @@
             icon="icons/annotationsView.png"
             id="de.tobject.findbugs.view.userannotationsview"
             name="Bug User Annotations"/>
-      <!-- deprecated
-
       <view
-            category="de.tobject.findbugs.view.findBugsCategory"
-            class="de.tobject.findbugs.view.BugTreeView"
-            icon="icons/treeView.png"
-            id="de.tobject.findbugs.view.bugtreeview"
-            name="Bug Tree View"/> -->
+         category="de.tobject.findbugs.view.findBugsCategory"
+         class="org.eclipse.ui.navigator.CommonNavigator"
+         icon="icons/treeView.png"
+         id="de.tobject.findbugs.view.bugtreeview"
+         name="Bug Explorer">
+     </view>
    </extension>
 
    <extension
@@ -430,17 +448,6 @@
       </perspectiveExtension>
    </extension>
 
-   <!-- experimental code for new bug explorer view -->
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-         category="de.tobject.findbugs.view.findBugsCategory"
-         class="org.eclipse.ui.navigator.CommonNavigator"
-         icon="icons/treeView.png"
-         id="de.tobject.findbugs.view.bugtreeview"
-         name="Bug Explorer">
-     </view>
-   </extension>
 
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -703,4 +710,32 @@
             priority="71">
       </markerGroupingEntry>
    </extension>
+
+    <extension
+         point="org.eclipse.ui.commands">
+
+      <category
+            name="FindBugs commands"
+            description="FindBugs commands"
+            id="FindBugs.category"/>
+      <command
+            categoryId="FindBugs.category"
+            name="Copy Bug Details (Bug Group)"
+            id="FindBugs.command.copy"/>
+      <command
+            categoryId="FindBugs.category"
+            name="Copy Bug Details (Bug)"
+            id="FindBugs.command.copy2"/>
+    </extension>
+
+    <extension
+     point="org.eclipse.ui.bindings">
+
+      <key
+            sequence="Ctrl+C"
+            commandId="FindBugs.command.copy"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+    </extension>
+
 </plugin>
