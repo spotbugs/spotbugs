@@ -2,662 +2,705 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-		 point="org.eclipse.core.runtime.adapters">
-	  <factory
-			adaptableType="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode"
-			class="de.tobject.findbugs.adapters.ChangeSetAdapterFactory">
-		 <adapter
-			   type="org.eclipse.team.internal.core.subscribers.ChangeSet">
-		 </adapter>
-	  </factory>
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode"
+            class="de.tobject.findbugs.adapters.ChangeSetAdapterFactory">
+         <adapter
+               type="org.eclipse.team.internal.core.subscribers.ChangeSet">
+         </adapter>
+      </factory>
    </extension>
 
-	 <extension
-		 point="org.eclipse.ui.propertyPages">
-	  <page
-			name="FindBugs"
-			class="de.tobject.findbugs.properties.FindbugsPropertyPage"
-			id="de.tobject.findbugs.properties.findbugsPropertyPage">
-		 <filter
-			   name="nature"
-			   value="org.eclipse.jdt.core.javanature">
-		 </filter>
-		   <enabledWhen>
-		<adapt
-			  type="org.eclipse.core.resources.IProject">
-		</adapt>
-		   </enabledWhen>
-	  </page>
+     <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            name="FindBugs"
+            class="de.tobject.findbugs.properties.FindbugsPropertyPage"
+            id="de.tobject.findbugs.properties.findbugsPropertyPage">
+         <filter
+               name="nature"
+               value="org.eclipse.jdt.core.javanature">
+         </filter>
+           <enabledWhen>
+        <adapt
+              type="org.eclipse.core.resources.IProject">
+        </adapt>
+           </enabledWhen>
+      </page>
    </extension>
    <extension
-		 id="findbugsBuilder"
-		 name="%findbugsBuilderName"
-		 point="org.eclipse.core.resources.builders">
-	  <builder>
-		 <run
-			   class="de.tobject.findbugs.builder.FindBugsBuilder">
-		 </run>
-	  </builder>
+         id="findbugsBuilder"
+         name="%findbugsBuilderName"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="de.tobject.findbugs.builder.FindBugsBuilder">
+         </run>
+      </builder>
    </extension>
    <extension
-		 id="findbugsNature"
-		 name="%findbugsNatureName"
-		 point="org.eclipse.core.resources.natures">
-	  <runtime>
-		 <run
-			   class="de.tobject.findbugs.nature.FindBugsNature">
-		 </run>
-	  </runtime>
+         id="findbugsNature"
+         name="%findbugsNatureName"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="de.tobject.findbugs.nature.FindBugsNature">
+         </run>
+      </runtime>
    </extension>
    <extension
-		 id="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
-		 name="FindBugs Problem"
-		 point="org.eclipse.core.resources.markers">
-	  <super type="org.eclipse.core.resources.problemmarker"/>
-	  <super type="org.eclipse.core.resources.textmarker"/>
-	  <persistent value="true"/>
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
+         name="FindBugs Problem"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <super type="org.eclipse.jdt.core.problem"/>
+      <persistent value="true"/>
+   </extension>
+
+   <extension
+         id="findbugsMarkerHigh"
+         name="FindBugs Problem (High Priority)"
+         point="org.eclipse.core.resources.markers">
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <super type="org.eclipse.jdt.core.problem"/>
+      <persistent value="true">
+      </persistent>
    </extension>
    <extension
-		 id="findbugsMarkerHigh"
-		 name="FindBugs Problem (High Priority)"
-		 point="org.eclipse.core.resources.markers">
-	  <super type="org.eclipse.core.resources.problemmarker"/>
-	  <super type="org.eclipse.core.resources.textmarker"/>
-	  <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
-	  <persistent
-			value="true">
-	  </persistent>
+         id="findbugsMarkerNormal"
+         name="FindBugs Problem (Normal Priority)"
+         point="org.eclipse.core.resources.markers">
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <super type="org.eclipse.jdt.core.problem"/>
+      <persistent value="true"/>
    </extension>
    <extension
-		 id="findbugsMarkerNormal"
-		 name="FindBugs Problem (Normal Priority)"
-		 point="org.eclipse.core.resources.markers">
-	  <super type="org.eclipse.core.resources.problemmarker"/>
-	  <super type="org.eclipse.core.resources.textmarker"/>
-	  <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
-	  <persistent value="true"/>
+         id="findbugsMarkerLow"
+         name="FindBugs Problem (Low Priority)"
+         point="org.eclipse.core.resources.markers">
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <super type="org.eclipse.jdt.core.problem"/>
+      <persistent value="true"/>
    </extension>
    <extension
-		 id="findbugsMarkerLow"
-		 name="FindBugs Problem (Low Priority)"
-		 point="org.eclipse.core.resources.markers">
-	  <super type="org.eclipse.core.resources.problemmarker"/>
-	  <super type="org.eclipse.core.resources.textmarker"/>
-	  <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
-	  <persistent value="true"/>
-   </extension>
-   <extension
-		 id="findbugsMarkerExperimental"
-		 name="FindBugs Problem (Experimental)"
-		 point="org.eclipse.core.resources.markers">
-	  <super type="org.eclipse.core.resources.problemmarker"/>
-	  <super type="org.eclipse.core.resources.textmarker"/>
-	  <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
-	  <persistent value="true"/>
+         id="findbugsMarkerExperimental"
+         name="FindBugs Problem (Experimental)"
+         point="org.eclipse.core.resources.markers">
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <super type="org.eclipse.jdt.core.problem"/>
+      <persistent value="true"/>
    </extension>
 
 
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
-	  <type
-		 name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
-		 super="org.eclipse.ui.workbench.texteditor.warning"
-		 markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"/>
-	  <type
-			markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal"
-			name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
-			super="org.eclipse.ui.workbench.texteditor.warning"/>
-	  <type
-			markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow"
-			name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
-			super="org.eclipse.ui.workbench.texteditor.warning"/>
-	  <type
-			markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
-			name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
-			super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+         name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
+         super="org.eclipse.ui.workbench.texteditor.warning"
+         markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
   </extension>
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
-	  <specification
-			annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
-			icon="icons/buggy-tiny.png"
-			includeOnPreferencePage="true"
-			label="fbWarningHigh"
-			quickFixIcon="icons/buggy-tiny.png"/>
-	  <specification
-			annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
-			icon="icons/buggy-tiny-orange.png"
-			includeOnPreferencePage="true"
-			label="fbWarningNormal"
-			quickFixIcon="icons/buggy-tiny-orange.png"/>
-	  <specification
-			annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
-			icon="icons/buggy-tiny-yellow.png"
-			includeOnPreferencePage="true"
-			label="fbWarningLow"
-			quickFixIcon="icons/buggy-tiny-yellow.png"/>
-	  <specification
-			annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
-			icon="icons/buggy-tiny-green.png"
-			includeOnPreferencePage="false"
-			label="fbWarningExperimental"
-			quickFixIcon="icons/buggy-tiny-green.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
+            icon="icons/buggy-tiny.png"
+            includeOnPreferencePage="true"
+            label="fbWarningHigh"
+            quickFixIcon="icons/buggy-tiny.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
+            icon="icons/buggy-tiny-orange.png"
+            includeOnPreferencePage="true"
+            label="fbWarningNormal"
+            quickFixIcon="icons/buggy-tiny-orange.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
+            icon="icons/buggy-tiny-yellow.png"
+            includeOnPreferencePage="true"
+            label="fbWarningLow"
+            quickFixIcon="icons/buggy-tiny-yellow.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
+            icon="icons/buggy-tiny-green.png"
+            includeOnPreferencePage="false"
+            label="fbWarningExperimental"
+            quickFixIcon="icons/buggy-tiny-green.png"/>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.popupMenus">
-	  <!-- IOpenable objects in the JDT core are projects, folders, packages,
-			  java source files, and jars -->
-	  <objectContribution
-			id="de.tobject.findbugs.JavaElementActions"
-			objectClass="org.eclipse.jdt.core.IOpenable">
-		 <menu
-			   id="findbugs"
-			   label="Find Bugs"
-			   path="additions"/>
-		 <action
-			 class="de.tobject.findbugs.actions.LoadXmlAction"
-				 id="de.tobject.findbugs.loadXml"
-				 label="Load XML"
-				 menubarPath="findbugs/additions"/>
-		 <action
-			   class="de.tobject.findbugs.actions.ClearMarkersAction"
-			   id="de.tobject.findbugs.removeMarkers"
-			   label="%menu.clearMarkers"
-			   menubarPath="findbugs/additions"
-			   tooltip="%menu.clearMarkersPopup"/>
+         point="org.eclipse.ui.popupMenus">
+      <!-- IOpenable objects in the JDT core are projects, folders, packages,
+              java source files, and jars -->
+      <objectContribution
+            id="de.tobject.findbugs.JavaElementActions"
+            objectClass="org.eclipse.jdt.core.IOpenable">
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="additions"/>
+         <action
+             class="de.tobject.findbugs.actions.LoadXmlAction"
+                 id="de.tobject.findbugs.loadXml"
+                 label="Load XML"
+                 menubarPath="findbugs/additions"/>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersAction"
+               id="de.tobject.findbugs.removeMarkers"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.clearMarkersPopup"/>
 
-		 <action
-			   class="de.tobject.findbugs.actions.FindBugsAction"
-			   icon="icons/runFindbugs.png"
-			   id="de.tobject.findbugs.findBugs"
-			   label="&amp;Find Bugs"
-			   menubarPath="findbugs/additions"
-			   tooltip="%menu.findBugsPopup"/>
-	  </objectContribution>
-	  <!-- Special case context menu for simple projects that have java natures -->
-	  <objectContribution
-			objectClass="org.eclipse.core.resources.IProject"
-			id="de.tobject.findbugs.NavigatorActions">
-		 <menu
-			   id="findbugs"
-			   label="Find Bugs"
-			   path="additions"/>
-		 <action
-			   class="de.tobject.findbugs.actions.ClearMarkersAction"
-			   id="de.tobject.findbugs.removeMarkers"
-			   label="%menu.clearMarkers"
-			   menubarPath="findbugs/additions"
-			   tooltip="%menu.clearMarkersPopup">
+         <action
+               class="de.tobject.findbugs.actions.FindBugsAction"
+               icon="icons/runFindbugs.png"
+               id="de.tobject.findbugs.findBugs"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.findBugsPopup"/>
+      </objectContribution>
+      <!-- Special case context menu for simple projects that have java natures -->
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IProject"
+            id="de.tobject.findbugs.NavigatorActions">
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="additions"/>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersAction"
+               id="de.tobject.findbugs.removeMarkers"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.clearMarkersPopup">
 
-		 </action>
-		 <action
-			   class="de.tobject.findbugs.actions.FindBugsAction"
-			   icon="icons/runFindbugs.png"
-			   id="de.tobject.findbugs.findBugs"
-			   label="&amp;Find Bugs"
-			   menubarPath="findbugs/additions"
-			   tooltip="Scan selected element for bugs.">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.FindBugsAction"
+               icon="icons/runFindbugs.png"
+               id="de.tobject.findbugs.findBugs"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/additions"
+               tooltip="Scan selected element for bugs.">
 
-		 </action>
+         </action>
    <visibility>
-	  <objectState
-			name="nature"
-			value="org.eclipse.jdt.core.javanature">
-	  </objectState>
+      <objectState
+            name="nature"
+            value="org.eclipse.jdt.core.javanature">
+      </objectState>
    </visibility>
-	  </objectContribution>
+      </objectContribution>
 
-	<!-- "Show Details" context menu entry for each type of FindBugs markers in the Problems view -->
-	  <objectContribution
-			objectClass="org.eclipse.core.resources.IMarker"
-			id="de.tobject.findbugs.showDescription">
-		 <action
-			   label="Show Bug Details"
-			   icon="icons/detailsView.png"
-			   class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
-			   menubarPath="additions"
-			   enablesFor="1"
-			   id="de.tobject.findbugs.showDescription">
-		 </action>
-		 <filter
-			   name="superType"
-			   value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
-		 </filter>
-	  </objectContribution>
+    <!-- "Show Details" context menu entry for each type of FindBugs markers in the Problems view -->
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IMarker"
+            id="de.tobject.findbugs.showDescription">
+         <action
+               label="Show Bug Details"
+               icon="icons/detailsView.png"
+               class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
+               menubarPath="additions"
+               enablesFor="1"
+               id="de.tobject.findbugs.showDescription">
+         </action>
+         <filter
+               name="superType"
+               value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+         </filter>
+      </objectContribution>
 
-	  <!--
-		  "Show Details" context menu entry for markers in the editor ruler.
-		The existing FindBugs marker action cannot be used, as the editor ruler
-		markers are not FindBugs markers
-	  -->
-	  <viewerContribution
-			targetID="#CompilationUnitRulerContext"
-			id="de.tobject.findbugs.actions.ShowBugDetailsAction">
-		 <action
-			   label="Show Bug Details"
-			   icon="icons/detailsView.png"
-			   class="de.tobject.findbugs.actions.MarkerRulerAction"
-			   menubarPath="additions"
-			   id="de.tobject.findbugs.actions.markerruleraction">
-			<selection
-				  class="org.eclipse.core.resources.IMarker">
-			</selection>
-		 </action>
-	  </viewerContribution>
-	  <viewerContribution
-			id="de.tobject.findbugs.TextEditorActions"
-			targetID="#CompilationUnitEditorContext">
-		 <menu
-			   id="findbugs"
-			   label="Find Bugs"
-			   path="additions"/>
-		<action
-			 class="de.tobject.findbugs.actions.LoadXmlAction"
-			 id="de.tobject.findbugs.loadXml"
-			 label="Load XML"
-			 menubarPath="findbugs/additions"/>
-		 <action
-			   class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
-			   id="de.tobject.findbugs.removeMarkers"
-			   label="%menu.clearMarkers"
-			   menubarPath="findbugs/additions"
-			   tooltip="%menu.clearMarkersPopup"/>
-		 <action
-			   class="de.tobject.findbugs.actions.FindBugsEditorAction"
-			   icon="icons/runFindbugs.png"
-			   id="de.tobject.findbugs.findBugs"
-			   label="&amp;Find Bugs"
-			   menubarPath="findbugs/additions"
-			   tooltip="%menu.findBugsPopup"/>
-	  </viewerContribution>
+      <!--
+          "Show Details" context menu entry for markers in the editor ruler.
+        The existing FindBugs marker action cannot be used, as the editor ruler
+        markers are not FindBugs markers
+      -->
+      <viewerContribution
+            targetID="#CompilationUnitRulerContext"
+            id="de.tobject.findbugs.actions.ShowBugDetailsAction">
+         <action
+               label="Show Bug Details"
+               icon="icons/detailsView.png"
+               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               menubarPath="additions"
+               id="de.tobject.findbugs.actions.markerruleraction">
+            <selection
+                  class="org.eclipse.core.resources.IMarker">
+            </selection>
+         </action>
+      </viewerContribution>
+      <viewerContribution
+            id="de.tobject.findbugs.TextEditorActions"
+            targetID="#CompilationUnitEditorContext">
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="additions"/>
+        <action
+             class="de.tobject.findbugs.actions.LoadXmlAction"
+             id="de.tobject.findbugs.loadXml"
+             label="Load XML"
+             menubarPath="findbugs/additions"/>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
+               id="de.tobject.findbugs.removeMarkers"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.clearMarkersPopup"/>
+         <action
+               class="de.tobject.findbugs.actions.FindBugsEditorAction"
+               icon="icons/runFindbugs.png"
+               id="de.tobject.findbugs.findBugs"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.findBugsPopup"/>
+      </viewerContribution>
    <objectContribution
-		 adaptable="true"
-		 id="de.tobject.findbugs.ActiveChangeSetActions"
-		 objectClass="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode">
-	  <action
-			class="de.tobject.findbugs.actions.FindBugsAction"
-			enablesFor="1"
-			icon="icons/runFindbugs.png"
-			id="de.tobject.findbugs.findBugs"
-			label="&amp;Find Bugs"
-			menubarPath="additions"
-			tooltip="%menu.findBugsPopup">
-	  </action>
-	  <action
-			class="de.tobject.findbugs.actions.ClearMarkersAction"
-			enablesFor="1"
-			id="de.tobject.findbugs.removeMarkers"
-			label="%menu.clearMarkers"
-			menubarPath="additions"
-			tooltip="%menu.clearMarkersPopup">
-	  </action>
-	  <enablement>
-			 <adapt type="org.eclipse.team.internal.core.subscribers.ChangeSet">
-				 <instanceof value="org.eclipse.team.internal.core.subscribers.ActiveChangeSet"/>
-			 </adapt>
-	  </enablement>
+         adaptable="true"
+         id="de.tobject.findbugs.ActiveChangeSetActions"
+         objectClass="org.eclipse.team.internal.ui.synchronize.ChangeSetDiffNode">
+      <action
+            class="de.tobject.findbugs.actions.FindBugsAction"
+            enablesFor="1"
+            icon="icons/runFindbugs.png"
+            id="de.tobject.findbugs.findBugs"
+            label="&amp;Find Bugs"
+            menubarPath="additions"
+            tooltip="%menu.findBugsPopup">
+      </action>
+      <action
+            class="de.tobject.findbugs.actions.ClearMarkersAction"
+            enablesFor="1"
+            id="de.tobject.findbugs.removeMarkers"
+            label="%menu.clearMarkers"
+            menubarPath="additions"
+            tooltip="%menu.clearMarkersPopup">
+      </action>
+      <enablement>
+             <adapt type="org.eclipse.team.internal.core.subscribers.ChangeSet">
+                 <instanceof value="org.eclipse.team.internal.core.subscribers.ActiveChangeSet"/>
+             </adapt>
+      </enablement>
    </objectContribution>
    <!-- <objectContribution
-		 id="de.tobject.findbugs.ignoreBug"
-		 objectClass="org.eclipse.core.resources.IMarker">
-	  <action
-			class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
-			enablesFor="1"
-			icon="icons/detailsView.png"
-			id="de.tobject.findbugs.showDescription"
-			label="Show Bug Details"
-			menubarPath="additions">
-	  </action>
-	  <filter
-			name="superType"
-			value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
-	  </filter>
+         id="de.tobject.findbugs.ignoreBug"
+         objectClass="org.eclipse.core.resources.IMarker">
+      <action
+            class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
+            enablesFor="1"
+            icon="icons/detailsView.png"
+            id="de.tobject.findbugs.showDescription"
+            label="Show Bug Details"
+            menubarPath="additions">
+      </action>
+      <filter
+            name="superType"
+            value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+      </filter>
    </objectContribution> -->
    </extension>
 
-	<!-- Details view -->
+    <!-- Details view -->
    <extension
-		 point="org.eclipse.ui.views">
-	  <category
-			name="FindBugs"
-			id="de.tobject.findbugs.view.findBugsCategory">
-	  </category>
-	  <view
-			name="Bug Details"
-			icon="icons/detailsView.png"
-			category="de.tobject.findbugs.view.findBugsCategory"
-			class="de.tobject.findbugs.view.DetailsView"
-			id="de.tobject.findbugs.view.detailsview">
-	  </view>
-	  <view
-			category="de.tobject.findbugs.view.findBugsCategory"
-			class="de.tobject.findbugs.view.UserAnnotationsView"
-			icon="icons/annotationsView.png"
-			id="de.tobject.findbugs.view.userannotationsview"
-			name="Bug User Annotations"/>
-	  <!-- deprecated
+         point="org.eclipse.ui.views">
+      <category
+            name="FindBugs"
+            id="de.tobject.findbugs.view.findBugsCategory">
+      </category>
+      <view
+            name="Bug Details"
+            icon="icons/detailsView.png"
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.DetailsView"
+            id="de.tobject.findbugs.view.detailsview">
+      </view>
+      <view
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.UserAnnotationsView"
+            icon="icons/annotationsView.png"
+            id="de.tobject.findbugs.view.userannotationsview"
+            name="Bug User Annotations"/>
+      <!-- deprecated
 
-	  <view
-			category="de.tobject.findbugs.view.findBugsCategory"
-			class="de.tobject.findbugs.view.BugTreeView"
-			icon="icons/treeView.png"
-			id="de.tobject.findbugs.view.bugtreeview"
-			name="Bug Tree View"/> -->
+      <view
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.BugTreeView"
+            icon="icons/treeView.png"
+            id="de.tobject.findbugs.view.bugtreeview"
+            name="Bug Tree View"/> -->
    </extension>
 
    <extension
-		 point="org.eclipse.ui.ide.markerImageProviders">
-	  <imageprovider
-		 icon="icons/buggy-tiny.png"
-		 id="de.tobject.findbugs.imageprovider"
-		 markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh">
-	  </imageprovider>
-	  <imageprovider
-		 icon="icons/buggy-tiny-orange.png"
-		 id="de.tobject.findbugs.imageprovider"
-		 markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
-	  </imageprovider>
-	  <imageprovider
-		 icon="icons/buggy-tiny-yellow.png"
-		 id="de.tobject.findbugs.imageprovider"
-		 markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
-	  </imageprovider>
-	  <imageprovider
-		 icon="icons/buggy-tiny-green.png"
-		 id="de.tobject.findbugs.imageprovider"
-		 markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental">
-	  </imageprovider>
+         point="org.eclipse.ui.ide.markerImageProviders">
+      <imageprovider
+         icon="icons/buggy-tiny.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh">
+      </imageprovider>
+      <imageprovider
+         icon="icons/buggy-tiny-orange.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
+      </imageprovider>
+      <imageprovider
+         icon="icons/buggy-tiny-yellow.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
+      </imageprovider>
+      <imageprovider
+         icon="icons/buggy-tiny-green.png"
+         id="de.tobject.findbugs.imageprovider"
+         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental">
+      </imageprovider>
    </extension>
 
    <extension
-		 point="org.eclipse.jdt.core.classpathVariableInitializer">
-	  <classpathVariableInitializer
-			class="de.tobject.findbugs.AnnotationClasspathInitializer"
-			variable="FINDBUGS_ANNOTATIONS"/>
+         point="org.eclipse.jdt.core.classpathVariableInitializer">
+      <classpathVariableInitializer
+            class="de.tobject.findbugs.AnnotationClasspathInitializer"
+            variable="FINDBUGS_ANNOTATIONS"/>
    <classpathVariableInitializer
-		 class="de.tobject.findbugs.AnnotationClasspathInitializer"
-		 variable="JSR305_ANNOTATIONS">
+         class="de.tobject.findbugs.AnnotationClasspathInitializer"
+         variable="JSR305_ANNOTATIONS">
    </classpathVariableInitializer>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.ide.markerResolution">
-	  <markerResolutionGenerator
-			markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
-			class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.perspectives">
-	  <perspective
-			class="de.tobject.findbugs.view.FindBugsPerspectiveFactory"
-			fixed="false"
-			icon="icons/buggy-tiny.png"
-			id="de.tobject.findbugs.FindBugsPerspective"
-			name="FindBugs">
-	  </perspective>
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.tobject.findbugs.view.FindBugsPerspectiveFactory"
+            fixed="false"
+            icon="icons/buggy-tiny.png"
+            id="de.tobject.findbugs.FindBugsPerspective"
+            name="FindBugs">
+      </perspective>
    </extension>
 
    <!-- seems to be a problem with defining some of parts below in Java code directly -->
    <extension
-		 point="org.eclipse.ui.perspectiveExtensions">
-	  <!-- see JavaUI, IPageLayout & IConsoleConstants -->
-	  <perspectiveExtension targetID="de.tobject.findbugs.FindBugsPerspective">
-		 <showInPart id="org.eclipse.ui.views.ResourceNavigator"/>
-		 <showInPart id="org.eclipse.jdt.ui.PackageExplorer"/>
+         point="org.eclipse.ui.perspectiveExtensions">
+      <!-- see JavaUI, IPageLayout & IConsoleConstants -->
+      <perspectiveExtension targetID="de.tobject.findbugs.FindBugsPerspective">
+         <showInPart id="org.eclipse.ui.views.ResourceNavigator"/>
+         <showInPart id="org.eclipse.jdt.ui.PackageExplorer"/>
 
-		 <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
-		 <actionSet id="org.eclipse.jdt.ui.SearchActionSet"/>
-		 <actionSet id="org.eclipse.jdt.ui.A_OpenActionSet"/>
+         <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
+         <actionSet id="org.eclipse.jdt.ui.SearchActionSet"/>
+         <actionSet id="org.eclipse.jdt.ui.A_OpenActionSet"/>
 
-		 <perspectiveShortcut id="org.eclipse.jdt.ui.JavaPerspective"/>
-		 <perspectiveShortcut id="org.eclipse.jdt.ui.JavaHierarchyPerspective"/>
-		 <perspectiveShortcut id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
+         <perspectiveShortcut id="org.eclipse.jdt.ui.JavaPerspective"/>
+         <perspectiveShortcut id="org.eclipse.jdt.ui.JavaHierarchyPerspective"/>
+         <perspectiveShortcut id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
 
-		 <viewShortcut id="de.tobject.findbugs.view.detailsview"/>
-		 <viewShortcut id="de.tobject.findbugs.view.userannotationsview"/>
-		 <viewShortcut id="de.tobject.findbugs.view.bugtreeview"/>
-		 <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/>
-		 <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
-		 <viewShortcut id="org.eclipse.ui.views.BookmarkView"/>
-		 <viewShortcut id="org.eclipse.ui.views.TaskList"/>
-		 <viewShortcut id="org.eclipse.ui.views.ProgressView"/>
-	  </perspectiveExtension>
+         <viewShortcut id="de.tobject.findbugs.view.detailsview"/>
+         <viewShortcut id="de.tobject.findbugs.view.userannotationsview"/>
+         <viewShortcut id="de.tobject.findbugs.view.bugtreeview"/>
+         <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/>
+         <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
+         <viewShortcut id="org.eclipse.ui.views.BookmarkView"/>
+         <viewShortcut id="org.eclipse.ui.views.TaskList"/>
+         <viewShortcut id="org.eclipse.ui.views.ProgressView"/>
+      </perspectiveExtension>
    </extension>
 
    <!-- experimental code for new bug explorer view -->
    <extension
-		 point="org.eclipse.ui.views">
-	  <view
-		 category="de.tobject.findbugs.view.findBugsCategory"
-		 class="org.eclipse.ui.navigator.CommonNavigator"
-		 icon="icons/treeView.png"
-		 id="de.tobject.findbugs.view.bugtreeview"
-		 name="Bug Explorer">
-	 </view>
+         point="org.eclipse.ui.views">
+      <view
+         category="de.tobject.findbugs.view.findBugsCategory"
+         class="org.eclipse.ui.navigator.CommonNavigator"
+         icon="icons/treeView.png"
+         id="de.tobject.findbugs.view.bugtreeview"
+         name="Bug Explorer">
+     </view>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.navigator.navigatorContent">
-	  <navigatorContent
-			activeByDefault="true"
-			contentProvider="de.tobject.findbugs.view.explorer.BugContentProvider"
-			icon="icons/buggy-tiny.png"
-			id="de.tobject.findbugs.view.explorer.BugContentProvider"
-			labelProvider="de.tobject.findbugs.view.explorer.BugLabelProvider"
-			name="Bugs"
-			priority="lowest"
-			providesSaveables="false">
-		 <triggerPoints>
-					<adapt
-							type="org.eclipse.core.resources.IResource" >
-					</adapt>
-			</triggerPoints>
-		 <commonSorter
-			   class="de.tobject.findbugs.view.explorer.BugPrioritySorter"
-			   id="de.tobject.findbugs.view.explorer.BugPrioritySorter">
-			<parentExpression>
-			   <or>
-				  <adapt
-						type="org.eclipse.core.resources.IResource">
-				  </adapt>
-				  <adapt
-						type="de.tobject.findbugs.view.explorer.BugPatternGroup">
-				  </adapt>
-				  <adapt
-						type="org.eclipse.core.resources.IMarker">
-				  </adapt>
-			   </or></parentExpression>
-		 </commonSorter>
-		 <actionProvider
-			   class="de.tobject.findbugs.view.explorer.BugActionProvider"
-			   id="de.tobject.findbugs.view.explorer.BugActionProvider">
-			<enablement>
-			   <adapt
-					 type="org.eclipse.core.resources.IMarker">
-			   </adapt>
-			</enablement>
-		 </actionProvider>
-		 <possibleChildren>
-			<or>
-			   <adapt
-					 type="org.eclipse.core.resources.IMarker">
-			   </adapt>
-			   <adapt
-					 type="org.eclipse.core.resources.IResource">
-			   </adapt>
-			   <adapt
-					 type="org.eclipse.jdt.core.IJavaElement">
-			   </adapt>
-			</or>
-		 </possibleChildren>
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="de.tobject.findbugs.view.explorer.BugContentProvider"
+            icon="icons/buggy-tiny.png"
+            id="de.tobject.findbugs.view.explorer.BugContentProvider"
+            labelProvider="de.tobject.findbugs.view.explorer.BugLabelProvider"
+            name="Bugs"
+            priority="lowest"
+            providesSaveables="false">
+         <triggerPoints>
+                    <adapt
+                            type="org.eclipse.core.resources.IResource" >
+                    </adapt>
+            </triggerPoints>
+         <commonSorter
+               class="de.tobject.findbugs.view.explorer.BugPrioritySorter"
+               id="de.tobject.findbugs.view.explorer.BugPrioritySorter">
+            <parentExpression>
+               <or>
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                  </adapt>
+                  <adapt
+                        type="de.tobject.findbugs.view.explorer.BugPatternGroup">
+                  </adapt>
+                  <adapt
+                        type="org.eclipse.core.resources.IMarker">
+                  </adapt>
+               </or></parentExpression>
+         </commonSorter>
+         <actionProvider
+               class="de.tobject.findbugs.view.explorer.BugActionProvider"
+               id="de.tobject.findbugs.view.explorer.BugActionProvider">
+            <enablement>
+               <adapt
+                     type="org.eclipse.core.resources.IMarker">
+               </adapt>
+            </enablement>
+         </actionProvider>
+         <possibleChildren>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IMarker">
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+               </adapt>
+               <adapt
+                     type="org.eclipse.jdt.core.IJavaElement">
+               </adapt>
+            </or>
+         </possibleChildren>
 
-	  </navigatorContent>
+      </navigatorContent>
 
-	  <commonFilter
-			activeByDefault="true"
-			class="de.tobject.findbugs.view.explorer.ZeroBugsFilter"
-			description="Projects with bug-free code"
-			id="de.tobject.findbugs.view.explorer.zeroBugsFilter"
-			name="Projects without bugs">
-	  </commonFilter>
+      <commonFilter
+            activeByDefault="true"
+            class="de.tobject.findbugs.view.explorer.ZeroBugsFilter"
+            description="Projects with bug-free code"
+            id="de.tobject.findbugs.view.explorer.zeroBugsFilter"
+            name="Projects without bugs">
+      </commonFilter>
 
-	  <commonFilter
-			id="de.tobject.findbugs.view.explorer.closedProject"
-			name="Closed projects"
-			description="Closed projects"
-			activeByDefault="true">
-		 <filterExpression>
-			<and>
-				<adapt type="org.eclipse.core.resources.IProject"/>
-				<test property="org.eclipse.core.resources.open" value="false"/>
-			</and>
-		 </filterExpression>
-	  </commonFilter>
+      <commonFilter
+            id="de.tobject.findbugs.view.explorer.closedProject"
+            name="Closed projects"
+            description="Closed projects"
+            activeByDefault="true">
+         <filterExpression>
+            <and>
+                <adapt type="org.eclipse.core.resources.IProject"/>
+                <test property="org.eclipse.core.resources.open" value="false"/>
+            </and>
+         </filterExpression>
+      </commonFilter>
 
-	  <commonFilter
-			name="Non-Java projects"
-			description="Non-Java projects"
-			id="de.tobject.findbugs.view.explorer.NonJavaProjects"
-			activeByDefault="true">
-		 <filterExpression>
-			<and>
-				<adapt type="org.eclipse.core.resources.IProject"/>
-				<or>
-					<test property="org.eclipse.core.resources.open" value="false"/>
-					<not>
-						<test property="org.eclipse.core.resources.projectNature"
-							value="org.eclipse.jdt.core.javanature" />
-					</not>
-				</or>
-			</and>
-		 </filterExpression>
+      <commonFilter
+            name="Non-Java projects"
+            description="Non-Java projects"
+            id="de.tobject.findbugs.view.explorer.NonJavaProjects"
+            activeByDefault="true">
+         <filterExpression>
+            <and>
+                <adapt type="org.eclipse.core.resources.IProject"/>
+                <or>
+                    <test property="org.eclipse.core.resources.open" value="false"/>
+                    <not>
+                        <test property="org.eclipse.core.resources.projectNature"
+                            value="org.eclipse.jdt.core.javanature" />
+                    </not>
+                </or>
+            </and>
+         </filterExpression>
 
-	   </commonFilter>
+       </commonFilter>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.navigator.viewer">
-	  <viewer
-			viewerId="de.tobject.findbugs.view.bugtreeview">
-		 <options>
-			<property
-				  name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
-				  value="true">
-			</property>
-		 </options>
-	  </viewer>
-	  <viewerContentBinding
-			viewerId="de.tobject.findbugs.view.bugtreeview">
-		 <includes>
-			<contentExtension
-				  isRoot="true"
-				  pattern="de.tobject.findbugs.*">
-			</contentExtension>
-			<!-- <contentExtension pattern="org.eclipse.ui.navigator.resources.*" />
-			<contentExtension pattern="org.eclipse.jdt.*" /> -->
-		 </includes>
-	  </viewerContentBinding>
+         point="org.eclipse.ui.navigator.viewer">
+      <viewer
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <options>
+            <property
+                  name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
+                  value="true">
+            </property>
+         </options>
+      </viewer>
+      <viewerContentBinding
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="de.tobject.findbugs.*">
+            </contentExtension>
+            <!-- <contentExtension pattern="org.eclipse.ui.navigator.resources.*" />
+            <contentExtension pattern="org.eclipse.jdt.*" /> -->
+         </includes>
+      </viewerContentBinding>
 
-	  <viewerActionBinding
-			viewerId="de.tobject.findbugs.view.bugtreeview">
-		 <includes>
-			<actionExtension pattern="de.tobject.findbugs.*" />
-		 </includes>
-	  </viewerActionBinding>
+      <viewerActionBinding
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <includes>
+            <actionExtension pattern="de.tobject.findbugs.*" />
+         </includes>
+      </viewerActionBinding>
 
-	  <viewerActionBinding
-			viewerId="de.tobject.findbugs.view.bugtreeview">
-		 <includes>
-			<actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
-		 </includes>
-		 <excludes>
-			<actionExtension pattern="org.eclipse.ui.navigator.resources.WorkingSetActions" />
-		 </excludes>
-	  </viewerActionBinding>
+      <viewerActionBinding
+            viewerId="de.tobject.findbugs.view.bugtreeview">
+         <includes>
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
+         </includes>
+         <excludes>
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.WorkingSetActions" />
+         </excludes>
+      </viewerActionBinding>
    </extension>
 
    <!-- decorates any resource with bug counts (has to be activated via
-	Preferences -> general -> appearance -> label decorations)-->
+    Preferences -> general -> appearance -> label decorations)-->
    <extension
-		 point="org.eclipse.ui.decorators">
-	  <decorator
-			adaptable="true"
-			class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
-			id="de.tobject.findbugs.decorators.ProjectBugCountDecorator"
-			label="Bug count decorator (Project)"
-			state="false">
-		 <enablement>
-			<objectClass
-				  name="org.eclipse.core.resources.IProject">
-			</objectClass>
-		 </enablement>
-		 <description>
-			Decorates java projects with bug counts for all contained java classes
-		 </description>
-	  </decorator>
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
+            id="de.tobject.findbugs.decorators.ProjectBugCountDecorator"
+            label="Bug count decorator (Project)"
+            state="false">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.core.resources.IProject">
+            </objectClass>
+         </enablement>
+         <description>
+            Decorates java projects with bug counts for all contained java classes
+         </description>
+      </decorator>
 
-	  <decorator
-			adaptable="true"
-			class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
-			id="de.tobject.findbugs.decorators.FolderBugCountDecorator"
-			label="Bug count decorator (Folder)"
-			state="false">
-		 <enablement>
-			<objectClass
-				  name="org.eclipse.core.resources.IFolder">
-			</objectClass>
-		 </enablement>
-		 <description>
-			Decorates java related resources with bug counts for all contained java classes
-		 </description>
-	  </decorator>
+      <decorator
+            adaptable="true"
+            class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
+            id="de.tobject.findbugs.decorators.FolderBugCountDecorator"
+            label="Bug count decorator (Folder)"
+            state="false">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.core.resources.IFolder">
+            </objectClass>
+         </enablement>
+         <description>
+            Decorates java related resources with bug counts for all contained java classes
+         </description>
+      </decorator>
 
-	  <decorator
-			adaptable="true"
-			class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
-			id="de.tobject.findbugs.decorators.FileBugCountDecorator"
-			label="Bug count decorator (File)"
-			state="false">
-		 <enablement>
-			<objectClass
-				  name="org.eclipse.core.resources.IFile">
-			</objectClass>
-		 </enablement>
-		 <description>
-			Decorates java files with bug counts
-		 </description>
-	  </decorator>
+      <decorator
+            adaptable="true"
+            class="de.tobject.findbugs.decorators.ResourceBugCountDecorator"
+            id="de.tobject.findbugs.decorators.FileBugCountDecorator"
+            label="Bug count decorator (File)"
+            state="false">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.core.resources.IFile">
+            </objectClass>
+         </enablement>
+         <description>
+            Decorates java files with bug counts
+         </description>
+      </decorator>
    </extension>
    <extension
-		 point="org.eclipse.ui.viewActions">
-	  <viewContribution
-			id="findBugsEclipsePlugin.viewContribution1"
-			targetID="de.tobject.findbugs.view.bugtreeview">
-		 <action
-			   class="de.tobject.findbugs.actions.RefreshAction"
-			   icon="icons/refresh.gif"
-			   id="findBugsEclipsePlugin.action1"
-			   label="Refresh"
-			   menubarPath="additions"
-			   style="push"
-			   toolbarPath="additions"
-			   tooltip="Refresh explorer content">
-		 </action>
-	  </viewContribution>
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="findBugsEclipsePlugin.viewContribution1"
+            targetID="de.tobject.findbugs.view.bugtreeview">
+         <action
+               class="de.tobject.findbugs.actions.RefreshAction"
+               icon="icons/refresh.gif"
+               id="findBugsEclipsePlugin.action1"
+               label="Refresh"
+               menubarPath="additions"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Refresh explorer content">
+         </action>
+      </viewContribution>
    </extension>
 
    <extension
-		 point="org.eclipse.ui.exportWizards">
-	  <wizard
-			category="org.eclipse.jdt.ui.Java"
-			class="de.tobject.findbugs.wizards.BugCountsExportWizard"
-			icon="icons/export_bugs.png"
-			id="de.tobject.findbugs.bugCountsExportWizard"
-			name="Bug counts">
-		 <description>
-			Export bug counts as a list of simple csv records
-		 </description>
-	  </wizard>
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="org.eclipse.jdt.ui.Java"
+            class="de.tobject.findbugs.wizards.BugCountsExportWizard"
+            icon="icons/export_bugs.png"
+            id="de.tobject.findbugs.bugCountsExportWizard"
+            name="Bug counts">
+         <description>
+            Export bug counts as a list of simple csv records
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.markerSupport">
+      <markerGroupingEntry
+            id="fb.high"
+            label="FindBugs Warnings (High)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="79">
+      </markerGroupingEntry>
+      <markerAttributeGrouping
+            attribute="priority"
+            defaultGroupingEntry="org.eclipse.jdt.ui.category.potential"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+         <markerAttributeMapping
+               markerGroupingEntry="fb.low"
+               value="0">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="fb.normal"
+               value="1">
+         </markerAttributeMapping>
+         <markerAttributeMapping
+               markerGroupingEntry="fb.high"
+               value="2">
+         </markerAttributeMapping>
+      </markerAttributeGrouping>
+      <markerGroupingEntry
+            id="fb.normal"
+            label="FindBugs Warnings (Normal)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="75">
+      </markerGroupingEntry>
+      <markerGroupingEntry
+            id="fb.low"
+            label="FindBugs Warnings (Low)"
+            markerGrouping="org.eclipse.jdt.ui.java_marker_category"
+            priority="71">
+      </markerGroupingEntry>
    </extension>
 </plugin>

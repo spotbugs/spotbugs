@@ -1,4 +1,5 @@
 Release 1.3.5 - FindBugs team
+- feature 1926908: FB warnings are now properly grouped by "Java Problem Type" (Andrei Loskutov)
 - feature 1800221: build automatically allows start FB only for incremental builds (Arnout Engelen)
 - feature: FB plugin will start only limited number (by CPU cores + 1) of parallel jobs (Andrei Loskutov)
 - fixed bug 2032970: Eclipse plugin confused which generics in inner class declarations (Andrei Loskutov)
