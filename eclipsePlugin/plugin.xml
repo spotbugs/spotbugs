@@ -728,6 +728,7 @@
             id="FindBugs.command.copy2"/>
     </extension>
 
+<!-- uncommented until we define our own context
     <extension
      point="org.eclipse.ui.bindings">
 
@@ -737,5 +738,6 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
     </extension>
+-->
 
 </plugin>
