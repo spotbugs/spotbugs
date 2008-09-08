@@ -76,7 +76,7 @@ public abstract class BugResolution implements IMarkerResolution {
 	 * associated to the <CODE>IMarker</CODE> will be repaired. All exceptions
 	 * are reported to the ErrorLog.
 	 *
-	 * @param marker
+	 * @param marker non null
 	 *            The <CODE>IMarker</CODE> that specifies the bug.
 	 */
 	public void run(IMarker marker) {
@@ -99,7 +99,7 @@ public abstract class BugResolution implements IMarkerResolution {
 	 * This method is used by the test-framework, to catch the thrown exceptions
 	 * and report it to the user.
 	 *
-	 * @see run(IMarker)
+	 * @see #run(IMarker)
 	 */
 	private void runInternal(IMarker marker) throws BugResolutionException, BadLocationException, CoreException {
 		assert marker != null;
@@ -127,8 +127,6 @@ public abstract class BugResolution implements IMarkerResolution {
 			FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
 
 			marker.delete();
-			// should not be needed, markers should manage itself properly
-//			MarkerUtil.redisplayMarkers(project, FindbugsPlugin.getShell());
 		} finally {
 			originalUnit.discardWorkingCopy();
 		}
@@ -141,7 +139,7 @@ public abstract class BugResolution implements IMarkerResolution {
 	/**
 	 * Get the compilation unit for the marker.
 	 *
-	 * @param marker
+	 * @param marker not null
 	 * @return The compilation unit for the marker, or null if the file was not
 	 *         accessible or was not a Java file.
 	 */
@@ -161,8 +159,7 @@ public abstract class BugResolution implements IMarkerResolution {
 	 * Reports an exception to the user. This method could be overwritten by a
 	 * subclass to handle some exceptions individual.
 	 *
-	 * @param e
-	 *            The <CODE>Exception</CODE> to by reported.
+	 * @param e not null
 	 */
 	protected void reportException(Exception e) {
 		assert e != null;
@@ -172,7 +169,7 @@ public abstract class BugResolution implements IMarkerResolution {
 	}
 
 	private CompilationUnit createWorkingCopy(ICompilationUnit unit) throws JavaModelException {
-		unit.becomeWorkingCopy(null, monitor);
+		unit.becomeWorkingCopy(monitor);
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(unit);
 		parser.setResolveBindings(resolveBindings());
