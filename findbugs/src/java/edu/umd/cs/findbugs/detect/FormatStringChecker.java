@@ -56,12 +56,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
 	@Override
 	public void visit(Code code) {
-		boolean interesting = true;
 		state = FormatState.NONE;
-		if (interesting) {
-			// initialize any variables we want to initialize for the method
-			super.visit(code); // make callbacks to sawOpcode for all opcodes
-		}
+		super.visit(code); // make callbacks to sawOpcode for all opcodes
 		arguments = null;
 	}
 
@@ -72,6 +68,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + state);
 
 		if (stack.getStackDepth() < stackDepth) {
 			state = FormatState.NONE;
@@ -111,7 +108,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 			String nm = getNameConstantOperand();
 			String sig = getSigConstantOperand();
 			XMethod m = getXMethodOperand();
-			if ((m == null || m.isVarArgs()) && sig.indexOf("Ljava/lang/String;[java/lang/Object;)") > 0
+			if ((m == null || m.isVarArgs()) && sig.indexOf("Ljava/lang/String;[Ljava/lang/Object;)") >= 0
 					&& ("java/util/Formatter".equals(cl) && "format".equals(nm)
 							|| "java/lang/String".equals(cl) && "format".equals(nm)
 							|| "java/io/PrintStream".equals(cl) && "format".equals(nm)
