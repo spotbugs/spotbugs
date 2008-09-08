@@ -461,9 +461,10 @@ public class ClassContext {
 			return result;
 		}
 		Code code = method.getCode();
-		assert code != null;
-		if (code == null)
+		if (code == null) {
+			assert false;
 			return Collections.<Integer>emptySet();
+		}
 
 		byte[] instructionList = code.getCode();
 
