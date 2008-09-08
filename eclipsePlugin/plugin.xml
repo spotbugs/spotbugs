@@ -672,6 +672,10 @@
          </description>
       </wizard>
    </extension>
+
+<!-- See feature 1926908. This is disabled because it may cause NPE in
+    FieldMarkerGroup.addEntry(FieldMarkerGroup.java:332) in Eclipse 3.3.2 and
+    NPE in MarkerGroup.addEntry(MarkerGroup.java:451) in Eclipse 3.4.0
    <extension
          point="org.eclipse.ui.ide.markerSupport">
       <markerGroupingEntry
@@ -710,7 +714,7 @@
             priority="71">
       </markerGroupingEntry>
    </extension>
-
+-->
     <extension
          point="org.eclipse.ui.commands">
 
