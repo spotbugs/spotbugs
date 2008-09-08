@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -31,10 +32,10 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
+	final BugAccumulator bugAccumulator;
 
 	public FindSelfComparison(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 	String f;
 	String className;
@@ -47,6 +48,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 		whichRegister = -1;
 		registerLoadCount = 0;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -75,10 +77,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 				OpcodeStack.Item item1 = stack.getStackItem(1);
 				if (putFieldRegister == item1.getRegisterNumber())
-				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+				bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addReferencedField(this)
-				.addSourceLine(this));
+				.addReferencedField(this), this);
 			}
 			state = 0;
 			break;
@@ -162,20 +163,19 @@ private void checkForSelfOperation(int opCode, String op) {
 		int fr0 = item0.getFieldLoadedFromRegister();
 		int fr1 = item1.getFieldLoadedFromRegister();
 		if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
-			bugReporter.reportBug(new BugInstance(this,
+			bugAccumulator.accumulateBug(new BugInstance(this,
 					"SA_FIELD_SELF_" + op, NORMAL_PRIORITY)
-			.addClassAndMethod(this).addField(field0)
-			.addSourceLine(this));
+			.addClassAndMethod(this).addField(field0), this);
+
 
 		else if (opCode == ISUB  && registerLoadCount >= 2) { // let FindSelfComparison2 report this; more accurate
-			bugReporter.reportBug(new BugInstance(this,
+			bugAccumulator.accumulateBug(new BugInstance(this,
 					"SA_LOCAL_SELF_" + op, (opCode == ISUB || opCode == LSUB  || opCode == INVOKEINTERFACE || opCode == INVOKEVIRTUAL) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 			.addClassAndMethod(this).add(
 					LocalVariableAnnotation
 					.getLocalVariableAnnotation(
 							getMethod(), whichRegister, getPC(),
-							getPC() - 1))
-							.addSourceLine(this));
+							getPC() - 1)),this);
 		}
 	}
 }
