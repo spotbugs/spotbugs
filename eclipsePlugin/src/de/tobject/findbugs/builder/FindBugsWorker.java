@@ -54,6 +54,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
+import de.tobject.findbugs.util.Util.StopTimer;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -80,6 +81,7 @@ public class FindBugsWorker {
 	private UserPreferences userPrefs;
 	private final IProject project;
 	private final IJavaProject javaProject;
+	private StopTimer st;
 
 	/**
 	 * Creates a new worker.
@@ -130,9 +132,14 @@ public class FindBugsWorker {
 		if (DEBUG) {
 			System.out.println(resources);
 		}
+		st = new StopTimer();
+
+		st.newPoint("clearMarkers");
 
 		// clear markers
 		clearMarkers(resources);
+
+		st.newPoint("configureOutputFiles");
 
 		final Project findBugsProject = new Project();
 		findBugsProject.setProjectName(javaProject.getElementName());
@@ -149,16 +156,22 @@ public class FindBugsWorker {
 		// find and add all the class files in the output directories
 		configureOutputFiles(findBugsProject, outputFiles);
 
+		st.newPoint("createAuxClasspath");
+
 		String[] classPathEntries = createAuxClasspath();
 		// add to findbugs classpath
 		for (String entry : classPathEntries) {
 			findBugsProject.addAuxClasspathEntry(entry);
 		}
+
+		st.newPoint("configureProps");
+
 		final FindBugs2 findBugs = new FindBugs2();
 		findBugs.setNoClassOk(true);
 		findBugs.setBugReporter(bugReporter);
 		findBugs.setProject(findBugsProject);
 		findBugs.setProgressCallback(bugReporter);
+
 		findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 
 		// configure detectors.
@@ -170,12 +183,19 @@ public class FindBugsWorker {
 		configureExtendedProps(userPrefs.getExcludeFilterFiles(), findBugs, false, false);
 		configureExtendedProps(userPrefs.getExcludeBugsFiles(), findBugs, false, true);
 
+		st.newPoint("runFindBugs");
+
 		runFindBugs(findBugs);
 
 		// Merge new results into existing results
 		// if the argument is project, then it's not incremental
 		boolean incremental = !(resources.get(0) instanceof IProject);
 		updateBugCollection(findBugsProject, bugReporter, incremental);
+		st.newPoint("done");
+		if(DEBUG){
+			System.out.println("\n------\n" + st.getResults() + "\n------\n");
+		}
+		st = null;
 	}
 
 
@@ -188,6 +208,8 @@ public class FindBugsWorker {
 		if(fileName == null) {
 			return;
 		}
+		st = new StopTimer();
+
 		// clear markers
 		clearMarkers(null);
 
@@ -389,21 +411,21 @@ public class FindBugsWorker {
 	 *
 	 * @param findBugsProject FindBugs project representing analyzed classes
 	 * @param bugReporter     Reporter used to collect the new warnings
-	 * @throws CoreException
-	 * @throws IOException
-	 * @throws DocumentException
 	 */
 	private void updateBugCollection(Project findBugsProject, Reporter bugReporter,
 			boolean incremental) {
 		try {
+			st.newPoint("getBugCollection");
 			SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project,
 					monitor);
 			SortedBugCollection newBugCollection = bugReporter.getBugCollection();
 
+			st.newPoint("mergeBugCollections");
 			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,
 					newBugCollection, incremental);
 			resultCollection.setTimestamp(System.currentTimeMillis());
 
+			st.newPoint("storeBugCollection");
 			FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject,
 					monitor);
 		} catch (IOException e) {

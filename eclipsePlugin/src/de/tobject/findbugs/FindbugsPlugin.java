@@ -78,7 +78,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
 	/** Map containing preloaded ImageDescriptors */
-	private Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
+	private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
 
 	/** Controls debugging of the plugin */
 	public static boolean DEBUG;
@@ -108,6 +108,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
 	private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; //$NON-NLS-1$
 	private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
+	private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; //$NON-NLS-1$
 
 	// Persistent and session property keys
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
@@ -236,27 +237,24 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (isDebugging()) {
 			// debugging for the plugin itself
 			String option = Platform.getDebugOption(PLUGIN_DEBUG);
-			if (option != null) {
-				FindbugsPlugin.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-			}
+			FindbugsPlugin.DEBUG = Boolean.valueOf(option).booleanValue();
 
 			// debugging for the builder and friends
 			option = Platform.getDebugOption(BUILDER_DEBUG);
-			if (option != null) {
-				FindBugsBuilder.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-				FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
-			}
+			FindBugsBuilder.DEBUG = Boolean.valueOf(option).booleanValue();
+			FindBugsWorker.DEBUG = FindBugsBuilder.DEBUG;
 
 			// debugging for the nature
 			option = Platform.getDebugOption(NATURE_DEBUG);
-			if (option != null) {
-				FindBugsNature.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-			}
+			FindBugsNature.DEBUG = Boolean.valueOf(option).booleanValue();
 
 			// debugging for the reporter
 			option = Platform.getDebugOption(REPORTER_DEBUG);
-			if (option != null) {
-				Reporter.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
+			Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
+
+			option = Platform.getDebugOption(PROFILER_DEBUG);
+			if(Boolean.valueOf(option).booleanValue()){
+				System.setProperty("profiler.report", "true");
 			}
 		}
 	}

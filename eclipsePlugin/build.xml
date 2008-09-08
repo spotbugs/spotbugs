@@ -37,6 +37,7 @@
 	<path id="plugin.classpath">
 		<fileset dir="${eclipsePlugin.dir}">
 			<include name="**/*.jar"/>
+			<exclude name="edu.umd.cs.findbugs.**/*.jar"/>
 		</fileset>
 		<fileset file="findbugs.jar"/>
 		<fileset file="bcel.jar"/>
@@ -136,6 +137,7 @@
 				  <exclude name="svnClientAdapter.jar"/>
 				  <include name="*.png"/>
 				  <include name="about.*"/>
+				  <include name=".options"/>
 			</fileset>
 
 		</copy>
