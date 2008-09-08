@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -30,11 +31,13 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 
 public class FindRunInvocations extends BytecodeScanningDetector implements StatelessDetector {
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 	private boolean alreadySawStart;
 
 	public FindRunInvocations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -51,6 +54,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 		 public void visit(Code obj) {
 		alreadySawStart = false;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -63,10 +67,8 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 			if (getNameConstantOperand().equals("start"))
 				alreadySawStart = true;
 			else if (getNameConstantOperand().equals("run"))
-				bugReporter
-						.reportBug(new BugInstance(this, "RU_INVOKE_RUN", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+				bugAccumulator.accumulateBug(new BugInstance(this, "RU_INVOKE_RUN", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
 		}
 	}
 }

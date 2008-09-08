@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -34,9 +35,11 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	private static final boolean DEBUG = SystemProperties.getBoolean("ffi.debug");
 
 	private BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	public FindFinalizeInvocations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -57,6 +60,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	public void visit(Code obj) {
 		sawSuperFinalize = false;
 		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
 		if (!getMethodName().equals("finalize")
 				|| !getMethodSig().equals("()V"))
 			return;
@@ -88,11 +92,11 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		    getNameConstantOperand().equals("finalize") &&
 		    getSigConstantOperand().equals("()V"))
 		{
-			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
+			bugAccumulator.accumulateBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
 						getMethodName().equals("finalize") && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 					.addClassAndMethod(this)
-					.addCalledMethod(this)
-					.addSourceLine(this, getPC()));
+					.addCalledMethod(this), this);
+
 		}
 		if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize"))
 			sawSuperFinalize = true;

@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -46,10 +47,12 @@ import edu.umd.cs.findbugs.ba.LockSet;
  */
 public class FindSleepWithLockHeld implements Detector {
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	public FindSleepWithLockHeld(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -107,11 +110,12 @@ public class FindSleepWithLockHeld implements Detector {
 
 			LockSet lockSet = lockDataflow.getFactAtLocation(location);
 			if (lockSet.getNumLockedObjects() > 0) {
-				bugReporter.reportBug(new BugInstance("SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
-						.addClassAndMethod(classContext.getJavaClass(), method)
-						.addSourceLine(classContext,method, location));
+				bugAccumulator.accumulateBug(new BugInstance("SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
+						.addClassAndMethod(classContext.getJavaClass(), method),
+						classContext, method, location);
 			}
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	private boolean isSleep(INVOKESTATIC ins, ConstantPoolGen cpg) {

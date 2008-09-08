@@ -33,9 +33,11 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -50,10 +52,12 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public final class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	public FindMismatchedWaitOrNotify(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -149,13 +153,14 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 						// Non-public methods may be properly locked in a calling context.
 						int priority = method.isPublic() ? NORMAL_PRIORITY : LOW_PRIORITY;
 
-						bugReporter.reportBug(new BugInstance(this, type, priority)
-						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(classContext, methodGen, sourceFile, handle));
+						bugAccumulator.accumulateBug(new BugInstance(this, type, priority)
+						.addClassAndMethod(methodGen, sourceFile),
+						SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
 					}
 				}
 			}
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	public void report() {

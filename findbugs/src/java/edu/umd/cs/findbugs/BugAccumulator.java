@@ -19,9 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.util.MultiMap;
 
 import java.util.TreeSet;
+
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.MethodGen;
 
 /**
  * Accumulate warnings that may occur at multiple source locations,
@@ -104,6 +109,31 @@ public class BugAccumulator {
      */
     public void clearBugs() {
     	map.clear();
+	    
+    }
+
+	/**
+     * @param addClassAndMethod
+     * @param classContext
+     * @param method
+     * @param location
+     */
+    public void accumulateBug(BugInstance bug, ClassContext classContext, Method method, Location location) {
+	    accumulateBug(bug, SourceLineAnnotation.fromVisitedInstruction(classContext, method, location));
+	    
+    }
+
+	/**
+     * @param addClassAndMethod
+     * @param classContext
+     * @param methodGen
+     * @param sourceFile
+     * @param location
+     */
+    public void accumulateBug(BugInstance bug, ClassContext classContext, MethodGen methodGen, String sourceFile,
+            Location location) {
+    	   accumulateBug(bug, SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle()));
+    		 
 	    
     }
 }

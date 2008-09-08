@@ -9,6 +9,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -26,10 +27,12 @@ import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
 
 public class DumbMethodInvocations implements Detector {
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 
 	public DumbMethodInvocations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -41,6 +44,7 @@ public class DumbMethodInvocations implements Detector {
 
 			try {
 				analyzeMethod(classContext, method);
+				bugAccumulator.reportAccumulatedBugs();
 			} catch (MethodUnprofitableException mue) {
 				if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
 					bugReporter.logError("skipping unprofitable method in " + getClass().getName());
@@ -84,22 +88,14 @@ public class DumbMethodInvocations implements Detector {
 				if (operandValue.isConstantString()) {
 					String password = operandValue.getConstantString();
 					if (password.length() == 0)
-						bugReporter.reportBug(new BugInstance(this,
+						bugAccumulator.accumulateBug(new BugInstance(this,
 								"DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
-								.addClassAndMethod(methodGen, sourceFile)
-								.addSourceLine(
-										SourceLineAnnotation
-												.fromVisitedInstruction(classContext, methodGen,
-														sourceFile, location
-																.getHandle())));
-					else bugReporter.reportBug(new BugInstance(this,
+								.addClassAndMethod(methodGen, sourceFile),
+								classContext, methodGen,sourceFile, location);
+					else bugAccumulator.accumulateBug(new BugInstance(this,
 							"DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
-							.addClassAndMethod(methodGen, sourceFile)
-							.addSourceLine(
-									SourceLineAnnotation
-											.fromVisitedInstruction(classContext, methodGen,
-													sourceFile, location
-															.getHandle())));
+							.addClassAndMethod(methodGen, sourceFile), classContext, methodGen,
+													sourceFile, location);
 
 				}
 			}
@@ -113,14 +109,10 @@ public class DumbMethodInvocations implements Detector {
 					continue;
 				int v = operandValue.getConstantInt();
 				if (v == 0)
-					bugReporter.reportBug(new BugInstance(this,
+					bugAccumulator.accumulateBug(new BugInstance(this,
 							"DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
-							.addClassAndMethod(methodGen, sourceFile)
-							.addSourceLine(
-									SourceLineAnnotation
-											.fromVisitedInstruction(classContext, methodGen,
-													sourceFile, location
-															.getHandle())));
+							.addClassAndMethod(methodGen, sourceFile), classContext, methodGen,
+													sourceFile, location);
 
 			}
 			else 
@@ -136,15 +128,11 @@ public class DumbMethodInvocations implements Detector {
 						int priority = NORMAL_PRIORITY;
 						if (v.startsWith("/tmp")) priority = LOW_PRIORITY;
 						else if (v.indexOf("/home") >= 0) priority = HIGH_PRIORITY;
-						bugReporter.reportBug(new BugInstance(this,
+						bugAccumulator.accumulateBug(new BugInstance(this,
 								"DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
 								.addClassAndMethod(methodGen, sourceFile)
-								.addString(v).describe("FILE_NAME")
-								.addSourceLine(
-										SourceLineAnnotation
-												.fromVisitedInstruction(classContext, methodGen,
-														sourceFile, location
-																.getHandle())));
+								.addString(v).describe("FILE_NAME"), classContext, methodGen,
+														sourceFile, location);
 					}
 
 				}

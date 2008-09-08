@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -60,10 +61,12 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 
 	Map<ClassAnnotation, MethodAnnotation> equalsMethod = new TreeMap<ClassAnnotation, MethodAnnotation>();
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
+	final BugAccumulator bugAccumulator;
 
 	public OverridingEqualsNotSymmetrical(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 	
@@ -139,6 +142,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			equalsMethod.put(classAnnotation, MethodAnnotation.fromVisitedMethod(this));
 			
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	
@@ -309,7 +313,10 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
                         } catch (ClassNotFoundException e) {
 	                        bugReporter.reportMissingClass(e);
                         }
-						bugReporter.reportBug(new BugInstance(this,"EQ_GETCLASS_AND_CLASS_CONSTANT", priority).addClassAndMethod(this).addSourceLine(this).addString("doesn't work for subtypes"));
+						bugAccumulator.accumulateBug(
+								new BugInstance(this,"EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
+								.addClassAndMethod(this)
+								.addString("doesn't work for subtypes"), this);
 					}
 	    		}
 	    	}
