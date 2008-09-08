@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2003-2007 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class Profiler {
 
 	final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
-	
+
 	private static Profiler instance = new Profiler();
 
 	private Profiler() {
@@ -79,8 +79,9 @@ public class Profiler {
 		long currentNanoTime = System.nanoTime();
 
 		Stack<Clock> stack = startTimes.get();
-		if (!stack.isEmpty())
-			stack.peek().accumulateTime(currentNanoTime);
+		if (!stack.isEmpty()) {
+	        stack.peek().accumulateTime(currentNanoTime);
+        }
 		stack.push(new Clock(c, currentNanoTime));
 		// System.out.println("push " + c.getSimpleName());
 
@@ -102,14 +103,16 @@ public class Profiler {
 			restarting.restartClock(currentNanoTime);
 		}
 		long accumulatedTime = ending.accumulatedTime;
-		if (accumulatedTime == 0)
-			return;
+		if (accumulatedTime == 0) {
+	        return;
+        }
 		AtomicLong counter = profile.get(c);
 		if (counter == null) {
 			counter = new AtomicLong();
 			AtomicLong counter2 = profile.putIfAbsent(c, counter);
-			if (counter2 != null)
-				counter = counter2;
+			if (counter2 != null) {
+	            counter = counter2;
+            }
 		}
 		counter.addAndGet(accumulatedTime);
 	}
@@ -131,18 +134,21 @@ public class Profiler {
 	}
 
 	public void report() {
-		if (!REPORT)
-			return;
+		if (!REPORT) {
+	        return;
+        }
 		try {
 			Comparator<Pair<Class<?>, AtomicLong>> c = new Comparator<Pair<Class<?>, AtomicLong>>() {
 
 				public int compare(Pair<Class<?>, AtomicLong> o1, Pair<Class<?>, AtomicLong> o2) {
 					long v1 = o1.second.get();
 					long v2 = o2.second.get();
-					if (v1 < v2)
-						return -1;
-					if (v1 > v2)
-						return 1;
+					if (v1 < v2) {
+	                    return -1;
+                    }
+					if (v1 > v2) {
+	                    return 1;
+                    }
 					return o1.first.getName().compareTo(o2.first.getName());
 				}
 
@@ -154,12 +160,16 @@ public class Profiler {
 			Pair<Class<?>, AtomicLong> prev = null;
 			for (Pair<Class<?>, AtomicLong> e : treeSet) {
 				System.out.printf("%7d  %s\n", e.second.get() / 1000000, e.first.getSimpleName());
-				if (false && prev != null)
-					System.out.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
+				if (false && prev != null) {
+	                System.out.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
+                }
 				prev = e;
 			}
 		} catch (RuntimeException e) {
 			System.out.println(e);
+		} finally {
+			profile.clear();
+			startTimes.get().clear();
 		}
 	}
 }
