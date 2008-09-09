@@ -57,7 +57,7 @@ extends OpcodeStackDetector {
 
 
 	   bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
-				NORMAL_PRIORITY)
+				ignorePasswordMasking ? NORMAL_PRIORITY : HIGH_PRIORITY)
 								.addClassAndMethod(this)
 								.addSourceLine(this)
 				);
