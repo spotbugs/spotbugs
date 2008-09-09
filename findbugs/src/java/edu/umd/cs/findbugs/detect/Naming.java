@@ -320,6 +320,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	
 	boolean hasBadMethodNames;
+	boolean hasBadFieldNames;
 
 	@Override
 	public void visit(JavaClass obj) {
@@ -340,6 +341,10 @@ public class Naming extends PreorderVisitor implements Detector {
 			}
 		}
 
+		int badFieldNames = 0;
+		for(Field f : obj.getFields()) 
+			if (f.getName().length() >= 2 && badFieldName(f)) badFieldNames++;
+		hasBadFieldNames = badFieldNames > 5 && badFieldNames > obj.getFields().length/2;
 		int badNames = 0;
 		for(Method m : obj.getMethods()) 
 			if (badMethodName(m.getName())) badNames++;
@@ -352,14 +357,22 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (getFieldName().length() == 1)
 			return;
 
-		if (!obj.isFinal() && Character.isLetter(getFieldName().charAt(0)) && !Character.isLowerCase(getFieldName().charAt(0))
-		        && getFieldName().indexOf("_") == -1 && Character.isLetter(getFieldName().charAt(1))
-		        && Character.isLowerCase(getFieldName().charAt(1))) {
+		if (badFieldName(obj)) {
 			bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
-			        && (obj.isPublic() || obj.isProtected()) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addVisitedField(
+			        && (obj.isPublic() || obj.isProtected())  && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addVisitedField(
 			        this));
 		}
 	}
+
+	/**
+     * @param obj
+     * @return
+     */
+    private boolean badFieldName(Field obj) {
+	    return !obj.isFinal() && Character.isLetter(getFieldName().charAt(0)) && !Character.isLowerCase(getFieldName().charAt(0))
+		        && getFieldName().indexOf("_") == -1 && Character.isLetter(getFieldName().charAt(1))
+		        && Character.isLowerCase(getFieldName().charAt(1));
+    }
 
 	private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
@@ -481,7 +494,7 @@ public class Naming extends PreorderVisitor implements Detector {
      * @return
      */
     private boolean badMethodName(String mName) {
-	    return Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0)) && Character.isLetter(mName.charAt(1))
+	    return mName.length() >= 2 && Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0)) && Character.isLetter(mName.charAt(1))
 		        && Character.isLowerCase(mName.charAt(1)) && mName.indexOf("_") == -1;
     }
 
