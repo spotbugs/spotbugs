@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -45,7 +48,7 @@ public abstract class ValueNumberSourceInfo {
 	 * @param vnaFrame
 	 * @return the annotation
 	 */
-	public static BugAnnotation findAnnotationFromValueNumber(Method method,
+	public static @CheckForNull BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
 		LocalVariableAnnotation ann = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(
@@ -56,9 +59,26 @@ public abstract class ValueNumberSourceInfo {
 				location, valueNumber, vnaFrame);
 		if (field != null)
 			return field;
-		return ann;
+		if (ann != null) return ann;
+		return null;
 	}
 
+	/**
+	 * @param method
+	 *            TODO
+	 * @param location
+	 * @param valueNumber
+	 * @param vnaFrame
+	 * @return the annotation
+	 */
+	public static @Nonnull BugAnnotation findRequiredAnnotationFromValueNumber(Method method,
+			Location location, ValueNumber valueNumber,
+			ValueNumberFrame vnaFrame) {
+		BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
+		if (result != null) return result;
+		return new LocalVariableAnnotation("?", -1, location.getHandle().getPosition());
+	}
+	
 	public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
 			Method method, Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {

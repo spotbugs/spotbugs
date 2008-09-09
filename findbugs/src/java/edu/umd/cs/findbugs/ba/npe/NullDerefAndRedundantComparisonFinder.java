@@ -375,9 +375,10 @@ public class NullDerefAndRedundantComparisonFinder {
 
 			} catch (DataflowAnalysisException e2) {
 			}
-			if (variableAnnotation instanceof LocalVariableAnnotation && ((LocalVariableAnnotation)variableAnnotation).getName().equals("?") 
-					&& method.getCode().getLocalVariableTable() != null)
-				variableAnnotation = null;
+			if (variableAnnotation == null)
+				variableAnnotation = new LocalVariableAnnotation("?", -1, 
+						derefLocationSet.iterator().next().getHandle().getPosition());
+
 
 
 
@@ -756,13 +757,13 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param valueNumber
 	 * @param vnaFrame
 	 * @return the annotation
-	 * @deprecated Use {@link ValueNumberSourceInfo#findAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
+	 * @deprecated Use {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
 	 */
 	@Deprecated
 	public static BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		return ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
+		return ValueNumberSourceInfo.findRequiredAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {
