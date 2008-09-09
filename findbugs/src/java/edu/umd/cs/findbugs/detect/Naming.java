@@ -319,6 +319,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	
+	boolean hasBadMethodNames;
 
 	@Override
 	public void visit(JavaClass obj) {
@@ -339,6 +340,10 @@ public class Naming extends PreorderVisitor implements Detector {
 			}
 		}
 
+		int badNames = 0;
+		for(Method m : obj.getMethods()) 
+			if (badMethodName(m.getName())) badNames++;
+		hasBadMethodNames = badNames > 5 && badNames > obj.getMethods().length/2;
 		super.visit(obj);
 	}
 
@@ -401,10 +406,9 @@ public class Naming extends PreorderVisitor implements Detector {
 			return;
 		if (mName.equals("isRequestedSessionIdFromURL") || mName.equals("isRequestedSessionIdFromUrl"))
 			return;
-		if (Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0)) && Character.isLetter(mName.charAt(1))
-		        && Character.isLowerCase(mName.charAt(1)) && mName.indexOf("_") == -1)
+		if (badMethodName(mName))
 			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
-			        && (obj.isPublic() || obj.isProtected()) ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this));
+			        && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this));
 		String sig = getMethodSig();
 		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
@@ -471,6 +475,15 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 	}
+
+	/**
+     * @param mName
+     * @return
+     */
+    private boolean badMethodName(String mName) {
+	    return Character.isLetter(mName.charAt(0)) && !Character.isLowerCase(mName.charAt(0)) && Character.isLetter(mName.charAt(1))
+		        && Character.isLowerCase(mName.charAt(1)) && mName.indexOf("_") == -1;
+    }
 
 	private boolean codeDoesSomething(Code code) {
 		byte[] codeBytes = code.getCode();
