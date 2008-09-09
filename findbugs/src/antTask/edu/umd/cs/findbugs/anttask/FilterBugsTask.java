@@ -85,15 +85,15 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     	this.not = arg;
     }
     
-    public void withSource(String arg) {
+    public void setWithSource(String arg) {
     	this.withSource = arg;
     }
     
-    public void exclude(String arg) {
+    public void setExclude(String arg) {
     	this.exclude = arg;
     }
     
-    public void include(String arg) {
+    public void setInclude(String arg) {
     	this.include = arg;
     }
     
