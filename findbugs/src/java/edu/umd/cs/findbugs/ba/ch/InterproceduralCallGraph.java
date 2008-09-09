@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
  * 
  * @author David Hovemeyer
  */
+@Deprecated
 public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallGraphEdge, InterproceduralCallGraphVertex> {
 
 	private Map<MethodDescriptor, InterproceduralCallGraphVertex> methodDescToVertexMap;
