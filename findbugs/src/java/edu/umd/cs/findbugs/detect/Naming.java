@@ -369,9 +369,10 @@ public class Naming extends PreorderVisitor implements Detector {
      * @return
      */
     private boolean badFieldName(Field obj) {
-	    return !obj.isFinal() && Character.isLetter(getFieldName().charAt(0)) && !Character.isLowerCase(getFieldName().charAt(0))
-		        && getFieldName().indexOf("_") == -1 && Character.isLetter(getFieldName().charAt(1))
-		        && Character.isLowerCase(getFieldName().charAt(1));
+    	String fieldName = obj.getName();
+	    return !obj.isFinal() && Character.isLetter(fieldName.charAt(0)) && !Character.isLowerCase(fieldName.charAt(0))
+		        && fieldName.indexOf("_") == -1 && Character.isLetter(fieldName.charAt(1))
+		        && Character.isLowerCase(fieldName.charAt(1));
     }
 
 	private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
