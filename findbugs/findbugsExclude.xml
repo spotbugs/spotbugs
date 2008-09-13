@@ -66,5 +66,36 @@
         <Bug pattern="URF_UNREAD_FIELD"/>
         <Class name="edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM$1$2"/>
       </Match>
-
+  <And>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.gui2.MainFrame"/>
+  </And>
+  <And>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.ml.GenerateUIDs"/>
+  </And>
+  <And>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.userAnnotations.ri.XMLFileUserAnnotationPlugin"/>
+  </And>
+  <Match>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.util.Util"/>
+  </Match>
+  <Match>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis"/>
+  </Match>
+  <Match>
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION"/>
+    <Class name="edu.umd.cs.findbugs.xml.OutputStreamXMLOutput"/>
+  </Match>
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+    <Class name="edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM$1"/>
+  </Match>
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+    <Class name="edu.umd.cs.findbugs.userAnnotations.SimpleWebPlugin"/>
+  </Match>
 </FindBugsFilter>
