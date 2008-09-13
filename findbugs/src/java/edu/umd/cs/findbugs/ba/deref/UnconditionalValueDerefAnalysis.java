@@ -162,10 +162,7 @@ public class UnconditionalValueDerefAnalysis extends
 			throws DataflowAnalysisException {
 
 		Instruction instruction = handle.getInstruction();
-		if (false && DEBUG) {
-			System.out.println("XXX: " + handle.getPosition() + " " + instruction);
-		}
-		   if (fact.isTop()) return;
+	    if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
 
 		// If this is a call to an assertion method,

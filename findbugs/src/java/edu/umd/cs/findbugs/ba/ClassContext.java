@@ -614,7 +614,7 @@ public class ClassContext {
 	 *         of the method's parameters
 	 */
 	public String[] getParameterSignatureList(Method method) {
-		return getMethodAnalysisNoException(String[].class, method);// XXX
+		return getMethodAnalysisNoException(String[].class, method);
 	}
 
 	/**

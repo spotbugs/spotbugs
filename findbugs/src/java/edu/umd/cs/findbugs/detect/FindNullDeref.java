@@ -1127,7 +1127,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	}
 
 
-	// XXX
 	BugAnnotation getVariableAnnotation(Location location) {
 		BugAnnotation variableAnnotation = null;
 		try {

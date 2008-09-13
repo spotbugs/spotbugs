@@ -143,7 +143,6 @@ public class SetBugDatabaseInfoTask extends AbstractFindBugsTask {
 		if(outputFile != null) {
 	        addArg(outputFile);
 		}
-		System.out.println("XXX " + getFindbugsEngine().getCommandLine());
 	}
 
 	/* (non-Javadoc)
