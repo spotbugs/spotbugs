@@ -47,7 +47,7 @@ public class Version {
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/**
 	 * Release candidate number.
