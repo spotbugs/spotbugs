@@ -155,6 +155,12 @@ public class FindBugsWorker {
 
 		// find and add all the class files in the output directories
 		configureOutputFiles(findBugsProject, outputFiles);
+		if(findBugsProject.getFileCount() == 0){
+			if (DEBUG) {
+				FindbugsPlugin.getDefault().logInfo("No resources to analyse for project " + project);
+			}
+			return;
+		}
 
 		st.newPoint("createAuxClasspath");
 
