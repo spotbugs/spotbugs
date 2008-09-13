@@ -409,7 +409,7 @@ This does not help the garbage collector in any way, the nulling out of fields h
   <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting">
     <Details>
 <![CDATA[
-<p> This detector looks for obvious/blatent cases of cross site scripting vulnerabilities.</p>
+<p> This detector looks for obvious/blatant cases of cross site scripting vulnerabilities.</p>
 ]]>
     </Details>
   </Detector>
@@ -1242,7 +1242,7 @@ This detector looks for bad casts of object references using data flow analysis.
     <Details>
 <![CDATA[
 <p>
-This detector looks for stores of non Serializable objects into Http sessions.
+This detector looks for stores of non Serializable objects into HTTP sessions.
 </p>
 ]]>
     </Details>
@@ -1587,8 +1587,8 @@ factory pattern to create these objects.</p>
 	<p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow a HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
-<p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
-If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more 
+<p>FindBugs looks only for the most blatant, obvious cases of HTTP response splitting.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
 vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously 
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1605,8 +1605,8 @@ consider using a commercial static analysis or pen-testing tool.
 	<p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
 for more information.</p>
-<p>FindBugs looks only for the most blatent, obvious cases of HTTP response splitting.
-If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more 
+<p>FindBugs looks only for the most blatant, obvious cases of HTTP response splitting.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more 
 vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously 
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1622,8 +1622,8 @@ consider using a commercial static analysis or pen-testing tool.
 	<p>This code directly writes an HTTP parameter to Servlet output, which allows for a reflected cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
-<p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
-If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
+<p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1641,8 +1641,8 @@ consider using a commercial static analysis or pen-testing tool.
 for a reflected cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
-<p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
-If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
+<p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1659,8 +1659,8 @@ consider using a commercial static analysis or pen-testing tool.
 	<p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
 vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
 for more information.</p>
-<p>FindBugs looks only for the most blatent, obvious cases of cross site scripting.
-If FindBugs found <em>any</em>, you <em>almostly certainly</em> have more cross site scripting
+<p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
+If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
 vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously 
 consider using a commercial static analysis or pen-testing tool.
 </p>
@@ -1929,7 +1929,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     <LongDescription>{1} uses {2} for a variable name, which is a keyword in later versions of Java</LongDescription>
     <Details>
 <![CDATA[
-<p>The identifier is a word that is reserversed as a keyword in later versions of Java, and your code will need to be changed
+<p>The identifier is a word that is reserved as a keyword in later versions of Java, and your code will need to be changed
 in order to compile it in later versions of Java.</p>
 
 ]]>
@@ -2511,7 +2511,7 @@ on objects referenced by X, because they may already be getting finalized in a s
     <Details>
 <![CDATA[
   <p> This class defines an enumeration, and equality on enumerations are defined
-using object identity. Definine a covariant equals method for an enumeration
+using object identity. Defining a covariant equals method for an enumeration
 value is exceptionally bad practice, since it would likely result
 in having two different enumeration values that compare as equals using
 the covariant enum method, and as not equal when compared normally.
@@ -2595,7 +2595,7 @@ invoking super.equals(o).
 <![CDATA[
   <p> This class defines an equals method that overrides an equals method in a superclass. Both equals methods
 methods use <code>instanceof</code> in the determination of whether two objects are equal. This is fraught with peril,
-since it is important that the equals method is symetrical (in other words, <code>a.equals(b) == b.equals(a)</code>).
+since it is important that the equals method is symmetrical (in other words, <code>a.equals(b) == b.equals(a)</code>).
 If B is a subtype of A, and A's equals method checks that the argument is an instanceof A, and B's equals method
 checks that the argument is an instanceof B, it is quite likely that the equivalence relation defined by these
 methods is not symmetric.
@@ -2660,7 +2660,7 @@ Plus, it means that the equals method is not symmetric.
     <LongDescription>{1} always returns false</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class defines an equals method that always returns false. This means that an object is not equal to itself, and it is impossible to create useful Maps or Sets of this class. More fundementally, it means
+  <p> This class defines an equals method that always returns false. This means that an object is not equal to itself, and it is impossible to create useful Maps or Sets of this class. More fundamentally, it means
 that equals is not reflexive, one of the requirements of the equals method.</p>
 <p>The likely intended semantics are object identity: that an object is equal to itself. This is the behavior inherited from class <code>Object</code>. If you need to override an equals inherited from a different 
 superclass, you can use use:
@@ -2947,7 +2947,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
     <LongDescription>{1} is a mutable servlet field</LongDescription>
     <Details>
 <![CDATA[
-<p>A web server generally only creates one instance of servlet or jsp class (i.e., treates
+<p>A web server generally only creates one instance of servlet or jsp class (i.e., treats
 the class as a Singleton), 
 and will 
 have multiple threads invoke methods on that instance to service multiple 
@@ -3249,8 +3249,8 @@ public class CircularClassInitialization {
 
 
   <BugPattern type="IT_NO_SUCH_ELEMENT">
-    <ShortDescription>Iterator next() method can't throw NoSuchElement exception</ShortDescription>
-    <LongDescription>{1} can't throw NoSuchElement exception</LongDescription>
+    <ShortDescription>Iterator next() method can't throw NoSuchElementException</ShortDescription>
+    <LongDescription>{1} can't throw NoSuchElementException</LongDescription>
     <Details>
 <![CDATA[
   <p> This class implements the <code>java.util.Iterator</code> interface.&nbsp;
@@ -3307,7 +3307,7 @@ and possible deadlock</p>
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE">
-    <ShortDescription>Synchronization on boxed primative values</ShortDescription>
+    <ShortDescription>Synchronization on boxed primitive values</ShortDescription>
     <LongDescription>Synchronization on {2} in {1}</LongDescription>
     <Details>
       <![CDATA[
@@ -3327,8 +3327,8 @@ private static final Integer fileLock = new Integer(1);
 private static final Object fileLock = new Object();
 </pre>
 The existing code might be OK, but it is confusing and a 
-future refactoing, such as the "Remove Boxing" refactoring in IntelliJ,
-might replace this with the use of an intern'd Integer object shared 
+future refactoring, such as the "Remove Boxing" refactoring in IntelliJ,
+might replace this with the use of an interned Integer object shared 
 throughout the JVM, leading to very confusing behavior and potential deadlock.
 </p>
 ]]>
@@ -3336,7 +3336,7 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
   </BugPattern>
 
   <BugPattern type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE">
-    <ShortDescription>Synchronization on boxed primative could lead to deadlock</ShortDescription>
+    <ShortDescription>Synchronization on boxed primitive could lead to deadlock</ShortDescription>
     <LongDescription>Synchronization on {2} could deadlock in {1}</LongDescription>
     <Details>
       <![CDATA[
@@ -4551,7 +4551,7 @@ a null value will be dereferenced, which
 would generate a <code>NullPointerException</code> when the code is executed.
 Of course, the problem might be that the branch or statement is infeasible and that
 the null pointer exception can't ever be executed; deciding that is beyond the ability of FindBugs.
-Due to the fact that this value had been previously tested for nullness, this is a definite possiblity.
+Due to the fact that this value had been previously tested for nullness, this is a definite possibility.
 </p>
 ]]>
     </Details>
@@ -4783,7 +4783,7 @@ is not a directory.</p>
 control flow continues onto the same place regardless of whether or not
 the branch is taken. For example,
 this is caused by having an empty statement
-block fot an <code>if</code> statement:</p>
+block for an <code>if</code> statement:</p>
 <pre>
     if (argv.length == 0) {
 	// TODO: handle this case
