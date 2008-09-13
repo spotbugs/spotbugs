@@ -5355,7 +5355,7 @@ that value. Values loaded from a byte array are sign extended to 32 bits
 before any any bitwise operations are performed on the value.
 Thus, if <code>b[0]</code> contains the value <code>0xff</code>, and
 <code>x</code> is initially 0, then the code 
-<code>((x << 8) | b[0])</code>  will sign extend <code>0xff</code>
+<code>((x &lt;&lt; 8) | b[0])</code>  will sign extend <code>0xff</code>
 to get <code>0xffffffff</code>, and thus give the value
 <code>0xffffffff</code> as the result.
 </p>
