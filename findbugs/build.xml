@@ -483,6 +483,7 @@
   <target name="runanttask" depends="anttask,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask" classpath="${anttask.jar}"/>
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
@@ -491,6 +492,12 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
+<setBugDatabaseInfo home="."
+	withMessages="true"
+	name="Set name test"
+	input="${sampleoutput.dir}/bcel.xml"
+	output="${sampleoutput.dir}/bcel-2.xml"
+	/>
   </target>
 
   <target name="findbugscheck" depends="anttask,classes,junittests,jars">
