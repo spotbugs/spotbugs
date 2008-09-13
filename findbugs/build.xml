@@ -861,7 +861,7 @@
 
 
 	<!-- Generate binary and source distributions. -->
-	<target name="dist" depends="bindist,srcdist,jnlp,web" description="Complete distribution"/>
+	<target name="dist" depends="clean,bindist,srcdist,web" description="Complete distribution except for jnlp"/>
 	
 	<!-- Generate binary distribution (both .zip and .tar.gz) -->
 	<target name="bindist" depends="rebuild,docs" description="Binary distribution">
