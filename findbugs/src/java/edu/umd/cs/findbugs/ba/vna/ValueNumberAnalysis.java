@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -37,6 +39,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * A dataflow analysis to track the production and flow of values in the Java
@@ -93,7 +96,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	}
 	public ValueNumber getClassObjectValue(String className) {
-		return visitor.getClassObjectValue(className);
+		return visitor.factory.getClassObjectValue(className);
 	}
 	public void setMergeTree(MergeTree mergeTree) {
 		this.mergeTree = mergeTree;
@@ -406,6 +409,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		}
 		return valueNumber;
 	}
+	
+	 public @CheckForNull @DottedClassName String getClassName(ValueNumber v) { 
+		 return factory.getClassName(v);
+	 }
 }
 
 // vim:ts=4

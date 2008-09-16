@@ -25,6 +25,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.*;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -38,6 +40,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Visitor to model the effects of bytecode instructions on the
@@ -59,7 +62,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private ValueNumberDataflow valueNumberDataflow;
 
 	// Fields for precise modeling of instanceof instructions.
-	private short lastOpcode;
 	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
 	private ValueNumber instanceOfValueNumber;
@@ -86,16 +88,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		this.valueNumberDataflow = valueNumberDataflow;
 	}
 
-	/**
-	 * Get the last opcode analyzed by this visitor.
-	 * The TypeAnalysis may use this to get more precise types in
-	 * the resulting frame.
-	 * 
-	 * @return the last opcode analyzed by this visitor
-	 */
-	public short getLastOpcode() {
-		return lastOpcode;
-	}
 
 	/**
 	 * Return whether an instanceof instruction was followed by a branch.
@@ -147,11 +139,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		return TypeFrame.getBottomType();
 	}
 
+	boolean sawEffectiveInstanceOf;
+	boolean previousWasEffectiveInstanceOf;
+	
 	@Override
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
 		instanceOfFollowedByBranch = false;
+		sawEffectiveInstanceOf = false;
 		super.analyzeInstruction(ins);
-		lastOpcode = ins.getOpcode();
+		previousWasEffectiveInstanceOf = sawEffectiveInstanceOf;
 	}
 
 	/**
@@ -160,7 +156,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * for instanceof modeling.
 	 */
 	public void startBasicBlock() {
-		lastOpcode = -1;
 		instanceOfType = null;
 		instanceOfValueNumber = null;
 	}
@@ -368,7 +363,32 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		TypeFrame frame = getFrame();
-		if (obj.getMethodName(cpg).equals("initCause") && obj.getSignature(cpg).equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && obj.getClassName(cpg).endsWith("Exception")) {
+		
+		String methodName = obj.getMethodName(cpg);
+		String signature = obj.getSignature(cpg);
+		String className = obj.getClassName(cpg);
+		
+		if (methodName.equals("isInstance")) {
+			if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
+				// Record the value number of the value checked by this instruction,
+				// and the type the value was compared to.
+				try {
+					ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
+					if (vnaFrame.isValid()) {
+						 ValueNumber stackValue = vnaFrame.getStackValue(1);
+						 String c = valueNumberDataflow.getClassName(stackValue);
+						 instanceOfValueNumber = vnaFrame.getTopValue();
+						 instanceOfType = ObjectType.getInstance(c);
+						 sawEffectiveInstanceOf = true;
+						 
+						
+					}
+				} catch (DataflowAnalysisException e) {
+					// Ignore
+				}
+			}
+		}
+		if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && className.endsWith("Exception")) {
 			try {
 
 				frame.popValue();
@@ -444,6 +464,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (vnaFrame.isValid()) {
 					instanceOfValueNumber = vnaFrame.getTopValue();
 					instanceOfType = obj.getType(getCPG());
+					sawEffectiveInstanceOf = true;
 				}
 			} catch (DataflowAnalysisException e) {
 				// Ignore
@@ -961,28 +982,28 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	@Override
 	public void visitIFEQ(IFEQ obj) {
-		if (lastOpcode == Constants.INSTANCEOF)
+		if (previousWasEffectiveInstanceOf)
 			instanceOfFollowedByBranch = true;
 		super.visitIFEQ(obj);
 	}
 
 	@Override
 	public void visitIFGT(IFGT obj) {
-		if (lastOpcode == Constants.INSTANCEOF)
+		if (previousWasEffectiveInstanceOf)
 			instanceOfFollowedByBranch = true;
 		super.visitIFGT(obj);
 	}
 
 	@Override
 	public void visitIFLE(IFLE obj) {
-		if (lastOpcode == Constants.INSTANCEOF)
+		if (previousWasEffectiveInstanceOf)
 			instanceOfFollowedByBranch = true;
 		super.visitIFLE(obj);
 	}
 
 	@Override
 	public void visitIFNE(IFNE obj) {
-		if (lastOpcode == Constants.INSTANCEOF)
+		if (previousWasEffectiveInstanceOf)
 			instanceOfFollowedByBranch = true;
 		super.visitIFNE(obj);
 	}

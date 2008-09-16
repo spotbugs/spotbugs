@@ -80,7 +80,7 @@ public class TypeDataflowFactory extends AnalysisFactory<TypeDataflow> {
 
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 		typeDataflow.execute();
-		if (TypeAnalysis.DEBUG) {
+		if (TypeAnalysis.DEBUG || ClassContext.DUMP_DATAFLOW_ANALYSIS) {
 			ClassContext.dumpTypeDataflow(method, cfg, typeDataflow);
 		}
 

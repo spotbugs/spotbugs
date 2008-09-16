@@ -22,11 +22,14 @@ package edu.umd.cs.findbugs.ba.vna;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
@@ -66,8 +69,12 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 		}
 
 		return valueNumberToParamMap;
-
 	}
+	
+	 public @CheckForNull @DottedClassName String getClassName(ValueNumber v) { 
+		 return getAnalysis().getClassName(v);
+	 
+	 }
 }
 
 // vim:ts=4

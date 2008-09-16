@@ -248,7 +248,11 @@ public class Subtypes2 {
 		if (type.equals(possibleSupertype)) {
 			return true;
 		}
-		// others?
+		if (possibleSupertype.equals(ObjectType.OBJECT)) 
+			return true;
+		if (type.equals(ObjectType.OBJECT)) 
+			return false;
+		
 
 		boolean typeIsObjectType = (type instanceof ObjectType);
 		boolean possibleSupertypeIsObjectType = (possibleSupertype instanceof ObjectType);
@@ -263,8 +267,7 @@ public class Subtypes2 {
 
 		if (typeIsArrayType) {
 			// Check superclass/interfaces
-			if (possibleSupertype.equals(ObjectType.OBJECT)
-					|| possibleSupertype.equals(SERIALIZABLE)
+			if (possibleSupertype.equals(SERIALIZABLE)
 					|| possibleSupertype.equals(CLONEABLE)) {
 				return true;
 			}

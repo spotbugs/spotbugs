@@ -148,20 +148,6 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return flags - other.flags;
 
 	}
-/*
-
-	public int hashCode() {
-		return number;
-	}
-
-
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != this.getClass())
-			return false;
-		ValueNumber other = (ValueNumber) obj;
-		return this.number == other.number;
-	}
-*/
 }
 
 // vim:ts=4

@@ -19,8 +19,14 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.CheckForNull;
 
 /**
  * Factory for ValueNumbers.
@@ -35,7 +41,8 @@ public class ValueNumberFactory {
 	 * Store all allocated value numbers.
 	 */
 	private ArrayList<ValueNumber> allocatedValueList = new ArrayList<ValueNumber>();
-
+	private HashMap<String, ValueNumber> classObjectValueMap = new HashMap<String, ValueNumber>();
+	
 	/**
 	 * Create a fresh (unique) value number.
 	 */
@@ -89,6 +96,31 @@ public class ValueNumberFactory {
 
 		this.allocatedValueList = newList;
 	}
+	 /**
+	  * Get the ValueNumber for given class's Class object.
+	  *
+	  * @param className the class
+	  */
+	 public ValueNumber getClassObjectValue(@DottedClassName String className) {
+		 assert className.indexOf('/') == -1;
+		 // TODO: Check to see if we need to do this
+		 className = className.replace('/','.');
+		 ValueNumber value = classObjectValueMap.get(className);
+		 if (value == null) {
+			 value = createFreshValue(ValueNumber.CONSTANT_CLASS_OBJECT);
+			 classObjectValueMap.put(className, value);
+		 }
+		 return value;
+	 }
+	 
+	 public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
+		 if (!v.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) 
+			 throw new IllegalArgumentException ("Not a value number for a constant class");
+		 for(Map.Entry<String, ValueNumber> e : classObjectValueMap.entrySet()) {
+			 if (e.getValue().equals(v)) return e.getKey();
+		 }
+		 return null;
+	 }
 
 }
 

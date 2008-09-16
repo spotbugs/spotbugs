@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Visitor which models the effects of bytecode instructions
@@ -73,10 +74,10 @@ public class ValueNumberFrameModelingVisitor
 	 * ---------------------------------------------------------------------- */
 
 	private MethodGen methodGen;
-	private ValueNumberFactory factory;
+	ValueNumberFactory factory;
 	private ValueNumberCache cache;
 	private LoadedFieldSet loadedFieldSet;
-	private HashMap<String, ValueNumber> classObjectValueMap;
+	
 	private HashMap<Object, ValueNumber> constantValueMap;
 	private HashMap<ValueNumber, String> stringConstantMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -105,7 +106,6 @@ public class ValueNumberFrameModelingVisitor
 		this.factory = factory;
 		this.cache = cache;
 		this.loadedFieldSet = loadedFieldSet;
-		this.classObjectValueMap = new HashMap<String, ValueNumber>();
 		this.constantValueMap = new HashMap<Object, ValueNumber>();
 		this.stringConstantMap = new HashMap<ValueNumber, String>();
 		this.lookupFailureCallback = lookupFailureCallback;
@@ -283,7 +283,7 @@ public class ValueNumberFrameModelingVisitor
 		if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
 			String className = fieldName.substring("class$".length()).replace('$', '.');
 			if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
-			ValueNumber value = getClassObjectValue(className);
+			ValueNumber value = factory.getClassObjectValue(className);
 			frame.pushValue(value);
 			return;
 		}
@@ -336,7 +336,7 @@ public class ValueNumberFrameModelingVisitor
 					if (className != null) {
 						frame.popValue();
 						if (RLE_DEBUG) System.out.println("[found access of class object " + className + "]");
-						frame.pushValue(getClassObjectValue(className));
+						frame.pushValue(factory.getClassObjectValue(className));
 						return;
 					}
 				} catch (DataflowAnalysisException e) {
@@ -462,7 +462,7 @@ public class ValueNumberFrameModelingVisitor
 		if (constantValue instanceof ConstantClass) {
 			ConstantClass constantClass = (ConstantClass) constantValue;
 			String className = constantClass.getBytes(cpg.getConstantPool());
-			value = getClassObjectValue(className);
+			value = factory.getClassObjectValue(className);
 		} else {
 			value = constantValueMap.get(constantValue);
 			if (value == null) {
@@ -748,22 +748,7 @@ public class ValueNumberFrameModelingVisitor
 		}
 	}
 
-	/**
-	 * Get the ValueNumber for given class's Class object.
-	 *
-	 * @param className the class
-	 */
-	public ValueNumber getClassObjectValue(String className) {
-		// TODO: Check to see if we need to do this
-		className = className.replace('/','.');
-		ValueNumber value = classObjectValueMap.get(className);
-		if (value == null) {
-			value = factory.createFreshValue(ValueNumber.CONSTANT_CLASS_OBJECT);
-			classObjectValueMap.put(className, value);
-		}
-		return value;
-	}
-
+	
 }
 
 // vim:ts=4
