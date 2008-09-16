@@ -376,12 +376,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
 					if (vnaFrame.isValid()) {
 						 ValueNumber stackValue = vnaFrame.getStackValue(1);
-						 String c = valueNumberDataflow.getClassName(stackValue);
-						 instanceOfValueNumber = vnaFrame.getTopValue();
-						 instanceOfType = ObjectType.getInstance(c);
-						 sawEffectiveInstanceOf = true;
-						 
-						
+						 if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
+							String c = valueNumberDataflow.getClassName(stackValue);
+							if (c != null) {
+								instanceOfValueNumber = vnaFrame.getTopValue();
+								instanceOfType = ObjectType.getInstance(c);
+								sawEffectiveInstanceOf = true;
+							}
+						}
+
 					}
 				} catch (DataflowAnalysisException e) {
 					// Ignore
