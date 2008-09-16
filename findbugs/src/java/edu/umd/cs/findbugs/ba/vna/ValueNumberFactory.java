@@ -102,7 +102,7 @@ public class ValueNumberFactory {
 	  * @param className the class
 	  */
 	 public ValueNumber getClassObjectValue(@DottedClassName String className) {
-		 assert className.indexOf('/') == -1;
+		 // assert className.indexOf('.') == -1;
 		 // TODO: Check to see if we need to do this
 		 className = className.replace('/','.');
 		 ValueNumber value = classObjectValueMap.get(className);
