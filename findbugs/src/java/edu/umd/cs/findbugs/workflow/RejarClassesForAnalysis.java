@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import edu.umd.cs.findbugs.config.CommandLine;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,7 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import edu.umd.cs.findbugs.config.CommandLine;
+import javax.annotation.WillClose;
 
 /**
  * @author William Pugh
@@ -121,7 +123,7 @@ public class RejarClassesForAnalysis {
 		return readFrom(new InputStreamReader(System.in));
 	}
 
-	public static List<String> readFrom(Reader r) throws IOException {
+	public static List<String> readFrom(@WillClose Reader r) throws IOException {
 		BufferedReader in = new BufferedReader(r);
 		List<String> lst = new LinkedList<String>();
 		while (true) {
@@ -278,7 +280,7 @@ public class RejarClassesForAnalysis {
 						analyzeOut.putNextEntry(new ZipEntry(name));
 					if (writeToAuxilaryOut) {
 						auxilaryClassCount++;
-						if (auxilaryClassCount > commandLine.maxClasses) {
+						if (auxilaryClassCount > 29999) {
 							auxilaryClassCount = 0;
 							advanceAuxilaryOut();
 						}
@@ -302,7 +304,7 @@ public class RejarClassesForAnalysis {
 						return;
 					}
 					auxilaryClassCount++;
-					if (auxilaryClassCount > commandLine.maxClasses) {
+					if (auxilaryClassCount > 29999) {
 						auxilaryClassCount = 0;
 						advanceAuxilaryOut();
 					}
@@ -352,6 +354,14 @@ public class RejarClassesForAnalysis {
 	}
 
 	boolean processZipEntries(File f, ZipElementHandler handler) {
+		if (!f.exists()) {
+			System.out.println("file not found: " + f);
+			return false;
+		}
+		if (!f.canRead() || f.isDirectory()) {
+			System.out.println("not readable: " + f);
+			return false;
+		}
 		ZipFile zipInputFile;
 		try {
 			zipInputFile = new ZipFile(f);
