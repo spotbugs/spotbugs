@@ -676,7 +676,7 @@ public class IsNullValueAnalysis
 		// If required, make a copy of the frame
 		frame = modifyFrame(origFrame, frame);
 
-		assert frame.getNumSlots() == targetVnaFrame.getNumSlots();
+		assert frame.getNumSlots() == targetVnaFrame.getNumSlots() : " frame has " + frame.getNumSlots() + ", target has " + targetVnaFrame.getNumSlots() + " in  " + classAndMethod;
 
 		// The VNA frame may have more slots than the IsNullValueFrame
 		// if it was produced by an IF comparison (whose operand or operands

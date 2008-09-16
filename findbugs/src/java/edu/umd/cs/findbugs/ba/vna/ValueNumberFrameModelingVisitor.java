@@ -42,6 +42,7 @@ import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -451,7 +452,15 @@ public class ValueNumberFrameModelingVisitor
 		if (obj.getMethodName(cpg).equals("cast") 
 				&& obj.getClassName(cpg).equals("java.lang.Class")) {
 			// treat as no-op
-			return;
+			try {
+				ValueNumberFrame frame = getFrame();
+	            ValueNumber resultType = frame.popValue();
+	            frame.popValue();
+	            frame.pushValue(resultType);
+            } catch (DataflowAnalysisException e) {
+            	AnalysisContext.logError("oops", e);
+            }
+            return;
 		}
 		// Don't know what this method invocation is doing.
 		// Kill all loads.

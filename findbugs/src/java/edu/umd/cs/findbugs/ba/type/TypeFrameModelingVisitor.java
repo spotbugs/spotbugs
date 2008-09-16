@@ -370,7 +370,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		
 		if (methodName.equals("cast") 
 				&& className.equals("java.lang.Class")) {
-			// treat as no-op
+			try {
+	            Type resultType = frame.popValue();
+	            frame.popValue();
+	            frame.pushValue(resultType);
+            } catch (DataflowAnalysisException e) {
+            	AnalysisContext.logError("oops", e);
+            }
+			
 			return;
 		}
 	
@@ -403,7 +410,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				frame.popValue();
 				return;
 			} catch (DataflowAnalysisException e) {
-
+				AnalysisContext.logError("Ooops", e);
 			}
 		}
 		if (handleToArray(obj)) return;
