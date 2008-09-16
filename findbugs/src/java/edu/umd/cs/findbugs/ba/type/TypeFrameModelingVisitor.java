@@ -368,6 +368,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		String signature = obj.getSignature(cpg);
 		String className = obj.getClassName(cpg);
 		
+		if (methodName.equals("cast") 
+				&& className.equals("java.lang.Class")) {
+			// treat as no-op
+			return;
+		}
+	
 		if (methodName.equals("isInstance")) {
 			if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
 				// Record the value number of the value checked by this instruction,

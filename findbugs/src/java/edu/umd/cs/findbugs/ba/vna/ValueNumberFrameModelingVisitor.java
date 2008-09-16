@@ -447,9 +447,15 @@ public class ValueNumberFrameModelingVisitor
 
 	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		
+		if (obj.getMethodName(cpg).equals("cast") 
+				&& obj.getClassName(cpg).equals("java.lang.Class")) {
+			// treat as no-op
+			return;
+		}
 		// Don't know what this method invocation is doing.
 		// Kill all loads.
-		if (obj.getMethodName(cpg).equals("lock"))
+		if (obj.getMethodName(cpg).toLowerCase().indexOf("lock") >= 0)
 			getFrame().killAllLoads();
 		else killLoadsOfObjectsPassed(obj);
 		handleNormalInstruction(obj);
