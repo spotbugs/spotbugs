@@ -14,9 +14,13 @@ import com.google.inject.Inject;
 public class Bug1718130 {
 	@Inject Object x;
 	@SpringBean Object y;
+	Object z;
+	Bug1718130() {
+		z = y;
+	}
 	
 	public int hashCode() {
-		return x.hashCode() + y.hashCode();
+		return x.hashCode() + y.hashCode() + z.hashCode();
 	}
 
 }
