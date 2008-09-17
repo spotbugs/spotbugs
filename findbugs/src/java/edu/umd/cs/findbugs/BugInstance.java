@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -56,6 +57,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -128,7 +130,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	private static boolean adjustExperimental = false;
 
-	private static Set<String> bugTypes = Collections.synchronizedSet(new HashSet<String>());
+	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
 	
 	/**
 	 * Constructor.
@@ -142,13 +144,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
 
-		if (bugTypes.add(type)) {
-			BugPattern p = I18N.instance().lookupBugPattern(type);
-			if (p == null) {
+		BugPattern p = I18N.instance().lookupBugPattern(type);
+		if (p == null) {
+			if (missingBugTypes.add(type)) {
 				String msg = "Can't find definition of bug type " + type;
 				AnalysisContext.logError(msg, new IllegalArgumentException(msg));
 			}
-		}
+		} else
+			this.priority += p.getPriorityAdjustment();
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
 		boundPriority();
@@ -949,9 +952,29 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
 		return this;
 	}
+	
+	public BugInstance addEqualsMethodUsed(ClassDescriptor expectedClass) {
+		try {
+			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
+			        false);
+			if (targets.size() < 3) {
+				for (XMethod m : targets)
+					addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
+			}
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+		}
+
+		return this;
+	}
 
 	public BugInstance addTypeOfNamedClass(String typeName) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
+		add(typeAnnotation);
+		return this;
+	}
+	public BugInstance addType(ClassDescriptor c) {
+		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + c.getClassName()+";");
 		add(typeAnnotation);
 		return this;
 	}

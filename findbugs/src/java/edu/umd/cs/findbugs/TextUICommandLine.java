@@ -378,19 +378,28 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				if (eq < 0)
 					throw new IllegalArgumentException("Illegal priority adjustment: " + token);
 
-				String visitorName = token.substring(0, eq);
-
-				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
-				if (factory == null)
-					throw new IllegalArgumentException("Unknown detector: " + visitorName);
-
+				String adjustmentTarget = token.substring(0, eq);
 				String adjustment = token.substring(eq + 1);
 				if (!(adjustment.equals("raise") || adjustment.equals("lower")))
 					throw new IllegalArgumentException("Illegal priority adjustment value: " +
 							adjustment);
 
 				// Recall that lower values are higher priorities
-				factory.setPriorityAdjustment(adjustment.equals("raise") ? -1 : +1);
+				int adjustmentAmount = adjustment.equals("raise") ? -1 : +1;
+
+				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
+				if (factory != null) 
+					factory.setPriorityAdjustment(adjustmentAmount);
+				else {
+					// 
+					I18N i18n = I18N.instance();
+					BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
+					if (pattern == null)
+						throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
+					pattern.adjustPriority(adjustmentAmount);
+				}
+			
+		 
 			}
 		} else if (option.equals("-bugCategories")) {
 			this.bugCategorySet = FindBugs.handleBugCategories(getUserPreferences(), argument);

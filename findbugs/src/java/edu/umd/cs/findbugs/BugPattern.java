@@ -39,6 +39,7 @@ public class BugPattern implements Comparable<BugPattern> {
 	final private String detailText;
 	 private String detailHTML;
 	 final int cweid;
+	  int priorityAdjustment = 0;
 
 	/**
 	 * Constructor.
@@ -106,6 +107,14 @@ public class BugPattern implements Comparable<BugPattern> {
 	 */
 	public String getCategory() {
 		return category;
+	}
+	
+	public int getPriorityAdjustment() {
+		return priorityAdjustment;
+	}
+	
+	public void adjustPriority(int change) {
+		priorityAdjustment += change;
 	}
 
 	public String getCategoryAbbrev() {
