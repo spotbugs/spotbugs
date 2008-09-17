@@ -26,6 +26,7 @@ import java.util.Collection;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -88,6 +89,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	XMethod previousMethodInvocation;
 	boolean isTigerOrHigher;
 	
+	Constant value_LDC2_W;
+
 	@Override
 	public void visit(JavaClass obj) {
 		isTigerOrHigher = obj.getMajor() >= MAJOR_1_5;
@@ -459,6 +462,17 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				&& getSigConstantOperand().length() == 4) 
 			previousMethodInvocation = XFactory.createReferencedXMethod(this);
 		else previousMethodInvocation = null;
+		
+		
+		
+		if (seen == LDC2_W) {
+			value_LDC2_W = getConstantRefOperand();
+		} else if (seen == L2I && getPrevOpcode(1) == LAND && getPrevOpcode(2) == LDC2_W && value_LDC2_W instanceof ConstantLong) {
+			ConstantLong longValue = (ConstantLong) value_LDC2_W;
+			if (longValue.getBytes() == 0xEFFFFFFF)
+				bugAccumulator.accumulateBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY).addClassAndMethod(this), this);
+
+		}
 		prevOpCode = seen;
 
 		}
