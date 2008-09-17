@@ -87,7 +87,13 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
 
 	public String format(String key, ClassAnnotation primaryClass) {
-		return new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
+		String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
+		if (key.equals("givenClass"))
+			return ClassAnnotation.shorten(primaryClass.getPackageName(), name);
+		else if (key.equals("excludingPackage"))
+			return ClassAnnotation.removePackage(name);
+		
+		return name;
 	}
 
 	public void setDescription(String roleDescription) {

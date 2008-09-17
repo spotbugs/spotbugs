@@ -115,6 +115,15 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 		}
 		return typeName;
 	}
+	
+
+	protected static String removePackage( String typeName) {
+		int index = typeName.lastIndexOf('.');
+		if (index >= 0) {
+			return typeName.substring(index+1);
+		}
+		return typeName;
+	}
 	/**
 	 * Shorten a type name by removing the package name
 	 */
