@@ -298,8 +298,7 @@ public class Hierarchy2 {
 			ConstantPoolGen cpg,
 			boolean receiverTypeIsExact
 			) throws ClassNotFoundException {
-		HashSet<XMethod> result = new HashSet<XMethod>();
-
+		
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			throw new IllegalArgumentException();
 
@@ -315,20 +314,42 @@ public class Hierarchy2 {
 	            return Collections.<XMethod>emptySet();
             }
 
-		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-
+		
 		// Get the receiver class.
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);
-		XClass xClass;
+		  boolean virtualInvocation = invokeInstruction.getOpcode() == Constants.INVOKEVIRTUAL || invokeInstruction.getOpcode() == Constants.INVOKEINTERFACE;
+		
+		return resolveVirtualMethodCallTargets(receiverClassName, methodName, methodSig, receiverTypeIsExact);
+	}
+
+	/**
+     * @param receiverClassName
+	 * @param methodName
+	 * @param methodSig
+	 * @param receiverTypeIsExact
+     * @return
+     * @throws ClassNotFoundException
+     */
+	 public static Set<XMethod> resolveVirtualMethodCallTargets(String receiverClassName, String methodName, String methodSig,
+	            boolean receiverTypeIsExact) throws ClassNotFoundException {
+		 ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);
+		 return resolveVirtualMethodCallTargets(receiverDesc, methodName, methodSig, receiverTypeIsExact);
+	 }
+	 
+    public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
+            boolean receiverTypeIsExact) throws ClassNotFoundException {
+	    // Figure out the upper bound for the method.
+		// This is what will be called if this is not a virtual call site.
+        AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+        XClass xClass;
         try {
 	        xClass = getXClass(receiverDesc);
         } catch (CheckedAnalysisException e) {
 	      return Collections.<XMethod>emptySet();
         }
-		// Figure out the upper bound for the method.
-		// This is what will be called if this is not a virtual call site.
-		XMethod upperBound = findMethod(receiverDesc, methodName, methodSig, false);
+      
+        HashSet<XMethod> result = new HashSet<XMethod>();
+        XMethod upperBound = findMethod(receiverDesc, methodName, methodSig, false);
 		if (upperBound == null) {
 			upperBound = findInvocationLeastUpperBound(xClass, methodName, methodSig, false, false);
 		}
@@ -341,12 +362,11 @@ public class Hierarchy2 {
 
 		// Is this a virtual call site?
 		boolean virtualCall =
-			   (invokeInstruction.getOpcode() == Constants.INVOKEVIRTUAL || invokeInstruction.getOpcode() == Constants.INVOKEINTERFACE)
-			   && (upperBound == null || !upperBound.isFinal())
+			   (upperBound == null || !upperBound.isFinal())
 			&& !receiverTypeIsExact;
 
 		if (virtualCall) {
-			if (!receiverClassName.equals("java.lang.Object")) {
+			if (!receiverDesc.getClassName().equals("java/lang/Object")) {
 
 			// This is a true virtual call: assume that any concrete
 			// subtype method may be called.
@@ -358,12 +378,12 @@ public class Hierarchy2 {
 				}
 			}
 			if (false && subTypeSet.size() > 500)
-				new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size() + " of which implement " + methodName+methodSig + " " + invokeInstruction).printStackTrace(System.out);
+				new RuntimeException(receiverDesc + " has " + subTypeSet.size() + " subclasses, " + result.size() + " of which implement " + methodName+methodSig).printStackTrace(System.out);
 			
 			}
 		}
 		return result;
-	}
+    }
 
 	/**
      * Find the declared exceptions for the method called

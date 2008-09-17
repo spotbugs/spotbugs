@@ -60,6 +60,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static final String METHOD_DANGEROUS_TARGET = "METHOD_DANGEROUS_TARGET";
 
 	public static final String METHOD_SAFE_TARGET = "METHOD_SAFE_TARGET";
+	
+	public static final String METHOD_EQUALS_USED = "METHOD_EQUALS_USED";
 
 
 	/**
@@ -471,7 +473,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		String role = getDescription();
 		if (METHOD_DANGEROUS_TARGET.equals(role) 
 				|| METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role) 
-				|| METHOD_SAFE_TARGET.equals(role)) return false;
+				|| METHOD_SAFE_TARGET.equals(role)
+				|| METHOD_EQUALS_USED.equals(role)) return false;
 		return true;
 	}
 }

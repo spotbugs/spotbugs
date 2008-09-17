@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
@@ -924,7 +925,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (!looksLikeTestCase) {
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsSig, lhsSig),
+				.addFoundAndExpectedType(rhsSig, lhsSig)
+				.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsSig)),
 				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
 			}
@@ -933,13 +935,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
 	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
         } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
 	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
         }

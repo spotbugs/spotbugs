@@ -309,6 +309,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			//.addString(GenericUtilities.getString(parmType))
 			//.addString(GenericUtilities.getString(argType))
 			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
+			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature()))
 			.addCalledMethod(methodGen, (InvokeInstruction) ins)
 			,sourceLineAnnotation);
 		}
