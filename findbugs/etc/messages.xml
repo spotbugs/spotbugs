@@ -438,6 +438,16 @@ This does not help the garbage collector in any way, the nulling out of fields h
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis">
+    <Details>
+<![CDATA[
+<p> Checks for equals methods that check for their operand being an instance of a class 
+that is not compatible with the class defining the equals method.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -2505,6 +2515,31 @@ on objects referenced by X, because they may already be getting finalized in a s
     </Details>
   </BugPattern>
 
+  <BugPattern type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">
+    <ShortDescription>Equals checks for noncompatible operand</ShortDescription>
+    <LongDescription>{1} checks for operand being a {2.givenClass} </LongDescription>
+    <Details>
+<![CDATA[
+  <p> This equals method is checking to see if the argument is some incompatible type
+(i.e., a class that is neither a supertype nor subtype of the class that defines
+the equals method). For example, the Foo class might have an equals method
+that looks like:
+
+<p><code><pre>
+public boolean equals(Object o) {
+  if (o instanceof Foo)
+    return name.equals(((Foo)o).name);
+  else if (o instanceof String)
+    return name.equals(o);
+  else return false;
+</pre></code></p>
+
+<p>This is considered bad practice, as it makes it very hard to implement an equals method that
+is symmetric and transitive. Without those properties, very unexpected behavoirs are possible.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM">
     <ShortDescription>Covariant equals() method defined for enum</ShortDescription>
     <LongDescription>enum {0} defines equals({0.givenClass})</LongDescription>

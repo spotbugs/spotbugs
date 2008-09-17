@@ -176,14 +176,26 @@ public abstract class AnalysisContext {
 		return currentXFactory.get();
 	}
 
+	ClassSummary classSummary;
+	public ClassSummary getClassSummary() {
+		if (classSummary == null) throw new IllegalStateException("ClassSummary  not set");
+		return classSummary;
+	}
+	public void setClassSummary(@NonNull ClassSummary classSummary) {
+		if (this.classSummary != null) throw new IllegalStateException("ClassSummary  already set");
+		this.classSummary = classSummary;
+	}
+	
+
+	
 	FieldSummary fieldSummary;
 	
 	public FieldSummary getFieldSummary() {
-		if (fieldSummary == null) throw new IllegalStateException("FieldSummary detector not set");
+		if (fieldSummary == null) throw new IllegalStateException("FieldSummary  not set");
 		return fieldSummary;
 	}
 	public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
-		if (this.fieldSummary != null) throw new IllegalStateException("FieldSummary detector already set");
+		if (this.fieldSummary != null) throw new IllegalStateException("FieldSummary  already set");
 		this.fieldSummary = fieldSummary;
 	}
 	
