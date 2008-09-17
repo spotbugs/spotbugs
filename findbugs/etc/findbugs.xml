@@ -277,11 +277,12 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="false"
+            disabled="true"
+            hidden="true"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" 
             speed="fast"
-            reports="TESTING"
+            reports="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
