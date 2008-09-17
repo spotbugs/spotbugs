@@ -256,11 +256,18 @@ public class DescriptorFactory {
     }
 
 	public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
+		int length = signature.length();
+		if (length == 0)
+			throw new IllegalArgumentException("Empty signature");
     	int first = 0;
-    	while (signature.charAt(first) == '[') first++;
+    	while (signature.charAt(first) == '[') {
+    		first++;
+    		if (first == length)
+    			throw new IllegalArgumentException("Illegal Signature: " + signature);
+    	}
     	signature = signature.substring(first);
     	if (signature.endsWith(";"))
-    		signature = signature.substring(1, signature.length()-1);
+    		signature = signature.substring(1, length-1);
     	return createClassDescriptor(signature);
     }
 
