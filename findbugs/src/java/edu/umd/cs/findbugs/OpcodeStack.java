@@ -2239,7 +2239,7 @@ public void initialize() {
 				return;
 			}
 		}
-		pushByLocalLoad("", register);
+		pushByLocalLoad("Ljava/lang/Object;", register);
 	 }
 
 	 private void pushByIntMath(DismantleBytecode dbc, int seen, Item lhs, Item rhs) {
@@ -2490,7 +2490,7 @@ public void initialize() {
 			newItem.registerNumber = register;
 		} else {
 			newItem = oldItem;
-			if (newItem.signature.equals("Ljava/lang/Object;")) {
+			if (newItem.signature.equals("Ljava/lang/Object;")  && !signature.equals("Ljava/lang/Object;")) {
 				newItem = new Item(oldItem);
 				newItem.signature = signature;
 			}
