@@ -963,7 +963,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 						if (Thread.interrupted()) {
 							throw new InterruptedException();
 						}
-						if (isHuge && !NonReportingDetector.class.isAssignableFrom(detector.getClass())) {
+						if (isHuge && !FirstPassDetector.class.isAssignableFrom(detector.getClass())) {
 
 							continue;
 						}

@@ -186,7 +186,7 @@ public class DetectorFactory {
 	 */
 	public boolean isReportingDetector() {
 		return !isDetectorClassSubtypeOf(TrainingDetector.class)
-			&& !isDetectorClassSubtypeOf(NonReportingDetector.class);
+			&& !isDetectorClassSubtypeOf(FirstPassDetector.class);
 
 	}
 

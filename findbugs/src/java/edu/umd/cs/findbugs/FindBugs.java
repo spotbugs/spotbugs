@@ -219,7 +219,7 @@ public abstract class FindBugs  {
 
 		// Training detectors are enabled if, and only if, we are emitting training output
 		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class);
-		boolean isNonReportingDetector = factory.isDetectorClassSubtypeOf(NonReportingDetector.class);
+		boolean isNonReportingDetector = factory.isDetectorClassSubtypeOf(FirstPassDetector.class);
 		if (findBugs.emitTrainingOutput()) {
 			return isTrainingDetector || isNonReportingDetector;
 		}
