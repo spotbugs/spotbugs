@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -79,6 +80,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -923,10 +925,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				priorityModifier = 0;
 			}
 			if (!looksLikeTestCase) {
+				ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(lhsSig);
+				if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(expectedClassDescriptor))
+					priorityModifier++;
+			
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsSig, lhsSig)
-				.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsSig)),
+				.addEqualsMethodUsed(expectedClassDescriptor),
 				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
 			}

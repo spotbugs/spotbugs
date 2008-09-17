@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
@@ -303,13 +304,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			if (TestCaseDetector.likelyTestCase(xmethod))
 				priority = Priorities.LOW_PRIORITY;
+			ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature());
+			if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(expectedClassDescriptor))
+				priority++;
 			accumulator.accumulateBug(new BugInstance(this,
 					"GC_UNRELATED_TYPES", priority)
 			.addClassAndMethod(methodGen, sourceFile)					
-			//.addString(GenericUtilities.getString(parmType))
-			//.addString(GenericUtilities.getString(argType))
 			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
-			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature()))
+			.addEqualsMethodUsed(expectedClassDescriptor)
 			.addCalledMethod(methodGen, (InvokeInstruction) ins)
 			,sourceLineAnnotation);
 		}
