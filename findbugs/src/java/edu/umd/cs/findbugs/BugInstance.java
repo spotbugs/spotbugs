@@ -1316,6 +1316,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	/*
+	 * Add an annotation about a parameter
+	 * @param index  parameter index, starting from 0
+	 * @param role the role used to describe the parameter
+	 */
+	public BugInstance addParameterAnnotation(int index, String role) {
+		return addInt(index+1).describe(role);
+	}
 	/**
 	 * Add a String annotation.
 	 *
