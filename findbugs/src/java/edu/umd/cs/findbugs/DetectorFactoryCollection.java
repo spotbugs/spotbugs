@@ -207,7 +207,7 @@ public class DetectorFactoryCollection {
 		
 		File pluginDir = new File(homeDir + File.separator + "plugin");
 		File[] contentList = pluginDir.listFiles();
-		if (contentList != null) {
+		if (contentList == null) {
 			pluginList = new URL[0];
 			return;
 		}
