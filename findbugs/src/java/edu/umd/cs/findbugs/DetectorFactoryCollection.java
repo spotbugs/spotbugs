@@ -207,10 +207,7 @@ public class DetectorFactoryCollection {
 		
 		File pluginDir = new File(homeDir + File.separator + "plugin");
 		File[] contentList = pluginDir.listFiles();
-		if (contentList == null) {
-			System.err.println("Error: The path " + pluginDir.getPath()
-					+ " does not seem to be a directory!");
-			System.err.println("No FindBugs plugins could be loaded");
+		if (contentList != null) {
 			pluginList = new URL[0];
 			return;
 		}
