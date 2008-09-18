@@ -243,6 +243,20 @@ public class DumbMethods extends OpcodeStackDetector  {
 		}
 
 
+		if (seen == INVOKESPECIAL && getClassConstantOperand().equals("java/util/concurrent/ScheduledThreadPoolExecutor")
+		        && getNameConstantOperand().equals("<init>")) {
+
+			int arguments = getNumberArguments(getSigConstantOperand());
+			OpcodeStack.Item item = stack.getStackItem(arguments - 1);
+			Object value = item.getConstant();
+			if (value instanceof Integer && ((Integer) value).intValue() == 0)
+				accumulator.accumulateBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY).addClassAndMethod(this), this);
+
+		}
+		if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/util/concurrent/ScheduledThreadPoolExecutor")
+		        && getNameConstantOperand().equals("setMaximumPoolSize")) {
+			accumulator.accumulateBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY).addClassAndMethod(this), this);
+		}
 		if (isEqualsObject && !reportedBadCastInEquals) {
 			if (seen == INSTANCEOF || seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
 					&& getSigConstantOperand().equals("()Ljava/lang/Class;")
