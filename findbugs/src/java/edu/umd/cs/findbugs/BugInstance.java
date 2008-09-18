@@ -957,7 +957,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addEqualsMethodUsed(ClassDescriptor expectedClass) {
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
-			        false);
+			        false, false);
 			
 			if (targets.size() < 4) {
 				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();

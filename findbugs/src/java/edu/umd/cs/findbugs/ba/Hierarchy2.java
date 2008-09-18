@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
@@ -317,9 +318,8 @@ public class Hierarchy2 {
 		
 		// Get the receiver class.
 		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		  boolean virtualInvocation = invokeInstruction.getOpcode() == Constants.INVOKEVIRTUAL || invokeInstruction.getOpcode() == Constants.INVOKEINTERFACE;
 		
-		return resolveVirtualMethodCallTargets(receiverClassName, methodName, methodSig, receiverTypeIsExact);
+		return resolveVirtualMethodCallTargets(receiverClassName, methodName, methodSig, receiverTypeIsExact, invokeInstruction instanceof INVOKESPECIAL);
 	}
 
 	/**
@@ -327,17 +327,18 @@ public class Hierarchy2 {
 	 * @param methodName
 	 * @param methodSig
 	 * @param receiverTypeIsExact
-     * @return
+	 * @param invokeSpecial TODO
+	 * @return
      * @throws ClassNotFoundException
      */
 	 public static Set<XMethod> resolveVirtualMethodCallTargets(String receiverClassName, String methodName, String methodSig,
-	            boolean receiverTypeIsExact) throws ClassNotFoundException {
+	            boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
 		 ClassDescriptor receiverDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(receiverClassName);
-		 return resolveVirtualMethodCallTargets(receiverDesc, methodName, methodSig, receiverTypeIsExact);
+		 return resolveVirtualMethodCallTargets(receiverDesc, methodName, methodSig, receiverTypeIsExact, invokeSpecial);
 	 }
 	 
     public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
-            boolean receiverTypeIsExact) throws ClassNotFoundException {
+            boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
 	    // Figure out the upper bound for the method.
 		// This is what will be called if this is not a virtual call site.
         AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
@@ -363,7 +364,7 @@ public class Hierarchy2 {
 		// Is this a virtual call site?
 		boolean virtualCall =
 			   (upperBound == null || !upperBound.isFinal())
-			&& !receiverTypeIsExact;
+			&& !receiverTypeIsExact && !invokeSpecial;
 
 		if (virtualCall) {
 			if (!receiverDesc.getClassName().equals("java/lang/Object")) {
