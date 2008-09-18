@@ -305,13 +305,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			if (TestCaseDetector.likelyTestCase(xmethod))
 				priority = Priorities.LOW_PRIORITY;
 			ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature());
-			if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(expectedClassDescriptor))
+			ClassDescriptor actualClassDescriptor =DescriptorFactory.createClassDescriptorFromSignature(argType.getSignature());
+			if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(actualClassDescriptor))
 				priority++;
 			accumulator.accumulateBug(new BugInstance(this,
 					"GC_UNRELATED_TYPES", priority)
 			.addClassAndMethod(methodGen, sourceFile)					
 			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
-			.addEqualsMethodUsed(expectedClassDescriptor)
+			.addEqualsMethodUsed(actualClassDescriptor)
 			.addCalledMethod(methodGen, (InvokeInstruction) ins)
 			,sourceLineAnnotation);
 		}
