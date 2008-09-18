@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -55,9 +56,9 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -957,9 +958,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
 			        false);
-			if (targets.size() < 3) {
-				for (XMethod m : targets)
-					addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
+			
+			if (targets.size() < 4) {
+				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+				ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
+				for (XMethod m : targets) {
+					ClassDescriptor c = m.getClassDescriptor();
+					if (subtypes2.isApplicationClass(c) && classSummary.mightBeEqualToOtherClasses(c))
+					   addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
+				}
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
