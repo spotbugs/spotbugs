@@ -75,7 +75,7 @@ public interface INullnessAnnotationDatabase {
 	public void addFieldAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, NullnessAnnotation annotation);
 	
 	/**
-	 * Add a field annotation to the database.
+	 * Add a method annotation to the database.
 	 * 
 	 * @param cName        dotted class name
 	 * @param mName        method name
