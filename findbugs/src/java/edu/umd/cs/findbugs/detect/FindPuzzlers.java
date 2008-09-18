@@ -409,12 +409,12 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					ternaryConversionState = 1;
 				} else ternaryConversionState = 0;
 
-			} else if (seen == INVOKEVIRTUAL) {
+			} else if (false && seen == INVOKEVIRTUAL) {
 				if (getClassConstantOperand().startsWith("java/lang") && getNameConstantOperand().endsWith("Value") && getSigConstantOperand().length() == 3)
 					ternaryConversionState = 1;
 				else ternaryConversionState = 0;
 			}else if (ternaryConversionState == 1) {
-				if (I2L <= seen && seen <= I2S) 
+				if (I2L < seen && seen <= I2S) 
 					ternaryConversionState = 2;
 				else ternaryConversionState = 0;
 			}
@@ -424,7 +424,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					bugReporter.reportBug(new BugInstance(this, "BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this));
-			}
+			} else ternaryConversionState = 0;
 		}
 
 		if (seen == INVOKESTATIC)
