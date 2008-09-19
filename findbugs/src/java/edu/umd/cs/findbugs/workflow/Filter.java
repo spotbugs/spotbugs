@@ -107,7 +107,9 @@ public class Filter {
 		public boolean removedCode = false;
 		public boolean removedCodeSpecified = false;
 
-		
+		public boolean dontUpdateStats = false;
+		public boolean dontUpdateStatsSpecified = false;
+
 
 		public boolean withMessagesSpecified = false;
 		public boolean withMessages = false;
@@ -156,6 +158,7 @@ public class Filter {
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
 			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
 			addSwitch("-hashChanged", "recomputed instance hash is different than stored instance hash");
+			addSwitch("-dontUpdateStats", "used when withSource is specified to only update bugs, not the class and package stats");
 			
 		}
 
@@ -461,7 +464,7 @@ public class Filter {
 		if (verbose)
 			System.out.println(passed + " warnings passed through, " + dropped
 				+ " warnings dropped");
-		if (commandLine.withSourceSpecified && commandLine.withSource) {
+		if (commandLine.withSourceSpecified && commandLine.withSource && !commandLine.dontUpdateStats) {
 			for(PackageStats stats : resultCollection.getProjectStats().getPackageStats()) {
 				Iterator<ClassStats> i = stats.getClassStats().iterator();
 				while (i.hasNext()) {
