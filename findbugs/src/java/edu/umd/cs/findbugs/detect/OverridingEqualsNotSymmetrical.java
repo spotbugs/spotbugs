@@ -107,7 +107,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			else if (sawCompare)
 				kind = KindOfEquals.COMPARE_EQUALS;
 			else {
-				bugReporter.reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addString("Strange equals method"));
+				bugReporter.reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
 			}
 
 			count(kind);

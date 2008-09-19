@@ -365,13 +365,13 @@ public class SerializableIdiom extends OpcodeStackDetector
 						.addClassAndMethod(this));
 			else if (obj.isStatic())
 				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_IS_STATIC", HIGH_PRIORITY)
-						.addClassAndMethod(this).addString("static readResolve() method"));
+						.addClassAndMethod(this));
 			else if (obj.isPrivate())
 				try {
 					Set<ClassDescriptor> subtypes = AnalysisContext.currentAnalysisContext().getSubtypes2().getSubtypes(getClassDescriptor());
 	                if (subtypes.size() > 1) {
 	                	BugInstance bug = new BugInstance(this, "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED", NORMAL_PRIORITY)
-	                	.addClassAndMethod(this).addString("private readResolve() method");
+	                	.addClassAndMethod(this);
 	                	boolean nasty = false;
 	                	for(ClassDescriptor subclass : subtypes) if (!subclass.equals(getClassDescriptor())) {
 	        
