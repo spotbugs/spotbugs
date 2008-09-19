@@ -36,12 +36,15 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 
@@ -303,20 +306,39 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			if (leftMatch && rightMatch) {
 	    		sawGoodEqualsClass = true;
 	    	} else {
-	    		if (left.getConstant() != null  && rightMatch || leftMatch && right.getConstant() != null) {
-	    			sawBadEqualsClass = true;
-	    			if (!getThisClass().isFinal()) {
+	    		if (getClassName().equals(left.getConstant())  && rightMatch 
+	    				|| leftMatch && getClassName().equals(right.getConstant())) {
+	    			if (getThisClass().isFinal()) {
+	    				sawGoodEqualsClass = true;
+	    			} else { 
+	    				sawBadEqualsClass = true;
 						int priority = Priorities.NORMAL_PRIORITY;
+						BugInstance bug = new BugInstance(this,"EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
+                        .addClassAndMethod(this);
+						
 						try {
-	                        if (AnalysisContext.currentAnalysisContext().getSubtypes2().hasSubtypes(getClassDescriptor()))
-	                        	priority--;
+							
+	                        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+	                        Set<ClassDescriptor> subtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
+							for(ClassDescriptor c : subtypes) {
+								try {
+	                                Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                                } catch (CheckedAnalysisException e) {
+	                                continue;
+                                }
+								XMethod m = Hierarchy2.findMethod(c, "equals", "(Ljava/lang/Object;)Z", false);
+								if (m == null) {
+									bug.addClass(c).describe(ClassAnnotation.SUBCLASS_ROLE);
+									priority--;
+									bug.setPriority(priority);
+								}
+							}
+
                         } catch (ClassNotFoundException e) {
 	                        bugReporter.reportMissingClass(e);
                         }
 						bugAccumulator.accumulateBug(
-								new BugInstance(this,"EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
-								.addClassAndMethod(this)
-								.addString("doesn't work for subtypes"), this);
+								bug, this);
 					}
 	    		}
 	    	}
