@@ -305,14 +305,26 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			if (TestCaseDetector.likelyTestCase(xmethod))
 				priority = Priorities.LOW_PRIORITY;
 			ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature());
-			ClassDescriptor actualClassDescriptor =DescriptorFactory.createClassDescriptorFromSignature(argType.getSignature());
-			if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(actualClassDescriptor))
-				priority++;
+			ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(argType.getSignature());
+			ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
+			Set<XMethod> targets = null;
+			try {
+	            targets = Hierarchy2.resolveVirtualMethodCallTargets(actualClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
+	                    false, false);
+	            boolean allOk = targets.size() > 1;
+	            for(XMethod m2 : targets) 
+	            	if (!classSummary.mightBeEqualToOtherClasses(m2.getClassDescriptor()))
+	            			allOk = false;
+	            if (allOk) 
+	            	priority++;
+            } catch (ClassNotFoundException e) {
+	            AnalysisContext.reportMissingClass(e);
+            }
 			accumulator.accumulateBug(new BugInstance(this,
 					"GC_UNRELATED_TYPES", priority)
 			.addClassAndMethod(methodGen, sourceFile)					
 			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
-			.addEqualsMethodUsed(actualClassDescriptor)
+			.addEqualsMethodUsed(targets)
 			.addCalledMethod(methodGen, (InvokeInstruction) ins)
 			,sourceLineAnnotation);
 		}

@@ -958,16 +958,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
 			        false, false);
-			
-			if (targets.size() < 4) {
-				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-				ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
-				for (XMethod m : targets) {
-					ClassDescriptor c = m.getClassDescriptor();
-					if (subtypes2.isApplicationClass(c) && classSummary.mightBeEqualToOtherClasses(c))
-					   addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
-				}
-			}
+			addEqualsMethodUsed(targets);
+
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
@@ -975,6 +967,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	public BugInstance addEqualsMethodUsed(@CheckForNull Set<XMethod> equalsMethods) {
+		if (equalsMethods == null) return this;
+		if (equalsMethods.size() < 4) {
+			for (XMethod m : equalsMethods) {
+				addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
+			}
+		}
+
+		return this;
+	}
 	public BugInstance addTypeOfNamedClass(String typeName) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
 		add(typeAnnotation);
