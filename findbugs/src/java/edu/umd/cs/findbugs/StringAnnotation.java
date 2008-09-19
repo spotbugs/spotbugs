@@ -40,7 +40,9 @@ public class StringAnnotation implements BugAnnotation {
 	public static final String REMAINING_OBLIGATIONS_ROLE = "STRING_REMAINING_OBLIGATIONS";
 
 	final private String value;
-	 private String description;
+	private String description;
+	
+	static class QuotedStringMarker {};
 
 	/**
 	 * Constructor.
@@ -51,8 +53,16 @@ public class StringAnnotation implements BugAnnotation {
 		this.value = quoteCharacters(value);
 		this.description = DEFAULT_ROLE;
 	}
+	private StringAnnotation(String value, QuotedStringMarker marker) {
+		this.value = value;
+		this.description = DEFAULT_ROLE;
+	}
 
 
+	public static StringAnnotation fromQuotedString(String value) {
+		return new StringAnnotation(value, (QuotedStringMarker) null);
+		
+	}
 	@Override
 	public Object clone() {
 		try {

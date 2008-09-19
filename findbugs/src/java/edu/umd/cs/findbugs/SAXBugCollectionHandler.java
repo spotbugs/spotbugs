@@ -417,7 +417,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	}
 	    } else if (qName.equals("String")) {
 	    		String value = getRequiredAttribute(attributes, "value", qName);
-	    		bugAnnotation = new StringAnnotation(value);
+	    		bugAnnotation = StringAnnotation.fromQuotedString(value);
 	    } else if (qName.equals("LocalVariable")) {
 	    	try {
 	    		String varName = getRequiredAttribute(attributes, "name", qName);
