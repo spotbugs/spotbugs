@@ -38,4 +38,13 @@ class BadRegEx {
 	String passwordMasking(String s) {
 		return s.replaceAll(".", "x");
 	}
+	
+	  private StringBuilder allStatesPost;
+
+	Pattern test() {
+		 String statesPost = allStatesPost.append(").*$").toString();
+		   
+	 return  Pattern.compile(statesPost,
+		          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE );
+	}	
 }
