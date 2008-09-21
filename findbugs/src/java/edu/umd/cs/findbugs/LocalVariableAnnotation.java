@@ -183,6 +183,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
 
+	public boolean isNamed() {
+		return register >= 0 && !value.equals("?");
+	}
 	/**
 	 * @return name of local variable
 	 */

@@ -58,6 +58,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static final String METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL = "METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL";
 
 	public static final String METHOD_DANGEROUS_TARGET = "METHOD_DANGEROUS_TARGET";
+	
+	public static final String METHOD_RETURN_VALUE_OF = "METHOD_RETURN_VALUE_OF";
 
 	public static final String METHOD_SAFE_TARGET = "METHOD_SAFE_TARGET";
 	

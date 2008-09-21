@@ -27,15 +27,16 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantLong;
-import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.visitclass.Util;
@@ -370,14 +372,32 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				String name = null;
 				int reg = item.getRegisterNumber();
 				Collection<BugAnnotation> as = new ArrayList<BugAnnotation>();
+				XField field = item.getXField();
+					
 				if(reg != -1) {
 					LocalVariableAnnotation lva =
 						LocalVariableAnnotation.getLocalVariableAnnotation(
 							getMethod(), reg, getPC(), getPC()-1);
-					name = "array " + lva.getName() + "[]";
-					as.add(lva);
+					if (lva.isNamed()) {
+						as.add(lva);
+						if (field != null)
+							as.add(FieldAnnotation.fromXField(field));
+					} else {
+						if (field != null) 
+							as.add(FieldAnnotation.fromXField(field));
+						as.add(lva);
+					}
+				} else if (field != null)
+						as.add(FieldAnnotation.fromXField(field));
+				else {
+					XMethod m = item.getReturnValueOf();
+					if (m != null) {
+						MethodAnnotation methodAnnotation = MethodAnnotation.fromXMethod(m);
+						methodAnnotation.setDescription(MethodAnnotation.METHOD_RETURN_VALUE_OF);
+						as.add(methodAnnotation);
+					}
 				}
-				if(name != null) {
+				if(!as.isEmpty()) {
 					bugAccumulator.accumulateBug(
 							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
