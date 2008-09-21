@@ -220,8 +220,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (key.equals("") || key.equals("hash"))
 			return className + "." + fieldName;
 		else if (key.equals("givenClass")) {
-			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
-			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+			String primaryClassName = primaryClass.getClassName();
+			if (className.equals(primaryClassName)) 
+				return getNameInClass(primaryClass);
+			else return shorten(primaryClass.getPackageName(), className) + "." + fieldName;
 		}
 		else if (key.equals("name"))
 			return fieldName;
