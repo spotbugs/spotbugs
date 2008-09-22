@@ -228,6 +228,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 			// we ignore all "package-info" issues
 			return false;
 		}
+		if (message.equals("java.lang.Synthetic"))
+			return false;
 		return true;
     }
 
