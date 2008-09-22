@@ -304,8 +304,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			if (TestCaseDetector.likelyTestCase(xmethod))
 				priority = Priorities.LOW_PRIORITY;
-			ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(parmType.getSignature());
-			ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(argType.getSignature());
+			ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(argType.getSignature());
 			ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
 			Set<XMethod> targets = null;
 			try {
@@ -324,8 +323,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					"GC_UNRELATED_TYPES", priority)
 			.addClassAndMethod(methodGen, sourceFile)					
 			.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
-			.addEqualsMethodUsed(targets)
 			.addCalledMethod(methodGen, (InvokeInstruction) ins)
+			.addEqualsMethodUsed(targets)
 			,sourceLineAnnotation);
 		}
 		accumulator.reportAccumulatedBugs();

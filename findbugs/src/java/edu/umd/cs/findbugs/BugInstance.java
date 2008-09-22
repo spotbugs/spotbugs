@@ -967,12 +967,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
-	public BugInstance addEqualsMethodUsed(@CheckForNull Set<XMethod> equalsMethods) {
+	public BugInstance addEqualsMethodUsed(@CheckForNull Collection<XMethod> equalsMethods) {
 		if (equalsMethods == null) return this;
-		if (equalsMethods.size() < 4) {
+		if (equalsMethods.size() < 5) {
 			for (XMethod m : equalsMethods) {
 				addMethod(m).describe(MethodAnnotation.METHOD_EQUALS_USED);
 			}
+		} else {
+			addMethod(equalsMethods.iterator().next()).describe(MethodAnnotation.METHOD_EQUALS_USED);
 		}
 
 		return this;
