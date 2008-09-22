@@ -270,7 +270,11 @@ public class DescriptorFactory {
     		signature = signature.substring(1, length-1);
     	return createClassDescriptor(signature);
     }
-
+	public static ClassDescriptor createClassOrObjectDescriptorFromSignature(String signature) {
+		if (signature.charAt(0) == '[')
+			return createClassDescriptor("java/lang/Object");
+		return createClassDescriptorFromSignature(signature);
+    }
 	public static ClassDescriptor createClassDescriptor(Class aClass) {
 		String className = ClassName.fromSignature(aClass.getName().replace('.','/'));
     	return instance().getClassDescriptor(className);
