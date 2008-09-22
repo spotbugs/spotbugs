@@ -25,6 +25,7 @@ import static edu.umd.cs.findbugs.ba.Hierarchy.STATIC_METHOD;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -349,7 +350,7 @@ public class Hierarchy2 {
 	      return Collections.<XMethod>emptySet();
         }
       
-        HashSet<XMethod> result = new HashSet<XMethod>();
+        HashSet<XMethod> result = new LinkedHashSet<XMethod>();
         XMethod upperBound = findMethod(receiverDesc, methodName, methodSig, false);
 		if (upperBound == null) {
 			upperBound = findInvocationLeastUpperBound(xClass, methodName, methodSig, false, false);
@@ -374,7 +375,7 @@ public class Hierarchy2 {
 			Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
 			for (ClassDescriptor subtype : subTypeSet) {
 				XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
-				if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Constants.ACC_ABSTRACT) == 0 ) {
+				if (concreteSubtypeMethod != null && !concreteSubtypeMethod.isAbstract() ) {
 					result.add(concreteSubtypeMethod);
 				}
 			}
