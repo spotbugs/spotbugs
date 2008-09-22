@@ -77,9 +77,15 @@ public class FieldSummary {
 		OpcodeStack.Item oldSummary = summary.get(fieldOperand);
 		if (oldSummary != null) {
 			Item newValue = OpcodeStack.Item.merge(mergeValue, oldSummary);
+			newValue.clearNewlyAllocated();
 			summary.put(fieldOperand, newValue);
-		} else
+		} else { 
+			if (mergeValue.isNewlyAllocated()) {
+				mergeValue = new OpcodeStack.Item(mergeValue);
+				mergeValue.clearNewlyAllocated();
+			}
 			summary.put(fieldOperand, mergeValue);
+		}
     }
 
 	

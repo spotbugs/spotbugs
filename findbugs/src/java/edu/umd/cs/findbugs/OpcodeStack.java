@@ -20,11 +20,17 @@
 
 package edu.umd.cs.findbugs;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.meta.TypeQualifier;
+import javax.annotation.meta.When;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -113,31 +119,39 @@ public class OpcodeStack implements Constants2
 
 	public static class Item
 	{ 		
-		public static final int SIGNED_BYTE = 1;
-		public static final int RANDOM_INT = 2;
-		public static final int LOW_8_BITS_CLEAR = 3;
-		public static final int HASHCODE_INT = 4;
-		public static final int INTEGER_SUM = 5;
-		public static final int AVERAGE_COMPUTED_USING_DIVISION = 6;
-		public static final int FLOAT_MATH = 7;
-		public static final int RANDOM_INT_REMAINDER = 8;
-		public static final int HASHCODE_INT_REMAINDER = 9;
-		public static final int FILE_SEPARATOR_STRING = 10;
-		public static final int MATH_ABS = 11;
-		public static final int NON_NEGATIVE = 12;
-		public static final int NASTY_FLOAT_MATH = 13;
-		public static final int FILE_OPENED_IN_APPEND_MODE = 14;
-		public static final int SERVLET_REQUEST_TAINTED = 15;
-		public static final int NEWLY_ALLOCATED  = 16;
-		public static final int ZERO_MEANS_NULL  = 17;
-		public static final int NONZERO_MEANS_NULL  = 18;
+		
+		@Documented
+		@TypeQualifier(applicableTo=Integer.class)
+		@Retention(RetentionPolicy.RUNTIME)
+		public @interface SpecialKind {}
+		
+		
+		public static final @SpecialKind int NOT_SPECIAL = 0;
+		public static final @SpecialKind int SIGNED_BYTE = 1;
+		public static final @SpecialKind int RANDOM_INT = 2;
+		public static final @SpecialKind int LOW_8_BITS_CLEAR = 3;
+		public static final @SpecialKind int HASHCODE_INT = 4;
+		public static final @SpecialKind int INTEGER_SUM = 5;
+		public static final @SpecialKind int AVERAGE_COMPUTED_USING_DIVISION = 6;
+		public static final @SpecialKind int FLOAT_MATH = 7;
+		public static final @SpecialKind int RANDOM_INT_REMAINDER = 8;
+		public static final @SpecialKind int HASHCODE_INT_REMAINDER = 9;
+		public static final @SpecialKind int FILE_SEPARATOR_STRING = 10;
+		public static final @SpecialKind int MATH_ABS = 11;
+		public static final @SpecialKind int NON_NEGATIVE = 12;
+		public static final @SpecialKind int NASTY_FLOAT_MATH = 13;
+		public static final @SpecialKind int FILE_OPENED_IN_APPEND_MODE = 14;
+		public static final @SpecialKind int SERVLET_REQUEST_TAINTED = 15;
+		public static final @SpecialKind int NEWLY_ALLOCATED  = 16;
+		public static final @SpecialKind int ZERO_MEANS_NULL  = 17;
+		public static final @SpecialKind int NONZERO_MEANS_NULL  = 18;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
 		private static final int IS_NULL_FLAG = 4;
 
 		public static final Object UNKNOWN = null;
-		private int specialKind;
+		private @SpecialKind int specialKind = NOT_SPECIAL;
 		private String signature;
 		private Object constValue = UNKNOWN;
 		private @CheckForNull ClassMember source;
@@ -265,7 +279,7 @@ public class OpcodeStack implements Constants2
 				break;
 		
 		
-			case 0 :
+			case NOT_SPECIAL :
 				break;
 			default:
 					buf.append(", #" + specialKind);
@@ -518,14 +532,14 @@ public class OpcodeStack implements Constants2
 		/**
 		 * @param specialKind The specialKind to set.
 		 */
-		public void setSpecialKind(int specialKind) {
+		public void setSpecialKind(@SpecialKind int specialKind) {
 			this.specialKind = specialKind;
 		}
 
 		/**
 		 * @return Returns the specialKind.
 		 */
-		public int getSpecialKind() {
+		public @SpecialKind int getSpecialKind() {
 			return specialKind;
 		}
 		/**
@@ -630,6 +644,20 @@ public class OpcodeStack implements Constants2
 		public boolean isNull() {
 			return (flags & IS_NULL_FLAG) != 0;
 		}
+
+		/**
+         * 
+         */
+        public void clearNewlyAllocated() {
+        	if (specialKind == NEWLY_ALLOCATED) {
+        		if (signature.startsWith("Ljava/lang/StringB"))
+        			constValue = null;
+        		specialKind = NOT_SPECIAL;
+        	}
+        }
+        public boolean isNewlyAllocated() {
+        	return specialKind == NEWLY_ALLOCATED;
+        }
 	}
 
 	@Override
@@ -1431,7 +1459,7 @@ public class OpcodeStack implements Constants2
 				 case NEW:
 				 {
 					 Item item = new Item("L" + dbc.getClassConstantOperand() + ";", (Object) null);
-					 item.specialKind = Item.NEWLY_ALLOCATED;
+					 item.setSpecialKind(Item.NEWLY_ALLOCATED);
 					push(item);
 				 }
 				 break;
@@ -2266,7 +2294,7 @@ public void initialize() {
 			else if (seen == IAND) {
 				newValue = new Item("I", lhsValue & rhsValue);
 				if ((rhsValue&0xff) == 0 && rhsValue != 0 || (lhsValue&0xff) == 0 && lhsValue != 0 ) 	
-					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 
 			} else if (seen == IOR)
 				newValue = new Item("I",lhsValue | rhsValue);
@@ -2274,7 +2302,8 @@ public void initialize() {
 				newValue = new Item("I",lhsValue ^ rhsValue);
 			else if (seen == ISHL) {
 				newValue = new Item("I",lhsValue << rhsValue);
-				if (rhsValue >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				if (rhsValue >= 8) 	
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 			}
 			else if (seen == ISHR)
 				newValue = new Item("I",lhsValue >> rhsValue);
@@ -2283,23 +2312,23 @@ public void initialize() {
 			else if (seen == IUSHR)
 				newValue = new Item("I", lhsValue >>> rhsValue);
 			} else if (rhs.getConstant() != null && seen == ISHL && (Integer) rhs.getConstant() >= 8)
-				newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 			else if (lhs.getConstant() != null && seen == IAND) {
 				int value = (Integer) lhs.getConstant();
 				if (value == 0)
 					newValue = new Item("I", 0);
 				else if ((value & 0xff) == 0)
-					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 				else if (value >= 0)
-					newValue.specialKind = Item.NON_NEGATIVE;
+					newValue.setSpecialKind(Item.NON_NEGATIVE);
 			} else if (rhs.getConstant() != null && seen == IAND) {
 				int value = (Integer) rhs.getConstant();
 				if (value == 0)
 					newValue = new Item("I", 0);
 				else if ((value & 0xff) == 0)
-					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 				else if (value >= 0)
-					newValue.specialKind = Item.NON_NEGATIVE;
+					newValue.setSpecialKind(Item.NON_NEGATIVE);
 			} else if (seen == IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
 				newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
 				newValue.setPC(lhs.getPC());
@@ -2320,17 +2349,17 @@ public void initialize() {
 			AnalysisContext.logError(msg , e);
 			
 		 }
-		if (lhs.specialKind == Item.INTEGER_SUM && rhs.getConstant() != null ) {
+		if (lhs.getSpecialKind() == Item.INTEGER_SUM && rhs.getConstant() != null ) {
 			int rhsValue = (Integer) rhs.getConstant();
 			if (seen == IDIV && rhsValue ==2  || seen == ISHR  && rhsValue == 1)
-				newValue.specialKind = Item.AVERAGE_COMPUTED_USING_DIVISION;
+				newValue.setSpecialKind(Item.AVERAGE_COMPUTED_USING_DIVISION);
 		}
-		if (seen == IADD && newValue.specialKind == 0 &&   lhs.getConstant() == null && rhs.getConstant() == null ) 
-			newValue.specialKind = Item.INTEGER_SUM;
-		if (seen == IREM && lhs.specialKind == Item.HASHCODE_INT)
-			newValue.specialKind = Item.HASHCODE_INT_REMAINDER;
-		if (seen == IREM && lhs.specialKind == Item.RANDOM_INT)
-			newValue.specialKind = Item.RANDOM_INT_REMAINDER;
+		if (seen == IADD && newValue.getSpecialKind() == Item.NOT_SPECIAL &&   lhs.getConstant() == null && rhs.getConstant() == null ) 
+			newValue.setSpecialKind(Item.INTEGER_SUM);
+		if (seen == IREM && lhs.getSpecialKind() == Item.HASHCODE_INT)
+			newValue.setSpecialKind(Item.HASHCODE_INT_REMAINDER);
+		if (seen == IREM && lhs.getSpecialKind() == Item.RANDOM_INT)
+			newValue.setSpecialKind(Item.RANDOM_INT_REMAINDER);
 		 if (DEBUG) System.out.println("push: " + newValue);
 		 newValue.setPC(dbc.getPC());
 		 push(newValue);
@@ -2345,7 +2374,8 @@ public void initialize() {
 			Long lhsValue = ((Long) lhs.getConstant());
 			 if (seen == LSHL) {
 				newValue  =new Item("J", lhsValue << ((Number) rhs.getConstant()).intValue());
-				if (((Number) rhs.getConstant()).intValue()  >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				if (((Number) rhs.getConstant()).intValue()  >= 8) 	
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 			 }
 			else if (seen == LSHR)
 				newValue  =new Item("J", lhsValue >> ((Number) rhs.getConstant()).intValue());
@@ -2365,7 +2395,7 @@ public void initialize() {
 			else if (seen == LAND) {
 				newValue  = new Item("J", lhsValue & rhsValue);
 			if ((rhsValue&0xff) == 0 && rhsValue != 0 || (lhsValue&0xff) == 0 && lhsValue != 0 ) 	
-				newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 			}
 			else if (seen == LOR)
 				newValue  = new Item("J", lhsValue | rhsValue);
@@ -2376,11 +2406,11 @@ public void initialize() {
 			}
 			}
 		 else if (rhs.getConstant() != null && seen == LSHL  && ((Integer) rhs.getConstant()) >= 8)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 		 else if (lhs.getConstant() != null && seen == LAND  && (((Long) lhs.getConstant()) & 0xff) == 0)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 		 else if (rhs.getConstant() != null && seen == LAND  && (((Long) rhs.getConstant()) & 0xff) == 0)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
 		} catch (RuntimeException e) {
 			// ignore it
 		}
