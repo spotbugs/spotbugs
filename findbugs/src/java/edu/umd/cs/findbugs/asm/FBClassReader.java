@@ -29,7 +29,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class FBClassReader extends ClassReader {
 
-    // boolean needOffsets; // optional optimisation (not thread safe)
+    // boolean needOffsets; // optional optimization (not thread safe)
 
 	public FBClassReader(byte[] b) {
 	    super(b);
