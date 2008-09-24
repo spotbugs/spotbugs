@@ -287,7 +287,7 @@ public class FindBadCast2 implements Detector {
 					priority = LOW_PRIORITY;
 				bugReporter.reportBug(
 						new BugInstance(this,
-						"BC_IMPOSSIBLE_CAST",  priority)
+						isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF",  priority)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addFoundAndExpectedType(refSig, castSig)
 						.addSourceLine(sourceLineAnnotation));
