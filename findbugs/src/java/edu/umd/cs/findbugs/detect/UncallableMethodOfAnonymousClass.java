@@ -107,6 +107,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			return true;
 		if (methodName.startsWith("access$"))
 			return true;
+		if (methodName.length() < 2 || methodName.indexOf('$') >= 0)
+			return true;
 		return false;
 	}
 	@Override
