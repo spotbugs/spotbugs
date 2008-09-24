@@ -304,18 +304,19 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			if (TestCaseDetector.likelyTestCase(xmethod))
 				priority = Priorities.LOW_PRIORITY;
+			ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(parmType.getSignature());
 			ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(argType.getSignature());
 			ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
 			Set<XMethod> targets = null;
 			try {
 	            targets = Hierarchy2.resolveVirtualMethodCallTargets(actualClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
 	                    false, false);
-	            boolean allOk = targets.size() > 1;
+	            boolean allOk = targets.size() > 0;
 	            for(XMethod m2 : targets) 
-	            	if (!classSummary.mightBeEqualToOtherClasses(m2.getClassDescriptor()))
+	            	if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), expectedClassDescriptor))
 	            			allOk = false;
 	            if (allOk) 
-	            	priority++;
+	            	priority+=2;
             } catch (ClassNotFoundException e) {
 	            AnalysisContext.reportMissingClass(e);
             }

@@ -33,14 +33,18 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 public class ClassSummary {
-	private Set<ClassDescriptor> hasFunkyEquals = new HashSet<ClassDescriptor>();
+	private Map<ClassDescriptor,ClassDescriptor> map = new HashMap<ClassDescriptor,ClassDescriptor>();
+	private Set<ClassDescriptor> veryFunky = new HashSet<ClassDescriptor>();
+
 	
-	
-	public boolean mightBeEqualToOtherClasses(ClassDescriptor c) {
-		return hasFunkyEquals.contains(c);
+	public boolean mightBeEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
+		return checkee.equals(map.get(checker)) || veryFunky.contains(checker);
 	}
-	public void setMightBeEqualToOtherClasses(ClassDescriptor c) {
-		hasFunkyEquals.add(c);
+
+	public void checksForEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
+		if (map.containsKey(checker))
+			veryFunky.add(checker);
+		else map.put(checker, checkee);
 	}
 
 

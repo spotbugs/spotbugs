@@ -63,15 +63,18 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 import edu.umd.cs.findbugs.ba.type.StandardTypeMerger;
@@ -926,13 +929,25 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			}
 			if (!looksLikeTestCase) {
 				ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(lhsSig);
-				if (AnalysisContext.currentAnalysisContext().getClassSummary().mightBeEqualToOtherClasses(expectedClassDescriptor))
-					priorityModifier++;
-			
+				ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(rhsSig);
+				ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
+				Set<XMethod> targets = null;
+				try {
+		            targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
+		                    false, false);
+		            boolean allOk = targets.size() > 0;
+		            for(XMethod m2 : targets) 
+		            	if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
+		            			allOk = false;
+		            if (allOk) 
+		            	priorityModifier+=2;
+	            } catch (ClassNotFoundException e) {
+		            AnalysisContext.reportMissingClass(e);
+	            }
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsSig, lhsSig)
-				.addEqualsMethodUsed(expectedClassDescriptor),
+				.addEqualsMethodUsed(targets),
 				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
 			}
