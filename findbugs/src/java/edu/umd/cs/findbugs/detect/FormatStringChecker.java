@@ -32,6 +32,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.formatStringChecker.Formatter;
+import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
+import edu.umd.cs.findbugs.formatStringChecker.IllegalFormatConversionException;
+import edu.umd.cs.findbugs.formatStringChecker.MissingFormatArgumentException;
 
 public class FormatStringChecker extends OpcodeStackDetector {
 	private static final boolean VAMISMATCH_DEBUG = SystemProperties.getBoolean("vamismatch.debug");
@@ -118,8 +122,41 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							|| cl.endsWith("Logger") && nm.endsWith("fmt")) {
 
 				try {
-					FormatSpecifier[] formats = parse(formatString);
-	                check(formats, arguments);
+					String[] signatures = new String[arguments.length];
+					for(int i = 0; i < signatures.length; i++)
+						signatures[i] = arguments[i].getSignature();
+					Formatter.check(formatString, signatures);
+					
+				} catch (IllegalFormatConversionException e) {
+					if (e.getConversion() == 'b')
+						bugReporter.reportBug(
+								new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN", HIGH_PRIORITY)
+								.addClassAndMethod(this)
+								.addCalledMethod(this)
+								.addType(e.getArgumentSignature())
+								.addString(e.getConversion())
+								.addString(formatString)
+								.addSourceLine(this)
+							);
+					else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() != 's')
+                	bugReporter.reportBug(
+							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addType(e.getArgumentSignature())
+							.addString(Character.toString(e.getConversion()))
+							.addString(formatString)
+							.addSourceLine(this)
+						);
+					else bugReporter.reportBug(
+							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addType(e.getArgumentSignature())
+							.addString(e.getConversion())
+							.addString(formatString)
+							.addSourceLine(this)
+						);
                 } catch (IllegalArgumentException e) {
                 	bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_ILLEGAL", HIGH_PRIORITY)
@@ -136,7 +173,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addString(formatString)
-							.addString(e.formatSpecifier.toString())
+							.addString(e.formatSpecifier)
 							.addSourceLine(this)
 						);
                     } else {
@@ -145,7 +182,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 	                    		.addClassAndMethod(this)
 	                    		.addCalledMethod(this)
 	                    		.addString(formatString)
-	                    		.addString(e.formatSpecifier.toString())
+	                    		.addString(e.formatSpecifier)
 	                    		.addInt(e.pos+1)
 	                    		.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 	                    		.addSourceLine(this)
@@ -168,185 +205,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 		}
 	}
 
-    // %[argument_index$][flags][width][.precision][t]conversion
-    private static Pattern fsPattern =
-    	Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
-
-
-    static class FormatSpecifier{
-    	 private final String fullPattern;
-    	 private final int index;
-         private final String flags;
-         private final int width;
-         private final int precision;
-         private final boolean dt;
-         private final char c;
-
-    	static int parseWidth(String n) {
-    		if (n == null) {
-	            return -1;
-            }
-    		int value = Integer.parseInt(n);
-    		if (value < 0) {
-	            throw new IllegalArgumentException("Illegal value: " + value);
-            }
-			return value;
-    	}
-
-    	@Override
-        public String toString() {
-    		return fullPattern;
-    	}
-        public FormatSpecifier(String fullPattern, String[] sa) {
-        	this.fullPattern = fullPattern;
-        	int idx = 0;
-        	String indexString = sa[idx++];
-
-        	flags = sa[idx++];
-            width = parseWidth(sa[idx++]);
-            String precisionWidthString = sa[idx++];
-            if (precisionWidthString == null) {
-	            precision = -1;
-            } else {
-	            precision = parseWidth(precisionWidthString.substring(1));
-            }
-
-
-            if (sa[idx++] != null) {
-                dt = true;
-
-            } else {
-	            dt = false;
-            }
-            c = sa[idx++].charAt(0);
-
-            if (c == '%' || c == 'n') {
-	            index = -2;
-            } else if (flags.indexOf('<') >= 0) {
-	            index = -1;
-            } else if (indexString == null) {
-	            index = 0;
-            } else {
-	            index = Integer.parseInt(indexString.substring(0, indexString.length()-1));
-            }
-
-
-        }};
-
-    private FormatSpecifier[] parse(String s) {
-        ArrayList<FormatSpecifier> al = new ArrayList<FormatSpecifier>();
-        Matcher m = fsPattern.matcher(s);
-        int i = 0;
-        while (i < s.length()) {
-            if (m.find(i)) {
-                // Anything between the start of the string and the beginning
-                // of the format specifier is either fixed text or contains
-                // an invalid format string.
-                if (m.start() != i) {
-                    // Make sure we didn't miss any invalid format specifiers
-                    checkText(s.substring(i, m.start()));
-                    // Assume previous characters were fixed text
-                    // ignore them
-                }
-
-                // Expect 6 groups in regular expression
-                String[] sa = new String[6];
-                for (int j = 0; j < m.groupCount(); j++)
-                    {
-                    sa[j] = m.group(j + 1);
-                    }
-                al.add(new FormatSpecifier(m.group(0), sa));
-                i = m.end();
-            } else {
-                // No more valid format specifiers.  Check for possible invalid
-                // format specifiers.
-                checkText(s.substring(i));
-                // The rest of the string is fixed text, ignore it
-                break;
-            }
-        }
-        return al.toArray(new FormatSpecifier[0]);
-    }
-    public void check(FormatSpecifier[] fsa, OpcodeStack.Item [] args) throws MissingFormatArgumentException, ExtraFormatArgumentsException {
-
-        // index of last argument referenced
-        int last = -1;
-        // last ordinary index
-        int lasto = -1;
-
-        int maxIndex = -1;
-
-        for (int i = 0; i < fsa.length; i++) {
-        	FormatSpecifier fs = fsa[i];
-            int index = fs.index;
-
-                switch (index) {
-                case -2:  // fixed string, "%n", or "%%"
-                    // ignore
-                    break;
-                case -1:  // relative index
-                    if (last < 0 || (last > args.length - 1)) {
-	                    throw new MissingFormatArgumentException(last, fs);
-                    }
-                    // check fs against args[last]
-                    maxIndex = Math.max(maxIndex, last);
-                    break;
-                case 0:  // ordinary index
-                    lasto++;
-                    last = lasto;
-                    if (lasto > args.length - 1) {
-	                    throw new MissingFormatArgumentException(lasto, fs);
-                    }
-                    // check fs against args[lasto]
-                    maxIndex = Math.max(maxIndex, lasto);
-                    break;
-                default:  // explicit index
-                    last = index - 1;
-                    if (last > args.length - 1) {
-	                    throw new MissingFormatArgumentException(last, fs);
-                    }
-                    // check fs against args[last]
-                    maxIndex = Math.max(maxIndex, last);
-                    break;
-                }
-
-        }
-        if (maxIndex < args.length -1) {
-	        throw new ExtraFormatArgumentsException(args.length, maxIndex+1);
-        }
-
-    }
-
-
-
-    private void checkText(String s) {
-        int idx;
-        // If there are any '%' in the given string, we got a bad format
-        // specifier.
-        if ((idx = s.indexOf('%')) != -1) {
-            char c = (idx > s.length() - 2 ? '%' : s.charAt(idx + 1));
-            throw new IllegalArgumentException("Unknown format string specified: " + String.valueOf(c));
-        }
-    }
-
-
-    static class MissingFormatArgumentException extends Exception {
-    	final int pos;
-    	final FormatSpecifier formatSpecifier;
-    	MissingFormatArgumentException(int pos, FormatSpecifier formatSpecifier) {
-    		this.pos = pos;
-    		this.formatSpecifier = formatSpecifier;
-    	}
-    }
-
-    static class ExtraFormatArgumentsException extends Exception {
-    	final int provided;
-    	final int used;
-    	ExtraFormatArgumentsException(int provided, int used) {
-    		this.provided = provided;
-    		this.used = used;
-    	}
-    }
+	
+ 
 
 
 

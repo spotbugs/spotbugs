@@ -66,6 +66,7 @@
 		<pathelement location="${jar.dir}/asm-tree-3.1.jar"/>
 		<pathelement location="${jar.dir}/jaxen-1.1.1.jar"/>		
 		<pathelement location="${jar.dir}/jsr305.jar"/>
+		<pathelement location="${jar.dir}/jFormatString.jar"/>
 	</path>
 	
 	<path id="tools.classpath">
@@ -346,6 +347,7 @@
 			<zipfileset src="${jar.dir}/dom4j-1.6.1.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/jaxen-1.1.1.jar" excludes="META-INF/**"/>
 			<zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**"/>
+			<zipfileset src="${jar.dir}/jFormatString.jar" excludes="META-INF/**"/>
 		</jar>
 	</target>
 	
@@ -840,6 +842,7 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.1.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-1.6.1.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
+		<copy todir="${jnlp.dir}" file="${jar.dir}/jFormatString.jar"/>		
 <!--
 		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
 -->

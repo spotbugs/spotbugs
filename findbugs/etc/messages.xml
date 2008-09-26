@@ -6410,6 +6410,52 @@ For example,
  	</Details>
   </BugPattern>
 
+  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
+    <ShortDescription>The type of a supplied argument doesn't match format specifier</ShortDescription>
+    <LongDescription>Argument of type {3} can't be handled by format specifier %{4} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+One of the arguments is uncompatible with the corresponding format string specifier.
+As a result, this will generate a runtime exception when executed.
+For example, <code>String.format("%d", "1")</code> will generate an exception, since
+the String "1" is incompatible with the format specifier %d.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
+    <ShortDescription>Non-Boolean argument formatted using %b format specifier</ShortDescription>
+    <LongDescription>Non-Boolean argument formatted using %b format specifier in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+An argument not of type Boolean is being formatted with a %b format specifier. This won't throw an
+exception; instead, it will print true for any nonnull value, and false for null.
+This feature of format strings is strange, and may not be what you intended.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY">
+    <ShortDescription>Array formatted in useless way using format string</ShortDescription>
+    <LongDescription>Argument of type {3} formatted in useless way in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+One of the arguments being formatted with a format string is an array. This will be formatted
+using a fairly useless format, such as [I@304282, which doesn't actually show the contents
+of the array.
+Consider wrapping the array using <code>Arrays.asList(...)</code> before handling it off to a formatted.
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
+
+
+
   <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
     <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
     <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>

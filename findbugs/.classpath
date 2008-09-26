@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jFormatString"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>
