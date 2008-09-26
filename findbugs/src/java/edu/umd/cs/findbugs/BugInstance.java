@@ -1339,6 +1339,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	/**
+	 * Add a String annotation.
+	 *
+	 * @param c the char value
+	 * @return this object
+	 */
+	public BugInstance addString(char c) {
+		add(new StringAnnotation(Character.toString(c)));
+		return this;
+	}
 	/* ----------------------------------------------------------------------
 	 * Source line annotation adders
 	 * ---------------------------------------------------------------------- */
