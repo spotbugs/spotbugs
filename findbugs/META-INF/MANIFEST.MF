@@ -12,6 +12,7 @@ Bundle-ClassPath: findbugs.jar,
  lib/asm-tree-3.1.jar,
  lib/asm-commons-3.1.jar,
  lib/jaxen-1.1.1.jar
+ lib/jFormatString.jar
 Bundle-Localization: plugin
 Export-Package: .,
  com.apple.eawt,
@@ -56,3 +57,4 @@ Export-Package: .,
  org.objectweb.asm.signature,
  org.objectweb.asm.tree
 Require-Bundle: org.apache.ant
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
