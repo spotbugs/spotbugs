@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -73,6 +75,8 @@ public class PluginLoader {
 
 	// The loaded Plugin
 	private Plugin plugin;
+	
+	private final boolean corePlugin;
 
 	/**
 	 * Constructor.
@@ -82,6 +86,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url});
+		corePlugin = false;
 		init();
 	}
 
@@ -93,6 +98,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(URL url, ClassLoader parent) throws PluginException {
 		this.classLoader = new URLClassLoader(new URL[]{url}, parent);
+		corePlugin = false;
 		init();
 	}
 	
@@ -105,6 +111,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader() {
 		this.classLoader = this.getClass().getClassLoader();
+		corePlugin = true;
 	}
 	
 	/**
@@ -145,6 +152,19 @@ public class PluginLoader {
 		
 		if (url == null) {
 			url = classLoader.getResource(name);
+		}
+		
+		if (url == null && corePlugin) {
+			String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
+			if (findBugsHome != null) {
+				File f =  new File(new File(new File(findBugsHome), "etc"), name);
+				if (f.canRead())
+	                try {
+	                    return f.toURL();
+                    } catch (MalformedURLException e) {
+	                    // ignore it
+                    }
+			}
 		}
 
 		return url;

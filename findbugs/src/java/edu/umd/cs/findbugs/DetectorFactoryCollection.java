@@ -184,14 +184,8 @@ public class DetectorFactoryCollection {
 	private void determinePlugins() {
 		if (pluginList != null)
 			return;
-		
-		String homeDir = FindBugs.getHome();
-		
-		if (homeDir == null) {
-			// Attempt to infer findbugs.home from the observed
-			// location of findbugs.jar.
-			homeDir = inferFindBugsHome();
-		}
+			
+		String homeDir = getFindBugsHome();
 		
 		if (homeDir == null) {
 			
@@ -242,7 +236,7 @@ public class DetectorFactoryCollection {
 	 * @return inferred ${findbugs.home}, or null if 
 	 *         we can't figure it out
 	 */
-	private String inferFindBugsHome() {
+	private static String inferFindBugsHome() {
 		for (Pattern jarNamePattern : findbugsJarNames) {
 			String findbugsJarCodeBase =
 				ClassPathUtil.findCodeBaseInClassPath(jarNamePattern, SystemProperties.getProperty("java.class.path"));
@@ -260,6 +254,18 @@ public class DetectorFactoryCollection {
 		
 	}
 
+	public static String getFindBugsHome() {
+		
+		String homeDir = FindBugs.getHome();
+		
+		if (homeDir == null) {
+			// Attempt to infer findbugs.home from the observed
+			// location of findbugs.jar.
+			homeDir = inferFindBugsHome();
+		}
+		return homeDir;
+
+	}
 	public void ensureLoaded() {
 		if (loaded) return;
 		loadPlugins();
