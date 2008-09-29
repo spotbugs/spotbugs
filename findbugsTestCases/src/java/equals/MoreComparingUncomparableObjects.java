@@ -33,4 +33,8 @@ public class MoreComparingUncomparableObjects {
 	public static boolean check(Icon i, Button b) {
 		return i.equals(b);
 	}
+	
+	public static boolean falsePositive3(String s, Comparable x) {
+		return s == x;
+	}
 }
