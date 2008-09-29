@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2005-2006 University of Maryland
+ * Copyright (C) 2005-2008 University of Maryland
+ * Copyright (C) 2008 Google
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,6 +60,7 @@ extends OpcodeStackDetector {
 	   bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
 				ignorePasswordMasking ? NORMAL_PRIORITY : HIGH_PRIORITY)
 								.addClassAndMethod(this)
+								.addCalledMethod(this)
 								.addSourceLine(this)
 				);
 	}
@@ -66,6 +68,8 @@ extends OpcodeStackDetector {
 	private void sawRegExPattern(int stackDepth) {
 		sawRegExPattern(stackDepth, 0);
 	}
+	
+	
 	private void sawRegExPattern(int stackDepth, int flags) {
 		if (stack.getStackDepth() < stackDepth) return;
 		OpcodeStack.Item it = stack.getStackItem(stackDepth);
@@ -73,6 +77,7 @@ extends OpcodeStackDetector {
 			  bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", 
 					  HIGH_PRIORITY)
 									  .addClassAndMethod(this)
+									  .addCalledMethod(this)
 									  .addSourceLine(this)
 					  );
 			  return;
@@ -86,6 +91,9 @@ extends OpcodeStackDetector {
 		  bugReporter.reportBug(new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
 				HIGH_PRIORITY)
 								.addClassAndMethod(this)
+								.addCalledMethod(this)
+								.addString(regex)
+								.addInt(flags)
 								.addSourceLine(this)
 				);
 		}

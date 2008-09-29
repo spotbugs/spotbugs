@@ -7358,6 +7358,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   **********************************************************************
    -->
 
+  <BugCode abbrev="FS" >Format string problem</BugCode>
   <BugCode abbrev="SKIPPED" >Analysis skipped</BugCode>
   <BugCode abbrev="IL" >Infinite Loop</BugCode>
   <BugCode abbrev="VO" >Use of volatile</BugCode>
