@@ -483,7 +483,7 @@
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
-			  jvmargs="-ea -Xmx600m"
+			  jvmargs="-ea -Xmx900m"
 			  projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
@@ -502,7 +502,7 @@
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml:withMessages"
-			  jvmargs="-ea -Xmx600m"
+			  jvmargs="-ea -Xmx900m"
 			  excludeFilter="findbugsExclude.xml"
 			  projectName="FindBugs"
     		  timeout="1800000"
