@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004-2006 University of Maryland
+ * Copyright (C) 2008 Google
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -138,7 +139,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 								.addString(formatString)
 								.addSourceLine(this)
 							);
-					else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() != 's')
+					else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() == 's')
                 	bugReporter.reportBug(
 							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY", HIGH_PRIORITY)
 							.addClassAndMethod(this)
