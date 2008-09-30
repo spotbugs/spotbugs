@@ -49,7 +49,7 @@ public class SubtypeTypeMatcher implements TypeMatcher {
 	/**
 	 * Constructor.
 	 * 
-	 * @param supertype a ClassDescriptor naming a class: this TypeMatcher will test whether
+	 * @param classDescriptor a ClassDescriptor naming a class: this TypeMatcher will test whether
 	 *                  or not candidate Types are subtypes of the class
 	 */
 	public SubtypeTypeMatcher(ClassDescriptor classDescriptor) {

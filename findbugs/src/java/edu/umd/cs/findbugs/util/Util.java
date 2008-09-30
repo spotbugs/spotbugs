@@ -215,7 +215,7 @@ public class Util {
 	}
 
 	/**
-     * @param iterable
+     * @param i the Iterable whose first element is to be retrieved
      * @return first element of iterable
      */
     public static <E> E first(Iterable<E> i) {
