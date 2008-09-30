@@ -30,14 +30,35 @@ import java.lang.reflect.Modifier;
  * org.apache.bcel.generic.ObjectType;
  * org.apache.bcel.generic.Type;
  * org.apache.bcel.Constants;
- * org.apache.bcel.generic.EmptyVisitor
- * org.apache.bcel.util.Repository;
+ * org.apache.bcel.classfile.EmptyVisitor
+ * org.apache.bcel.Repository;
  * 
  * @author langmead
  */
 
 public class CheckBcel {
 	
+	/**
+     * 
+     */
+    private static final String ORG_APACHE_BCEL_REPOSITORY = "org.apache.bcel.Repository";
+	/**
+     * 
+     */
+    private static final String ORG_APACHE_BCEL_CLASSFILE_EMPTY_VISITOR = "org.apache.bcel.classfile.EmptyVisitor";
+	/**
+     * 
+     */
+    private static final String ORG_APACHE_BCEL_CONSTANTS = "org.apache.bcel.Constants";
+	/**
+     * 
+     */
+    private static final String ORG_APACHE_BCEL_GENERIC_TYPE = "org.apache.bcel.generic.Type";
+	/**
+     * 
+     */
+    private static final String ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE = "org.apache.bcel.generic.ObjectType";
+
 	/**
 	 * Check whether given Class is declared final
 	 * @param c the class to check
@@ -74,29 +95,30 @@ public class CheckBcel {
 		Class emptyVis;
 		Class repository;
 		try {
-			objectType = Class.forName("org.apache.bcel.generic.ObjectType");
-			type       = Class.forName("org.apache.bcel.generic.Type");
-			constants  = Class.forName("org.apache.bcel.Constants");
-			emptyVis   = Class.forName("org.apache.bcel.generic.EmptyVisitor");
-			repository = Class.forName("org.apache.bcel.util.Repository");
+			objectType = Class.forName(ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE);
+			type       = Class.forName(ORG_APACHE_BCEL_GENERIC_TYPE);
+			constants  = Class.forName(ORG_APACHE_BCEL_CONSTANTS);
+			emptyVis   = Class.forName(ORG_APACHE_BCEL_CLASSFILE_EMPTY_VISITOR);
+			repository = Class.forName(ORG_APACHE_BCEL_REPOSITORY);
+			
 		} catch(ClassNotFoundException e) {
 			System.out.println("One or more required BCEL classes were missing.");
 			return false;
 		}
 		if(isFinal(objectType)) {
-			error("org.apache.bcel.generic.ObjectType"); return false;
+			error(ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE); return false;
 		}
 		if(isFinal(type)) {
-			error("org.apache.bcel.generic.Type"); return false;
+			error(ORG_APACHE_BCEL_GENERIC_TYPE); return false;
 		}
 		if(isFinal(constants)) {
-			error("org.apache.bcel.Constants"); return false;
+			error(ORG_APACHE_BCEL_CONSTANTS); return false;
 		}
 		if(isFinal(emptyVis)) {
-			error("org.apache.bcel.generic.EmptyVisitor"); return false;
+			error(ORG_APACHE_BCEL_CLASSFILE_EMPTY_VISITOR); return false;
 		}
 		if(isFinal(repository)) {
-			error("org.apache.bcel.util.Repository"); return false;
+			error(ORG_APACHE_BCEL_REPOSITORY); return false;
 		}
 		return true;
 	}
