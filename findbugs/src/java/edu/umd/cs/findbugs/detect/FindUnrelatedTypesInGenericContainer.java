@@ -109,6 +109,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private void addToCollectionsMap(@DottedClassName String className, String methodName, 
 			int argumentParameterIndex) {
 		ClassDescriptor c = DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
+		assert(!nameToInterfaceMap.containsKey(methodName));
 		nameToInterfaceMap.put(methodName, c);
 		nameToTypeArgumentIndex.put(methodName, argumentParameterIndex);
 		}
@@ -138,7 +139,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			// Map<K,V>
 			addToCollectionsMap(Map.class.getName(), "get", 0);
-			addToCollectionsMap(Map.class.getName(), "remove", 0);
 
 			}
 
