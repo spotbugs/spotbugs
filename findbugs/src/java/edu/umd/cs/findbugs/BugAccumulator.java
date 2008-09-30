@@ -113,7 +113,7 @@ public class BugAccumulator {
     }
 
 	/**
-     * @param addClassAndMethod
+     * @param bug
      * @param classContext
      * @param method
      * @param location
@@ -124,7 +124,7 @@ public class BugAccumulator {
     }
 
 	/**
-     * @param addClassAndMethod
+     * @param bug
      * @param classContext
      * @param methodGen
      * @param sourceFile
