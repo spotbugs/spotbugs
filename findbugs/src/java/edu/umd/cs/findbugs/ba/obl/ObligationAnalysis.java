@@ -366,7 +366,7 @@ public class ObligationAnalysis
 		final StateSet inputFact = fact;
 		
 		if (DEBUG && inputFact.isValid()) {
-			for (Iterator<State> i = inputFact.stateIterator(); i.hasNext();) {
+			for (Iterator<State> i = inputFact.stateIteratorUnmodifiable(); i.hasNext();) {
 				State state = i.next();
 				Path path = state.getPath();
 				if (path.getLength() > 0) {
