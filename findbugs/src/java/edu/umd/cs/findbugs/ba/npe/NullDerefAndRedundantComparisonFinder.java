@@ -175,7 +175,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			BasicBlock basicBlock = bbIter.next();
 
 			if (basicBlock.isNullCheck()) {
-				analyzeNullCheck(classContext, method, invDataflow, basicBlock);
+				analyzeNullCheck(invDataflow, basicBlock);
 			} else if (!basicBlock.isEmpty()) {
 				// Look for all reference comparisons where
 				//    - both values compared are definitely null, or
@@ -684,8 +684,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		redundantBranchList.add(redundantBranch);
 	}
 
-	private void analyzeNullCheck(ClassContext classContext, Method method, IsNullValueDataflow invDataflow,
-			BasicBlock basicBlock)
+	private void analyzeNullCheck(IsNullValueDataflow invDataflow, BasicBlock basicBlock)
 		throws DataflowAnalysisException, CFGBuilderException {
 		// Look for null checks where the value checked is definitely
 		// null or null on some path.
@@ -717,7 +716,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (DEBUG) System.out.println("Warning: VN " + valueNumber + " invf: " + frame + " @ " + location);
 
 		// Issue a warning
-		collector.foundNullDeref(classContext, location, valueNumber, refValue, vnaFrame);
+		collector.foundNullDeref(location, valueNumber, refValue, vnaFrame);
 	}
 
 	/**

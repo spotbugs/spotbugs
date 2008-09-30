@@ -828,9 +828,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				|| method.getName().indexOf("Test") >= 0;
 	}
 
-	public void foundNullDeref(ClassContext classContext, Location location,
-			ValueNumber valueNumber, IsNullValue refValue,
-			ValueNumberFrame vnaFrame) {
+	public void foundNullDeref(Location location, ValueNumber valueNumber,
+			IsNullValue refValue, ValueNumberFrame vnaFrame) {
 		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 			return;
