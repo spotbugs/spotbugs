@@ -48,7 +48,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -56,7 +55,6 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -1777,6 +1775,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		// This object is being modified, so the cached hashcode
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
+		return this;
+	}
+	
+	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
+		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
+		if (lv != null && lv.isNamed()) {
+			add(lv);
+		} else {
+			XField xField = item.getXField();
+			if (xField != null)
+				addField(xField);
+			else {
+				XMethod xMethod = item.getReturnValueOf();
+				if (xMethod != null)
+					addMethod(xMethod).describe(MethodAnnotation.METHOD_RETURN_VALUE_OF);
+			}
+		}
 		return this;
 	}
 

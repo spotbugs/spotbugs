@@ -21,12 +21,15 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -203,6 +206,19 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	public boolean isSignificant() {
 		return !value.equals("?");
 	}
+
+	/**
+     * @param method
+     * @param item
+     * @param pc2
+     * @return
+     */
+    public static @CheckForNull LocalVariableAnnotation getLocalVariableAnnotation(Method method, Item item, int pc) {
+	   int reg = item.getRegisterNumber();
+	   if (reg < 0) return null;
+	   return getLocalVariableAnnotation(method, reg, pc, item.getPC());
+	   
+    }
 }
 
 // vim:ts=4
