@@ -1,7 +1,8 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003, Mike Fagan <mfagan@tde.com>
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2008 University of Maryland
+ * Copyright (C) 2008 Google
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,6 +57,7 @@ import javax.annotation.WillClose;
  */
 public class ProjectStats implements XMLWriteable, Cloneable {
 	private static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
+	private static final boolean OMIT_PACKAGE_STATS = SystemProperties.getBoolean("findbugs.packagestats.omit");
 	private SortedMap<String, PackageStats> packageStatsMap;
 	private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
 	private int totalClasses;
@@ -274,9 +276,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			}
 		}
 		
-		for (PackageStats stats : packageStatsMap.values()) {
-			stats.writeXML(xmlOutput);
-		}
+		if (!OMIT_PACKAGE_STATS)
+			for (PackageStats stats : packageStatsMap.values()) {
+				stats.writeXML(xmlOutput);
+			}
 
 		xmlOutput.closeTag("FindBugsSummary");
 	}
