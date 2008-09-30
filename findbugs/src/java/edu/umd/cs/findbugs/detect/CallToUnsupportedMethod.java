@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004-2006 University of Maryland
+ * Copyright (C) 2004-2008 University of Maryland
+ * Copyright (C) 2008 Google
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -109,6 +110,10 @@ public class CallToUnsupportedMethod implements Detector  {
 			String methodName = inv.getMethodName(constantPoolGen);
 			if (methodName.toLowerCase().indexOf("unsupported") >= 0) 
 				continue;
+			String methodSig = inv.getSignature(constantPoolGen);
+			if (methodSig.equals("()Ljava/lang/UnsupportedOperationException;"))
+				continue;
+			
 			Set<XMethod> targets;
             try {
 	            
