@@ -231,6 +231,15 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		}
 	}
 
+	public boolean amVisitingMainMethod() {
+		if (!visitingMethod)
+			throw new IllegalStateException("Not visiting a method");
+		if (!method.isStatic()) return false;
+		if (!getMethodName().equals("main")) return false;
+		if (!getMethodSig().equals("([Ljava/lang/String;)V")) return false;
+		return true;
+
+	}
 	// Extra classes (i.e. leaves in this context)
 	@Override
 		 public void visitInnerClasses(InnerClasses obj) {

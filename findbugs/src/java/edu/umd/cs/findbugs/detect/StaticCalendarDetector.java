@@ -276,7 +276,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				throw new IllegalStateException("Not possible");
 			int priority = NORMAL_PRIORITY;
 			Method m = getMethod();
-			if (m.isStatic() && m.getName().equals("main") && m.getSignature().equals("(Ljava/lang/String;)V"))
+			if (amVisitingMainMethod())
 				priority++;
 			else if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse")
 					|| invokedName.equals("applyPattern"))
