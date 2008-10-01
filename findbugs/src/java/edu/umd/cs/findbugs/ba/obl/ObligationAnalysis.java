@@ -78,7 +78,8 @@ public class ObligationAnalysis
 	private IErrorLogger errorLogger;
 	private InstructionActionCache actionCache;
 	private StateSet cachedEntryFact;
-
+	static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor("javax/annotation/WillClose");
+	
 	/**
 	 * Constructor.
 	 * 
@@ -151,8 +152,7 @@ public class ObligationAnalysis
 		endTransfer(basicBlock, end, result);
 	}
 
-	private void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result)
-			throws DataflowAnalysisException {
+	private void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result) {
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
 			State state = i.next();
@@ -188,7 +188,7 @@ public class ObligationAnalysis
 			}
 		}
 
-		// If the edge is from a reference comparision
+		// If the edge is from a reference comparison
 		// which has established that a reference of an obligation type
 		// is null, then we remove one occurrence of that type of
 		// obligation from all states.
@@ -224,12 +224,12 @@ public class ObligationAnalysis
 		switch (opcode) {
 			case Constants.IFNULL:
 			case Constants.IFNONNULL:
-				type = nullCheck(typeDataflow, opcode, edge, last, sourceBlock);
+				type = nullCheck(opcode, edge, last, sourceBlock);
 				break;
 
 			case Constants.IF_ACMPEQ:
 			case Constants.IF_ACMPNE:
-				type = acmpNullCheck(typeDataflow, invDataflow, opcode, edge, last, sourceBlock);
+				type = acmpNullCheck(opcode, edge, last, sourceBlock);
 				break;
 		}
 
@@ -247,7 +247,7 @@ public class ObligationAnalysis
 
 	}
 
-	private Type nullCheck(TypeDataflow typeDataflow, short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+	private Type nullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
 		if (DEBUG_NULL_CHECK) {
 			System.out.println("checking for nullcheck on edge " + edge);
 		}
@@ -266,7 +266,7 @@ public class ObligationAnalysis
 		return type;
 	}
 
-	private Type acmpNullCheck(TypeDataflow typeDataflow, IsNullValueDataflow invDataflow, short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
+	private Type acmpNullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock) throws DataflowAnalysisException {
 		Type type = null;
 		//
 		// Make sure that IF a value has been compared to null,
@@ -322,7 +322,6 @@ public class ObligationAnalysis
 			//
 			
 			State state = new State(factory);
-			ClassDescriptor willClose = DescriptorFactory.createClassDescriptor("javax/annotation/WillClose");
 			Obligation[] paramObligations = factory.getParameterObligationTypes(xmethod);
 
 			for (int i = 0; i < paramObligations.length; i++) {
