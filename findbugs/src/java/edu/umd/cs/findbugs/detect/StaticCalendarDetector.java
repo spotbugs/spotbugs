@@ -275,7 +275,11 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			} else 
 				throw new IllegalStateException("Not possible");
 			int priority = NORMAL_PRIORITY;
-			if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse"))
+			Method m = getMethod();
+			if (m.isStatic() && m.getName().equals("main") && m.getSignature().equals("(Ljava/lang/String;)V"))
+				priority++;
+			else if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse")
+					|| invokedName.equals("applyPattern"))
 				priority--;
 			bugAccumulator.accumulateBug(new BugInstance(this, tBugType, priority).addClassAndMethod(this).addCalledMethod(this)
 					.addOptionalField(field), this);
