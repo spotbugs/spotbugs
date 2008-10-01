@@ -35,13 +35,13 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.formatStringChecker.Formatter;
 import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
+import edu.umd.cs.findbugs.formatStringChecker.IllegalDateFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.IllegalFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.MissingFormatArgumentException;
 
 public class FormatStringChecker extends OpcodeStackDetector {
-	private static final boolean VAMISMATCH_DEBUG = SystemProperties.getBoolean("vamismatch.debug");
-
-	BugReporter bugReporter;
+	
+	final BugReporter bugReporter;
 
 	public FormatStringChecker(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -128,7 +128,19 @@ public class FormatStringChecker extends OpcodeStackDetector {
 						signatures[i] = arguments[i].getSignature();
 					Formatter.check(formatString, signatures);
 					
+				} catch (IllegalDateFormatConversionException e) {
+					bugReporter.reportBug(
+							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addType(e.getArgumentSignature())
+							.addString("t"+e.getConversion())
+							.addString(formatString)
+							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
+							.addSourceLine(this)
+						);
 				} catch (IllegalFormatConversionException e) {
+				
 					if (e.getConversion() == 'b')
 						bugReporter.reportBug(
 								new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN", HIGH_PRIORITY)
@@ -137,6 +149,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 								.addType(e.getArgumentSignature())
 								.addString(e.getConversion())
 								.addString(formatString)
+								.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 								.addSourceLine(this)
 							);
 					else if (e.getArgumentSignature().charAt(0) == '[' && e.getConversion() == 's')
@@ -147,6 +160,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addType(e.getArgumentSignature())
 							.addString(Character.toString(e.getConversion()))
 							.addString(formatString)
+							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
 					else bugReporter.reportBug(
@@ -156,6 +170,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addType(e.getArgumentSignature())
 							.addString(e.getConversion())
 							.addString(formatString)
+							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
                 } catch (IllegalArgumentException e) {
