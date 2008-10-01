@@ -137,8 +137,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 								.addClassAndMethod(this)
 								.addCalledMethod(this)
 								.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
-								.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 								.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+								.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 								.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 								.addSourceLine(this)
 							);
@@ -148,8 +148,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
-							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
@@ -158,8 +158,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
-							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
@@ -178,8 +178,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addString(e.formatSpecifier).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addSourceLine(this)
 						);
                     } else {
@@ -187,8 +187,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 	                    		new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
 	                    		.addClassAndMethod(this)
 	                    		.addCalledMethod(this)
-	                    		.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 	                    		.addString(e.formatSpecifier).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+	                    		.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 	                    		.addInt(e.pos+1).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
 	                    		.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 	                    		.addSourceLine(this)

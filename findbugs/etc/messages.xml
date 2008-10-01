@@ -6412,7 +6412,7 @@ For example,
 
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
     <ShortDescription>The type of a supplied argument doesn't match format specifier</ShortDescription>
-    <LongDescription>Argument of type {3} can't be handled by format specifier %{4} in {1}</LongDescription>
+    <LongDescription>Argument of type {3} can't be handled by format specifier {4} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
