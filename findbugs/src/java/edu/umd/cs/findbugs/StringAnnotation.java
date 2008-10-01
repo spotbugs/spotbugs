@@ -38,6 +38,8 @@ public class StringAnnotation implements BugAnnotation {
 	public static final String PARAMETER_NAME_ROLE = "STRING_PARAMETER_NAME";
 	public static final String TYPE_QUALIFIER_ROLE = "STRING_TYPE_QUALIFIER";
 	public static final String REMAINING_OBLIGATIONS_ROLE = "STRING_REMAINING_OBLIGATIONS";
+	public static final String FORMAT_STRING_ROLE = "STRING_FORMAT_STRING";
+	public static final String FORMAT_SPECIFIER_ROLE = "STRING_FORMAT_SPECIFIER";
 
 	final private String value;
 	private String description;

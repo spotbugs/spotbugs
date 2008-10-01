@@ -30,12 +30,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.formatStringChecker.Formatter;
 import edu.umd.cs.findbugs.formatStringChecker.ExtraFormatArgumentsException;
-import edu.umd.cs.findbugs.formatStringChecker.IllegalDateFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.IllegalFormatConversionException;
 import edu.umd.cs.findbugs.formatStringChecker.MissingFormatArgumentException;
 
@@ -128,17 +129,6 @@ public class FormatStringChecker extends OpcodeStackDetector {
 						signatures[i] = arguments[i].getSignature();
 					Formatter.check(formatString, signatures);
 					
-				} catch (IllegalDateFormatConversionException e) {
-					bugReporter.reportBug(
-							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
-							.addClassAndMethod(this)
-							.addCalledMethod(this)
-							.addType(e.getArgumentSignature())
-							.addString("t"+e.getConversion())
-							.addString(formatString)
-							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
-							.addSourceLine(this)
-						);
 				} catch (IllegalFormatConversionException e) {
 				
 					if (e.getConversion() == 'b')
@@ -146,9 +136,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
 								new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN", HIGH_PRIORITY)
 								.addClassAndMethod(this)
 								.addCalledMethod(this)
-								.addType(e.getArgumentSignature())
-								.addString(e.getConversion())
-								.addString(formatString)
+								.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
+								.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+								.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
 								.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 								.addSourceLine(this)
 							);
@@ -157,9 +147,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addType(e.getArgumentSignature())
-							.addString(Character.toString(e.getConversion()))
-							.addString(formatString)
+							.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+							.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
 							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
@@ -167,9 +157,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_BAD_CONVERSION", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addType(e.getArgumentSignature())
-							.addString(e.getConversion())
-							.addString(formatString)
+							.addType(e.getArgumentSignature()).describe(TypeAnnotation.FOUND_ROLE)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+							.addString(e.getFormatSpecifier()).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
 							.addValueSource(arguments[e.getArgIndex()], getMethod(), getPC())
 							.addSourceLine(this)
 						);
@@ -178,7 +168,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_ILLEGAL", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addString(formatString)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addSourceLine(this)
 						);
                 } catch (MissingFormatArgumentException e) {
@@ -188,8 +178,8 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT", HIGH_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addString(formatString)
-							.addString(e.formatSpecifier)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+							.addString(e.formatSpecifier).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
 							.addSourceLine(this)
 						);
                     } else {
@@ -197,9 +187,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
 	                    		new BugInstance(this, "VA_FORMAT_STRING_MISSING_ARGUMENT", HIGH_PRIORITY)
 	                    		.addClassAndMethod(this)
 	                    		.addCalledMethod(this)
-	                    		.addString(formatString)
-	                    		.addString(e.formatSpecifier)
-	                    		.addInt(e.pos+1)
+	                    		.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
+	                    		.addString(e.formatSpecifier).describe(StringAnnotation.FORMAT_SPECIFIER_ROLE)
+	                    		.addInt(e.pos+1).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
 	                    		.addInt(arguments.length).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 	                    		.addSourceLine(this)
 	                    	);
@@ -210,7 +200,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 							new BugInstance(this, "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED", NORMAL_PRIORITY)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
-							.addString(formatString)
+							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
 							.addInt(e.used).describe(IntAnnotation.INT_EXPECTED_ARGUMENTS)
 							.addInt(e.provided).describe(IntAnnotation.INT_ACTUAL_ARGUMENTS)
 							.addSourceLine(this)
