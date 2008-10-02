@@ -125,7 +125,6 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 
 		ObligationFactory factory = database.getFactory();
-		IAnalysisCache analysisCache = Global.getAnalysisCache();
 			
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
 		for(Constant c : jclass.getConstantPool().getConstantPool()) {
