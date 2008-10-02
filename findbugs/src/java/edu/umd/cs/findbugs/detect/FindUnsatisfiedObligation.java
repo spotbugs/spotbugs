@@ -28,6 +28,10 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -54,6 +58,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.obl.Obligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationAcquiredOrReleasedInLoopException;
 import edu.umd.cs.findbugs.ba.obl.ObligationDataflow;
+import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
 import edu.umd.cs.findbugs.ba.obl.State;
 import edu.umd.cs.findbugs.ba.obl.StateSet;
@@ -61,6 +66,7 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.bcel.CFGDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -111,11 +117,35 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 	}
 
 	@Override
-	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
-		if (database == null) {
-			database = Global.getAnalysisCache().getDatabase(ObligationPolicyDatabase.class);
-		}
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
 
+		database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
+		ObligationFactory factory = database.getFactory();
+		
+		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
+		for(Constant c : jclass.getConstantPool().getConstantPool()) {
+			if (c instanceof ConstantNameAndType) {
+				ConstantNameAndType cnt = (ConstantNameAndType) c;
+				String signature = cnt.getSignature(jclass.getConstantPool());
+				if (factory.signatureInvolvesObligations(signature)) {
+					super.visitClass(classDescriptor);
+					return;
+				}
+			} else if (c instanceof ConstantClass) {
+				String className = ((ConstantClass)c).getBytes(jclass.getConstantPool());
+				if (factory.signatureInvolvesObligations(className)) {
+					super.visitClass(classDescriptor);
+					return;
+				}
+			}
+		}
+		if (DEBUG) 
+			System.out.println(classDescriptor + " isn't interesting for obligation analysis");
+	}
+	@Override
+	protected void visitMethodCFG(MethodDescriptor methodDescriptor, CFG cfg) throws CheckedAnalysisException {
+		
 		MethodChecker methodChecker = new MethodChecker(methodDescriptor, cfg);
 		methodChecker.analyzeMethod();
 	}

@@ -19,19 +19,23 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.CheckForNull;
 
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import org.apache.bcel.generic.Type;
 
 /**
  * Factory for Obligation and ObligationSet objects to be
@@ -39,6 +43,8 @@ import org.apache.bcel.generic.Type;
  */
 public class ObligationFactory {
 	private Map<String, Obligation> classNameToObligationMap;
+	
+	private Set<String> slashedClassNames = new HashSet<String>();
 
 //	// XXX: this is just for debugging.
 //	static ObligationFactory lastInstance;
@@ -53,6 +59,12 @@ public class ObligationFactory {
 		return classNameToObligationMap.size();
 	}
 
+	public boolean signatureInvolvesObligations(String sig) {
+		for(String c : slashedClassNames)
+			if (sig.indexOf(c) >= 0) return true;
+		return false;
+	}
+	
 	/**
 	 * Determine whether class named by given ClassDescriptor is
 	 * an Obligation type.
@@ -89,7 +101,7 @@ public class ObligationFactory {
 	 *         or null if there is no such Obligation
 	 * @throws ClassNotFoundException
 	 */
-	public Obligation getObligationByType(ObjectType type)
+	public @CheckForNull Obligation getObligationByType(ObjectType type)
 			throws ClassNotFoundException {
 		for (Iterator<Obligation> i = obligationIterator(); i.hasNext(); ) {
 			Obligation obligation = i.next();
@@ -110,7 +122,7 @@ public class ObligationFactory {
 	 *         or null if there is no such Obligation
 	 * @throws ClassNotFoundException
 	 */
-	public Obligation getObligationByType(ClassDescriptor classDescriptor) {
+	public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
 		try {
 			return getObligationByType(ObjectType.getInstance(classDescriptor.toDottedClassName()));
 		} catch (ClassNotFoundException e) {
@@ -146,6 +158,7 @@ public class ObligationFactory {
 
 	public Obligation addObligation(@DottedClassName String className) {
 		int nextId = classNameToObligationMap.size();
+		slashedClassNames.add(className.replace('.','/'));
 		Obligation obligation = new Obligation(className, nextId);
 		if (classNameToObligationMap.put(className, obligation) != null) {
 			throw new IllegalStateException("Obligation " + className +
@@ -161,13 +174,6 @@ public class ObligationFactory {
 		}
 		return null;
 	}
-
-//	public Obligation getObligation(String className) {
-//		Obligation obligation = classNameToObligationMap.get(className);
-//		if (obligation == null)
-//			throw new IllegalArgumentException("Unknown obligation class " + className);
-//		return obligation;
-//	}
 
 	public ObligationSet createObligationSet() {
 		return new ObligationSet(/*getMaxObligationTypes(), */this);
