@@ -114,15 +114,19 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 
 	public FindUnsatisfiedObligation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		 IAnalysisCache analysisCache = Global.getAnalysisCache();
+			
+		database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
+		
 	}
 
 	@Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 
-		database = analysisCache.getDatabase(ObligationPolicyDatabase.class);
 		ObligationFactory factory = database.getFactory();
-		
+		IAnalysisCache analysisCache = Global.getAnalysisCache();
+			
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
 		for(Constant c : jclass.getConstantPool().getConstantPool()) {
 			if (c instanceof ConstantNameAndType) {
