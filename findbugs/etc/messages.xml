@@ -6502,7 +6502,7 @@ this statement is executed.
 
   <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
     <ShortDescription>Format string references missing argument</ShortDescription>
-    <LongDescription>format string "{3}" needs argument {5} but only {6} are provided {1}</LongDescription>
+    <LongDescription>format string "{3}" needs argument {5} but only {6} are provided in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>

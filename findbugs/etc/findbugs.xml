@@ -1039,7 +1039,7 @@
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="BAD_PRACTICE" />
   <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG" category="CORRECTNESS"/>
   <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION" category="CORRECTNESS"/>
-  <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN" category="CORRECTNESS"/>
+  <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN" category="STYLE"/>
   <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY" category="CORRECTNESS"/>
   <BugPattern abbrev="FS" type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT" category="CORRECTNESS"/>
   <BugPattern abbrev="FS" type="VA_FORMAT_STRING_ARG_MISMATCH" category="CORRECTNESS"/>
