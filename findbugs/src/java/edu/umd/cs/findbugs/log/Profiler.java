@@ -38,6 +38,8 @@ public class Profiler {
 	private static Profiler instance = new Profiler();
 
 	private Profiler() {
+		if (REPORT) 
+			System.err.println("Profiling activated");
 	}
 
 	public static Profiler getInstance() {
@@ -83,12 +85,12 @@ public class Profiler {
 	        stack.peek().accumulateTime(currentNanoTime);
         }
 		stack.push(new Clock(c, currentNanoTime));
-		// System.out.println("push " + c.getSimpleName());
+		// System.err.println("push " + c.getSimpleName());
 
 	}
 
 	public void end(Class<?> c) {
-		// System.out.println("pop " + c.getSimpleName());
+		// System.err.println("pop " + c.getSimpleName());
 		long currentNanoTime = System.nanoTime();
 
 		Stack<Clock> stack = startTimes.get();
@@ -137,6 +139,7 @@ public class Profiler {
 		if (!REPORT) {
 	        return;
         }
+		System.err.println("PROFILE REPORT");
 		try {
 			Comparator<Pair<Class<?>, AtomicLong>> c = new Comparator<Pair<Class<?>, AtomicLong>>() {
 
@@ -155,18 +158,22 @@ public class Profiler {
 			};
 			TreeSet<Pair<Class<?>, AtomicLong>> treeSet = new TreeSet<Pair<Class<?>, AtomicLong>>(c);
 			for (Map.Entry<Class<?>, AtomicLong> e : profile.entrySet()) {
+
 				treeSet.add(new Pair<Class<?>, AtomicLong>(e.getKey(), e.getValue()));
 			}
 			Pair<Class<?>, AtomicLong> prev = null;
 			for (Pair<Class<?>, AtomicLong> e : treeSet) {
-				System.out.printf("%7d  %s\n", e.second.get() / 1000000, e.first.getSimpleName());
+				long time = e.second.get() / 1000000;
+				if (time > 0)
+					System.err.printf("%7d  %s\n",time,  e.first.getSimpleName());
 				if (false && prev != null) {
-	                System.out.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
+	                System.err.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
                 }
 				prev = e;
 			}
+			System.err.flush();
 		} catch (RuntimeException e) {
-			System.out.println(e);
+			System.err.println(e);
 		} finally {
 			profile.clear();
 			startTimes.get().clear();
