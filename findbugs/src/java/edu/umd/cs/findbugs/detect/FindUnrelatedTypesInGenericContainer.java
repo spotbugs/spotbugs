@@ -77,6 +77,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author Nat Ayewah
@@ -283,7 +284,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
 				IncompatibleTypes matchResult = compareTypes(parmType, argType);
 
-				if (matchResult == IncompatibleTypes.SEEMS_OK)
+				boolean selfOperation = operand.equals(argType);
+				if (argType instanceof GenericObjectType) {
+					GenericObjectType p2 = (GenericObjectType) argType;
+					List<? extends ReferenceType> parameters = p2.getParameters();
+					if (parameters != null && parameters.equals(operand.getParameters()))
+						selfOperation = true;
+				}
+				
+				if (!selfOperation && matchResult == IncompatibleTypes.SEEMS_OK)
 					continue;
 
 				// Prepare bug report
@@ -298,8 +307,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 				int priority = matchResult.getPriority();
 				XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+
 				if (TestCaseDetector.likelyTestCase(xmethod))
 					priority = Priorities.LOW_PRIORITY;
+				else if (selfOperation)
+					priority = Priorities.HIGH_PRIORITY;
 				ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(parmType
 				        .getSignature());
 				ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(argType
