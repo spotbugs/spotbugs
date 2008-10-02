@@ -38,6 +38,7 @@
 			<attribute name="javadoc_location" value="http://asm.objectweb.org/current/doc/javadoc/user"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>

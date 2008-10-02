@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -105,6 +106,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 	}
 
+	public String getTextContents() {
+		return StringEscapeUtils.unescapeXml(textBuffer.toString());
+	}
+	
 	private static boolean DEBUG = false;
 	@Override
 	public void startElement(String uri, String name, String qName, Attributes attributes)
@@ -417,7 +422,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	}
 	    } else if (qName.equals("String")) {
 	    		String value = getRequiredAttribute(attributes, "value", qName);
-	    		bugAnnotation = StringAnnotation.fromQuotedString(value);
+	    		bugAnnotation = StringAnnotation.fromXMLEscapedString(value);
 	    } else if (qName.equals("LocalVariable")) {
 	    	try {
 	    		String varName = getRequiredAttribute(attributes, "name", qName);
@@ -546,20 +551,20 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						bugCollection.getProjectStats().addBug(bugInstance);
 				}
 			} else if (outerElement.equals(PROJECT)) {
-				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
+				//System.out.println("Adding project element " + qName + ": " + getTextContents());
 				if (qName.equals("Jar"))
-					project.addFile(textBuffer.toString());
+					project.addFile(getTextContents());
 				else if (qName.equals("SrcDir"))
-					project.addSourceDir(textBuffer.toString());
+					project.addSourceDir(getTextContents());
 				else if (qName.equals("AuxClasspathEntry"))
-					project.addAuxClasspathEntry(textBuffer.toString());
+					project.addAuxClasspathEntry(getTextContents());
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
-					bugInstance.setAnnotationText(textBuffer.toString());
+					bugInstance.setAnnotationText(getTextContents());
 				}
 			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {
-					analysisError.setMessage(textBuffer.toString());
+					analysisError.setMessage(getTextContents());
 					bugCollection.addError(analysisError);
 				} else if (qName.equals(BugCollection.ERROR_ELEMENT_NAME)) {
 					if (stackTrace.size() > 0) {
@@ -567,16 +572,16 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					}
 					bugCollection.addError(analysisError);
 				} else if (qName.equals(BugCollection.MISSING_CLASS_ELEMENT_NAME)) {
-					bugCollection.addMissingClass(textBuffer.toString());
+					bugCollection.addMissingClass(getTextContents());
 				}
 
 			} else if (outerElement.equals(BugCollection.ERROR_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ERROR_MESSAGE_ELEMENT_NAME)) {
-					analysisError.setMessage(textBuffer.toString());
+					analysisError.setMessage(getTextContents());
 				} else if (qName.equals(BugCollection.ERROR_EXCEPTION_ELEMENT_NAME)) {
-					analysisError.setExceptionMessage(textBuffer.toString());
+					analysisError.setExceptionMessage(getTextContents());
 				} else if (qName.equals(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME)) {
-					stackTrace.add(textBuffer.toString());
+					stackTrace.add(getTextContents());
 				}
 			} else if (outerElement.equals("ClassFeatures")) {
 				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
@@ -599,7 +604,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String value = attributes.getValue(attrName);
 		if (value == null)
 			throw new SAXException(elementName + " element missing " + attrName + " attribute");
-		return value;
+		return StringEscapeUtils.unescapeXml(value);
 	}
 
 

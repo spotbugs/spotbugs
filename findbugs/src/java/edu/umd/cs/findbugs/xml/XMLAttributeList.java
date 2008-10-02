@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -48,41 +50,6 @@ public class XMLAttributeList {
 		public String getValue() {
 			return value;
 		}
-	}
-
-	private static class StringBufferQuoteMetaCharacters extends QuoteMetaCharacters {
-		private StringBuilder buf;
-
-		public StringBufferQuoteMetaCharacters(String text, MetaCharacterMap map,
-			StringBuilder buf) {
-			super(text, map);
-			this.buf = buf;
-		}
-
-		@Override
-		public void process() {
-			try {
-				super.process();
-			} catch (java.io.IOException e) {
-				// This can't actually happen - we're writing to a StringBuilder
-			}
-		}
-
-		@Override
-		public void emitLiteral(String s) {
-			buf.append(s);
-		}
-	}
-
-	// The "<", ">", and "&" must be escaped in
-	// attribute values.  I have no idea why this is useful,
-	// but that's standards for you.
-	private static final MetaCharacterMap attrMetaCharacterMap = new MetaCharacterMap();
-	static {
-		attrMetaCharacterMap.addMeta('<', "&lt;");
-		attrMetaCharacterMap.addMeta('>', "&gt;");
-		attrMetaCharacterMap.addMeta('&', "&amp;");
-		attrMetaCharacterMap.addMeta('"', "&quot;");
 	}
 
 	// Fields
@@ -135,7 +102,9 @@ public class XMLAttributeList {
 			buf.append(' ');
 			buf.append(pair.getName());
 			buf.append('=');
+			buf.append('"');
 			buf.append(getQuotedAttributeValue(pair.getValue()));
+			buf.append('"');
 		}
 		return buf.toString();
 	}
@@ -153,12 +122,7 @@ public class XMLAttributeList {
 	 * @return a properly quoted representation of the value
 	 */
 	public static String getQuotedAttributeValue(@NonNull String rawValue) {
-		if (rawValue == null) throw new NullPointerException("rawValue must be nonnull");
-		StringBuilder buf = new StringBuilder();
-		buf.append('"');
-		new StringBufferQuoteMetaCharacters(rawValue, attrMetaCharacterMap, buf).process();
-		buf.append('"');
-		return buf.toString();
+		return StringEscapeUtils.escapeXml(rawValue);
 	}
 }
 

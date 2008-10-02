@@ -27,6 +27,8 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import javax.annotation.WillCloseWhenClosed;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * Write XML to an output stream.
  * 
@@ -39,24 +41,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
 	}
 
-	private static final MetaCharacterMap textMetaCharacterMap = new MetaCharacterMap();
-	static {
-		textMetaCharacterMap.addMeta('<', "&lt;");
-		textMetaCharacterMap.addMeta('>', "&gt;");
-		textMetaCharacterMap.addMeta('&', "&amp;");
-	}
 
-	private class WriterQuoteMetaCharacters extends QuoteMetaCharacters {
-		public WriterQuoteMetaCharacters(String text) {
-			super(text, textMetaCharacterMap);
-		}
-
-		@Override
-				 public void emitLiteral(String s) throws IOException {
-			out.write(s);
-			newLine = s.endsWith("\n");
-		}
-	}
 
 	private Writer out;
 	private int nestingLevel;
@@ -116,7 +101,9 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		out.write(' ');
 		out.write(name);
 		out.write('=');
+		out.write('"');
 		out.write(XMLAttributeList.getQuotedAttributeValue(value));
+		out.write('"');
 	}
 
 	public void stopTag(boolean close) throws IOException {
@@ -154,12 +141,13 @@ public class OutputStreamXMLOutput implements XMLOutput {
 	}
 
 	public void writeText(String text) throws IOException {
-		new WriterQuoteMetaCharacters(text).process();
+		out.write(StringEscapeUtils.escapeXml(text));
 	}
 
 	public void writeCDATA(String cdata) throws IOException {
 		// FIXME: We just trust fate that the characters being written
 		// don't contain the string "]]>"
+		assert(cdata.indexOf("]]") == -1);
 		out.write("<![CDATA[");
 		out.write(cdata);
 		out.write("]]>");

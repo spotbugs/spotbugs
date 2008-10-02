@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -52,17 +54,12 @@ public class StringAnnotation implements BugAnnotation {
 	 * @param value the String value
 	 */
 	public StringAnnotation(String value) {
-		this.value = quoteCharacters(value);
-		this.description = DEFAULT_ROLE;
-	}
-	private StringAnnotation(String value, QuotedStringMarker marker) {
 		this.value = value;
 		this.description = DEFAULT_ROLE;
 	}
 
-
-	public static StringAnnotation fromQuotedString(String value) {
-		return new StringAnnotation(value, (QuotedStringMarker) null);
+	public static StringAnnotation fromXMLEscapedString(String value) {
+		return new StringAnnotation(StringEscapeUtils.unescapeXml(value));
 		
 	}
 	@Override
@@ -73,41 +70,6 @@ public class StringAnnotation implements BugAnnotation {
 			throw new AssertionError(e);
 		}
 	}
-
-
-	 private static String quoteCharacters(String s) {
-			StringBuilder result = null;
-			for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
-				char c = s.charAt(i);
-				String replacement = null;
-
-				if (c == '&') {
-					replacement = "&amp;";
-				} else if (c == '<') {
-					replacement = "&lt;";
-				} else if (c == '\r') {
-					replacement = "&#13;";
-				} else if (c == '>') {
-					replacement = "&gt;";
-				} else if (c == '"') {
-					replacement = "&quot;";
-				} else if (c == '\'') {
-					replacement = "&apos;";
-				}
-
-				if (replacement != null) {
-					if (result == null) {
-						result = new StringBuilder(s);
-					}
-					result.replace(i + delta, i + delta + 1, replacement);
-					delta += (replacement.length() - 1);
-				}
-			}
-			if (result == null) {
-				return s;
-			}
-			return result.toString();
-		}
 
 
 	/**
