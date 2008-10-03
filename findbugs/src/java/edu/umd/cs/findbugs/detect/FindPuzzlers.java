@@ -373,6 +373,12 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				int reg = item.getRegisterNumber();
 				Collection<BugAnnotation> as = new ArrayList<BugAnnotation>();
 				XField field = item.getXField();
+				FieldAnnotation fieldAnnotation = null;
+				if (field != null) {
+					fieldAnnotation = FieldAnnotation.fromXField(field);
+					fieldAnnotation.setDescription(FieldAnnotation.LOADED_FROM_ROLE);
+				}
+					
 					
 				if(reg != -1) {
 					LocalVariableAnnotation lva =
@@ -380,15 +386,15 @@ public class FindPuzzlers extends OpcodeStackDetector {
 							getMethod(), reg, getPC(), getPC()-1);
 					if (lva.isNamed()) {
 						as.add(lva);
-						if (field != null)
-							as.add(FieldAnnotation.fromXField(field));
+						if (fieldAnnotation != null)
+							as.add(fieldAnnotation);
 					} else {
-						if (field != null) 
-							as.add(FieldAnnotation.fromXField(field));
+						if (fieldAnnotation != null) 
+							as.add(fieldAnnotation);
 						as.add(lva);
 					}
-				} else if (field != null)
-						as.add(FieldAnnotation.fromXField(field));
+				} else if (fieldAnnotation != null)
+						as.add(fieldAnnotation);
 				else {
 					XMethod m = item.getReturnValueOf();
 					if (m != null) {
