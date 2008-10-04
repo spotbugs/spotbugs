@@ -433,6 +433,15 @@ public class Naming extends PreorderVisitor implements Detector {
 					priority--;
 				else if (!obj.isPublic() && getThisClass().isPublic())
 					priority--;
+				boolean instanceMembers = false;
+				for(Method m : this.getThisClass().getMethods())
+					if (!m.isStatic() && m != obj)
+						instanceMembers = true;
+				for(Field f : this.getThisClass().getFields())
+					if (!f.isStatic())
+						instanceMembers = true;
+				if (!instanceMembers)
+					priority+=2;
 				if (realVoidConstructor == null)
 					priority++;
 
