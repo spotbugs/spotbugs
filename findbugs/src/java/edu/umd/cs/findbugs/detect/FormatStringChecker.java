@@ -196,8 +196,11 @@ public class FormatStringChecker extends OpcodeStackDetector {
                     }
 
                 } catch (ExtraFormatArgumentsException e) {
+                	int priority = NORMAL_PRIORITY;
+                	if (e.used == 0 && formatString.indexOf("{0") >= 0)
+                		priority = HIGH_PRIORITY;
                 	bugReporter.reportBug(
-							new BugInstance(this, "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED", NORMAL_PRIORITY)
+							new BugInstance(this, "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED", priority)
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addString(formatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
