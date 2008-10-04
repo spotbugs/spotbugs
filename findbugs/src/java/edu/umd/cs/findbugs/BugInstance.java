@@ -1785,7 +1785,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		} else {
 			XField xField = item.getXField();
 			if (xField != null)
-				addField(xField);
+				addField(xField).describe(FieldAnnotation.LOADED_FROM_ROLE);
 			else {
 				XMethod xMethod = item.getReturnValueOf();
 				if (xMethod != null)

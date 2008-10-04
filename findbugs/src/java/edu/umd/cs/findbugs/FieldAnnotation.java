@@ -55,7 +55,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public static final String DEFAULT_ROLE = "FIELD_DEFAULT";
 
 	public static final String DID_YOU_MEAN_ROLE = "FIELD_DID_YOU_MEAN";
-
+	public static final String LOADED_FROM_ROLE = "FIELD_LOADED_FROM";
+	public static final String STORED_ROLE = "FIELD_STORED";
 	private String fieldName;
 	private String fieldSig;
 	private boolean isStatic;
