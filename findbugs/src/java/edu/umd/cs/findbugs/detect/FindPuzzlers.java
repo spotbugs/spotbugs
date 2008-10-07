@@ -54,8 +54,8 @@ import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindPuzzlers extends OpcodeStackDetector {
 
-	static FieldDescriptor SYSTEM_OUT =  new FieldDescriptor("java/lang/System", "out", "Ljava/io/OutputStream;", true);
-	static FieldDescriptor SYSTEM_ERR =  new FieldDescriptor("java/lang/System", "err", "Ljava/io/OutputStream;", true);
+	static FieldDescriptor SYSTEM_OUT =  new FieldDescriptor("java/lang/System", "out", "Ljava/io/PrintStream;", true);
+	static FieldDescriptor SYSTEM_ERR =  new FieldDescriptor("java/lang/System", "err", "Ljava/io/PrintStream;", true);
 	
 	final BugReporter bugReporter;
 	final BugAccumulator bugAccumulator;
@@ -368,6 +368,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						&& getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuilder;") && getClassConstantOperand().equals("java/lang/StringBuilder")
 						|| getNameConstantOperand().equals("append")
 						&& getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuffer;") && getClassConstantOperand().equals("java/lang/StringBuffer")
+						|| (getNameConstantOperand().equals("print") || getNameConstantOperand().equals("println"))
+						 	&& getSigConstantOperand().equals("(Ljava/lang/Object;)V")
 				)
 		) {
 				OpcodeStack.Item item = stack.getStackItem(0);
