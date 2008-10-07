@@ -379,7 +379,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 				
 				if (!debuggingContext) {
 					for(CodeException e : getCode().getExceptionTable()) {
-						if (e.getHandlerPC()<= getPC() && e.getHandlerPC() + 20 >= getPC())
+						if (e.getHandlerPC()<= getPC() && e.getHandlerPC() +30 >= getPC())
 							debuggingContext = true;
 					}
 						
