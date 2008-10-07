@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.JavaClass;
@@ -47,12 +48,15 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindPuzzlers extends OpcodeStackDetector {
 
-	private static final boolean VAMISMATCH_DEBUG = SystemProperties.getBoolean("vamismatch.debug");
-
+	static FieldDescriptor SYSTEM_OUT =  new FieldDescriptor("java/lang/System", "out", "Ljava/io/OutputStream;", true);
+	static FieldDescriptor SYSTEM_ERR =  new FieldDescriptor("java/lang/System", "err", "Ljava/io/OutputStream;", true);
+	
 	final BugReporter bugReporter;
 	final BugAccumulator bugAccumulator;
 	public FindPuzzlers(BugReporter bugReporter) {
@@ -366,9 +370,28 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						&& getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuffer;") && getClassConstantOperand().equals("java/lang/StringBuffer")
 				)
 		) {
-			OpcodeStack.Item item = stack.getStackItem(0);
+				OpcodeStack.Item item = stack.getStackItem(0);
 			String signature = item.getSignature();
 			if (signature != null && signature.startsWith("[")) {
+				boolean debuggingContext = signature.equals("[Ljava/lang/StackTraceElement;");
+				
+				if (!debuggingContext) {
+					for(CodeException e : getCode().getExceptionTable()) {
+						if (e.getHandlerPC()<= getPC() && e.getHandlerPC() + 20 >= getPC())
+							debuggingContext = true;
+					}
+						
+
+					for(int i = 1; !debuggingContext &&  i < stack.getStackDepth(); i++) {
+					OpcodeStack.Item e = stack.getStackItem(i);
+					
+					if (e.getSignature().indexOf("Logger") >= 0 || e.getSignature().indexOf("Exception") >= 0) debuggingContext = true;
+					
+					XField f = e.getXField();
+					if (f != null && (SYSTEM_ERR.equals(f.getFieldDescriptor()) || SYSTEM_OUT.equals(f.getFieldDescriptor())))
+							debuggingContext = true;
+					}
+				}
 				String name = null;
 				int reg = item.getRegisterNumber();
 				Collection<BugAnnotation> as = new ArrayList<BugAnnotation>();
@@ -403,14 +426,15 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						as.add(methodAnnotation);
 					}
 				}
+				int priority = debuggingContext ? NORMAL_PRIORITY : HIGH_PRIORITY;
 				if(!as.isEmpty()) {
 					bugAccumulator.accumulateBug(
-							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
+							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", priority)
 					.addClassAndMethod(this)
 					.addAnnotations(as), this);
 				} else {
 					bugAccumulator.accumulateBug(
-							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY", NORMAL_PRIORITY)
+							new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY", priority)
 					.addClassAndMethod(this), this);
 				}
 			}
