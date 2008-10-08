@@ -64,6 +64,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private int totalSize;
 	private Date timestamp;
 	private Footprint baseFootprint;
+	private String java_vm_version = SystemProperties.getProperty("java.vm.version");
 
 	@Override
 	public String toString() {
@@ -118,6 +119,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.timestamp = new Date(timestamp);
 	}
 
+	public void setVMVersion(String vm_version) {
+		this.java_vm_version = vm_version;
+	}
 	/**
 	 * Get the number of classes analyzed.
 	 */
@@ -236,6 +240,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
 		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
 
+		if (java_vm_version != null)
+			xmlOutput.addAttribute("vm_version", java_vm_version);
 		Footprint delta = new Footprint(baseFootprint);
 		NumberFormat twoPlaces = NumberFormat.getInstance(Locale.ENGLISH);
 		twoPlaces.setMinimumFractionDigits(2);

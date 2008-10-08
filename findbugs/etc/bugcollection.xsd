@@ -234,6 +234,7 @@
 						<xs:attribute name="total_bugs" type="xs:unsignedInt" use="required" />
 						<xs:attribute name="total_size" type="xs:unsignedInt" use="required" />
 						<xs:attribute name="num_packages" type="xs:unsignedInt" use="required" />
+						<xs:attribute name="vm_version" type="xs:string" use="optional" />
 						<xs:attribute name="cpu_seconds" type="xs:float" use="optional" /> <!-- could move to xs:duration -->
 						<xs:attribute name="clock_seconds" type="xs:float" use="optional" />
 						<xs:attribute name="peak_mbytes" type="xs:float" use="optional" />
