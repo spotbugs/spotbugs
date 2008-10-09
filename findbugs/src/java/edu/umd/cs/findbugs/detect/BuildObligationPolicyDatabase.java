@@ -174,9 +174,10 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 						// We'll create a "weak" database entry deleting the
 						// obligation.  If strict checking is performed,
 						// weak entries are ignored.
-						addParameterDeletesObligationDatabaseEntry(
-							xmethod, paramObligationTypes[i], ObligationPolicyDatabaseEntryType.WEAK);
 						*/
+						if (false) 
+							addParameterDeletesObligationDatabaseEntry(
+							xmethod, paramObligationTypes[i], ObligationPolicyDatabaseEntryType.WEAK);
 					}
 				}
 
