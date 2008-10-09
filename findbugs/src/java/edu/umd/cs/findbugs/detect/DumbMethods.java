@@ -73,6 +73,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 	private boolean isEqualsObject;
 	private boolean sawInstanceofCheck;
 	private boolean reportedBadCastInEquals;
+	private int sawCheckForNonNegativeSignedByte;
 
 	private int sinceBufferedInputStreamReady;
 	private int randomNextIntState;
@@ -137,6 +138,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 		reportedBadCastInEquals = false;
 		freshRandomOnTos = false;
 		sinceBufferedInputStreamReady = 100000;
+		sawCheckForNonNegativeSignedByte = -1000;
 
 	}
 
@@ -160,6 +162,9 @@ public class DumbMethods extends OpcodeStackDetector  {
 	public void sawOpcode(int seen) {
 
 		// System.out.printf("%4d %10s: %s\n", getPC(), OPCODE_NAMES[seen], stack);
+		if (seen == IFLT && stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
+			sawCheckForNonNegativeSignedByte = getPC();
+		}
 		if (pendingAbsoluteValueBug != null) {
 			if (opcodesSincePendingAbsoluteValueBug == 0) {
 				opcodesSincePendingAbsoluteValueBug++;
@@ -457,6 +462,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 							priority = NORMAL_PRIORITY;
 						}
 
+						if (getPC() - sawCheckForNonNegativeSignedByte < 10) priority++;
 
 						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
 									.addClassAndMethod(this)
