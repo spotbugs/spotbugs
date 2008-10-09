@@ -658,6 +658,16 @@ public class OpcodeStack implements Constants2
         public boolean isNewlyAllocated() {
         	return specialKind == NEWLY_ALLOCATED;
         }
+
+		/**
+         * @param i
+         * @return
+         */
+        public boolean hasConstantValue(int value) {
+	        if (constValue instanceof Number)
+	        	return ((Number) constValue).intValue() == value;
+	        return false;
+        }
 	}
 
 	@Override

@@ -115,6 +115,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 		 public void visit(Method method) {
 		String cName = getDottedClassName();
 
+		// System.out.println(getFullyQualifiedMethodName());
 		isPublicStaticVoidMain = method.isPublic() && method.isStatic()
 				&& getMethodName().equals("main")
 				|| cName.toLowerCase().indexOf("benchmark") >= 0;
@@ -158,6 +159,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 	@Override
 	public void sawOpcode(int seen) {
 
+		// System.out.printf("%4d %10s: %s\n", getPC(), OPCODE_NAMES[seen], stack);
 		if (pendingAbsoluteValueBug != null) {
 			if (opcodesSincePendingAbsoluteValueBug == 0) {
 				opcodesSincePendingAbsoluteValueBug++;
@@ -476,20 +478,21 @@ public class DumbMethods extends OpcodeStackDetector  {
 			}
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
-			  accumulator.accumulateBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE",
-					prevOpcode == LOR ? HIGH_PRIORITY : NORMAL_PRIORITY)
+			String pattern = (prevOpcode == LOR || prevOpcode == IOR) ? "BIT_IOR_OF_SIGNED_BYTE" : "BIT_ADD_OF_SIGNED_BYTE";
+			int priority = (prevOpcode == LOR || prevOpcode == LADD) ? HIGH_PRIORITY : NORMAL_PRIORITY;
+			  accumulator.accumulateBug(new BugInstance(this, pattern , priority)
 						.addClassAndMethod(this), this);
 
 			  checkForBitIorofSignedByte = false;
-		} else if ((seen == IOR || seen == LOR) && stack.getStackDepth() >= 2) {
+		} else if ((seen == IOR || seen == LOR || seen == IADD || seen == LADD) && stack.getStackDepth() >= 2) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 
 			int special0 = item0.getSpecialKind();
 			int special1 = item1.getSpecialKind();
 			if  (special0 == OpcodeStack.Item.SIGNED_BYTE
-					&& special1 == OpcodeStack.Item.LOW_8_BITS_CLEAR
-					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.SIGNED_BYTE ) {
+					&& special1 == OpcodeStack.Item.LOW_8_BITS_CLEAR  && !item1.hasConstantValue(256) 
+					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && !item0.hasConstantValue(256) && special1 == OpcodeStack.Item.SIGNED_BYTE ) {
 				checkForBitIorofSignedByte = true;
 			} else {
 				checkForBitIorofSignedByte = false;
