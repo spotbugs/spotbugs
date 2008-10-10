@@ -309,7 +309,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 
 				if (TestCaseDetector.likelyTestCase(xmethod))
-					priority = Priorities.LOW_PRIORITY;
+					priority = Math.max(priority,Priorities.NORMAL_PRIORITY);
 				else if (selfOperation)
 					priority = Priorities.HIGH_PRIORITY;
 				ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassOrObjectDescriptorFromSignature(parmType
