@@ -1177,5 +1177,6 @@
   <BugPattern abbrev="TQ" type="TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
-  <BugPattern abbrev="OBL" type="OBL_UNSATISFIED_OBLIGATION" category="STYLE"/>
+  <BugPattern abbrev="OBL" type="OBL_UNSATISFIED_OBLIGATION" category="EXPERIMENTAL" 
+    experimental="true"/>
 </FindbugsPlugin>

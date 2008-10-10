@@ -90,6 +90,13 @@ This plugin contains all of the standard FindBugs detectors.
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
+  <BugCategory category="EXPERIMENTAL">
+    <Description>Experimental</Description>
+    <Abbreviation>X</Abbreviation>
+    <Details>Experimental and not fully vetted bug patterns</Details>
+    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
+  </BugCategory>
+
 
   <!--
   **********************************************************************
