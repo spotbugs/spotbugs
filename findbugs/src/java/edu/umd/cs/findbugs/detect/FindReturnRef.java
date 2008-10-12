@@ -29,21 +29,21 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class FindReturnRef extends BytecodeScanningDetector {
+public class FindReturnRef extends OpcodeStackDetector {
 	boolean check = false;
 	boolean thisOnTOS = false;
 	boolean fieldOnTOS = false;
 	boolean publicClass = false;
 	boolean staticMethod = false;
-	boolean dangerousToStoreIntoField = false;
 	String nameOnStack;
 	String classNameOnStack;
 	String sigOnStack;
 	int parameterCount;
 	int r;
-	int timesRead [] = new int[256];
 	boolean fieldIsStatic;
 	private BugAccumulator bugAccumulator;
 	
@@ -67,20 +67,12 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		 public void visit(Method obj) {
 		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
 		if (!check) return;
-		dangerousToStoreIntoField = false;
 		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		//variableNames = obj.getLocalVariableTable();
 		parameterCount = getNumberMethodArguments();
-		/*
-		System.out.println(betterMethodName);
-		for(int i = 0; i < parameterCount; i++)
-			System.out.println("parameter " + i + ": " + obj.getArgumentTypes()[i]);
-		*/
-
+		
 		if (!staticMethod) parameterCount++;
 
-		for (int i = 0; i < parameterCount; i++)
-			timesRead[i] = 0;
 		thisOnTOS = false;
 		fieldOnTOS = false;
 		super.visit(obj);
@@ -99,77 +91,28 @@ public class FindReturnRef extends BytecodeScanningDetector {
 				
 		if (!check) return;
 		
-		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
+		if (staticMethod && seen == PUTSTATIC
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			if (top.isInitialParameter())
 			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
-					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1)),
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(), getPC(), getPC()-1)),
 					this);
 		}
-		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
+		if (!staticMethod && seen == PUTFIELD
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			OpcodeStack.Item target = stack.getStackItem(1);
+			if (top.isInitialParameter() && target.getRegisterNumber() == 0)
 			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
-					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),r,getPC(),getPC()-1)),
+					.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(),top.getRegisterNumber(),getPC(),getPC()-1)),
 					this);
 		}
-		dangerousToStoreIntoField = false;
-		int reg = -1; // this value should never be seen
-		checkStore: {
-			switch (seen) {
-			case ALOAD_0:
-				reg = 0;
-				break;
-			case ALOAD_1:
-				reg = 1;
-				break;
-			case ALOAD_2:
-				reg = 2;
-				break;
-			case ALOAD_3:
-				reg = 3;
-				break;
-			case ALOAD:
-				reg = getRegisterOperand();
-				break;
-			default:
-				break checkStore;
-			}
-			if (reg < parameterCount)
-				timesRead[reg]++;
-		}
-		if (thisOnTOS && !staticMethod) {
-			switch (seen) {
-			case ALOAD_1:
-			case ALOAD_2:
-			case ALOAD_3:
-			case ALOAD:
-				if (reg < parameterCount) {
-					r = reg;
-					dangerousToStoreIntoField = true;
-					// System.out.println("Found dangerous value from parameter " + reg);
-				}
-				break;
-			default:
-			}
-		} else if (staticMethod) {
-			switch (seen) {
-			case ALOAD_0:
-			case ALOAD_1:
-			case ALOAD_2:
-			case ALOAD_3:
-			case ALOAD:
-				if (reg < parameterCount) {
-					//r = reg;
-					dangerousToStoreIntoField = true;
-				}
-				break;
-			default:
-			}
-		}
-
+		
 		if (seen == ALOAD_0 && !staticMethod) {
 			thisOnTOS = true;
 			fieldOnTOS = false;
