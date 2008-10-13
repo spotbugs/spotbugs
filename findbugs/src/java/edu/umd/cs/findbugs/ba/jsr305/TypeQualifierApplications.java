@@ -501,7 +501,8 @@ public class TypeQualifierApplications {
 			tqa = getDirectTypeQualifierAnnotation(o, typeQualifierValue);
 
 			// If it's an instance method, check for an inherited annotation
-			if (tqa == null && (o instanceof XMethod) && !((XMethod) o).isStatic()) {
+			if (tqa == null && (o instanceof XMethod) && !((XMethod) o).isStatic() 
+					&& !((XMethod) o).isPrivate() && !((XMethod) o).getName().equals("<init>") ) {
 				tqa = getInheritedTypeQualifierAnnotation((XMethod) o, typeQualifierValue);
 			}
 
@@ -688,7 +689,7 @@ public class TypeQualifierApplications {
 			}
 
 			// If it's an instance method, check for inherited annotation
-			if (tqa == null && !xmethod.isStatic()) {
+			if (tqa == null && !xmethod.isStatic() 	&& !xmethod.isPrivate() && !xmethod.getName().equals("<init>")) {
 				if (DEBUG) {
 					System.out.print("  (2) Checking inherited...");
 				}
