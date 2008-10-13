@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="asm-tree-3.1.jar"/>
 	<classpathentry kind="lib" path="dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="jaxen-1.1.1.jar"/>
+	<classpathentry kind="lib" path="jFormatString.jar"/>
 	<classpathentry kind="output" path="bin_eclipse"/>
 </classpath>
