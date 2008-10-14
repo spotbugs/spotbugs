@@ -597,6 +597,11 @@ public class OpcodeStack implements Constants2
 
 		}
 
+		public boolean checkForIntegerMinValue() {
+			return !isNonNegative() && (getSpecialKind() == Item.RANDOM_INT 
+					|| getSpecialKind() == Item.HASHCODE_INT 
+					);
+		}
 		/**
 		 * @param isInitialParameter The isInitialParameter to set.
 		 */
@@ -1041,7 +1046,15 @@ public class OpcodeStack implements Constants2
 
 				 {
 					seenTransferOfControl = true;
-					 pop(2);
+					Item right = pop();
+					Item left = pop();
+					if (right.hasConstantValue(Integer.MIN_VALUE) && left.checkForIntegerMinValue() 
+							|| left.hasConstantValue(Integer.MIN_VALUE) && right.checkForIntegerMinValue() ) {
+						for(Item i : stack) if (i.checkForIntegerMinValue()) 
+							i.setSpecialKind(Item.NOT_SPECIAL);
+						for(Item i : lvValues) if (i.checkForIntegerMinValue()) 
+							i.setSpecialKind(Item.NOT_SPECIAL);
+					 }  
 					 int branchTarget = dbc.getBranchTarget();
 					 addJumpValue(dbc.getPC(), branchTarget);
 					break;
