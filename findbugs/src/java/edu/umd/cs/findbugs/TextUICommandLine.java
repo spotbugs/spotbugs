@@ -380,13 +380,19 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 				String adjustmentTarget = token.substring(0, eq);
 				String adjustment = token.substring(eq + 1);
-				if (!(adjustment.equals("raise") || adjustment.equals("lower")))
+				
+				int adjustmentAmount;
+				if (adjustment.equals("raise"))
+					adjustmentAmount = -1;
+				else if (adjustment.equals("lower"))
+					adjustmentAmount = +1;
+				else if (adjustment.equals("suppress"))
+					adjustmentAmount = +100;
+				else 
 					throw new IllegalArgumentException("Illegal priority adjustment value: " +
 							adjustment);
 
-				// Recall that lower values are higher priorities
-				int adjustmentAmount = adjustment.equals("raise") ? -1 : +1;
-
+				
 				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
 				if (factory != null) 
 					factory.setPriorityAdjustment(adjustmentAmount);
