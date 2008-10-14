@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
@@ -88,7 +89,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		return result;
 	}
 
-	static private boolean skip(Method obj) {
+	 private boolean skip(Method obj) {
 		if (obj.isSynthetic())
 			return true;
 		if (obj.isPrivate())
@@ -109,6 +110,10 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			return true;
 		if (methodName.length() < 2 || methodName.indexOf('$') >= 0)
 			return true;
+		XMethod m = getXMethod();
+		for(ClassDescriptor c : m.getAnnotationDescriptors()) 
+			if (c.getClassName().indexOf("inject") >= 0)
+				return true;
 		return false;
 	}
 	@Override
