@@ -54,26 +54,27 @@ public class InstructionActionCache {
 		Collection<ObligationPolicyDatabaseAction> actionList = actionCache.get(handle);
 		if (actionList == null) {
 			Instruction ins = handle.getInstruction();
-
-			if (!(ins instanceof InvokeInstruction)) {
-				actionList = Collections.emptyList();
-			} else {
+			actionList = Collections.emptyList();
+			if (ins instanceof InvokeInstruction) {
 
 				InvokeInstruction inv = (InvokeInstruction) ins;
-
-				ReferenceType receiverType = inv.getReferenceType(cpg);
-				String methodName = inv.getName(cpg);
 				String signature = inv.getSignature(cpg);
-				boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+				if (signature.indexOf(';') >=  -1) {
+					ReferenceType receiverType = inv.getReferenceType(cpg);
+					String methodName = inv.getName(cpg);
 
-				actionList = new LinkedList<ObligationPolicyDatabaseAction>();
-				database.getActions(receiverType, methodName, signature, isStatic, actionList);
-				if (actionList.isEmpty()) {
-					actionList = Collections.emptyList();
-				}
-		
-				if (DEBUG_LOOKUP && !actionList.isEmpty()) {
-					System.out.println("  At " + handle +": " + actionList);
+					boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+
+
+					actionList = new LinkedList<ObligationPolicyDatabaseAction>();
+					database.getActions(receiverType, methodName, signature, isStatic, actionList);
+					if (actionList.isEmpty()) {
+						actionList = Collections.emptyList();
+					}
+
+					if (DEBUG_LOOKUP && !actionList.isEmpty()) {
+						System.out.println("  At " + handle +": " + actionList);
+					}
 				}
 			}
 			

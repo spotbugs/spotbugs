@@ -101,10 +101,11 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 			String signature,
 			boolean isStatic,
 			Collection<ObligationPolicyDatabaseAction> actionList) {
-		if (this.receiverType.matches(receiverType)
-			&& this.methodName.matches(methodName)
+		if (this.methodName.matches(methodName)
 			&& this.signature.matches(signature)
-			&& this.isStatic == isStatic) {
+			&& this.isStatic == isStatic 
+			&& this.receiverType.matches(receiverType)
+			) {
 			actionList.add(new ObligationPolicyDatabaseAction(action, obligation));
 			return true;
 		}

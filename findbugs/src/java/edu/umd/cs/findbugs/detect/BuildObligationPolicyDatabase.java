@@ -135,7 +135,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 				methodHasCloseInName = splitter.split().contains("close");
 			}
 
-			for (int i = 0; i < xmethod.getNumParams(); i++) {
+			for (int i = 0; i < xmethod.getNumParams(); i++) if (paramObligationTypes[i] != null) {
 				if (xmethod.getParameterAnnotation(i, willCloseWhenClosed) != null) {
 					//
 					// Calling this method deletes a parameter obligation and
@@ -175,7 +175,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 						// obligation.  If strict checking is performed,
 						// weak entries are ignored.
 						*/
-						if (false) 
+						if (xmethod.getName().equals("<init>") || xmethod.getName().toLowerCase().indexOf("close") >= 0
+								|| xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) 
 							addParameterDeletesObligationDatabaseEntry(
 							xmethod, paramObligationTypes[i], ObligationPolicyDatabaseEntryType.WEAK);
 					}

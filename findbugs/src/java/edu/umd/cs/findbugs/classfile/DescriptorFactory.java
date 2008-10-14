@@ -53,11 +53,13 @@ public class DescriptorFactory {
 	};
 
 	private Map<String, ClassDescriptor> classDescriptorMap;
+	private Map<String, ClassDescriptor> dottedClassDescriptorMap;
 	private Map<MethodDescriptor, MethodDescriptor> methodDescriptorMap;
 	private Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
 
 	private DescriptorFactory() {
 		this.classDescriptorMap = new HashMap<String, ClassDescriptor>();
+		this.dottedClassDescriptorMap = new HashMap<String, ClassDescriptor>();
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
 		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
@@ -90,8 +92,10 @@ public class DescriptorFactory {
 	}
 
 	public void purge(Collection<ClassDescriptor> unusable) {
-		for(ClassDescriptor c : unusable)
+		for(ClassDescriptor c : unusable) {
 		 classDescriptorMap.remove(c.getClassName());
+		 dottedClassDescriptorMap.remove(c.getClassName().replace('/','.'));
+		}
 	}
 	/**
 	 * Get a ClassDescriptor for a class name in VM (slashed) format.
@@ -117,7 +121,12 @@ public class DescriptorFactory {
 	 * @return ClassDescriptor for that class
 	 */
 	public ClassDescriptor getClassDescriptorForDottedClassName(@DottedClassName String dottedClassName) {
-		return getClassDescriptor(dottedClassName.replace('.', '/'));
+		ClassDescriptor classDescriptor = dottedClassDescriptorMap.get(dottedClassName);
+		if (classDescriptor == null) {
+			classDescriptor = getClassDescriptor(dottedClassName.replace('.', '/'));
+			dottedClassDescriptorMap.put(dottedClassName, classDescriptor);
+		}
+		return classDescriptor;
 	}
 
 	public MethodDescriptor getMethodDescriptor(JavaClass jClass, Method method) {
