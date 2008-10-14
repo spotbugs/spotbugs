@@ -145,7 +145,9 @@ public class AssertionMethods implements Constants {
 									|| methodNameLC.indexOf("legal") >= 0
 									|| methodNameLC.indexOf("error") >= 0
 									|| methodNameLC.indexOf("abort") >= 0
-									|| methodNameLC.indexOf("check") >= 0 || methodNameLC.indexOf("failed") >= 0)) {
+									|| methodNameLC.indexOf("check") >= 0 || methodNameLC.indexOf("failed") >= 0)
+									|| methodName.equals("addOrThrowException")
+									) {
 						assertionMethodRefSet.set(i);
 						if (DEBUG) {
 							System.out.println("==> YES");
