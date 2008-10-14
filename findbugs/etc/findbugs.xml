@@ -833,7 +833,7 @@
   <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" cweid="382"/>
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER" category="BAD_PRACTICE" />
-  <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
+  <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
@@ -882,7 +882,7 @@
   <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS" category="BAD_PRACTICE" />
   <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_UNUSUAL" category="STYLE" />
-  <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="CORRECTNESS" />
+  <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="BAD_PRACTICE" />
   <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS" />
   <BugPattern abbrev="Eq" type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC" category="CORRECTNESS" />
