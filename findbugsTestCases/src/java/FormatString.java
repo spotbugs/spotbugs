@@ -14,8 +14,9 @@ public class FormatString {
 		System.out.printf("%s\n", new int[] {1, 2});
 		System.out.printf("%b\n", "false");
 		System.out.printf("%d\n", "foo");
+		System.out.printf("%d% \n", 42);
 		System.out.printf("%d\n", new int[] {1, 2});
-		
+		System.out.printf("%s\n", (Object) new String[] {"a", "b"} );
 		
 		varargsMethod((Object[]) args);
 	}

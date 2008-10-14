@@ -27,6 +27,22 @@ class BadIntegerOperations {
 		return Integer.MIN_VALUE <= i;
 	}
 
+	int getBytesAsIntUsingOr(byte b[]) {
+		int stamp = b[0];
+		stamp |= (int) b[1] << 8;
+		stamp |= (int) b[2] << 16;
+		stamp |= (int) b[3] << 24;
+		return stamp;
+
+	}
+	int getBytesAsIntUsingPlus(byte b[]) {
+		int stamp = b[0];
+		stamp += (int) b[1] << 8;
+		stamp += (int) b[2] << 16;
+		stamp += (int) b[3] << 24;
+		return stamp;
+
+	}
 	int getBytesAsInt(byte b[]) {
 		int l = 0;
 		for (int i = 0; i < b.length; i++)
