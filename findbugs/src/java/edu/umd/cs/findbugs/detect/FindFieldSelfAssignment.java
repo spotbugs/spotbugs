@@ -86,21 +86,17 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 
 				int priority = NORMAL_PRIORITY;
-				SignatureParser parser = new SignatureParser(getMethodSig());
-				boolean foundMatch = false;
-				for(Iterator<String> i =  parser.parameterSignatureIterator(); i.hasNext(); ) {
-					String s = i.next();
-					if (s.equals(getSigConstantOperand())) {
-						foundMatch = true;
-						break;
-					}
-				}
-				if (getMethodName().equals("<init>") && !initializedFields.contains(getRefConstantOperand()) && foundMatch)
+				
+				LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), 
+						getSigConstantOperand());
+				if (possibleMatch != null)
 					priority = HIGH_PRIORITY;
+				
 
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
 						.addClassAndMethod(this)
 						.addReferencedField(this)
+						.addOptionalAnnotation(possibleMatch)
 						.addSourceLine(this));
 			}
 			state = 0;

@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -139,9 +140,14 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 					&& !initializedFields.contains(f) 
 					&& declaredFields.contains(f)
 					&& !containerFields.contains(f)) {
-				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY)
+				LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), xField.getSignature());
+				
+				int priority = unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY;
+				if (possibleTarget != null) priority--;
+				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", priority)
 				.addClassAndMethod(this)
 				.addField(f)
+				.addOptionalAnnotation(possibleTarget)
 				.addSourceLine(this));
 				initializedFields.add(f);
 			}

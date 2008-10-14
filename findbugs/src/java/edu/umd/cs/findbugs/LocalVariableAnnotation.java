@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.BitSet;
+import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
@@ -30,7 +32,16 @@ import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Dataflow;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -43,7 +54,17 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class LocalVariableAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "LOCAL_VARIABLE_DEFAULT";
+	public static final String DEFAULT_ROLE="LOCAL_VARIABLE_DEFAULT";
+	public static final String NAMED_ROLE="LOCAL_VARIABLE_NAMED";
+	public static final String UNKNOWN_ROLE="LOCAL_VARIABLE_UNKNOWN";
+	public static final String PARAMETER_ROLE="LOCAL_VARIABLE_PARAMETER";
+	public static final String PARAMETER_NAMED_ROLE="LOCAL_VARIABLE_PARAMETER_NAMED";
+	public static final String PARAMETER_VALUE_SOURCE_ROLE="LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE"; public static final String PARAMETER_VALUE_SOURCE_NAMED_ROLE="LOCAL_VARIABLE_PARAMETER_VALUE_SOURCE_NAMED";
+	public static final String VALUE_DOOMED_ROLE="LOCAL_VARIABLE_VALUE_DOOMED";
+	public static final String VALUE_DOOMED_NAMED_ROLE="LOCAL_VARIABLE_VALUE_DOOMED_NAMED";
+	public static final String DID_YOU_MEAN_ROLE="LOCAL_VARIABLE_DID_YOU_MEAN";
+
+
 
 	final private String value;
 	final int register, pc;
@@ -219,6 +240,39 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	   return getLocalVariableAnnotation(method, reg, pc, item.getPC());
 	   
     }
+    
+	public static @CheckForNull
+	LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String signature) {
+		try {
+			Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow = classContext.getLiveLocalStoreDataflow(method);
+			CFG cfg;
+
+			cfg = classContext.getCFG(method);
+
+			BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
+			int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
+			int startIndex = 0;
+			if (!method.isStatic())
+				startIndex = 1;
+			SignatureParser parser = new SignatureParser(method.getSignature());
+			Iterator<String> signatureIterator = parser.parameterSignatureIterator();
+			for(int i = startIndex; i < localsThatAreParameters+startIndex; i++) {
+				String sig = signatureIterator.next();
+				if (!liveStoreSetAtEntry.get(i) && signature.equals(sig)) {
+					// parameter isn't live and signatures match
+					LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
+					localVariableAnnotation.setDescription(DID_YOU_MEAN_ROLE);
+					return localVariableAnnotation;
+					
+				}
+			}
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("", e);
+		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("", e);
+		}
+		return null;
+	}
 }
 
 // vim:ts=4
