@@ -60,17 +60,23 @@ public class InstructionActionCache {
 				InvokeInstruction inv = (InvokeInstruction) ins;
 				String signature = inv.getSignature(cpg);
 				if (signature.indexOf(';') >=  -1) {
-					ReferenceType receiverType = inv.getReferenceType(cpg);
-					String methodName = inv.getName(cpg);
-
-					boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-
-
 					actionList = new LinkedList<ObligationPolicyDatabaseAction>();
-					database.getActions(receiverType, methodName, signature, isStatic, actionList);
-					if (actionList.isEmpty()) {
-						actionList = Collections.emptyList();
+					
+					if (signature.substring(0,signature.indexOf(')')).indexOf("Ljava/io/Closeable;") >= 0) {
+						actionList.add(ObligationPolicyDatabaseAction.CLEAR);
+					} else {
+
+						ReferenceType receiverType = inv.getReferenceType(cpg);
+						String methodName = inv.getName(cpg);
+
+						boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+
+						database.getActions(receiverType, methodName, signature, isStatic, actionList);
+						if (actionList.isEmpty()) {
+							actionList = Collections.emptyList();
+						}
 					}
+					
 
 					if (DEBUG_LOOKUP && !actionList.isEmpty()) {
 						System.out.println("  At " + handle +": " + actionList);

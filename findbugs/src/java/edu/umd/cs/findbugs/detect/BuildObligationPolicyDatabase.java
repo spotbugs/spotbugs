@@ -175,7 +175,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 						// obligation.  If strict checking is performed,
 						// weak entries are ignored.
 						*/
-						if (xmethod.getName().equals("<init>") || xmethod.getName().toLowerCase().indexOf("close") >= 0
+						if (xmethod.getName().equals("<init>") || xmethod.isStatic()
+								|| xmethod.getName().toLowerCase().indexOf("close") >= 0
 								|| xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) 
 							addParameterDeletesObligationDatabaseEntry(
 							xmethod, paramObligationTypes[i], ObligationPolicyDatabaseEntryType.WEAK);

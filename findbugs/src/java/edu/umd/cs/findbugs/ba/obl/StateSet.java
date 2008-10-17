@@ -47,7 +47,7 @@ public class StateSet {
 	private boolean isTop;
 	private boolean isBottom;
 	private Map<ObligationSet, State> stateMap;
-	private ObligationFactory factory;
+	private final ObligationFactory factory;
 
 	public StateSet(ObligationFactory factory) {
 		this.isTop = this.isBottom = false;
@@ -76,6 +76,11 @@ public class StateSet {
 
 	public boolean isValid() {
 		return !this.isTop && !this.isBottom;
+	}
+	
+	public void clear() {
+		this.isTop = this.isBottom = false;
+		stateMap.clear();
 	}
 
 	/**

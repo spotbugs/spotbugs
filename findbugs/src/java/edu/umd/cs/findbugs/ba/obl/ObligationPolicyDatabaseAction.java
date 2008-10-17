@@ -31,6 +31,8 @@ public class ObligationPolicyDatabaseAction {
 	private final ObligationPolicyDatabaseActionType actionType;
 	private final Obligation obligation;
 	
+	public static final ObligationPolicyDatabaseAction CLEAR = new ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType.CLEAR, null);
+	
 	public ObligationPolicyDatabaseAction(ObligationPolicyDatabaseActionType actionType, Obligation obligation) {
 		this.actionType = actionType;
 		this.obligation = obligation;
@@ -54,6 +56,10 @@ public class ObligationPolicyDatabaseAction {
 				stateSet.deleteObligation(obligation, basicBlockId);
 				break;
 
+			case CLEAR:
+				stateSet.clear();
+				break;
+				
 			default:
 				assert false;
 		}
