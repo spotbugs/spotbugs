@@ -259,6 +259,21 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			return dottedClassName.substring(0, lastDot);
 		}
 	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.umd.cs.findbugs.ba.AccessibleEntity#getPackageName()
+	 */
+	
+    public String getSlashedPackageName() {
+		String slashedClassName = getClassDescriptor().getClassName();
+		int lastSlash = slashedClassName.lastIndexOf('/');
+		if (lastSlash < 0) {
+			return "";
+		} else {
+			return slashedClassName.substring(0, lastSlash);
+		}
+	}
 	public Collection<ClassDescriptor> getAnnotationDescriptors() {
 		return classAnnotations.keySet();
 	}
@@ -297,15 +312,47 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		return source;
 	}
 	
+	static final private AnnotatedObject NOT_CACHED = new AnnotatedObject() {
+
+		public AnnotationValue getAnnotation(ClassDescriptor desc) {
+	        throw new UnsupportedOperationException();
+        }
+
+		public Collection<ClassDescriptor> getAnnotationDescriptors() {
+			throw new UnsupportedOperationException();
+        }
+
+		public Collection<AnnotationValue> getAnnotations() {
+			throw new UnsupportedOperationException();
+        }
+
+		public ClassDescriptor getClassDescriptor() {
+			throw new UnsupportedOperationException();
+        }
+
+		public AnnotatedObject getContainingScope() {
+			throw new UnsupportedOperationException();
+        }
+
+		public ElementType getElementType() {
+			throw new UnsupportedOperationException();
+        }};
+	@CheckForNull AnnotatedObject containingScope = NOT_CACHED;
 	public @CheckForNull AnnotatedObject getContainingScope() {
+		if (containingScope == NOT_CACHED) {
+			containingScope = getContainingScope0();
+		}
+		return containingScope;
+	}
+	public @CheckForNull AnnotatedObject getContainingScope0() {
 		try {
 			if (immediateEnclosingClass != null) {
 				return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());
 			}
-			if (getClassName().endsWith("/package-info") || getClassName().equals("package-info")) {
+			if (getClassName().endsWith("package-info") ) {
 				return null;
 			}
-			ClassDescriptor p = DescriptorFactory.createClassDescriptorFromDottedClassName(getPackageName() +"."+"package-info");
+			ClassDescriptor p = DescriptorFactory.createClassDescriptor(getSlashedPackageName() +"/"+"package-info");
 			return Global.getAnalysisCache().getClassAnalysis(XClass.class, p);
 		} catch (CheckedAnalysisException e) {
 			return null;

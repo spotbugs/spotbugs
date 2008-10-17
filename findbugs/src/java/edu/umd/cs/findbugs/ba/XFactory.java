@@ -255,6 +255,27 @@ public class XFactory {
 			String className) {
 		assert className.indexOf('/') == -1;
 	}
+	public static void assertSlashedClassName(@SlashedClassName
+			String className) {
+		assert className.indexOf('.') == -1;
+	}
+	
+	/**
+	 * @param className
+	 * @param methodName
+	 * @param methodSig
+	 * @param isStatic
+	 * @return the created XMethod
+	 */
+
+	public static XMethod createXMethodUsingSlashedClassName(@SlashedClassName
+	String className, String methodName, String methodSig, boolean isStatic) {
+		assertSlashedClassName(className);
+		MethodDescriptor desc = DescriptorFactory.instance().getMethodDescriptor(className,
+		        methodName, methodSig, isStatic);
+		return createXMethod(desc);
+	}
+
 	/**
 	 * @param className
 	 * @param methodName
@@ -336,7 +357,23 @@ public class XFactory {
 	 * @return the created XField
 	 */
 	public static 
-	XField createXField(String className, String fieldName, String fieldSignature, boolean isStatic) {
+	XField createXFieldUsingSlashedClassName(@SlashedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
+		FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(className,
+				fieldName, fieldSignature, isStatic);
+		
+		return  createXField(fieldDesc);
+	}
+	/**
+	 * Create an XField object
+	 * 
+	 * @param className
+	 * @param fieldName
+	 * @param fieldSignature
+	 * @param isStatic
+	 * @return the created XField
+	 */
+	public static 
+	XField createXField(@DottedClassName String className, String fieldName, String fieldSignature, boolean isStatic) {
 		FieldDescriptor fieldDesc = DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className),
 				fieldName, fieldSignature, isStatic);
 		
@@ -358,12 +395,12 @@ public class XFactory {
 		int seen = visitor.getOpcode();
 		if (seen != Opcodes.GETFIELD &&  seen != Opcodes.GETSTATIC && seen != Opcodes.PUTFIELD && seen != Opcodes.PUTSTATIC)
 			throw new IllegalArgumentException("Not at a field reference");
-		return createXField(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor
+		return createXFieldUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(), visitor
 		        .getSigConstantOperand(), visitor.getRefFieldIsStatic());
 	}
 
 	public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
-		return createXMethod(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor
+		return createXMethodUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(), visitor
 		        .getSigConstantOperand(), visitor.getOpcode() == Constants.INVOKESTATIC);
 	}
 
