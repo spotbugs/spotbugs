@@ -14,9 +14,25 @@
 
 				<td align="left" valign="top">
 
+
 					<h1>
-						FindBugs Change Log, Version 1.3.5
+						FindBugs Change Log, Version 1.3.6
 					</h1>
+					
+
+					<p> Changes since version 1.3.5</p>
+					<ul>
+					<li>Added fairly exhaustive static analysis
+					of uses of format strings, checking for missing or 
+					extra arguements, invalid format specifiers, 
+					or mismatched format specifiers and arguments (e.g,
+					passing a String value for a %d format specifier). 
+					The logic for doing so is derived from Sun's java.util.Formatter class,
+					and available separately from FindBugs as part of the
+					<a href="https://jformatstring.dev.java.net/">jFormatString</a> project.
+					
+					
+					
 
 					<p> Changes since version 1.3.4</p>
 					<ul>
