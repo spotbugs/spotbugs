@@ -59,8 +59,13 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
     		ConstantPoolGen cpg = getConstantPoolGen(analysisCache, descriptor.getClassDescriptor());
 
     		String methodName = method.getName();
+    		int codeLength = method.getCode().getLength();
+			String superclassName = jclass.getSuperclassName();
+			if (codeLength > 6000 && methodName.equals("<clinit>") && superclassName.equals("java.lang.Enum")) {
+				analysisContext.getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
+				return null;
+			}
     		if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-    			int codeLength = method.getCode().getLength();
     			if (codeLength > 3000 
     					|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
     				analysisContext.getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
