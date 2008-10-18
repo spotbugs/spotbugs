@@ -31,6 +31,21 @@
 					and available separately from FindBugs as part of the
 					<a href="https://jformatstring.dev.java.net/">jFormatString</a> project.
 					
+					<li>More tuning of the unsatisfied obligation detector. Since this
+					detector is still rather noisy and an unfinished research project,
+					I've moved the generated issues to a new category: EXPERIMENTAL.
+					
+					<li>Added check for BIT_ADD_OF_SIGNED_BYTE; similar to BIT_IOR_OF_SIGNED_BYTE, except that 
+					addition is being used to combine shifted signed bytes.
+					
+					<li>Changed detection of EI_EXPOSE_REP2, so we only report it if  the value stored
+					is guaranteed to be the same value that was passed in as a parameter.
+					
+					<li>Added EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS, a warning when
+						an equals method checks to see if an operand is an instance of a class not
+							compatible with itself. For example, if the Foo class checks to see if the argument
+							is an instance of String. This is either a questionable design decision or a coding mistake.
+					</ul>
 					
 					
 
