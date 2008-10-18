@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 abstract public class DismantleBytecode extends AnnotationVisitor {
 
@@ -92,7 +93,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	private boolean isRegisterStore;
 
 	private static final int INVALID_OFFSET = Integer.MIN_VALUE;
-	private static final String NOT_AVAILABLE = "none";
+	private static final String NOT_AVAILABLE = "./.";
 
 	 static String replaceSlashesWithDots(String c) {
 		return c.replace('/', '.');
@@ -150,9 +151,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	
 	public ClassDescriptor getClassDescriptorOperand() {
-		if (dottedClassConstantOperand == NOT_AVAILABLE)
+		if (referencedClass == null)
 			throw new IllegalStateException("getClassDescriptorOperand called but value not available");
-
 		return referencedClass;
 	}
 
@@ -198,8 +198,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	
 	/** If the current opcode has a class operand, get the associated class constant, dot-formatted */
 	public String getDottedClassConstantOperand() {
-		if (dottedClassConstantOperand == NOT_AVAILABLE)
+		if (dottedClassConstantOperand != null) {
+			assert dottedClassConstantOperand != NOT_AVAILABLE;
+			return dottedClassConstantOperand;
+		}
+		if (classConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getDottedClassConstantOperand called but value not available");
+		dottedClassConstantOperand = ClassName.toDottedClassName(classConstantOperand);
 		return dottedClassConstantOperand;
 	}
 
@@ -208,6 +213,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		if (refConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
 		if (refConstantOperand == null) {
+			String dottedClassConstantOperand = getDottedClassConstantOperand();
 			StringBuilder ref = new StringBuilder(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
 		ref.append(dottedClassConstantOperand)
 			.append(".")
@@ -364,7 +370,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	}
 
 	private void resetState() {
-		dottedClassConstantOperand = classConstantOperand = nameConstantOperand = sigConstantOperand = dottedSigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
+		classConstantOperand = nameConstantOperand = sigConstantOperand = dottedSigConstantOperand = stringConstantOperand = refConstantOperand = NOT_AVAILABLE;
 		refFieldIsStatic = false;
 		constantRefOperand = null;
 		registerOperand = -1;
@@ -372,6 +378,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		isRegisterStore = false;
 		branchOffset = branchTarget = branchFallThrough = defaultSwitchOffset = INVALID_OFFSET;
 		switchOffsets = switchLabels = null;
+		dottedClassConstantOperand = null;
 		referencedClass = null;
 		referencedXClass = null;
 		referencedMethod = null;
@@ -562,7 +569,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 							if (constantRefOperand instanceof ConstantClass) {
 								ConstantClass clazz = (ConstantClass) constantRefOperand;
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
-								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 								referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
 								try {
 	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);
@@ -587,7 +593,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 								ConstantClass clazz
 									= (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
-								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 								referencedClass = DescriptorFactory.createClassDescriptor(classConstantOperand);
 								try {
 	                                referencedXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, referencedClass);

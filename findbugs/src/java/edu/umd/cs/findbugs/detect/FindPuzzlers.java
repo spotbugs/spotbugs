@@ -169,7 +169,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						bugAccumulator.accumulateBug(new BugInstance(this, 
 								"IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION", 
 								priority)
-						.addClassAndMethod(this).addClass(getDottedClassConstantOperand()),
+						.addClassAndMethod(this).addClass(getClassConstantOperand()),
 						this);
 						
 					}
