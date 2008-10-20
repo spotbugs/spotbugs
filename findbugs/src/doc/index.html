@@ -81,6 +81,11 @@
 						<a href="#sponsors">Sponsors</a> |
 						<a href="#support">Support</a> 
 					</p>
+					<h1>New</h1>
+					<p>We created <a href="http://www.linkedin.com/groups?gid=976017">LinkedIn</a>
+					<a href="http://www.facebook.com/group.php?gid=33445880950">Facebook</a> groups
+					for the FindBugs community. Join these to help meet up with other users and 
+					contributors to FindBugs.
 					<h1><a name="moreSoftware">Additional open source projects</a></h1>
 					<p>The following software is being made available by the University of Maryland and the FindBugs project.
 					The software is still preliminary, and needs volunteers to help mature it.
@@ -181,40 +186,34 @@
 					<p> The current version of FindBugs is s @VERSION@.</p>
 
 					<p>
-						Changes since version 1.3.4
+						Changes since version 1.3.5
 					</p>
 					<ul>
-						<li>New reports:</li>
-						<ul>
-							<li>OBL_UNSATISFIED_OBLIGATION: method fails to close
-							a stream, database object, or other resource.
-							This bug pattern is reported by the
-							new FindUnsatisfiedObligation detector,
-							which uses a more powerful analysis
-							than the FindOpenStream detector.
-							See Weimer and Necula,
-							<a href="http://doi.acm.org/10.1145/1028976.1029011"
-							>Finding and preventing run-time error handling mistakes</a>.</li>
-						</ul>
-						<li>Other:</li>
-						<ul>
-							<li>The CheckTypeQualifiers detector works harder
-							to determine when a method requires analysis
-							to check values annotated with 
-							<a href="http://jcp.org/en/jsr/detail?id=305"
-							>JSR-305</a> type qualifiers.</li>
-							
-							<li>The CheckTypeQualifiers detector checks
-							exclusive and exhaustive type qualifiers.</li>
-							
-							<li>The CheckTypeQualifiers detector does
-							limited interprocedural checking of uses
-							of JSR-305 type qualifiers.</li>
-						</ul>
-						<li>Fixes</li>
+						<li>Added fairly exhaustive static analysis
+					of uses of format strings, checking for missing or 
+					extra arguements, invalid format specifiers, 
+					or mismatched format specifiers and arguments (e.g,
+					passing a String value for a %d format specifier). 
+					The logic for doing so is derived from Sun's java.util.Formatter class,
+					and available separately from FindBugs as part of the
+					<a href="https://jformatstring.dev.java.net/">jFormatString</a> project.
+					
+					<li>More tuning of the unsatisfied obligation detector. Since this
+					detector is still rather noisy and an unfinished research project,
+					I've moved the generated issues to a new category: EXPERIMENTAL.
+					
+					<li>Added check for <a href="http://findbugs.sourceforge.net/bugDescriptions.html#BIT_ADD_OF_SIGNED_BYTE">BIT_ADD_OF_SIGNED_BYTE</a>; similar to <a href="http://findbugs.sourceforge.net/bugDescriptions.html#BIT_IOR_OF_SIGNED_BYTE">BIT_IOR_OF_SIGNED_BYTE</a>, except that 
+					addition is being used to combine shifted signed bytes.
+					
+					<li>Changed detection of EI_EXPOSE_REP2, so we only report it if  the value stored
+					is guaranteed to be the same value that was passed in as a parameter.
+					
+					<li>Added <a href="http://findbugs.sourceforge.net/bugDescriptions.html#EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS</a>, a warning when
+						an equals method checks to see if an operand is an instance of a class not
+							compatible with itself. For example, if the Foo class checks to see if the argument
+							is an instance of String. This is either a questionable design decision or a coding mistake.
 					</ul>
-					
-					
+				
 					<p>
 						<a href="Changes.html">Older versions...</a>
 					</p>

@@ -21,7 +21,6 @@
 					
 
 					<p> Changes since version 1.3.5</p>
-					<ul>
 					<li>Added fairly exhaustive static analysis
 					of uses of format strings, checking for missing or 
 					extra arguements, invalid format specifiers, 
@@ -35,17 +34,17 @@
 					detector is still rather noisy and an unfinished research project,
 					I've moved the generated issues to a new category: EXPERIMENTAL.
 					
-					<li>Added check for BIT_ADD_OF_SIGNED_BYTE; similar to BIT_IOR_OF_SIGNED_BYTE, except that 
+					<li>Added check for <a href="http://findbugs.sourceforge.net/bugDescriptions.html#BIT_ADD_OF_SIGNED_BYTE">BIT_ADD_OF_SIGNED_BYTE</a>; similar to <a href="http://findbugs.sourceforge.net/bugDescriptions.html#BIT_IOR_OF_SIGNED_BYTE">BIT_IOR_OF_SIGNED_BYTE</a>, except that 
 					addition is being used to combine shifted signed bytes.
 					
 					<li>Changed detection of EI_EXPOSE_REP2, so we only report it if  the value stored
 					is guaranteed to be the same value that was passed in as a parameter.
 					
-					<li>Added EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS, a warning when
+					<li>Added <a href="http://findbugs.sourceforge.net/bugDescriptions.html#EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS</a>, a warning when
 						an equals method checks to see if an operand is an instance of a class not
 							compatible with itself. For example, if the Foo class checks to see if the argument
 							is an instance of String. This is either a questionable design decision or a coding mistake.
-					</ul>
+					</ul></ul>
 					
 					
 

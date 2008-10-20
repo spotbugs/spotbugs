@@ -5432,18 +5432,18 @@ to get <code>0xffffffff</code>, and thus give the value
 </p>
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-<code>
+<pre>
 int result = 0;
 for(int i = 0; i &lt; 4; i++) 
   result = ((result &lt;&lt; 8) | b[i]);
-</code>
+</pre>
 
 <p>The following idiom will work instead: </p>
-<code>
+<pre>
 int result = 0;
 for(int i = 0; i &lt; 4; i++) 
-  result = ((result &lt;&lt; 8) | (b[i] &amps; 0xff));
-</code>
+  result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
+</pre>
 
 ]]>
     </Details>
@@ -5464,18 +5464,18 @@ to get <code>0xffffffff</code>, and thus give the value
 </p>
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-<code>
+<pre>
 int result = 0;
 for(int i = 0; i &lt; 4; i++) 
   result = ((result &lt;&lt; 8) + b[i]);
-</code>
+</pre>
 
 <p>The following idiom will work instead: </p>
-<code>
+<pre>
 int result = 0;
 for(int i = 0; i &lt; 4; i++) 
-  result = ((result &lt;&lt; 8) + (b[i] &amps; 0xff));
-</code>
+  result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
+</pre>
 
 ]]>
     </Details>
