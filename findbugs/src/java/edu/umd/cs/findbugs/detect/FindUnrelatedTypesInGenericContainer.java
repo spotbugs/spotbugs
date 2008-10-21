@@ -290,7 +290,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
 				IncompatibleTypes matchResult = compareTypes(parmType, argType, allMethod);
 
-				boolean selfOperation = operand.equals(argType);
+				boolean selfOperation = !allMethod && operand.equals(argType);
 				if (!allMethod && argType instanceof GenericObjectType) {
 					GenericObjectType p2 = (GenericObjectType) argType;
 					List<? extends ReferenceType> parameters = p2.getParameters();
