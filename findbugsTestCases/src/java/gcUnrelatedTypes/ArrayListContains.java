@@ -86,7 +86,7 @@ public class ArrayListContains<T> {
 		genericF.contains(s); 					// No warning
 
 		genericEF.contains(dummy); 				// No warning
-		genericEF.contains(dummyChild); 		// No warning
+		genericEF.contains(dummyChild); 		    // No warning
 		genericEF.contains(s); 					// No warning
 
 		genericSF.contains(dummy); 				// No warning
