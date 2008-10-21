@@ -224,10 +224,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				String argSignature = m.getSignature();
 				argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
 				int pos = 0;
-				
+				boolean allMethod = false;
 				if (!argSignature.equals("(Ljava/lang/Object;)")) {
 						if (m.getName().equals("removeAll") || m.getName().equals("containsAll")) {
 							if (!m.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
+							allMethod = true;
 						} else if (m.getName().endsWith("ndexOf")
 								&& m.getClassName().equals("java.util.Vector") && 
 								argSignature.equals("(Ljava/lang/Object;I)"))
@@ -287,10 +288,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (typeArgument < 0) parmType = operand;
 				else parmType = operand.getParameterAt(typeArgument);
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
-				IncompatibleTypes matchResult = compareTypes(parmType, argType);
+				IncompatibleTypes matchResult = compareTypes(parmType, argType, allMethod);
 
 				boolean selfOperation = operand.equals(argType);
-				if (argType instanceof GenericObjectType) {
+				if (!allMethod && argType instanceof GenericObjectType) {
 					GenericObjectType p2 = (GenericObjectType) argType;
 					List<? extends ReferenceType> parameters = p2.getParameters();
 					if (parameters != null && parameters.equals(operand.getParameters()))
@@ -351,10 +352,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	 * This is a conservative comparison - returns true if it cannot decide. If
 	 * the parameter type is a type variable (e.g. <code>T</code>) then we don't
 	 * know enough (yet) to decide if they do not match so return true.
+	 * @param ignoreBaseType TODO
 	 */
-	private IncompatibleTypes compareTypes(Type parmType, Type argType) {
+	private IncompatibleTypes compareTypes(Type parmType, Type argType, boolean ignoreBaseType) {
 		// XXX equality not implemented for GenericObjectType
 		// if (parmType.equals(argType)) return true;
+		if (parmType == argType) 
+			return IncompatibleTypes.SEEMS_OK;
 		// Compare type signatures instead
 		String parmString = GenericUtilities.getString(parmType);
 		String argString = GenericUtilities.getString(argType);
@@ -372,6 +376,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		TypeCategory parmCat = GenericUtilities.getTypeCategory(parmType);
 		TypeCategory argCat = GenericUtilities.getTypeCategory(argType);
 
+		if (ignoreBaseType) {
+			if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
+				GenericObjectType parmGeneric = (GenericObjectType) parmType;
+				GenericObjectType argGeneric = (GenericObjectType) argType;
+				return compareTypeParameters(parmGeneric, argGeneric);
+			}
+			return IncompatibleTypes.SEEMS_OK;
+		}
 		// -~- plain objects are easy
 		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
 
@@ -379,7 +391,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 		// -~- parmType is: "? extends Another Type" OR "? super Another Type"
 		if (parmCat == TypeCategory.WILDCARD_EXTENDS || parmCat == TypeCategory.WILDCARD_SUPER)
-			return compareTypes(((GenericObjectType) parmType).getExtension(), argType);
+			return compareTypes(((GenericObjectType) parmType).getExtension(), argType, ignoreBaseType);
 
 		// -~- Not handling type variables
 		if (parmCat == TypeCategory.TYPE_VARIABLE || argCat == TypeCategory.TYPE_VARIABLE)
@@ -393,7 +405,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			if (parmArray.getDimensions() != argArray.getDimensions())
 				return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
 
-			return compareTypes(parmArray.getBasicType(), argArray.getBasicType());
+			return compareTypes(parmArray.getBasicType(), argArray.getBasicType(), ignoreBaseType);
 		}
 		// If one is an Array Type and the other is not, then they
 		// are incompatible. (We already know neither is java.lang.Object)
@@ -413,18 +425,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			GenericObjectType argGeneric = (GenericObjectType) argType;
 
 			// base types should be related
-			IncompatibleTypes result = compareTypes(parmGeneric.getObjectType(), argGeneric.getObjectType());
+			{
+			IncompatibleTypes result = compareTypes(parmGeneric.getObjectType(), argGeneric.getObjectType(), ignoreBaseType);
 			if (!result.equals(IncompatibleTypes.SEEMS_OK)) return result;
-			int p = parmGeneric.getNumParameters();
-			if (p != argGeneric.getNumParameters()) {
-				AnalysisContext.logError("Wierd generic parameters: " + parmGeneric + " and " + argGeneric);
-				return IncompatibleTypes.SEEMS_OK;
 			}
-			for(int x = 0; x< p; x++) {
-				result = compareTypes(parmGeneric.getParameterAt(x), argGeneric.getParameterAt(x));
-				if (result != IncompatibleTypes.SEEMS_OK) return result;
-			}
-			return result;
+			return compareTypeParameters(parmGeneric, argGeneric);
 
 			// XXX More to come
 		}
@@ -454,6 +459,19 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		return IncompatibleTypes.SEEMS_OK;
 
 	}
+
+	private IncompatibleTypes compareTypeParameters(GenericObjectType parmGeneric, GenericObjectType argGeneric) {
+	    int p = parmGeneric.getNumParameters();
+	    if (p != argGeneric.getNumParameters()) {
+	    	AnalysisContext.logError("Wierd generic parameters: " + parmGeneric + " and " + argGeneric);
+	    	return IncompatibleTypes.SEEMS_OK;
+	    }
+	    for(int x = 0; x< p; x++) {
+	    	IncompatibleTypes result = compareTypes(parmGeneric.getParameterAt(x), argGeneric.getParameterAt(x), false);
+	    	if (result != IncompatibleTypes.SEEMS_OK) return result;
+	    }
+	    return IncompatibleTypes.SEEMS_OK;
+    }
 
 	// old version of compare types
 	private boolean compareTypesOld(Type parmType, Type argType) {
