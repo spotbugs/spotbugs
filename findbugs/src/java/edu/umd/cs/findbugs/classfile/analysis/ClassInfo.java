@@ -359,4 +359,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		}
 	}
 
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XClass#getSourceSignature()
+     */
+    public String getSourceSignature() {
+	    return classSourceSignature;
+    }
+
 }

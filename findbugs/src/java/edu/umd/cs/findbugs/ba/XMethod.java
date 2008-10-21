@@ -20,6 +20,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
@@ -93,7 +95,7 @@ public interface XMethod extends ClassMember, AnnotatedObject {
 	 * @return AnnotationValue annotating the parameter,
 	 *         or null if parameter is not annotated with this kind of annotation
 	 */
-    public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
+    public @CheckForNull AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
 
     /**
 	 * Get collection of all AnnotationValues applied directly

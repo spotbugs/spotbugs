@@ -111,21 +111,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 	public FindUnrelatedTypesInGenericContainer(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		String basicSignature = "(Ljava/lang/Object;)Z";
-		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
-		String indexSignature = "(Ljava/lang/Object;)I";
-
+		
 		// Collection<E>
 		addToCollectionsMap(Collection.class.getName(), "contains", 0);
 		addToCollectionsMap(Collection.class.getName(), "remove", 0);
-
-		// addToCollectionsMap(collectionMembers, "containsAll",
-		// collectionSignature, 0);
-		// addToCollectionsMap(collectionMembers, "removeAll",
-		// collectionSignature, 0);
-		// addToCollectionsMap(collectionMembers, "retainAll",
-		// collectionSignature, 0);
-
+		addToCollectionsMap(Collection.class.getName(), "removeFirstOccurrence", 0);
+		addToCollectionsMap(Collection.class.getName(), "removeLastOccurrence", 0);
+		addToCollectionsMap(Collection.class.getName(), "containsAll", -1);
+		addToCollectionsMap(Collection.class.getName(), "removeAll", -1);
+		
 		// List<E>
 		addToCollectionsMap(List.class.getName(), "indexOf", 0);
 		addToCollectionsMap(List.class.getName(), "lastIndexOf", 0);
@@ -226,11 +220,20 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(m.getName())) {
 
+				if (DEBUG) System.out.println("Checking call to " + interfaceOfInterest + " : " + m);
 				String argSignature = m.getSignature();
 				argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
-				if (!argSignature.equals("(Ljava/lang/Object;)"))
-					continue;
-
+				int pos = 0;
+				
+				if (!argSignature.equals("(Ljava/lang/Object;)")) {
+						if (m.getName().equals("removeAll") || m.getName().equals("containsAll")) {
+							if (!m.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
+						} else if (m.getName().endsWith("ndexOf")
+								&& m.getClassName().equals("java.util.Vector") && 
+								argSignature.equals("(Ljava/lang/Object;I)"))
+							pos = 1;
+						else continue;
+				}
 				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 				try {
 					if (!subtypes2.isSubtype(m.getClassDescriptor(), interfaceOfInterest))
@@ -249,12 +252,12 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					continue;
 				}
 
-				Type operandType = frame.getTopValue();
+				Type operandType = frame.getStackValue(pos);
 				if (operandType.equals(TopType.instance())) {
 					// unreachable
 					continue;
 				}
-
+				
 				// Only consider generic...
 				Type objectType = frame.getInstance(inv, cpg);
 				if (!(objectType instanceof GenericObjectType))
@@ -274,13 +277,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 				int numArguments = frame.getNumArguments(inv, cpg);
 
-				if (numArguments != 1)
+				if (numArguments != 1+pos)
 					continue;
 
 				// compare containers type parameters to corresponding arguments
 				SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 
-				Type parmType = operand.getParameterAt(typeArgument);
+				Type parmType;
+				if (typeArgument < 0) parmType = operand;
+				else parmType = operand.getParameterAt(typeArgument);
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
 				IncompatibleTypes matchResult = compareTypes(parmType, argType);
 
@@ -331,7 +336,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					AnalysisContext.reportMissingClass(e);
 				}
 				accumulator.accumulateBug(new BugInstance(this, "GC_UNRELATED_TYPES", priority).addClassAndMethod(methodGen,
-				        sourceFile).addFoundAndExpectedType(argType.getSignature(), parmType.getSignature()).addCalledMethod(
+				        sourceFile).addFoundAndExpectedType(argType, parmType).addCalledMethod(
 				        methodGen, (InvokeInstruction) ins).addEqualsMethodUsed(targets), sourceLineAnnotation);
 			}
 		}
@@ -408,7 +413,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			GenericObjectType argGeneric = (GenericObjectType) argType;
 
 			// base types should be related
-			return compareTypes(parmGeneric.getObjectType(), argGeneric.getObjectType());
+			IncompatibleTypes result = compareTypes(parmGeneric.getObjectType(), argGeneric.getObjectType());
+			if (!result.equals(IncompatibleTypes.SEEMS_OK)) return result;
+			int p = parmGeneric.getNumParameters();
+			if (p != argGeneric.getNumParameters()) {
+				AnalysisContext.logError("Wierd generic parameters: " + parmGeneric + " and " + argGeneric);
+				return IncompatibleTypes.SEEMS_OK;
+			}
+			for(int x = 0; x< p; x++) {
+				result = compareTypes(parmGeneric.getParameterAt(x), argGeneric.getParameterAt(x));
+				if (result != IncompatibleTypes.SEEMS_OK) return result;
+			}
+			return result;
 
 			// XXX More to come
 		}

@@ -41,6 +41,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -946,9 +947,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	public BugInstance addFoundAndExpectedType(Type foundType, Type expectedType) {
+		
+		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
+		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
+		return this;
+	}
+	
 	public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
-		add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
-		add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
+		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
+		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
 		return this;
 	}
 	

@@ -50,6 +50,7 @@
 										</xs:sequence>
 										<xs:attribute name="descriptor" type="xs:string" use="required" />
 										<xs:attribute name="role" type="xs:string" use="optional" />
+										<xs:attribute name="typeParameters" type="xs:string" use="optional" />
 									</xs:complexType>
 								</xs:element>
 								<xs:element name="Method">

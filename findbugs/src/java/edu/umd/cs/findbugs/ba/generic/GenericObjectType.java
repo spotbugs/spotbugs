@@ -208,4 +208,8 @@ public class GenericObjectType extends ObjectType {
 	public String toPlainString() {
 		return super.toString();
 	}
+	
+	public String getGenericParametersAsString() {
+		return toString().substring(super.toString().length());
+	}
 }

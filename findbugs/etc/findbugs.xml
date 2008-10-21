@@ -811,7 +811,7 @@
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
   <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
   <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS" />
-  <BugPattern abbrev="TEST" type="UNKNOWN" category="CORRECTNESS" />
+  <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />

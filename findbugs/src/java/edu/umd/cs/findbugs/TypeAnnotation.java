@@ -20,9 +20,13 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.bcel.generic.Type;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -45,6 +49,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
 	final private String descriptor; // jvm type descriptor, such as "[I"
 	private String roleDescription;
+	private String typeParameters;
 
 	/**
 	 * constructor.
@@ -59,6 +64,18 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 		this(typeDescriptor, DEFAULT_ROLE);
 	}
 
+	public TypeAnnotation(Type objectType) {
+		this(objectType, DEFAULT_ROLE);
+	}
+
+	
+	public TypeAnnotation(Type objectType, String roleDescription) {
+		this(objectType.getSignature(), roleDescription);
+		if (objectType instanceof GenericObjectType) {
+			typeParameters = ((GenericObjectType) objectType).getGenericParametersAsString();
+		}
+	}
+		
 	public TypeAnnotation(String typeDescriptor, String roleDescription) {
 		descriptor = typeDescriptor;
 		this.roleDescription = roleDescription;
@@ -89,10 +106,12 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	public String format(String key, ClassAnnotation primaryClass) {
 		String name = new SignatureConverter(descriptor).parseNext().replace("java.lang.", "");
 		if (key.equals("givenClass"))
-			return ClassAnnotation.shorten(primaryClass.getPackageName(), name);
+			name =  ClassAnnotation.shorten(primaryClass.getPackageName(), name);
 		else if (key.equals("excludingPackage"))
-			return ClassAnnotation.removePackage(name);
+			name =  ClassAnnotation.removePackage(name);
 		
+		if (typeParameters != null)
+			name = name + typeParameters;
 		return name;
 	}
 
@@ -102,6 +121,9 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
 	public String getDescription() {
 		return roleDescription;
+	}
+	public void setTypeParameters(String typeParameters) {
+		this.typeParameters = typeParameters;
 	}
 
 	@Override
@@ -143,10 +165,13 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("descriptor", descriptor);
+		
 
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
+		if (typeParameters != null)
+			attributeList.addAttribute("typeParameters", StringEscapeUtils.escapeXml(typeParameters));
 
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}

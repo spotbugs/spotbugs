@@ -117,4 +117,6 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	
 	public List<? extends XField> getXFields();
 	public List<? extends XMethod> getXMethods();
+	
+	public String getSourceSignature();
 }

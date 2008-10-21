@@ -391,7 +391,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	bugAnnotation = bugAnnotationWithSourceLines = new ClassAnnotation(className);
 	    } else if (qName.equals("Type")) {
 	    	String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
-	    	bugAnnotation = bugAnnotationWithSourceLines = new TypeAnnotation(typeDescriptor);
+	    	TypeAnnotation typeAnnotation;
+	    	bugAnnotation = bugAnnotationWithSourceLines = typeAnnotation = new TypeAnnotation(typeDescriptor);
+	    	String typeParameters = attributes.getValue("typeParameters");
+	    	if (typeParameters != null)
+	    		typeAnnotation.setTypeParameters(StringEscapeUtils.unescapeXml(typeParameters));
+
 	    } else if (qName.equals("Method") || qName.equals("Field")) {
 	    	String classname = getRequiredAttribute(attributes, "classname", qName);
 	    	String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
