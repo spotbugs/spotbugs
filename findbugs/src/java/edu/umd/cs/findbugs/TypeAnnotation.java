@@ -110,7 +110,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 		else if (key.equals("excludingPackage"))
 			name =  ClassAnnotation.removePackage(name);
 		
-		if (typeParameters != null)
+		if (typeParameters != null && !key.equals("hash"))
 			name = name + typeParameters;
 		return name;
 	}
