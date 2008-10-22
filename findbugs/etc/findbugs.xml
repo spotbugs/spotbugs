@@ -35,6 +35,14 @@
 		<Later class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" />
 	</SplitPass>
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindRefComparison" />
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" />
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindRefComparison" />
 	</SplitPass>
