@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ArrayType;
@@ -28,6 +30,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -35,6 +38,10 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 
 public class IncompatibleTypes {
+	private static final ClassDescriptor LIST_DESCRIPTOR = DescriptorFactory.createClassDescriptor(List.class);
+	private static final ClassDescriptor MAP_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Map.class);
+	private static final ClassDescriptor SET_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Set.class);
+
 	final int priority;
 
 	final String msg;
@@ -167,11 +174,13 @@ public class IncompatibleTypes {
      */
     public static IncompatibleTypes getPriorityForAssumingCompatible(boolean pointerEquality, ClassDescriptor lhsDescriptor,
             ClassDescriptor rhsDescriptor) throws CheckedAnalysisException, ClassNotFoundException {
-    	IAnalysisCache cache = Global.getAnalysisCache();
+    	AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+ 	   Subtypes2 subtypes2 = analysisContext.getSubtypes2();
+		
+        	IAnalysisCache cache = Global.getAnalysisCache();
 		XClass lhs = cache.getClassAnalysis(XClass.class, lhsDescriptor);
 		XClass rhs = cache.getClassAnalysis(XClass.class, rhsDescriptor);
-		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-	    // Look up the classes
+		 // Look up the classes
 	    XMethod lhsEquals = getInvokedMethod(lhs, "equals", "(Ljava/lang/Object;)Z", false);
 	    XMethod rhsEquals = getInvokedMethod(rhs, "equals", "(Ljava/lang/Object;)Z", false);
 	    String lhsClassName = lhsEquals.getClassName();
@@ -181,6 +190,14 @@ public class IncompatibleTypes {
 	    	if (!pointerEquality && !lhsClassName.equals("java.lang.Object"))
 	    		return SEEMS_OK;
 	    }
+		
+    	if ((subtypes2.isSubtype(lhsDescriptor, SET_DESCRIPTOR)
+    			&& subtypes2.isSubtype(rhsDescriptor, SET_DESCRIPTOR)
+    			|| subtypes2.isSubtype(lhsDescriptor, MAP_DESCRIPTOR)
+    			&& subtypes2.isSubtype(rhsDescriptor, MAP_DESCRIPTOR)
+    			|| subtypes2.isSubtype(lhsDescriptor, LIST_DESCRIPTOR)
+    			&& subtypes2.isSubtype(rhsDescriptor, LIST_DESCRIPTOR)))
+    		return SEEMS_OK;
 
 	    if (!lhs.isInterface() && !rhs.isInterface()) {
 	    	// Both are class types, and therefore there is no possible
@@ -193,7 +210,7 @@ public class IncompatibleTypes {
 	    	// intersection does not contain at least one instantiable
 	    	// class,
 	    	// then issue a warning of the appropriate type.
-	    	Set<ClassDescriptor> commonSubtypes = analysisContext.getSubtypes2().getTransitiveCommonSubtypes(
+	    	Set<ClassDescriptor> commonSubtypes = subtypes2.getTransitiveCommonSubtypes(
 	    	        lhsDescriptor, rhsDescriptor);
 
 	    	if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
