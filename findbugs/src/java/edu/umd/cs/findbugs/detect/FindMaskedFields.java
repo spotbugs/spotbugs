@@ -129,6 +129,8 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 							priority += 2;
 						else if (fld.getAccessFlags() != maskingField.getAccessFlags())
 							priority++;
+						if (fld.isSynthetic() || fld.getName().indexOf('$') >= 0)
+							priority++;
 
 						FieldAnnotation maskedFieldAnnotation = FieldAnnotation.fromFieldDescriptor(fld.getFieldDescriptor());
 						BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD", priority).addClass(this).addField(fa)

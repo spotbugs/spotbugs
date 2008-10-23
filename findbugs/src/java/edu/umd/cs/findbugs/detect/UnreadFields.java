@@ -407,7 +407,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 				if (getThisClass().isPrivate() 
 					|| getMethod().isPrivate())
 					priority++;
-				if (getClassName().indexOf('$') != -1)
+				if (getClassName().indexOf('$') != -1 || getMethod().isSynthetic() || f.isSynthetic() || f.getName().indexOf('$') >= 0)
 					priority++;
 				bugAccumulator.accumulateBug(
 						new BugInstance(this, 
