@@ -102,8 +102,8 @@ public class UnionResults {
 			project.add(newProject);
 			results = union(results, more);
 			} catch (Exception e) {
-					System.err.println("Trouble parsing " + argv[i]);
-					e.printStackTrace();
+					System.err.println("Trouble reading/parsing " + argv[i]);
+					e.printStackTrace(System.err);
 			}
 		}
 
