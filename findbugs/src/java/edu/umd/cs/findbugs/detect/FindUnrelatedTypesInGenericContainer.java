@@ -282,7 +282,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				ValueNumber argVN = vnFrame.getArgument(inv, cpg, 0, sigParser);
 				
 				if (objectVN.equals(argVN)) {
-					accumulator.accumulateBug(new BugInstance(this, "IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES", HIGH_PRIORITY)
+					accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES", HIGH_PRIORITY)
 					.addClassAndMethod(methodGen,
 					        sourceFile).addCalledMethod(
 					        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
@@ -311,8 +311,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
 				IncompatibleTypes matchResult = compareTypes(parmType, argType, allMethod);
 
-				boolean selfOperation = !allMethod && operand.equals(argType);
-				if (!allMethod && argType instanceof GenericObjectType) {
+
+				boolean parmIsObject = parmType.getSignature().equals("Ljava/lang/Object;");
+				boolean selfOperation = !allMethod && operand.equals(argType) && !parmIsObject;
+				if (!allMethod && !parmIsObject && argType instanceof GenericObjectType) {
+
 					GenericObjectType p2 = (GenericObjectType) argType;
 					List<? extends ReferenceType> parameters = p2.getParameters();
 					if (parameters != null && parameters.equals(operand.getParameters()))

@@ -7130,7 +7130,7 @@ and the next method is supposed to change the state of the iterator.
      ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
+  <BugPattern type="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
     <ShortDescription>Collections should not contain themselves</ShortDescription>
     <LongDescription>Collections should not contain themselves in call to {2.givenClass}</LongDescription>
     <Details>

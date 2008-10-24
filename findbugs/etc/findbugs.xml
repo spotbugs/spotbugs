@@ -747,7 +747,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
             speed="fast"
-            reports="GC_UNRELATED_TYPES,IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" />
+            reports="GC_UNRELATED_TYPES,DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" />
 
        <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"  reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
 
@@ -1179,7 +1179,7 @@
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS" cweid="481" />
   <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>
-  <BugPattern abbrev="IL" type="IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" category="CORRECTNESS"/>
+  <BugPattern abbrev="DMI" type="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
