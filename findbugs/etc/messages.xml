@@ -7143,6 +7143,29 @@ It is likely that the wrong value is being passed as a parameter.
      ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_VACUOUS_SELF_COLLECTION_CALL">
+    <ShortDescription>Vacuous call to collections</ShortDescription>
+    <LongDescription>For any collection c, calling c.{2.name}(c) doesn't make sense </LongDescription>
+    <Details>
+     <![CDATA[
+     <p> This call doesn't make sense. For any collection <code>c</code>, calling <code>c.containsAll(c)</code> should
+always be true, and <code>c.retainAll(c)</code> should have no effect.
+	</p>
+     ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
+    <ShortDescription>Don't use removeAll to clear a collection</ShortDescription>
+    <LongDescription>removeAll used to clear a collection in {1}</LongDescription>
+    <Details>
+     <![CDATA[
+     <p> If you want to remove all elements from a collection <code>c</code>, use <code>c.clear</code>,
+not <code>c.removeAll(c)</code>.
+	</p>
+     ]]>
+    </Details>
+  </BugPattern>
 
 <BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
 <ShortDescription>Static Calendar</ShortDescription>

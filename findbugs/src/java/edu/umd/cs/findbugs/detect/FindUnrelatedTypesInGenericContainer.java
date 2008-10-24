@@ -282,7 +282,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				ValueNumber argVN = vnFrame.getArgument(inv, cpg, 0, sigParser);
 				
 				if (objectVN.equals(argVN)) {
-					accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES", HIGH_PRIORITY)
+					String bugPattern =  "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES";
+					int priority = HIGH_PRIORITY;
+					if (m.getName().equals("removeAll")) {
+						bugPattern = "DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION";
+						priority = NORMAL_PRIORITY;
+					} else if (m.getName().endsWith("All")) {
+						bugPattern = "DMI_VACUOUS_SELF_COLLECTION_CALL";
+						priority = NORMAL_PRIORITY;
+					}
+						
+					accumulator.accumulateBug(new BugInstance(this,bugPattern, priority)
 					.addClassAndMethod(methodGen,
 					        sourceFile).addCalledMethod(
 					        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
