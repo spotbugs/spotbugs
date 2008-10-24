@@ -7104,11 +7104,11 @@ and the next method is supposed to change the state of the iterator.
     <LongDescription>{2.givenClass} is incompatible with expected argument type {3.givenClass} in {1}</LongDescription>
     <Details>
      <![CDATA[
-     <p> This call to a generic container's method contains an argument
-     with an incompatible class from that of the container's parameter
+     <p> This call to a generic collection method contains an argument
+     with an incompatible class from that of the collection's parameter
 	(i.e., the type of the argument is neither a supertype nor a subtype 
 		of the corresponding generic type argument).
-     Therefore, it is unlikely that the container contains any objects 
+     Therefore, it is unlikely that the collection contains any objects 
 	that are equal to the method argument used here.
 	Most likely, the wrong value is being passed to the method.</p>
 	<p>In general, instances of two unrelated classes are not equal. 
@@ -7126,6 +7126,19 @@ and the next method is supposed to change the state of the iterator.
 	the case that if you check if a <code>Collection&lt;String&gt;</code> contains
 	a <code>Foo</code>, the equals method of argument (e.g., the equals method of the 
 	<code>Foo</code> class) used to perform the equality checks.
+	</p>
+     ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
+    <ShortDescription>Collections should not contain themselves</ShortDescription>
+    <LongDescription>Collections should not contain themselves in call to {2.givenClass}</LongDescription>
+    <Details>
+     <![CDATA[
+     <p> This call to a generic container's method would only make sense if a collection contained 
+itself (e.g., if <code>s.contains(s)</code> were true). This is unlikely to be true and would cause
+problems if it were true (such as the computation of the hash code resulting in infinite recursion).
+It is likely that the wrong value is being passed as a parameter.
 	</p>
      ]]>
     </Details>
@@ -7512,6 +7525,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
   <BugCode abbrev="PS">Public Semaphores</BugCode>
+  <BugCode abbrev="BSHIFT">Bad shift</BugCode>
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
   <BugCode abbrev="RE">Regular expressions</BugCode>
   <BugCode abbrev="SQL">SQL Problem</BugCode>

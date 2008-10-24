@@ -73,11 +73,14 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author Nat Ayewah
@@ -119,6 +122,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		addToCollectionsMap(Collection.class.getName(), "removeLastOccurrence", 0);
 		addToCollectionsMap(Collection.class.getName(), "containsAll", -1);
 		addToCollectionsMap(Collection.class.getName(), "removeAll", -1);
+		addToCollectionsMap(Collection.class.getName(), "retainAll", -1);
 		
 		// List<E>
 		addToCollectionsMap(List.class.getName(), "indexOf", 0);
@@ -192,6 +196,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		ValueNumberDataflow vnDataflow = classContext.getValueNumberDataflow(method);
 
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -226,7 +231,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				int pos = 0;
 				boolean allMethod = false;
 				if (!argSignature.equals("(Ljava/lang/Object;)")) {
-						if (m.getName().equals("removeAll") || m.getName().equals("containsAll")) {
+						if (m.getName().equals("removeAll") || m.getName().equals("containsAll")
+								|| m.getName().equals("retainAll")) {
 							if (!m.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
 							allMethod = true;
 						} else if (m.getName().endsWith("ndexOf")
@@ -259,6 +265,32 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					continue;
 				}
 				
+				ValueNumberFrame vnFrame = vnDataflow.getFactAtLocation(location);
+				int numArguments = frame.getNumArguments(inv, cpg);
+
+				if (numArguments != 1+pos)
+					continue;
+				
+				int expectedParameters = 1;
+				if (interfaceOfInterest.getSimpleName().equals("Map"))
+					expectedParameters = 2;
+				
+				// compare containers type parameters to corresponding arguments
+				SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+
+				ValueNumber objectVN = vnFrame.getInstance(ins, cpg);
+				ValueNumber argVN = vnFrame.getArgument(inv, cpg, 0, sigParser);
+				
+				if (objectVN.equals(argVN)) {
+					accumulator.accumulateBug(new BugInstance(this, "IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES", HIGH_PRIORITY)
+					.addClassAndMethod(methodGen,
+					        sourceFile).addCalledMethod(
+					        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+							location, objectVN, vnFrame)),
+					        SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+							        sourceFile, handle));
+				}
+			
 				// Only consider generic...
 				Type objectType = frame.getInstance(inv, cpg);
 				if (!(objectType instanceof GenericObjectType))
@@ -270,19 +302,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (!operand.hasParameters())
 					continue;
 
-				int expectedParameters = 1;
-				if (interfaceOfInterest.getSimpleName().equals("Map"))
-					expectedParameters = 2;
 				if (operand.getNumParameters() != expectedParameters)
 					continue;
-
-				int numArguments = frame.getNumArguments(inv, cpg);
-
-				if (numArguments != 1+pos)
-					continue;
-
-				// compare containers type parameters to corresponding arguments
-				SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 
 				Type parmType;
 				if (typeArgument < 0) parmType = operand;
@@ -338,7 +359,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				}
 				accumulator.accumulateBug(new BugInstance(this, "GC_UNRELATED_TYPES", priority).addClassAndMethod(methodGen,
 				        sourceFile).addFoundAndExpectedType(argType, parmType).addCalledMethod(
-				        methodGen, (InvokeInstruction) ins).addEqualsMethodUsed(targets), sourceLineAnnotation);
+				        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+								location, objectVN, vnFrame)).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+										location, argVN, vnFrame)).addEqualsMethodUsed(targets), sourceLineAnnotation);
 			}
 		}
 		accumulator.reportAccumulatedBugs();

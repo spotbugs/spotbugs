@@ -747,7 +747,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
             speed="fast"
-            reports="GC_UNRELATED_TYPES" />
+            reports="GC_UNRELATED_TYPES,IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" />
 
        <Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector" speed="fast"  reports="STCAL_STATIC_CALENDAR_INSTANCE,STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE,STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE,STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"/>
 
@@ -1152,13 +1152,13 @@
   <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="RE" type="RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DLS" type="DLS_OVERWRITTEN_INCREMENT" category="CORRECTNESS"/>
-  <BugPattern abbrev="ICAST" type="ICAST_BAD_SHIFT_AMOUNT" category="CORRECTNESS"/>
+  <BugPattern abbrev="BSHIFT" type="ICAST_BAD_SHIFT_AMOUNT" category="CORRECTNESS"/>
   <BugPattern abbrev="IM" type="IM_MULTIPLYING_RESULT_OF_IREM" category="CORRECTNESS"/>
   <BugPattern abbrev="IM" type="IM_BAD_CHECK_FOR_ODD" category="STYLE"/>
   <BugPattern abbrev="IM" type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_INVOKING_TOSTRING_ON_ARRAY" category="CORRECTNESS"/>
   <BugPattern abbrev="DMI" type="DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY" category="CORRECTNESS"/>
-  <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
+  <BugPattern abbrev="BSHIFT" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
   <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="STYLE"/>
@@ -1179,6 +1179,7 @@
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS" cweid="481" />
   <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>
+  <BugPattern abbrev="IL" type="IL_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED" category="CORRECTNESS"/>
   <BugPattern abbrev="TQ" type="TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
