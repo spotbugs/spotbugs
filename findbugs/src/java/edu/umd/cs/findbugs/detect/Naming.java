@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,10 +107,10 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	// map of canonicalName -> trueMethodName
-	HashMap<String, HashSet<String>> canonicalToTrueMapping = new HashMap<String, HashSet<String>>();
+	TreeMap<String, TreeSet<String>> canonicalToTrueMapping = new TreeMap<String, TreeSet<String>>();
 
 	// map of canonicalName -> Set<XMethod>
-	HashMap<String, HashSet<XMethod>> canonicalToXMethod = new HashMap<String, HashSet<XMethod>>();
+	TreeMap<String, TreeSet<XMethod>> canonicalToXMethod = new TreeMap<String, TreeSet<XMethod>>();
 
 	HashSet<String> visited = new HashSet<String>();
 
@@ -122,7 +124,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		classContext.getJavaClass().accept(this);
 	}
 
-	private boolean checkSuper(XMethod m, HashSet<XMethod> others) {
+	private boolean checkSuper(XMethod m, Set<XMethod> others) {
 		if (m.isStatic())
 			return false;
 		if (m.getName().equals("<init>") || m.getName().equals("<clinit>"))
@@ -211,7 +213,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	@SuppressWarnings("unchecked")
-    private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
+    private boolean checkNonSuper(XMethod m, Set<XMethod> others) {
 		if (m.isStatic())
 			return false;
 		if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>"))
@@ -238,10 +240,10 @@ public class Naming extends PreorderVisitor implements Detector {
 	public void report() {
 
 		canonicalNameIterator: for (String allSmall : canonicalToTrueMapping.keySet()) {
-			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
+			TreeSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s.size() <= 1)
 				continue;
-			HashSet<XMethod> conflictingMethods = canonicalToXMethod.get(allSmall);
+			TreeSet<XMethod> conflictingMethods = canonicalToXMethod.get(allSmall);
 			for (Iterator<XMethod> j = conflictingMethods.iterator(); j.hasNext();) {
 				if (checkSuper(j.next(), conflictingMethods))
 					j.remove();
@@ -481,17 +483,17 @@ public class Naming extends PreorderVisitor implements Detector {
 
 		XMethod xm = getXMethod();
 		{
-			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
+			TreeSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {
-				s = new HashSet<String>();
+				s = new TreeSet<String>();
 				canonicalToTrueMapping.put(allSmall, s);
 			}
 			s.add(trueName);
 		}
 		{
-			HashSet<XMethod> s = canonicalToXMethod.get(allSmall);
+			TreeSet<XMethod> s = canonicalToXMethod.get(allSmall);
 			if (s == null) {
-				s = new HashSet<XMethod>();
+				s = new TreeSet<XMethod>();
 				canonicalToXMethod.put(allSmall, s);
 			}
 			s.add(xm);
