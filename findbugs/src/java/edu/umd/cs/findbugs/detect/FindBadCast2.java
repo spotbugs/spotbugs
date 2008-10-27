@@ -289,7 +289,7 @@ public class FindBadCast2 implements Detector {
 						new BugInstance(this,
 						isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF",  priority)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addFoundAndExpectedType(refSig, castSig)
+						.addFoundAndExpectedType(refType, castType)
 						.addSourceLine(sourceLineAnnotation));
 				continue;
 			}
@@ -330,7 +330,7 @@ public class FindBadCast2 implements Detector {
 						accumulator.accumulateBug(new BugInstance(this,
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-								.addFoundAndExpectedType(refSig, castSig)
+								.addFoundAndExpectedType(refType, castType)
 								,sourceLineAnnotation);
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
@@ -381,7 +381,7 @@ public class FindBadCast2 implements Detector {
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 
-								.addFoundAndExpectedType(refSig, castSig)
+								.addFoundAndExpectedType(refType, castType)
 								.addOptionalAnnotation(variable)
 								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
@@ -442,7 +442,7 @@ public class FindBadCast2 implements Detector {
 
 							BugInstance bugInstance = new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addFoundAndExpectedType(refSig, castSig)
+									.addFoundAndExpectedType(refType, castType)
 									 .addOptionalAnnotation(variable);
 
 							accumulator.accumulateBug(bugInstance,

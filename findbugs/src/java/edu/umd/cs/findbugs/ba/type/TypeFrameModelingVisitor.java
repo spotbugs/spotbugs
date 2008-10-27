@@ -27,10 +27,12 @@ import org.apache.bcel.generic.*;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
@@ -65,7 +67,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
 	private ValueNumber instanceOfValueNumber;
-
+    private FieldSummary fieldSummary;
 	private FieldStoreTypeDatabase database;
 
 	/**
@@ -75,6 +77,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 */
 	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {
 		super(cpg);
+		fieldSummary =  AnalysisContext.currentAnalysisContext().getFieldSummary();
+		
 	}
 
 	/**
@@ -310,12 +314,18 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					loadType = property.getLoadType((ReferenceType) loadType);
 				}
 			}
-
+			
+			Item summary = fieldSummary.getSummary(xfield);
+			
+			if (loadType == originalLoadType && summary != null) {
+				loadType = Type.getType(summary.getSignature());
+				
+			}
 			// [Added: Support for Generics]
 			// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
 			// we can assume, that the signature for obj is still relevant. This should
 			// be updated by inserting generic information in the FieldStoreTypeDatabase
-			if (originalLoadType.equals(loadType) && xfield != null) {
+			if (xfield != null) {
 				// find the field and its signature
 				Field field = Hierarchy.findField(xfield.getClassName(), xfield.getName());
 				String signature = null;
@@ -328,10 +338,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 				// replace loadType with information from field signature (conservative)
 				if (signature != null && 
-					(loadType instanceof ObjectType || loadType instanceof ArrayType) &&
-					!(loadType instanceof ExceptionObjectType)
+					(loadType instanceof ObjectType)
 					) {
-					loadType = GenericUtilities.getType( signature );
+					loadType = GenericUtilities.merge(GenericUtilities.getType( signature ), (ObjectType) loadType);
 				}
 			}
 		} catch (ClassNotFoundException e) {

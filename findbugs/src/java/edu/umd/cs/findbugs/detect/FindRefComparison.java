@@ -384,39 +384,48 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		@Override
 		public void visitGETSTATIC(GETSTATIC obj) {
-			handleLoad(obj);
+			Type type = obj.getType(getCPG());
+			if (type.getSignature().equals(STRING_SIGNATURE)) {
+				handleLoad(obj);
+			}
+			else super.visitGETSTATIC(obj);
 		}
 
 		@Override
 		public void visitGETFIELD(GETFIELD obj) {
-			handleLoad(obj);
+			Type type = obj.getType(getCPG());
+			if (type.getSignature().equals(STRING_SIGNATURE)) {
+				handleLoad(obj);
+			}
+			else super.visitGETFIELD(obj);
 		}
 
 		private void handleLoad(FieldInstruction obj) {
 			consumeStack(obj);
 
 			Type type = obj.getType(getCPG());
-			if (type.getSignature().equals(STRING_SIGNATURE)) {
-				try {
-					String className = obj.getClassName(getCPG());
-					String fieldName = obj.getName(getCPG());
-					Field field = Hierarchy.findField(className, fieldName);
+			if (!type.getSignature().equals(STRING_SIGNATURE)) 
+				throw new IllegalArgumentException("type is not String: " + type);
+			try {
+				String className = obj.getClassName(getCPG());
+				String fieldName = obj.getName(getCPG());
+				Field field = Hierarchy.findField(className, fieldName);
 
-					if (field != null) {
-						// If the field is final, we'll assume that the String value
-						// is static.
-						if (field.isFinal()) {
-	                        pushValue(staticStringTypeInstance);
-                        } else {
-	                        pushValue(type);
-                        }
-
-						return;
+				if (field != null) {
+					// If the field is final, we'll assume that the String value
+					// is static.
+					if (field.isFinal()) {
+						pushValue(staticStringTypeInstance);
+					} else {
+						pushValue(type);
 					}
-				} catch (ClassNotFoundException ex) {
-					lookupFailureCallback.reportMissingClass(ex);
+
+					return;
 				}
+			} catch (ClassNotFoundException ex) {
+				lookupFailureCallback.reportMissingClass(ex);
 			}
+
 
 			pushValue(type);
 		}
@@ -755,7 +764,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsType.getSignature(), lhsType.getSignature()),
+				.addFoundAndExpectedType(rhsType, lhsType),
 				SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
 				);
 			}
@@ -908,7 +917,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
 			bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			.addFoundAndExpectedType(rhsType_, lhsType_),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		}
@@ -916,7 +925,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
 	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature()),
+			.addFoundAndExpectedType(rhsType_, lhsType_),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
         } else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
@@ -946,7 +955,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	            }
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsSig, lhsSig)
+				.addFoundAndExpectedType(rhsType_, lhsType_)
 				.addEqualsMethodUsed(targets),
 				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
@@ -956,14 +965,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
 	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+			.addFoundAndExpectedType(rhsType_, lhsType_)
 			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
         } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
 	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+			.addFoundAndExpectedType(rhsType_, lhsType_)
 			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);

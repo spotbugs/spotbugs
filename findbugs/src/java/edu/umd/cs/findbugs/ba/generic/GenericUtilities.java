@@ -246,7 +246,14 @@ public class GenericUtilities {
 			return Type.getType(signature);
 	}
 
+	public static ObjectType  merge(Type t1, ObjectType t2) {
+		if (t1 instanceof GenericObjectType) 
+			return merge((GenericObjectType) t1, t2);
+		return t2;
+	}
 	public static ObjectType  merge(GenericObjectType t1, ObjectType t2) {
+		if (t2 instanceof GenericObjectType) 
+			return t2;
 		List<? extends ReferenceType> parameters = t1.getParameters();
 		if (parameters == null) return t2;
 		return new GenericObjectType(t2.getClassName(), parameters);
