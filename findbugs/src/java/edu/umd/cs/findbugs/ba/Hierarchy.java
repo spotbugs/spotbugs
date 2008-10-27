@@ -868,7 +868,7 @@ public class Hierarchy {
 		XField xfield = findXField(className, fieldName, fieldSig, isStatic);
 		short opcode = fins.getOpcode();
 		if (xfield != null &&
-				xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+				xfield.isResolved() && xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
 			return xfield;
 		else
 			return null;

@@ -308,24 +308,24 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			// Check the field store type database to see if we can
 			// get a more precise type for this load.
 			XField xfield = Hierarchy.findXField(obj, getCPG());
-			if (database != null && (loadType instanceof ReferenceType) && xfield != null) {
-				FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
-				if (property != null) {
-					loadType = property.getLoadType((ReferenceType) loadType);
-				}
-			}
-			
-			Item summary = fieldSummary.getSummary(xfield);
-			
-			if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
-				loadType = Type.getType(summary.getSignature());
-				
-			}
-			// [Added: Support for Generics]
-			// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
-			// we can assume, that the signature for obj is still relevant. This should
-			// be updated by inserting generic information in the FieldStoreTypeDatabase
 			if (xfield != null) {
+				if (database != null && (loadType instanceof ReferenceType)) {
+					FieldStoreType property = database.getProperty(xfield.getFieldDescriptor());
+					if (property != null) {
+						loadType = property.getLoadType((ReferenceType) loadType);
+					}
+				}
+
+				Item summary = fieldSummary.getSummary(xfield);
+				if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
+					loadType = Type.getType(summary.getSignature());
+				}
+
+				// [Added: Support for Generics]
+				// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
+				// we can assume, that the signature for obj is still relevant. This should
+				// be updated by inserting generic information in the FieldStoreTypeDatabase
+
 				// find the field and its signature
 				Field field = Hierarchy.findField(xfield.getClassName(), xfield.getName());
 				String signature = null;
@@ -338,10 +338,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 				// replace loadType with information from field signature (conservative)
 				if (signature != null && 
-					(loadType instanceof ObjectType)
-					) {
+						(loadType instanceof ObjectType)
+				) {
 					loadType = GenericUtilities.merge(GenericUtilities.getType( signature ), (ObjectType) loadType);
 				}
+
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
