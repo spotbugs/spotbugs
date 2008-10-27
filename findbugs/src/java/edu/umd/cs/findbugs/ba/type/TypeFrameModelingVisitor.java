@@ -317,7 +317,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			
 			Item summary = fieldSummary.getSummary(xfield);
 			
-			if (loadType == originalLoadType && summary != null) {
+			if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
 				loadType = Type.getType(summary.getSignature());
 				
 			}
