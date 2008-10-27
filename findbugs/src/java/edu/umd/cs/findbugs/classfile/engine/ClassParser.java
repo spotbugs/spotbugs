@@ -115,9 +115,13 @@ public class ClassParser implements ClassParserInterface {
 			if (interfaces_count < 0) {
 				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 			}
-			ClassDescriptor[] interfaceDescriptorList = new ClassDescriptor[interfaces_count];
-			for (int i = 0; i < interfaceDescriptorList.length; i++) {
-				interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
+			ClassDescriptor[] interfaceDescriptorList;
+			if (interfaces_count == 0)
+				interfaceDescriptorList = ClassDescriptor.EMPTY_ARRAY;
+			else {
+				interfaceDescriptorList = new ClassDescriptor[interfaces_count];
+				for (int i = 0; i < interfaceDescriptorList.length; i++)
+					interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
 			}
 			// Extract all references to other classes,
 			// both CONSTANT_Class entries and also referenced method

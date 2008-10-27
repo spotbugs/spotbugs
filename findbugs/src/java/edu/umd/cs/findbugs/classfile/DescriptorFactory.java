@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class DescriptorFactory {
-	private static ThreadLocal<DescriptorFactory> instance =
+	private static ThreadLocal<DescriptorFactory> instanceThreadLocal =
 		new ThreadLocal<DescriptorFactory>() {
 		@Override
         protected
@@ -63,28 +63,33 @@ public class DescriptorFactory {
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
 		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
-	// MapCache<String, String> stringCache = new MapCache<String, String>(10000);
+	MapCache<String, String> stringCache = new MapCache<String, String>(3000);
 	public static String canonicalizeString(String s) {
-		/*
+		
 		DescriptorFactory instance = instance();
 		String result = instance.stringCache.get(s);
 		if (result != null) return result;
 		instance.stringCache.put(s,s);
-		*/
+		
 		return s;
 	}
 
+	public static void clearStringCache() {
+		DescriptorFactory instance = instance();
+		instance.stringCache.clear();
+		
+	}
 	/**
 	 * Get the singleton instance of the DescriptorFactory.
 	 *
 	 * @return the singleton instance of the DescriptorFactory
 	 */
 	public static DescriptorFactory instance() {
-		return instance.get();
+		return instanceThreadLocal.get();
 	}
 
 	public static void clearInstance() {
-		instance.remove();
+		instanceThreadLocal.remove();
 	}
 
 	public Collection<ClassDescriptor> getAllClassDescriptors() {
@@ -295,6 +300,8 @@ public class DescriptorFactory {
     }
 
 	public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
+		if (classNames.length == 0)
+			return ClassDescriptor.EMPTY_ARRAY;
     	ClassDescriptor[] result = new ClassDescriptor[classNames.length];
     	for(int i = 0; i < classNames.length; i++)
     		result[i] = createClassDescriptor(classNames[i]);

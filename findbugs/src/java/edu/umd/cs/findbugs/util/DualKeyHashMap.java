@@ -53,7 +53,7 @@ public class DualKeyHashMap<K1, K2, V>  {
 	public V put(K1 k1, K2 k2, V v) {
 		Map<K2, V> m = map.get(k1);
 		if (m == null) {
-			m = new HashMap<K2, V>();
+			m = new HashMap<K2, V>(3);
 			map.put(k1, m);
 		}
 		return m.put(k2,v);

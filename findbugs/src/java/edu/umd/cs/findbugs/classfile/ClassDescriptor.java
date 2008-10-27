@@ -37,6 +37,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	private static final long serialVersionUID = 1L;
 	private final String className;
 
+	public static final ClassDescriptor[] EMPTY_ARRAY = new ClassDescriptor[0];
 	/**
 	 * Constructor.
 	 * 

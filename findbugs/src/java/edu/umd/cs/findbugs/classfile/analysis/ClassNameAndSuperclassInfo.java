@@ -116,10 +116,16 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		 *            The referencedClassDescriptorList to set.
 		 */
 		public void setReferencedClassDescriptors(Collection<ClassDescriptor> referencedClassDescriptorList) {
-			this.referencedClassDescriptorList = new ArrayList<ClassDescriptor>(referencedClassDescriptorList);
+			if (referencedClassDescriptorList.size() == 0)
+				this.referencedClassDescriptorList = Collections.emptyList();
+			else 
+				this.referencedClassDescriptorList = new ArrayList<ClassDescriptor>(referencedClassDescriptorList);
 		}
 		public void setCalledClassDescriptors(Collection<ClassDescriptor> calledClassDescriptorList) {
-			this.calledClassDescriptorList = new ArrayList<ClassDescriptor>(calledClassDescriptorList);
+			if (calledClassDescriptorList.size() == 0)
+				this.calledClassDescriptorList = Collections.emptyList();
+			else 
+				this.calledClassDescriptorList = new ArrayList<ClassDescriptor>(calledClassDescriptorList);
 		}
 	}
 

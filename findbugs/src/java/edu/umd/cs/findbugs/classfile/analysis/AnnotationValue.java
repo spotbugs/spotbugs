@@ -36,8 +36,8 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
  */
 public class AnnotationValue {
 	private final ClassDescriptor annotationClass;
-	private Map<String, Object> valueMap = new HashMap<String, Object>();
-	private Map<String, Object> typeMap = new HashMap<String, Object>();
+	private Map<String, Object> valueMap = new HashMap<String, Object>(4);
+	private Map<String, Object> typeMap = new HashMap<String, Object>(4);
 	
 	/**
 	 * Constructor.

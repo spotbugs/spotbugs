@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedObject {
 
+	public static final MethodInfo [] EMPTY_ARRAY = new MethodInfo[0];
 	static public class Builder {
 		final int accessFlags;
 
@@ -59,9 +60,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		boolean isUnconditionalThrower;
 		boolean isUnsupported;
 
-		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
-		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>();
+		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(4);
 
 		public Builder(@DottedClassName String className, String methodName, String methodSignature, int accessFlags) {
 			this.className = className;

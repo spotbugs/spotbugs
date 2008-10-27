@@ -64,16 +64,26 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 
 		private ClassDescriptor immediateEnclosingClass;
-		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
 		private String classSourceSignature;
 		private String source;
 
 		@Override
         public ClassInfo build() {
+			FieldInfo fields [];
+			MethodInfo methods[];
+			
+			if (fieldDescriptorList.size() == 0)
+				fields = FieldInfo.EMPTY_ARRAY;
+			else fields = fieldDescriptorList.toArray(new FieldInfo[fieldDescriptorList.size()]);
+			if (methodDescriptorList.size() == 0)
+				methods = MethodInfo.EMPTY_ARRAY;
+			else methods = methodDescriptorList.toArray(new MethodInfo[methodDescriptorList.size()]);
+			
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
-					classAnnotations, fieldDescriptorList.toArray(new FieldInfo[0]), 
-					methodDescriptorList.toArray(new MethodInfo[0]), immediateEnclosingClass );
+					classAnnotations, fields, 
+					methods, immediateEnclosingClass );
 		}
 
 		
@@ -156,6 +166,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors,   majorVersion,  minorVersion);
 		this.source = source;
 		this.classSourceSignature = classSourceSignature;
+		if (fieldDescriptorList.length == 0) 
+			fieldDescriptorList = FieldInfo.EMPTY_ARRAY;
 		this.xFields = fieldDescriptorList;
 		this.xMethods = methodDescriptorList;
 		this.immediateEnclosingClass = immediateEnclosingClass;

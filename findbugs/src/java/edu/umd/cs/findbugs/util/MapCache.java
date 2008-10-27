@@ -39,7 +39,7 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 	 * @param maxCapacity - maximum number of entries in the map
 	 */
 	public MapCache(int maxCapacity) {
-		super(4*maxCapacity/3, 0.75f, true);
+		super(4*maxCapacity/3+5, 0.75f, true);
 		this.maxCapacity = maxCapacity;
 
 	}

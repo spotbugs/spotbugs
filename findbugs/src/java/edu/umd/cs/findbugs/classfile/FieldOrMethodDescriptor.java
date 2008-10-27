@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Common superclass for FieldDescriptor and MethodDescriptor.
@@ -27,12 +28,16 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comparable {
+	/**
+     * 
+     */
+    private static final int CACHE_SIZE = 100;
 	private final @SlashedClassName String slashedClassName;
 	private final String name;
 	private final String signature;
 	private final boolean isStatic;
 	private int cachedHashCode;
-
+	
 	public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
 		assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 			
@@ -42,6 +47,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 		this.isStatic = isStatic;
 	}
 
+	
 	/**
 	 * @return Returns the class name
 	 */

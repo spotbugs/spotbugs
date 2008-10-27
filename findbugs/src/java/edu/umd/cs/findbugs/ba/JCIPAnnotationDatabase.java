@@ -63,7 +63,7 @@ public class JCIPAnnotationDatabase {
 		assert dottedClassName.indexOf('/') == -1;
 		Map<String, Object> map = classAnnotations.get(dottedClassName);
 		if (map == null) {
-			map = new HashMap<String, Object>();
+			map = new HashMap<String, Object>(3);
 			classAnnotations.put(dottedClassName, map);
 		}
 		return map;

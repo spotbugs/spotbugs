@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObject {
 
+	public static final FieldInfo[] EMPTY_ARRAY = new FieldInfo[0];
 	static public class Builder {
 		final int accessFlags;
 
@@ -54,7 +55,7 @@ public class FieldInfo extends FieldDescriptor implements XField, AnnotatedObjec
 
 		String fieldSourceSignature;
 
-		final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<ClassDescriptor, AnnotationValue>();
+		final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
 
 		public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
 			this.className = className;
