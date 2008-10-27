@@ -1487,10 +1487,10 @@ factory pattern to create these objects.</p>
     <Details>
     <![CDATA[
     <p> This detector looks at the arguments of calls to generic 
-    container methods that receive a <code>java.lang.Object</code>
-    to see if the argument's type is related to the container's 
+    collection methods that receive a <code>java.lang.Object</code>
+    to see if the argument's type is related to the collection's 
     parameter. Arguments with unrelated class types are never going 
-    to be in the container. For example, if <code>foo</code> is a 
+    to be in the collection. For example, if <code>foo</code> is a 
     <code>List&lt;String&gt;</code> and <code>bar</code> is a 
     <code>StringBuffer</code>, the call <code>foo.contains(bar)</code>
     will always return false. This is a fast detector. 
@@ -1758,11 +1758,11 @@ an infinite recursive loop that will result in a stack overflow.</p>
 
 
   <BugPattern type="IL_CONTAINER_ADDED_TO_ITSELF">
-    <ShortDescription>A container is added to itself</ShortDescription>
-    <LongDescription>A container is added to itself in {1}</LongDescription>
+    <ShortDescription>A collection is added to itself</ShortDescription>
+    <LongDescription>A collection is added to itself in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>A container is added to itself. As a result, computing the hashCode of this
+<p>A collection is added to itself. As a result, computing the hashCode of this
 set will throw a StackOverflowException.
 </p>
 ]]>
@@ -7135,7 +7135,7 @@ and the next method is supposed to change the state of the iterator.
     <LongDescription>Collections should not contain themselves in call to {2.givenClass}</LongDescription>
     <Details>
      <![CDATA[
-     <p> This call to a generic container's method would only make sense if a collection contained 
+     <p> This call to a generic collection's method would only make sense if a collection contained 
 itself (e.g., if <code>s.contains(s)</code> were true). This is unlikely to be true and would cause
 problems if it were true (such as the computation of the hash code resulting in infinite recursion).
 It is likely that the wrong value is being passed as a parameter.
@@ -7573,7 +7573,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
   <BugCode abbrev="VR">Version compatibility issue</BugCode>
   <BugCode abbrev="DP">Use doPrivileged</BugCode>
-  <BugCode abbrev="GC">Suspicious calls to generic container methods</BugCode>
+  <BugCode abbrev="GC">Suspicious calls to generic collection methods</BugCode>
   <BugCode abbrev="STCAL">Static use of type Calendar or DateFormat</BugCode>
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
