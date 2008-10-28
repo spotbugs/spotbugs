@@ -171,7 +171,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
 		if (typeParameters != null)
-			attributeList.addAttribute("typeParameters", StringEscapeUtils.escapeXml(typeParameters));
+			attributeList.addAttribute("typeParameters", typeParameters);
 
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
