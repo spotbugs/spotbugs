@@ -91,7 +91,7 @@ public abstract class Frame<ValueType> {
 	/**
 	 * Default number of stack slots to preallocate space for.
 	 */
-	private static final int DEFAULT_STACK_CAPACITY = 10;
+	private static final int DEFAULT_STACK_CAPACITY = 4;
 
 	// //////////////////////////////////////////////////////////////////////////////////
 	// Methods

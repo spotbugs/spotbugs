@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ConstantPoolGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -56,6 +57,7 @@ public class AnalysisCache implements IAnalysisCache {
      *
      */
     private static final int MAX_JAVACLASS_RESULTS_TO_CACHE = 5000;
+    private static final int MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE = 500;
 
 	/**
 	 * Maximum number of class analysis results to cache.
@@ -385,8 +387,10 @@ public class AnalysisCache implements IAnalysisCache {
 			IAnalysisEngine<DescriptorType, E> engine = engineMap.get(analysisClass);
 			if (analysisClass.equals(JavaClass.class)) {
 	            descriptorMap = new MapCache<DescriptorType, Object>(MAX_JAVACLASS_RESULTS_TO_CACHE);
-            } else if (analysisClass.equals(ClassContext.class)) {
-	            descriptorMap = new MapCache<DescriptorType, Object>(10);
+			} else if (analysisClass.equals(ConstantPoolGen.class)) {
+				descriptorMap = new MapCache<DescriptorType, Object>(MAX_CONSTANT_POOL_GEN_RESULTS_TO_CACHE);
+			} else if (analysisClass.equals(ClassContext.class)) {
+				descriptorMap = new MapCache<DescriptorType, Object>(10);
             } else if (engine instanceof IClassAnalysisEngine && ((IClassAnalysisEngine)engine).canRecompute()) {
 	            descriptorMap = new MapCache<DescriptorType, Object>(MAX_CLASS_RESULTS_TO_CACHE);
             } else {
