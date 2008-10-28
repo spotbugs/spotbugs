@@ -119,6 +119,16 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
+		
+		if (seen == INVOKEVIRTUAL &&   getNameConstantOperand().equals("hashCode")
+				&&   getSigConstantOperand().equals("()I")
+				&& stack.getStackDepth() > 0) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			if (item0.getSignature().charAt(0) == '[')
+				bugReporter.reportBug(new BugInstance(this, "DMI_INVOKING_HASHCODE_ON_ARRAY", NORMAL_PRIORITY).addClassAndMethod(this)
+						.addValueSource(item0, getMethod(), getPC())
+						.addSourceLine(this));
+		}
 		if (seen != RETURN && isReturn(seen) && isRegisterStore(getPrevOpcode(1))) {
 			
 			int priority = Priorities.NORMAL_PRIORITY;

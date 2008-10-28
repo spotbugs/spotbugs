@@ -6837,6 +6837,23 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
   </BugPattern>
 
 
+  <BugPattern type="DMI_INVOKING_HASHCODE_ON_ARRAY">
+    <ShortDescription>Invocation of hashCode on an array</ShortDescription>
+    <LongDescription>Invocation of hashCode on array in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code invokes hashCode on an array. Calling hashCode on
+an array returns the same value as System.identityHashCode, and ingores
+the contents and length of the array. If you need a hashCode that
+depends on the contents of an array <code>a</code>, 
+use <code>java.util.Arrays.hashCode(a)</code>.
+
+</p>
+]]>
+    </Details>
+    </BugPattern>
+
   <BugPattern type="DMI_INVOKING_TOSTRING_ON_ARRAY">
     <ShortDescription>Invocation of toString on an array</ShortDescription>
     <LongDescription>Invocation of toString on {2.givenClass} in {1}</LongDescription>
