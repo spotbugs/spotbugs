@@ -63,21 +63,11 @@ public class DescriptorFactory {
 		this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
 		this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
 	}
-	MapCache<String, String> stringCache = new MapCache<String, String>(3000);
 	public static String canonicalizeString(String s) {
-		
-		DescriptorFactory instance = instance();
-		String result = instance.stringCache.get(s);
-		if (result != null) return result;
-		instance.stringCache.put(s,s);
-		
 		return s;
 	}
 
-	public static void clearStringCache() {
-		DescriptorFactory instance = instance();
-		instance.stringCache.clear();
-		
+	public static void clearStringCache() {		
 	}
 	/**
 	 * Get the singleton instance of the DescriptorFactory.
