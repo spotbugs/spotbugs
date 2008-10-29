@@ -49,6 +49,12 @@ public interface FindBugsMarker {
 	public static final String UNIQUE_ID = "FINDBUGS_UNIQUE_ID";
 
 	/**
+	 * Marker attribute recording the primary (first) line of the BugInstance
+	 * in its BugCollection (in case same bug reported on many lines).
+	 */
+	public static final String PRIMARY_LINE = "PRIMARY_LINE";
+
+	/**
 	 * Marker attribute recording the name and timestamp of the first version.
 	 */
 	public static final String FIRST_VERSION = "FIRST_VERSION";

@@ -22,6 +22,7 @@ package de.tobject.findbugs.reporter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -41,32 +42,39 @@ import edu.umd.cs.findbugs.Priorities;
 	* Creates a FindBugs marker in a runnable window.
 	*/
 public class MarkerReporter implements IWorkspaceRunnable {
-	private BugInstance bug;
-	private IResource resource;
-	private int startLine;
-	private BugCollection collection;
+	private final BugInstance bug;
+	private final IResource resource;
+	private final Set<Integer> lines;
+	private final BugCollection collection;
 	private static final boolean EXPERIMENTAL_BUGS = false;
+	private final Integer primaryLine;
 
-	public MarkerReporter(BugInstance bug, IResource resource, int startLine,
+	public MarkerReporter(BugInstance bug, IResource resource, Integer primaryLine,
+			Set<Integer> lines,
 			BugCollection theCollection, IProject project) {
-		this.startLine = startLine;
+		this.primaryLine = primaryLine;
+		this.lines = lines;
 		this.bug = bug;
 		this.resource = resource;
 		this.collection = theCollection;
 	}
 
 	public void run(IProgressMonitor monitor) throws CoreException {
-
 		String markerType = getMarkerType();
-
 		if(markerType == null) {
 			return;
 		}
+		addmarker(markerType, primaryLine);
+		for (Integer line : lines) {
+			// This triggers resource update on IResourceChangeListener's (BugTreeView)
+			addmarker(markerType, line);
+		}
+	}
 
-		// This triggers resource update on IResourceChangeListener's (BugTreeView)
+	private void addmarker(String markerType, Integer line) throws CoreException {
 		IMarker marker = resource.createMarker(markerType);
 
-		Map<String, Object> attributes = createMarkerAttributes(marker);
+		Map<String, Object> attributes = createMarkerAttributes(marker, line);
 		setAttributes(marker, attributes);
 	}
 
@@ -104,11 +112,13 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
 	/**
 	 * @param marker non null
+	 * @param startLine
 	 * @return attributes map which should be assigned to the given marker
 	 */
-	private Map<String, Object> createMarkerAttributes(IMarker marker) {
+	private Map<String, Object> createMarkerAttributes(IMarker marker, Integer startLine) {
 		Map<String, Object> attributes = new HashMap<String, Object>(23);
-		attributes.put(IMarker.LINE_NUMBER, Integer.valueOf(startLine));
+		attributes.put(IMarker.LINE_NUMBER, startLine);
+		attributes.put(FindBugsMarker.PRIMARY_LINE, primaryLine);
 		attributes.put(FindBugsMarker.BUG_TYPE, bug.getType());
 		long seqNum = bug.getFirstVersion();
 		if(seqNum == 0) {

@@ -20,7 +20,9 @@
 
 package de.tobject.findbugs.reporter;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -124,21 +127,25 @@ public final class MarkerUtil {
 
 			int startLine = 1;
 			if (bug.getPrimarySourceLineAnnotation() != null) {
-				  startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
+				startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
 			}
 
 			int fieldLine = -1;
-			if (startLine <= 0 && bug.getPrimaryField() != null
-					&& bug.getPrimaryField().getSourceLines() != null) {
-				fieldLine = bug.getPrimaryField().getSourceLines().getStartLine();
+			if (startLine <= 0) {
+				FieldAnnotation primaryField = bug.getPrimaryField();
+				if (primaryField != null && primaryField.getSourceLines() != null) {
+					fieldLine = primaryField.getSourceLines().getStartLine();
+				}
 			}
 
 			// Eclipse editor starts with 1, otherwise the marker will not be shown in editor at all
 			if(startLine <= 0 && fieldLine > 0) {
 				startLine = fieldLine;
 			}
-			addMarker(bug, project.getProject(), resource, startLine, theCollection);
+
 			if(startLine != fieldLine && fieldLine > 0){
+				addMarker(bug, project.getProject(), resource, fieldLine, theCollection);
+			} else {
 				addMarker(bug, project.getProject(), resource, startLine, theCollection);
 			}
 
@@ -154,24 +161,56 @@ public final class MarkerUtil {
 		}
 	}
 
+	private static Set<Integer> getAdditionalLines(BugInstance bug) {
+		Set<Integer> lines = new HashSet<Integer>();
+		// XXX it would make sense to add a property to show all the occurencies
+		// currently it would lead to too much noise...
+		if(true){
+			return lines;
+		}
+		Iterator<BugAnnotation> annotationIter = bug.annotationIterator();
+		// skip the first annotation, which is already reported
+		BugAnnotation theAnnotation = annotationIter.next();
+		ClassAnnotation primaryClass = bug.getPrimaryClass();
+		String className = primaryClass != null? primaryClass.getClassName() : "";
+		while(annotationIter.hasNext()){
+			theAnnotation = annotationIter.next();
+			if(!(theAnnotation instanceof SourceLineAnnotation)){
+				continue;
+			}
+			SourceLineAnnotation lineAnnotation = (SourceLineAnnotation) theAnnotation;
+			if(className.equals(lineAnnotation.getClassName())){
+				lines.add(Integer.valueOf(lineAnnotation.getStartLine()));
+			}
+		}
+		return lines;
+	}
+
 	private static void addMarker(BugInstance bug, IProject project,
-			IResource resource, int startLine, BugCollection theCollection) {
+			IResource resource, int primaryLine, BugCollection theCollection) {
 		if (Reporter.DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
-				+ startLine
+				+ primaryLine
 				+ bug.getMessage());
-			}
-			try {
-				project.getWorkspace().run(
-					new MarkerReporter(bug, resource, startLine, theCollection, project), // action
-					null,  // scheduling rule (null if there are no scheduling restrictions)
-					0,     // flags (could specify IWorkspace.AVOID_UPDATE)
-					null); // progress monitor (null if progress reporting is not desired)
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
-			}
 		}
+
+		Integer primLine = Integer.valueOf(primaryLine);
+		Set<Integer> lines = getAdditionalLines(bug);
+		if(lines.size() > 0) {
+			lines.remove(primLine);
+		}
+
+		try {
+			project.getWorkspace().run(
+				new MarkerReporter(bug, resource, primLine, lines, theCollection, project), // action
+				null,  // scheduling rule (null if there are no scheduling restrictions)
+				0,     // flags (could specify IWorkspace.AVOID_UPDATE)
+				null); // progress monitor (null if progress reporting is not desired)
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
+		}
+	}
 
 
 	/**
@@ -280,7 +319,10 @@ public final class MarkerUtil {
 		IField ifield = type.getField(field.getFieldName());
 		if (type instanceof SourceType) {
 			IScanner scanner = initScanner(type);
-			ISourceRange sourceRange = ifield.getSourceRange();
+			ISourceRange sourceRange = ifield.getNameRange();
+			if(sourceRange == null) {
+				sourceRange = ifield.getSourceRange();
+			}
 			int offset = sourceRange.getOffset();
 			int lineNbr = scanner.getLineNumber(offset);
 			lineNbr = lineNbr <= 0 ? 1 : lineNbr;
@@ -327,7 +369,10 @@ public final class MarkerUtil {
 		IOpenable op = source.getOpenable();
 		if (op instanceof CompilationUnit) {
 			IScanner scanner = initScanner(source);
-			ISourceRange range = source.getSourceRange();
+			ISourceRange range = source.getNameRange();
+			if(range == null){
+				range = source.getSourceRange();
+			}
 			return scanner.getLineNumber(range.getOffset());
 		}
 		// start line of enclosing type
@@ -591,14 +636,21 @@ public final class MarkerUtil {
 			String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
 			String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
 			Integer lineNumber = (Integer)marker.getAttribute(IMarker.LINE_NUMBER);
-			if (bugId == null || bugType == null || lineNumber == null) {
+			Integer primaryLineNumber = (Integer)marker.getAttribute(FindBugsMarker.PRIMARY_LINE);
+
+			// compatibility
+			if(primaryLineNumber == null){
+				primaryLineNumber = lineNumber;
+			}
+			if (bugId == null || bugType == null || primaryLineNumber == null) {
 				FindbugsPlugin.getDefault().logError("Could not get find attributes for marker " + marker + ": (" + bugId + ", " + bugType +", " + lineNumber+")");
 				return null;
 			}
-			 BugInstance bug = bugCollection.findBug(
+
+			BugInstance bug = bugCollection.findBug(
 					bugId,
 					bugType,
-					lineNumber.intValue());
+					primaryLineNumber.intValue());
 
 			return bug;
 		} catch (RuntimeException e) {
