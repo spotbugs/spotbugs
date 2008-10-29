@@ -1,17 +1,17 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2003-2005 University of Maryland
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -111,7 +111,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/*
 	 * The following fields are used for tracking Bug instances across multiple versions of software.
-	 * They are meaningless in a BugCollection for just one version of software. 
+	 * They are meaningless in a BugCollection for just one version of software.
 	 */
 	private long firstVersion = 0;
 	private long lastVersion = -1;
@@ -131,7 +131,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private static boolean adjustExperimental = false;
 
 	private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -186,7 +186,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Create a new BugInstance.
 	 * This is the constructor that should be used by Detectors.
-	 * 
+	 *
 	 * @param detector the Detector that is reporting the BugInstance
 	 * @param type     the bug type
 	 * @param priority the bug priority
@@ -209,7 +209,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Create a new BugInstance.
 	 * This is the constructor that should be used by Detectors.
-	 * 
+	 *
 	 * @param detector the Detector2 that is reporting the BugInstance
 	 * @param type     the bug type
 	 * @param priority the bug priority
@@ -374,7 +374,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Find the first BugAnnotation in the list of annotations
 	 * that is the same type or a subtype as the given Class parameter.
-	 * 
+	 *
 	 * @param cls the Class parameter
 	 * @return the first matching BugAnnotation of the given type,
 	 *         or null if there is no such BugAnnotation
@@ -389,7 +389,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {
-		for (BugAnnotation annotation : annotationList) 
+		for (BugAnnotation annotation : annotationList)
 			if (annotation instanceof LocalVariableAnnotation)
 				return (LocalVariableAnnotation) annotation;
 		return null;
@@ -441,7 +441,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * If given PackageMemberAnnotation is non-null, return its
 	 * SourceLineAnnotation.
-	 * 
+	 *
 	 * @param packageMember
 	 *            a PackageMemberAnnotation
 	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
@@ -474,7 +474,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		userDesignation = bd;
 	}
 	/** return the user designation object, which may be null.
-	 * 
+	 *
 	 *  A previous calls to getSafeUserDesignation(), setAnnotationText(),
 	 *  or setUserDesignation() will ensure it will be non-null
 	 *  [barring an intervening setUserDesignation(null)].
@@ -501,7 +501,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *
 	 *  To set the user designation key, call
 	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
-	 * 
+	 *
 	 *  @see I18N#getUserDesignation(String key)
 	 *  @return the user designation key
 	 */
@@ -527,7 +527,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	@NonNull public String getAnnotationText() {
 		BugDesignation userDesignation = this.userDesignation;
-		if (userDesignation == null) return "";		
+		if (userDesignation == null) return "";
 		String s = userDesignation.getAnnotationText();
 		if (s == null) return "";
 		return s;
@@ -559,9 +559,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Get the BugInstance's unique id.
-	 * 
+	 *
 	 * @return the unique id, or null if no unique id has been assigned
-	 * 
+	 *
 	 * Deprecated, since it isn't persistent
 	 */
 	@Deprecated
@@ -571,9 +571,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Set the unique id of the BugInstance.
-	 * 
+	 *
 	 * @param uniqueId the unique id
-	 * 
+	 *
 	 *   * Deprecated, since it isn't persistent
 	 */
 	@Deprecated
@@ -635,7 +635,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Get value of given property.
-	 * 
+	 *
 	 * @param name name of the property to get
 	 * @return the value of the named property, or null if
 	 *         the property has not been set
@@ -648,7 +648,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Get value of given property, returning given default
 	 * value if the property has not been set.
-	 * 
+	 *
 	 * @param name         name of the property to get
 	 * @param defaultValue default value to return if propery is not set
 	 * @return the value of the named property, or the default
@@ -661,7 +661,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Get an Iterator over the properties defined in this BugInstance.
-	 * 
+	 *
 	 * @return Iterator over properties
 	 */
 	public Iterator<BugProperty> propertyIterator() {
@@ -670,7 +670,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Set value of given property.
-	 * 
+	 *
 	 * @param name  name of the property to set
 	 * @param value the value of the property
 	 * @return this object, so calls can be chained
@@ -688,7 +688,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Look up a property by name.
-	 * 
+	 *
 	 * @param name name of the property to look for
 	 * @return the BugProperty with the given name,
 	 *         or null if the property has not been set
@@ -707,7 +707,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Delete property with given name.
-	 * 
+	 *
 	 * @param name name of the property to delete
 	 * @return true if a property with that name was deleted,
 	 *         or false if there is no such property
@@ -760,7 +760,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Add a Collection of BugAnnotations.
-	 * 
+	 *
 	 * @param annotationCollection Collection of BugAnnotations
 	 */
 	public BugInstance addAnnotations(Collection<? extends BugAnnotation> annotationCollection) {
@@ -821,7 +821,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Add class and method annotations for given class and method.
-	 *  
+	 *
 	 * @param javaClass the class
 	 * @param method    the method
 	 * @return this object
@@ -881,7 +881,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * Add a class annotation.  If this is the first class annotation added,
 	 * it becomes the primary class annotation.
-	 * 
+	 *
 	 * @param classDescriptor the class to add
 	 * @return this object
 	 */
@@ -937,7 +937,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * <p>For information on type descriptors,
 	 * <br>see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#14152
 	 * <br>or  http://www.murrayc.com/learning/java/java_classfileformat.shtml#TypeDescriptors
-	 * 
+	 *
 	 * @param typeDescriptor a jvm type descriptor, such as "[I"
 	 * @return this object
 	 */
@@ -948,18 +948,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	public BugInstance addFoundAndExpectedType(Type foundType, Type expectedType) {
-		
+
 		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
 		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
 		return this;
 	}
-	
+
 	public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
 		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
 		add( new TypeAnnotation(expectedType, TypeAnnotation.EXPECTED_ROLE));
 		return this;
 	}
-	
+
 	public BugInstance addEqualsMethodUsed(ClassDescriptor expectedClass) {
 		try {
 			Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClass, "equals", "(Ljava/lang/Object;)Z",
@@ -1072,7 +1072,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 	/**
 	 * Add a field annotation for a FieldDescriptor.
-	 * 
+	 *
 	 * @param fieldDescriptor the FieldDescriptor
 	 * @return this object
 	 */
@@ -1128,8 +1128,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			this.add(LocalVariableAnnotation.getLocalVariableAnnotation(dbc.getMethod(), register, dbc.getPC()-1, dbc.getPC()));
 		return this;
 	}
-	
-	
+
+
 	/* ----------------------------------------------------------------------
 	 * Method annotation adders
 	 * ---------------------------------------------------------------------- */
@@ -1290,7 +1290,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Add a MethodAnnotation from an XMethod.
-	 * 
+	 *
 	 * @param xmethod the XMethod
 	 * @return this object
 	 */
@@ -1451,8 +1451,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	/**
-	 * Add source line annotation for given Location in a method. 
-	 * 
+	 * Add source line annotation for given Location in a method.
+	 *
 	 * @param classContext the ClassContext
 	 * @param method       the Method
 	 * @param location     the Location in the method
@@ -1464,7 +1464,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/**
 	 * Add source line annotation for given Location in a method.
-	 * 
+	 *
 	 * @param methodDescriptor the method
 	 * @param location         the Location in the method
 	 * @return this BugInstance
@@ -1479,10 +1479,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor().toDottedClassName()));
 		}
 	}
-	
+
 	/**
-	 * Add source line annotation for given Location in a method. 
-	 * 
+	 * Add source line annotation for given Location in a method.
+	 *
 	 * @param classContext the ClassContext
 	 * @param method       the Method
 	 * @param handle       InstructionHandle of an instruction in the method
@@ -1580,7 +1580,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getMessageWithoutPrefix() {
 		BugPattern bugPattern = getBugPattern();
 		String pattern, shortPattern;
-		
+
 			pattern = getLongDescription();
 			shortPattern = bugPattern.getShortDescription();
 		try {
@@ -1597,7 +1597,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getAbridgedMessage() {
 		BugPattern bugPattern = getBugPattern();
 		String pattern, shortPattern;
-		if (bugPattern == null) 
+		if (bugPattern == null)
 			shortPattern = pattern = "Error2: missing bug pattern for key " + type;
 		else {
 			pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
@@ -1701,9 +1701,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
-		if (introducedByChangeOfExistingClass) 
+		if (introducedByChangeOfExistingClass)
 			attributeList.addAttribute("introducedByChange", "true");
-		if (removedByChangeOfPersistingClass) 
+		if (removedByChangeOfPersistingClass)
 			attributeList.addAttribute("removedByChange", "true");
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
@@ -1726,7 +1726,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 
 		Map<BugAnnotation,Void> primaryAnnotations;
-		
+
 		if (addMessages) {
 			primaryAnnotations = new IdentityHashMap<BugAnnotation,Void>();
 			primaryAnnotations.put(getPrimarySourceLineAnnotation(), null);
@@ -1736,10 +1736,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		} else {
 			primaryAnnotations = Collections.<BugAnnotation,Void>emptyMap();
 		}
-		
+
 		boolean foundSourceAnnotation = false;
 		for (BugAnnotation annotation : annotationList) {
-			if (annotation instanceof SourceLineAnnotation) 
+			if (annotation instanceof SourceLineAnnotation)
 				foundSourceAnnotation = true;
 			annotation.writeXML(xmlOutput, addMessages,  primaryAnnotations.containsKey(annotation));
 		}
@@ -1785,7 +1785,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		cachedHashCode = INVALID_HASH_CODE;
 		return this;
 	}
-	
+
 	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
 		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
 		if (lv != null && lv.isNamed()) {
@@ -1832,6 +1832,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	@Override
 	public boolean equals(Object o) {
+		if(this == o){
+			return true;
+		}
 		if (!(o instanceof BugInstance))
 			return false;
 		BugInstance other = (BugInstance) o;
@@ -1879,7 +1882,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public void setFirstVersion(long firstVersion) {
 		this.firstVersion = firstVersion;
-		if (lastVersion >= 0 && firstVersion > lastVersion) 
+		if (lastVersion >= 0 && firstVersion > lastVersion)
 			throw new IllegalArgumentException(
 				firstVersion + ".." + lastVersion);
 	}
@@ -1895,7 +1898,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param lastVersion The lastVersion to set.
 	 */
 	public void setLastVersion(long lastVersion) {
-		if (lastVersion >= 0 && firstVersion > lastVersion) 
+		if (lastVersion >= 0 && firstVersion > lastVersion)
 			throw new IllegalArgumentException(
 				firstVersion + ".." + lastVersion);
 		this.lastVersion = lastVersion;
