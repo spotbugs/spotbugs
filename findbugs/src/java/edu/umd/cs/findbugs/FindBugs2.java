@@ -933,6 +933,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 						System.out.println("  " + c);
 					}
 				}
+				AnalysisContext.currentAnalysisContext().updateDatabases(passCount);
+				
 				progress.startAnalysis(classCollection.size());
 				int count = 0;
 				Global.getAnalysisCache().purgeAllMethodAnalysis();
@@ -995,7 +997,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 					detector.finishPass();
 				}
 
-				AnalysisContext.currentAnalysisContext().updateDatabases(passCount);
 				progress.finishPerClassAnalysis();
 
 				passCount++;
