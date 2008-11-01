@@ -24,13 +24,13 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -46,7 +46,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -62,6 +66,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
@@ -136,6 +141,21 @@ public class DetailsView extends AbstractFindbugsView {
 				selectInEditor(true);
 			}
 		});
+		final Menu menu = new Menu (annotationList);
+		final MenuItem item = new MenuItem (menu, SWT.PUSH);
+		item.setText ("Copy To Clipboard");
+		item.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				copyInfoToClipboard();
+			}
+		});
+		menu.addListener (SWT.Show, new Listener () {
+			public void handleEvent (Event event) {
+				item.setEnabled(theBug != null);
+			}
+		});
+		annotationList.setMenu(menu);
+
 		try {
 			browser = new Browser(sash, SWT.NONE | SWT.BORDER);
 		} catch (SWTError e) {
@@ -152,17 +172,17 @@ public class DetailsView extends AbstractFindbugsView {
 			});
 
 			try {
-				Class<? extends IInformationPresenterExtension> presenterClass
-				= Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter").asSubclass(IInformationPresenterExtension.class);
-				presenter = presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
+				presenter = new HTMLTextPresenter(false);
 			} catch (Exception e2) {
-				FindbugsPlugin
-						.getDefault()
-						.logException(new RuntimeException(e.getMessage(), e),
-								"Could not create a org.eclipse.swt.widgets.Composite.Browser");
+				FindbugsPlugin plugin = FindbugsPlugin.getDefault();
+				plugin.logException(new RuntimeException(e.getMessage(), e),
+						"Could not create a org.eclipse.swt.widgets.Composite.Browser");
+				plugin
+						.logException(new RuntimeException(e2.getMessage(), e2),
+								"Could not create a org.eclipse.jface.internal.text.html.HTMLTextPresenter");
 			}
-
 		}
+
 		sash.setWeights(new int[] {1, 2 });
 		// Add selection listener to detect click in problems view or in tree
 		// view
@@ -263,7 +283,6 @@ public class DetailsView extends AbstractFindbugsView {
 		setHTMLText(html);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void setHTMLText(String html) {
 		if (browser != null && !browser.isDisposed()) {
 			browser.setText(html);
@@ -275,7 +294,6 @@ public class DetailsView extends AbstractFindbugsView {
 						.getDisplay(), html, presentation, size.width,
 						size.height);
 				myHtmlControl.setText(html);
-				TextPresentation.applyTextPresentation(presentation, myHtmlControl);
 			}
 		}
 	}
@@ -300,9 +318,18 @@ public class DetailsView extends AbstractFindbugsView {
 		String abbrev = null;
 		if (pattern != null) {
 			String shortDescription = pattern.getShortDescription();
+			abbrev = "["
+				+ theBug.getPriorityAbbreviation()
+				+ " " + theBug.getCategoryAbbrev()
+				+ " " + pattern.getAbbrev()
+				+ "] ";
+			if (shortDescription == null) {
+				title = abbrev;
+			} else {
+				title = abbrev
+						+ shortDescription.trim() + " [" + pattern.getType() + "]";
+			}
 			String detailText = pattern.getDetailText();
-			abbrev = "[" + pattern.getAbbrev() + "] ";
-			title = (shortDescription == null) ? abbrev : abbrev + shortDescription.trim() + " [" + pattern.getType() + "]";
 			description = (detailText == null) ? "" : detailText.trim();
 		} else {
 			title = "";
@@ -448,5 +475,20 @@ public class DetailsView extends AbstractFindbugsView {
 	 */
 	public IMarker getMarker() {
 		return marker;
+	}
+
+	private void copyInfoToClipboard() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(theBug.getPriorityTypeString()).append(" ");
+		sb.append(title);
+		sb.append("\n");
+		Iterator<BugAnnotation> iterator = theBug.annotationIterator();
+		while (iterator.hasNext()) {
+			BugAnnotation bugAnnotation = iterator.next();
+			sb.append(bugAnnotation.toString()).append("\n");
+		}
+		sb.append("\n");
+		sb.append(description);
+		Util.copyToClipboard(sb.toString());
 	}
 }
