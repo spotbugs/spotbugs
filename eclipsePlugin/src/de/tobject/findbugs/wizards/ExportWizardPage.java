@@ -64,11 +64,6 @@ public class ExportWizardPage extends WizardPage {
 	private int sortBy;
 	private Text filteredBugIdsText;
 
-	/**
-	 * @param pageName
-	 * @param title
-	 * @param titleImage
-	 */
 	protected ExportWizardPage(String pageName, String title, String descr,
 			String imagePath) {
 		super(pageName, title, AbstractUIPlugin.imageDescriptorFromPlugin(FindbugsPlugin
@@ -206,11 +201,6 @@ public class ExportWizardPage extends WizardPage {
 		return sb.toString();
 	}
 
-	/**
-	 * @param project
-	 * @param sortByName
-	 * @return
-	 */
 	private Record createProjectLine(IProject project) {
 		try {
 			if(Util.isJavaProject(project) /* TODO why not working ?? && project.hasNature(FindbugsPlugin.NATURE_ID) */) {
@@ -287,6 +277,39 @@ public class ExportWizardPage extends WizardPage {
 		private final int overallBugs;
 		private final int notFilteredBugs;
 
+		@Override
+		public int hashCode() {
+			int result = ((name == null) ? 0 : name.hashCode());
+			result += notFilteredBugs;
+			result += overallBugs;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof Record)) {
+				return false;
+			}
+			Record other = (Record) obj;
+			if (notFilteredBugs != other.notFilteredBugs) {
+				return false;
+			}
+			if (overallBugs != other.overallBugs) {
+				return false;
+			}
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			return true;
+		}
+
 		Record(String name, int overallBugs, int notFilteredBugs){
 			this.name = name;
 			this.overallBugs = overallBugs;
@@ -327,6 +350,7 @@ public class ExportWizardPage extends WizardPage {
 				return name + SEPARATOR + notFilteredBugs + SEPARATOR + overallBugs + "\n";
 			}
 		}
+
 	}
 
 }
