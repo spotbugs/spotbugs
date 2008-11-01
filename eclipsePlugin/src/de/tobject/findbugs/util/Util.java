@@ -27,6 +27,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.widgets.Display;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -132,6 +135,26 @@ public class Util{
 					- stopTimes.firstKey().longValue();
 			sb.append("Overall: ").append(overall).append(" ms");
 			return sb.toString();
+		}
+	}
+
+	/**
+	 * Copies given string to the system clipboard
+	 * @param content non null String
+	 */
+	public static void copyToClipboard(String content) {
+		if(content == null){
+			return;
+		}
+		Clipboard cb = null;
+		try {
+			cb = new Clipboard(Display.getDefault());
+			cb.setContents(new String[] { content }, new TextTransfer[] { TextTransfer
+					.getInstance() });
+		} finally {
+			if (cb != null) {
+				cb.dispose();
+			}
 		}
 	}
 }

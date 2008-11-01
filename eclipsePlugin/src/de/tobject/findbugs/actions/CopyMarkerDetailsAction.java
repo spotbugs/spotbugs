@@ -30,14 +30,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.view.explorer.BugPatternGroup;
 
 public class CopyMarkerDetailsAction implements IObjectActionDelegate {
@@ -62,20 +60,7 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
 		}
 		Set<IMarker> markers = getMarkers();
 		String content = getContent(markers);
-		copyToClipboard(content);
-	}
-
-	private void copyToClipboard(String content) {
-		Clipboard cb = null;
-		try {
-			cb = new Clipboard(Display.getDefault());
-			cb.setContents(new String[] { content }, new TextTransfer[] { TextTransfer
-					.getInstance() });
-		} finally {
-			if (cb != null) {
-				cb.dispose();
-			}
-		}
+		Util.copyToClipboard(content);
 	}
 
 	private String getContent(Set<IMarker> markers) {
