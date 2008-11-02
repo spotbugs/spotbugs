@@ -18,14 +18,11 @@
  */
 package de.tobject.findbugs.actions;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -34,9 +31,8 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
-import de.tobject.findbugs.view.explorer.BugPatternGroup;
 
 public class CopyMarkerDetailsAction implements IObjectActionDelegate {
 
@@ -94,37 +90,7 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
 	}
 
 	private Set<IMarker> getMarkers() {
-		Set<IMarker> markers = new HashSet<IMarker>();
-		try {
-			IStructuredSelection sSelection = (IStructuredSelection) selection;
-			for (Iterator<?> iter = sSelection.iterator(); iter.hasNext();) {
-				Object next = iter.next();
-				if(next instanceof IMarker){
-					IMarker marker = (IMarker) next;
-					if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
-						continue;
-					}
-					markers.add(marker);
-				} else if (next instanceof IAdaptable){
-					IAdaptable adapter = (IAdaptable) next;
-					IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-					if (marker == null || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
-						continue;
-					}
-					markers.add(marker);
-				} else if (next instanceof BugPatternGroup){
-					BugPatternGroup group = (BugPatternGroup) next;
-					IMarker[] children = group.getChildren();
-					for (IMarker marker : children) {
-						markers.add(marker);
-					}
-				}
-			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
-		}
-		return markers;
+		return MarkerUtil.getMarkerFromSelection(selection);
 	}
 
 }

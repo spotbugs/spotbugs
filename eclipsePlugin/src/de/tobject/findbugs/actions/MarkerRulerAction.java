@@ -157,7 +157,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		IMarker[] allMarkers;
 		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
 		try {
-			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true, 0);
+			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_ZERO);
 		}
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(

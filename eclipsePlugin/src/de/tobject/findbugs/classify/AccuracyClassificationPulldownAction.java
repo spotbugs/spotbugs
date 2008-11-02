@@ -22,6 +22,8 @@
  */
 package de.tobject.findbugs.classify;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -194,12 +196,11 @@ public class AccuracyClassificationPulldownAction
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		if(DEBUG) {
-			System.out.println("Selection is " + selection.getClass().getName());
-		}
 
 		bugInstance = null;
-		marker = MarkerUtil.getMarkerFromSelection(selection);
+		Set<IMarker> markerFromSelection = MarkerUtil.getMarkerFromSelection(selection);
+		// TODO learn to deal with ALL elements
+		marker = markerFromSelection.isEmpty()? null : markerFromSelection.iterator().next();
 
 		if (marker == null) {
 			// No marker selected.

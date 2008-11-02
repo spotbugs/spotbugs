@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -48,11 +49,12 @@ import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.view.explorer.BugPatternGroup;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -670,24 +672,40 @@ public final class MarkerUtil {
 	 * @return the selected IMarker, or null if we can't find an IMarker
 	 *         in the selection
 	 */
-	public static IMarker getMarkerFromSelection(ISelection selection) {
-		if (selection instanceof StructuredSelection) {
-			StructuredSelection structuredSelection = (StructuredSelection) selection;
-
-			for (Iterator<?> i = structuredSelection.iterator(); i.hasNext(); ) {
-				Object selectedObj = i.next();
-				if(Reporter.DEBUG) {
-					System.out.println("\tSelection element: " + selectedObj.getClass().getName());
-				}
-				if (selectedObj instanceof IMarker) {
-					if(Reporter.DEBUG) {
-						System.out.println("Selection element is an IMarker!");
+	public static Set<IMarker> getMarkerFromSelection(ISelection selection) {
+		Set<IMarker> markers = new HashSet<IMarker>();
+		if(!(selection instanceof IStructuredSelection)){
+			return markers;
+		}
+		IStructuredSelection sSelection = (IStructuredSelection) selection;
+		try {
+			for (Iterator<?> iter = sSelection.iterator(); iter.hasNext();) {
+				Object next = iter.next();
+				if(next instanceof IMarker){
+					IMarker marker = (IMarker) next;
+					if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
+						continue;
 					}
-					return (IMarker) selectedObj;
+					markers.add(marker);
+				} else if (next instanceof IAdaptable){
+					IAdaptable adapter = (IAdaptable) next;
+					IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+					if (marker == null || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
+						continue;
+					}
+					markers.add(marker);
+				} else if (next instanceof BugPatternGroup){
+					BugPatternGroup group = (BugPatternGroup) next;
+					IMarker[] children = group.getChildren();
+					for (IMarker marker : children) {
+						markers.add(marker);
+					}
 				}
 			}
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e,
+					"Exception while parsing content of FindBugs markers.");
 		}
-
-		return null;
+		return markers;
 	}
 }

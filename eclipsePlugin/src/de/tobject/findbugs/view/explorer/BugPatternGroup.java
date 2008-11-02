@@ -33,6 +33,8 @@ import org.eclipse.core.runtime.CoreException;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.I18N;
 
 /**
  * @author Andrei
@@ -42,10 +44,12 @@ public class BugPatternGroup {
 	private final String shortPatternDescription;
 	private final List<IMarker> children;
 	private final IResource parent;
+	private final BugPattern bugPattern;
 
-	private BugPatternGroup(IResource parent, String shortPatternDescription) {
+	private BugPatternGroup(IResource parent, BugPattern bugPattern, String shortPatternDescription) {
 		super();
 		this.parent = parent;
+		this.bugPattern = bugPattern;
 		this.shortPatternDescription = shortPatternDescription;
 		this.children = new ArrayList<IMarker>();
 	}
@@ -111,12 +115,20 @@ public class BugPatternGroup {
 	static BugPatternGroup [] createGroups(IResource parent) {
 		IMarker[] markers = getMarkers(parent);
 		Map<String, BugPatternGroup> groups = new HashMap<String, BugPatternGroup>();
+		I18N i18n = I18N.instance();
 		for (IMarker marker : markers) {
-			String attribute = marker.getAttribute(FindBugsMarker.PATTERN_DESCR_SHORT, "unknown");
-			BugPatternGroup group = groups.get(attribute);
+			String type = marker.getAttribute(FindBugsMarker.BUG_TYPE, "unknown");
+			BugPatternGroup group = groups.get(type);
 			if(group == null) {
-				group = new BugPatternGroup(parent, attribute);
-				groups.put(attribute, group);
+				BugPattern bugPattern =  i18n.lookupBugPattern(type);
+				String abbrType = type;
+				if(bugPattern != null) {
+					abbrType = "[" + bugPattern.getAbbrev() + "] ";
+				} else {
+					continue;
+				}
+				group = new BugPatternGroup(parent, bugPattern, abbrType + bugPattern.getShortDescription());
+				groups.put(type, group);
 			}
 			group.addmarker(marker);
 		}

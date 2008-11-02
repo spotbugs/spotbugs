@@ -158,7 +158,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			break;
 		}
 
-		attributes.put(FindBugsMarker.PATTERN_DESCR_SHORT, bug.getBugPattern().getShortDescription());
+//		attributes.put(FindBugsMarker.PATTERN_DESCR_SHORT, bug.getBugPattern().getShortDescription());
 
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.

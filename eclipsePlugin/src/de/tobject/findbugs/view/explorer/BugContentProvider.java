@@ -19,11 +19,9 @@
 package de.tobject.findbugs.view.explorer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -58,7 +56,7 @@ public class BugContentProvider implements ITreeContentProvider {
 
 	private CommonViewer viewer;
 	private final IResourceChangeListener resourceListener;
-	private final Map<String, BugPatternGroup> groups;
+//	private final Map<String, BugPatternGroup> groups;
 	private final static Object[] EMPTY = new Object[0];
 
 	private static final int SHORT_DELAY = 100;
@@ -67,7 +65,7 @@ public class BugContentProvider implements ITreeContentProvider {
 
 	public BugContentProvider() {
 		super();
-		groups = new HashMap<String, BugPatternGroup>();
+//		groups = new HashMap<String, BugPatternGroup>();
 		resourceListener = new MyResourceChangeListener();
 		refreshJob = new RefreshJob("Updating bugs in bug exporer");
 		refreshJob.setSystem(true);
@@ -101,12 +99,12 @@ public class BugContentProvider implements ITreeContentProvider {
 		}
 		if (element instanceof IMarker) {
 			IMarker marker = (IMarker) element;
-			String patternDescr = marker.getAttribute(FindBugsMarker.PATTERN_DESCR_SHORT,
-					"");
-			BugPatternGroup groupElement = groups.get(patternDescr);
-			if (groupElement != null) {
-				return groupElement;
-			}
+//			String patternDescr = marker.getAttribute(FindBugsMarker.PATTERN_DESCR_SHORT,
+//					"");
+//			BugPatternGroup groupElement = groups.get(patternDescr);
+//			if (groupElement != null) {
+//				return groupElement;
+//			}
 			return marker.getResource().getProject();
 		}
 		return null;
@@ -192,7 +190,7 @@ public class BugContentProvider implements ITreeContentProvider {
 	 */
 	public void dispose() {
 		viewer = null;
-		groups.clear();
+//		groups.clear();
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
 	}
 
@@ -338,7 +336,7 @@ public class BugContentProvider implements ITreeContentProvider {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						if (viewer != null && !viewer.getControl().isDisposed()) {
-							groups.clear();
+//							groups.clear();
 //							if (resource == null) {
 //								System.out.println("refresh root!");
 //							} else {

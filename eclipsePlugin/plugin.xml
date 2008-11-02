@@ -555,7 +555,7 @@
          <options>
             <property
                   name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
-                  value="true">
+                  value="false">
             </property>
          </options>
       </viewer>
@@ -657,6 +657,20 @@
                tooltip="Refresh explorer content">
          </action>
       </viewContribution>
+      <viewContribution
+            id="findBugsEclipsePlugin.viewContribution2"
+            targetID="de.tobject.findbugs.view.bugtreeview">
+         <action
+               class="de.tobject.findbugs.actions.ExpandAllAction"
+               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/expandall.gif"
+               id="findBugsEclipsePlugin.action1"
+               label="Expand All"
+               menubarPath="additions"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Expand All">
+         </action>
+      </viewContribution>
    </extension>
 
    <extension
@@ -730,6 +744,28 @@
             categoryId="FindBugs.category"
             name="Copy Bug Details (Bug)"
             id="FindBugs.command.copy2"/>
+    </extension>
+    <extension
+          point="org.eclipse.ui.navigator.linkHelper">
+       <linkHelper
+             class="de.tobject.findbugs.view.explorer.BugLinkHelper"
+             id="de.tobject.findbugs.linkHelper">
+          <editorInputEnablement>
+             <instanceof
+                   value="org.eclipse.ui.IFileEditorInput">
+             </instanceof>
+          </editorInputEnablement>
+          <selectionEnablement>
+             <or>
+                <adapt
+                      type="org.eclipse.core.resources.IMarker">
+                </adapt>
+                <adapt
+                      type="de.tobject.findbugs.view.explorer.BugPatternGroup">
+                </adapt>
+             </or>
+          </selectionEnablement>
+       </linkHelper>
     </extension>
 
 <!-- uncommented until we define our own context

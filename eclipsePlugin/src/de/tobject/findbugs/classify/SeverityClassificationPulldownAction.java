@@ -3,6 +3,8 @@
  */
 package de.tobject.findbugs.classify;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,7 +27,7 @@ import edu.umd.cs.findbugs.BugProperty;
 
 /**
  * Pulldown menu action for classifying warning severity.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SeverityClassificationPulldownAction implements
@@ -73,8 +75,9 @@ public class SeverityClassificationPulldownAction implements
 				Widget w = e.widget;
 				int index;
 				for (index = 0; index < severityItemList.length; ++index) {
-					if (w == severityItemList[index])
+					if (w == severityItemList[index]) {
 						break;
+					}
 				}
 
 				if (index < severityItemList.length) {
@@ -136,7 +139,7 @@ public class SeverityClassificationPulldownAction implements
 
 	/**
 	 * Set the menu to given severity level.
-	 * 
+	 *
 	 * @param severity the severity level (1..5)
 	 */
 	private void selectSeverity(int severity) {
@@ -152,7 +155,7 @@ public class SeverityClassificationPulldownAction implements
 
 	/**
 	 * Reset menu items so they are unchecked.
-	 * 
+	 *
 	 * @param enable true if menu items should be enabled,
 	 *               false if they should be disabled
 	 */
@@ -178,6 +181,7 @@ public class SeverityClassificationPulldownAction implements
 	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
 	 */
 	public void init(IWorkbenchWindow window) {
+		// noop
 	}
 
 	/* (non-Javadoc)
@@ -192,9 +196,12 @@ public class SeverityClassificationPulldownAction implements
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		bugInstance = null;
-		IMarker marker = MarkerUtil.getMarkerFromSelection(selection);
-		if (marker == null)
+		Set<IMarker> markerFromSelection = MarkerUtil.getMarkerFromSelection(selection);
+		// TODO learn to deal with ALL elements
+		IMarker marker = markerFromSelection.isEmpty()? null : markerFromSelection.iterator().next();
+		if (marker == null) {
 			return;
+		}
 		bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
 	}
 

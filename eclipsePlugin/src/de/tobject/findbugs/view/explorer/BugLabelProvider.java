@@ -23,14 +23,15 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.navigator.IDescriptionProvider;
 
 /**
  * @author Andrei
  *
  */
-public class BugLabelProvider implements ILabelProvider {
+public class BugLabelProvider implements ILabelProvider, IDescriptionProvider {
 
-	private WorkbenchLabelProvider wbProvider;
+	private final WorkbenchLabelProvider wbProvider;
 
 	public BugLabelProvider() {
 		super();
@@ -92,6 +93,10 @@ public class BugLabelProvider implements ILabelProvider {
 	public void removeListener(ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public String getDescription(Object anElement) {
+		return getText(anElement);
 	}
 
 }

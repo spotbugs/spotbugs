@@ -64,10 +64,10 @@ public interface FindBugsMarker {
 	 */
 	public static final String PRIORITY_TYPE = "PRIORITY_TYPE";
 
-	/**
-	 * Marker attribute recording the "group" of the bug (e.g. "Unread field")
-	 */
-	public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
+//	/**
+//	 * Marker attribute recording the "group" of the bug (e.g. "Unread field")
+//	 */
+//	public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
 
 	enum Priority {
 		High(NAME_HIGH),
