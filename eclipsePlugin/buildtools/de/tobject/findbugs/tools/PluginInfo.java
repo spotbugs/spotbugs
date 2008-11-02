@@ -41,9 +41,21 @@ public class PluginInfo {
 		emitProperty(manifest, "plugin.version", "Bundle-Version");
 		if (args.length == 2) {
 			File outputFile = new File(args[1]);
-			outputFile.getParentFile().mkdirs();
-			outputFile.delete();
-			outputFile.createNewFile();
+			boolean ok = outputFile.getParentFile().mkdirs();
+			if(!ok && !outputFile.getParentFile().exists()){
+				System.err.println("Cannot create directory: " + outputFile.getParentFile());
+				System.exit(1);
+			}
+			ok = outputFile.delete();
+			if(!ok && outputFile.exists()){
+				System.err.println("Cannot delete file: " + outputFile);
+				System.exit(1);
+			}
+			ok = outputFile.createNewFile();
+			if(!ok && !outputFile.exists()){
+				System.err.println("Cannot create file: " + outputFile);
+				System.exit(1);
+			}
 			serializetoXML(manifest, new FileOutputStream(args[1]));
 		}
 	}
