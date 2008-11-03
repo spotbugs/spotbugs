@@ -19,10 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,11 +107,8 @@ public class Naming extends PreorderVisitor implements Detector {
 		return false;
 	}
 
-	// map of canonicalName -> trueMethodName
-	TreeMap<String, TreeSet<String>> canonicalToTrueMapping = new TreeMap<String, TreeSet<String>>();
-
 	// map of canonicalName -> Set<XMethod>
-	TreeMap<String, TreeSet<XMethod>> canonicalToXMethod = new TreeMap<String, TreeSet<XMethod>>();
+	HashMap<String, TreeSet<XMethod>> canonicalToXMethod = new HashMap<String, TreeSet<XMethod>>();
 
 	HashSet<String> visited = new HashSet<String>();
 
@@ -239,18 +237,20 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	public void report() {
 
-		canonicalNameIterator: for (String allSmall : canonicalToTrueMapping.keySet()) {
-			TreeSet<String> s = canonicalToTrueMapping.get(allSmall);
-			if (s.size() <= 1)
-				continue;
-			TreeSet<XMethod> conflictingMethods = canonicalToXMethod.get(allSmall);
+		for (Map.Entry<String,TreeSet<XMethod>> e : canonicalToXMethod.entrySet()) {
+			TreeSet<XMethod> conflictingMethods = e.getValue();
+			HashSet<String> trueNames = new HashSet<String>();
+			
+			for(XMethod m : conflictingMethods) 
+				trueNames.add(m.getName() + m.getSignature());
+			if (trueNames.size() <= 1) continue;
 			for (Iterator<XMethod> j = conflictingMethods.iterator(); j.hasNext();) {
 				if (checkSuper(j.next(), conflictingMethods))
 					j.remove();
 			}
 			for (XMethod conflictingMethod : conflictingMethods) {
 				if (checkNonSuper(conflictingMethod, conflictingMethods))
-					continue canonicalNameIterator;
+					break;
 			}
 		}
 	}
@@ -477,19 +477,10 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (obj.isPrivate() || obj.isStatic() || mName.equals("<init>"))
 			return;
 
-		String trueName = mName + sig;
 		String sig2 = removePackageNamesFromSignature(sig);
 		String allSmall = mName.toLowerCase() + sig2;
 
 		XMethod xm = getXMethod();
-		{
-			TreeSet<String> s = canonicalToTrueMapping.get(allSmall);
-			if (s == null) {
-				s = new TreeSet<String>();
-				canonicalToTrueMapping.put(allSmall, s);
-			}
-			s.add(trueName);
-		}
 		{
 			TreeSet<XMethod> s = canonicalToXMethod.get(allSmall);
 			if (s == null) {
