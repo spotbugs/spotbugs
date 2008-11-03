@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -38,6 +40,7 @@ import org.apache.bcel.generic.MethodGen;
 public class BugAccumulator {
 
 	private BugReporter reporter;
+	private final boolean performAccumulation;
 	private MultiMap<BugInstance, SourceLineAnnotation> map;
 	
 	/**
@@ -47,6 +50,7 @@ public class BugAccumulator {
 	 */
 	public BugAccumulator(BugReporter reporter) {
 		this.reporter = reporter;
+		performAccumulation = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS);
 		this.map = new MultiMap<BugInstance, SourceLineAnnotation>(TreeSet.class);
 	}
 
@@ -57,7 +61,10 @@ public class BugAccumulator {
 	 * @param sourceLine the source location
 	 */
 	public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
-		map.add(bug,sourceLine);
+		if (performAccumulation)
+			map.add(bug,sourceLine);
+		else
+			reporter.reportBug(bug.addSourceLine(sourceLine));
 		
 	}
 

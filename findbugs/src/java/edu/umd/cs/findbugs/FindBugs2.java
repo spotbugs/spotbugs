@@ -35,6 +35,7 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -80,6 +81,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
+	public static final boolean PROGRESS = SystemProperties.getBoolean("findbugs.progress");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
 	
 	private static final boolean DEBUG_UA = SystemProperties.getBoolean("ua.debug");
@@ -110,6 +112,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private boolean noClassOk;
 	private edu.umd.cs.findbugs.userAnnotations.Plugin userAnnotationPlugin;
 	private boolean userAnnotationSync;
+	private boolean mergeSimilarWarnings = true;
 
 	/**
 	 * Constructor.
@@ -804,6 +807,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		for (AnalysisFeatureSetting setting : analysisFeatureSettingList) {
 			setting.configure(AnalysisContext.currentAnalysisContext());
 		}
+		AnalysisContext.currentAnalysisContext().setBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, mergeSimilarWarnings);
 	}
 
 	/**
@@ -1090,6 +1094,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			}
 		}
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#setMergeSimilarWarnings(boolean)
+     */
+    public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
+	    this.mergeSimilarWarnings = mergeSimilarWarnings;
+	    
+    }
 
 
 }

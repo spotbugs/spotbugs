@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Boolean-valued analysis properties for FindBugs.
@@ -42,19 +43,19 @@ public abstract class FindBugsAnalysisFeatures {
 	 * encode the heuristics as BugProperties (for consumption
 	 * by a machine-learning-based ranking algorithm).
 	 */
-	public static final int RELAXED_REPORTING_MODE = START + 0;
+	public static final  @AnalysisFeature int RELAXED_REPORTING_MODE = START + 0;
 
 	/**
 	 * Enable interprocedural analysis.
 	 */
-	public static final int INTERPROCEDURAL_ANALYSIS = START + 1;
-	public static final int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
+	public static final  @AnalysisFeature int INTERPROCEDURAL_ANALYSIS = START + 1;
+	public static final  @AnalysisFeature int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
 
-	static void setProperty(int property, boolean value) {
+	static void setProperty( @AnalysisFeature int property, boolean value) {
 		AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
 	}
 
-	static boolean getProperty(int property) {
+	static boolean getProperty( @AnalysisFeature int property) {
 		return AnalysisContext.currentAnalysisContext().getBoolProperty(property);
 	}
 

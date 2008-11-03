@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.config;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures.AnalysisFeature;
 
 /**
  * Configure a specific boolean analysis property.
@@ -27,7 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * @author David Hovemeyer
  */
 public class AnalysisFeatureSetting {
-	private int property;
+	private @AnalysisFeature int property;
 	private boolean enabled;
 
 	/**
@@ -36,7 +37,7 @@ public class AnalysisFeatureSetting {
 	 * @param property the analysis property to configure
 	 * @param enabled  true if the property is enabled, false if not
 	 */
-	public AnalysisFeatureSetting(int property, boolean enabled) {
+	public AnalysisFeatureSetting(@AnalysisFeature int property, boolean enabled) {
 		this.property = property;
 		this.enabled = enabled;
 	}

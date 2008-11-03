@@ -54,6 +54,7 @@ public abstract class FindBugs  {
 	public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, false),
@@ -69,6 +70,7 @@ public abstract class FindBugs  {
 	public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
@@ -84,6 +86,7 @@ public abstract class FindBugs  {
 	public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
@@ -99,6 +102,7 @@ public abstract class FindBugs  {
 	public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
@@ -114,6 +118,7 @@ public abstract class FindBugs  {
 	public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),

@@ -278,4 +278,7 @@ public interface IFindBugsEngine {
 	 * @param xmlWithAbridgedMessages
 	 */
 	public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
+	
+	
+	public void setMergeSimilarWarnings(boolean mergeSimilarWarnings);
 }
