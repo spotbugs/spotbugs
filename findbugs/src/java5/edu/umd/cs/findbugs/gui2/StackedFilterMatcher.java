@@ -190,7 +190,10 @@ public class StackedFilterMatcher extends FilterMatcher
 	@Override
 	public int hashCode()
 	{
-		return filters.hashCode();
+		int hash = 0;
+		for(FilterMatcher f : filters) 
+			hash += f.hashCode();
+		return hash;
 	}
 
 	public static void main(String[] args)

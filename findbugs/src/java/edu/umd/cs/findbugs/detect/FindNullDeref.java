@@ -486,7 +486,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		IsNullValue tos = frame.getTopValue();
 		if (tos.isDefinitelyNull()) {
 			BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-					location, valueNumber, vnaFrame, null);
+					location, valueNumber, vnaFrame,  "VALUE_OF");
 
 			String bugPattern = "NP_NONNULL_RETURN_VIOLATION";
 			int priority = NORMAL_PRIORITY;
@@ -736,7 +736,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 					try {
 					valueNumber = vnaFrame. getArgument(instruction, classContext.getConstantPoolGen(), i, sigParser );
 					BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-							location, valueNumber, vnaFrame, null);
+							location, valueNumber, vnaFrame, "VALUE_OF");
 					warning.addOptionalAnnotation(variableAnnotation);
 				} catch (DataflowAnalysisException e) {
 					AnalysisContext.logError("error", e);
@@ -793,7 +793,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 					ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
 					ValueNumber valueNumber = vnaFrame. getArgument(invokeInstruction, cpg, i, sigParser );
 					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-						   location, valueNumber, vnaFrame, null);
+						   location, valueNumber, vnaFrame, "VALUE_OF");
 
 				} catch (DataflowAnalysisException e) {
 				  AnalysisContext.logError("error", e);
@@ -840,7 +840,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-				location, valueNumber, vnaFrame, null);
+				location, valueNumber, vnaFrame, "VALUE_OF");
 
 		boolean duplicated = false;
 		try {
@@ -1082,7 +1082,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 					return;
 				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-						location, valueNumber, vnaFrame, null);
+						location, valueNumber, vnaFrame, "VALUE_OF");
 
 			}
 		} catch (DataflowAnalysisException e) {
@@ -1140,7 +1140,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 					return null;
 				variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-						location, valueNumber, vnaFrame, null);
+						location, valueNumber, vnaFrame, "VALUE_OF");
 
 			}
 		} catch (DataflowAnalysisException e) {

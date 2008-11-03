@@ -360,15 +360,15 @@ public class NullDerefAndRedundantComparisonFinder {
 			BugAnnotation variableAnnotation = null;
 			try {
 				for (Location loc : derefLocationSet)  {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), "VALUE_OF");
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : knownNullAndDoomedAt) {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc),  "VALUE_OF");
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc),  "VALUE_OF");
 					if (variableAnnotation != null) break;
 				}
 
@@ -756,13 +756,13 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param valueNumber
 	 * @param vnaFrame
 	 * @return the annotation
-	 * @deprecated Use {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)} instead
+	 * @deprecated Use {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame, String)} instead
 	 */
 	@Deprecated
 	public static BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		return ValueNumberSourceInfo.findRequiredAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
+		return ValueNumberSourceInfo.findRequiredAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, null);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {
