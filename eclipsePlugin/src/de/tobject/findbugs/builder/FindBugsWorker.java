@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
@@ -185,6 +186,7 @@ public class FindBugsWorker {
 
 		// configure extended preferences
 		findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
+		findBugs.setMergeSimilarWarnings(false);
 		configureExtendedProps(userPrefs.getIncludeFilterFiles(), findBugs, true, false);
 		configureExtendedProps(userPrefs.getExcludeFilterFiles(), findBugs, false, false);
 		configureExtendedProps(userPrefs.getExcludeBugsFiles(), findBugs, false, true);
