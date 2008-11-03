@@ -136,7 +136,7 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 					SourceLineAnnotation tested = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), getMethod(),
 					        produced);
 					BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(getMethod(), produced,
-					        value, valueNumberFact);
+					        value, valueNumberFact, "VALUE_OF");
 					Set<Location> unconditionalDerefLocationSet = unconditionalDeref.getUnconditionalDerefLocationSet(value);
 
 					BugInstance bug;

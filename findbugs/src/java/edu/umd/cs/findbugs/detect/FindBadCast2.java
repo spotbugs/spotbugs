@@ -318,7 +318,7 @@ public class FindBadCast2 implements Detector {
 					.getTopValue();
 			boolean isParameter = paramValueNumberSet.contains(valueNumber);
 			BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-					location, valueNumber, vFrame);
+					location, valueNumber, vFrame, "VALUE_OF");
 			try {
 				JavaClass castJavaClass = Repository.lookupClass(castName);
 				JavaClass refJavaClass = Repository.lookupClass(refName);

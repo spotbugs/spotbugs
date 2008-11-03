@@ -360,15 +360,15 @@ public class NullDerefAndRedundantComparisonFinder {
 			BugAnnotation variableAnnotation = null;
 			try {
 				for (Location loc : derefLocationSet)  {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : knownNullAndDoomedAt) {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
 					if (variableAnnotation != null) break;
 				}
 				if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
-					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc), null);
 					if (variableAnnotation != null) break;
 				}
 

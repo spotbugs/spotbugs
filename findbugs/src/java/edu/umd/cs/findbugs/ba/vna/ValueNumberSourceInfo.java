@@ -46,19 +46,26 @@ public abstract class ValueNumberSourceInfo {
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame
+	 * @param partialRole TODO
 	 * @return the annotation
 	 */
 	public static @CheckForNull BugAnnotation findAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
-			ValueNumberFrame vnaFrame) {
+			ValueNumberFrame vnaFrame, String partialRole) {
 		LocalVariableAnnotation ann = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(
 				method, location, valueNumber, vnaFrame);
-		if (ann != null && ann.isSignificant())
+		if (partialRole != null) ann.setDescription("LOCAL_VARIABLE_"+partialRole);
+		
+		if (ann != null && ann.isSignificant()) {
 			return ann;
+		}
 		FieldAnnotation field = ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame);
-		if (field != null)
+		if (field != null) {
+			if (partialRole != null) field.setDescription("FIELD_"+partialRole);
+			
 			return field;
+		}
 		if (ann != null) return ann;
 		return null;
 	}
@@ -74,7 +81,7 @@ public abstract class ValueNumberSourceInfo {
 	public static @Nonnull BugAnnotation findRequiredAnnotationFromValueNumber(Method method,
 			Location location, ValueNumber valueNumber,
 			ValueNumberFrame vnaFrame) {
-		BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
+		BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, null);
 		if (result != null) return result;
 		return new LocalVariableAnnotation("?", -1, location.getHandle().getPosition());
 	}

@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -295,8 +296,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					accumulator.accumulateBug(new BugInstance(this,bugPattern, priority)
 					.addClassAndMethod(methodGen,
 					        sourceFile).addCalledMethod(
-					        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-							location, objectVN, vnFrame)),
+					        methodGen, (InvokeInstruction) ins)
+					        .addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+							location, objectVN, vnFrame, "INVOKED_ON")),
 					        SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
 							        sourceFile, handle));
 				}
@@ -372,9 +374,12 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				}
 				accumulator.accumulateBug(new BugInstance(this, "GC_UNRELATED_TYPES", priority).addClassAndMethod(methodGen,
 				        sourceFile).addFoundAndExpectedType(argType, parmType).addCalledMethod(
-				        methodGen, (InvokeInstruction) ins).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-								location, objectVN, vnFrame)).addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
-										location, argVN, vnFrame)).addEqualsMethodUsed(targets), sourceLineAnnotation);
+				        methodGen, (InvokeInstruction) ins)
+				        .addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+								location, objectVN, vnFrame, "INVOKED_ON"))
+								.addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
+										location, argVN, vnFrame, "ARGUMENT"))
+										.addEqualsMethodUsed(targets), sourceLineAnnotation);
 			}
 		}
 		accumulator.reportAccumulatedBugs();
