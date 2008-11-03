@@ -54,7 +54,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 public class BugContentProvider implements ITreeContentProvider {
 
-	private CommonViewer viewer;
+	private volatile CommonViewer viewer;
 	private final IResourceChangeListener resourceListener;
 //	private final Map<String, BugPatternGroup> groups;
 	private final static Object[] EMPTY = new Object[0];

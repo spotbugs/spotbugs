@@ -663,7 +663,7 @@
          <action
                class="de.tobject.findbugs.actions.ExpandAllAction"
                icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/expandall.gif"
-               id="findBugsEclipsePlugin.action1"
+               id="findBugsEclipsePlugin.action2"
                label="Expand All"
                menubarPath="additions"
                style="push"
@@ -671,6 +671,32 @@
                tooltip="Expand All">
          </action>
       </viewContribution>
+        <viewContribution
+            id="findBugsEclipsePlugin.viewContribution3"
+            targetID="de.tobject.findbugs.view.bugtreeview">
+           <action
+                class="de.tobject.findbugs.actions.GoUpAction"
+                icon="platform:/plugin/org.eclipse.ui/icons/full/elcl16/up_nav.gif"
+                id="findBugsEclipsePlugin.action3"
+                label="Go Up"
+                style="push"
+                toolbarPath="Normal/additions"
+                tooltip="Go Up">
+           </action>
+        </viewContribution>
+        <viewContribution
+              id="findBugsEclipsePlugin.viewContribution4"
+              targetID="de.tobject.findbugs.view.bugtreeview">
+           <action
+                 class="de.tobject.findbugs.actions.GoIntoAction"
+                 icon="platform:/plugin/org.eclipse.compare/icons/full/elcl16/next_nav_into.gif"
+                 id="findBugsEclipsePlugin.action4"
+                 label="Go Into"
+                 style="push"
+                 toolbarPath="Normal/additions"
+                 tooltip="Go Into">
+           </action>
+        </viewContribution>
    </extension>
 
    <extension
