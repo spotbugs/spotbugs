@@ -54,7 +54,7 @@ public abstract class ValueNumberSourceInfo {
 			ValueNumberFrame vnaFrame, String partialRole) {
 		LocalVariableAnnotation ann = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(
 				method, location, valueNumber, vnaFrame);
-		if (partialRole != null) ann.setDescription("LOCAL_VARIABLE_"+partialRole);
+		if (ann != null && partialRole != null) ann.setDescription("LOCAL_VARIABLE_"+partialRole);
 		
 		if (ann != null && ann.isSignificant()) {
 			return ann;
