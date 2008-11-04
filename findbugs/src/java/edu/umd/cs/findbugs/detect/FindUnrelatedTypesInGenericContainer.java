@@ -504,7 +504,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private IncompatibleTypes compareTypeParameters(GenericObjectType parmGeneric, GenericObjectType argGeneric) {
 	    int p = parmGeneric.getNumParameters();
 	    if (p != argGeneric.getNumParameters()) {
-	    	AnalysisContext.logError("Wierd generic parameters: " + parmGeneric + " and " + argGeneric);
+	    	if (SystemProperties.ASSERTIONS_ENABLED) 
+	    		AnalysisContext.logError("Wierd generic parameters: " + parmGeneric + " and " + argGeneric);
 	    	return IncompatibleTypes.SEEMS_OK;
 	    }
 	    for(int x = 0; x< p; x++) {
