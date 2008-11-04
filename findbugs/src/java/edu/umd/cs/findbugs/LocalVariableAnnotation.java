@@ -110,7 +110,19 @@ public class LocalVariableAnnotation implements BugAnnotation {
 				lv1 = localVariableTable.getLocalVariable(local, position2);
 				position1 = position2;
 			}
-			if (lv1 != null) localName = lv1.getName();
+			if (lv1 != null) 
+				localName = lv1.getName();
+			else
+				for (LocalVariable lv : localVariableTable.getLocalVariableTable()) {
+					if (lv.getIndex() == local) {
+						if (!localName.equals("?") && !localName.equals(lv.getName())) {
+							// not a single consistent name
+							localName = "?";
+							break;
+						}
+						localName = lv.getName();
+					}
+			}
 		}
 		return new LocalVariableAnnotation(localName, local, position1);
 	}
