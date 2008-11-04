@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -54,7 +55,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
 	private SwitchHandler switchHdlr;
 	private boolean reachable;
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
+	private final BugAccumulator bugAccumulator;
 	private int lastPC;
 	private BitSet potentiallyDeadStores = new BitSet();
 	private Set<XField> potentiallyDeadFields = new HashSet<XField>();
@@ -66,6 +68,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -89,12 +92,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 		fallthroughDistance = 1000;
 		super.visit(obj);
 		if (!found.isEmpty()) {
-			if (found.size() >= 4 && priority == NORMAL_PRIORITY) priority = LOW_PRIORITY;
-			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
-					.addClassAndMethod(this).addAnnotations(found);
-			bugReporter.reportBug(bug);
-
+			if (found.size() >= 4 && priority == NORMAL_PRIORITY) 
+				priority = LOW_PRIORITY;
+			for(SourceLineAnnotation s : found) 
+			bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
+					.addClassAndMethod(this), s);
 		}
+		bugAccumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -137,9 +141,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 				if (potentiallyDeadFields.contains(f) && potentiallyDeadFieldsFromBeforeFallthrough.contains(f)){
 					// killed store
 					priority = HIGH_PRIORITY;
-					BugInstance bug = new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-					.addClassAndMethod(this).addField(f).addSourceLine(this);
-					bugReporter.reportBug(bug);
+					bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+					.addClassAndMethod(this).addField(f), this);
 
 				}
 				potentiallyDeadFields.add(f);
@@ -158,9 +161,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 				// killed store
 				priority = HIGH_PRIORITY;
 				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
-				BugInstance bug = new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-				.addClassAndMethod(this).add(deadStore).addSourceLine(this);
-				bugReporter.reportBug(bug);
+				bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+				.addClassAndMethod(this).add(deadStore), this);
 
 			}
 			potentiallyDeadStores.set(register);
