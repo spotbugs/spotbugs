@@ -242,12 +242,11 @@ public class FindBadCast2 implements Detector {
 			if (operandType.equals(NullType.instance()) || operandNullness.isDefinitelyNull()) {
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-				String castName = castSig.substring(1, castSig.length() - 1)
-				.replace('/', '.');
+				assert castSig.length() > 1;
 				if (!isCast) accumulator.accumulateBug(new BugInstance(this,
 						"NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addClass(castName), sourceLineAnnotation);
+						.addType(castSig), sourceLineAnnotation);
 				continue;
 
 			}

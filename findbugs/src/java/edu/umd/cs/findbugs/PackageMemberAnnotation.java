@@ -42,6 +42,8 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	 * @param className name of the class
 	 */
 	protected PackageMemberAnnotation(@DottedClassName String className, String description) {
+		if (className.length() == 0)
+			throw new IllegalArgumentException("Empty classname not allowed");
 		if (className.indexOf('/') >= 0) {
 			assert false: "classname " + className + " should be dotted";
 			className = className.replace('/', '.');
