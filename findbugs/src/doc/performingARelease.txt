@@ -1,0 +1,20 @@
+Create a directory that contains exactly all the files to upload. For example:
+  eclipsePlugin-1.3.6.20081104-source.zip                findbugs-1.3.6-rc3-source.zip  findbugs-1.3.6-rc3.zip
+  edu.umd.cs.findbugs.plugin.eclipse_1.3.6.20081104.zip  findbugs-1.3.6-rc3.tar.gz
+
+cd to that directory
+sftp username@frs.sourceforge.net
+sftp> cd uploads
+sftp> mput *
+fstp> quit
+
+Add releases via:
+	https://sourceforge.net/project/admin/editpackages.php?group_id=96405	
+
+
+release daily/candidate/final eclipse plugins
+
+From findbugs directory, do:
+	rsync -avz web/ username,findbugs@web.sourceforge.net:htdocs/
+
+For a release candidate, send email to findbugs-discuss and findbugs-core. For a full release, send email to findbugs-announce.
