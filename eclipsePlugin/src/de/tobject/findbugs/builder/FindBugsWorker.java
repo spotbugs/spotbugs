@@ -61,7 +61,6 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
@@ -300,6 +299,9 @@ public class FindBugsWorker {
 			Map<IPath, IPath> outLocations, Map<File, String> outputFiles) {
 		IPath path = file.getLocation();
 		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
+		if(srcRoot == null){
+			return;
+		}
 		IPath outputRoot = outLocations.get(srcRoot);
 		int firstSegments = path.matchingFirstSegments(srcRoot);
 		// add relative path to the output path
