@@ -1500,20 +1500,24 @@ public class OpcodeStack implements Constants2
 				  
 				 case ANEWARRAY:
 					 pop();
-					signature = "["+ dbc.getClassConstantOperand();
+					 signature = dbc.getClassConstantOperand();
+					 if (signature.charAt(0) == '[')
+						 signature = "[" + signature;
+					 else 
+						 signature = "[L" + signature + ";";
 					 pushBySignature(signature, dbc);
 				 break;
 
 				 case MULTIANEWARRAY:
 					 int dims = dbc.getIntConstant();
-					 while ((dims--) > 0) {
+					 for(int i = 0; i < dims; i++)
 						 pop();
-					 }
+					 
 					signature = dbc.getClassConstantOperand();
-					if (!signature.startsWith("[")) {
-						dims = dbc.getIntConstant();
-						signature = Util.repeat("[", dims) +"L" + signature + ";";
-					}
+					if (signature.startsWith("[")) {
+						signature = "L" + signature + ";";
+					} 
+					signature = Util.repeat("[", dims) + signature;
 					pushBySignature(signature, dbc);
 				 break;
 
