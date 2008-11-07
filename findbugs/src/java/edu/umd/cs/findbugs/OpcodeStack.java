@@ -1514,10 +1514,6 @@ public class OpcodeStack implements Constants2
 						 pop();
 					 
 					signature = dbc.getClassConstantOperand();
-					if (signature.startsWith("[")) {
-						signature = "L" + signature + ";";
-					} 
-					signature = Util.repeat("[", dims) + signature;
 					pushBySignature(signature, dbc);
 				 break;
 
