@@ -1518,9 +1518,15 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case AALOAD:
+					 {
 					 pop();
 					 it = pop();
-					 pushBySignature(it.getElementSignature(), dbc);
+					 String arraySig = it.getSignature();
+					 if ( arraySig.charAt(0) == '[') 
+						 pushBySignature(arraySig.substring(1), dbc);
+					 else 
+						 push(new Item());
+					 }
 				 break;
 
 				 case JSR:
