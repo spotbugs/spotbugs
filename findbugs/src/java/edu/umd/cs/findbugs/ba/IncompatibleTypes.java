@@ -101,17 +101,10 @@ public class IncompatibleTypes {
 		}
 
 		if (lhsType instanceof ArrayType) {
-
-			if (rhsType.equals(ObjectType.OBJECT))
-				return ARRAY_AND_OBJECT;
-			else
-				return ARRAY_AND_NON_ARRAY;
+			return getPriorityForAssumingCompatibleWithArray(rhsType);
 		}
 		if (rhsType instanceof ArrayType) {
-			if (lhsType.equals(ObjectType.OBJECT))
-				return ARRAY_AND_OBJECT;
-			else
-				return ARRAY_AND_NON_ARRAY;
+			return getPriorityForAssumingCompatibleWithArray(lhsType);
 		}
 		if (lhsType.equals(rhsType))
 			return SEEMS_OK;
@@ -124,6 +117,15 @@ public class IncompatibleTypes {
 		return getPriorityForAssumingCompatible((ObjectType) lhsType, (ObjectType) rhsType, pointerEquality);
 
 	}
+
+	private static IncompatibleTypes getPriorityForAssumingCompatibleWithArray(Type rhsType) {
+	    if (rhsType.equals(ObjectType.OBJECT))
+	    	return ARRAY_AND_OBJECT;
+	    String sig = rhsType.getSignature();
+	    if (sig.equals("Ljava/io/Serializable;") || sig.equals("Ljava/lang/Cloneable;"))
+	    		return SEEMS_OK;
+	    return ARRAY_AND_NON_ARRAY;
+    }
 
 	static @NonNull
 	XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
