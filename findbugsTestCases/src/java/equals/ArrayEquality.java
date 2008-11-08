@@ -1,10 +1,13 @@
 package equals;
 
+import java.io.Serializable;
+
 public class ArrayEquality {
 
 	boolean reportProblemsWithArrayEquality(String[] a, String b) {
 		return a.equals(b);
 	}
+
 	boolean reportProblemsWithArrayEquality2(String[] a, String b) {
 		return  b.equals(a);
 	}
@@ -26,6 +29,11 @@ public class ArrayEquality {
 	boolean reportProblemsWithArrayEquality8(StringBuffer[] a, String []b) {
 		return a.equals(b);
 	}
-
+	boolean reportProblemsWithArrayEqualityFalsePositive1(String[] a, Serializable b) {
+		return a.equals(b) || b.equals(a);
+	}
+	boolean reportProblemsWithArrayEqualityFalsePositive2(String[] a, Cloneable b) {
+		return a.equals(b) || b.equals(a);
+	}
 
 }
