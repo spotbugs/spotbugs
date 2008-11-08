@@ -679,7 +679,7 @@
  <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
   <Details>
 <![CDATA[
-<p>Ce détecteur recherche les appels à <code>equals(java.lang.Object)</code> sur des tableaux ou des classes finales qui ne surchargent pas la méthode <code>equals</code> de la classe <code>Object</code>. Celà signifie que la sémantique de equals est la même que <code>==</code>, ce qui est probablement une erreur.</p>
+<p>Ce détecteur recherche les appels à <code>equals(java.lang.Object)</code> sur des tableaux ou des classes finales qui ne surchargent pas la méthode <code>equals</code> de la classe <code>Object</code>. Cela signifie que la sémantique de equals est la même que <code>==</code>, ce qui est probablement une erreur.</p>
 ]]>
   </Details>
  </Detector>
@@ -986,7 +986,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <LongDescription>Il y a une boucle récursive infinie apparente dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette méthode s'appelle elle-même sans condition. Celà semble indiquer une boucle récursive infinie qui se terminera sur un débordement de la pile.</p>
+<p>Cette méthode s'appelle elle-même sans condition. Cela semble indiquer une boucle récursive infinie qui se terminera sur un débordement de la pile.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1140,7 +1140,7 @@ La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la r
   <LongDescription>{1} invoque System.exit(...), qui stoppe toute la JVM</LongDescription>
   <Details>
 <![CDATA[
-<p>Invoquer <code>System.exit()</code> arrête toute la JVM. Celà ne doit être fait que lorsque c'est nécessaire. De tels appels rendent difficile ou impossible l'invocation de votre code par d'autre code. Envisagez de déclencher une <code>RuntimeException</code> à la place.</p>
+<p>Invoquer <code>System.exit()</code> arrête toute la JVM. Cela ne doit être fait que lorsque c'est nécessaire. De tels appels rendent difficile ou impossible l'invocation de votre code par d'autre code. Envisagez de déclencher une <code>RuntimeException</code> à la place.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1332,7 +1332,7 @@ La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la r
   <LongDescription>{1} rend inutile {2}.finalize() ; est-ce voulu ?</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette méthode <code>finalize()</code> vide rend explicitement inutile tout finaliseur défini dans les super-classes. Toute action définie dans un finaliseur d'une superclasse sera ignorée. A moins que celà ne soit voulu, supprimer cette méthode.</p>
+<p>Cette méthode <code>finalize()</code> vide rend explicitement inutile tout finaliseur défini dans les super-classes. Toute action définie dans un finaliseur d'une superclasse sera ignorée. A moins que cela ne soit voulu, supprimer cette méthode.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1422,7 +1422,7 @@ La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la r
   <LongDescription>{0} définit hashCode() et utilise Object.equals()</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette classe définit une méthode <code>hashCode()</code> mais hérite la méthode <code>equals()</code> de <code>java.lang.Object</code> (qui définit l'égalité par comparaison des références des objets). Bien que celà satisfasse certainement le contrat indiquant que les objets égaux doivent avoir des codes de hachage égaux, ce n'est certainement pas ce qui était voulu lors de la surcharge de la méthode <code>hashCode()</code> (Surcharger <code>hashCode()</code> implique que l'identité des objets soit basée sur des critères plus compliqués qu'une simple égalités des références.)</p>
+<p>Cette classe définit une méthode <code>hashCode()</code> mais hérite la méthode <code>equals()</code> de <code>java.lang.Object</code> (qui définit l'égalité par comparaison des références des objets). Bien que cela satisfasse certainement le contrat indiquant que les objets égaux doivent avoir des codes de hachage égaux, ce n'est certainement pas ce qui était voulu lors de la surcharge de la méthode <code>hashCode()</code> (Surcharger <code>hashCode()</code> implique que l'identité des objets soit basée sur des critères plus compliqués qu'une simple égalités des références.)</p>
 <p>Si vous ne pensez pas que des instances de cette classe soient un jour insérées dans des <code>HashMap</code>/<code>HashTable</code>, l'implémentation recommendée de <code>hashCode</code> est :</p>
 <p><pre>
 public int hashCode() {
@@ -1718,7 +1718,7 @@ synchronized() {}
   <LongDescription>La méthode {1} se synchronise sur le champ mis à jour {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette méthode se synchronise sur le champ modifiable d'une référence objet. Il y a peu de chances que celà ait un sens puisque les différents threads se synchroniserons par rapport à différents objets.</p>
+<p>Cette méthode se synchronise sur le champ modifiable d'une référence objet. Il y a peu de chances que cela ait un sens puisque les différents threads se synchroniserons par rapport à différents objets.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1727,7 +1727,7 @@ synchronized() {}
   <LongDescription>{1} devrait être sorti de l'interface et mis en package protected</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ final static défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre celà et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
+<p>Un champ final static défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre cela et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2106,7 +2106,7 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
   <LongDescription>Ecriture d'un champ statique {2} depuis la méthode d'une instance {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>La méthode de l'instance écrit la valeur d'un champ statique. Celà peut être difficile à gérer si plusieurs instances ont la possibilité d'écrire cette valeur et celà ressemble surtout à une mauvaise pratique.</p>
+<p>La méthode de l'instance écrit la valeur d'un champ statique. Cela peut être difficile à gérer si plusieurs instances ont la possibilité d'écrire cette valeur et cela ressemble surtout à une mauvaise pratique.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2294,7 +2294,7 @@ dateString = dateString.trim();
   <LongDescription>Déréférencement d'un pointeur null dans le chemin d'exception de {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Un pointeur à <code>null</code> dans le chemin d'exception est déréférencé ici. Celà va mener à une <code>NullPointerException</code> quand le code sera exécuté. Notez que puisque FindBugs ne détecte pas les chemins d'exception irréalisables, il est possible que cette alarme soit injustifiée.</p>
+<p>Un pointeur à <code>null</code> dans le chemin d'exception est déréférencé ici. Cela va mener à une <code>NullPointerException</code> quand le code sera exécuté. Notez que puisque FindBugs ne détecte pas les chemins d'exception irréalisables, il est possible que cette alarme soit injustifiée.</p>
 <p>Notez aussi que FindBugs considère le choix par défaut d'un <code>switch</code> comme étant dans le chemin d'exception, puisque ce choix est souvent irréalisable.</p>
 ]]>
   </Details>
@@ -2304,7 +2304,7 @@ dateString = dateString.trim();
   <LongDescription>Possible déréférencement d'un pointeur null dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Une valeur par référence déréférencée ici peut-être à <code>null</code> à l'exécution. Celà peut conduire à une <code>NullPointerException</code> quand le code est exécuté.</p>
+<p>Une valeur par référence déréférencée ici peut-être à <code>null</code> à l'exécution. Cela peut conduire à une <code>NullPointerException</code> quand le code est exécuté.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2415,7 +2415,7 @@ dateString = dateString.trim();
   <Details>
 <![CDATA[
 <p>Renvoyer un tableau vide constitue souvent une meilleure approche plutôt que de renvoyer une référence à <code>null</code> pour signaler qu'il n'y a pas de résultat (c'est-à-dire, une liste vide de résultats). De cette façon, aucune vérification explicite du <code>null</code> n'est nécessaire dans les méthodes clientes.</p>
-<p>D'un autre côté, utiliser <code>null</code> signifie "il n'y a pas de réponse à cette question". Celà peut donc être approprié. Par exemple, <code>File.listFiles()</code> renvoi une liste vide si un répertoire donné ne contient pas de fichiers, et renvoi <code>null</code> si le fichier n'est pas un répertoire.</p>
+<p>D'un autre côté, utiliser <code>null</code> signifie "il n'y a pas de réponse à cette question". Cela peut donc être approprié. Par exemple, <code>File.listFiles()</code> renvoi une liste vide si un répertoire donné ne contient pas de fichiers, et renvoi <code>null</code> si le fichier n'est pas un répertoire.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2673,7 +2673,7 @@ public void foo() {
   <LongDescription>Des masques binaires incompatibles renvoient un résultat constant dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette méthode compare une expression de la forme (a <code>&amp;</code> C) avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Celà peut indiquer une faute de frappe ou une erreur logique.</p>
+<p>Cette méthode compare une expression de la forme (a <code>&amp;</code> C) avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Cela peut indiquer une faute de frappe ou une erreur logique.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2867,10 +2867,10 @@ String s = buf.toString();
  </BugPattern>
  <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
   <ShortDescription>Vérification de type inutile avec l'opérateur instanceof</ShortDescription>
-  <LongDescription>La méthode {1} effectue une vérification de type inutile avec l'opérateur instanceof alors que celà pourrait-être déterminé statiquement</LongDescription>
+  <LongDescription>La méthode {1} effectue une vérification de type inutile avec l'opérateur instanceof alors que cela pourrait-être déterminé statiquement</LongDescription>
   <Details>
 <![CDATA[
-<p>Vérification de type effectuée avec l'opérateur <code>instanceof</code> alors que celà pourrait-être déterminé statiquement.</p>
+<p>Vérification de type effectuée avec l'opérateur <code>instanceof</code> alors que cela pourrait-être déterminé statiquement.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2944,7 +2944,7 @@ String s = buf.toString();
   <Details>
 <![CDATA[
 <p>Cette instruction assigne une valeur à une variable locale mais cette variable n'est pas lue par la suite. Ceci indique souvent une erreur puisque la valeur calculée n'est jamais utilisée.</p>
-<p>Notez que le compilateur javac de Sun génère fréquemment ce genre d'affectations à perte. FindBugs analysant le byte-code généré, il n'y a pas de façon simple d'éliminer c'est fausses alarmes.</p>
+<p>Notez que le compilateur javac de Sun génère fréquemment ce genre d'affectations à perte. FindBugs analysant le byte-code généré, il n'y a pas de façon simple d'éliminer ces fausses alarmes.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3070,7 +3070,7 @@ String s = buf.toString();
   <LongDescription>La classe {0} implémente la même interface que sa classe mère</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette classe déclare implémenter une interface qui est aussi implémentée par une de ses classes mères. Ceci est redondant : dès qu'une super-classe implémente une interface, toutes les sous-classes le font aussi par défaut. Celà peut indiquer que la hiérarchie d'héritage a changé depuis la création de cette classe et la cible de l'implémentation de l'interface doit peut-être être reprise en considération.</p>
+<p>Cette classe déclare implémenter une interface qui est aussi implémentée par une de ses classes mères. Ceci est redondant : dès qu'une super-classe implémente une interface, toutes les sous-classes le font aussi par défaut. Cela peut indiquer que la hiérarchie d'héritage a changé depuis la création de cette classe et la cible de l'implémentation de l'interface doit peut-être être reprise en considération.</p>
 ]]>
   </Details>
  </BugPattern>
