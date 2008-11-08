@@ -478,6 +478,7 @@ public class OpcodeStack implements Constants2
 			 return signature.startsWith("[");
 		 }
 
+		 @Deprecated
 		 public String getElementSignature() {
 			 if (!isArray())
 				 return signature;
