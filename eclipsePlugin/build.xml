@@ -121,6 +121,7 @@
 		<property file="${bin.dir}/plugininfo.properties"/>
 	</target>
 
+	<target name="all" depends="site,dist,srcdist"/>
 	<target name="dist" depends="clean,classes,version" description="Build a plugin distributable">
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
 				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
