@@ -21,6 +21,7 @@
 					
 
 					<p> Changes since version 1.3.5</p>
+					<ul>
 					<li>Added fairly exhaustive static analysis
 					of uses of format strings, checking for missing or 
 					extra arguements, invalid format specifiers, 
@@ -44,6 +45,23 @@
 						an equals method checks to see if an operand is an instance of a class not
 							compatible with itself. For example, if the Foo class checks to see if the argument
 							is an instance of String. This is either a questionable design decision or a coding mistake.
+					<li>Added <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DMI_INVOKING_HASHCODE_ON_ARRAY">DMI_INVOKING_HASHCODE_ON_ARRAY</a>, 
+						which checks for invoking <code>hashCode()</code> on an array, which returns a hash code that ignores the contents of the array.
+					<li>Added checks for using <code>x.removeAll(x)</code> to rather than <code>x.clear()</code>
+					to clear an array.
+					<li>Add checks for calls such as <code>x.contains(x)</code>, <code>x.remove(x)</code> and <code>x.containsAll(x)</code>.
+					<li>Improvements to Eclipse plugin (thanks to Andrei Loskutov):
+					<ul>
+					<li>Report separate markers for each occurrence of an issue that appears multiple times in a method
+					<li> fine tuning for reported markers: add only one marker for fields, add marker on right position 
+					<li>  link bugs selected in bug explorer view to the opened editor and vice versa 
+					<li> select bugs selected in editor ruler in the opened bug explorer view 
+					<li>  consistent abbreviations used in both bug explorer and bug details view 
+					<li> added "Expand All" button to the bug explorer view 
+					<li>  added "Go Into/Go Up" buttons to the bug explorer view 
+					<li>  added "Copy to clipboard" menu/functionality to the details view list widget 
+					<li> fix for CNF exception if loading the backup solution for broken browser widget 
+					
 					</ul></ul>
 					
 					
