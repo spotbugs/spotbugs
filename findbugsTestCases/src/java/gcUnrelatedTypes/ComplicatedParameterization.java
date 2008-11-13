@@ -13,7 +13,7 @@ public class ComplicatedParameterization {
 		myFoo.add(a);
 	}
 	
-	boolean contains(ArrayList<Integer> a) {
+	boolean falsePositive(ArrayList<Integer> a) {
 		return myFoo.contains(a);
 	}
 	
