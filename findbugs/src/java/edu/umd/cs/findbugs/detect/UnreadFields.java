@@ -594,6 +594,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 		previousOpcode = seen;
 	}
 
+	public boolean isReflexive(XField f) {
+		return reflectiveFields.contains(f);
+	}
 	static Pattern dontComplainAbout = Pattern.compile("class[$]");
 	static Pattern withinAnonymousClass = Pattern.compile("[$][0-9].*[$]");
 	@Override
