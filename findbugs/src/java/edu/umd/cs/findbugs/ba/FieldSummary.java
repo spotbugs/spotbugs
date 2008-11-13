@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.util.Util;
 
 public class FieldSummary {
@@ -70,8 +71,12 @@ public class FieldSummary {
 	public boolean isWrittenOutsideOfConstructor(XField field) {
 		if (field.isFinal())
 			return false;
-		boolean result = writtenOutsideOfConstructor.contains(field);
-		return result;
+		if (writtenOutsideOfConstructor.contains(field))
+			return true;
+		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+		if (unreadFields.isReflexive(field)) 
+			return true;
+		return false;
 	}
 
 	

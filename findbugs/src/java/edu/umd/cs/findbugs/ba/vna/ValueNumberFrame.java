@@ -148,7 +148,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
 		for(AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 			XField field = availableLoad.getField();
-			if (!field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
+			if (field.isVolatile() || !field.isFinal() && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
 				if (RLE_DEBUG) 
 					System.out.println("KILLING load of " + availableLoad + " in " + this);
 				killMe.add(availableLoad);
