@@ -3,6 +3,6 @@ Put the jar files for FindBugs plugins in this directory.
 For example, you can download the fb-contrib plugin from:
 	http://fb-contrib.sourceforge.net/
 
-You should carefully evaluate any plugins to determine whether the issues they
-report are suitable and appropriate for your project.
+You should carefully evaluate any FindBugs plugins to determine whether 
+the issues they report are suitable and appropriate for your project.
 
