@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -65,6 +64,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -78,8 +78,10 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 
@@ -313,6 +315,16 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				// ... containers
 				if (!operand.hasParameters())
 					continue;
+				ClassDescriptor operandClass = DescriptorFactory.getClassDescriptor(operand);
+				if (!operandClass.getClassName().startsWith("java/util")) try {
+	            	XClass xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, operandClass);
+	            	String sig = xclass.getSourceSignature();
+	            	if (sig != null && sig.indexOf("<L") > 0)
+	            		continue;
+		           
+			    } catch (CheckedAnalysisException e1) {
+		          AnalysisContext.logError("Error checking for weird generic parameterization", e1);
+	            }
 
 				if (operand.getNumParameters() != expectedParameters)
 					continue;
