@@ -33,6 +33,8 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 public abstract class ClassName {
 
 	public static String toSignature(@SlashedClassName String className) {
+		if (className.length() == 0)
+			throw new IllegalArgumentException("classname can't be empty");
 		if (className.charAt(0) == '[' || className.endsWith(";")) return className;
 		return "L" + className + ";";
 	}
