@@ -179,7 +179,7 @@ public class IncompatibleTypes {
     	AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
  	   Subtypes2 subtypes2 = analysisContext.getSubtypes2();
 		
-        	IAnalysisCache cache = Global.getAnalysisCache();
+        IAnalysisCache cache = Global.getAnalysisCache();
 		XClass lhs = cache.getClassAnalysis(XClass.class, lhsDescriptor);
 		XClass rhs = cache.getClassAnalysis(XClass.class, rhsDescriptor);
 		 // Look up the classes
