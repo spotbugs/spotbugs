@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -38,6 +39,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 
 public class IncompatibleTypes {
+	private static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
+	private static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance("java.util.Map");
 	private static final ClassDescriptor LIST_DESCRIPTOR = DescriptorFactory.createClassDescriptor(List.class);
 	private static final ClassDescriptor MAP_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Map.class);
 	private static final ClassDescriptor SET_DESCRIPTOR = DescriptorFactory.createClassDescriptor(Set.class);
@@ -149,12 +152,26 @@ public class IncompatibleTypes {
 		if (lhsType.equals(rhsType))
 			return SEEMS_OK;
 		try {
-			// See if the types are related by inheritance.
-			ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(lhsType.getClassName());
-			ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(rhsType.getClassName());
-
+			
 			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType)) {
+				// See if the types are related by inheritance.
+				ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(lhsType.getClassName());
+				ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(rhsType.getClassName());
+
 				return getPriorityForAssumingCompatible(pointerEquality, lhsDescriptor, rhsDescriptor);
+			}
+			
+			if (lhsType instanceof GenericObjectType && rhsType instanceof GenericObjectType 
+					&& (Hierarchy.isSubtype(lhsType, COLLECTION_TYPE) || Hierarchy.isSubtype(lhsType, MAP_TYPE))) {
+				List<? extends ReferenceType> lhsParameters = ((GenericObjectType)lhsType).getParameters();
+				List<? extends ReferenceType> rhsParameters = ((GenericObjectType)rhsType).getParameters();
+				if (lhsParameters.size() == rhsParameters.size()) 
+					for(int i = 0; i < lhsParameters.size(); i++) {
+						IncompatibleTypes r = getPriorityForAssumingCompatible(lhsParameters.get(i), rhsParameters.get(i), pointerEquality);
+						if (r.getPriority() <= Priorities.NORMAL_PRIORITY)
+							return r;
+					}
+				
 			}
 
 		} catch (ClassNotFoundException e) {
