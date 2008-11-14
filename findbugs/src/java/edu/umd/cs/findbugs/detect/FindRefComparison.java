@@ -311,8 +311,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		@Override
 		public void visitINVOKESTATIC(INVOKESTATIC obj) {
-			consumeStack(obj);
 			if (returnsString(obj)) {
+				consumeStack(obj);
+
 				String className = obj.getClassName(getCPG());
 				if (className.equals("java.lang.String")) {
 					pushValue(dynamicStringTypeInstance);
@@ -320,23 +321,30 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					pushReturnType(obj);
 				}
 			} else {
-				pushReturnType(obj);
+				super.visitINVOKESTATIC(obj);
 			}
 		}
 
 		@Override
 		public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
-			handleInstanceMethod(obj);
+			if (returnsString(obj))
+				handleInstanceMethod(obj);
+			else super.visitINVOKESPECIAL(obj);
 		}
 
 		@Override
 		public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
-			handleInstanceMethod(obj);
+			if (returnsString(obj))
+				handleInstanceMethod(obj);
+			else super.visitINVOKEINTERFACE(obj);
+
 		}
 
 		@Override
 		public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
-			handleInstanceMethod(obj);
+			if (returnsString(obj))
+				handleInstanceMethod(obj);
+			else super.visitINVOKEVIRTUAL(obj);
 		}
 
 		private boolean returnsString(InvokeInstruction inv) {
@@ -345,25 +353,24 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		private void handleInstanceMethod(InvokeInstruction obj) {
-			consumeStack(obj);
-			if (returnsString(obj)) {
-				String className = obj.getClassName(getCPG());
-				String methodName = obj.getName(getCPG());
-				// System.out.println(className + "." + methodName);
 
-				if (methodName.equals("intern") && className.equals("java.lang.String")) {
-					sawStringIntern = true;
-					pushValue(staticStringTypeInstance);
-				} else if (methodName.equals("toString")
-						|| className.equals("java.lang.String")) {
-					pushValue(dynamicStringTypeInstance);
-					// System.out.println("  dynamic");
-				} else {
-	                pushReturnType(obj);
-                }
+			assert returnsString(obj);
+			consumeStack(obj);
+			String className = obj.getClassName(getCPG());
+			String methodName = obj.getName(getCPG());
+			// System.out.println(className + "." + methodName);
+
+			if (methodName.equals("intern") && className.equals("java.lang.String")) {
+				sawStringIntern = true;
+				pushValue(staticStringTypeInstance);
+			} else if (methodName.equals("toString")
+					|| className.equals("java.lang.String")) {
+				pushValue(dynamicStringTypeInstance);
+				// System.out.println("  dynamic");
 			} else {
-	            pushReturnType(obj);
-            }
+				pushReturnType(obj);
+			}
+
 		}
 
 		@Override
@@ -683,6 +690,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String methodSig = inv.getSignature(cpg);
 			if (isEqualsMethod(methodName, methodSig)) {
 				sawCallToEquals = true;
+				try {
+	                ClassContext.dumpTypeDataflow(method, classContext.getCFG(method), typeDataflow);
+                } catch (CFGBuilderException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+                }
 				checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
 			}
 		}
