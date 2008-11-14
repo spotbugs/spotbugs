@@ -295,7 +295,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						bugPattern = "DMI_VACUOUS_SELF_COLLECTION_CALL";
 						priority = NORMAL_PRIORITY;
 					}
-						
+					if (invokedMethod.getName().startsWith("contains")) {
+						InstructionHandle next = handle.getNext();
+						if (next != null) {
+							Instruction nextIns = next.getInstruction();
+
+							if (nextIns instanceof InvokeInstruction) {
+								XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
+								if (nextMethod.getName().equals("assertTrue"))
+									continue;
+							}
+						}
+					}
 					accumulator.accumulateBug(new BugInstance(this,bugPattern, priority)
 					.addClassAndMethod(methodGen,
 					        sourceFile).addCalledMethod(
@@ -353,11 +364,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 				if (invokedMethod.getName().startsWith("contains")) {
 					InstructionHandle next = handle.getNext();
-					Instruction nextIns = next.getInstruction();
-					if (nextIns instanceof InvokeInstruction) {
-						XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
-						if (nextMethod.getName().equals("assertFalse")) continue;
+					if (next != null) {
+						Instruction nextIns = next.getInstruction();
 
+						if (nextIns instanceof InvokeInstruction) {
+							XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
+							if (nextMethod.getName().equals("assertFalse"))
+								continue;
+						}
 					}
 				}
 				
