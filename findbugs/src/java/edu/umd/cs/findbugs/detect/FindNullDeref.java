@@ -659,7 +659,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		BugInstance warning = new BugInstance(this,bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method).addMethod(
 						calledMethod)
-				.describe("METHOD_CALLED").addSourceLine(classContext,
+				.describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext,
 						method,  location);
 
 		boolean uncallable = false;
@@ -808,7 +808,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				BugInstance warning = new BugInstance(this,
 						"NP_NONNULL_PARAM_VIOLATION", priority)
 						.addClassAndMethod(classContext.getJavaClass(), method).addMethod(m)
-						.describe("METHOD_CALLED").addParameterAnnotation(i, 
+						.describe(MethodAnnotation.METHOD_CALLED).addParameterAnnotation(i, 
 								description).addOptionalAnnotation(variableAnnotation).addSourceLine(
 								classContext, method,
 								location);
@@ -1339,7 +1339,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
 		if (invokedMethod != null)
-			bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED")
+			bugInstance.addMethod(invokedMethod).describe(MethodAnnotation.METHOD_CALLED)
 			.addParameterAnnotation(parameterNumber, "INT_MAYBE_NULL_ARG");
 		if (storedField!= null)
 			bugInstance.addField(storedField).describe("FIELD_STORED");

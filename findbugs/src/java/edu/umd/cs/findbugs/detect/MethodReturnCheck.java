@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -195,7 +196,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 				BugInstance warning = new BugInstance(this,
 						pattern, priority)
 						.addClassAndMethod(this)
-						.addMethod(callSeen).describe("METHOD_CALLED");
+						.addMethod(callSeen).describe(MethodAnnotation.METHOD_CALLED);
 				bugAccumulator.accumulateBug(warning, SourceLineAnnotation.fromVisitedInstruction(this, callPC));
 			}
 			state = SCAN;

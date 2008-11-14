@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -224,29 +225,29 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			InvokeInstruction inv = (InvokeInstruction) ins;
 
-			XMethod m = XFactory.createXMethod(inv, cpg);
+			XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
 
-			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(m.getName())) {
+			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(invokedMethod.getName())) {
 
-				if (DEBUG) System.out.println("Checking call to " + interfaceOfInterest + " : " + m);
-				String argSignature = m.getSignature();
+				if (DEBUG) System.out.println("Checking call to " + interfaceOfInterest + " : " + invokedMethod);
+				String argSignature = invokedMethod.getSignature();
 				argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
 				int pos = 0;
 				boolean allMethod = false;
 				if (!argSignature.equals("(Ljava/lang/Object;)")) {
-						if (m.getName().equals("removeAll") || m.getName().equals("containsAll")
-								|| m.getName().equals("retainAll")) {
-							if (!m.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
+						if (invokedMethod.getName().equals("removeAll") || invokedMethod.getName().equals("containsAll")
+								|| invokedMethod.getName().equals("retainAll")) {
+							if (!invokedMethod.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
 							allMethod = true;
-						} else if (m.getName().endsWith("ndexOf")
-								&& m.getClassName().equals("java.util.Vector") && 
+						} else if (invokedMethod.getName().endsWith("ndexOf")
+								&& invokedMethod.getClassName().equals("java.util.Vector") && 
 								argSignature.equals("(Ljava/lang/Object;I)"))
 							pos = 1;
 						else continue;
 				}
 				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 				try {
-					if (!subtypes2.isSubtype(m.getClassDescriptor(), interfaceOfInterest))
+					if (!subtypes2.isSubtype(invokedMethod.getClassDescriptor(), interfaceOfInterest))
 						continue;
 				} catch (ClassNotFoundException e) {
 					AnalysisContext.reportMissingClass(e);
@@ -254,7 +255,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				}
 				// OK, we've fold a method call of interest
 
-				int typeArgument = nameToTypeArgumentIndex.get(m.getName());
+				int typeArgument = nameToTypeArgumentIndex.get(invokedMethod.getName());
 
 				TypeFrame frame = typeDataflow.getFactAtLocation(location);
 				if (!frame.isValid()) {
@@ -287,10 +288,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (objectVN.equals(argVN)) {
 					String bugPattern =  "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES";
 					int priority = HIGH_PRIORITY;
-					if (m.getName().equals("removeAll")) {
+					if (invokedMethod.getName().equals("removeAll")) {
 						bugPattern = "DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION";
 						priority = NORMAL_PRIORITY;
-					} else if (m.getName().endsWith("All")) {
+					} else if (invokedMethod.getName().endsWith("All")) {
 						bugPattern = "DMI_VACUOUS_SELF_COLLECTION_CALL";
 						priority = NORMAL_PRIORITY;
 					}
@@ -333,6 +334,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (typeArgument < 0) parmType = operand;
 				else parmType = operand.getParameterAt(typeArgument);
 				Type argType = frame.getArgument(inv, cpg, 0, sigParser);
+				
 				IncompatibleTypes matchResult = compareTypes(parmType, argType, allMethod);
 
 
@@ -349,6 +351,16 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (!selfOperation && matchResult == IncompatibleTypes.SEEMS_OK)
 					continue;
 
+				if (invokedMethod.getName().startsWith("contains")) {
+					InstructionHandle next = handle.getNext();
+					Instruction nextIns = next.getInstruction();
+					if (nextIns instanceof InvokeInstruction) {
+						XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
+						if (nextMethod.getName().equals("assertFalse")) continue;
+
+					}
+				}
+				
 				// Prepare bug report
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
 				        sourceFile, handle);
@@ -385,8 +397,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					AnalysisContext.reportMissingClass(e);
 				}
 				accumulator.accumulateBug(new BugInstance(this, "GC_UNRELATED_TYPES", priority).addClassAndMethod(methodGen,
-				        sourceFile).addFoundAndExpectedType(argType, parmType).addCalledMethod(
-				        methodGen, (InvokeInstruction) ins)
+				        sourceFile).addFoundAndExpectedType(argType, parmType).addMethod(invokedMethod).describe(MethodAnnotation.METHOD_CALLED)
 				        .addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 								location, objectVN, vnFrame, "INVOKED_ON"))
 								.addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
