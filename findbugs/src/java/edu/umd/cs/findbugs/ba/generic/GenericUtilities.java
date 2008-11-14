@@ -198,6 +198,10 @@ public class GenericUtilities {
 		}
 		return result.toString();
 	}
+	 
+	 public static GenericObjectType getType(String className, List<? extends ReferenceType> parameters) {
+		 return new GenericObjectType(className, parameters);	
+	 }
 	/**
 	 * This method is analogous to <code>Type.getType(String)</code>, 
 	 * except that it also accepts signatures with generic information.
@@ -207,7 +211,7 @@ public class GenericUtilities {
 	 * to break up a signature with many types or call createTypes(String) to
 	 * return a list of types
 	 */
-	public static final Type getType(String signature) {
+	public static  Type getType(String signature) {
 		// ensure signature only has one type
 		if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1)
 			throw new IllegalArgumentException("the following signature does not " +
