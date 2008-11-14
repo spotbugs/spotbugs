@@ -690,12 +690,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String methodSig = inv.getSignature(cpg);
 			if (isEqualsMethod(methodName, methodSig)) {
 				sawCallToEquals = true;
-				try {
-	                ClassContext.dumpTypeDataflow(method, classContext.getCFG(method), typeDataflow);
-                } catch (CFGBuilderException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                }
 				checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
 			}
 		}
