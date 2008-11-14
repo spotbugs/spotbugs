@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.Collections;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Field;
@@ -38,6 +40,7 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -389,6 +392,26 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             }
 			
 			return;
+		}
+		
+		if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") && className.endsWith("Map")) {
+			Type argType;
+            try {
+	            argType = frame.popValue();
+            } catch (DataflowAnalysisException e) {
+	            AnalysisContext.logError("oops", e);
+	            return;
+            }
+			ObjectType mapType;
+			if (argType instanceof GenericObjectType) {
+				GenericObjectType genericArgType = (GenericObjectType) argType;
+				mapType = GenericUtilities.getType("java.util.Map$Entry", genericArgType.getParameters());
+			} else
+				mapType = (ObjectType) Type.getType("Ljava/util/Map$Entry;");
+			GenericObjectType entrySetType = GenericUtilities.getType("java.util.Set", Collections.singletonList(mapType));
+			frame.pushValue(entrySetType);
+			return;
+            
 		}
 	
 		if (methodName.equals("isInstance")) {
