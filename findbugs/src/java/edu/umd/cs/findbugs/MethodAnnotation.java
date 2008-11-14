@@ -64,6 +64,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static final String METHOD_SAFE_TARGET = "METHOD_SAFE_TARGET";
 	
 	public static final String METHOD_EQUALS_USED = "METHOD_EQUALS_USED";
+	public static final String METHOD_CALLED = "METHOD_CALLED";
 
 
 	/**
