@@ -165,7 +165,7 @@ public class IncompatibleTypes {
 					&& (Hierarchy.isSubtype(lhsType, COLLECTION_TYPE) || Hierarchy.isSubtype(lhsType, MAP_TYPE))) {
 				List<? extends ReferenceType> lhsParameters = ((GenericObjectType)lhsType).getParameters();
 				List<? extends ReferenceType> rhsParameters = ((GenericObjectType)rhsType).getParameters();
-				if (lhsParameters.size() == rhsParameters.size()) 
+				if (lhsParameters != null && rhsParameters != null && lhsParameters.size() == rhsParameters.size()) 
 					for(int i = 0; i < lhsParameters.size(); i++) {
 						IncompatibleTypes r = getPriorityForAssumingCompatible(lhsParameters.get(i), rhsParameters.get(i), pointerEquality);
 						if (r.getPriority() <= Priorities.NORMAL_PRIORITY)
