@@ -144,8 +144,8 @@ public class MineBugHistory {
 			for (int i = 0; i <= maxSequence; ++i) {
 				if (bugInstance.getFirstVersion() > i) continue;
 				boolean activePrevious = bugInstance.getFirstVersion() < i
-					&& (bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i-1 );
-				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i ;
+					&& (!bugInstance.isDead() || bugInstance.getLastVersion() >= i-1 );
+				boolean activeCurrent = !bugInstance.isDead() || bugInstance.getLastVersion() >= i ;
 
 				int key = getKey(activePrevious, activeCurrent);
 				if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass()) key = REMOVEDCODE;

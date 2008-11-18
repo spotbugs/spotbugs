@@ -1913,6 +1913,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return lastVersion;
 	}
 
+	public boolean isDead() {
+		return lastVersion != -1;
+	}
 	/**
 	 * @param introducedByChangeOfExistingClass The introducedByChangeOfExistingClass to set.
 	 */

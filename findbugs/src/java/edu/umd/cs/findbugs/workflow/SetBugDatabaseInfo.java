@@ -50,18 +50,20 @@ public class SetBugDatabaseInfo {
 	/**
 	 * 
 	 */
-	private static final String USAGE = "Usage: <cmd> " 
-			+ " [options] [<oldData> [<newData>]]";
-
+	private static final String USAGE = "Usage: <cmd> " + " [options] [<oldData> [<newData>]]";
 
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
+
 		String exclusionFilterFile;
-	 boolean withMessages = false;
+
+		boolean withMessages = false;
 
 		long revisionTimestamp = 0L;
-		public  List<String> sourcePaths = new LinkedList<String>();
-		public  List<String> searchSourcePaths = new LinkedList<String>();
+
+		public List<String> sourcePaths = new LinkedList<String>();
+
+		public List<String> searchSourcePaths = new LinkedList<String>();
 
 		SetInfoCommandLine() {
 			addOption("-name", "name", "set name for (last) revision");
@@ -74,20 +76,18 @@ public class SetBugDatabaseInfo {
 		}
 
 		@Override
-		protected void handleOption(String option, String optionExtraPart)
-				throws IOException {
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-withMessages"))
 				withMessages = true;
 			else if (option.equals("-resetSource"))
 				sourcePaths.clear();
-		else
-		   throw new IllegalArgumentException("no option " + option);
+			else
+				throw new IllegalArgumentException("no option " + option);
 
 		}
 
 		@Override
-		protected void handleOptionWithArgument(String option, String argument)
-				throws IOException {
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
 			else if (option.equals("-suppress"))
@@ -100,8 +100,7 @@ public class SetBugDatabaseInfo {
 			else if (option.equals("-findSource"))
 				searchSourcePaths.add(argument);
 			else
-				throw new IllegalArgumentException("Can't handle option "
-						+ option);
+				throw new IllegalArgumentException("Can't handle option " + option);
 
 		}
 
@@ -163,25 +162,31 @@ public class SetBugDatabaseInfo {
 						String path = javaFile.getAbsolutePath();
 						if (path.endsWith(sourcePath)) {
 							String dir = path.substring(0,path.length() - sourcePath.length());
-							if (foundPaths.add(dir)) {
-								project.addSourceDir(dir);
-								if (argCount < args.length) 
-									System.out.println("Found " + dir);
-							}
+							foundPaths.add(dir);
+							
 						}
 					}
 
-
 				}
 
-
+			Set<String> toRemove = new HashSet<String>();
+			for(String p1 : foundPaths)
+				for(String p2 : foundPaths)
+					if (p1 != p2 && p1.startsWith(p2)) {
+						toRemove.add(p1);
+						break;
+					}
+			foundPaths.removeAll(toRemove);
+			
+			for(String dir : foundPaths)  {
+				project.addSourceDir(dir);
+				if (argCount < args.length)
+					System.out.println("Found " + dir);
 				}
 
+		}
 			// OK, now we know all the missing source files
 			// we also know all the .java files in the directories we were pointed to
-
-
-
 
 
 		if (argCount < args.length) 
@@ -190,11 +195,11 @@ public class SetBugDatabaseInfo {
 			origCollection.writeXML(System.out, project);
 
 	}
-	static String fullPath(SourceLineAnnotation src) {
-		return src.getPackageName().replace('.', File.separatorChar)
-		+ File.separatorChar + src.getSourceFile();
-	}
-	static SourceSearcher sourceSearcher;
 
+	static String fullPath(SourceLineAnnotation src) {
+		return src.getPackageName().replace('.', File.separatorChar) + File.separatorChar + src.getSourceFile();
+	}
+
+	static SourceSearcher sourceSearcher;
 
 }

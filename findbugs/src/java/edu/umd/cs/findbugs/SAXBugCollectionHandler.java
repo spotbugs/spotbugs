@@ -201,7 +201,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							bugInstance.setLastVersion(Long.parseLong(lastVersion));
 						}
 
-						if (bugInstance.getLastVersion() >= 0 &&
+						if (bugInstance.isDead() &&
 								bugInstance.getFirstVersion() > bugInstance.getLastVersion())
 							throw new IllegalStateException("huh");
 
@@ -553,8 +553,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			} else if (outerElement.equals(BUG_COLLECTION)) {
 				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance, false);
-				   // TODO: check this
-					if (bugInstance.getLastVersion() == -1)
+				   if (!bugInstance.isDead())
 						bugCollection.getProjectStats().addBug(bugInstance);
 				}
 			} else if (outerElement.equals(PROJECT)) {

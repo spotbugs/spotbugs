@@ -266,7 +266,7 @@ public class Filter {
 					return false;
 
 
-			if (activeSpecified && active != (bug.getLastVersion() == -1))
+			if (activeSpecified && active == bug.isDead())
 				return false;
 			if (removedByChangeSpecified
 					&& bug.isRemovedByChangeOfPersistingClass() != removedByChange)
@@ -276,7 +276,7 @@ public class Filter {
 				return false;
 			if (newCodeSpecified && newCode != (!bug.isIntroducedByChangeOfExistingClass() && bug.getFirstVersion() != 0))
 				return false;
-			if (removedCodeSpecified && removedCode != (!bug.isRemovedByChangeOfPersistingClass() && bug.getLastVersion() != -1))
+			if (removedCodeSpecified && removedCode != (!bug.isRemovedByChangeOfPersistingClass() && bug.isDead()))
 				return false;
 
 			if (bugPattern != null && !bugPattern.matcher(bug.getType()).find())
@@ -332,7 +332,7 @@ public class Filter {
 		private boolean bugLiveAt(BugInstance bug, long now) {
 			if (now < bug.getFirstVersion())
 				return false;
-			if (bug.getLastVersion() != -1 && bug.getLastVersion() < now)
+			if (bug.isDead() && bug.getLastVersion() < now)
 				return false;
 			return true;
 		}
@@ -453,7 +453,7 @@ public class Filter {
 		for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(bug)) {
 				resultCollection.add(bug, false);
-				if (bug.getLastVersion() == -1 )
+				if (!bug.isDead() )
 					resultCollection.getProjectStats().addBug(bug);
 				passed++;
 			} else
