@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -36,10 +39,10 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
-	Set<String> badSignatures;
+	final Set<String> badSignatures;
+	final BugAccumulator bugAccumulator;
 	public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 		badSignatures = new HashSet<String>();
 		badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;",
 				"Ljava/lang/Double;","Ljava/lang/Float;","Ljava/lang/Byte;","Ljava/lang/Character;",
@@ -57,6 +60,11 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 	private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
 	
 	@Override
+	public void visit(Code obj) {
+		super.visit(obj);
+		bugAccumulator.reportAccumulatedBugs();
+	}
+	@Override
 	public void sawOpcode(int seen) {
 		if (seen == MONITORENTER) {
 			OpcodeStack.Item top = stack.getStackItem(0);
@@ -69,7 +77,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 				if (identified.matcher(value).matches())
 					bug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
 				
-				bugReporter.reportBug(bug.addSourceLine(this));
+				bugAccumulator.accumulateBug(bug, this);
 			} else if (badSignatures.contains(signature)) {
 				boolean isBoolean = signature.equals("Ljava/lang/Boolean;");
 				XField field = top.getXField();
@@ -78,13 +86,13 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 				int priority = NORMAL_PRIORITY;
 				if (isBoolean) priority--;
 				if (newlyConstructedObject(summary))
-					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
-					.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
+					bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+					.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top), this);
 				else if (isBoolean) 
-					bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
-					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
-				else bugReporter.reportBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
-				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top).addSourceLine(this));
+					bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority)
+					.addClassAndMethod(this).addOptionalField(field).addOptionalLocalVariable(this, top), this);
+				else bugAccumulator.accumulateBug(new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE", priority)
+				.addClassAndMethod(this).addType(signature).addOptionalField(field).addOptionalLocalVariable(this, top), this);
 			}
 		}
 	}
