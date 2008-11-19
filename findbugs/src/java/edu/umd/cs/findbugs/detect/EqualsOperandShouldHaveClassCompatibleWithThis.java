@@ -47,7 +47,6 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 	final BugAccumulator bugAccumulator;
 
 	final ClassSummary classSummary = new ClassSummary();
-	Set<ClassDescriptor> classWithFunkyEqualsMethods = new HashSet<ClassDescriptor>();
 	
 		
 	public EqualsOperandShouldHaveClassCompatibleWithThis(BugReporter bugReporter) {

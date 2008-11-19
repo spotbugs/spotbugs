@@ -43,7 +43,6 @@ public class FindReturnRef extends OpcodeStackDetector {
 	String classNameOnStack;
 	String sigOnStack;
 	int parameterCount;
-	int r;
 	boolean fieldIsStatic;
 	private BugAccumulator bugAccumulator;
 	
