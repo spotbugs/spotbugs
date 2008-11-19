@@ -411,7 +411,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					AnalysisContext.reportMissingClass(e);
 				}
 				accumulator.accumulateBug(new BugInstance(this, "GC_UNRELATED_TYPES", priority).addClassAndMethod(methodGen,
-				        sourceFile).addFoundAndExpectedType(argType, parmType).addMethod(invokedMethod).describe(MethodAnnotation.METHOD_CALLED)
+				        sourceFile).addFoundAndExpectedType(argType, parmType).addCalledMethod(
+				        methodGen, (InvokeInstruction) ins)
 				        .addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 								location, objectVN, vnFrame, "INVOKED_ON"))
 								.addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
