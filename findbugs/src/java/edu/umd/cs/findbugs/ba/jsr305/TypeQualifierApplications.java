@@ -67,8 +67,8 @@ public class TypeQualifierApplications {
 			new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
 
 		/** Type qualifier annotations applied directly to method parameters. */
-		private DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> directParameterAnnotations =
-			new DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>>();
+		private HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations =
+			new HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>>();
 
 		/**
 		 * Map of TypeQualifierValues to maps containing, for each AnnotatedObject,
@@ -108,7 +108,7 @@ public class TypeQualifierApplications {
 		return instance.get().effectiveObjectAnnotations;
 	}
 
-	private static DualKeyHashMap<XMethod, Integer, Collection<AnnotationValue>> getDirectParameterAnnotations() {
+	private static HashMap<XMethod,  Map<Integer, Collection<AnnotationValue>>> getDirectParameterAnnotations() {
 		return instance.get().directParameterAnnotations;
 	}
 
@@ -150,13 +150,34 @@ public class TypeQualifierApplications {
 	 *         applied to this parameter
 	 */
 	private static Collection<AnnotationValue> getDirectAnnotation(XMethod m, int parameter) {
-		Collection<AnnotationValue> result = getDirectParameterAnnotations().get(m, parameter);
+		HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations = getDirectParameterAnnotations();
+		Map<Integer, Collection<AnnotationValue>> map =  directParameterAnnotations.get(m);
+		if (map == null) {
+			int n = m.getNumParams();
+			map = new HashMap<Integer, Collection<AnnotationValue>>(n+2);
+			for(int i = 0; i < n; i++) {
+				Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
+				if (!a.isEmpty())
+					map.put(i, a);
+			}
+			if (map.isEmpty()) map = Collections.emptyMap();
+			directParameterAnnotations.put(m, map);
+		} else if (false) {
+			int n = m.getNumParams();
+			for(int i = 0; i < n; i++) {
+				Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
+				Collection<AnnotationValue> a2 = map.get(i);
+				boolean ok = a2 == null ?  a.isEmpty() : a.equals(a2);
+				if (!ok) {
+					Collection<AnnotationValue> a3 = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
+					System.out.println("huh");
+				}
+			}
+		}
+		
+		Collection<AnnotationValue> result = map.get(parameter);
 		if (result != null) return result;
-		if (m.getParameterAnnotationDescriptors(parameter).isEmpty()) return Collections.<AnnotationValue>emptyList();
-		result = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(parameter));
-		if (result.size() == 0) result = Collections.<AnnotationValue>emptyList();
-		getDirectParameterAnnotations().put(m, parameter, result);
-		return result;
+		return Collections.emptyList();
 	}
 
 	/**
@@ -648,13 +669,14 @@ public class TypeQualifierApplications {
 				System.out.println("  Value is " + typeQualifierValue.value +"("+typeQualifierValue.value.getClass().toString()+")");
 			}
 		}
-		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map = getEffectiveParameterAnnotations().get(typeQualifierValue);
+		Map<TypeQualifierValue, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = getEffectiveParameterAnnotations();
+		DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation> map = effectiveParameterAnnotations.get(typeQualifierValue);
 		if (map == null) {
 			if (DEBUG) {
 				System.out.println("computeEffectiveTypeQualifierAnnotation: Creating map for " + typeQualifierValue);
 			}
 			map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
-			getEffectiveParameterAnnotations().put(typeQualifierValue, map);
+			effectiveParameterAnnotations.put(typeQualifierValue, map);
 		}
 
 		// Check cached answer
