@@ -354,9 +354,11 @@ public class FindDeadLocalStores implements Detector {
 								if (location2.getHandle().getPosition() + 15 == location.getHandle().getPosition()) {
 									Instruction  instruction2 = location2.getHandle().getInstruction();
 									if (instruction2 instanceof LDC) {
-										String n = (String) ((LDC)instruction2).getValue(methodGen.getConstantPool());
+										Object value = ((LDC)instruction2).getValue(methodGen.getConstantPool());
+										if (value instanceof String) {String n = (String) value;
 										if (n.length() > 0)
-										  initializationOf = ClassName.toSignature(n);
+											initializationOf = ClassName.toSignature(n);
+										}
 									}
 								}}
 
