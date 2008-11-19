@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
@@ -57,9 +59,9 @@ public class Update {
 	private static final String USAGE = "Usage: " + Update.class.getName()
 			+ " [options]  data1File data2File data3File ... ";
 
-	private HashMap<BugInstance, BugInstance> mapFromNewToOldBug = new HashMap<BugInstance, BugInstance>();
+	private Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<BugInstance, BugInstance>();
 
-	private HashSet<BugInstance> matchedOldBugs = new HashSet<BugInstance>();
+	private Map<BugInstance,Void> matchedOldBugs = new IdentityHashMap<BugInstance,Void>();
 
 	boolean noPackageMoves = false;
 
@@ -165,7 +167,7 @@ public class Update {
 				bugCollection, false);
 		for (Iterator<BugInstance> i  = bugCollection.getCollection().iterator(); i.hasNext(); ) {
 			BugInstance bug = i.next();
-			if (matchedOldBugs.contains(bug)) i.remove();
+			if (matchedOldBugs.containsKey(bug)) i.remove();
 		}
 			
 	
@@ -221,11 +223,11 @@ public class Update {
 		HashSet<String> analyzedSourceFiles = sourceFilesInCollection(newCollection);
 		// Copy unmatched bugs
 		if (copyDeadBugs || incrementalAnalysis)
-			for (BugInstance bug : origCollection.getCollection()) if (!matchedOldBugs.contains(bug)) 
+			for (BugInstance bug : origCollection.getCollection()) if (!matchedOldBugs.containsKey(bug)) 
 				if (bug.isDead()) {
-						oldBugs++;
-						BugInstance newBug = (BugInstance) bug.clone();
-						resultCollection.add(newBug, false);
+					oldBugs++;
+					BugInstance newBug = (BugInstance) bug.clone();
+					resultCollection.add(newBug, false);
 				} else {
 					newlyDeadBugs++;
 
@@ -234,8 +236,9 @@ public class Update {
 					ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
 					String className = classBugFoundIn.getClassName();
 					String sourceFile = classBugFoundIn.getSourceFileName();
-					boolean removed = sourceFile != null && analyzedSourceFiles.contains(sourceFile) || newCollection.getProjectStats().getClassStats(className) != null;
-					if (removed) {
+					boolean fixed = sourceFile != null && analyzedSourceFiles.contains(sourceFile) 
+					                  || newCollection.getProjectStats().getClassStats(className) != null;
+					if (fixed) {
 						if (!copyDeadBugs)
 							continue;
 						newBug.setRemovedByChangeOfPersistingClass(true);
@@ -312,6 +315,14 @@ public class Update {
 
 	}
 
+	private static int size(BugCollection b) {
+		int count = 0;
+		for(Iterator<BugInstance> i = b.iterator(); i.hasNext(); ) {
+			i.next();
+			count++;
+		}
+		return count;
+	}
 	/**
      * @param origCollection
      * @param newCollection
@@ -322,13 +333,20 @@ public class Update {
 	    
 		mapFromNewToOldBug.clear();
 		matchedOldBugs.clear();
-		
+		if (false) {
+		System.out.printf("%d old bugs, %d new bugs\n", size(origCollection), size(newCollection));
+		System.out.println("Matched old bugs: " + matchedOldBugs.size());
+		}
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection, false);
+		if (false) 
+		System.out.println("Matched old bugs: " + matchedOldBugs.size());
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection, true);
 		if (!preciseMatch) {
 			matchBugs(fuzzyBugPatternMatcher, origCollection, newCollection, false);
+			if (false) System.out.println("Matched old bugs: " + matchedOldBugs.size());
+			
 		}
 		if (!noPackageMoves) {
 			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
@@ -343,6 +361,8 @@ public class Update {
 					matchBugs(movedBugComparator, origCollection, newCollection, false);
 				}
 			}
+			if (false) System.out.println("Matched old bugs: " + matchedOldBugs.size());
+			
 		}
     }
 
@@ -482,8 +502,9 @@ public class Update {
 		int oldBugs = 0;
 		int newBugs = 0;
 		int matchedBugs = 0;
+		if (false) System.out.printf("%d old, %d new\n", size(origCollection), size(newCollection));
 		for (BugInstance bug : origCollection.getCollection())
-			if ( !matchedOldBugs.contains(bug) && (!bug.isDead() || matchDeadBugsInRemovedClasses && !bug.isRemovedByChangeOfPersistingClass())) {
+			if ( !matchedOldBugs.containsKey(bug) && (!bug.isDead() || bug.isDead() && matchDeadBugsInRemovedClasses && !bug.isRemovedByChangeOfPersistingClass())) {
 				oldBugs++;
 				LinkedList<BugInstance> q = set.get(bug);
 				if (q == null) {
@@ -492,6 +513,9 @@ public class Update {
 				}
 				q.add(bug);
 			}
+		if (false) for(Map.Entry<BugInstance, LinkedList<BugInstance>> e : set.entrySet()) {
+			System.out.println(e.getKey() + " " + e.getValue().size());
+		}
 		for (BugInstance bug : newCollection.getCollection())
 			if (!mapFromNewToOldBug.containsKey(bug)) {
 				newBugs++;
@@ -500,8 +524,13 @@ public class Update {
 					matchedBugs++;
 					BugInstance matchedBug = q.removeFirst();
 					mapFromNewToOldBug.put(bug, matchedBug);
-					matchedOldBugs.add(matchedBug);
-				}
+					matchedOldBugs.put(matchedBug, null);
+					if (false) System.out.println(newBugs + " Matched " + bug);
+					if (q.isEmpty()) 
+						set.remove(bug);
+				} else if (false) System.out.println(newBugs + " No match " + bug);
+			} else if (false) {
+				System.out.println(newBugs + " skipping " + bug);
 			}
 		if (false && verbose)
 			System.out.println("matched " + matchedBugs + " of " + oldBugs
