@@ -170,7 +170,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 *
 	 * @param className   the full name of the class
 	 */
-	public ClassStats getClassStats(String className) {
+	public @CheckForNull ClassStats getClassStats(String className) {
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
