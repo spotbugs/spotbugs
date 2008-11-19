@@ -139,7 +139,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 		startOptionGroup("Output filtering options:");
 		addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
-		addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
+		addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages; end with .* to indicate classes in a package, .- to indicate a package prefix");
 		addOption("-excludeBugs", "baseline bugs", "exclude bugs that are also reported in the baseline xml output");
 		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
