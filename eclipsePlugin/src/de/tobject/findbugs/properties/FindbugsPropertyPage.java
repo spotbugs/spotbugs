@@ -251,13 +251,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	private void collectUserPreferences() {
 		// Get current user preferences for project
-		try {
-			this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
-		} catch (CoreException e) {
-			// Use default settings
-			FindbugsPlugin.getDefault().logException(e, "Could not get user preferences for project");
-			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
-		}
+		this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
 		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
 	}
 

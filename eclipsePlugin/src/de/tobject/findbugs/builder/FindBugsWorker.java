@@ -52,6 +52,8 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerParameter;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.util.Util.StopTimer;
@@ -78,7 +80,7 @@ public class FindBugsWorker {
 	public static boolean DEBUG;
 
 	private final IProgressMonitor monitor;
-	private UserPreferences userPrefs;
+	private final UserPreferences userPrefs;
 	private final IProject project;
 	private final IJavaProject javaProject;
 	private StopTimer st;
@@ -102,13 +104,7 @@ public class FindBugsWorker {
 							+ project, null));
 		}
 		this.monitor = monitor;
-		try {
-			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Could not get selected detectors for project");
-			throw e;
-		}
+		this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 	}
 
 	/**
@@ -203,6 +199,7 @@ public class FindBugsWorker {
 			System.out.println("\n------\n" + st.getResults() + "\n------\n");
 		}
 		st = null;
+		monitor.done();
 	}
 
 
@@ -227,6 +224,7 @@ public class FindBugsWorker {
 		reportFromXml(fileName, findBugsProject, bugReporter);
 		// Merge new results into existing results.
 		updateBugCollection(findBugsProject, bugReporter, false);
+		monitor.done();
 	}
 
 	/**
@@ -424,17 +422,23 @@ public class FindBugsWorker {
 	 */
 	private void updateBugCollection(Project findBugsProject, Reporter bugReporter,
 			boolean incremental) {
+		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
+
+		// will eventually update bug collection with right source lines
+		st.newPoint("createBugParameters");
+		List<MarkerParameter> bugParameters = MarkerUtil.createBugParameters(javaProject,
+				newBugCollection, monitor);
 		try {
 			st.newPoint("getBugCollection");
 			SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project,
 					monitor);
-			SortedBugCollection newBugCollection = bugReporter.getBugCollection();
 
 			st.newPoint("mergeBugCollections");
 			SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection,
 					newBugCollection, incremental);
 			resultCollection.setTimestamp(System.currentTimeMillis());
 
+			// will store bugs in the default FB file + Eclipse project session props
 			st.newPoint("storeBugCollection");
 			FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject,
 					monitor);
@@ -443,6 +447,10 @@ public class FindBugsWorker {
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
 		}
+
+		// will store bugs as markers in Eclipse workspace
+		st.newPoint("addMarkers");
+		MarkerUtil.addMarkers(bugParameters, project, newBugCollection, monitor);
 	}
 
 	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection,

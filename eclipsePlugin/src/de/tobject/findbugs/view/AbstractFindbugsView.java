@@ -43,7 +43,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 /**
  * @author Andrei Loskutov
  */
-public abstract class AbstractFindbugsView extends ViewPart {
+public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSelectionHandler {
 	static final String DETAILS_VIEW_IMG = "detailsView.png";
 	static final String USER_ANNOTATIONS_VIEW_IMG = "annotationsView.png";
 	static final String TREE_VIEW_IMG = "treeView.png";
@@ -68,7 +68,7 @@ public abstract class AbstractFindbugsView extends ViewPart {
 		}
 	}
 
-	final protected boolean isVisible() {
+	final public boolean isVisible() {
 		return getSite().getPage().isPartVisible(this);
 	}
 

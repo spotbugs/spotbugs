@@ -25,9 +25,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -47,6 +45,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
@@ -202,26 +201,20 @@ public class ExportWizardPage extends WizardPage {
 	}
 
 	private Record createProjectLine(IProject project) {
-		try {
-			if(Util.isJavaProject(project) /* TODO why not working ?? && project.hasNature(FindbugsPlugin.NATURE_ID) */) {
-				IMarker[] markerArr = project.findMarkers(FindBugsMarker.NAME, true,
-						IResource.DEPTH_INFINITE);
-				if (markerArr.length == 0) {
-					return null;
-				}
-				int overallBugCount = markerArr.length;
-				int notFilteredBugCount = 0;
-				String usedExportFilters = getLastUsedExportFilters();
-				for (IMarker marker : markerArr) {
-					if(!isFiltered(marker, usedExportFilters)) {
-						notFilteredBugCount ++;
-					}
-				}
-				return new Record(project.getName(), overallBugCount, notFilteredBugCount);
+		if(Util.isJavaProject(project) /* TODO why not working ?? && project.hasNature(FindbugsPlugin.NATURE_ID) */) {
+			IMarker[] markerArr = MarkerUtil.getAllMarkers(project);
+			if (markerArr.length == 0) {
+				return null;
 			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Can't export project bugs for: " + project);
+			int overallBugCount = markerArr.length;
+			int notFilteredBugCount = 0;
+			String usedExportFilters = getLastUsedExportFilters();
+			for (IMarker marker : markerArr) {
+				if(!isFiltered(marker, usedExportFilters)) {
+					notFilteredBugCount ++;
+				}
+			}
+			return new Record(project.getName(), overallBugCount, notFilteredBugCount);
 		}
 		return null;
 	}

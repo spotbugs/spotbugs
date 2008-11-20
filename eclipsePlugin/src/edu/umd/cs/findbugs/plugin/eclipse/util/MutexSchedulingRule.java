@@ -63,6 +63,9 @@ public class MutexSchedulingRule implements ISchedulingRule {
 	}
 
 	public boolean contains(ISchedulingRule rule) {
+		if(rule instanceof IProject){
+			return project.equals(rule);
+		}
 		return isConflicting(rule);
 		/* from the URL above: "If you do not need to create hierarchies of locks,
 		   you can implement the contains method to simply call isConflicting." */

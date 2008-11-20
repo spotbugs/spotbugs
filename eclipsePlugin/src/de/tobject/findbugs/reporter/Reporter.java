@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -43,7 +42,6 @@ import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * The <code>Reporter</code> is a class that is called by the FindBugs engine
@@ -67,12 +65,9 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	/** Persistent store of reported warnings. */
 	private final SortedBugCollection bugCollection;
 
-	/** Current user preferences for the project. */
-	private UserPreferences userPrefs;
-
 	private int pass = -1;
 
-	private int filteredBugCount;
+	private int bugCount;
 
 	/**
 	 * Constructor.
@@ -84,13 +79,8 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		super();
 		this.monitor = monitor;
 		this.project = project;
+		// TODO we do not need to sort bugs, so we can optimize performance and use just a list here
 		this.bugCollection = new SortedBugCollection();
-		try {
-			this.userPrefs = FindbugsPlugin.getUserPreferences(project.getProject());
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
-			this.userPrefs = UserPreferences.createDefaultUserPreferences();
-		}
 	}
 
 	/* (non-Javadoc)
@@ -108,10 +98,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 				return;
 			}
 		}
-		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
-			MarkerUtil.createMarker(bug, project, bugCollection);
-			filteredBugCount++;
-		}
+		bugCount++;
 	}
 
 	@Override
@@ -159,9 +146,8 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 */
 	public void finish() {
 		if (DEBUG) {
-			System.out.println("Finish: Found " + filteredBugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
+			System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
-		monitor.done();
 	}
 
 	/**
@@ -189,11 +175,11 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 		// Update progress monitor
 		if (pass <= 0) {
-			monitor.setTaskName("Prescanning... (found " + filteredBugCount
+			monitor.setTaskName("Prescanning... (found " + bugCount
 					+ ", checking " + className + ")");
 		} else {
 			monitor.setTaskName("Checking... (pass #" + pass + ") (found "
-					+ filteredBugCount + ", checking " + className + ")");
+					+ bugCount + ", checking " + className + ")");
 		}
 		monitor.worked(work);
 	}

@@ -153,6 +153,7 @@
       <!-- IOpenable objects in the JDT core are projects, folders, packages,
               java source files, and jars -->
       <objectContribution
+            adaptable="true"
             id="de.tobject.findbugs.JavaElementActions"
             objectClass="org.eclipse.jdt.core.IOpenable">
          <menu
@@ -178,15 +179,29 @@
                label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
+         <visibility>
+            <not>
+               <objectClass
+                     name="org.eclipse.jdt.core.IJavaProject">
+               </objectClass>
+            </not>
+         </visibility>
       </objectContribution>
       <!-- Special case context menu for simple projects that have java natures -->
       <objectContribution
-            objectClass="org.eclipse.core.resources.IProject"
-            id="de.tobject.findbugs.NavigatorActions">
+            adaptable="true"
+            id="de.tobject.findbugs.NavigatorActions"
+            objectClass="org.eclipse.core.resources.IProject">
          <menu
                id="findbugs"
                label="Find Bugs"
                path="additions"/>
+           <action
+                 class="de.tobject.findbugs.actions.LoadXmlAction"
+                 id="de.tobject.findbugs.loadXml"
+                 label="Load XML"
+                 menubarPath="findbugs/additions">
+           </action>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
                id="de.tobject.findbugs.removeMarkers"
@@ -210,6 +225,7 @@
             value="org.eclipse.jdt.core.javanature">
       </objectState>
    </visibility>
+
       </objectContribution>
 
     <!-- "Show Details" context menu entry for each type of FindBugs markers in the Problems view -->
@@ -323,8 +339,8 @@
    </objectContribution>
    <objectContribution
          adaptable="true"
-         id="de.tobject.findbugs.copyGroupBugs"
-         objectClass="de.tobject.findbugs.view.explorer.BugPatternGroup">
+         id="de.tobject.findbugs.GroupBugs"
+         objectClass="de.tobject.findbugs.view.explorer.BugGroup">
       <action
             class="de.tobject.findbugs.actions.CopyMarkerDetailsAction"
             definitionId="FindBugs.command.copy"
@@ -332,6 +348,15 @@
             icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
             id="de.tobject.findbugs.copyBug"
             label="Copy Bug Details"
+            menubarPath="additions">
+      </action>
+      <action
+            class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
+            definitionId="FindBugs.command.showInPackageExplorer"
+            enablesFor="1"
+            icon="platform:/plugin/org.eclipse.jdt.ui/icons/full/eview16/package.gif"
+            id="de.tobject.findbugs.showInPackageExplorer"
+            label="Show In Package Explorer"
             menubarPath="additions">
       </action>
    </objectContribution>
@@ -361,7 +386,7 @@
             name="Bug User Annotations"/>
       <view
          category="de.tobject.findbugs.view.findBugsCategory"
-         class="org.eclipse.ui.navigator.CommonNavigator"
+         class="de.tobject.findbugs.view.BugExplorerView"
          icon="icons/treeView.png"
          id="de.tobject.findbugs.view.bugtreeview"
          name="Bug Explorer">
@@ -458,7 +483,7 @@
             id="de.tobject.findbugs.view.explorer.BugContentProvider"
             labelProvider="de.tobject.findbugs.view.explorer.BugLabelProvider"
             name="Bugs"
-            priority="lowest"
+            priority="highest"
             providesSaveables="false">
          <triggerPoints>
                     <adapt
@@ -470,12 +495,12 @@
                id="de.tobject.findbugs.view.explorer.BugPrioritySorter">
             <parentExpression>
                <or>
-                  <adapt
-                        type="org.eclipse.core.resources.IResource">
-                  </adapt>
-                  <adapt
-                        type="de.tobject.findbugs.view.explorer.BugPatternGroup">
-                  </adapt>
+                  <instanceof
+                        value="de.tobject.findbugs.view.explorer.BugGroup">
+                  </instanceof>
+                  <instanceof
+                        value="org.eclipse.core.resources.IMarker">
+                  </instanceof>
                   <adapt
                         type="org.eclipse.core.resources.IMarker">
                   </adapt>
@@ -483,15 +508,17 @@
          </commonSorter>
          <actionProvider
                class="de.tobject.findbugs.view.explorer.BugActionProvider"
-               id="de.tobject.findbugs.view.explorer.BugActionProvider">
-            <enablement>
-               <adapt
-                     type="org.eclipse.core.resources.IMarker">
-               </adapt>
-            </enablement>
+               id="de.tobject.findbugs.view.explorer.BugActionProvider"
+               priority="highest">
          </actionProvider>
          <possibleChildren>
             <or>
+               <instanceof
+                     value="de.tobject.findbugs.view.explorer.BugGroup">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.core.resources.IMarker">
+               </instanceof>
                <adapt
                      type="org.eclipse.core.resources.IMarker">
                </adapt>
@@ -499,7 +526,16 @@
                      type="org.eclipse.core.resources.IResource">
                </adapt>
                <adapt
+                     type="org.eclipse.core.resources.IProject">
+               </adapt>
+               <adapt
+                     type="edu.umd.cs.findbugs.BugPattern">
+               </adapt>
+               <adapt
                      type="org.eclipse.jdt.core.IJavaElement">
+               </adapt>
+               <adapt
+                     type="org.eclipse.jdt.core.IPackageFragment">
                </adapt>
             </or>
          </possibleChildren>
@@ -553,40 +589,50 @@
       <viewer
             viewerId="de.tobject.findbugs.view.bugtreeview">
          <options>
-            <property
-                  name="org.eclipse.ui.navigator.hideLinkWithEditorAction"
-                  value="false">
-            </property>
+            <property name="org.eclipse.ui.navigator.hideLinkWithEditorAction" value="true" />
+            <property name="org.eclipse.ui.navigator.hideCollapseAllAction" value="true" />
          </options>
+          <popupMenu
+                allowsPlatformContributions="true"
+                id="de.tobject.findbugs.view.bugtreeview#PopupMenu">
+             <insertionPoint name="group.new"/>
+             <insertionPoint name="group.open" separator="true"/>
+             <insertionPoint name="group.openWith"/>
+             <insertionPoint name="group.edit" separator="true"/>
+             <insertionPoint name="group.reorganize" />
+             <insertionPoint name="group.port" separator="true"/>
+             <insertionPoint name="group.build" separator="true"/>
+             <insertionPoint name="group.generate" separator="true"/>
+             <insertionPoint name="group.search" separator="true"/>
+             <insertionPoint name="additions" separator="true"/>
+             <insertionPoint name="group.properties" separator="true"/>
+          </popupMenu>
       </viewer>
+
       <viewerContentBinding
             viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="de.tobject.findbugs.*">
+            <contentExtension isRoot="true"
+                  pattern="de.tobject.findbugs.view.explorer.BugContentProvider">
             </contentExtension>
-            <!-- <contentExtension pattern="org.eclipse.ui.navigator.resources.*" />
-            <contentExtension pattern="org.eclipse.jdt.*" /> -->
+            <contentExtension pattern="de.tobject.findbugs.*" />
+            <!-- contentExtension pattern="org.eclipse.ui.navigator.resources.*" /-->
+            <!-- contentExtension pattern="org.eclipse.jdt.*" /-->
          </includes>
+          <excludes>
+            <contentExtension pattern="org.eclipse.ui.navigator.resources.workingSets" />
+         </excludes>
       </viewerContentBinding>
 
       <viewerActionBinding
             viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
+            <!-- navigator must be fist, allows us remove some unused menus -->
+            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
             <actionExtension pattern="de.tobject.findbugs.*" />
          </includes>
       </viewerActionBinding>
 
-      <viewerActionBinding
-            viewerId="de.tobject.findbugs.view.bugtreeview">
-         <includes>
-            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
-         </includes>
-         <excludes>
-            <actionExtension pattern="org.eclipse.ui.navigator.resources.WorkingSetActions" />
-         </excludes>
-      </viewerActionBinding>
    </extension>
 
    <!-- decorates any resource with bug counts (has to be activated via
@@ -646,56 +692,116 @@
       <viewContribution
             id="findBugsEclipsePlugin.viewContribution1"
             targetID="de.tobject.findbugs.view.bugtreeview">
-         <action
-               class="de.tobject.findbugs.actions.RefreshAction"
-               icon="icons/refresh.gif"
-               id="findBugsEclipsePlugin.action1"
-               label="Refresh"
-               menubarPath="additions"
-               style="push"
-               toolbarPath="additions"
-               tooltip="Refresh explorer content">
-         </action>
-      </viewContribution>
-      <viewContribution
-            id="findBugsEclipsePlugin.viewContribution2"
-            targetID="de.tobject.findbugs.view.bugtreeview">
-         <action
-               class="de.tobject.findbugs.actions.ExpandAllAction"
-               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/expandall.gif"
-               id="findBugsEclipsePlugin.action2"
-               label="Expand All"
-               menubarPath="additions"
-               style="push"
-               toolbarPath="additions"
-               tooltip="Expand All">
-         </action>
-      </viewContribution>
-        <viewContribution
-            id="findBugsEclipsePlugin.viewContribution3"
-            targetID="de.tobject.findbugs.view.bugtreeview">
+           <menu
+                 id="bugExplorer.menu.group"
+                 label="Group By"
+                 path="group">
+              <separator
+                    name="groupBy">
+              </separator>
+           </menu>
            <action
                 class="de.tobject.findbugs.actions.GoUpAction"
                 icon="platform:/plugin/org.eclipse.ui/icons/full/elcl16/up_nav.gif"
                 id="findBugsEclipsePlugin.action3"
                 label="Go Up"
                 style="push"
-                toolbarPath="Normal/additions"
+                toolbarPath="navigation"
                 tooltip="Go Up">
            </action>
-        </viewContribution>
-        <viewContribution
-              id="findBugsEclipsePlugin.viewContribution4"
-              targetID="de.tobject.findbugs.view.bugtreeview">
            <action
                  class="de.tobject.findbugs.actions.GoIntoAction"
                  icon="platform:/plugin/org.eclipse.compare/icons/full/elcl16/next_nav_into.gif"
                  id="findBugsEclipsePlugin.action4"
                  label="Go Into"
                  style="push"
-                 toolbarPath="Normal/additions"
+                 toolbarPath="navigation"
                  tooltip="Go Into">
            </action>
+         <action
+               class="de.tobject.findbugs.actions.RefreshAction"
+               icon="icons/refresh.gif"
+               id="findBugsEclipsePlugin.action1"
+               label="Refresh"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Refresh explorer content">
+         </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker"
+                 label="Priority-&gt;Category-&gt;Project-&gt;Package-&gt;Class-&gt;Pattern Type-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker"
+                 label="Priority-&gt;Category-&gt;Project-&gt;Pattern Type-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Priority.Project.Pattern.Marker"
+                 label="Priority-&gt;Project-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Priority.Category.PatternType.Pattern.Marker"
+                 label="Project-&gt;Priority-&gt;Category-&gt;Pattern Type-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Priority.Pattern.Marker"
+                 label="Project-&gt;Priority-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.GroupByAction"
+                 id="findBugsEclipsePlugin.toggleGrouping.Project.Pattern.Marker"
+                 label="Project-&gt;Pattern"
+                 menubarPath="bugExplorer.menu.group/groupBy"
+                 style="radio"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+           <action
+                 class="de.tobject.findbugs.actions.OpenGroupDialogAction"
+                 icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/edtsrclkup_co.gif"
+                 id="findBugsEclipsePlugin.toggleGrouping.groupDialog"
+                 label="Group By..."
+                 menubarPath="bugExplorer.menu.group"
+                 toolbarPath="navigation"
+                 tooltip="Change Bug Explorer Grouping">
+           </action>
+         <action
+               class="de.tobject.findbugs.actions.ExpandAllAction"
+               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/collapseall.gif"
+               id="findBugsEclipsePlugin.actionCollapse"
+               label="Collapse All"
+               style="push"
+               toolbarPath="collapseExpand"
+               tooltip="Collapse All">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.ExpandAllAction"
+               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/expandall.gif"
+               id="findBugsEclipsePlugin.actionExpand"
+               label="Expand All"
+               style="push"
+               toolbarPath="collapseExpand"
+               tooltip="Expand All">
+         </action>
         </viewContribution>
    </extension>
 
@@ -787,7 +893,7 @@
                       type="org.eclipse.core.resources.IMarker">
                 </adapt>
                 <adapt
-                      type="de.tobject.findbugs.view.explorer.BugPatternGroup">
+                      type="de.tobject.findbugs.view.explorer.BugGroup">
                 </adapt>
              </or>
           </selectionEnablement>

@@ -18,34 +18,57 @@
  */
 package de.tobject.findbugs.view.explorer;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.core.resources.IResourceDelta;
 
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.reporter.MarkerUtil;
+class DeltaInfo{
 
-public class ZeroBugsFilter extends ViewerFilter {
+	final Object data;
 
-	public ZeroBugsFilter() {
-		super();
+	/**
+	 * @see IResourceDelta#getKind()
+	 */
+	final int changeKind;
+
+	public DeltaInfo(Object element, int kind) {
+		data = element;
+		changeKind = kind;
 	}
 
 	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		IResource resource = ResourceUtils.getResource(element);
-		if(resource == null) {
-			return true;
-		}
-		if(!resource.isAccessible()) {
+	public boolean equals(Object obj) {
+		if(data == null){
 			return false;
 		}
-		IMarker[] markerArr = MarkerUtil.getAllMarkers(resource);
-		if (markerArr.length == 0) {
-			return false;
+		if(obj instanceof DeltaInfo){
+			return data.equals(((DeltaInfo)obj).data);
 		}
-		return true;
+		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		return data == null? 0 : data.hashCode();
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuffer sb = new StringBuffer();
+		switch (changeKind) {
+		case IResourceDelta.ADDED:
+			sb.append("ADDED");
+			break;
+		case IResourceDelta.CHANGED:
+			sb.append("CHANGED");
+			break;
+		case IResourceDelta.REMOVED:
+			sb.append("REMOVED");
+			break;
+		default:
+			sb.append(" ? ").append(changeKind);
+			break;
+		}
+		sb.append(" ").append(data);
+		return sb.toString();
+	}
 }

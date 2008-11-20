@@ -18,46 +18,33 @@
  */
 package de.tobject.findbugs.actions;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugPatternGroup;
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugGroup;
 
 
 public class GoIntoAction implements IViewActionDelegate {
 
-	static final QualifiedName KEY_OLD_PARENT = new QualifiedName("old", "parent");
-	private CommonNavigator navigator;
+	private BugExplorerView navigator;
 	private Object selectedElement;
 
 	public void init(IViewPart view) {
-		if(view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+		if(view instanceof BugExplorerView) {
+			navigator = (BugExplorerView) view;
 		}
 	}
 
 	public void run(IAction action) {
 		if(action.isEnabled() && navigator != null && selectedElement != null) {
 			CommonViewer viewer = navigator.getCommonViewer();
-			if(selectedElement instanceof IProject){
-				IProject project = (IProject) selectedElement;
-				try {
-					project.setSessionProperty(KEY_OLD_PARENT, viewer.getInput());
-				} catch (CoreException e) {
-					FindbugsPlugin.getDefault().logException(e,
-							"Failed to remember working set");
-				}
-			}
 			viewer.setInput(selectedElement);
+			viewer.expandToLevel(2);
 		}
 	}
 
@@ -72,7 +59,7 @@ public class GoIntoAction implements IViewActionDelegate {
 			return;
 		}
 		Object element = ssel.getFirstElement();
-		if(!(element instanceof IProject || element instanceof BugPatternGroup)){
+		if(!(element instanceof BugGroup)){
 			action.setEnabled(false);
 			return;
 		}

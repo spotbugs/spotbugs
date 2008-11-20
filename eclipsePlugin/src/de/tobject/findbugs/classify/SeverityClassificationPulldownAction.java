@@ -3,8 +3,6 @@
  */
 package de.tobject.findbugs.classify;
 
-import java.util.Set;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -196,9 +194,8 @@ public class SeverityClassificationPulldownAction implements
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		bugInstance = null;
-		Set<IMarker> markerFromSelection = MarkerUtil.getMarkerFromSelection(selection);
 		// TODO learn to deal with ALL elements
-		IMarker marker = markerFromSelection.isEmpty()? null : markerFromSelection.iterator().next();
+		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(selection);
 		if (marker == null) {
 			return;
 		}

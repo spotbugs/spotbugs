@@ -18,11 +18,17 @@
  */
 package de.tobject.findbugs.actions;
 
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.CommonViewer;
+
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 
 public class RefreshAction implements IViewActionDelegate {
 
@@ -36,7 +42,20 @@ public class RefreshAction implements IViewActionDelegate {
 
 	public void run(IAction action) {
 		if(navigator != null) {
-			navigator.getCommonViewer().refresh();
+			CommonViewer viewer = navigator.getCommonViewer();
+			BugContentProvider provider = BugContentProvider.getProvider(navigator
+					.getNavigatorContentService());
+			provider.setRefreshRequested(true);
+			Object input = viewer.getInput();
+			if (provider.getChildren(input).length == 0) {
+				viewer.setInput(null);
+				if(input instanceof IWorkingSet || input instanceof IWorkspaceRoot){
+					viewer.setInput(input);
+				} else {
+					viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+				}
+			}
+			viewer.refresh(true);
 		}
 	}
 

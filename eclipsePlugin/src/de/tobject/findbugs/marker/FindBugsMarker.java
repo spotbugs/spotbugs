@@ -20,6 +20,8 @@
 
 package de.tobject.findbugs.marker;
 
+import edu.umd.cs.findbugs.Priorities;
+
 /**
  * Marker ids for the findbugs.
  *
@@ -70,15 +72,31 @@ public interface FindBugsMarker {
 //	public static final String PATTERN_DESCR_SHORT = "PATTERN_DESCR_SHORT";
 
 	enum Priority {
-		High(NAME_HIGH),
-		Normal(NAME_NORMAL),
-		Low(NAME_LOW),
-		Experimental(NAME_EXPERIMENTAL);
+		High(NAME_HIGH, "buggy-tiny.png", Priorities.HIGH_PRIORITY),
+		Normal(NAME_NORMAL, "buggy-tiny-orange.png", Priorities.NORMAL_PRIORITY),
+		Low(NAME_LOW, "buggy-tiny-yellow.png", Priorities.LOW_PRIORITY),
+		Experimental(NAME_EXPERIMENTAL, "buggy-tiny-blue.png", Priorities.EXP_PRIORITY),
+		Ignore("", "buggy-tiny-green.png", Priorities.IGNORE_PRIORITY),
+		Unknown("", "buggy-tiny-green.png", Priorities.IGNORE_PRIORITY);
 
 		private final String prioName;
+		private final String icon;
+		private final int detectorPrio;
 
-		Priority(String prioName){
+		Priority(String prioName, String icon, int detectorPrio){
 			this.prioName = prioName;
+			this.icon = icon;
+			this.detectorPrio = detectorPrio;
+		}
+
+		public static Priority label(int prioId) {
+			Priority[] values = Priority.values();
+			for (Priority priority : values) {
+				if(priority.detectorPrio == prioId) {
+					return priority;
+				}
+			}
+			return Unknown;
 		}
 
 		public static int ordinal(String prioId) {
@@ -91,5 +109,8 @@ public interface FindBugsMarker {
 			return -1;
 		}
 
+		public String iconName(){
+			return icon;
+		}
 	}
 }

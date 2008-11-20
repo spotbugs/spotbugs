@@ -22,10 +22,8 @@ package de.tobject.findbugs.view;
 import java.util.Calendar;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -41,7 +39,6 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -141,37 +138,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		ISelectionService theService = getSite().getWorkbenchWindow()
 				.getSelectionService();
 
-		selectionListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart thePart,
-					ISelection theSelection) {
-				if (!(theSelection instanceof IStructuredSelection)) {
-					return;
-				}
-				if (!isVisible()) {
-					return;
-				}
-				IMarker theMarker = null;
-				Object elt = ((IStructuredSelection) theSelection)
-						.getFirstElement();
-				if (elt instanceof IMarker) {
-					theMarker = (IMarker) elt;
-				}
-
-				// bug 2030157: selections in problems view are not reflected in our views
-				// we cannot use MarkerItem because this is new Eclipse 3.4 API.
-				/* else if (elt instanceof MarkerItem){
-					theMarker = ((MarkerItem)elt).getMarker();
-				}*/
-				// the code below is the workaroound compatible with both 3.3 and 3.4 API
-				else if (elt instanceof IAdaptable) {
-					theMarker = (IMarker) ((IAdaptable)elt).getAdapter(IMarker.class);
-				}
-
-				if (theMarker != null) {
-					selectMarker(theMarker);
-				}
-			}
-		};
+		selectionListener = new MarkerSelectionListener(this);
 		theService.addSelectionListener(selectionListener);
 
 		/*
@@ -235,12 +202,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	}
 
 	/**
-	 * Set the content to be displayed.
-	 *
-	 * @param title
-	 *            the title of the bug
-	 * @param description
-	 *            the description of the bug
+	 * Set the content to be displayed
 	 */
 	public void setContent(String userAnnotation, BugInstance bug,
 			String firstVersionText) {
@@ -255,59 +217,53 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	}
 
 	/**
-	 * Show the details of a FindBugs marker in the details view. Brings the
+	 * Show the details of a FindBugs marker in the view. Brings the
 	 * view to the foreground.
 	 *
 	 * @param marker
 	 *            the FindBugs marker containing the bug pattern to show details
 	 *            for
 	 */
-	private static void showInView(IMarker marker,
-			UserAnnotationsView annotationView) {
+	private void showInView(IMarker marker) {
 
 		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-		Long theTimestamp = Long.parseLong(marker.getAttribute(
+		long timestamp = Long.parseLong(marker.getAttribute(
 				FindBugsMarker.FIRST_VERSION, "-2"));
-		String firstVersionText = "Bug present since: "
-				+ convertTimestamp(theTimestamp);
+		String firstVersion = "Bug present since: "	+ convertTimestamp(timestamp);
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		if (pattern == null) {
 			return;
 		}
 		BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-		String userAnnotation;
+		String annotation;
 		if (bug == null) {
-			userAnnotation = "Error - BugInstance not found.";
+			annotation = "Error - BugInstance not found.";
 		} else {
-			userAnnotation = bug.getNonnullUserDesignation()
-					.getAnnotationText();
+			annotation = bug.getNonnullUserDesignation().getAnnotationText();
 		}
 
-		annotationView.setContent(userAnnotation, bug, firstVersionText);
-		annotationView.activate();
+		setContent(annotation, bug, firstVersion);
+
 	}
 
-	static void showMarker(IMarker marker) {
-		IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow()
-				.getActivePage();
-		// first find view, if it is already open - this does not steal focus
-		// from editor
-		IViewPart viewPart = page
-				.findView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-		if (!(viewPart instanceof UserAnnotationsView)) {
-			// view is not shown => open it in the page
-			viewPart = AbstractFindbugsView.showUserAnnotationView();
-		}
-		if (viewPart instanceof UserAnnotationsView && marker != null) {
-			showInView(marker, (UserAnnotationsView) viewPart);
+	void showMarker(IMarker marker) {
+		if (marker != null) {
+			showInView(marker);
 		}
 	}
 
-	private void selectMarker(IMarker newMarker) {
+	public void markerSelected(IMarker newMarker) {
+		try {
+			if(!newMarker.isSubtypeOf(FindBugsMarker.NAME)){
+				// we are not interested in other markers then FB
+				return;
+			}
+		} catch (CoreException e) {
+			// ignore
+		}
+		showMarker(newMarker);
 		if (!isVisible()) {
-			showMarker(newMarker);
-		} else {
-			showInView(newMarker, this);
+			activate();
 		}
 	}
 

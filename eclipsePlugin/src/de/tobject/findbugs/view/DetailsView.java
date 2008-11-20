@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
@@ -31,8 +31,6 @@ import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -58,7 +56,6 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -188,37 +185,7 @@ public class DetailsView extends AbstractFindbugsView {
 		// view
 		ISelectionService theService = getSite().getWorkbenchWindow()
 				.getSelectionService();
-		selectionListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart thePart,
-					ISelection theSelection) {
-				if (!(theSelection instanceof IStructuredSelection)) {
-					return;
-				}
-				if (!isVisible()) {
-					return;
-				}
-				IMarker theMarker = null;
-				Object elt = ((IStructuredSelection) theSelection)
-						.getFirstElement();
-				if (elt instanceof IMarker) {
-					theMarker = (IMarker) elt;
-				}
-
-				// bug 2030157: selections in problems view are not reflected in our views
-				// we cannot use MarkerItem because this is new Eclipse 3.4 API.
-				/* else if (elt instanceof MarkerItem){
-					theMarker = ((MarkerItem)elt).getMarker();
-				}*/
-				// the code below is the workaroound compatible with both 3.3 and 3.4 API
-				else if (elt instanceof IAdaptable) {
-					theMarker = (IMarker) ((IAdaptable)elt).getAdapter(IMarker.class);
-				}
-
-				if (theMarker != null) {
-					selectMarker(theMarker);
-				}
-			}
-		};
+		selectionListener = new MarkerSelectionListener(this);
 		theService.addSelectionListener(selectionListener);
 		return sash;
 	}
@@ -301,10 +268,6 @@ public class DetailsView extends AbstractFindbugsView {
 	/**
 	 * Set the content to be displayed.
 	 *
-	 * @param title
-	 *            the title of the bug
-	 * @param description
-	 *            the description of the bug
 	 * @param theBug
 	 *            the BugInstance
 	 * @param priorityTypeString
@@ -313,7 +276,7 @@ public class DetailsView extends AbstractFindbugsView {
 	 * @param marker
 	 */
 	private void setContent(BugPattern pattern, BugInstance theBug,
-			String priorityTypeString, IMarker marker) {
+			String priorityTypeString, final IMarker marker) {
 		this.marker = marker;
 		String abbrev = null;
 		if (pattern != null) {
@@ -347,11 +310,15 @@ public class DetailsView extends AbstractFindbugsView {
 		setTitleToolTip(getTitle());
 		showAnnotations(theBug);
 		updateDisplay();
-		IViewPart viewPart = getSite().getPage()
-			.findView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-		if (viewPart instanceof UserAnnotationsView) {
-			UserAnnotationsView.showMarker(marker);
-		}
+//		final IViewPart viewPart = getSite().getPage()
+//			.findView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
+//		if (viewPart instanceof UserAnnotationsView) {
+//			getSite().getShell().getDisplay().asyncExec(new Runnable() {
+//				public void run() {
+//					((UserAnnotationsView)viewPart).showMarker(marker);
+//				}
+//			});
+//		}
 	}
 
 	/**
@@ -391,7 +358,15 @@ public class DetailsView extends AbstractFindbugsView {
 		detailsView.activate();
 	}
 
-	private void selectMarker(IMarker newMarker) {
+	public void markerSelected(IMarker newMarker) {
+		try {
+			if(!newMarker.isSubtypeOf(FindBugsMarker.NAME)){
+				// we are not interested in other markers then FB
+				return;
+			}
+		} catch (CoreException e) {
+			// ignore
+		}
 		if (!isVisible()) {
 			showMarker(newMarker);
 		} else {

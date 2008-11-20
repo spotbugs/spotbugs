@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Sat Sep 06 12:00:17 CEST 2008
+#Fri Nov 14 22:02:39 CET 2008
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|false
 detectorBadAppletConstructor=BadAppletConstructor|false
@@ -8,9 +8,12 @@ detectorBadSyntaxForRegularExpression=BadSyntaxForRegularExpression|true
 detectorBadUseOfReturnValue=BadUseOfReturnValue|true
 detectorBadlyOverriddenAdapter=BadlyOverriddenAdapter|true
 detectorBooleanReturnNull=BooleanReturnNull|true
+detectorBuildInterproceduralCallGraph=BuildInterproceduralCallGraph|false
+detectorBuildObligationPolicyDatabase=BuildObligationPolicyDatabase|true
 detectorCallToUnsupportedMethod=CallToUnsupportedMethod|true
 detectorCalledMethods=CalledMethods|true
 detectorCheckCalls=CheckCalls|false
+detectorCheckExpectedWarnings=CheckExpectedWarnings|false
 detectorCheckImmutableAnnotation=CheckImmutableAnnotation|true
 detectorCheckTypeQualifiers=CheckTypeQualifiers|true
 detectorCloneIdiom=CloneIdiom|true
@@ -27,6 +30,7 @@ detectorDumbMethods=DumbMethods|true
 detectorDuplicateBranches=DuplicateBranches|true
 detectorEmptyZipFileEntry=EmptyZipFileEntry|true
 detectorEqStringTest=EqStringTest|false
+detectorEqualsOperandShouldHaveClassCompatibleWithThis=EqualsOperandShouldHaveClassCompatibleWithThis|true
 detectorFieldItemSummary=FieldItemSummary|true
 detectorFinalizerNullsFields=FinalizerNullsFields|true
 detectorFindBadCast=FindBadCast|false
@@ -73,6 +77,7 @@ detectorFindUnreleasedLock=FindUnreleasedLock|true
 detectorFindUnsatisfiedObligation=FindUnsatisfiedObligation|false
 detectorFindUnsyncGet=FindUnsyncGet|true
 detectorFindUselessControlFlow=FindUselessControlFlow|true
+detectorFormatStringChecker=FormatStringChecker|true
 detectorHugeSharedStringConstants=HugeSharedStringConstants|true
 detectorIDivResultCastToDouble=IDivResultCastToDouble|true
 detectorIncompatMask=IncompatMask|true
@@ -147,6 +152,6 @@ detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
 effort=max
 excludefilter0=findbugsExclude.xml
-filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false
+filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false
 filter_settings_neg=MALICIOUS_CODE|
 run_at_full_build=false

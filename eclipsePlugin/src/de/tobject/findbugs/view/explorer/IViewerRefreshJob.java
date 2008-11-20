@@ -18,34 +18,12 @@
  */
 package de.tobject.findbugs.view.explorer;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.reporter.MarkerUtil;
 
-public class ZeroBugsFilter extends ViewerFilter {
+interface IViewerRefreshJob {
 
-	public ZeroBugsFilter() {
-		super();
-	}
-
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		IResource resource = ResourceUtils.getResource(element);
-		if(resource == null) {
-			return true;
-		}
-		if(!resource.isAccessible()) {
-			return false;
-		}
-		IMarker[] markerArr = MarkerUtil.getAllMarkers(resource);
-		if (markerArr.length == 0) {
-			return false;
-		}
-		return true;
-	}
+	boolean addToQueue(DeltaInfo resource);
+	boolean cancel();
+	void schedule(long delay);
 
 }

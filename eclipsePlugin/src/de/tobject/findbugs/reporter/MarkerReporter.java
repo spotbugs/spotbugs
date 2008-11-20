@@ -21,12 +21,11 @@
 package de.tobject.findbugs.reporter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,51 +36,55 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
 	* Creates a FindBugs marker in a runnable window.
 	*/
 public class MarkerReporter implements IWorkspaceRunnable {
-	private final BugInstance bug;
-	private final IResource resource;
-	private final Set<Integer> lines;
 	private final BugCollection collection;
 	private static final boolean EXPERIMENTAL_BUGS = false;
-	private final Integer primaryLine;
+	private final List<MarkerParameter> mpList;
+	private final IProject project;
 
-	public MarkerReporter(BugInstance bug, IResource resource, Integer primaryLine,
-			Set<Integer> lines,
+	public MarkerReporter(List<MarkerParameter> mpList,
 			BugCollection theCollection, IProject project) {
-		this.primaryLine = primaryLine;
-		this.lines = lines;
-		this.bug = bug;
-		this.resource = resource;
+
+		this.mpList = mpList;
 		this.collection = theCollection;
+		this.project = project;
 	}
 
 	public void run(IProgressMonitor monitor) throws CoreException {
-		String markerType = getMarkerType();
-		if(markerType == null) {
-			return;
-		}
-		addmarker(markerType, primaryLine);
-		for (Integer line : lines) {
+		UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
+		ProjectFilterSettings filterSettings = userPrefs.getFilterSettings();
+		for (MarkerParameter mp : mpList) {
+			if(!MarkerUtil.displayWarning(mp.bug, filterSettings)){
+				continue;
+			}
+			String markerType = getMarkerType(mp.bug);
+			if(markerType == null) {
+				continue;
+			}
 			// This triggers resource update on IResourceChangeListener's (BugTreeView)
-			addmarker(markerType, line);
+			addmarker(markerType, mp);
 		}
+
 	}
 
-	private void addmarker(String markerType, Integer line) throws CoreException {
-		IMarker marker = resource.createMarker(markerType);
+	private void addmarker(String markerType, MarkerParameter mp) throws CoreException {
+		IMarker marker = mp.resource.createMarker(markerType);
 
-		Map<String, Object> attributes = createMarkerAttributes(marker, line);
+		Map<String, Object> attributes = createMarkerAttributes(marker, mp);
 		setAttributes(marker, attributes);
 	}
 
 	/**
+	 * @param bug
 	 * @return null if marker shouldn't be generated
 	 */
-	private String getMarkerType() {
+	private String getMarkerType(BugInstance bug) {
 		String markerType;
 		switch (bug.getPriority()) {
 		case Priorities.HIGH_PRIORITY:
@@ -112,15 +115,15 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
 	/**
 	 * @param marker non null
-	 * @param startLine
+	 * @param mp
 	 * @return attributes map which should be assigned to the given marker
 	 */
-	private Map<String, Object> createMarkerAttributes(IMarker marker, Integer startLine) {
+	private Map<String, Object> createMarkerAttributes(IMarker marker, MarkerParameter mp) {
 		Map<String, Object> attributes = new HashMap<String, Object>(23);
-		attributes.put(IMarker.LINE_NUMBER, startLine);
-		attributes.put(FindBugsMarker.PRIMARY_LINE, primaryLine);
-		attributes.put(FindBugsMarker.BUG_TYPE, bug.getType());
-		long seqNum = bug.getFirstVersion();
+		attributes.put(IMarker.LINE_NUMBER, mp.startLine);
+		attributes.put(FindBugsMarker.PRIMARY_LINE, mp.primaryLine);
+		attributes.put(FindBugsMarker.BUG_TYPE, mp.bug.getType());
+		long seqNum = mp.bug.getFirstVersion();
 		if(seqNum == 0) {
 			attributes.put(FindBugsMarker.FIRST_VERSION, "-1");
 		} else {
@@ -136,17 +139,17 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			}
 		}
 		try {
-			attributes.put(IMarker.MESSAGE, bug
+			attributes.put(IMarker.MESSAGE, mp.bug
 					.getMessageWithPriorityTypeAbbreviation());
 		} catch (RuntimeException e) {
 			FindbugsPlugin.getDefault().logException(e,
-					"Error generating msg for " + bug.getType());
-			attributes.put(IMarker.MESSAGE, "??? " + bug.getType());
+					"Error generating msg for " + mp.bug.getType());
+			attributes.put(IMarker.MESSAGE, "??? " + mp.bug.getType());
 		}
 		attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));
-		attributes.put(FindBugsMarker.PRIORITY_TYPE, bug.getPriorityTypeString());
+		attributes.put(FindBugsMarker.PRIORITY_TYPE, mp.bug.getPriorityTypeString());
 
-		switch (bug.getPriority()) {
+		switch (mp.bug.getPriority()) {
 		case Priorities.HIGH_PRIORITY:
 			attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_HIGH));
 			break;
@@ -162,7 +165,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.
-		String uniqueId = bug.getInstanceHash();
+		String uniqueId = mp.bug.getInstanceHash();
 		if (uniqueId != null) {
 			attributes.put(FindBugsMarker.UNIQUE_ID, uniqueId);
 		}

@@ -36,7 +36,11 @@ public class ExpandAllAction implements IViewActionDelegate {
 
 	public void run(IAction action) {
 		if(navigator != null) {
-			navigator.getCommonViewer().expandAll();
+			if(action.getId().endsWith("Expand")) {
+				navigator.getCommonViewer().expandAll();
+			} else {
+				navigator.getCommonViewer().collapseAll();
+			}
 		}
 	}
 

@@ -18,27 +18,16 @@
  */
 package de.tobject.findbugs.view.explorer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -46,7 +35,6 @@ import org.eclipse.ui.navigator.ILinkHelper;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
@@ -63,26 +51,44 @@ public class BugLinkHelper implements ILinkHelper {
 	}
 
 	public void activateEditor(IWorkbenchPage page, IStructuredSelection selection) {
-		IWorkbenchPart activePart = page.getActivePart();
-		Set<IMarker> markerFromSelection = MarkerUtil.getMarkerFromSelection(selection);
-		Map<IResource, Set<IMarker>> fileToMarkers = new HashMap<IResource, Set<IMarker>>();
-		for (IMarker marker : markerFromSelection) {
-			addResource(fileToMarkers, marker);
-		}
-		Set<Entry<IResource, Set<IMarker>>> entrySet = fileToMarkers.entrySet();
-		boolean editorActivated = false;
-		for (Entry<IResource, Set<IMarker>> entry : entrySet) {
-			IResource resource = entry.getKey();
-			if (resource instanceof IFile) {
-				editorActivated = activateEditor(page, (IFile) resource, entry.getValue());
+//		IWorkbenchPart activePart = page.getActivePart();
+		IMarker markerFromSelection = MarkerUtil.getMarkerFromSingleSelection(selection);
+		IResource resource = null;
+		if(markerFromSelection != null) {
+			resource = markerFromSelection.getResource();
+		} else {
+			resource = getFile(selection);
+			if(resource == null) {
+				return;
 			}
 		}
-		if (activePart != null && editorActivated) {
-			page.activate(activePart);
+
+//		boolean editorActivated = false;
+		if (resource instanceof IFile) {
+			/*editorActivated = */activateEditor(page, (IFile) resource, markerFromSelection);
 		}
+		// This leads to endless loop if editor AND problems view both are active
+//		if (activePart != null && editorActivated) {
+//			page.activate(activePart);
+//		}
 	}
 
-	private boolean activateEditor(IWorkbenchPage page, IFile file, Set<IMarker> markers) {
+	private IFile getFile(IStructuredSelection selection) {
+		if(selection.size() != 1){
+			return null;
+		}
+		Object element = selection.getFirstElement();
+		if(element instanceof IAdaptable){
+			IAdaptable adaptable = (IAdaptable) element;
+			IResource res = (IResource) adaptable.getAdapter(IResource.class);
+			if(res != null && res.getType() == IResource.FILE){
+				return (IFile) res;
+			}
+		}
+		return null;
+	}
+
+	private boolean activateEditor(IWorkbenchPage page, IFile file, IMarker marker) {
 		IEditorPart activeEditor = page.getActiveEditor();
 		if (activeEditor == null) {
 			return false;
@@ -90,16 +96,14 @@ public class BugLinkHelper implements ILinkHelper {
 		IEditorInput editorInput = activeEditor.getEditorInput();
 		if (matchInput(editorInput, file)) {
 			try {
-				// sort markers and choose the first one (smallest line)
-				List<IMarker> sorted = new ArrayList<IMarker>(markers);
-				Collections.sort(sorted, new Comparator<IMarker>(){
-					public int compare(IMarker m1, IMarker m2) {
-						int line1 = m1.getAttribute(IMarker.LINE_NUMBER, 0);
-						int line2 = m2.getAttribute(IMarker.LINE_NUMBER, 0);
-						return line1 - line2;
-					}
-				});
-				IDE.openEditor(page, sorted.get(0));
+				if(marker != null){
+					// code below leads to unexpected scrolling to the marker on editor switch
+					// just because bug explorer was open (even if it is not visible)
+					// IDE.openEditor(page, marker);
+					IDE.openEditor(page, (IFile) marker.getResource());
+				} else {
+					IDE.openEditor(page, file);
+				}
 				lastSelectedInput = editorInput;
 				return true;
 			} catch (PartInitException e) {
@@ -114,15 +118,7 @@ public class BugLinkHelper implements ILinkHelper {
 		return file.equals(input.getAdapter(IFile.class));
 	}
 
-	private void addResource(Map<IResource, Set<IMarker>> fileToMarkers, IMarker marker) {
-		IResource resource = marker.getResource();
-		Set<IMarker> set = fileToMarkers.get(resource);
-		if (set == null) {
-			set = new HashSet<IMarker>();
-			fileToMarkers.put(resource, set);
-		}
-		set.add(marker);
-	}
+
 
 	public IStructuredSelection findSelection(IEditorInput input) {
 		if (lastSelectedInput == input) {
@@ -134,12 +130,8 @@ public class BugLinkHelper implements ILinkHelper {
 		int startLine = getStartLine();
 		IMarker[] allMarkers;
 		IResource resource = (IResource) input.getAdapter(IFile.class);
-		try {
-			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true,
-					IResource.DEPTH_ZERO);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Could not enumerate markers for resource " + resource.getName());
+		allMarkers = MarkerUtil.getAllMarkers(resource);
+		if(allMarkers.length == 0) {
 			return StructuredSelection.EMPTY;
 		}
 		if (startLine < 0) {

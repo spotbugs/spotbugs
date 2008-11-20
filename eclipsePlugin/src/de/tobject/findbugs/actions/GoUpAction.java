@@ -18,64 +18,51 @@
  */
 package de.tobject.findbugs.actions;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkingSet;
-import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.view.explorer.BugPatternGroup;
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.Grouping;
 
 public class GoUpAction implements IViewActionDelegate {
-	private CommonNavigator navigator;
+	private BugExplorerView navigator;
 
 	public void init(IViewPart view) {
-		if(view instanceof CommonNavigator) {
-			navigator = (CommonNavigator) view;
+		if(view instanceof BugExplorerView) {
+			navigator = (BugExplorerView) view;
 		}
 	}
 
 	public void run(IAction action) {
-		if(action.isEnabled()) {
-			CommonViewer viewer = navigator.getCommonViewer();
-			Object input = viewer.getInput();
-			if(input instanceof IProject){
-				IProject project = (IProject) input;
-				// if the parent of a project before we've going into was a working set,
-				// then we have somehow restore this state
-				Object data = null;
-				try {
-					data = project.getSessionProperty(GoIntoAction.KEY_OLD_PARENT);
-					project.setSessionProperty(GoIntoAction.KEY_OLD_PARENT, null);
-				} catch (CoreException e) {
-					FindbugsPlugin.getDefault().logException(e,
-					"Failed to retrieve working set");
-				}
-				if(data != null) {
-					viewer.setInput(data);
-				} else {
-					viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				}
-			} else if (input instanceof BugPatternGroup) {
-				BugPatternGroup group = (BugPatternGroup) input;
-				// if the parent of a project before we've going into was a working set,
-				// then we have somehow restore this state
-				Object data = group.getParent();
-				if(data != null) {
-					viewer.setInput(data);
-				} else {
-					viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				}
-			}
-			action.setEnabled(isEnabled());
+		if(!action.isEnabled()) {
+			return;
 		}
+		CommonViewer viewer = navigator.getCommonViewer();
+		Object input = viewer.getInput();
+		if (input instanceof BugGroup) {
+			BugGroup group = (BugGroup) input;
+			// if the parent of a project before we've going into was a working set,
+			// then we have somehow restore this state
+			Object data = group.getParent();
+			if(data == null) {
+				// root node
+				BugContentProvider.getProvider(navigator.getNavigatorContentService())
+						.reSetInput();
+			} else {
+				viewer.setInput(data);
+			}
+			viewer.setSelection(new StructuredSelection(input), true);
+			viewer.expandToLevel(input, AbstractTreeViewer.ALL_LEVELS);
+		}
+		action.setEnabled(isEnabled());
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -83,13 +70,25 @@ public class GoUpAction implements IViewActionDelegate {
 	}
 
 	private boolean isEnabled() {
-		if(navigator == null){
+		if (navigator == null) {
 			return false;
 		}
 		Object input = navigator.getCommonViewer().getInput();
-		return !(input instanceof IWorkspaceRoot) && !(input instanceof IWorkingSet);
+		if(input  instanceof IMarker){
+			return true;
+		}
+		if(input instanceof BugGroup){
+			BugContentProvider provider = BugContentProvider.getProvider(navigator
+					.getNavigatorContentService());
+			BugGroup bugGroup = (BugGroup) input;
+			Grouping grouping = provider.getGrouping();
+			if(grouping == null){
+				return false;
+			}
+			// as long as the current input is on the "visible" children list (workspace is invisible)
+			return grouping.contains(bugGroup.getType());
+		}
+		return false;
 	}
-
-
 
 }

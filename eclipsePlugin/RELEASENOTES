@@ -1,3 +1,13 @@
+Release 1.3.7 - FindBugs team
+- feature: complete internal makeover of Bug Explorer view: freely configurable grouping (Andrei Loskutov)
+- feature: added "Group By..." dialog for Bug Explorer view (Andrei Loskutov)
+- feature: added some predefined "Group By" configurations for Bug Explorer view (Andrei Loskutov)
+- feature: added "Show In Package Explorer" context menu to bug groups (Andrei Loskutov)
+- feature: double click on a "Class" group in the Bug Explorer view opens assotiated editor (Andrei Loskutov)
+- feature: selection of multiple entries in the Bug Explorer view shows their total bug count in the view status line (Andrei Loskutov)
+- feature: refactored reporter algorithm which improves performance on multi-project build (Andrei Loskutov)
+- feature removed: do NOT automatically link bugs selected in bug explorer view to the opened editor (causes too much side effects) (Andrei Loskutov)
+
 Release 1.3.6 - FindBugs team
 - fine tuning for reported markers: add only one marker for fields, add marker on right position (Andrei Loskutov)
 - feature: link bugs selected in bug explorer view to the opened editor and vice versa (Andrei Loskutov)

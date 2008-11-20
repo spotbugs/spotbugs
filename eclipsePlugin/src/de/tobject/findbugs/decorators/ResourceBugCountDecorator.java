@@ -20,14 +20,12 @@ package de.tobject.findbugs.decorators;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * A simple decorator which adds (in currently hardcoded way) bug counts to the resources.
@@ -47,18 +45,18 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 		if(!resource.isAccessible()) {
 			return text;
 		}
-		try {
-			IMarker[] markerArr = resource.findMarkers(FindBugsMarker.NAME, true,
-					IResource.DEPTH_INFINITE);
-			if (markerArr.length == 0) {
+		IMarker[] markerArr = MarkerUtil.getAllMarkers(resource);
+		if (markerArr.length == 0) {
+			return text;
+		}
+		if (text != null) {
+			// XXX the decorator is added to our own bug explorer view too...
+			// this would add the bug count second time...
+			if(text.matches(".+\\(\\d+\\)$")){
 				return text;
 			}
-			return text + " (" + markerArr.length + ")";
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Core exception on decorateText() for: " + element);
 		}
-		return text;
+		return text + " (" + markerArr.length + ")";
 	}
 
 	public void addListener(ILabelProviderListener listener) {

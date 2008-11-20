@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -61,9 +62,11 @@ import de.tobject.findbugs.builder.FindBugsBuilder;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.io.FileOutput;
 import de.tobject.findbugs.io.IO;
+import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -81,6 +84,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.detailsview";
 	public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
 	public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
+	public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
 
 	/** Map containing preloaded ImageDescriptors */
 	private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
@@ -113,6 +117,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	private static final String BUILDER_DEBUG = PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
 	private static final String NATURE_DEBUG = PLUGIN_ID + "/debug/nature"; //$NON-NLS-1$
 	private static final String REPORTER_DEBUG = PLUGIN_ID + "/debug/reporter"; //$NON-NLS-1$
+	private static final String CONTENT_DEBUG = PLUGIN_ID + "/debug/content"; //$NON-NLS-1$
 	private static final String PROFILER_DEBUG = PLUGIN_ID + "/debug/profiler"; //$NON-NLS-1$
 
 	// Persistent and session property keys
@@ -175,6 +180,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Register our save participant
 		FindbugsSaveParticipant saveParticipant = new FindbugsSaveParticipant();
 		ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
+	}
+
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		for (FindBugsMarker.Priority prio : FindBugsMarker.Priority.values()) {
+			ImageDescriptor descriptor = getImageDescriptor(prio.iconName());
+			if(descriptor != null){
+				reg.put(prio.iconName(), descriptor);
+			}
+		}
 	}
 
 	/**
@@ -256,6 +271,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			// debugging for the reporter
 			option = Platform.getDebugOption(REPORTER_DEBUG);
 			Reporter.DEBUG = Boolean.valueOf(option).booleanValue();
+
+			// debugging for the content provider
+			option = Platform.getDebugOption(CONTENT_DEBUG);
+			BugContentProvider.DEBUG = Boolean.valueOf(option).booleanValue();
 
 			option = Platform.getDebugOption(PROFILER_DEBUG);
 			if(Boolean.valueOf(option).booleanValue()){
@@ -566,19 +585,24 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 *
 	 * @param project the project
 	 * @return the UserPreferences for the project
-	 * @throws CoreException
 	 */
-	public static UserPreferences getUserPreferences(IProject project) throws CoreException {
-		UserPreferences prefs =
-			(UserPreferences)project.getSessionProperty(SESSION_PROPERTY_USERPREFS);
-		if (prefs == null) {
-			prefs = readUserPreferences(project);
+	public static UserPreferences getUserPreferences(IProject project) {
+		try {
+			UserPreferences prefs = (UserPreferences) project
+					.getSessionProperty(SESSION_PROPERTY_USERPREFS);
 			if (prefs == null) {
-				prefs = UserPreferences.createDefaultUserPreferences();
+				prefs = readUserPreferences(project);
+				if (prefs == null) {
+					prefs = UserPreferences.createDefaultUserPreferences();
+				}
+				project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
 			}
-			project.setSessionProperty(SESSION_PROPERTY_USERPREFS, prefs);
+			return prefs;
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e,
+					"Error getting FindBugs preferences for project");
+			return UserPreferences.createDefaultUserPreferences();
 		}
-		return prefs;
 	}
 
 
@@ -692,8 +716,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public ImageDescriptor getImageDescriptor(String id) {
 		ImageDescriptor imageDescriptor = imageDescriptors.get(id);
 		if (imageDescriptor == null) {
-			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(getDefault()
-					.getBundle().getSymbolicName(), ICON_PATH + id);
+			String pluginId = getDefault()
+					.getBundle().getSymbolicName();
+			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, ICON_PATH + id);
 			imageDescriptors.put(id, imageDescriptor);
 		}
 		return imageDescriptor;
