@@ -52,6 +52,7 @@ import javax.annotation.WillClose;
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
 		public String prefix = "";
+		public String exclude = null;
 
 		int maxClasses = 29999;
 
@@ -68,6 +69,7 @@ public class RejarClassesForAnalysis {
 
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
 			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed (e.g., edu.umd.cs.)");
+			addOption("-exclude", "class name prefix", "prefix of class names that should be excluded from both analyze and auxilary jar files (e.g., java)");
 		}
 
 		/*
@@ -93,6 +95,8 @@ public class RejarClassesForAnalysis {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-prefix"))
 				prefix = argument;
+			else if (option.equals("-exclude"))
+				exclude = argument;
 			else if (option.equals("-inputFileList"))
 				inputFileList = argument;
 			else if (option.equals("-auxFileList"))
@@ -213,7 +217,12 @@ public class RejarClassesForAnalysis {
 			int oldSize = copied.size();
 			if (processZipEntries(f, new ZipElementHandler() {
 				public void handle(ZipFile file, ZipEntry ze) {
-					if (copied.add(ze.getName()) && ze.getName().replace('/', '.').startsWith(commandLine.prefix))
+					String name = ze.getName();
+					
+					String dottedName = name.replace('/', '.');
+					if (commandLine.exclude != null && dottedName.startsWith(commandLine.exclude)) return;
+					
+					if (copied.add(name) && dottedName.startsWith(commandLine.prefix))
 						filesToAnalyze++;
 				}
 			}) && oldSize < copied.size())
@@ -257,6 +266,8 @@ public class RejarClassesForAnalysis {
 
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
 					String name = ze.getName();
+					String dottedName = name.replace('/', '.');
+					if (commandLine.exclude != null && dottedName.startsWith(commandLine.exclude)) return;
 					if (!copied.add(name)) {
 						System.err.println("Skipping duplicate of " + name);
 						return;
@@ -264,7 +275,7 @@ public class RejarClassesForAnalysis {
 					}
 					boolean writeToAnalyzeOut = false;
 					boolean writeToAuxilaryOut = false;
-					if (name.replace('/', '.').startsWith(commandLine.prefix)) {
+					if (dottedName.startsWith(commandLine.prefix)) {
 						writeToAnalyzeOut = true;
 						if (filesToAnalyze > commandLine.maxClasses)
 							writeToAuxilaryOut = true;
