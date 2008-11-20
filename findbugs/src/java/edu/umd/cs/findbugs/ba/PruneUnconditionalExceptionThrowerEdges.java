@@ -119,7 +119,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					if (DEBUG) System.out.println("\tFound " + xMethod);
 					
 					// Ignore abstract and native methods
-					boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod);
+					boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported();
 					if (isUnconditionalThrower) {
 						foundThrower = true;
 						if (DEBUG) System.out.println("Found thrower");
