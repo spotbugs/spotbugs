@@ -192,7 +192,8 @@ public class FindDeadLocalStores implements Detector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-
+		if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
+		
 		if (DEBUG) {
 			System.out.println("    Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
 		}
@@ -208,6 +209,8 @@ public class FindDeadLocalStores implements Detector {
 		int[] localIncrementCount = new int[numLocals];
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
+		if ((cfg.getFlags() & CFG.FOUND_UNCONDITIONAL_THROWERS) == CFG.FOUND_UNCONDITIONAL_THROWERS)
+			return;
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 		BitSet complainedAbout = new BitSet();
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);

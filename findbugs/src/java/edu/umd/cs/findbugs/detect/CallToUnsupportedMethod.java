@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -88,8 +89,8 @@ public class CallToUnsupportedMethod implements Detector  {
      * @param method
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException, DataflowAnalysisException {
-    	if (method.isSynthetic()) return;
-    	CFG cfg = classContext.getCFG(method);
+    	if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
+		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		ConstantPoolGen constantPoolGen = classContext.getConstantPoolGen();
 		
