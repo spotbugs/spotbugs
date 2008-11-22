@@ -51,7 +51,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 	public static final MethodInfo [] EMPTY_ARRAY = new MethodInfo[0];
 	static public class Builder {
-		final int accessFlags;
+		int accessFlags;
 
 		final String className, methodName, methodSignature;
 
@@ -79,6 +79,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 			this.exceptions = exceptions;
 		}
 
+		public void setAccessFlags(int accessFlags) {
+			this.accessFlags = accessFlags;
+		}
 		public void addAnnotation(String name, AnnotationValue value) {
 			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
 			methodAnnotations.put(annotationClass, value);

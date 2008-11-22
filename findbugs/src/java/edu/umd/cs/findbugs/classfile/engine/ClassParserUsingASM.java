@@ -71,6 +71,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 	private final ClassDescriptor expectedClassDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
 	enum State { INITIAL, THIS_LOADED, VARIABLE_LOADED, AFTER_METHOD_CALL }
+	enum StubState { INITIAL, LOADED_STUB, INITIALIZE_RUNTIME }
 
 
 	public ClassParserUsingASM(ClassReader classReader,
@@ -158,6 +159,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 				}
 
 			}
+			
 
 			public MethodVisitor visitMethod(final int access, final String methodName, final String methodDesc, String signature, String[] exceptions) {
 				if (cBuilder instanceof ClassInfo.Builder) {
@@ -169,27 +171,39 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						int variable;
 						boolean sawReturn = (access & Opcodes.ACC_NATIVE) != 0;
-						boolean sawThrow = false;
-						boolean sawNonUnsupportedThrow = false;
+						boolean sawNormalThrow = false;
+						boolean sawUnsupportedThrow = false;
 						boolean sawSystemExit = false;
 						boolean sawBranch = false;
+						boolean sawStubThrow = false;
 						boolean justSawInitializationOfUnsupportedOperationException;
 						State state = State.INITIAL;
+						StubState stubState = StubState.INITIAL;
+						
 
-
+						@Override
+						public void visitLdcInsn(Object cst) {
+							if (cst.equals("Stub!"))
+								stubState = StubState.LOADED_STUB;
+							else 
+								stubState = StubState.INITIAL;
+						}
 						@Override
 						public void visitInsn(int opcode) {
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
 							else if (opcode == Opcodes.ATHROW) {
-								if (!justSawInitializationOfUnsupportedOperationException)
-									sawNonUnsupportedThrow = true;
-								sawThrow = true;
+								if (stubState == StubState.INITIALIZE_RUNTIME) {
+								  sawStubThrow = true;
+								} else if (justSawInitializationOfUnsupportedOperationException)
+									sawUnsupportedThrow = true;
+								else sawNormalThrow = true;
 							}
 							resetState();
 						}
 
 						public void resetState() {
 							if (state != State.AFTER_METHOD_CALL) state = State.INITIAL;
+							stubState = StubState.INITIAL;
 						}
 						@Override
 						public void visitSomeInsn() {
@@ -229,7 +243,14 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+							if (stubState == StubState.LOADED_STUB 
+									&& opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/RuntimeException")
+									&& name.equals("<init>"))
+								stubState = StubState.INITIALIZE_RUNTIME;
+							else
+								stubState = StubState.INITIAL;
 							if (opcode == Opcodes.INVOKEINTERFACE) return;
+							
 							if(owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
 								// primitive array
 								return;
@@ -255,10 +276,18 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						}
 						public void visitEnd() {
+							boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
 							if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
+								
 								mBuilder.setIsUnconditionalThrower();
-								if (!sawReturn && !sawNonUnsupportedThrow)
-									mBuilder.setUnsupported();
+								if (!sawReturn && !sawNormalThrow) {
+									if (sawUnsupportedThrow)
+										mBuilder.setUnsupported();
+									if (sawStubThrow) 
+										mBuilder.setAccessFlags(access | Constants.ACC_SYNTHETIC );
+								}
+									
+								// else System.out.println(slashedClassName+"."+methodName+methodDesc + " is thrower");
 							}
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
