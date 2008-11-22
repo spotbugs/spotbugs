@@ -37,6 +37,8 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
@@ -119,7 +121,13 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					if (DEBUG) System.out.println("\tFound " + xMethod);
 					
 					// Ignore abstract and native methods
-					boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported();
+					if (!xMethod.isFinal() && !xMethod.isStatic() && !xMethod.isPrivate() ) try {
+	                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
+	                    if (xClass.isAbstract()) continue;
+                    } catch (CheckedAnalysisException e) {
+	                    AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
+                    }
+					boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
 					if (isUnconditionalThrower) {
 						foundThrower = true;
 						if (DEBUG) System.out.println("Found thrower");
