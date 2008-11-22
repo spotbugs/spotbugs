@@ -75,7 +75,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
 		if (currentAnalysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
 			throw new IllegalStateException("This should not happen");
-
+		boolean foundInexact = false;
 		Set<Edge> deletedEdgeSet = new HashSet<Edge>();
 //		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
@@ -107,6 +107,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
 			// if (primaryXMethod.isAbstract()) continue;
 			Set<XMethod> targetSet = null;
+			boolean isExact = true;
 			try {
 
 				if (className.startsWith("["))
@@ -119,9 +120,10 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 				for(XMethod xMethod : targetSet) {
 					if (DEBUG) System.out.println("\tFound " + xMethod);
-					
+
 					// Ignore abstract and native methods
-					if (!xMethod.isFinal() && !xMethod.isStatic() && !xMethod.isPrivate() ) try {
+					if (!( xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate() )) try {
+						isExact = false;
 	                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
 	                    if (xClass.isAbstract()) continue;
                     } catch (CheckedAnalysisException e) {
@@ -143,6 +145,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			}
 			boolean newResult = foundThrower && !foundNonThrower;
 			if (newResult) {
+				if (!isExact)
+					foundInexact = true;
 				// Method always throws an unhandled exception
 				// Remove the normal control flow edge from the CFG.
 				Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
@@ -157,10 +161,15 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 		}
 
+		if (!deletedEdgeSet.isEmpty()) {
+			cfgModified = true;
+			if (foundInexact)
+				cfg.setFlag(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS);
 		// Remove all edges marked for deletion
 		for (Edge edge : deletedEdgeSet) {
 			cfg.removeEdge(edge);
-			cfgModified = true;
+
+		}
 		}
 	}
 

@@ -209,7 +209,7 @@ public class FindDeadLocalStores implements Detector {
 		int[] localIncrementCount = new int[numLocals];
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
-		if ((cfg.getFlags() & CFG.FOUND_UNCONDITIONAL_THROWERS) == CFG.FOUND_UNCONDITIONAL_THROWERS)
+		if (cfg.isFlagSet(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS))
 			return;
 		BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 		BitSet complainedAbout = new BitSet();

@@ -209,10 +209,10 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 				pruner.execute();
 				if (pruner.wasCFGModified()) {
 					changed = true;
-					cfg.setFlag( CFG.FOUND_UNCONDITIONAL_THROWERS);
+
 				}
 			} catch (DataflowAnalysisException e) {
-				// FIXME: should report the error
+				AnalysisContext.logError("Error pruning normal return edges for unconditionally throwing methods for " + descriptor, e);
 			}
 		}
 		cfg.setFlag( CFG.PRUNED_UNCONDITIONAL_THROWERS);
