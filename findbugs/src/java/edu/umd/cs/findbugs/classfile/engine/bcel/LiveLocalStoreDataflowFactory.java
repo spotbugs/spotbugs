@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
@@ -60,7 +61,10 @@ public class LiveLocalStoreDataflowFactory extends AnalysisFactory<LiveLocalStor
 			new LiveLocalStoreDataflow(cfg, analysis);
 
 		dataflow.execute();
+		if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
+			ClassContext.dumpLiveLocalStoreDataflow(descriptor, cfg, dataflow);
 
+		}
 		return dataflow;
 	}
 }

@@ -880,6 +880,27 @@ public class ClassContext {
 		System.out.println("}\n\n");
 	}
 
+/**
+ * @param method
+ * @param cfg
+ * @param typeDataflow
+ * @throws DataflowAnalysisException
+ */
+public static void dumpLiveLocalStoreDataflow(MethodDescriptor method, CFG cfg, LiveLocalStoreDataflow dataflow) throws DataflowAnalysisException {
+	System.out.println("\n\n{ LiveLocalStore analysis for " + method);
+	TreeSet<Location> tree = new TreeSet<Location>();
+
+	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+		Location loc = locs.next();
+		tree.add(loc);
+	}
+	for(Location loc : tree) {
+		System.out.println("\n Pre: " + dataflow.getFactAfterLocation(loc));
+		System.out.println("Location: " + loc);
+		System.out.println("Post: " + dataflow.getFactAtLocation(loc));	
+	}
+	System.out.println("}\n\n");
+}
 	/* ----------------------------------------------------------------------
 	 * Helper methods for getting an analysis object from the analysis cache.
 	 * ---------------------------------------------------------------------- */
