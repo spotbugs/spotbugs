@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
