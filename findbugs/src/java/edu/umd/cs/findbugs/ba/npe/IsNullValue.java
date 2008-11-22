@@ -165,20 +165,20 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	 * Was this value propagated on an exception path?
 	 */
 	public boolean isException() {
-		return (kind & EXCEPTION) != 0;
+		return (kind & EXCEPTION) == EXCEPTION;
 	}
 	/**
 	 * Was this value marked as a possibly null return value?
 	 */
 	public boolean isReturnValue() {
-		return (kind & RETURN_VAL) != 0;
+		return (kind & RETURN_VAL) == RETURN_VAL;
 	}
 	public boolean isReadlineValue() {
-		return (kind & READLINE_VAL) != 0;
+		return (kind & READLINE_VAL) == READLINE_VAL;
 	}
 
 	public boolean isFieldValue() {
-		return (kind & FIELD_VAL) != 0;
+		return (kind & FIELD_VAL) == RETURN_VAL;
 	}
 	/**
 	 * Was this value marked as a possibly null parameter?
