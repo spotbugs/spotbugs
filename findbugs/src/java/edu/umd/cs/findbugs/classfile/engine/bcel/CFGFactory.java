@@ -207,7 +207,10 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 							typeDataflow,
 							AnalysisContext.currentAnalysisContext());
 				pruner.execute();
-				changed = changed || pruner.wasCFGModified();
+				if (pruner.wasCFGModified()) {
+					changed = true;
+					cfg.setFlag( CFG.FOUND_UNCONDITIONAL_THROWERS);
+				}
 			} catch (DataflowAnalysisException e) {
 				// FIXME: should report the error
 			}

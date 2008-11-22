@@ -61,6 +61,8 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	
 	/** Flag set if CFG is busy (in the process of being refined. */
 	public static final int BUSY = 16;
+	
+	public static final int FOUND_UNCONDITIONAL_THROWERS = 32;
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
