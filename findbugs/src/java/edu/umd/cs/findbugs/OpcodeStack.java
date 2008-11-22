@@ -2338,9 +2338,13 @@ public void initialize() {
 				newValue = new Item("I", lhsValue % rhsValue);
 			else if (seen == IUSHR)
 				newValue = new Item("I", lhsValue >>> rhsValue);
-			} else if (rhs.getConstant() != null && seen == ISHL && (Integer) rhs.getConstant() >= 8)
-				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-			else if (lhs.getConstant() != null && seen == IAND) {
+			} else if (rhs.getConstant() != null && (seen == ISHL || seen == ISHR || seen == IUSHR)) { 
+				int constant = (Integer) rhs.getConstant();
+				if ((constant & 0x1f) == 0)
+					newValue = new Item(lhs);
+				else if (seen == ISHL && (constant & 0x1f) >= 8)
+					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
+			} else if (lhs.getConstant() != null && seen == IAND) {
 				int value = (Integer) lhs.getConstant();
 				if (value == 0)
 					newValue = new Item("I", 0);
