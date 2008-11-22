@@ -103,7 +103,6 @@ public class UnionResults {
 			results = union(results, more);
 			} catch (Exception e) {
 					System.err.println("Trouble reading/parsing " + argv[i]);
-					e.printStackTrace(System.err);
 			}
 		}
 
