@@ -514,7 +514,12 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (DEBUG) {
 			System.out.println("%%% HIT for value number " + valueNumber + " @ " + thisLocation);
 		}
-
+		Set<Location> unconditionalDerefLocationSet = derefSet.getUnconditionalDerefLocationSet(valueNumber);
+		if (unconditionalDerefLocationSet.isEmpty()) {
+			AnalysisContext.logError("empty set of unconditionally dereferenced locations at " + thisLocation.getHandle().getPosition() + " in " + classContext.getClassDescriptor() + "." + method.getName() + method.getSignature());
+			return;
+		}
+		
 		// OK, we have a null value that is unconditionally
 		// derferenced.  Make a note of the locations where it
 		// will be dereferenced.
@@ -523,7 +528,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			thisNullValueDeref = new NullValueUnconditionalDeref();
 			nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
 		}
-		thisNullValueDeref.add(isNullValue, derefSet.getUnconditionalDerefLocationSet(valueNumber));
+		thisNullValueDeref.add(isNullValue, unconditionalDerefLocationSet);
 
 		if (thisLocation != null) {
 			SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
