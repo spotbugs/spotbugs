@@ -48,31 +48,12 @@ public class BugPrioritySorter extends ViewerSorter {
 		}
 
         if(e1 instanceof IMarker && e2 instanceof IMarker) {
-			IMarker marker1 = (IMarker) e1;
-			IMarker marker2 = (IMarker) e2;
-			return compareMarkers(marker1, marker2);
+			return compareMarkers((IMarker) e1, (IMarker) e2);
         }
-
-//        if(e1 instanceof IAdaptable && e2 instanceof IAdaptable) {
-//        	IAdaptable a1 = (IAdaptable) e1;
-//        	IAdaptable a2 = (IAdaptable) e2;
-//        	IMarker marker1 = (IMarker) a1.getAdapter(IMarker.class);
-//        	IMarker marker2 = (IMarker) a2.getAdapter(IMarker.class);
-//        	return compareMarkers(marker1, marker2);
-//        }
 
         // Sorts groups on priority first, then on group name
         if(e1 instanceof BugGroup && e2 instanceof BugGroup) {
-        	BugGroup group1 = (BugGroup)e1;
-        	BugGroup group2 = (BugGroup)e2;
-			int ord1 = group1.getPriority().ordinal();
-			int ord2 = group2.getPriority().ordinal();
-        	int result = ord1 - ord2;
-        	if (result == 0) {
-				return group1.getShortDescription().compareTo(
-						group2.getShortDescription());
-			}
-			return result;
+        	return compareGroups((BugGroup)e1, (BugGroup)e2);
         }
         return super.compare(viewer, e1, e2);
     }

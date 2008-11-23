@@ -37,6 +37,8 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -337,8 +339,8 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	/**
-	 * @return list of the parents with changed chldern, or empty, if the full refresh is
-	 *         needed
+	 * @return list of the *visible* parents with changed chldern to refresh the viewer.
+	 * Retunrs empty list if the full refresh is needed
 	 */
 	public Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
 		int oldRootSize = rootElement.getChildren().length;
@@ -363,13 +365,17 @@ public class BugContentProvider implements ICommonContentProvider {
 					if (parent == null) {
 						continue;
 					}
-					removeElement(parent, toRemove, changedParents);
+					BugGroup accessibleParent = getFirstAccessibleParent(parent);
+					changedParents.add(accessibleParent);
+					removeElement(parent, toRemove);
 				} else {
 					List<BugGroup> dataParents = findData(toRemove);
 					for (BugGroup group : dataParents) {
 						Object parent = group.getParent();
+						BugGroup accessibleParent = getFirstAccessibleParent(group);
+						changedParents.add(accessibleParent);
 						if (parent instanceof BugGroup) {
-							removeElement((BugGroup) parent, group, changedParents);
+							removeElement((BugGroup) parent, group);
 						}
 					}
 				}
@@ -396,7 +402,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			if (filter != null && !filter.select(null, null, marker.getResource())) {
 				return;
 			}
-			updateElements(marker, mapper, rootElement, changedParents);
+			addElement(marker, mapper, rootElement, changedParents);
 		} else if (toAdd instanceof IResource) {
 			// filter through working set
 			if (filter != null && !filter.select(null, null, toAdd)) {
@@ -404,12 +410,12 @@ public class BugContentProvider implements ICommonContentProvider {
 			}
 			IMarker[] markers = getMarkers((IResource) toAdd);
 			for (IMarker marker : markers) {
-				updateElements(marker, mapper, rootElement, changedParents);
+				addElement(marker, mapper, rootElement, changedParents);
 			}
 		}
 	}
 
-	private <Identifier> void updateElements(IMarker marker,
+	private <Identifier> void addElement(IMarker marker,
 			MarkerMapper<Identifier> mapper, BugGroup parent,
 			Set<BugGroup> changedParents) {
 
@@ -438,16 +444,18 @@ public class BugContentProvider implements ICommonContentProvider {
 				break;
 			}
 		}
-
+//		parent.addMarker(marker);
 		GroupType childType = grouping.getChildType(mapper.getType());
 		boolean lastlevel = childType == GroupType.Marker;
 		if (matchingChild != null) {
 			// node exists? fine, add marker and update children
 			matchingChild.addMarker(marker);
-			changedParents.add(matchingChild);
+			// update only first visible parent element to avoid multiple refreshes
+			if(isAccessible(matchingChild) && changedParents.isEmpty()) {
+				changedParents.add(matchingChild);
+			}
 			if (!lastlevel) {
-				updateElements(marker, childType.getMapper(), matchingChild,
-						changedParents);
+				addElement(marker, childType.getMapper(), matchingChild, changedParents);
 			}
 		} else {
 			// if there is no node, create one and recursvely all children to the last
@@ -455,6 +463,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getPrio(id));
 			group.addMarker(marker);
 			createGroups(group, childType.getMapper());
+//			changedParents.add(parent);
 		}
 	}
 
@@ -474,34 +483,62 @@ public class BugContentProvider implements ICommonContentProvider {
 		if (element instanceof IWorkspaceRoot) {
 			return GroupType.Workspace;
 		}
-		// TODO add code for package/file?
+		if (element instanceof IPackageFragment) {
+			return GroupType.Package;
+		}
+		if (element instanceof IJavaElement) {
+			return GroupType.Class;
+		}
 		return GroupType.Undefined;
 	}
 
-	private void removeElement(BugGroup parent, Object element,
-			Set<BugGroup> changedParents) {
-		if (!(element instanceof IMarker)) {
-			if (parent.removeChild(element)) {
-				changedParents.add(parent);
-			}
-			if (parent.getMarkersCount() == 0 && parent.getParent() instanceof BugGroup) {
-				removeElement((BugGroup) parent.getParent(), parent, changedParents);
+	/**
+	 * @return true if the element is accessible from the content viewer point of view.
+	 * After "go into" action parent elements can became inaccessible to the viewer
+	 */
+	public boolean isAccessible(BugGroup group){
+		BugGroup rootGroup;
+		if(!(input instanceof BugGroup)) {
+			rootGroup = rootElement;
+		} else {
+			rootGroup = (BugGroup) input;
+		}
+
+		if(grouping.compare(rootGroup.getType(), group.getType()) < 0){
+			return true;
+		}
+		return false;
+	}
+
+	private void removeElement(BugGroup parent, Object child) {
+		if (child instanceof IMarker) {
+			BugGroup currParent = parent;
+			while (currParent.getParent() instanceof BugGroup) {
+				BugGroup prevParent = currParent;
+				prevParent.removeMarker((IMarker) child);
+				currParent = (BugGroup) currParent.getParent();
+				if (prevParent.getMarkersCount() == 0) {
+					removeElement(currParent, prevParent);
+				}
 			}
 		} else {
-			if (parent.removeMarker((IMarker) element)) {
-				changedParents.add(parent);
-			}
-			BugGroup p2 = parent;
-			while (p2.getParent() instanceof BugGroup) {
-				p2 = (BugGroup) p2.getParent();
-				if (p2.removeMarker((IMarker) element)) {
-					changedParents.add(p2);
-					if (parent.getMarkersCount() == 0 && parent.getParent() instanceof BugGroup) {
-						removeElement((BugGroup) parent.getParent(), parent, changedParents);
-					}
+			if (parent.removeChild((BugGroup) child)) {
+				if (parent.getMarkersCount() == 0 && parent.getParent() instanceof BugGroup) {
+					removeElement((BugGroup) parent.getParent(), parent);
 				}
 			}
 		}
+	}
+
+	private BugGroup getFirstAccessibleParent(BugGroup element){
+		if(element.getParent() instanceof BugGroup){
+			BugGroup parent = (BugGroup) element.getParent();
+			if(!isAccessible(parent)){
+				return element;
+			}
+			return getFirstAccessibleParent(parent);
+		}
+		return element;
 	}
 
 	private List<BugGroup> findParents(Object element, GroupType type) {

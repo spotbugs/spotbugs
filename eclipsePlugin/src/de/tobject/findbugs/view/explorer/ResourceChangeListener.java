@@ -18,16 +18,10 @@
  */
 package de.tobject.findbugs.view.explorer;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.runtime.CoreException;
 
-import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
@@ -48,29 +42,8 @@ final class ResourceChangeListener implements IResourceChangeListener {
 
 	public void resourceChanged(IResourceChangeEvent event) {
 
-		IResourceDelta delta = event.getDelta();
 		boolean postBuild = event.getType() == IResourceChangeEvent.POST_BUILD;
-
-		Set<DeltaInfo> projectsDelta;
-		if (delta == null) {
-			// XXX can it happen? When???
-			projectsDelta = new HashSet<DeltaInfo>();
-			projectsDelta.add(new DeltaInfo(null, IResourceDelta.ADDED));
-		} else {
-			ProjectDeltaVisitor visitor = new ProjectDeltaVisitor();
-			try {
-				delta.accept(visitor);
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Error visiting changed projects: " + delta);
-			}
-			projectsDelta = visitor.getProjectsDelta();
-		}
-
 		boolean accepted = false;
-		for (DeltaInfo deltaInfo : projectsDelta) {
-			accepted |= refreshJob.addToQueue(deltaInfo);
-		}
 
 		/*
 		 * gather all marker changes from the delta. be sure to do this in the calling

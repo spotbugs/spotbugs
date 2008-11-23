@@ -20,7 +20,6 @@ package de.tobject.findbugs.actions;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
@@ -49,18 +48,16 @@ public class GoUpAction implements IViewActionDelegate {
 		Object input = viewer.getInput();
 		if (input instanceof BugGroup) {
 			BugGroup group = (BugGroup) input;
-			// if the parent of a project before we've going into was a working set,
-			// then we have somehow restore this state
 			Object data = group.getParent();
-			if(data == null) {
-				// root node
+			boolean needRefresh = data == null;
+			if(needRefresh) {
 				BugContentProvider.getProvider(navigator.getNavigatorContentService())
 						.reSetInput();
 			} else {
 				viewer.setInput(data);
 			}
 			viewer.setSelection(new StructuredSelection(input), true);
-			viewer.expandToLevel(input, AbstractTreeViewer.ALL_LEVELS);
+			viewer.expandToLevel(input, 1);
 		}
 		action.setEnabled(isEnabled());
 	}

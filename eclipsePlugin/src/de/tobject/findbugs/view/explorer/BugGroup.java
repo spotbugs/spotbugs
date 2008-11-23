@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.marker.FindBugsMarker.Priority;
@@ -155,22 +156,19 @@ public class BugGroup implements IAdaptable {
 		}
 	}
 
-	boolean removeChild(Object child) {
+	boolean removeChild(BugGroup child) {
 		boolean removed = children.remove(child);
 		if(BugContentProvider.DEBUG) {
 			System.out.println("Removing child: " + child + " from " + this);
 		}
 		if(children.size() == 0){
-			removeMarkers(allMarkers);
-		} else {
-			if(child instanceof IMarker) {
-				removeMarker((IMarker) child);
-			} else if(child instanceof BugGroup){
-				BugGroup group = (BugGroup)child;
-				removeMarkers(group.getAllMarkers());
-				group.parent = null;
+			if(getMarkersCount() > 0) {
+				removeMarkers(allMarkers);
 			}
+		} else {
+			removeMarkers(child.getAllMarkers());
 		}
+		child.dispose();
 		return removed;
 	}
 
@@ -181,14 +179,23 @@ public class BugGroup implements IAdaptable {
 		}
 	}
 
-	boolean removeMarker(IMarker marker){
+	void removeMarker(IMarker marker){
+		if(allMarkers.isEmpty()){
+			return;
+		}
 		if(BugContentProvider.DEBUG) {
 			System.out.println("Removing marker: " + marker + " from " + this);
 		}
-		return allMarkers.remove(marker);
+		allMarkers.remove(marker);
+		if(parent instanceof BugGroup){
+			((BugGroup) parent).removeMarker(marker);
+		}
 	}
 
-	void removeMarkers(Set<IMarker> markers){
+	private void removeMarkers(Set<IMarker> markers){
+		if(markers.isEmpty() || allMarkers.isEmpty()){
+			return;
+		}
 		if(BugContentProvider.DEBUG) {
 			for (IMarker marker : markers) {
 				System.out.println("Removing marker: " + marker + " from " + this);
@@ -198,6 +205,9 @@ public class BugGroup implements IAdaptable {
 			allMarkers.clear();
 		} else {
 			allMarkers.removeAll(markers);
+		}
+		if(parent instanceof BugGroup){
+			((BugGroup) parent).removeMarkers(markers);
 		}
 	}
 
@@ -217,15 +227,17 @@ public class BugGroup implements IAdaptable {
 	}
 
 	public Object getAdapter(Class adapter) {
-		if(adapter.isAssignableFrom(self.getClass())){
+		if(self.getClass().isInstance(adapter)){
 			return self;
 		}
-		// TODO this causes multiple errors in Eclipse 3.4 log, and doesn't work in 3.3
-		// What is about the factory for adaptors???
-//		if(self instanceof IAdaptable){
-//			IAdaptable adaptable = (IAdaptable) self;
-//			return adaptable.getAdapter(adapter);
-//		}
+		if(ITaskListResourceAdapter.class == adapter){
+			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=246409
+			return null;
+		}
+		if(self instanceof IAdaptable){
+			IAdaptable adaptable = (IAdaptable) self;
+			return adaptable.getAdapter(adapter);
+		}
 		return null;
 	}
 
@@ -240,6 +252,7 @@ public class BugGroup implements IAdaptable {
 	void dispose(){
 		children.clear();
 		allMarkers.clear();
+		parent = null;
 	}
 
 }

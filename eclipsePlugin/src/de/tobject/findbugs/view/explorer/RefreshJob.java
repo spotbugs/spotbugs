@@ -21,7 +21,6 @@ package de.tobject.findbugs.view.explorer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,14 +38,14 @@ import org.eclipse.ui.navigator.CommonViewer;
  */
 class RefreshJob extends Job implements IViewerRefreshJob {
 
-	final LinkedList<DeltaInfo> deltaToRefresh;
+	final List<DeltaInfo> deltaToRefresh;
 	private volatile CommonViewer viewer;
 	private final BugContentProvider contentProvider;
 
 	public RefreshJob(String name, BugContentProvider provider) {
 		super(name);
 		this.contentProvider = provider;
-		deltaToRefresh = new LinkedList<DeltaInfo>();
+		deltaToRefresh = new ArrayList<DeltaInfo>();
 	}
 
 	@Override
@@ -61,7 +60,6 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 			final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
 			final boolean fullRefreshNeeded = changedParents.isEmpty();
 
-			// XXX should we run a- or synchronious here????
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					if (viewer != null && !viewer.getControl().isDisposed()

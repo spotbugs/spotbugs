@@ -499,12 +499,13 @@
                         value="de.tobject.findbugs.view.explorer.BugGroup">
                   </instanceof>
                   <instanceof
-                        value="org.eclipse.core.resources.IMarker">
+                        value="org.eclipse.core.resources.IWorkspaceRoot">
                   </instanceof>
-                  <adapt
-                        type="org.eclipse.core.resources.IMarker">
-                  </adapt>
-               </or></parentExpression>
+                  <instanceof
+                        value="org.eclipse.ui.IWorkingSet">
+                  </instanceof>
+               </or>
+            </parentExpression>
          </commonSorter>
          <actionProvider
                class="de.tobject.findbugs.view.explorer.BugActionProvider"
@@ -516,72 +517,24 @@
                <instanceof
                      value="de.tobject.findbugs.view.explorer.BugGroup">
                </instanceof>
-               <instanceof
-                     value="org.eclipse.core.resources.IMarker">
+               <instanceof value="org.eclipse.core.resources.IMarker">
                </instanceof>
-               <adapt
-                     type="org.eclipse.core.resources.IMarker">
-               </adapt>
-               <adapt
-                     type="org.eclipse.core.resources.IResource">
-               </adapt>
-               <adapt
-                     type="org.eclipse.core.resources.IProject">
-               </adapt>
-               <adapt
-                     type="edu.umd.cs.findbugs.BugPattern">
-               </adapt>
-               <adapt
-                     type="org.eclipse.jdt.core.IJavaElement">
-               </adapt>
-               <adapt
-                     type="org.eclipse.jdt.core.IPackageFragment">
-               </adapt>
+              <adapt
+                    type="org.eclipse.core.resources.IMarker">
+              </adapt>
+              <adapt
+                    type="org.eclipse.core.resources.IProject">
+              </adapt>
+              <adapt
+                    type="org.eclipse.core.resources.IResource">
+              </adapt>
             </or>
          </possibleChildren>
 
       </navigatorContent>
 
-      <commonFilter
-            activeByDefault="true"
-            class="de.tobject.findbugs.view.explorer.ZeroBugsFilter"
-            description="Projects with bug-free code"
-            id="de.tobject.findbugs.view.explorer.zeroBugsFilter"
-            name="Projects without bugs">
-      </commonFilter>
 
-      <commonFilter
-            id="de.tobject.findbugs.view.explorer.closedProject"
-            name="Closed projects"
-            description="Closed projects"
-            activeByDefault="true">
-         <filterExpression>
-            <and>
-                <adapt type="org.eclipse.core.resources.IProject"/>
-                <test property="org.eclipse.core.resources.open" value="false"/>
-            </and>
-         </filterExpression>
-      </commonFilter>
 
-      <commonFilter
-            name="Non-Java projects"
-            description="Non-Java projects"
-            id="de.tobject.findbugs.view.explorer.NonJavaProjects"
-            activeByDefault="true">
-         <filterExpression>
-            <and>
-                <adapt type="org.eclipse.core.resources.IProject"/>
-                <or>
-                    <test property="org.eclipse.core.resources.open" value="false"/>
-                    <not>
-                        <test property="org.eclipse.core.resources.projectNature"
-                            value="org.eclipse.jdt.core.javanature" />
-                    </not>
-                </or>
-            </and>
-         </filterExpression>
-
-       </commonFilter>
    </extension>
 
    <extension
@@ -592,21 +545,6 @@
             <property name="org.eclipse.ui.navigator.hideLinkWithEditorAction" value="true" />
             <property name="org.eclipse.ui.navigator.hideCollapseAllAction" value="true" />
          </options>
-          <popupMenu
-                allowsPlatformContributions="true"
-                id="de.tobject.findbugs.view.bugtreeview#PopupMenu">
-             <insertionPoint name="group.new"/>
-             <insertionPoint name="group.open" separator="true"/>
-             <insertionPoint name="group.openWith"/>
-             <insertionPoint name="group.edit" separator="true"/>
-             <insertionPoint name="group.reorganize" />
-             <insertionPoint name="group.port" separator="true"/>
-             <insertionPoint name="group.build" separator="true"/>
-             <insertionPoint name="group.generate" separator="true"/>
-             <insertionPoint name="group.search" separator="true"/>
-             <insertionPoint name="additions" separator="true"/>
-             <insertionPoint name="group.properties" separator="true"/>
-          </popupMenu>
       </viewer>
 
       <viewerContentBinding
@@ -616,12 +554,12 @@
                   pattern="de.tobject.findbugs.view.explorer.BugContentProvider">
             </contentExtension>
             <contentExtension pattern="de.tobject.findbugs.*" />
+            <contentExtension
+                  pattern="org.eclipse.ui.navigator.resources.workingSets">
+            </contentExtension>
             <!-- contentExtension pattern="org.eclipse.ui.navigator.resources.*" /-->
             <!-- contentExtension pattern="org.eclipse.jdt.*" /-->
          </includes>
-          <excludes>
-            <contentExtension pattern="org.eclipse.ui.navigator.resources.workingSets" />
-         </excludes>
       </viewerContentBinding>
 
       <viewerActionBinding
@@ -877,27 +815,16 @@
             name="Copy Bug Details (Bug)"
             id="FindBugs.command.copy2"/>
     </extension>
+    <!-- only to get rid of error messages generated by silly TabbedPropertySheetAdapterFactory -->
     <extension
-          point="org.eclipse.ui.navigator.linkHelper">
-       <linkHelper
-             class="de.tobject.findbugs.view.explorer.BugLinkHelper"
-             id="de.tobject.findbugs.linkHelper">
-          <editorInputEnablement>
-             <instanceof
-                   value="org.eclipse.ui.IFileEditorInput">
-             </instanceof>
-          </editorInputEnablement>
-          <selectionEnablement>
-             <or>
-                <adapt
-                      type="org.eclipse.core.resources.IMarker">
-                </adapt>
-                <adapt
-                      type="de.tobject.findbugs.view.explorer.BugGroup">
-                </adapt>
-             </or>
-          </selectionEnablement>
-       </linkHelper>
+          point="org.eclipse.core.runtime.adapters">
+       <factory
+             adaptableType="de.tobject.findbugs.view.BugExplorerView"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySheetPage">
+          </adapter>
+       </factory>
     </extension>
 
 <!-- uncommented until we define our own context

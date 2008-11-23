@@ -18,34 +18,19 @@
  */
 package de.tobject.findbugs.view.explorer;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 
-import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.reporter.MarkerUtil;
+public class PropertyPageAdapterFactory implements IAdapterFactory {
 
-public class ZeroBugsFilter extends ViewerFilter {
-
-	public ZeroBugsFilter() {
-		super();
+	public Object getAdapter(Object adaptableObject, Class adapterType) {
+		// return nothing to get rid of errors generated through
+		// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator class
+		return null;
 	}
 
-	@Override
-	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		IResource resource = ResourceUtils.getResource(element);
-		if(resource == null) {
-			return true;
-		}
-		if(!resource.isAccessible()) {
-			return false;
-		}
-		IMarker[] markerArr = MarkerUtil.getAllMarkers(resource);
-		if (markerArr.length == 0) {
-			return false;
-		}
-		return true;
+	public Class[] getAdapterList() {
+        return new Class[] {IPropertySheetPage.class};
 	}
 
 }
