@@ -77,7 +77,7 @@ public interface FindBugsMarker {
 		Low(NAME_LOW, "buggy-tiny-yellow.png", Priorities.LOW_PRIORITY),
 		Experimental(NAME_EXPERIMENTAL, "buggy-tiny-blue.png", Priorities.EXP_PRIORITY),
 		Ignore("", "buggy-tiny-green.png", Priorities.IGNORE_PRIORITY),
-		Unknown("", "buggy-tiny-green.png", Priorities.IGNORE_PRIORITY);
+		Unknown("", "buggy-tiny-gray.png", Priorities.IGNORE_PRIORITY);
 
 		private final String prioName;
 		private final String icon;
