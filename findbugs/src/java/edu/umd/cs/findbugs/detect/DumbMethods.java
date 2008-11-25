@@ -181,6 +181,14 @@ public class DumbMethods extends OpcodeStackDetector  {
 			}
 		}
 
+		if (seen == INVOKESTATIC && getClassConstantOperand().equals("org/easymock/EasyMock") 
+				&& (getNameConstantOperand().equals("replay") || getNameConstantOperand().equals("verify") || getNameConstantOperand().startsWith("reset"))
+				&& getSigConstantOperand().equals("([Ljava/lang/Object;)V") && getPrevOpcode(1) == ANEWARRAY && getPrevOpcode(2) == ICONST_0)
+			accumulator.accumulateBug(new BugInstance(this,
+					"DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addCalledMethod(this),this);
+		
 		if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
 				&& getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
 			SignatureParser parser = new SignatureParser(getSigConstantOperand());

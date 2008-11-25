@@ -1560,6 +1560,17 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
+    <ShortDescription>Useless/vacuous call to EasyMock method</ShortDescription>
+    <LongDescription>Useless/vacuous call to {2} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>This call doesn't pass any objects to the EasyMock method, so the call doesn't do anything.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS">
     <ShortDescription>Creation of ScheduledThreadPoolExecutor with zero core threads</ShortDescription>
     <LongDescription>Creation of ScheduledThreadPoolExecutor with zero core threads in {1}</LongDescription>
