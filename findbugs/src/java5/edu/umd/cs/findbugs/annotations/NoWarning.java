@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * 
  * @author David Hovemeyer
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.CLASS)
 public @interface NoWarning {
 	// Comma-separated list of bug codes (e.g., "NP") not expected

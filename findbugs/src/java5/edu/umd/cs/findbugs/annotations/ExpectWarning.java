@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * 
  * @author David Hovemeyer
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.CLASS)
 public @interface ExpectWarning {
 	// The value indicates the bug code (e.g., NP) of the expected warning.
