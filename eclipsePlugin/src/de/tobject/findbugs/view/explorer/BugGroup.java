@@ -226,6 +226,7 @@ public class BugGroup implements IAdaptable {
 		return priority;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		if(self.getClass().isInstance(adapter)){
 			return self;
