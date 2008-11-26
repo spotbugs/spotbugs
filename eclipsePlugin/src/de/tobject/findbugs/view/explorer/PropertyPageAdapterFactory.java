@@ -18,19 +18,217 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
+
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 
 public class PropertyPageAdapterFactory implements IAdapterFactory {
 
+	public static class PropertySource implements IPropertySource {
+
+		private final Object object;
+		private final IPropertyDescriptor[] propertyDescriptors;
+
+		public PropertySource(Object object) {
+			this.object = object;
+			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+			List<Method> getters = getGetters(object);
+			for (Method method : getters) {
+				props.add(new PropertyDescriptor(method, getReadableName(method)));
+			}
+			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+		}
+
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return propertyDescriptors;
+		}
+
+		public Object getPropertyValue(Object propId) {
+			if (propId instanceof Method) {
+				Method method = (Method) propId;
+				try {
+					return method.invoke(object, (Object[])null);
+				} catch (Exception e) {
+					FindbugsPlugin.getDefault().logException(e,
+						"getPropertyValue: method access failed");
+				}
+			}
+			return null;
+		}
+
+		public Object getEditableValue() {
+			return null;
+		}
+		public boolean isPropertySet(Object id) {
+			return false;
+		}
+		public void resetPropertyValue(Object id) {
+			//
+		}
+		public void setPropertyValue(Object id, Object value) {
+			//
+		}
+	}
+
+	static List<Method> getGetters(Object obj){
+		List<Method> methodList = new ArrayList<Method>();
+		Method[] methods = obj.getClass().getMethods();
+		for (Method method : methods) {
+			if(method.getParameterTypes().length == 0){
+				String name = method.getName();
+				if(name.startsWith("get") || name.startsWith("is")) {
+					methodList.add(method);
+				}
+			}
+		}
+		return methodList;
+	}
+
+	public static String getReadableName(Method method) {
+		String name = method.getName();
+		return name.startsWith("get") ? name.substring(3) : name.startsWith("is") ? name
+				.substring(2) : name;
+	}
+
+	static enum PropId {
+		Type, Resource, Bug, Id, CreationTime
+	}
+
+	public static class MarkerPropertySource implements IPropertySource {
+
+		private final IMarker marker;
+		private final IPropertyDescriptor[] propertyDescriptors;
+
+		public MarkerPropertySource(IMarker marker) {
+			this.marker = marker;
+			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+			try {
+				Map<?, ?> attributes = marker.getAttributes();
+				Set<?> keySet = new TreeSet<Object>(attributes.keySet());
+				for (Object object : keySet) {
+					props.add(new PropertyDescriptor(object, "" + object));
+				}
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"MarkerPropertySource: marker access failed");
+			}
+			props.add(new PropertyDescriptor(PropId.Bug, "Bug"));
+			props.add(new PropertyDescriptor(PropId.Resource, "Resource"));
+			props.add(new PropertyDescriptor(PropId.Id, "Marker id"));
+			props.add(new PropertyDescriptor(PropId.Type, "Marker type"));
+			props.add(new PropertyDescriptor(PropId.CreationTime, "Creation time"));
+			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+		}
+
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return propertyDescriptors;
+		}
+
+		public Object getPropertyValue(Object propId) {
+			try {
+				if (propId instanceof PropId) {
+					PropId id = (PropId) propId;
+					switch (id) {
+					case Bug:
+						return MarkerUtil.findBugInstanceForMarker(marker);
+					case Resource:
+						return marker.getResource();
+					case Id:
+						return Long.valueOf(marker.getId());
+					case CreationTime:
+						return new Date(marker.getCreationTime());
+					case Type:
+						return marker.getType();
+					}
+				} else if (propId instanceof String) {
+					return marker.getAttribute((String) propId);
+				}
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"getPropertyValue: marker access failed");
+			}
+			return null;
+		}
+
+		public Object getEditableValue() {
+			return null;
+		}
+		public boolean isPropertySet(Object id) {
+			return false;
+		}
+		public void resetPropertyValue(Object id) {
+			//
+		}
+		public void setPropertyValue(Object id, Object value) {
+			//
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		// return nothing to get rid of errors generated through
-		// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator class
+		if (adapterType == IPropertySheetPage.class) {
+			// return nothing to get rid of errors generated through
+			// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator
+			// class
+			return null;
+		}
+		if (adapterType == IPropertySource.class) {
+			if (adaptableObject instanceof BugPattern) {
+				BugPattern bug = (BugPattern) adaptableObject;
+				return new PropertySource(bug);
+			}
+			if (adaptableObject instanceof BugInstance) {
+				BugInstance bug = (BugInstance) adaptableObject;
+				return new PropertySource(bug);
+			}
+			IMarker marker = null;
+			if (adaptableObject instanceof IMarker) {
+				marker = (IMarker) adaptableObject;
+			} else if (adaptableObject instanceof IAdaptable) {
+				marker = (IMarker) ((IAdaptable) adaptableObject)
+						.getAdapter(IMarker.class);
+			}
+			if (marker == null || !MarkerUtil.isFindBugsMarker(marker)) {
+				return null;
+			}
+			return new MarkerPropertySource(marker);
+		}
+		if (adapterType == BugInstance.class) {
+			if (adaptableObject instanceof BugInstance) {
+				BugInstance bug = (BugInstance) adaptableObject;
+				return new PropertySource(bug);
+			}
+		}
+		if (adapterType == BugPattern.class) {
+			if (adaptableObject instanceof BugPattern) {
+				BugPattern bug = (BugPattern) adaptableObject;
+				return new PropertySource(bug);
+			}
+		}
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Class[] getAdapterList() {
-        return new Class[] {IPropertySheetPage.class};
+		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
 	}
 
 }

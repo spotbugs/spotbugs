@@ -824,6 +824,44 @@
           <adapter
                 type="org.eclipse.ui.views.properties.IPropertySheetPage">
           </adapter>
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="org.eclipse.core.resources.IMarker"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="org.eclipse.core.internal.resources.Marker"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.BugInstance"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.BugPattern"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="org.eclipse.ui.internal.views.markers.MarkerEntry"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
        </factory>
     </extension>
 

@@ -585,7 +585,7 @@ public final class MarkerUtil {
 			return null;
 		}
 		try {
-			if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
+			if (!isFindBugsMarker(marker)) {
 				// log disabled because otherwise each selection in problems view generates
 				// 6 new errors (we need refactor all bug views to get rid of this).
 //				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
@@ -641,36 +641,31 @@ public final class MarkerUtil {
 			return markers;
 		}
 		IStructuredSelection sSelection = (IStructuredSelection) selection;
-		try {
-			for (Iterator<?> iter = sSelection.iterator(); iter.hasNext();) {
-				Object next = iter.next();
-				if(next instanceof IMarker){
-					IMarker marker = (IMarker) next;
-					if (!marker.exists() || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
-						continue;
-					}
-					markers.add(marker);
-				} else if (next instanceof BugGroup){
-					BugGroup group = (BugGroup) next;
-					markers.addAll(group.getAllMarkers());
-				} else if (next instanceof IResource){
-					IResource res = (IResource) next;
-					IMarker[] markers2 = MarkerUtil.getAllMarkers(res);
-					for (IMarker marker : markers2) {
-						markers.add(marker);
-					}
-				} else if (next instanceof IAdaptable){
-					IAdaptable adapter = (IAdaptable) next;
-					IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-					if (marker == null || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
-						continue;
-					}
+		for (Iterator<?> iter = sSelection.iterator(); iter.hasNext();) {
+			Object next = iter.next();
+			if(next instanceof IMarker){
+				IMarker marker = (IMarker) next;
+				if (!marker.exists() || !isFindBugsMarker(marker)) {
+					continue;
+				}
+				markers.add(marker);
+			} else if (next instanceof BugGroup){
+				BugGroup group = (BugGroup) next;
+				markers.addAll(group.getAllMarkers());
+			} else if (next instanceof IResource){
+				IResource res = (IResource) next;
+				IMarker[] markers2 = MarkerUtil.getAllMarkers(res);
+				for (IMarker marker : markers2) {
 					markers.add(marker);
 				}
+			} else if (next instanceof IAdaptable){
+				IAdaptable adapter = (IAdaptable) next;
+				IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+				if (marker == null || !isFindBugsMarker(marker)) {
+					continue;
+				}
+				markers.add(marker);
 			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
 		}
 		return markers;
 	}
@@ -684,31 +679,36 @@ public final class MarkerUtil {
 			return null;
 		}
 
-		try {
-			Object next = sSelection.getFirstElement();
-			if(next instanceof IMarker){
-				IMarker marker = (IMarker) next;
-				if (!marker.exists() || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
-					return null;
-				}
-				return marker;
-			} else if (next instanceof BugGroup){
+		Object next = sSelection.getFirstElement();
+		if(next instanceof IMarker){
+			IMarker marker = (IMarker) next;
+			if (!marker.exists() || !isFindBugsMarker(marker)) {
 				return null;
-			} else if (next instanceof IResource){
-				return null;
-			} else if (next instanceof IAdaptable){
-				IAdaptable adapter = (IAdaptable) next;
-				IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-				if (marker == null || !marker.isSubtypeOf(FindBugsMarker.NAME)) {
-					return null;
-				}
-				return marker;
 			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
+			return marker;
+		} else if (next instanceof BugGroup){
+			return null;
+		} else if (next instanceof IResource){
+			return null;
+		} else if (next instanceof IAdaptable){
+			IAdaptable adapter = (IAdaptable) next;
+			IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+			if (marker == null || !isFindBugsMarker(marker)) {
+				return null;
+			}
+			return marker;
 		}
 		return null;
+	}
+
+	public static boolean isFindBugsMarker(IMarker marker) {
+		try {
+			return marker.isSubtypeOf(FindBugsMarker.NAME);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e,
+			"Exception while checking FindBugs type on marker.");
+		}
+		return false;
 	}
 
 	/**
