@@ -25,7 +25,7 @@ public class Bug1969563 extends Thread {
 	 * L M Dm: Method new Bug1969563() creates a thread using the default empty
 	 * run method  At Bug1969563.java:[line 19]
 	 * ******************** */
-	// TODO:  add @NoWarning("Dm") annotation if/when it applies to constructors
+	@NoWarning("Dm")
 	public Bug1969563() {
 		super("TestThread-" + getNextId());
 	}
