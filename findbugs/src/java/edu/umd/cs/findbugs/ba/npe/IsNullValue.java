@@ -71,7 +71,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	/** Value is (potentially) null because of a value returned from a called method. */
 	private static final int RETURN_VAL = 4 << FLAG_SHIFT;
 	private static final int FIELD_VAL = 8 << FLAG_SHIFT;
-	/** Value is (potentially) null because of a value returned from a called method. */
+	/** Value is (potentially) null because of a value returned from readline. */
 	private static final int READLINE_VAL = (16 << FLAG_SHIFT) | RETURN_VAL;
 
 	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL | READLINE_VAL; 
@@ -160,25 +160,29 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private int getFlags() {
 		return kind & FLAG_MASK;
 	}
+	
+	private boolean hasFlag(int flag) {
+		return (kind & flag) == flag;
+	}
 
 	/**
 	 * Was this value propagated on an exception path?
 	 */
 	public boolean isException() {
-		return (kind & EXCEPTION) == EXCEPTION;
+		return hasFlag(EXCEPTION);
 	}
 	/**
 	 * Was this value marked as a possibly null return value?
 	 */
 	public boolean isReturnValue() {
-		return (kind & RETURN_VAL) == RETURN_VAL;
+		return hasFlag(RETURN_VAL);
 	}
 	public boolean isReadlineValue() {
-		return (kind & READLINE_VAL) == READLINE_VAL;
+		return hasFlag(READLINE_VAL);
 	}
 
 	public boolean isFieldValue() {
-		return (kind & FIELD_VAL) == RETURN_VAL;
+		return hasFlag(FIELD_VAL);
 	}
 	/**
 	 * Was this value marked as a possibly null parameter?
