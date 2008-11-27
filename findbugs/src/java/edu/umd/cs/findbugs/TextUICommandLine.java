@@ -288,7 +288,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		} else if (option.equals("-xdocs")) {
 			bugReporterType = XDOCS_REPORTER;
 		} else if (option.equals("-applySuppression")) {
-			System.out.println("FOO: set applySuppression");
 			applySuppression = true;
 		} else if (option.equals("-quiet")) {
 			quiet = true;
