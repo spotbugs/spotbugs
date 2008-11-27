@@ -89,6 +89,9 @@ public class Filter {
 
 		public boolean hasLocal = false;
 		public boolean hasLocalSpecified = false;
+		
+		public boolean applySuppression = false;
+		public boolean applySuppressionSpecified = false;
 
 		public boolean withSource = false;
 		public boolean withSourceSpecified = false;
@@ -143,7 +146,8 @@ public class Filter {
 			addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
 			addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
 			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
-
+			addSwitch("-applySuppression",  "exclude warnings that match the suppression filter");
+			
 			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
 					"allow only warnings introduced by a change of an existing class");
 			addSwitchWithOptionalExtraPart("-removedByChange", "truth",
@@ -206,7 +210,9 @@ public class Filter {
 			}
 		}
 
-		void adjustFilter(BugCollection collection) {
+		edu.umd.cs.findbugs.filter.Filter suppressionFilter;
+		void adjustFilter(Project project, BugCollection collection) {
+			suppressionFilter = project.getSuppressionFilter();
 			Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
 			SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
 
@@ -299,6 +305,9 @@ public class Filter {
 					return false;
 			}
 
+			if (applySuppressionSpecified && applySuppression 
+					&& suppressionFilter.match(bug))
+				return false;
 			return true;
 		}
 
@@ -447,7 +456,7 @@ public class Filter {
 		resultCollection.setWithMessages(commandLine.withMessages);
 		if (commandLine.hashChangedSpecified)
 			origCollection.computeBugHashes();
-		commandLine.adjustFilter(resultCollection);
+		commandLine.adjustFilter(project, resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
 		sourceSearcher = new SourceSearcher(project);
 		for (BugInstance bug : origCollection.getCollection())

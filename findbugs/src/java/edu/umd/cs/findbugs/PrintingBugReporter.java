@@ -61,7 +61,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
 			addSwitch("-designations", "report user designations for each bug");
 			addSwitch("-history", "report first and last versions for each bug");
-
+			addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
 			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 			"Generate HTML output (default stylesheet is default.xsl)");
@@ -75,6 +75,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				setUseLongBugCodes(true);
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
+			else if (option.equals("-applySuppression"))
+				setApplySuppressions(true);
 			else if (option.equals("-history"))
 				setReportHistory(true);
 		   else if (option.equals("-annotationUpload"))
@@ -111,15 +113,16 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		if (reporter.stylesheet != null) {
 			// actually do xsl via HTMLBugReporter instead of PrintingBugReporter
-			xslt(reporter.stylesheet, args, argCount);
+			xslt(reporter.stylesheet, reporter.isApplySuppressions(), args, argCount);
 			return;
 		}
 
+		Project proj = new Project();
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
-			bugCollection.readXML(args[argCount++], new Project());
+			bugCollection.readXML(args[argCount++], proj);
 		else
-			bugCollection.readXML(System.in, new Project());
+			bugCollection.readXML(System.in, proj);
 
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
@@ -152,8 +155,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			}
 		}
 		else {
-		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-			BugInstance warning = i.next();
+		for (BugInstance warning :  bugCollection.getCollection())
+		    if (!reporter.isApplySuppressions() || !proj.getSuppressionFilter().match(warning) ){
 			try {
 			reporter.printBug(warning);
 			} catch (RuntimeException e) {
@@ -167,16 +170,17 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	}
 
 
-	public static void xslt(String stylesheet, String[] args, int argCount) throws Exception {
+	public static void xslt(String stylesheet, boolean applySuppression, String[] args, int argCount) throws Exception {
 		Project proj = new Project();
 		HTMLBugReporter reporter = new HTMLBugReporter(proj, stylesheet);
 		BugCollection bugCollection = reporter.getBugCollection();
 
+		bugCollection.setApplySuppressions(applySuppression);
 		if (argCount < args.length) {
 			proj.setProjectFileName(args[argCount]);
 			bugCollection.readXML(args[argCount++], proj);
 		} else
-			bugCollection.readXML(System.in, new Project());
+			bugCollection.readXML(System.in, proj);
 
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));

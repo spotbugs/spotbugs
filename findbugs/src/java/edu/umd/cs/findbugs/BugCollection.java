@@ -301,4 +301,8 @@ public interface BugCollection
 
 	public BugInstance findBug(String instanceHash, String bugType, int lineNumber);
 
+	
+	public boolean isApplySuppressions();
+
+	public void setApplySuppressions(boolean applySuppressions);
 }

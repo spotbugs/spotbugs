@@ -172,7 +172,7 @@ public class SetBugDatabaseInfo {
 			Set<String> toRemove = new HashSet<String>();
 			for(String p1 : foundPaths)
 				for(String p2 : foundPaths)
-					if (p1 != p2 && p1.startsWith(p2)) {
+					if (!p1.equals(p2) && p1.startsWith(p2)) {
 						toRemove.add(p1);
 						break;
 					}

@@ -36,7 +36,7 @@ import org.dom4j.io.DocumentSource;
 public class HTMLBugReporter extends BugCollectionBugReporter {
 	private String stylesheet;
 	private Exception fatalException;
-
+	
 	public HTMLBugReporter(Project project, String stylesheet) {
 		super(project);
 		this.stylesheet = stylesheet;

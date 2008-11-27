@@ -39,6 +39,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean useLongBugCodes = false;
 	private boolean reportHistory = false;
 	private boolean reportUserDesignations = false;
+	private boolean applySuppressions = false;
 
 	static final String OTHER_CATEGORY_ABBREV = "X";
 
@@ -187,6 +188,10 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
 	}
+	
+	public void setApplySuppressions(boolean applySuppressions) {
+		this.applySuppressions = applySuppressions;
+	}
 
 	public void setReportUserDesignations(boolean reportUserDesignations) {
 		this.reportUserDesignations = reportUserDesignations;
@@ -218,6 +223,11 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 			}
 		}
 	}
+
+
+	public boolean isApplySuppressions() {
+	    return applySuppressions;
+    }
 
 }
 

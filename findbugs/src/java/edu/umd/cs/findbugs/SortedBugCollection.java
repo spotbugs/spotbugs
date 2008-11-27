@@ -84,7 +84,15 @@ public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
+	private boolean applySuppressions = false;
+	
+	public boolean isApplySuppressions() {
+    	return applySuppressions;
+    }
 
+	public void setApplySuppressions(boolean applySuppressions) {
+    	this.applySuppressions = applySuppressions;
+    }
 	private static final boolean REPORT_SUMMARY_HTML =
 		SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
@@ -424,6 +432,7 @@ public class SortedBugCollection implements BugCollection {
 			
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
+				if (!applySuppressions || !project.getSuppressionFilter().match(bugInstance))
 				bugInstance.writeXML(xmlOutput, withMessages, false);
 
 			writeEpilogue(xmlOutput);
