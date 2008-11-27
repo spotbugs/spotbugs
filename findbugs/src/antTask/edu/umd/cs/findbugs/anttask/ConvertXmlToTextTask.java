@@ -30,6 +30,7 @@ import org.apache.tools.ant.BuildException;
 public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 
 	private boolean longBugCodes;
+	private boolean applySuppression;
 	private String input;
 	private String output;
 	private String format = "html";
@@ -46,7 +47,12 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
     public void setLongBugCodes(boolean longBugCodes) {
 	    this.longBugCodes = longBugCodes;
     }
-    
+    /**
+     * @param applySuppression The applySuppression to set.
+     */
+    public void setApplySuppression(boolean applySuppression) {
+	    this.applySuppression = applySuppression;
+    }
     /**
      * @param input The input to set.
      */
@@ -61,6 +67,20 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 	    this.output = output;
     }
     
+    /**
+     * @param input The input to set.
+     */
+    public void setInputFile(String input) {
+	    this.input = input;
+    }
+    
+    /**
+     * @param output The output to set.
+     */
+    public void setOutputFile(String output) {
+	    this.output = output;
+    }
+
     /**
      * @param format The format to set.
      */
@@ -97,6 +117,9 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
 		}
 		if (longBugCodes) {
 			addArg("-longBugCodes");
+		}
+		if (applySuppression) {
+			addArg("-applySuppression");
 		}
 		addArg(input);
 		addArg(output);

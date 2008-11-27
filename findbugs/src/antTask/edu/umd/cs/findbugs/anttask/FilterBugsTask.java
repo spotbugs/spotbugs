@@ -32,6 +32,7 @@ import org.apache.tools.ant.BuildException;
 public class FilterBugsTask extends AbstractFindBugsTask {
 	
 	private File outputFile;
+	private String applySuppression;
     private String not;
 	private String withSource;
 	private String exclude;
@@ -91,6 +92,9 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     
     public void setExclude(String arg) {
     	this.exclude = arg;
+    }
+    public void setApplySuppression(String arg) {
+    	this.applySuppression = arg;
     }
     
     public void setInclude(String arg) {
@@ -203,6 +207,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
     	}
     	
     	checkBoolean(withSource, "withSource");
+    	checkBoolean(applySuppression, "applySuppression");
     	checkBoolean(active, "active");
     	checkBoolean(introducedByChange, "introducedByChange");
     	checkBoolean(removedByChange, "removedByChange");
@@ -254,6 +259,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 		addOption("-category", category);
 		addOption("-designation", designation);
 		addBoolOption("-withMessages", withMessages);
+		addBoolOption("-applySuppression", applySuppression);
 		if (excludeBugs != null) {
 			addArg("-excludeBugs");
 			addArg(excludeBugs);

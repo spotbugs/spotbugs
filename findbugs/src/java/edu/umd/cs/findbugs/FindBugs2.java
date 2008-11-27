@@ -109,6 +109,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private FindBugsProgress progress;
 	private IClassScreener classScreener;
 	private boolean scanNestedArchives;
+	private boolean applySuppression;
+	
 	private boolean noClassOk;
 	private edu.umd.cs.findbugs.userAnnotations.Plugin userAnnotationPlugin;
 	private boolean userAnnotationSync;
@@ -1101,6 +1103,22 @@ public class FindBugs2 implements IFindBugsEngine2 {
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
 	    this.mergeSimilarWarnings = mergeSimilarWarnings;
 	    
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#setApplySuppression(boolean)
+     */
+    public void setApplySuppression(boolean applySuppression) {
+    	this.applySuppression = applySuppression;
+	  
+    }
+    
+    public void finishSettings() {
+    	  if (applySuppression) {
+    		BugReporter origBugReporter = bugReporter.getDelegate();
+  			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, getProject().getSuppressionFilter(), false);
+  			bugReporter.setDelegate(filterBugReporter);
+  	    }  
     }
 
 

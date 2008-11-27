@@ -281,4 +281,8 @@ public interface IFindBugsEngine {
 	
 	
 	public void setMergeSimilarWarnings(boolean mergeSimilarWarnings);
+	
+	public void setApplySuppression(boolean applySuppression);
+	
+	public void finishSettings();
 }

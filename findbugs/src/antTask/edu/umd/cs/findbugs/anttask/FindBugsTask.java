@@ -70,6 +70,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * arguments:
  * <ul>
  * <li>adjustExperimental (boolean default false)
+ * <li>applySuppression   (exclude any warnings that match a suppression filter supplied in a project file)
  * <li>auxAnalyzepath     (class, jar, zip files or directories containing classes to analyze)
  * <li>auxClasspath       (classpath or classpathRef)
  * <li>baselineBugs		  (xml file containing baseline bugs)
@@ -133,6 +134,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private boolean adjustExperimental;
 	private File projectFile ;
 	private File baselineBugs ;
+	private boolean applySuppression;
 	
 	private File excludeFile ;
 	private File includeFile ;
@@ -262,6 +264,13 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	 */
 	public void setQuietErrors(boolean flag) {
 		this.quietErrors = flag;
+	}
+
+	/**
+	 * Set the quietErrors flag
+	 */
+	public void setApplySuppression(boolean flag) {
+		this.applySuppression = flag;
 	}
 
 	/**
@@ -548,7 +557,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 		if ( conserveSpace ) {
 			addArg("-conserveSpace");
 		}
-		if ( workHard ){
+			if ( workHard ){
 			addArg("-workHard");
 		}
 		if ( effort != null ) {
@@ -581,6 +590,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
 			addArg("-project");
 			addArg(projectFile.getPath());
 		}
+		if ( applySuppression ) {
+			addArg("-applySuppression");
+		}
+	
 		if ( baselineBugs != null) {
 			addArg("-excludeBugs");
 			addArg(baselineBugs.getPath());

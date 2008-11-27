@@ -99,6 +99,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String userAnnotationPlugin;
 	private Map<String,String> userAnnotationPluginProperties = new HashMap<String, String>();
 	private boolean userAnnotationSync;
+	private boolean applySuppression;
 
 	/**
 	 * Constructor.
@@ -165,6 +166,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-uaPlugin", "class name", "class name of user annotation plugin");
 		addOption("-uaPluginProps", "p1=val[,p2=val,...]", "specify configuration properties for user annotation plugin");
 		addSwitch("-uaSync", "fetch user annotations and apply them to new analysis results");
+		addSwitch("-applySuppression", "Exclude any bugs that match suppression filter loaded from fbp file");
+		
 	}
 
 	@Override
@@ -185,6 +188,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		return quiet;
 	}
 
+	public boolean applySuppression() {
+		return applySuppression;
+	}
 	/**
 	 * Get class name of user annotation plugin.
 	 * 
@@ -281,6 +287,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			}
 		} else if (option.equals("-xdocs")) {
 			bugReporterType = XDOCS_REPORTER;
+		} else if (option.equals("-applySuppression")) {
+			System.out.println("FOO: set applySuppression");
+			applySuppression = true;
 		} else if (option.equals("-quiet")) {
 			quiet = true;
 		} else if (option.equals("-nested")) {
@@ -576,6 +585,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			((IFindBugsEngine2)findBugs).loadUserAnnotationPlugin(userAnnotationPlugin, userAnnotationPluginProperties);
 			((IFindBugsEngine2)findBugs).setUserAnnotationSync(userAnnotationSync);
 		}
+		if (applySuppression)
+			findBugs.setApplySuppression(true);
+		
+		findBugs.finishSettings();
 	}
 
 	/**
