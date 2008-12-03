@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -72,7 +73,9 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	public TypeAnnotation(Type objectType, String roleDescription) {
 		this(objectType.getSignature(), roleDescription);
 		if (objectType instanceof GenericObjectType) {
-			typeParameters = ((GenericObjectType) objectType).getGenericParametersAsString();
+			GenericObjectType genericObjectType = (GenericObjectType) objectType;
+			if (genericObjectType.getTypeCategory() == GenericUtilities.TypeCategory.PARAMETERIZED)
+			  typeParameters = genericObjectType.getGenericParametersAsString();
 		}
 	}
 		

@@ -72,6 +72,9 @@ public class IncompatibleTypes {
 	public static final IncompatibleTypes ARRAY_AND_NON_ARRAY = new IncompatibleTypes("Array and non array",
 	        Priorities.HIGH_PRIORITY);
 
+	public static final IncompatibleTypes UNCHECKED = new IncompatibleTypes("Actual compile type time of argument is Object, unchecked",
+	        Priorities.LOW_PRIORITY);
+
 	public static final IncompatibleTypes ARRAY_AND_OBJECT = new IncompatibleTypes("Array and Object", Priorities.LOW_PRIORITY);
 
 	public static final IncompatibleTypes INCOMPATIBLE_CLASSES = new IncompatibleTypes("Incompatible classes",
@@ -92,32 +95,32 @@ public class IncompatibleTypes {
 	}
 
 	static public @NonNull
-	IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType, boolean pointerEquality) {
-		if (!(lhsType instanceof ReferenceType))
+	IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+		if (!(expectedType instanceof ReferenceType))
 			return SEEMS_OK;
-		if (!(rhsType instanceof ReferenceType))
+		if (!(actualType instanceof ReferenceType))
 			return SEEMS_OK;
 
-		while (lhsType instanceof ArrayType && rhsType instanceof ArrayType) {
-			lhsType = ((ArrayType) lhsType).getElementType();
-			rhsType = ((ArrayType) rhsType).getElementType();
+		while (expectedType instanceof ArrayType && actualType instanceof ArrayType) {
+			expectedType = ((ArrayType) expectedType).getElementType();
+			actualType = ((ArrayType) actualType).getElementType();
 		}
 
-		if (lhsType instanceof ArrayType) {
-			return getPriorityForAssumingCompatibleWithArray(rhsType);
+		if (expectedType instanceof ArrayType) {
+			return getPriorityForAssumingCompatibleWithArray(actualType);
 		}
-		if (rhsType instanceof ArrayType) {
-			return getPriorityForAssumingCompatibleWithArray(lhsType);
+		if (actualType instanceof ArrayType) {
+			return getPriorityForAssumingCompatibleWithArray(expectedType);
 		}
-		if (lhsType.equals(rhsType))
+		if (expectedType.equals(actualType))
 			return SEEMS_OK;
 
 		// For now, ignore the case where either reference is not
 		// of an object type. (It could be either an array or null.)
-		if (!(lhsType instanceof ObjectType) || !(rhsType instanceof ObjectType))
+		if (!(expectedType instanceof ObjectType) || !(actualType instanceof ObjectType))
 			return SEEMS_OK;
 
-		return getPriorityForAssumingCompatible((ObjectType) lhsType, (ObjectType) rhsType, pointerEquality);
+		return getPriorityForAssumingCompatible((ObjectType) expectedType, (ObjectType) actualType, pointerEquality);
 
 	}
 
@@ -148,23 +151,24 @@ public class IncompatibleTypes {
 	}
 
 	static public @NonNull
-	IncompatibleTypes getPriorityForAssumingCompatible(ObjectType lhsType, ObjectType rhsType, boolean pointerEquality) {
-		if (lhsType.equals(rhsType))
+	IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType, boolean pointerEquality) {
+		if (expectedType.equals(actualType))
 			return SEEMS_OK;
 		try {
 			
-			if (!Hierarchy.isSubtype(lhsType, rhsType) && !Hierarchy.isSubtype(rhsType, lhsType)) {
+			
+			if (!Hierarchy.isSubtype(expectedType, actualType) && !Hierarchy.isSubtype(actualType, expectedType)) {
 				// See if the types are related by inheritance.
-				ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(lhsType.getClassName());
-				ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(rhsType.getClassName());
+				ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(expectedType.getClassName());
+				ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(actualType.getClassName());
 
 				return getPriorityForAssumingCompatible(pointerEquality, lhsDescriptor, rhsDescriptor);
 			}
 			
-			if (lhsType instanceof GenericObjectType && rhsType instanceof GenericObjectType 
-					&& (Hierarchy.isSubtype(lhsType, COLLECTION_TYPE) || Hierarchy.isSubtype(lhsType, MAP_TYPE))) {
-				List<? extends ReferenceType> lhsParameters = ((GenericObjectType)lhsType).getParameters();
-				List<? extends ReferenceType> rhsParameters = ((GenericObjectType)rhsType).getParameters();
+			if (expectedType instanceof GenericObjectType && actualType instanceof GenericObjectType 
+					&& (Hierarchy.isSubtype(expectedType, COLLECTION_TYPE) || Hierarchy.isSubtype(expectedType, MAP_TYPE))) {
+				List<? extends ReferenceType> lhsParameters = ((GenericObjectType)expectedType).getParameters();
+				List<? extends ReferenceType> rhsParameters = ((GenericObjectType)actualType).getParameters();
 				if (lhsParameters != null && rhsParameters != null && lhsParameters.size() == rhsParameters.size()) 
 					for(int i = 0; i < lhsParameters.size(); i++) {
 						IncompatibleTypes r = getPriorityForAssumingCompatible(lhsParameters.get(i), rhsParameters.get(i), pointerEquality);

@@ -210,6 +210,10 @@ public class GenericObjectType extends ObjectType {
 	}
 	
 	public String getGenericParametersAsString() {
-		return toString().substring(super.toString().length());
+		if (getTypeCategory() !=  GenericUtilities.TypeCategory.PARAMETERIZED)
+		  throw new IllegalStateException(toString() + " doesn't have generic parameters");
+		String baseStringValue = super.toString();
+		String fullStringValue = toString();
+		return fullStringValue.substring(baseStringValue.length());
 	}
 }

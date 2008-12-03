@@ -7130,6 +7130,22 @@ and the next method is supposed to change the state of the iterator.
     </Details>
   </BugPattern>
 
+  <BugPattern type="GC_UNCHECKED_TYPE_IN_GENERIC_CALL">
+    <ShortDescription>Unchecked type in generic call</ShortDescription>
+    <LongDescription>Unchecked argument of type Object provided where type {3.givenClass} is expected in {1}</LongDescription>
+    <Details>
+     <![CDATA[
+     <p> This call to a generic collection method passes an argument
+	while compile type Object where a specific type from
+	the generic type parameters is expected.
+	Thus, neither the standard Java type system nor static analysis
+	can provide useful information on whether the
+	object being passed as a parameter is of an appropriate type.
+	</p>
+     ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="GC_UNRELATED_TYPES">
     <ShortDescription>No relationship between generic parameter and method argument</ShortDescription>
     <LongDescription>{2.givenClass} is incompatible with expected argument type {3.givenClass} in {1}</LongDescription>
@@ -7161,6 +7177,10 @@ and the next method is supposed to change the state of the iterator.
      ]]>
     </Details>
   </BugPattern>
+
+
+
+
   <BugPattern type="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES">
     <ShortDescription>Collections should not contain themselves</ShortDescription>
     <LongDescription>Collections should not contain themselves in call to {2.givenClass}</LongDescription>
