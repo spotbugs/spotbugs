@@ -2829,13 +2829,27 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS">
+    <ShortDescription>Signature declares use of unhashable class in hashed construct</ShortDescription>
+    <LongDescription>{2} doesn't define a hashCode() method but it is used in a hashed context in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A method, field or class declares a generic signature where a non-hashable class
+is used in context where a hashable class is required.
+A class that declares an equals method but inherits a hashCode() method
+from Object is unhashable, since it doesn't fulfill the requirement that
+equal objects have equal hashCodes.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="HE_USE_OF_UNHASHABLE_CLASS">
     <ShortDescription>Use of class without a hashCode() method in a hashed data structure</ShortDescription>
     <LongDescription>{2} doesn't define a hashCode() method but is used in a hashed data structure</LongDescription>
     <Details>
 <![CDATA[
   <p> A class defines an equals(Object)  method but not a hashCode() method,
-and thus doesn't fulfill the requirement that equal Objects have equal hashCodes.
+and thus doesn't fulfill the requirement that equal objects have equal hashCodes.
 An instance of this class is used in a hash data structure, making the need to
 fix this problem of highest importance.
 ]]>

@@ -19,6 +19,37 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.annotation.CheckForNull;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.ReturnInstruction;
+
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -79,35 +110,6 @@ import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.Util;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ATHROW;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IFNULL;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionTargeter;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.ReturnInstruction;
-
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.annotation.CheckForNull;
 
 /**
  * A Detector to find instructions where a NullPointerException might be raised.
@@ -703,7 +705,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	private void decorateWarning(Location location,
 			WarningPropertySet<WarningProperty> propertySet, BugInstance warning) {
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-			WarningPropertyUtil.addPropertiesForLocation(propertySet,
+			WarningPropertyUtil.addPropertiesForDataMining(propertySet,
 					classContext, method, location);
 		}
 		propertySet.decorateBugInstance(warning);
@@ -841,27 +843,33 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame, "VALUE_OF");
-
-		boolean duplicated = false;
+		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));
+		boolean duplicated = propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED);
 		try {
 			CFG cfg = classContext.getCFG(method);
-			duplicated = cfg.getLocationsContainingInstructionWithOffset(pc)
-					.size() > 1;
+			if (cfg.getLocationsContainingInstructionWithOffset(pc)
+					.size() > 1) {
+				propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
+				duplicated = true;
+			}
 		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("huh", e);
 		}
 
 		boolean caught = inCatchNullBlock(location);
 		if (caught && skipIfInsideCatchNull())
 			return;
 
-		if (!duplicated && refValue.isDefinitelyNull()) {
-			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION"
-					: "NP_ALWAYS_NULL";
+		
+		if (refValue.isDefinitelyNull()) {
+			String type = "NP_ALWAYS_NULL";
+			if (onExceptionPath) type =  "NP_ALWAYS_NULL_EXCEPTION";
+			else if (duplicated)
+				type = "NP_NULL_ON_SOME_PATH";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 			if (caught)
 				priority++;
-			reportNullDeref(propertySet, classContext, method, location, type,
-					priority, variable);
+			reportNullDeref(propertySet, location, type, priority, variable);
 		} else if (refValue.mightBeNull() && refValue.isParamValue()) {
 
 			String type;
@@ -884,14 +892,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				System.out.println("Reporting null on some path: value="
 						+ refValue);
 
-			reportNullDeref(propertySet, classContext, method, location, type,
-					priority, variable);
+			reportNullDeref(propertySet, location, type, priority, variable);
 		}
 	}
 
 	private void reportNullDeref(WarningPropertySet<WarningProperty> propertySet,
-			ClassContext classContext, Method method, Location location,
-			String type, int priority, BugAnnotation variable) {
+			Location location, String type, int priority,
+			@CheckForNull BugAnnotation variable) {
 
 		BugInstance bugInstance = new BugInstance(this, type, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
@@ -903,13 +910,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				location).describe("SOURCE_LINE_DEREF");
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-			WarningPropertyUtil.addPropertiesForLocation(propertySet,
+			WarningPropertyUtil.addPropertiesForDataMining(propertySet,
 					classContext, method, location);
 		}
-		if (isDoomed(location)) {
-			// Add a WarningProperty
-			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
-		}
+		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));
+		
 		propertySet.decorateBugInstance(bugInstance);
 
 		bugReporter.reportBug(bugInstance);
@@ -1103,7 +1108,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
-			WarningPropertyUtil.addPropertiesForLocation(propertySet,
+			WarningPropertyUtil.addPropertiesForDataMining(propertySet,
 					classContext, method, location);
 			if (isChecked)
 				propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
@@ -1114,9 +1119,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				propertySet.addProperty(NullDerefProperty.CREATED_DEAD_CODE);
 
 			propertySet.decorateBugInstance(bugInstance);
-
-			priority = propertySet.computePriority(NORMAL_PRIORITY);
-			bugInstance.setPriority(priority);
 		}
 		
 		SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
@@ -1211,33 +1213,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		if (doomedLocations.isEmpty() || derefLocationSet.isEmpty())
 			return;
-		boolean derefOutsideCatchBlock = false;
-		for (Location loc : derefLocationSet)
-			if (!inCatchNullBlock(loc)) {
-				derefOutsideCatchBlock = true;
-				break;
-			}
-
-		boolean uniqueDereferenceLocations = false;
-		LineNumberTable table = method.getLineNumberTable();
-		if (table == null)
-			uniqueDereferenceLocations = true;
-		else {
-			BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
-			for(Location loc : derefLocationSet) {
-			  int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
-			  if (!linesMentionedMultipleTimes.get(lineNumber)) uniqueDereferenceLocations = true;
-			}
-		}
-
-
-		if (!derefOutsideCatchBlock) {
-			if (!uniqueDereferenceLocations || skipIfInsideCatchNull())
-				return;
-			priority++;
-		}
-		if (!uniqueDereferenceLocations)
-			priority++;
+		
+		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+		
+		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
 
 		// Create BugInstance
 
@@ -1320,9 +1299,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		}
 
 
-		XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-		boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(xMethod) 
-				&& xMethod.isPrivate();
 		if (invokedXMethod != null) for (Location derefLoc : derefLocationSet) 
 			if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc)) return;
 		boolean hasManyNullTests = true;
@@ -1347,27 +1323,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (variableAnnotation instanceof FieldAnnotation)
 			bugInstance.describe("FIELD_CONTAINS_VALUE");
 		
-		// If all deref locations are doomed
-		// (i.e., locations where a normal return is not possible),
-		// add a warning property indicating such.
-
-		// Are all derefs at doomed locations?
-		boolean allDerefsAtDoomedLocations = true;
-		for (Location derefLoc : derefLocationSet) {
-			if (!isDoomed(derefLoc)) {
-				allDerefsAtDoomedLocations = false;
-				break;
-			}
-		}
-
-		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
-
-		if (allDerefsAtDoomedLocations) {
-			// Add a WarningProperty
-			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
-		}
-		if (uncallable)
-			propertySet.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
+		
+		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
+		
 		propertySet.decorateBugInstance(bugInstance);
 		
 		if (bugType.equals("NP_DEREFERENCE_OF_READLINE_VALUE")) {
@@ -1394,6 +1352,73 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			bugReporter.reportBug(bugInstance);
 		}
 	}
+
+	/**
+     * @param propertySet
+     * @param derefLocationSet
+     */
+    private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
+            Collection<Location> derefLocationSet) {
+	    boolean derefOutsideCatchBlock = false;
+	    boolean allDerefsAtDoomedLocations = true;
+		for (Location loc : derefLocationSet) {
+			if (!inCatchNullBlock(loc)) 
+				derefOutsideCatchBlock = true;
+			
+		    if (!isDoomed(loc)) 
+			   allDerefsAtDoomedLocations = false;
+		}
+		
+		if (allDerefsAtDoomedLocations) {
+			// Add a WarningProperty
+			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
+		}
+		boolean uniqueDereferenceLocations = uniqueLocations(derefLocationSet);
+
+		if (!derefOutsideCatchBlock) {
+			if (!uniqueDereferenceLocations || skipIfInsideCatchNull())
+				propertySet.addProperty(GeneralWarningProperty.FALSE_POSITIVE);
+			else propertySet.addProperty(NullDerefProperty.DEREFS_IN_CATCH_BLOCKS);
+		}
+		if (!uniqueDereferenceLocations)
+			// Add a WarningProperty
+			propertySet.addProperty(NullDerefProperty.DEREFS_ARE_CLONED);
+		
+		addPropertiesForMethodContainingWarning(propertySet);
+    }
+
+	/**
+     * @param derefLocationSet
+     * @return
+     */
+    private boolean uniqueLocations(Collection<Location> derefLocationSet) {
+	    boolean uniqueDereferenceLocations = false;
+		LineNumberTable table = method.getLineNumberTable();
+		if (table == null)
+			uniqueDereferenceLocations = true;
+		else {
+			BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+			for(Location loc : derefLocationSet) {
+			  int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
+			  if (!linesMentionedMultipleTimes.get(lineNumber)) uniqueDereferenceLocations = true;
+			}
+		}
+	    return uniqueDereferenceLocations;
+    }
+
+	/**
+     * @param propertySet
+     * @param xMethod
+     */
+    private void addPropertiesForMethodContainingWarning(WarningPropertySet<WarningProperty> propertySet) {
+    	XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+		
+	    boolean uncallable = !AnalysisContext.currentXFactory().isCalledDirectlyOrIndirectly(xMethod) 
+		&& xMethod.isPrivate();
+
+		if (uncallable)
+			propertySet.addProperty(GeneralWarningProperty.IN_UNCALLABLE_METHOD);
+    }
 
 	private boolean isDoomed(Location loc) {
 		if (!MARK_DOOMED) {

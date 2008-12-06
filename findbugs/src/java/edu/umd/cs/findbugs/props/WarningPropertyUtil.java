@@ -170,7 +170,7 @@ public abstract class WarningPropertyUtil {
 	 * @param method       the Method
 	 * @param location     the Location
 	 */
-	public static void addPropertiesForLocation(
+	public static void addPropertiesForDataMining(
 			WarningPropertySet<WarningProperty> propertySet,
 			ClassContext classContext,
 			Method method,
@@ -196,7 +196,7 @@ public abstract class WarningPropertyUtil {
 		try {
 			Location location = pcToLocation(classContext, method, pc);
 			if (location != null) {
-				addPropertiesForLocation(propertySet, classContext, method, location);
+				addPropertiesForDataMining(propertySet, classContext, method, location);
 			}
 		} catch (CFGBuilderException e) {
 			// Ignore

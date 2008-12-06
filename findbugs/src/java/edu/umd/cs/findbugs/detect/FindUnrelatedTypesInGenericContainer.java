@@ -412,8 +412,25 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				}
 				String bugPattern = "GC_UNRELATED_TYPES";
 				if (matchResult == IncompatibleTypes.UNCHECKED) {
+					boolean foundMatch = false;
+				
+					for (ClassDescriptor selfInterface : nameToInterfaceMap.get(methodGen.getName())) {
+
+						if (DEBUG) System.out.println("Checking call to " + interfaceOfInterest + " : " + invokedMethod);
+						String selfSignature = methodGen.getSignature();
+						argSignature = argSignature.substring(0, argSignature.indexOf(')') + 1);
+						try {
+	                        if (argSignature.equals("(Ljava/lang/Object;)") 
+	                        		&& subtypes2.isSubtype(classContext.getClassDescriptor(), selfInterface)) {
+	                        	foundMatch = true;
+	                        	break;
+	                        }
+                        } catch (ClassNotFoundException e) {
+	                       AnalysisContext.reportMissingClass(e);
+                        }
+						}
+					if (foundMatch) continue;
 					bugPattern = "GC_UNCHECKED_TYPE_IN_GENERIC_CALL";
-					priority = Priorities.NORMAL_PRIORITY;
 				}
 				accumulator.accumulateBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen,
 				        sourceFile).addFoundAndExpectedType(actualType, expectedType).addCalledMethod(
@@ -449,6 +466,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (expectedString.equals(actualString))
 			return IncompatibleTypes.SEEMS_OK;
 
+		if (expectedType == Type.OBJECT)
+			return IncompatibleTypes.SEEMS_OK; 
 		// if either type is java.lang.Object, then automatically true!
 		// again compare strings...
 		
@@ -457,14 +476,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (expectedString.equals(objString)) {
 			return IncompatibleTypes.SEEMS_OK;
 		}
-		if (actualString.equals(objString)) {
-			return IncompatibleTypes.UNCHECKED;
-		}
 
+		
 		// get a category for each type
 		TypeCategory parmCat = GenericUtilities.getTypeCategory(expectedType);
 		TypeCategory argCat = GenericUtilities.getTypeCategory(actualType);
-
+		if (actualString.equals(objString) && parmCat == TypeCategory.TYPE_VARIABLE) {
+			return IncompatibleTypes.SEEMS_OK;
+		}
 		if (ignoreBaseType) {
 			if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
 				GenericObjectType parmGeneric = (GenericObjectType) expectedType;
@@ -476,7 +495,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		// -~- plain objects are easy
 		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
 
-			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, actualType);
+			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, actualType, false);
 
 		// -~- parmType is: "? extends Another Type" OR "? super Another Type"
 		if (parmCat == TypeCategory.WILDCARD_EXTENDS || parmCat == TypeCategory.WILDCARD_SUPER)

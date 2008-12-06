@@ -154,9 +154,12 @@ public class IncompatibleTypes {
 	IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType, boolean pointerEquality) {
 		if (expectedType.equals(actualType))
 			return SEEMS_OK;
+		
+		if (actualType.equals(ObjectType.OBJECT))
+			return IncompatibleTypes.UNCHECKED;
+		
 		try {
-			
-			
+
 			if (!Hierarchy.isSubtype(expectedType, actualType) && !Hierarchy.isSubtype(actualType, expectedType)) {
 				// See if the types are related by inheritance.
 				ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(expectedType.getClassName());

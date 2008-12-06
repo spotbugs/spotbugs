@@ -701,7 +701,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			WarningDecorator warningDecorator) {
 		for (WarningWithProperties warn : stringComparisonList) {
 			warningDecorator.decorate(warn);
-			warn.instance.setPriority(warn.propertySet.computePriority(NORMAL_PRIORITY));
+			warn.propertySet.decorateBugInstance(warn.instance);
 		}
 	}
 
@@ -721,7 +721,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (reportAll) {
 				if (relaxed) {
 					// Add general warning properties
-					WarningPropertyUtil.addPropertiesForLocation(
+					WarningPropertyUtil.addPropertiesForDataMining(
 							warn.propertySet,
 							classContext,
 							method,
@@ -766,7 +766,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
 			IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType, rhsType, true);
-			if (result != IncompatibleTypes.SEEMS_OK) {
+			if (result != IncompatibleTypes.SEEMS_OK && result != IncompatibleTypes.UNCHECKED) {
 				String sourceFile = jclass.getSourceFileName();
 
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())

@@ -540,14 +540,14 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		BugInstance bug = null;
 
 		if (visitingField())
-			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+			bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS",
 					priority).addClass(this).addVisitedField(
 							this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
 		else if (visitingMethod())
-			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+			bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS",
 					priority).addClassAndMethod(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
 		else
-			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+			bug = new BugInstance(this, "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS",
 					priority).addClass(this).addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
 		potentialBugs.put(className, bug);
 	}

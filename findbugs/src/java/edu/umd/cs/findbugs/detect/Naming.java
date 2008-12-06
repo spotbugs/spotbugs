@@ -166,7 +166,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					else if (m.isDeprecated() || m2.isDeprecated())
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
 
-					priority = propertySet.computePriority(priority);
+	
 
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
 						String pattern = m3 != null ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
@@ -177,8 +177,7 @@ public class Naming extends PreorderVisitor implements Detector {
 							bug.addMethod(m3);
 						propertySet.decorateBugInstance(bug);
 						bugReporter.reportBug(bug);
-					}
-					if (!m.getSignature().equals(m2.getSignature())
+					} else if (!m.getSignature().equals(m2.getSignature())
 					        && removePackageNamesFromSignature(m.getSignature()).equals(
 					                removePackageNamesFromSignature(m2.getSignature()))) {
 						String pattern = m3 != null ? "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";

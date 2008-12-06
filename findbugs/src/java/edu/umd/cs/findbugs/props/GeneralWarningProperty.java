@@ -57,4 +57,7 @@ public class GeneralWarningProperty extends AbstractWarningProperty {
 	public static final GeneralWarningProperty IN_UNCALLABLE_METHOD =
 		new GeneralWarningProperty("IN_UNCALLABLE_METHOD", PriorityAdjustment.AT_MOST_LOW);
 	
+	public static final GeneralWarningProperty FALSE_POSITIVE =
+		new GeneralWarningProperty("FALSE_POSITIVE", PriorityAdjustment.FALSE_POSITIVE);
+
 }

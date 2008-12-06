@@ -254,6 +254,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 	 *            the BugInstance
 	 */
 	public void decorateBugInstance(BugInstance bugInstance) {
+		int priority = computePriority(bugInstance.getPriority());
+		bugInstance.setPriority(priority);
 		for (Map.Entry<T, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();

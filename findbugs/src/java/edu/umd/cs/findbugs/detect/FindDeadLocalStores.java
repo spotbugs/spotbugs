@@ -512,12 +512,11 @@ public class FindDeadLocalStores implements Detector {
 					propertySet.addProperty(DeadLocalStoreProperty.NOT_JAVA);
 				}
 				
-				int priority = propertySet.computePriority(NORMAL_PRIORITY);
-				if (priority <= Detector.EXP_PRIORITY) {
+				 
 
 					// Report the warning
 					BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL"
-							: "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(
+							: "DLS_DEAD_LOCAL_STORE", NORMAL_PRIORITY).addClassAndMethod(
 									methodGen,
 									sourceFileName).add(lvAnnotation);
 
@@ -529,20 +528,18 @@ public class FindDeadLocalStores implements Detector {
 					// information.
 					if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 						// Add general-purpose warning properties
-						WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
-
-						// Turn all warning properties into BugProperties
-						propertySet.decorateBugInstance(bugInstance);
+						WarningPropertyUtil.addPropertiesForDataMining(propertySet, classContext, method, location);
 					}
-
+					// Turn all warning properties into BugProperties
+					propertySet.decorateBugInstance(bugInstance);
 					if (DEBUG) {
 						System.out.println(sourceFileName + " : " + methodGen.getName());
-						System.out.println("priority: " + priority);
+						System.out.println("priority: " + bugInstance.getPriority());
 						System.out.println("Reporting " + bugInstance);
 						System.out.println(propertySet);
 					}
 					accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
-				}
+				
 			} finally {
 				if (pendingBugReportAboutOverwrittenParameter != null)
 					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
