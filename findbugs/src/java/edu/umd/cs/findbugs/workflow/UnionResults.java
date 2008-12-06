@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.workflow;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
@@ -82,7 +84,7 @@ public class UnionResults {
 		return result;
 	}
 
-	public static void main(String[] argv) throws Exception {
+	public static void main(String[] argv) throws IOException, DocumentException  {
 
 
 		final UnionResultsCommandLine commandLine = new UnionResultsCommandLine();
@@ -101,9 +103,11 @@ public class UnionResults {
 			more.readXML(argv[i], newProject);
 			project.add(newProject);
 			results = union(results, more);
-			} catch (Exception e) {
-					System.err.println("Trouble reading/parsing " + argv[i]);
-			}
+			} catch (IOException e) {
+				System.err.println("Trouble reading/parsing " + argv[i]);
+            } catch (DocumentException e) {
+            	System.err.println("Trouble reading/parsing " + argv[i]);
+            }
 		}
 
 		results.setWithMessages(commandLine.withMessages);
