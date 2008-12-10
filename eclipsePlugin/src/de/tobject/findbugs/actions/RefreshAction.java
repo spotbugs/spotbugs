@@ -45,7 +45,9 @@ public class RefreshAction implements IViewActionDelegate {
 			CommonViewer viewer = navigator.getCommonViewer();
 			BugContentProvider provider = BugContentProvider.getProvider(navigator
 					.getNavigatorContentService());
-			provider.setRefreshRequested(true);
+//			provider.setRefreshRequested(true);
+
+			Object[] expandedElements = viewer.getExpandedElements();
 			Object input = viewer.getInput();
 			if (provider.getChildren(input).length == 0) {
 				viewer.setInput(null);
@@ -54,8 +56,11 @@ public class RefreshAction implements IViewActionDelegate {
 				} else {
 					viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 				}
+				viewer.refresh(true);
+			} else {
+				provider.reSetInput();
 			}
-			viewer.refresh(true);
+			viewer.setExpandedElements(expandedElements);
 		}
 	}
 

@@ -18,7 +18,9 @@
  */
 package de.tobject.findbugs.actions;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -28,12 +30,13 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
-import de.tobject.findbugs.view.explorer.GroupSelectionDialog;
-import de.tobject.findbugs.view.explorer.GroupType;
-import de.tobject.findbugs.view.explorer.Grouping;
+import de.tobject.findbugs.view.explorer.FilterBugsDialog;
+import edu.umd.cs.findbugs.BugPattern;
 
-public class OpenGroupDialogAction implements IViewActionDelegate {
+public class FilterBugsDialogAction implements IViewActionDelegate {
 
 	private CommonNavigator navigator;
 
@@ -49,27 +52,38 @@ public class OpenGroupDialogAction implements IViewActionDelegate {
 		}
 		BugContentProvider provider = BugContentProvider.getProvider(navigator
 				.getNavigatorContentService());
-		List<GroupType> list = provider.getGrouping().asList();
-		GroupSelectionDialog dialog = new GroupSelectionDialog(navigator.getSite()
-				.getShell(), list);
-		dialog.setTitle("Bug Group Configuration");
+		Map<String, Set<BugPattern>> filtered = FindbugsPlugin.getFilteredPatterns();
+		FilterBugsDialog dialog = new FilterBugsDialog(navigator.getSite().getShell(),
+				filtered);
+		dialog.setTitle("Bug Filter Configuration");
 		int result = dialog.open();
 		if (result != Window.OK) {
 			return;
 		}
-		Grouping grouping = Grouping.createFrom(dialog.getGroups());
-		if (grouping == null) {
-			return;
+		Set<BugPattern> patterns = dialog.getPatterns();
+		Set<String> sortedIds = new TreeSet<String>();
+		StringBuilder sb = new StringBuilder();
+		for (BugPattern pattern : patterns) {
+			sortedIds.add(pattern.getAbbrev());
 		}
-		provider.setGrouping(grouping);
+
+		for (String string : sortedIds) {
+			sb.append(string).append(",");
+		}
+		if(sb.length() > 0) {
+			sb.setLength(sb.length() - 1);
+		}
+		FindbugsPlugin.getDefault().getPreferenceStore().setValue(
+				FindBugsConstants.LAST_USED_EXPORT_FILTER, sb.toString());
+		provider.clearFilters();
 		CommonViewer viewer = navigator.getCommonViewer();
 		Object[] expandedElements = viewer.getExpandedElements();
-		provider.reSetInput();
+		viewer.refresh(true);
 		viewer.setExpandedElements(expandedElements);
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		if(navigator == null){
+		if (navigator == null) {
 			action.setEnabled(false);
 			return;
 		}

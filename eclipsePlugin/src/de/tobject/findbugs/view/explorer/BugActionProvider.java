@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -138,7 +139,16 @@ public class BugActionProvider extends CommonActionProvider {
 					if ("Top Level Elements".equals(mm.getMenuText())
 							|| "&Top Level Elements".equals(mm.getMenuText())) {
 						menuManager.remove(item);
-						break;
+//						break;
+					}
+				}
+				if (item instanceof ActionContributionItem) {
+					ActionContributionItem item2 = (ActionContributionItem) item;
+					String text = item2.getAction().getText();
+					if ("Customize View...".equals(text)
+							|| "&Customize View...".equals(text)) {
+						item2.getAction().setText("Toggle Filters...");
+	//						break;
 					}
 				}
 			}

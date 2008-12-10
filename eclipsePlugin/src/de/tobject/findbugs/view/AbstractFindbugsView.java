@@ -102,7 +102,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 		contributeToActionBars();
 	}
 
-	final protected Composite getRootControl() {
+	final public Composite getRootControl() {
 		return root;
 	}
 

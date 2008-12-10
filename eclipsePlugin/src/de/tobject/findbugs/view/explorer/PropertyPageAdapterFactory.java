@@ -30,10 +30,16 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -184,7 +190,17 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IPropertySheetPage.class) {
+		if (adapterType == IPropertySheetPage.class && (adaptableObject instanceof JavaEditor)) {
+			IWorkbenchPart part = (IWorkbenchPart) adaptableObject;
+			IViewReference[] references = part.getSite().getPage().getViewReferences();
+			for (IViewReference viewReference : references) {
+				if ("de.tobject.findbugs.view.bugtreeview".equals(viewReference.getId())) {
+					IWorkbenchPart workbenchPart = viewReference.getPart(false);
+					if(workbenchPart != null){
+						return new JavaEditorTabbedPropertySheetPage(workbenchPart);
+					}
+				}
+			}
 			// return nothing to get rid of errors generated through
 			// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator
 			// class
@@ -226,9 +242,32 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
+
 	@SuppressWarnings("unchecked")
 	public Class[] getAdapterList() {
 		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
+	}
+
+	private static class JavaEditorTabbedPropertySheetPage extends TabbedPropertySheetPage {
+
+		private final IWorkbenchPart workbenchPart;
+
+		static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+			public String getContributorId() {
+				return "de.tobject.findbugs.view.bugtreeview";
+			}
+		};
+
+		public JavaEditorTabbedPropertySheetPage(IWorkbenchPart workbenchPart) {
+			super(contributor);
+			this.workbenchPart = workbenchPart;
+		}
+
+		@Override
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			selection = workbenchPart.getSite().getSelectionProvider().getSelection();
+			super.selectionChanged(part, selection);
+		}
 	}
 
 }

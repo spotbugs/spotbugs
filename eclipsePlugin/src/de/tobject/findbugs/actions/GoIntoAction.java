@@ -43,8 +43,9 @@ public class GoIntoAction implements IViewActionDelegate {
 	public void run(IAction action) {
 		if(action.isEnabled() && navigator != null && selectedElement != null) {
 			CommonViewer viewer = navigator.getCommonViewer();
+			Object[] expandedElements = viewer.getVisibleExpandedElements();
 			viewer.setInput(selectedElement);
-			viewer.expandToLevel(2);
+			viewer.setExpandedElements(expandedElements);
 		}
 	}
 

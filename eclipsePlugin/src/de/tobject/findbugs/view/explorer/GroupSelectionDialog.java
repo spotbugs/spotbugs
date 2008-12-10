@@ -1,5 +1,20 @@
-/**
+/*
+ * Contributions to FindBugs
+ * Copyright (C) 2008, Andrei Loskutov
  *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.tobject.findbugs.view.explorer;
 
@@ -78,14 +93,14 @@ public class GroupSelectionDialog extends SelectionDialog {
 		GridData layoutData = new GridData(GridData.FILL_BOTH
                 | GridData.GRAB_HORIZONTAL| GridData.GRAB_HORIZONTAL);
 		layoutData.minimumHeight = 100;
-		layoutData.minimumWidth = 100;
-		layoutData.heightHint = 150;
+		layoutData.minimumWidth = 150;
+		layoutData.heightHint = 200;
 		layoutData.widthHint = 200;
 
 		composite.setLayoutData(layoutData);
 
 		checkList = CheckboxTableViewer.newCheckList(composite,
-				SWT.SINGLE | SWT.BORDER| SWT.RESIZE);
+				SWT.SINGLE | SWT.BORDER| SWT.RESIZE | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		Table table = checkList.getTable();
 		table.setHeaderVisible(true);
@@ -169,7 +184,12 @@ public class GroupSelectionDialog extends SelectionDialog {
 
 	@Override
 	protected IDialogSettings getDialogBoundsSettings() {
-		return FindbugsPlugin.getDefault().getDialogSettings();
+		IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
+		IDialogSettings section = dialogSettings.getSection("GroupSelectionDialog");
+		if(section == null){
+			dialogSettings.addNewSection("GroupSelectionDialog");
+		}
+		return section;
 	}
 
 	void moveUp(GroupType type){

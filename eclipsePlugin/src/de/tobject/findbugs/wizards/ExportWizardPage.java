@@ -43,12 +43,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
 
 /**
  * @author Andrei
@@ -210,7 +207,7 @@ public class ExportWizardPage extends WizardPage {
 			int notFilteredBugCount = 0;
 			String usedExportFilters = getLastUsedExportFilters();
 			for (IMarker marker : markerArr) {
-				if(!isFiltered(marker, usedExportFilters)) {
+				if(!MarkerUtil.isFiltered(marker, usedExportFilters)) {
 					notFilteredBugCount ++;
 				}
 			}
@@ -219,20 +216,7 @@ public class ExportWizardPage extends WizardPage {
 		return null;
 	}
 
-	/**
-	 * @param marker might be null
-	 * @param usedExportFilters non null
-	 * @return true if marker should be filtered
-	 */
-	private boolean isFiltered(IMarker marker, String usedExportFilters) {
-		String type = marker.getAttribute(FindBugsMarker.BUG_TYPE, "not found");
-		BugPattern result =  I18N.instance().lookupBugPattern(type);
-		if(result == null) {
-			return false;
-		}
-		String id = result.getAbbrev();
-		return usedExportFilters.indexOf(id) >= 0;
-	}
+
 
 	protected int getSortBy() {
 		return sortBy;

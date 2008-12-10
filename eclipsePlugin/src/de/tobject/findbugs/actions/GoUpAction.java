@@ -21,7 +21,6 @@ package de.tobject.findbugs.actions;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -45,6 +44,7 @@ public class GoUpAction implements IViewActionDelegate {
 			return;
 		}
 		CommonViewer viewer = navigator.getCommonViewer();
+		Object[] expandedElements = viewer.getVisibleExpandedElements();
 		Object input = viewer.getInput();
 		if (input instanceof BugGroup) {
 			BugGroup group = (BugGroup) input;
@@ -56,8 +56,9 @@ public class GoUpAction implements IViewActionDelegate {
 			} else {
 				viewer.setInput(data);
 			}
-			viewer.setSelection(new StructuredSelection(input), true);
-			viewer.expandToLevel(input, 1);
+//			viewer.setSelection(new StructuredSelection(input), true);
+//			viewer.expandToLevel(input, 1);
+			viewer.setExpandedElements(expandedElements);
 		}
 		action.setEnabled(isEnabled());
 	}

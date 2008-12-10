@@ -42,6 +42,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.navigator.resources,
  org.eclipse.pde.core;resolution:=optional,
  org.eclipse.pde.build;resolution:=optional,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.ui.views.properties.tabbed
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

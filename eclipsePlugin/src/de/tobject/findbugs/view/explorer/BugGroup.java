@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.I18N;
 /**
  * @author Andrei
  */
-public class BugGroup implements IAdaptable {
+public class BugGroup implements IAdaptable, IActionFilter {
 
 	private String shortDescription;
 	private final Set<Object> children;
@@ -256,4 +257,40 @@ public class BugGroup implements IAdaptable {
 		parent = null;
 	}
 
+	public boolean testAttribute(Object target, String name, String value) {
+		if("type".equals(name)){
+			return getType().name().equals(value);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof BugGroup)){
+			return false;
+		}
+		BugGroup bugGroup = (BugGroup) obj;
+		if(!equals(parent, bugGroup.parent)){
+			return false;
+		}
+		if (self == null) {
+			return super.equals(obj);
+		}
+		return self.equals(bugGroup.self);
+	}
+
+	@Override
+	public int hashCode() {
+		if (self == null) {
+			return super.hashCode();
+		}
+		return self.hashCode();
+	}
+
+	private boolean equals(Object o1, Object o2){
+		if(o1 == null){
+			return o2 == null;
+		}
+		return o1.equals(o2);
+	}
 }

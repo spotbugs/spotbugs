@@ -42,20 +42,28 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 
 	public String decorateText(String text, Object element) {
 		IResource resource = ResourceUtils.getResource(element);
-		if(!resource.isAccessible()) {
+		if(resource == null || !resource.isAccessible()) {
 			return text;
 		}
-		IMarker[] markerArr = MarkerUtil.getAllMarkers(resource);
+		IMarker[] markerArr;
+		// TODO we can use preference here to count markers cumulative or not.
+		if(resource.getType() == IResource.PROJECT){
+			markerArr = MarkerUtil.getAllMarkers(resource);
+		} else {
+			markerArr = MarkerUtil.getMarkers(resource, IResource.DEPTH_ONE);
+		}
 		if (markerArr.length == 0) {
 			return text;
 		}
-		if (text != null) {
-			// XXX the decorator is added to our own bug explorer view too...
-			// this would add the bug count second time...
-			if(text.matches(".+\\(\\d+\\)$")){
-				return text;
-			}
-		}
+		// followed is only needed if we decorate IProject/IFile/IFolder,
+		// which is currently not the case
+//		if (text != null) {
+//			// XXX the decorator is added to our own bug explorer view too...
+//			// this would add the bug count second time...
+//			if(text.matches(".+\\(\\d+\\)$")){
+//				return text;
+//			}
+//		}
 		return text + " (" + markerArr.length + ")";
 	}
 

@@ -27,10 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
@@ -45,6 +51,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -64,10 +71,13 @@ import de.tobject.findbugs.io.FileOutput;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -722,6 +732,37 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			imageDescriptors.put(id, imageDescriptor);
 		}
 		return imageDescriptor;
+	}
+
+	public static Set<BugPattern> getKnownPatterns() {
+		Set<BugPattern> patterns = new TreeSet<BugPattern>();
+		Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+		while (patternIterator.hasNext()){
+			patterns.add(patternIterator.next());
+		}
+		return patterns;
+	}
+
+	public static Map<String, Set<BugPattern>> getFilteredPatterns(){
+		final IPreferenceStore store = getDefault().getPreferenceStore();
+		String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+		Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
+		Map<String, Set<BugPattern>> map = new HashMap<String, Set<BugPattern>>();
+		List<String> patternTypes = Arrays.asList(lastUsedFilter.split(","));
+		while (patternIterator.hasNext()){
+			BugPattern next = patternIterator.next();
+			String patternType = next.getAbbrev();
+			if(!patternTypes.contains(patternType)){
+				continue;
+			}
+			Set<BugPattern> set = map.get(patternType);
+			if(set == null){
+				set = new HashSet<BugPattern>();
+				map.put(patternType, set);
+			}
+			set.add(next);
+		}
+		return map;
 	}
 }
 

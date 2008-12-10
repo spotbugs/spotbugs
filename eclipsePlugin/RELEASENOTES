@@ -1,22 +1,29 @@
-Release 1.3.7 - FindBugs team
-- feature: complete internal makeover of Bug Explorer view: freely configurable grouping (Andrei Loskutov)
-- feature: added "Group By..." dialog for Bug Explorer view (Andrei Loskutov)
-- feature: added some predefined "Group By" configurations for Bug Explorer view (Andrei Loskutov)
-- feature: added "Show In Package Explorer" context menu to bug groups (Andrei Loskutov)
-- feature: double click on a "Class" group in the Bug Explorer view opens assotiated editor (Andrei Loskutov)
-- feature: selection of multiple entries in the Bug Explorer view shows their total bug count in the view status line (Andrei Loskutov)
-- feature: refactored reporter algorithm which improves performance on multi-project build (Andrei Loskutov)
-- feature removed: do NOT automatically link bugs selected in bug explorer view to the opened editor (causes too much side effects) (Andrei Loskutov)
+Release 1.3.7 - Andrei Loskutov
+- feature in progress: initial implementation for "Filter Bug by Id..." dialog in bug explorer view
+- feature: added "Empty Parent Bug Groups" and "Filter Bugs by Id" filters in bug explorer view
+- feature: selected grouping will persist after bug explorer view is closed
+- feature: added "Toggle Filter->This Pattern Type" for pattern and pattern type entries
+- feature: added properties page for bug pattern entries (right click -> Show Details)
+- fix: changed bug counts decorator to count bugs for the current package only (without children)
+- feature: complete internal makeover of Bug Explorer view: freely configurable grouping
+- feature: last used "Group By..." order used in Bug Explorer view is remembered and restored
+- feature: added "Group By..." dialog for Bug Explorer view
+- feature: added some predefined "Group By" configurations for Bug Explorer view
+- feature: added "Show In Package Explorer" context menu to bug groups
+- feature: double click on a "Class" group in the Bug Explorer view opens assotiated editor
+- feature: selection of multiple entries in the Bug Explorer view shows their total bug count in the view status line
+- feature: refactored reporter algorithm which improves performance on multi-project build
+- feature removed: do NOT automatically link bugs selected in bug explorer view to the opened editor (causes too much side effects)
 
-Release 1.3.6 - FindBugs team
-- fine tuning for reported markers: add only one marker for fields, add marker on right position (Andrei Loskutov)
-- feature: link bugs selected in bug explorer view to the opened editor and vice versa (Andrei Loskutov)
-- feature: select bugs selected in editor ruler in the opened bug explorer view (Andrei Loskutov)
-- feature: consistent abbreviations used in both bug explorer and bug details view (Andrei Loskutov)
-- feature: added "Expand All" button to the bug explorer view (Andrei Loskutov)
-- feature: added "Go Into/Go Up" buttons to the bug explorer view (Andrei Loskutov)
-- feature: added "Copy to clipboard" menu/functionality to the details view list widget (Andrei Loskutov)
-- fix for CNF exception if loading the backup solution for broken browser widget (Andrei Loskutov)
+Release 1.3.6 - Andrei Loskutov
+- fine tuning for reported markers: add only one marker for fields, add marker on right position
+- feature: link bugs selected in bug explorer view to the opened editor and vice versa
+- feature: select bugs selected in editor ruler in the opened bug explorer view
+- feature: consistent abbreviations used in both bug explorer and bug details view
+- feature: added "Expand All" button to the bug explorer view
+- feature: added "Go Into/Go Up" buttons to the bug explorer view
+- feature: added "Copy to clipboard" menu/functionality to the details view list widget
+- fix for CNF exception if loading the backup solution for broken browser widget
 
 Release 1.3.5 - FindBugs team
 - new feature: bug details (path, pattern id and warning) can be copied from marker/but explorer views (Andrei Loskutov)

@@ -27,10 +27,14 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
@@ -43,10 +47,11 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 /**
  * @author Andrei
  */
-public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, ICommonLabelProvider {
+public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, ICommonLabelProvider,
+	IColorProvider {
 
 	private final WorkbenchLabelProvider wbProvider;
-	private ICommonContentExtensionSite config;
+	private BugContentProvider provider;
 
 	public BugLabelProvider() {
 		super();
@@ -78,15 +83,20 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 		return wbProvider.getImage(element);
 	}
 
+	boolean isStandalone(){
+		return provider == null;
+	}
+
 	public String getText(Object element) {
 		if (element instanceof BugGroup) {
 			BugGroup group = (BugGroup) element;
-//			GroupType type = group.getType();
-//			if(type == GroupType.Class || type == GroupType.Package
-//					|| type == GroupType.Project || type == GroupType.Marker){
-//				return wbProvider.getText(group.getData());
-//			}
-			return group.getShortDescription() + " (" + group.getMarkersCount() + ")";
+			if(isStandalone()){
+				return group.getShortDescription();
+			}
+			int filtered = getFilteredMarkersCount(group);
+			String filterCount = filtered > 0? "/" + filtered + " filtered" : "";
+			return group.getShortDescription() + " ("
+					+ (group.getMarkersCount() - filtered) + filterCount + ")";
 		}
 		if(element instanceof IMarker){
 			IMarker marker = (IMarker) element;
@@ -101,6 +111,13 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 			return getDescriptionAndMarkersCount((Object[]) element);
 		}
 		return wbProvider.getText(element);
+	}
+
+	private int getFilteredMarkersCount(BugGroup group) {
+		if(isStandalone() || !provider.isBugFilterActive()){
+			return 0;
+		}
+		return provider.getFilteredMarkersCount(group);
 	}
 
 	private String getDescriptionAndMarkersCount(Object[] objects) {
@@ -145,7 +162,7 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 			}
 			if(keepIt){
 				finalGroups.add(g1);
-				count += g1.getMarkersCount();
+				count += g1.getMarkersCount() - getFilteredMarkersCount(g1);
 			}
 		}
 //		Set<IMarker> finalMarkers = new HashSet<IMarker>();
@@ -172,11 +189,10 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 	}
 
 	public void init(ICommonContentExtensionSite config) {
-		this.config = config;
+		provider = BugContentProvider.getProvider(config.getService());
 	}
 
 	Grouping getGrouping(){
-		BugContentProvider provider = BugContentProvider.getProvider(config.getService());
 		return provider.getGrouping();
 	}
 
@@ -208,5 +224,21 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 	public void saveState(IMemento memento) {
 		// noop
 	}
+
+	public Color getBackground(Object element) {
+		return null;
+	}
+
+	public Color getForeground(Object element) {
+		if (element instanceof BugGroup){
+			BugGroup group = (BugGroup) element;
+			if(getFilteredMarkersCount(group) == group.getMarkersCount()){
+				return Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW);
+			}
+		}
+		return null;
+	}
+
+
 
 }

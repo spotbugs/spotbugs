@@ -59,8 +59,10 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -718,12 +720,50 @@ public final class MarkerUtil {
 	 * Exception will be logged
 	 */
 	public static IMarker[] getAllMarkers(IResource fileOrFolder){
+		return getMarkers(fileOrFolder, IResource.DEPTH_INFINITE);
+	}
+
+	/**
+	 * Retrieves all the FB markers from given resource and all its descendants
+	 * @param fileOrFolder
+	 * @return never null (empty array if nothing there or exception happens).
+	 * Exception will be logged
+	 */
+	public static IMarker[] getMarkers(IResource fileOrFolder, int depth){
 		try {
-			return fileOrFolder.findMarkers(FindBugsMarker.NAME, true,
-					IResource.DEPTH_INFINITE);
+			return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);
 		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Cannot collect FindBugs warnings from: " + fileOrFolder);
+			FindbugsPlugin.getDefault().logException(e,
+					"Cannot collect FindBugs warnings from: " + fileOrFolder);
 		}
 		return EMPTY;
 	}
+
+	/**
+	 * @param marker might be null
+	 * @param bugIdToFilter might be null
+	 * @return true if marker should be filtered
+	 */
+	public static boolean isFiltered(IMarker marker, String bugIdToFilter) {
+		if(marker == null){
+			return true;
+		}
+		if(bugIdToFilter == null){
+			return false;
+		}
+		String type = marker.getAttribute(FindBugsMarker.BUG_TYPE, "not found");
+		BugPattern result =  I18N.instance().lookupBugPattern(type);
+		if(result == null) {
+			return false;
+		}
+		String id = result.getAbbrev();
+		String[] ids = bugIdToFilter.split(",");
+		for (String badId : ids) {
+			if(badId.equals(id)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

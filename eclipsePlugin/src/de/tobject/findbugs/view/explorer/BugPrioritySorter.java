@@ -79,7 +79,7 @@ public class BugPrioritySorter extends ViewerSorter {
 	static int compareGroups(BugGroup m1, BugGroup m2) {
 		int result = m1.getPriority().compareTo(m2.getPriority());
 		if(result == 0){
-			return m1.getShortDescription().compareTo(m2.getShortDescription());
+			return m1.getShortDescription().compareToIgnoreCase(m2.getShortDescription());
 		}
 		return result;
 	}
@@ -103,7 +103,7 @@ public class BugPrioritySorter extends ViewerSorter {
 			}
 			String a1 = m1.getAttribute(IMarker.MESSAGE, "");
 			String a2 = m2.getAttribute(IMarker.MESSAGE, "");
-			return a1.compareTo(a2);
+			return a1.compareToIgnoreCase(a2);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Sort error");
 		}

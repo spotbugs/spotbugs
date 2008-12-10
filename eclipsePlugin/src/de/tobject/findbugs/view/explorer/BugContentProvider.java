@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -52,6 +53,7 @@ import org.eclipse.ui.navigator.INavigatorContentExtension;
 import org.eclipse.ui.navigator.INavigatorContentService;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
@@ -70,7 +72,6 @@ public class BugContentProvider implements ICommonContentProvider {
 	private Grouping grouping;
 
 	private Object input;
-	private boolean refreshRequested;
 //	private boolean showWorkingSets;
 
 	/**
@@ -83,12 +84,16 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private CommonViewer viewer;
 
-//	private IExtensionStateModel extensionStateModel;
+	private ICommonContentExtensionSite site;
 
-//	private final IPropertyChangeListener rootModeListener;
+	private final Map<BugGroup, Integer> filteredMarkersMap;
+
+	private final HashSet<IMarker> filteredMarkers;
 
 	public BugContentProvider() {
 		super();
+		filteredMarkersMap = new HashMap<BugGroup, Integer>();
+		filteredMarkers = new HashSet<IMarker>();
 		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
 		refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
 		refreshJob.setSystem(true);
@@ -113,8 +118,8 @@ public class BugContentProvider implements ICommonContentProvider {
 		Object[] children = EMPTY;
 		if (parent instanceof BugGroup) {
 			BugGroup group = (BugGroup) parent;
-			if (!refreshRequested) {
-				children = group.getChildren();
+			children = group.getChildren();
+			/*if (!refreshRequested) {
 			} else {
 				GroupType type = group.getType();
 				if (type == GroupType.Workspace || type == GroupType.WorkingSet) {
@@ -123,10 +128,11 @@ public class BugContentProvider implements ICommonContentProvider {
 					// TODO we should refresh the group data too...
 					children = group.getChildren();
 				}
-			}
+			}*/
 		} else {
 			if (parent instanceof IWorkspaceRoot || parent instanceof IWorkingSet) {
 				BugGroup root = new BugGroup(null, parent, getType(parent), null);
+				clearFilters();
 				children = createChildren(grouping.getFirstType(), getResources(parent),
 						root);
 				if (input == parent) {
@@ -135,7 +141,6 @@ public class BugContentProvider implements ICommonContentProvider {
 				}
 			}
 		}
-		refreshRequested = false;
 		return children;
 	}
 
@@ -180,6 +185,11 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
+		// some strange timing issues on startup causing the first level groups be empty...
+//		if(element instanceof BugGroup){
+//			BugGroup group = (BugGroup) element;
+//			return group.size() > 0 || group.getMarkersCount() != getFilteredMarkersCount(group);
+//		}
 		return element instanceof BugGroup || element instanceof IWorkingSet
 				|| element instanceof IWorkspaceRoot;
 	}
@@ -193,22 +203,14 @@ public class BugContentProvider implements ICommonContentProvider {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
 //		extensionStateModel.removePropertyChangeListener(rootModeListener);
 		rootElement.dispose();
+		clearFilters();
 	}
 
 	public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
 		this.viewer = (CommonViewer) viewer1;
 		this.input = newInput;
 		refreshJob.setViewer((CommonViewer) viewer1);
-//			updateTitle()
-	}
-
-	public Object getInput() {
-		return input;
-	}
-
-	IWorkingSet getCurrentWorkingSet(){
-		ResourceWorkingSetFilter filter = getResourceFilter();
-		return filter == null? null : filter.getWorkingSet();
+		clearFilters();
 	}
 
 	public void reSetInput() {
@@ -224,6 +226,61 @@ public class BugContentProvider implements ICommonContentProvider {
 				viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 			}
 		}
+	}
+
+	public void clearFilters() {
+		filteredMarkers.clear();
+		filteredMarkersMap.clear();
+	}
+
+	public int getFilteredMarkersCount(BugGroup bugGroup){
+		if(!isBugFilterActive()){
+			return 0;
+		}
+		Integer bugCount = filteredMarkersMap.get(bugGroup);
+
+		if(bugCount == null){
+			int count = 0;
+			if(bugGroup.getParent() instanceof BugGroup){
+				BugGroup group = (BugGroup) bugGroup.getParent();
+				for (IMarker marker : bugGroup.getAllMarkers()){
+					if(isFiltered(marker, group)){
+						count ++;
+					}
+				}
+			} else {
+				final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+				String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+				for (IMarker marker : bugGroup.getAllMarkers()) {
+					if(MarkerUtil.isFiltered(marker, lastUsedFilter)){
+						count ++;
+						filteredMarkers.add(marker);
+					}
+				}
+			}
+			bugCount = Integer.valueOf(count);
+			filteredMarkersMap.put(bugGroup, bugCount);
+		}
+		return bugCount.intValue();
+	}
+
+	private boolean isFiltered(IMarker marker, BugGroup bugGroup){
+		if(bugGroup.getParent() instanceof BugGroup){
+			return isFiltered(marker, (BugGroup)bugGroup.getParent());
+		}
+		if(getFilteredMarkersCount(bugGroup) > 0){
+			return filteredMarkers.contains(marker);
+		}
+		return false;
+	}
+
+	public Object getInput() {
+		return input;
+	}
+
+	IWorkingSet getCurrentWorkingSet(){
+		ResourceWorkingSetFilter filter = getResourceFilter();
+		return filter == null? null : filter.getWorkingSet();
 	}
 
 	/**
@@ -330,6 +387,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void init(ICommonContentExtensionSite config) {
+		this.site = config;
 //		extensionStateModel = config.getExtensionStateModel();
 //		extensionStateModel.addPropertyChangeListener(rootModeListener);
 	}
@@ -618,10 +676,6 @@ public class BugContentProvider implements ICommonContentProvider {
 		return groups;
 	}
 
-	public void setRefreshRequested(boolean refreshRequested) {
-		this.refreshRequested = refreshRequested;
-	}
-
 	public static BugContentProvider getProvider(INavigatorContentService service) {
 		INavigatorContentExtension extensionById = service
 				.getContentExtensionById(FindbugsPlugin.BUG_CONTENT_PROVIDER_ID);
@@ -636,7 +690,8 @@ public class BugContentProvider implements ICommonContentProvider {
 		if(resourceFilter != null){
 			return resourceFilter;
 		}
-		ViewerFilter[] filters = viewer.getFilters();
+
+		ViewerFilter[] filters = site.getService().getFilterService().getVisibleFilters(true); // viewer.getFilters();
 		for (ViewerFilter filter : filters) {
 			if(filter instanceof ResourceWorkingSetFilter){
 				resourceFilter = (ResourceWorkingSetFilter) filter;
@@ -646,4 +701,17 @@ public class BugContentProvider implements ICommonContentProvider {
 		return resourceFilter;
 	}
 
+	public boolean isBugFilterActive(){
+		return isBugFilterActive(site);
+	}
+
+	public static boolean isBugFilterActive(ICommonContentExtensionSite site){
+		ViewerFilter[] visibleFilters = site.getService().getFilterService().getVisibleFilters(true);
+		for (ViewerFilter filter : visibleFilters) {
+			if(filter instanceof BugByIdFilter){
+				return true;
+			}
+		}
+		return false;
+	}
 }
