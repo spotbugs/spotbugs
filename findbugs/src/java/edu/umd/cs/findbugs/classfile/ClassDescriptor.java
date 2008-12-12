@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.JavaClass;
 
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String className;
+	private static final Pattern ANONYMOUS_CLASS_NAME = Pattern.compile(".*\\$[0-9]*$");
 
 	public static final ClassDescriptor[] EMPTY_ARRAY = new ClassDescriptor[0];
 	/**
@@ -223,5 +225,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      */
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
     	throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
+    }
+    
+    public boolean isAnonymousClass() {
+    	return ANONYMOUS_CLASS_NAME.matcher(className).matches();
     }
 }
