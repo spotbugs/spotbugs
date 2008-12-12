@@ -68,7 +68,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	// Fields for precise modeling of instanceof instructions.
 	private boolean instanceOfFollowedByBranch;
-	private Type instanceOfType;
+	private ReferenceType instanceOfType;
 	private ValueNumber instanceOfValueNumber;
     private FieldSummary fieldSummary;
 	private FieldStoreTypeDatabase database;
@@ -425,9 +425,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 						 if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
 							String c = valueNumberDataflow.getClassName(stackValue);
 							if (c != null) {
-								instanceOfValueNumber = vnaFrame.getTopValue();
-								instanceOfType = ObjectType.getInstance(c);
-								sawEffectiveInstanceOf = true;
+								Type type = Type.getType(c);
+								if (type instanceof ReferenceType) {
+									instanceOfValueNumber = vnaFrame.getTopValue();
+									instanceOfType = (ReferenceType) type;
+									sawEffectiveInstanceOf = true;
+								}
 							}
 						}
 
@@ -511,9 +514,12 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			try {
 				ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
 				if (vnaFrame.isValid()) {
-					instanceOfValueNumber = vnaFrame.getTopValue();
-					instanceOfType = obj.getType(getCPG());
-					sawEffectiveInstanceOf = true;
+					final Type type = obj.getType(getCPG());
+					if (type instanceof ReferenceType) {
+						instanceOfValueNumber = vnaFrame.getTopValue();
+						instanceOfType = (ReferenceType) type;
+						sawEffectiveInstanceOf = true;
+					}
 				}
 			} catch (DataflowAnalysisException e) {
 				// Ignore
