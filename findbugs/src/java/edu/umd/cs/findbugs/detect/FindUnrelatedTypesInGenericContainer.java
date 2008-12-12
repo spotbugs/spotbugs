@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -184,6 +183,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	 * code
 	 */
 	private boolean isSynthetic(Method m) {
+		if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0)
+			return true;
 		Attribute[] attrs = m.getAttributes();
 		for (Attribute attr : attrs) {
 			if (attr instanceof Synthetic)
@@ -195,7 +196,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 		if (isSynthetic(method) || !prescreen(classContext, method))
 			return;
-
+		XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+		if (xmethod.isSynthetic()) return;
+		
 		BugAccumulator accumulator = new BugAccumulator(bugReporter);
 
 		CFG cfg = classContext.getCFG(method);
@@ -386,8 +389,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					expectedType = ((GenericObjectType) expectedType).getUpperBound();
 
 				int priority = matchResult.getPriority();
-				XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-
+				
 				if (TestCaseDetector.likelyTestCase(xmethod))
 					priority = Math.max(priority,Priorities.NORMAL_PRIORITY);
 				else if (selfOperation)
