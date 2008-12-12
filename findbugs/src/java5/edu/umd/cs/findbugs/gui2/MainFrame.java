@@ -309,8 +309,7 @@ public class MainFrame extends FBFrame implements LogSync
 	void callOnClose(){
 		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		if(projectChanged){
-			int value = JOptionPane.showConfirmDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_closing_txt", "You are closing") + " " +
-					edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?"), 
+			int value = JOptionPane.showConfirmDialog(MainFrame.this, getActionWithoutSavingMsg("closing"), 
 					edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"), JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 
@@ -334,6 +333,15 @@ public class MainFrame extends FBFrame implements LogSync
 
 		System.exit(0);
 	}
+	/**
+     * @return
+     */
+    private String getActionWithoutSavingMsg(String action) {
+    	String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_without_saving_txt_txt", null);
+    	if (msg != null) return msg;
+	    return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_txt", "You are "+action) + " " +
+	    		edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
+    }
 
 	/*
 	 * A lot of if(false) here is for switching from special cases based on localSaveType
