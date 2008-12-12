@@ -844,6 +844,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame, "VALUE_OF");
 		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));
+		Instruction ins = location.getHandle().getInstruction();
+		if (ins instanceof InvokeInstruction) {
+			InvokeInstruction iins = (InvokeInstruction) ins;
+			if (iins.getMethodName(classContext.getConstantPoolGen()).equals("close") 
+					&& iins.getSignature(classContext.getConstantPoolGen()).equals("()V")) 
+				propertySet.containsProperty(NullDerefProperty.CLOSING_NULL);
+		}
 		boolean duplicated = propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED);
 		try {
 			CFG cfg = classContext.getCFG(method);

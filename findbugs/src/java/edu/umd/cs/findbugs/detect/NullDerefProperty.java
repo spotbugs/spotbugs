@@ -44,6 +44,8 @@ public class NullDerefProperty extends AbstractWarningProperty {
 		new NullDerefProperty("CREATED_DEAD_CODE", PriorityAdjustment.RAISE_PRIORITY);
 	public static final NullDerefProperty DEREFS_ARE_CLONED =
 		new NullDerefProperty("DEREFS_ARE_CLONED", PriorityAdjustment.AT_MOST_MEDIUM);
+	public static final NullDerefProperty CLOSING_NULL =
+		new NullDerefProperty("CLOSING_NULL", PriorityAdjustment.PEGGED_HIGH);
 	public static final NullDerefProperty DEREFS_ARE_INLINED_FINALLY_BLOCKS =
 		new NullDerefProperty("DEREFS_ARE_INLINED_FINALLY_BLOCKS", PriorityAdjustment.AT_MOST_MEDIUM);
 	public static final NullDerefProperty DEREFS_IN_CATCH_BLOCKS =
