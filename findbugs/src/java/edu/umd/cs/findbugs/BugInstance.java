@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -456,6 +457,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public Iterator<BugAnnotation> annotationIterator() {
 		return annotationList.iterator();
+	}
+	
+	/**
+	 * Get an Iterator over all bug annotations.
+	 */
+	public List<? extends BugAnnotation> getAnnotations() {
+		return annotationList;
 	}
 
 	/**
