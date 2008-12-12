@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**
@@ -33,10 +34,10 @@ import org.apache.bcel.generic.Type;
  * @see TypeFrame
  * @see TypeMerger
  */
-public class NullType extends Type implements ExtendedTypes {
+public class NullType extends ReferenceType implements ExtendedTypes {
 
 	private static final long serialVersionUID = 1L;
-	private static final Type theInstance = new NullType();
+	private static final NullType theInstance = new NullType();
 
 	private NullType() {
 		super(T_NULL, "<null type>");
@@ -52,7 +53,7 @@ public class NullType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static Type instance() {
+	public static NullType instance() {
 		return theInstance;
 	}
 }
