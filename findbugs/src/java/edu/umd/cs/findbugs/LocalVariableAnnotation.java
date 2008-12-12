@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
@@ -72,6 +73,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 	final private String value;
 	final int register, pc;
+	final int line;
 	 private String description;
 
 	/**
@@ -86,6 +88,23 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		this.value = name;
 		this.register = register;
 		this.pc = pc;
+		this.line = -1;
+		this.description = DEFAULT_ROLE;
+		this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+	}
+	/**
+	 * Constructor.
+	 *
+	 * @param name     the name of the local variable
+	 * @param register the local variable index
+	 * @param pc       the bytecode offset of the instruction that mentions
+	 *                 this local variable
+	 */
+	public LocalVariableAnnotation(String name, int register, int pc, int line) {
+		this.value = name;
+		this.register = register;
+		this.pc = pc;
+		this.line = line;
 		this.description = DEFAULT_ROLE;
 		this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
 	}
@@ -124,7 +143,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
 					}
 			}
 		}
-		return new LocalVariableAnnotation(localName, local, position1);
+		LineNumberTable lineNumbers = method.getLineNumberTable();
+		int line = lineNumbers.getSourceLine(position1);
+		return new LocalVariableAnnotation(localName, local, position1, line);
 	}
 
 	/**
