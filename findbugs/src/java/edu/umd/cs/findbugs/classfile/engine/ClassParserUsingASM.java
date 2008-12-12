@@ -128,9 +128,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 			public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 				if (name.equals("this$0")) isInnerClass = true;
 
+				if (desc == null) 
+					throw new NullPointerException("Description cannot be null");
 				if (cBuilder instanceof ClassInfo.Builder) {
 					final ClassInfo.Builder cBuilder2 = (ClassInfo.Builder) cBuilder;
-					if ((access & Opcodes.ACC_VOLATILE) != 0 || signature.contains("util/concurrent"))
+					if ((access & Opcodes.ACC_VOLATILE) != 0 || desc.contains("util/concurrent"))
 						cBuilder2.setUsesConcurrency();
 					final FieldInfo.Builder fBuilder = new FieldInfo.Builder(slashedClassName, name, desc, access);
 					fBuilder.setSourceSignature(signature);
