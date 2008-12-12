@@ -657,6 +657,9 @@ public class FindInconsistentSync2 implements Detector {
 								SignatureConverter.convertMethodSignature(methodGen) +
 								"\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
 
+					if (!isLocked && methodDescriptor.getClassDescriptor().isAnonymousClass()) 
+						continue;
+					
 					FieldStats stats = getStats(xfield);
 					
 					// Don't count a contructor's synchronized access
