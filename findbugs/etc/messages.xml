@@ -7570,7 +7570,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
   <BugCode abbrev="HSC" >Huge String constants</BugCode>
   <BugCode abbrev="HRS" >HTTP Response splitting vulnerability</BugCode>
-  <BugCode abbrev="XSS" >Cross site scripting vulnerabilitity</BugCode>
+  <BugCode abbrev="XSS" >Cross site scripting vulnerability</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="RpC" >Repeated conditional test</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
