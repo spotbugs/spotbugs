@@ -45,14 +45,38 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.WillClose;
+import javax.print.attribute.standard.OutputDeviceAssigned;
 
 /**
  * @author William Pugh
  */
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
-		public String prefix = "";
-		public String exclude = null;
+		
+		static class PrefixMatcher {
+			final String [] prefixes;
+			PrefixMatcher(String arg) {
+				this.prefixes = arg.split(",");
+			}
+			PrefixMatcher() {
+				this.prefixes = new String[0];
+			}
+			public boolean matches(String arg) {
+				for(String p : prefixes) 
+					if (arg.startsWith(p))
+						return true;
+				
+				return false;
+			}
+			public boolean matchesEverything() {
+				for(String p : prefixes) 
+					if (p.length() == 0) return true;
+				return false;
+			}
+		}
+		
+		public PrefixMatcher prefix = new PrefixMatcher("");
+		public PrefixMatcher exclude = new PrefixMatcher();
 
 		int maxClasses = 29999;
 
@@ -68,10 +92,12 @@ public class RejarClassesForAnalysis {
 			addOption("-auxFileList", "filename", "text file containing names of jar files for aux class path");
 
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
+			addOption("-outputDir", "dir", "directory for the generated jar files");
 			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed (e.g., edu.umd.cs.)");
 			addOption("-exclude", "class name prefix", "prefix of class names that should be excluded from both analyze and auxilary jar files (e.g., java)");
 		}
 
+		File outputDir = new File(".");
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -94,9 +120,9 @@ public class RejarClassesForAnalysis {
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-prefix"))
-				prefix = argument;
+				prefix = new PrefixMatcher(argument);
 			else if (option.equals("-exclude"))
-				exclude = argument;
+				exclude = new PrefixMatcher(argument);
 			else if (option.equals("-inputFileList"))
 				inputFileList = argument;
 			else if (option.equals("-auxFileList"))
@@ -105,6 +131,8 @@ public class RejarClassesForAnalysis {
 				maxClasses = Integer.parseInt(argument);
 			else if (option.equals("-maxAge"))
 				maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
+			else if (option.equals("-outputDir"))
+				outputDir = new File(argument);
 			else
 				throw new IllegalArgumentException("Unknown option : " + option);
 		}
@@ -191,7 +219,8 @@ public class RejarClassesForAnalysis {
 
 	public void execute() throws IOException {
 
-		analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput())));
+		String nextAnalyzeFileOutput = getNextAnalyzeFileOutput();
+		analyzeOut = createZipFile(nextAnalyzeFileOutput);
 
 		List<String> fileList;
 
@@ -220,9 +249,9 @@ public class RejarClassesForAnalysis {
 					String name = ze.getName();
 					
 					String dottedName = name.replace('/', '.');
-					if (commandLine.exclude != null && dottedName.startsWith(commandLine.exclude)) return;
+					if (commandLine.exclude.matches(dottedName)) return;
 					
-					if (copied.add(name) && dottedName.startsWith(commandLine.prefix))
+					if (copied.add(name) && commandLine.prefix.matches(dottedName) )
 						filesToAnalyze++;
 				}
 			}) && oldSize < copied.size())
@@ -254,9 +283,8 @@ public class RejarClassesForAnalysis {
 			System.out.println("  files to analyze: " + filesToAnalyze);
 		}
 
-		if (commandLine.prefix.length() > 0 || filesToAnalyze > commandLine.maxClasses)
-			auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
-			        getNextAuxilaryFileOutput())));
+		if (!commandLine.prefix.matchesEverything() || filesToAnalyze > commandLine.maxClasses)
+			auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
 		copied.clear();
 
@@ -267,7 +295,7 @@ public class RejarClassesForAnalysis {
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
 					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
-					if (commandLine.exclude != null && dottedName.startsWith(commandLine.exclude)) return;
+					if (commandLine.exclude.matches(dottedName)) return;
 					if (!copied.add(name)) {
 						System.err.println("Skipping duplicate of " + name);
 						return;
@@ -275,7 +303,7 @@ public class RejarClassesForAnalysis {
 					}
 					boolean writeToAnalyzeOut = false;
 					boolean writeToAuxilaryOut = false;
-					if (dottedName.startsWith(commandLine.prefix)) {
+					if (commandLine.prefix.matches(dottedName)) {
 						writeToAnalyzeOut = true;
 						if (filesToAnalyze > commandLine.maxClasses)
 							writeToAuxilaryOut = true;
@@ -333,6 +361,16 @@ public class RejarClassesForAnalysis {
 
 	}
 
+	/**
+     * @param fileName
+     * @return
+     * @throws FileNotFoundException
+     */
+    private ZipOutputStream createZipFile(String fileName) throws FileNotFoundException {
+    	File newFile = new File(commandLine.outputDir, fileName);
+	    return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newFile)));
+    }
+
 	private void copyEntry(ZipFile zipInputFile, ZipEntry ze, boolean writeToAnalyzeOut, boolean writeToAuxilaryOut)
 	        throws IOException {
 		InputStream zipIn = zipInputFile.getInputStream(ze);
@@ -355,22 +393,22 @@ public class RejarClassesForAnalysis {
 
 	private void advanceAuxilaryOut() throws IOException, FileNotFoundException {
 		auxilaryOut.close();
-		auxilaryOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAuxilaryFileOutput())));
+		auxilaryOut  =createZipFile(getNextAuxilaryFileOutput());
 	}
 
 	private void advanceAnalyzeOut() throws IOException, FileNotFoundException {
 		analysisClassCount = 0;
 		analyzeOut.close();
-		analyzeOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(getNextAnalyzeFileOutput())));
+		analyzeOut = createZipFile(getNextAnalyzeFileOutput());
 	}
 
 	boolean processZipEntries(File f, ZipElementHandler handler) {
 		if (!f.exists()) {
-			System.out.println("file not found: " + f);
+			System.out.println("file not found: '"+f+"'");
 			return false;
 		}
 		if (!f.canRead() || f.isDirectory()) {
-			System.out.println("not readable: " + f);
+			System.out.println("not readable: '"+f+"'");
 			return false;
 		}
 		ZipFile zipInputFile;
@@ -384,6 +422,7 @@ public class RejarClassesForAnalysis {
 			}
 			zipInputFile.close();
 		} catch (IOException e) {
+			System.out.println("Error processing '"+f+"'");
 			e.printStackTrace(System.out);
 			return false;
 		}
