@@ -47,6 +47,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	private final Collection<ClassDescriptor> calledClassDescriptorList;
 	private final int  majorVersion, minorVersion;
 
+
 	public static class Builder {
 		ClassDescriptor classDescriptor;
 
@@ -58,6 +59,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 
 		int accessFlags;
 		int majorVersion, minorVersion;
+
 		
 		Collection<ClassDescriptor> referencedClassDescriptorList;
 		Collection<ClassDescriptor>  calledClassDescriptorList = Collections.<ClassDescriptor>emptyList();
@@ -142,6 +144,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 	 *            codebase entry class was loaded from
 	 * @param accessFlags
 	 *            class's access flags
+	 * @param usesConcurrency TODO
 	 */
 	 ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
 	        ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, 
@@ -160,6 +163,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor  {
 		this.minorVersion = minorVersion;
 		
 	}
+
 
 	/**
 	 * @return Returns the accessFlags.

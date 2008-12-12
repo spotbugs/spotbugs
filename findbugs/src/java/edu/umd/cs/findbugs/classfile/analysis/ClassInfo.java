@@ -55,7 +55,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	/*final*/ Map<ClassDescriptor, AnnotationValue> classAnnotations;
 	final private String classSourceSignature;
 	final private String source;
-
+	private final boolean usesConcurrency;
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
 		private List<FieldInfo>fieldDescriptorList = new LinkedList<FieldInfo>();
@@ -67,7 +67,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
 		private String classSourceSignature;
 		private String source;
-
+		boolean usesConcurrency;
 		@Override
         public ClassInfo build() {
 			FieldInfo fields [];
@@ -83,7 +83,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
 					classAnnotations, fields, 
-					methods, immediateEnclosingClass );
+					methods, immediateEnclosingClass, usesConcurrency );
 		}
 
 		
@@ -133,6 +133,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		public void setImmediateEnclosingClass(ClassDescriptor immediateEnclosingClass) {
 			this.immediateEnclosingClass = immediateEnclosingClass;
 		}
+		
+		public void setUsesConcurrency() {
+			usesConcurrency = true;
+		}
 
 	}
 
@@ -156,13 +160,14 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 *            FieldDescriptors of fields defined in the class
 	 * @param methodDescriptorList
 	 *            MethodDescriptors of methods defined in the class
+	 * @param usesConcurrency TODO
 	 */
 	private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
 			ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source, int majorVersion,  int minorVersion,
 			Collection<ClassDescriptor> referencedClassDescriptorList,
 			Collection<ClassDescriptor> calledClassDescriptors,
 			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldInfo[] fieldDescriptorList,
-			MethodInfo[] methodDescriptorList, ClassDescriptor immediateEnclosingClass) {
+			MethodInfo[] methodDescriptorList, ClassDescriptor immediateEnclosingClass, boolean usesConcurrency) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors,   majorVersion,  minorVersion);
 		this.source = source;
 		this.classSourceSignature = classSourceSignature;
@@ -172,6 +177,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		this.xMethods = methodDescriptorList;
 		this.immediateEnclosingClass = immediateEnclosingClass;
 		this.classAnnotations = Util.immutableMap(classAnnotations);
+		this.usesConcurrency = usesConcurrency;
 	}
 
 	/**
@@ -380,6 +386,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
      */
     public String getSourceSignature() {
 	    return classSourceSignature;
+    }
+
+	public boolean usesConcurrency() {
+	    return usesConcurrency;
     }
 
 }

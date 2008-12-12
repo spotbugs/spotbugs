@@ -59,6 +59,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		String methodSourceSignature;
 		boolean isUnconditionalThrower;
 		boolean isUnsupported;
+		boolean usesConcurrency;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
@@ -73,6 +74,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		public void setSourceSignature(String methodSourceSignature) {
 			this.methodSourceSignature = methodSourceSignature;
+		}
+		public void setUsesConcurrency() {
+			this.usesConcurrency = true;
 		}
 
 		public void setThrownExceptions(String [] exceptions) {
@@ -98,8 +102,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public MethodInfo build() {
-			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, exceptions, 
-				 methodAnnotations, methodParameterAnnotations);
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
+				 exceptions, methodAnnotations, methodParameterAnnotations);
 		}
 
         public void setIsUnconditionalThrower() {
@@ -113,6 +117,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	}
 
 	final int accessFlags;
+	
+	final boolean usesConcurrency;
 
 	final String methodSourceSignature;
 	
@@ -131,11 +137,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param methodSignature
 	 * @param methodSourceSignature
 	 * @param isUnsupported 
+	 * @param usesConcurrency TODO
 	 * @param isStatic
 	 */
 	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        boolean isUnsupported, @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        boolean isUnsupported, boolean usesConcurrency, @CheckForNull String[] exceptions, 
+	        Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -147,6 +155,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
 		if (isUnconditionalThrower) unconditionalThrowers.put(this, null);
 		if (isUnsupported) unsupportedMethods.put(this, null);
+		this.usesConcurrency = usesConcurrency;
 	}
 
 	 public @CheckForNull String [] getThrownExceptions() {
@@ -369,6 +378,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
      */
     public boolean isVarArgs() {
     	return checkFlag(Constants.ACC_TRANSIENT);
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
+     */
+    public boolean usesConcurrency() {
+	   return usesConcurrency;
     }
 
 }

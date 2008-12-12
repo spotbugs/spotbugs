@@ -136,21 +136,24 @@ class UnresolvedXMethod extends AbstractMethod  {
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isSynthetic()
      */
     public boolean isSynthetic() {
-        // TODO Auto-generated method stub
         return false;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.AccessibleEntity#isDeprecated()
      */
     public boolean isDeprecated() {
-	    // TODO Auto-generated method stub
 	    return false;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#isVarArgs()
      */
     public boolean isVarArgs() {
-	    // TODO Auto-generated method stub
+	    return false;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#usesConcurrency()
+     */
+    public boolean usesConcurrency() {
 	    return false;
     }
 

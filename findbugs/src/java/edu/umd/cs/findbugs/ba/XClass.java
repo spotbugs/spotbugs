@@ -119,4 +119,6 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	public List<? extends XMethod> getXMethods();
 	
 	public String getSourceSignature();
+	
+	public boolean usesConcurrency();
 }
