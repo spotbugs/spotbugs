@@ -188,6 +188,10 @@ public abstract class AnalysisContext {
 	
 
 	
+	final EqualsKindSummary equalsKindSummary = new EqualsKindSummary();
+	public EqualsKindSummary getEqualsKindSummary() {
+		return equalsKindSummary;
+	}
 	FieldSummary fieldSummary;
 	
 	public FieldSummary getFieldSummary() {

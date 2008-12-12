@@ -33,9 +33,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -46,7 +48,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
-public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
+public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  implements NonReportingDetector {
 
 	private static final String EQUALS_NAME = "equals";
 
@@ -54,10 +56,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	private static final String STATIC_EQUALS_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
 
 	
-	static enum KindOfEquals {
-		OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN };
-		
-	Map<ClassAnnotation, KindOfEquals> kindMap = new HashMap<ClassAnnotation, KindOfEquals>();
 	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
 	Map<ClassDescriptor,Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<ClassDescriptor,Set<ClassDescriptor>>();
 	Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
@@ -66,10 +64,12 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 
 	final BugReporter bugReporter;
 	final BugAccumulator bugAccumulator;
+	final EqualsKindSummary equalsKindSummary;
 
 	public OverridingEqualsNotSymmetrical(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.bugAccumulator = new BugAccumulator(bugReporter);
+		equalsKindSummary = AnalysisContext.currentAnalysisContext().getEqualsKindSummary();
 	}
 
 	
@@ -83,35 +83,38 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 			sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
 			equalsCalls = 0;
 			super.visit(obj);
-			KindOfEquals kind = KindOfEquals.UNKNOWN;
+			EqualsKindSummary.KindOfEquals kind = EqualsKindSummary.KindOfEquals.UNKNOWN;
 			if (alwaysTrue)  
-				kind = KindOfEquals.ALWAYS_TRUE;
+				kind = EqualsKindSummary.KindOfEquals.ALWAYS_TRUE;
 			else if (alwaysFalse) 
-				kind = KindOfEquals.ALWAYS_FALSE;
+				kind = EqualsKindSummary.KindOfEquals.ALWAYS_FALSE;
 			else if (sawReturnSuper && !sawReturnNonSuper)
-				kind = KindOfEquals.RETURNS_SUPER;
+				kind = EqualsKindSummary.KindOfEquals.RETURNS_SUPER;
 			else if (sawSuperEquals)
-				kind = KindOfEquals.INVOKES_SUPER;
+				kind = EqualsKindSummary.KindOfEquals.INVOKES_SUPER;
 			else if (sawInstanceOf || sawInstanceOfSupertype)
-				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_INSTANCE_OF : KindOfEquals.INSTANCE_OF_EQUALS;
+				kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF : EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS;
 			else if (sawGetClass && sawGoodEqualsClass)
-				kind = getThisClass().isAbstract() ? KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS : KindOfEquals.GETCLASS_GOOD_EQUALS;
+				kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS : EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS;
 			else if (sawGetClass && sawBadEqualsClass) 
-					kind = KindOfEquals.GETCLASS_BAD_EQUALS;
+					kind = EqualsKindSummary.KindOfEquals.GETCLASS_BAD_EQUALS;
 			else if (equalsCalls == 1 || sawStaticDelegate)
-				kind = KindOfEquals.DELEGATE_EQUALS;
+				kind = EqualsKindSummary.KindOfEquals.DELEGATE_EQUALS;
 			else if (sawInitialIdentityCheck)
-				kind = KindOfEquals.TRIVIAL_EQUALS;
+				kind = EqualsKindSummary.KindOfEquals.TRIVIAL_EQUALS;
 			else if (sawCheckedCast)
-				kind = KindOfEquals.CHECKED_CAST_EQUALS;
+				kind = EqualsKindSummary.KindOfEquals.CHECKED_CAST_EQUALS;
 			else if (sawCompare)
-				kind = KindOfEquals.COMPARE_EQUALS;
+				kind = EqualsKindSummary.KindOfEquals.COMPARE_EQUALS;
 			else {
 				bugReporter.reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
 			}
-
+			ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
+			equalsKindSummary.put(classAnnotation, kind);
+			
+			
 			count(kind);
-			if (kind == KindOfEquals.GETCLASS_GOOD_EQUALS || kind == KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS || kind == KindOfEquals.GETCLASS_BAD_EQUALS) {
+			if (kind == EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS || kind == EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS || kind == EqualsKindSummary.KindOfEquals.GETCLASS_BAD_EQUALS) {
 				
 				ClassDescriptor classDescriptor = getClassDescriptor();
 				try {
@@ -123,7 +126,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	               assert true;
                 }
 				
-			} if (kind == KindOfEquals.INSTANCE_OF_EQUALS  || kind == KindOfEquals.ABSTRACT_INSTANCE_OF) {
+			} if (kind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS  || kind == EqualsKindSummary.KindOfEquals.ABSTRACT_INSTANCE_OF) {
 				
 				ClassDescriptor classDescriptor = getClassDescriptor();
 				try {
@@ -137,8 +140,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				
 			}
 	
-			ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
-			kindMap.put(classAnnotation, kind);
+
 			String superClassName = getSuperclassName().replace('/', '.');
 			if (!superClassName.equals("java.lang.Object"))
 				parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
@@ -170,9 +172,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 	boolean dangerDanger = false;
 	boolean sawStaticDelegate;
 
-	private EnumMap<KindOfEquals, Integer> count = new EnumMap<KindOfEquals, Integer> (KindOfEquals.class);
+	private EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<EqualsKindSummary.KindOfEquals, Integer> (EqualsKindSummary.KindOfEquals.class);
 	
-	private void count(KindOfEquals k) {
+	private void count(EqualsKindSummary.KindOfEquals k) {
 		Integer v = count.get(k);
 		if (v == null) count.put(k,1);
 		else count.put(k, v+1);
@@ -356,13 +358,13 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
 				XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
 				if (xParent == null) continue;
-				KindOfEquals parentKind = kindMap.get(parentClass);
+				EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
 				for(ClassDescriptor child : e.getValue()) {
 					if (child.equals(e.getKey())) continue;
 					XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
 					if (xChild == null) continue;
 					ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
-					KindOfEquals childKind = kindMap.get(childClass);
+					EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
 					int fieldsOfInterest = 0;
 					for(XField f : xChild.getXFields())
 						if (!f.isStatic() && !f.isSynthetic()) fieldsOfInterest++;
@@ -392,14 +394,14 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
 				XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
 				if (xParent == null) continue;
-				KindOfEquals parentKind = kindMap.get(parentClass);
+				EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
 				boolean isOverridden= false;
 				for(ClassDescriptor child : e.getValue()) {
 					if (child.equals(e.getKey())) continue;
 					XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
 					if (xChild == null) continue;
 					ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
-					KindOfEquals childKind = kindMap.get(childClass);
+					EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
 					if (childKind != null) isOverridden = true;
 				}
 				total++;
@@ -407,7 +409,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 				System.out.println("IS_OVERRIDDEN: " + e.getKey().getClassName());
 			}
 			System.out.println("Instance of equals: " + total + " subclassed, " + overridden + " overrridden");
-			for (Map.Entry<KindOfEquals, Integer> e : count.entrySet()) {
+			for (Map.Entry<EqualsKindSummary.KindOfEquals, Integer> e : count.entrySet()) {
 				System.out.println(e);
 			}
 			
@@ -416,11 +418,11 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector {
 		
 		for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
 			ClassAnnotation childClass = e.getKey();
-			KindOfEquals childKind = kindMap.get(childClass);
+			EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
 			ClassAnnotation parentClass = e.getValue();
-			KindOfEquals parentKind = kindMap.get(parentClass);
+			EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
 					
-			if (parentKind != null && childKind == KindOfEquals.INSTANCE_OF_EQUALS && parentKind == KindOfEquals.INSTANCE_OF_EQUALS)
+			if (parentKind != null && childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS)
 				bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
 				        .add(childClass).add(equalsMethod.get(childClass)).add(equalsMethod.get(parentClass)));
 

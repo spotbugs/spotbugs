@@ -26,9 +26,17 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<LaterCategory name="reporting" spanplugins="true"/>
 	</SplitPass>
+        <SplitPass>
+                <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
+                <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch" />
+        </SplitPass>
 	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<Later class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
+		<Later class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
 	</WithinPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>

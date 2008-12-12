@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Signature;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -42,6 +43,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -239,6 +241,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		}
 		else if (!hasHashCode
 				&& (hasEqualsObject || hasEqualsSelf)) {
+			EqualsKindSummary.KindOfEquals equalsKind = AnalysisContext.currentAnalysisContext().getEqualsKindSummary().get(new ClassAnnotation(obj.getClassName()));
+			if (equalsKind == EqualsKindSummary.KindOfEquals.ALWAYS_FALSE) 
+				return;
 			if (usesDefaultHashCode) {
 				int priority = HIGH_PRIORITY;
 				if (equalsMethodIsInstanceOfEquals)
