@@ -127,7 +127,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 			public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 				if (name.equals("this$0")) isInnerClass = true;
+
 				if (cBuilder instanceof ClassInfo.Builder) {
+					final ClassInfo.Builder cBuilder2 = (ClassInfo.Builder) cBuilder;
+					if ((access & Opcodes.ACC_VOLATILE) != 0 || signature.contains("util/concurrent"))
+						cBuilder2.setUsesConcurrency();
 					final FieldInfo.Builder fBuilder = new FieldInfo.Builder(slashedClassName, name, desc, access);
 					fBuilder.setSourceSignature(signature);
 					return new AbstractFieldAnnotationVisitor() {
@@ -139,7 +143,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						}
 
 						public void visitEnd() {
-							((ClassInfo.Builder) cBuilder).addFieldDescriptor(fBuilder.build());
+							cBuilder2.addFieldDescriptor(fBuilder.build());
 
 						}
 
@@ -166,6 +170,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 					final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
 					mBuilder.setSourceSignature(signature);
 					mBuilder.setThrownExceptions(exceptions);
+					if ((access & Opcodes.ACC_SYNCHRONIZED) != 0)
+						mBuilder.setUsesConcurrency();
 
 					return new AbstractMethodVisitor(){
 
@@ -190,6 +196,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						}
 						@Override
 						public void visitInsn(int opcode) {
+							if (opcode == Opcodes.MONITORENTER)
+								mBuilder.setUsesConcurrency();
 							if (RETURN_OPCODE_SET.get(opcode)) sawReturn = true;
 							else if (opcode == Opcodes.ATHROW) {
 								if (stubState == StubState.INITIALIZE_RUNTIME) {
@@ -249,6 +257,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								stubState = StubState.INITIALIZE_RUNTIME;
 							else
 								stubState = StubState.INITIAL;
+							if (owner.startsWith("java/util/concurrent"))
+								mBuilder.setUsesConcurrency();
 							if (opcode == Opcodes.INVOKEINTERFACE) return;
 							
 							if(owner.charAt(0) == '[' && owner.charAt(owner.length() - 1) != ';') {
@@ -292,6 +302,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							MethodInfo methodInfo = mBuilder.build();
 							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
 									methodInfo);
+							if (methodInfo.usesConcurrency())
+								((ClassInfo.Builder)cBuilder).setUsesConcurrency();
 						}
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
