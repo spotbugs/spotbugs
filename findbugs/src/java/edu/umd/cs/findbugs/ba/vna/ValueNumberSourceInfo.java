@@ -42,7 +42,6 @@ public abstract class ValueNumberSourceInfo {
 
 	/**
 	 * @param method
-	 *            TODO
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame
@@ -72,7 +71,6 @@ public abstract class ValueNumberSourceInfo {
 
 	/**
 	 * @param method
-	 *            TODO
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame

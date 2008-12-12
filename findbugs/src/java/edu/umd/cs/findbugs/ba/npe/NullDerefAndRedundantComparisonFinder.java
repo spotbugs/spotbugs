@@ -240,7 +240,6 @@ public class NullDerefAndRedundantComparisonFinder {
 						ValueNumber vn = vnaDataflow.getFactAfterLocation(location).getTopValue();
 						UnconditionalValueDerefSet uvd = uvdDataflow.getFactAfterLocation(location);
 						if (uvd.isUnconditionallyDereferenced(vn)) {
-							// System.out.println("Found it");
 							SortedSet<Location> knownNullAndDoomedAt = bugStatementLocationMap.get(vn);
 							noteUnconditionallyDereferencedNullValue(  location,
 									bugStatementLocationMap,
