@@ -1111,7 +1111,10 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void setAnalysisVersion(String version) {
 		this.analysisVersion = version;
-
+	}
+	
+	public String getAnalysisVersion() {
+		return this.analysisVersion;
 	}
 }
 
