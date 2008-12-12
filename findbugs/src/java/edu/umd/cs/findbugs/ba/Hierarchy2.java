@@ -40,6 +40,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -316,11 +317,16 @@ public class Hierarchy2 {
 	            return Collections.<XMethod>emptySet();
             }
 
+		if (receiverType instanceof ObjectType) {
+			// Get the receiver class.
+			String receiverClassName = ((ObjectType) receiverType).getClassName();
+
+			return resolveVirtualMethodCallTargets(receiverClassName, methodName, methodSig, receiverTypeIsExact,
+			        invokeInstruction instanceof INVOKESPECIAL);
+		}
+		assert receiverType instanceof NullType;
+		return Collections.<XMethod>emptySet();
 		
-		// Get the receiver class.
-		String receiverClassName = ((ObjectType) receiverType).getClassName();
-		
-		return resolveVirtualMethodCallTargets(receiverClassName, methodName, methodSig, receiverTypeIsExact, invokeInstruction instanceof INVOKESPECIAL);
 	}
 
 	/**
