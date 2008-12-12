@@ -54,6 +54,9 @@ public class PriorityAdjustment {
 
 	/** Priority is at most medium. */
 	public static final PriorityAdjustment AT_MOST_MEDIUM = new PriorityAdjustment("AT_MOST_MEDIUM");
+	
+	/** Pegged high */
+	public static final PriorityAdjustment PEGGED_HIGH = new PriorityAdjustment("PEGGED_HIGH");
 
 	/** Lower the priority. */
 	public static final PriorityAdjustment LOWER_PRIORITY = new PriorityAdjustment("LOWER_PRIORITY");

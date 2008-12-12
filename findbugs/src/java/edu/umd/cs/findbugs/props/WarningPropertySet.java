@@ -24,6 +24,7 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.Priorities;
 
 /**
  * A Set of WarningProperty objects, each with an optional attribute Object. A
@@ -181,6 +182,8 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 		if (!relaxedReporting) {
 			for (T warningProperty : map.keySet()) {
 				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
+				if (adj == PriorityAdjustment.PEGGED_HIGH)
+					return Priorities.HIGH_PRIORITY;
 				if (adj == PriorityAdjustment.FALSE_POSITIVE) {
 					falsePositive = true;
 					atMostLow = true;
