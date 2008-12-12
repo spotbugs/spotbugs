@@ -39,4 +39,5 @@ public interface AnnotatedObject {
 	
 	public ElementType getElementType();
 	public @CheckForNull AnnotatedObject getContainingScope();
+	public boolean isSynthetic();
 }

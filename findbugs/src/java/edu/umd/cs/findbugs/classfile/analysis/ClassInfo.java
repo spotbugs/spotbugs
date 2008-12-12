@@ -348,6 +348,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 		public ElementType getElementType() {
 			throw new UnsupportedOperationException();
+        }
+
+		public boolean isSynthetic() {
+			throw new UnsupportedOperationException();
         }};
 	@CheckForNull AnnotatedObject containingScope = NOT_CACHED;
 	public @CheckForNull AnnotatedObject getContainingScope() {

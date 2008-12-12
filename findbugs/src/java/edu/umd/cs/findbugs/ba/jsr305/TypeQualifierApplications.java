@@ -253,9 +253,11 @@ public class TypeQualifierApplications {
 	 * @param e      ElementType representing kind of AnnotatedObject
 	 */
 	private static void getApplicableScopedApplications(Set<TypeQualifierAnnotation> result, AnnotatedObject o, ElementType e) {
-		AnnotatedObject outer = o.getContainingScope();
-		if (outer != null)
-			getApplicableScopedApplications(result, outer, e);
+		if (!o.isSynthetic()) {
+			AnnotatedObject outer = o.getContainingScope();
+			if (outer != null)
+				getApplicableScopedApplications(result, outer, e);
+		}
 		getDirectApplications(result, o, e);
 	}
 
@@ -598,8 +600,7 @@ public class TypeQualifierApplications {
 	private static TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
 
-		if (o instanceof AbstractClassMember
-				&& (((AbstractClassMember)o).getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
+		if (o.isSynthetic())
 				return null; // synthetic methods don't get default annotations
 		
 		ElementType elementType = o.getElementType();
@@ -808,7 +809,7 @@ public class TypeQualifierApplications {
 			int parameter,
 			TypeQualifierValue typeQualifierValue) {
 
-		if ((xmethod.getAccessFlags() & Opcodes.ACC_SYNTHETIC) != 0)
+		if (xmethod.isSynthetic())
 			return null;  // synthetic methods don't get default annotations
 		AnnotatedObject o = xmethod;
 		while (true) {
