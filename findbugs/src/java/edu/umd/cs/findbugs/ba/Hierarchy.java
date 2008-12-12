@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -742,6 +744,9 @@ public class Hierarchy {
 			return result;
 		}
 
+		if (receiverType instanceof NullType) {
+		   return Collections.<JavaClassAndMethod>emptySet();
+		}
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 
 		// Get the receiver class.

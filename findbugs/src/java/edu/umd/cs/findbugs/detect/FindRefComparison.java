@@ -77,6 +77,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
+import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.StandardTypeMerger;
 import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -764,6 +765,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		Type lhsType = frame.getValue(numSlots - 1);
 		Type rhsType = frame.getValue(numSlots - 2);
 
+		if (lhsType instanceof NullType || rhsType instanceof NullType) {
+			return;
+		}
 		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
 			IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType, rhsType, true);
 			if (result != IncompatibleTypes.SEEMS_OK && result != IncompatibleTypes.UNCHECKED) {
