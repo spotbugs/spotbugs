@@ -409,7 +409,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
 		int oldRootSize = rootElement.getChildren().length;
 		Set<BugGroup> changedParents = new HashSet<BugGroup>();
-		boolean bugFilterActive = isBugFilterActive();
+		bugFilterActive = isBugFilterActive();
 		for (DeltaInfo delta : deltas) {
 			if (DEBUG) {
 				System.out.println(delta);
@@ -424,7 +424,7 @@ public class BugContentProvider implements ICommonContentProvider {
 				removeMarker(parent, changedMarker, changedParents);
 				break;
 			case IResourceDelta.ADDED:
-				addMarker(changedMarker, changedParents, bugFilterActive);
+				addMarker(changedMarker, changedParents);
 				break;
 			}
 		}
@@ -446,7 +446,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		removeMarker(parent, marker);
 	}
 
-	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents, boolean bugFilterActive) {
+	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents) {
 		MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
 		ResourceWorkingSetFilter filter = getResourceFilter();
 		// filter through working set
@@ -455,11 +455,11 @@ public class BugContentProvider implements ICommonContentProvider {
 			return;
 		}
 		rootElement.addMarker(marker);
-		addMarker(marker, mapper, rootElement, changedParents, bugFilterActive);
+		addMarker(marker, mapper, rootElement, changedParents);
 	}
 
 	private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper,
-			BugGroup parent, Set<BugGroup> changedParents, boolean bugFilterActive) {
+			BugGroup parent, Set<BugGroup> changedParents) {
 
 		if (mapper == MarkerMapper.NO_MAPPING){
 			return;
@@ -510,7 +510,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			}
 			boolean lastlevel = childType == GroupType.Marker;
 			if (!lastlevel) {
-				addMarker(marker, childType.getMapper(), matchingChild, changedParents, bugFilterActive);
+				addMarker(marker, childType.getMapper(), matchingChild, changedParents);
 			}
 		} else {
 			// if there is no node, create one and recursvely all children to the last
