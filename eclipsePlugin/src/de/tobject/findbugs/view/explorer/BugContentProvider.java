@@ -86,6 +86,8 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private final HashSet<IMarker> filteredMarkers;
 
+	private boolean bugFilterActive;
+
 	public BugContentProvider() {
 		super();
 		filteredMarkersMap = new HashMap<BugGroup, Integer>();
@@ -115,21 +117,14 @@ public class BugContentProvider implements ICommonContentProvider {
 		if (parent instanceof BugGroup) {
 			BugGroup group = (BugGroup) parent;
 			children = group.getChildren();
-			/*if (!refreshRequested) {
-			} else {
-				GroupType type = group.getType();
-				if (type == GroupType.Workspace || type == GroupType.WorkingSet) {
-					children = createChildren(type, getResources(group.getData()), group);
-				} else {
-					// TODO we should refresh the group data too...
-					children = group.getChildren();
-				}
-			}*/
 		} else {
 			if (parent instanceof IWorkspaceRoot || parent instanceof IWorkingSet) {
 				if(input == parent){
 					Object[] objects = rootElement.getChildren();
 					if(objects.length > 0) {
+						if(bugFilterActive != isBugFilterActive()){
+							refreshFilters();
+						}
 						return objects;
 					}
 				}
@@ -184,7 +179,6 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		// some strange timing issues on startup causing the first level groups be empty...
 //		if(element instanceof BugGroup){
 //			BugGroup group = (BugGroup) element;
 //			return group.size() > 0 || group.getMarkersCount() != getFilteredMarkersCount(group);
@@ -199,7 +193,6 @@ public class BugContentProvider implements ICommonContentProvider {
 	public void dispose() {
 		refreshJob.setViewer(null);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
-//		extensionStateModel.removePropertyChangeListener(rootModeListener);
 		rootElement.dispose();
 		clearFilters();
 	}
@@ -208,6 +201,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		this.viewer = (CommonViewer) viewer1;
 		this.input = newInput;
 		refreshJob.setViewer((CommonViewer) viewer1);
+		bugFilterActive = isBugFilterActive();
 		clearFilters();
 	}
 
@@ -230,40 +224,45 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void clearFilters() {
-		synchronized(filteredMarkersMap){
-			filteredMarkers.clear();
-			filteredMarkersMap.clear();
+		if(DEBUG){
+			System.out.println("Clear filters!");
+		}
+		filteredMarkers.clear();
+		filteredMarkersMap.clear();
+	}
+
+	public void refreshFilters() {
+		clearFilters();
+		bugFilterActive = isBugFilterActive();
+		if(!bugFilterActive){
+			return;
+		}
+		if(DEBUG){
+			System.out.println("Refreshing filters!");
+		}
+		String filter = getFilter();
+		for (IMarker marker : rootElement.getAllMarkers()) {
+			if(MarkerUtil.isFiltered(marker, filter)) {
+				filteredMarkers.add(marker);
+			}
 		}
 	}
 
-	public int getFilteredMarkersCount(BugGroup bugGroup){
+	public synchronized int getFilteredMarkersCount(BugGroup bugGroup){
 		if(!isBugFilterActive()){
 			return 0;
 		}
 		Integer bugCount;
-		synchronized(filteredMarkersMap){
-			bugCount = filteredMarkersMap.get(bugGroup);
-			if(bugCount == null){
-				int count = 0;
-				if(bugGroup.getParent() instanceof BugGroup){
-					BugGroup group = (BugGroup) bugGroup.getParent();
-					for (IMarker marker : bugGroup.getAllMarkers()){
-						if(isFiltered(marker, group)){
-							count ++;
-						}
-					}
-				} else {
-					String lastUsedFilter = getFilter();
-					for (IMarker marker : bugGroup.getAllMarkers()) {
-						if(MarkerUtil.isFiltered(marker, lastUsedFilter)){
-							count ++;
-							filteredMarkers.add(marker);
-						}
-					}
+		bugCount = filteredMarkersMap.get(bugGroup);
+		if(bugCount == null){
+			int count = 0;
+			for (IMarker marker : bugGroup.getAllMarkers()){
+				if(isFiltered(marker)){
+					count ++;
 				}
-				bugCount = Integer.valueOf(count);
-				filteredMarkersMap.put(bugGroup, bugCount);
 			}
+			bugCount = Integer.valueOf(count);
+			filteredMarkersMap.put(bugGroup, bugCount);
 		}
 		return bugCount.intValue();
 	}
@@ -274,14 +273,8 @@ public class BugContentProvider implements ICommonContentProvider {
 		return store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
 	}
 
-	private boolean isFiltered(IMarker marker, BugGroup bugGroup){
-		if(bugGroup.getParent() instanceof BugGroup){
-			return isFiltered(marker, (BugGroup)bugGroup.getParent());
-		}
-		if(getFilteredMarkersCount(bugGroup) > 0){
-			return filteredMarkers.contains(marker);
-		}
-		return false;
+	private boolean isFiltered(IMarker marker){
+		return filteredMarkers.contains(marker);
 	}
 
 	public Object getInput() {
@@ -306,10 +299,15 @@ public class BugContentProvider implements ICommonContentProvider {
 	private synchronized Object[] createChildren(GroupType desiredType, Set<IResource> parents,
 			BugGroup parent) {
 		Set<IMarker> markerSet = new HashSet<IMarker>();
+		boolean filterActive = isBugFilterActive();
+		String filter = getFilter();
 		for (IResource resource : parents) {
 			IMarker[] markers = getMarkers(resource);
 			for (IMarker marker : markers) {
-				markerSet.add(marker);
+				boolean added = markerSet.add(marker);
+				if(filterActive && added && MarkerUtil.isFiltered(marker, filter)) {
+					filteredMarkers.add(marker);
+				}
 			}
 		}
 		parent.setMarkers(markerSet);
@@ -408,9 +406,10 @@ public class BugContentProvider implements ICommonContentProvider {
 	 * @return list of the *visible* parents with changed chldern to refresh the viewer.
 	 * Retunrs empty list if the full refresh is needed
 	 */
-	public Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
+	public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
 		int oldRootSize = rootElement.getChildren().length;
 		Set<BugGroup> changedParents = new HashSet<BugGroup>();
+		boolean bugFilterActive = isBugFilterActive();
 		for (DeltaInfo delta : deltas) {
 			if (DEBUG) {
 				System.out.println(delta);
@@ -425,14 +424,19 @@ public class BugContentProvider implements ICommonContentProvider {
 				removeMarker(parent, changedMarker, changedParents);
 				break;
 			case IResourceDelta.ADDED:
-				addMarker(changedMarker, changedParents);
+				addMarker(changedMarker, changedParents, bugFilterActive);
 				break;
 			}
 		}
 		if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {
-			changedParents.clear();
+			if(oldRootSize == 0 || rootElement.getChildren().length == 0){
+				changedParents.clear();
+			}
 			return changedParents;
 		}
+		// XXX this is a fix for not updating of children on incremental build and
+		// for "empty" groups which can never be empty... I don't know where the bug is...
+		changedParents.add(rootElement);
 		return changedParents;
 	}
 
@@ -442,7 +446,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		removeMarker(parent, marker);
 	}
 
-	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents) {
+	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents, boolean bugFilterActive) {
 		MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
 		ResourceWorkingSetFilter filter = getResourceFilter();
 		// filter through working set
@@ -450,11 +454,12 @@ public class BugContentProvider implements ICommonContentProvider {
 		if (filter != null && !filter.select(null, null, marker.getResource())) {
 			return;
 		}
-		addMarker(marker, mapper, rootElement, changedParents);
+		rootElement.addMarker(marker);
+		addMarker(marker, mapper, rootElement, changedParents, bugFilterActive);
 	}
 
 	private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper,
-			BugGroup parent, Set<BugGroup> changedParents) {
+			BugGroup parent, Set<BugGroup> changedParents, boolean bugFilterActive) {
 
 		if (mapper == MarkerMapper.NO_MAPPING){
 			return;
@@ -483,24 +488,20 @@ public class BugContentProvider implements ICommonContentProvider {
 		}
 
 		GroupType childType = grouping.getChildType(mapper.getType());
-		boolean filtered = MarkerUtil.isFiltered(marker, getFilter());
+		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, getFilter());
 		if(filtered) {
-			synchronized(filteredMarkersMap){
-				filteredMarkers.add(marker);
-			}
+			filteredMarkers.add(marker);
 		}
 
 		if (matchingChild != null) {
 			// node exists? fine, add marker and update children
 			matchingChild.addMarker(marker);
 			if(filtered){
-				synchronized(filteredMarkersMap){
-					Integer count = filteredMarkersMap.get(matchingChild);
-					if(count == null) {
-						count = Integer.valueOf(0);
-					}
-					filteredMarkersMap.put(matchingChild, Integer.valueOf(count.intValue() + 1));
+				Integer count = filteredMarkersMap.get(matchingChild);
+				if(count == null) {
+					count = Integer.valueOf(0);
 				}
+				filteredMarkersMap.put(matchingChild, Integer.valueOf(count.intValue() + 1));
 			}
 
 			if(isAccessible(matchingChild)) {
@@ -509,7 +510,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			}
 			boolean lastlevel = childType == GroupType.Marker;
 			if (!lastlevel) {
-				addMarker(marker, childType.getMapper(), matchingChild, changedParents);
+				addMarker(marker, childType.getMapper(), matchingChild, changedParents, bugFilterActive);
 			}
 		} else {
 			// if there is no node, create one and recursvely all children to the last
@@ -517,9 +518,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			BugGroup group = new BugGroup(parent, id, mapper.getType(), mapper.getPrio(id));
 			group.addMarker(marker);
 			if(filtered){
-				synchronized(filteredMarkersMap){
-					filteredMarkersMap.put(group, Integer.valueOf(1));
-				}
+				filteredMarkersMap.put(group, Integer.valueOf(1));
 			}
 			createGroups(group, childType.getMapper());
 		}
@@ -548,7 +547,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	private void removeMarker(BugGroup parent, IMarker marker) {
 		parent.removeMarker(marker);
 		List<BugGroup> parents = getSelfAndParents(parent);
-		boolean filtered = isFiltered(marker, parent);
+		boolean filtered = isFiltered(marker);
 		for (BugGroup group : parents) {
 			if(group.getMarkersCount() == 0 && group.getParent() instanceof BugGroup){
 				removeGroup((BugGroup) group.getParent(), group);
@@ -565,9 +564,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private void removeGroup(BugGroup parent, BugGroup child) {
 		if (parent.removeChild(child)) {
-			synchronized(filteredMarkersMap){
-				filteredMarkersMap.remove(child);
-			}
+			filteredMarkersMap.remove(child);
 			if (parent.getMarkersCount() == 0 && parent.getParent() instanceof BugGroup) {
 				removeGroup((BugGroup) parent.getParent(), parent);
 			}

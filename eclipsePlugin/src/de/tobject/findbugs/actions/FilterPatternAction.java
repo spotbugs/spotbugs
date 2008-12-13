@@ -76,7 +76,7 @@ public class FilterPatternAction implements IObjectActionDelegate {
 		store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, sb.toString());
 		BugContentProvider provider = BugContentProvider.getProvider(navigator
 				.getNavigatorContentService());
-		provider.clearFilters();
+		provider.refreshFilters();
 		CommonViewer viewer = navigator.getCommonViewer();
 		Object[] expandedElements = viewer.getExpandedElements();
 		viewer.refresh(true);

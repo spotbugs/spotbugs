@@ -75,7 +75,7 @@ public class FilterBugsDialogAction implements IViewActionDelegate {
 		}
 		FindbugsPlugin.getDefault().getPreferenceStore().setValue(
 				FindBugsConstants.LAST_USED_EXPORT_FILTER, sb.toString());
-		provider.clearFilters();
+		provider.refreshFilters();
 		CommonViewer viewer = navigator.getCommonViewer();
 		Object[] expandedElements = viewer.getExpandedElements();
 		viewer.refresh(true);

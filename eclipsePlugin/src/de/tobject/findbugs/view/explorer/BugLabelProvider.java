@@ -58,11 +58,6 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 		wbProvider = new WorkbenchLabelProvider();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
-	 */
 	public Image getImage(Object element) {
 		if (element instanceof BugGroup) {
 			BugGroup group = (BugGroup) element;
@@ -165,7 +160,6 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 				count += g1.getMarkersCount() - getFilteredMarkersCount(g1);
 			}
 		}
-//		Set<IMarker> finalMarkers = new HashSet<IMarker>();
 		while(!markers.isEmpty()) {
 			IMarker marker = markers.remove(markers.size() - 1);
 			boolean keepIt = true;
@@ -182,6 +176,8 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 		StringBuffer sb = new StringBuffer("Selection contains ");
 		if(count == 1){
 			sb.append("exactly one single bug");
+		} else if(count == 0){
+			sb.append("zero bugs (change filter settings to see more...)");
 		} else {
 			sb.append(count).append(" bugs");
 		}
@@ -238,7 +234,5 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 		}
 		return null;
 	}
-
-
 
 }

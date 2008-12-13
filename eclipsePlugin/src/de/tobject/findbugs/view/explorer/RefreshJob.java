@@ -37,13 +37,15 @@ import org.eclipse.ui.navigator.CommonViewer;
  */
 class RefreshJob extends Job implements IViewerRefreshJob {
 
-	final List<DeltaInfo> deltaToRefresh;
+	private final RemovedFirstComparator deltaComparator;
+	private final List<DeltaInfo> deltaToRefresh;
 	private volatile CommonViewer viewer;
 	private final BugContentProvider contentProvider;
 
 	public RefreshJob(String name, BugContentProvider provider) {
 		super(name);
 		this.contentProvider = provider;
+		deltaComparator = new RemovedFirstComparator();
 		deltaToRefresh = new ArrayList<DeltaInfo>();
 	}
 
@@ -61,35 +63,40 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
-					if (viewer != null && !viewer.getControl().isDisposed()
-							&& !monitor.isCanceled()) {
-
-						viewer.getControl().setRedraw(false);
-						try {
-							if (fullRefreshNeeded) {
-								viewer.refresh();
+					if (viewer == null || monitor.isCanceled()
+							|| viewer.getControl().isDisposed()) {
+						return;
+					}
+					viewer.getControl().setRedraw(false);
+					try {
+						if (fullRefreshNeeded) {
+							viewer.refresh();
+							if(BugContentProvider.DEBUG){
+								System.out.println("Refreshing ROOT!!!");
+							}
+						} else {
+							// update the viewer based on the marker changes.
+							for (BugGroup parent : changedParents) {
+								boolean isRoot = parent.getParent() == null;
 								if(BugContentProvider.DEBUG){
-									System.out.println("Refreshing ROOT!!!");
-								}
-							} else {
-								// update the viewer based on the marker changes.
-								for (BugGroup parent : changedParents) {
-									viewer.refresh(parent, true);
-									if(BugContentProvider.DEBUG){
+									if(isRoot){
+										System.out.println("Refreshing ROOT: " + parent);
+									} else {
 										System.out.println("Refreshing: " + parent);
 									}
-									if(monitor.isCanceled()){
-										break;
-									}
+								}
+								if(isRoot) {
+									viewer.refresh();
+								} else {
+									viewer.refresh(parent, true);
+								}
+								if(monitor.isCanceled()){
+									break;
 								}
 							}
-						} finally {
-							viewer.getControl().setRedraw(true);
-							// XXX for some reason, "+" update doesn't work properly
-							// not sure if the code below helps...
-							viewer.getControl().redraw();
-							viewer.getControl().update();
 						}
+					} finally {
+						viewer.getControl().setRedraw(true);
 					}
 				}
 			});
@@ -109,19 +116,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 			deltas.addAll(deltaToRefresh);
 			deltaToRefresh.clear();
 		}
-		Collections.sort(deltas, new Comparator<DeltaInfo>(){
-
-			public int compare(DeltaInfo o1, DeltaInfo o2) {
-				if(o1.changeKind == o2.changeKind){
-					return 0;
-				}
-				if(o1.changeKind == IResourceDelta.REMOVED){
-					return -1;
-				}
-				return 1;
-			}
-
-		});
+		Collections.sort(deltas, deltaComparator);
 		return deltas;
 	}
 
@@ -147,4 +142,18 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 		return viewer;
 	}
 
+	/**
+	 * Sorts the removed delta's first. This allows more optimized refresh
+	 */
+	private final static class RemovedFirstComparator implements Comparator<DeltaInfo> {
+		public int compare(DeltaInfo o1, DeltaInfo o2) {
+			if(o1.changeKind == o2.changeKind){
+				return 0;
+			}
+			if(o1.changeKind == IResourceDelta.REMOVED){
+				return -1;
+			}
+			return 1;
+		}
+	}
 }
