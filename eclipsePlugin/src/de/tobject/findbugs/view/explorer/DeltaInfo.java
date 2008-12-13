@@ -18,36 +18,36 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.runtime.Assert;
 
 class DeltaInfo{
 
-	final Object data;
+	final IMarker marker;
 
 	/**
 	 * @see IResourceDelta#getKind()
 	 */
 	final int changeKind;
 
-	public DeltaInfo(Object element, int kind) {
-		data = element;
+	public DeltaInfo(IMarker marker, int kind) {
+		Assert.isNotNull(marker, "Null marker reported!");
+		this.marker = marker;
 		changeKind = kind;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if(data == null){
-			return false;
-		}
 		if(obj instanceof DeltaInfo){
-			return data.equals(((DeltaInfo)obj).data);
+			return marker.equals(((DeltaInfo)obj).marker);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return data == null? 0 : data.hashCode();
+		return marker.hashCode();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ class DeltaInfo{
 			sb.append(" ? ").append(changeKind);
 			break;
 		}
-		sb.append(" ").append(data);
+		sb.append(" ").append(marker);
 		return sb.toString();
 	}
 }

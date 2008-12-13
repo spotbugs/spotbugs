@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -31,7 +32,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 final class ResourceChangeListener implements IResourceChangeListener {
 
-	static final int SHORT_DELAY = 10;
+	static final int SHORT_DELAY = 50;
 	static final int LONG_DELAY = 500;
 
 	final IViewerRefreshJob refreshJob;
@@ -51,8 +52,11 @@ final class ResourceChangeListener implements IResourceChangeListener {
 		 */
 		IMarkerDelta[] markerDeltas = event.findMarkerDeltas(FindBugsMarker.NAME, true);
 		for (IMarkerDelta mdelta : markerDeltas) {
-			accepted |= refreshJob.addToQueue(new DeltaInfo(mdelta.getMarker(), mdelta
-					.getKind()));
+			IMarker marker = mdelta.getMarker();
+			if(marker == null){
+				continue;
+			}
+			accepted |= refreshJob.addToQueue(new DeltaInfo(marker, mdelta.getKind()));
 		}
 
 		if (!accepted) {

@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -86,6 +85,10 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 							}
 						} finally {
 							viewer.getControl().setRedraw(true);
+							// XXX for some reason, "+" update doesn't work properly
+							// not sure if the code below helps...
+							viewer.getControl().redraw();
+							viewer.getControl().update();
 						}
 					}
 				}
@@ -125,9 +128,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 	public boolean addToQueue(DeltaInfo res) {
 		switch (res.changeKind) {
 		case IResourceDelta.CHANGED:
-			if(res.data instanceof IMarker) {
-				return false;
-			}
+			return false;
 		}
 		synchronized (deltaToRefresh) {
 			if (!deltaToRefresh.contains(res)) {

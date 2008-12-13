@@ -23,8 +23,11 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.ui.IWorkingSet;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
@@ -134,6 +137,31 @@ public enum GroupType {
 			}
 		}
 		return visible;
+	}
+
+	public static GroupType getType(Object element) {
+		if (element instanceof BugGroup) {
+			return ((BugGroup) element).getType();
+		}
+		if (element instanceof IMarker) {
+			return GroupType.Marker;
+		}
+		if (element instanceof IProject) {
+			return GroupType.Project;
+		}
+		if (element instanceof IWorkingSet) {
+			return GroupType.WorkingSet;
+		}
+		if (element instanceof IWorkspaceRoot) {
+			return GroupType.Workspace;
+		}
+		if (element instanceof IPackageFragment) {
+			return GroupType.Package;
+		}
+		if (element instanceof IJavaElement) {
+			return GroupType.Class;
+		}
+		return GroupType.Undefined;
 	}
 
 

@@ -134,12 +134,19 @@ public class BugGroup implements IAdaptable, IActionFilter {
 		return shortDescription;
 	}
 
-
-	/**
-	 * @return the parent
-	 */
 	public Object getParent() {
 		return parent;
+	}
+
+	public BugGroup getTopParentGroup() {
+		if(!(parent instanceof BugGroup)){
+			return null;
+		}
+		BugGroup parentGroup = (BugGroup) parent;
+		while(parentGroup.getParent() instanceof BugGroup){
+			parentGroup = (BugGroup) parentGroup.getParent();
+		}
+		return parentGroup;
 	}
 
 	public int size() {
