@@ -20,6 +20,7 @@ package de.tobject.findbugs.view.explorer;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,13 +72,59 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 			if (propId instanceof Method) {
 				Method method = (Method) propId;
 				try {
-					return method.invoke(object, (Object[])null);
+					Object object2 = method.invoke(object, (Object[])null);
+					if (object2 != null) {
+						if(object2.getClass().isArray()){
+							return new ArrayPropertySource((Object[]) object2);
+						}
+						if(Collection.class.isAssignableFrom(object2.getClass())){
+							Collection<?> coll = (Collection<?>) object2;
+							return new ArrayPropertySource(coll.toArray());
+						}
+					}
+					return object2;
 				} catch (Exception e) {
 					FindbugsPlugin.getDefault().logException(e,
 						"getPropertyValue: method access failed");
 				}
 			}
 			return null;
+		}
+
+		public Object getEditableValue() {
+			return null;
+		}
+		public boolean isPropertySet(Object id) {
+			return false;
+		}
+		public void resetPropertyValue(Object id) {
+			//
+		}
+		public void setPropertyValue(Object id, Object value) {
+			//
+		}
+	}
+
+	public static class ArrayPropertySource implements IPropertySource {
+
+		private final Object[] array;
+		private final IPropertyDescriptor[] propertyDescriptors;
+
+		public ArrayPropertySource(Object[] object) {
+			this.array = object;
+			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+			for (Object obj : array) {
+				props.add(new PropertyDescriptor(obj, "" + obj));
+			}
+			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+		}
+
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return propertyDescriptors;
+		}
+
+		public Object getPropertyValue(Object propId) {
+			return propId;
 		}
 
 		public Object getEditableValue() {
@@ -207,13 +254,10 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 			return null;
 		}
 		if (adapterType == IPropertySource.class) {
-			if (adaptableObject instanceof BugPattern) {
-				BugPattern bug = (BugPattern) adaptableObject;
-				return new PropertySource(bug);
-			}
-			if (adaptableObject instanceof BugInstance) {
-				BugInstance bug = (BugInstance) adaptableObject;
-				return new PropertySource(bug);
+			if (adaptableObject instanceof BugPattern
+					|| adaptableObject instanceof BugInstance
+					|| adaptableObject instanceof BugGroup) {
+				return new PropertySource(adaptableObject);
 			}
 			IMarker marker = null;
 			if (adaptableObject instanceof IMarker) {

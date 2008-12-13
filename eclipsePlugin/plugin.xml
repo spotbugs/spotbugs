@@ -945,6 +945,13 @@
              class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
+       <factory
+             adaptableType="de.tobject.findbugs.view.explorer.BugGroup"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
     </extension>
 
     <extension
@@ -1030,6 +1037,15 @@
                 tab="bug.tab.bugPattern">
              <input
                    type="org.eclipse.core.resources.IMarker">
+             </input>
+          </propertySection>
+          <propertySection
+                class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+                enablesFor="1"
+                id="bug.section.Advanced.Group"
+                tab="bug.tab.Advanced">
+             <input
+                   type="de.tobject.findbugs.view.explorer.BugGroup">
              </input>
           </propertySection>
        </propertySections>
