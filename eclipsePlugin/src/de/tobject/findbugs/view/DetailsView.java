@@ -354,8 +354,15 @@ public class DetailsView extends AbstractFindbugsView {
 				FindBugsMarker.PRIORITY_TYPE, "");
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 		BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-		detailsView.setContent(pattern, bug, priorityTypeString, marker);
-		detailsView.activate();
+		if (bug == null) {
+			FindbugsPlugin.getDefault()
+					.logError(
+							"Could not find bug for marker " + marker + " and pattern "
+									+ pattern);
+		} else {
+			detailsView.setContent(pattern, bug, priorityTypeString, marker);
+			detailsView.activate();
+		}
 	}
 
 	public void markerSelected(IMarker newMarker) {

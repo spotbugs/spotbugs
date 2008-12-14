@@ -201,7 +201,7 @@ public class BugInstanceSection extends AbstractPropertySection {
 	private void refreshTitle() {
 		String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
 		BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
-		if (pattern == null) {
+		if (pattern == null || bug == null) {
 			title = "";
 			return;
 		}
