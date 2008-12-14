@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -99,6 +100,30 @@ public class FindBugsAction implements IObjectActionDelegate {
 				}
 			}
 		}
+	}
+
+	protected IDialogSettings getDialogSettings() {
+		IDialogSettings settings = FindbugsPlugin.getDefault().getDialogSettings();
+		String settingsId = getDialogSettingsId();
+		IDialogSettings section = settings.getSection(settingsId);
+		if (section == null) {
+			section = settings.addNewSection(settingsId);
+		}
+		return section;
+	}
+
+	protected final IProject getProject(IStructuredSelection structuredSelection) {
+		Object element = structuredSelection.getFirstElement();
+		IResource resource = ResourceUtils.getResource(element);
+		if (resource == null) {
+			return null;
+		}
+		IProject project = resource.getProject();
+		return project;
+	}
+
+	protected String getDialogSettingsId() {
+		return "findBugsAction";
 	}
 
 	/**

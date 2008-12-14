@@ -161,12 +161,8 @@
                label="Find Bugs"
                path="additions"/>
          <action
-             class="de.tobject.findbugs.actions.LoadXmlAction"
-                 id="de.tobject.findbugs.loadXml"
-                 label="Load XML"
-                 menubarPath="findbugs/additions"/>
-         <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
@@ -199,36 +195,48 @@
          <menu
                id="findbugs"
                label="Find Bugs"
-               path="additions"/>
+               path="additions">
+            <separator name="doit" />
+            <separator name="save" />
+         </menu>
            <action
                  class="de.tobject.findbugs.actions.LoadXmlAction"
+                 enablesFor="1"
+                 icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/import_wiz.gif"
                  id="de.tobject.findbugs.loadXml"
                  label="Load XML"
-                 menubarPath="findbugs/additions">
+                 menubarPath="findbugs/save">
            </action>
-         <action
-               class="de.tobject.findbugs.actions.ClearMarkersAction"
-               id="de.tobject.findbugs.removeMarkers"
-               label="%menu.clearMarkers"
-               menubarPath="findbugs/additions"
-               tooltip="%menu.clearMarkersPopup">
-
-         </action>
-         <action
+           <action
+                 class="de.tobject.findbugs.actions.SaveXmlAction"
+                 enablesFor="1"
+                 icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/saveas_edit.gif"
+                 id="de.tobject.findbugs.saveXml"
+                 label="Save XML"
+                 menubarPath="findbugs/save"/>
+            <action
+                  class="de.tobject.findbugs.actions.ClearMarkersAction"
+                  icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+                  id="de.tobject.findbugs.removeMarkers"
+                  label="%menu.clearMarkers"
+                  menubarPath="findbugs/doit"
+                  tooltip="%menu.clearMarkersPopup">
+           </action>
+           <action
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
                label="&amp;Find Bugs"
-               menubarPath="findbugs/additions"
+               menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
+           </action>
 
-         </action>
-   <visibility>
-      <objectState
-            name="nature"
-            value="org.eclipse.jdt.core.javanature">
-      </objectState>
-   </visibility>
+           <visibility>
+              <objectState
+                    name="nature"
+                    value="org.eclipse.jdt.core.javanature">
+              </objectState>
+           </visibility>
 
       </objectContribution>
 
@@ -263,13 +271,9 @@
                id="findbugs"
                label="Find Bugs"
                path="additions"/>
-        <action
-             class="de.tobject.findbugs.actions.LoadXmlAction"
-             id="de.tobject.findbugs.loadXml"
-             label="Load XML"
-             menubarPath="findbugs/additions"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
@@ -302,6 +306,7 @@
       <action
             class="de.tobject.findbugs.actions.ClearMarkersAction"
             enablesFor="1"
+            icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
             id="de.tobject.findbugs.removeMarkers"
             label="%menu.clearMarkers"
             menubarPath="additions"

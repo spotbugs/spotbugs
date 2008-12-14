@@ -1,4 +1,6 @@
 Release 1.3.7 - Andrei Loskutov
+- bugfix: made FindBugs -> Load XML action available for single projects only, make consistent with Save XML
+- feature 2148441: added FindBugs -> Save XML action to projects menu (Tomas Pollak)
 - feature in progress: initial implementation for "Filter Bug by Id..." dialog in bug explorer view
 - feature: added "Empty Parent Bug Groups" and "Filter Bugs by Id" filters in bug explorer view
 - feature: selected grouping will persist after bug explorer view is closed
