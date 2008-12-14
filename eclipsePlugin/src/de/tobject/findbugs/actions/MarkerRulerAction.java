@@ -1,22 +1,21 @@
 /*
-	* FindBugs Eclipse Plug-in.
-	* Copyright (C) 2003 - 2004, Peter Friese
-	*
-	* This library is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU Lesser General Public
-	* License as published by the Free Software Foundation; either
-	* version 2.1 of the License, or (at your option) any later version.
-	*
-	* This library is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-	* Lesser General Public License for more details.
-	*
-	* You should have received a copy of the GNU Lesser General Public
-	* License along with this library; if not, write to the Free Software
-	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	*/
-
+ * FindBugs Eclipse Plug-in.
+ * Copyright (C) 2003 - 2004, Peter Friese
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package de.tobject.findbugs.actions;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -47,42 +45,39 @@ import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.IUpdate;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
-	* An action that can display a bug marker's details in the FindBugs details view.
-	* TODO (PeterF) We should replace this action with a marker resolution or a marker help contribution.
-	*
-	* @author Phil Crosby
-	* @author Peter Friese
-	* @version 1.0
-	* @since 20.4.2004
-	*/
-public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseListener, IMenuListener {
+ * An action that can display a bug marker's details in the FindBugs details view.
+ * TODO (PeterF) We should replace this action with a marker resolution or a marker help
+ * contribution.
+ *
+ * @author Phil Crosby
+ * @author Peter Friese
+ * @version 1.0
+ * @since 20.4.2004
+ */
+public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseListener,
+		IMenuListener {
 
-	IVerticalRulerInfo ruler;
-	ITextEditor editor;
+	private IVerticalRulerInfo ruler;
+	private ITextEditor editor;
 
 	/** Contains the markers of the currently selected line in the ruler margin. */
-	ArrayList<IMarker> markers;
+	private final ArrayList<IMarker> markers;
 
 	/**
-	 * The action sent to this delegate. Enable and disable it based upon whether
-	 * there are FindBugs markers on the current line
+	 * The action sent to this delegate. Enable and disable it based upon whether there
+	 * are FindBugs markers on the current line
 	 */
-	IAction action;
+	private IAction action;
 
 	public MarkerRulerAction() {
 		super();
 		markers = new ArrayList<IMarker>();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction, org.eclipse.ui.IEditorPart)
-	 */
-	public void setActiveEditor(
-		IAction callerAction,
-		IEditorPart targetEditor) {
+	public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {
 		Control control;
 		// See if we're already listenting to an editor; if so, stop listening
 		if (editor != null) {
@@ -100,9 +95,9 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		// Start listening to the current editor
 		if (targetEditor instanceof ITextEditor) {
 			editor = (ITextEditor) targetEditor;
-			//Check for editor's ruler context listener capability
+			// Check for editor's ruler context listener capability
 			if (editor instanceof ITextEditorExtension) {
-				 ((ITextEditorExtension) editor).addRulerContextMenuListener(this);
+				((ITextEditorExtension) editor).addRulerContextMenuListener(this);
 			}
 			ruler = (IVerticalRulerInfo) editor.getAdapter(IVerticalRulerInfo.class);
 			if (ruler != null) {
@@ -111,40 +106,31 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 					control.addMouseListener(this);
 				}
 			}
-		}
-		else {
+		} else {
 			ruler = null;
 			editor = null;
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public void run(IAction action) {
-		this.action = action;
+	public void run(IAction action1) {
+		this.action = action1;
 		obtainFindBugsMarkers();
 		if (markers.size() <= 0) {
-			MessageDialog.openError(
-				editor.getSite().getShell(),
-				"Error Showing Bug Details",
-				"You must first select a FindBugs marker to view bug details.");
-		}
-		else {
+			MessageDialog.openError(editor.getSite().getShell(),
+					"Error Showing Bug Details",
+					"You must first select a FindBugs marker to view bug details.");
+		} else {
 			update();
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.action = action;
+	public void selectionChanged(IAction action1, ISelection selection) {
+		this.action = action1;
 	}
 
 	/**
-	 * Fills markers field with all of the FindBugs markers associated with the
-	 * current line in the text editor's ruler marign.
+	 * Fills markers field with all of the FindBugs markers associated with the current
+	 * line in the text editor's ruler marign.
 	 */
 	protected void obtainFindBugsMarkers() {
 		// Delete old markers
@@ -154,57 +140,36 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		}
 
 		// Obtain all markers in the editor
-		IMarker[] allMarkers;
 		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
-		try {
-			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_ZERO);
-		}
-		catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not enumerate markers for resource " + resource.getName());
-			return;
-		}
-
+		IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
 		// Discover relevant markers, i.e. FindBugsMarkers
 		AbstractMarkerAnnotationModel model = getModel();
 		IDocument document = getDocument();
 		for (int i = 0; i < allMarkers.length; i++) {
-			if (includesRulerLine(model.getMarkerPosition(allMarkers[i]),
-				document)) {
-				try {
-					if (allMarkers[i].isSubtypeOf(FindBugsMarker.NAME)) {
-						markers.add(allMarkers[i]);
-					}
-				}
-				catch (CoreException e) {
-					FindbugsPlugin.getDefault().logException(
-							e, "Error inspecting markers to find FindBugs warnings");
+			if (includesRulerLine(model.getMarkerPosition(allMarkers[i]), document)) {
+				if (MarkerUtil.isFindBugsMarker(allMarkers[i])) {
+					markers.add(allMarkers[i]);
 				}
 			}
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.IUpdate#update()
-	 */
 	public void update() {
 		if (markers.size() > 0) {
 			IMarker marker = markers.get(0);
-
-			try{
-			  FindbugsPlugin.showMarker(marker);
-			} catch (Exception e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Exception on marker user annotations view");
-			}
+			FindbugsPlugin.showMarker(marker);
+			markers.clear();
 		}
 	}
 
 	/**
-	 * Checks a Position in a document to see whether the line of last
-	 * mouse activity falls within this region.
-	 * @param position Position of the marker
-	 * @param document the Document the marker resides in
+	 * Checks a Position in a document to see whether the line of last mouse activity
+	 * falls within this region.
+	 *
+	 * @param position
+	 *            Position of the marker
+	 * @param document
+	 *            the Document the marker resides in
 	 * @return true if the last mouse click falls on the same line as the marker
 	 */
 	protected boolean includesRulerLine(Position position, IDocument document) {
@@ -215,8 +180,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 				if (line == markerLine) {
 					return true;
 				}
-			}
-			catch (BadLocationException x) {
+			} catch (BadLocationException x) {
 				FindbugsPlugin.getDefault().logException(x, "Error getting marker line");
 			}
 		}
@@ -225,12 +189,12 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
 	/**
 	 * Retrieves the AbstractMarkerAnnontationsModel from the editor.
+	 *
 	 * @return AbstractMarkerAnnotatiosnModel from the editor
 	 */
 	protected AbstractMarkerAnnotationModel getModel() {
 		IDocumentProvider provider = editor.getDocumentProvider();
-		IAnnotationModel model =
-			provider.getAnnotationModel(editor.getEditorInput());
+		IAnnotationModel model = provider.getAnnotationModel(editor.getEditorInput());
 		if (model instanceof AbstractMarkerAnnotationModel) {
 			return (AbstractMarkerAnnotationModel) model;
 		}
@@ -239,6 +203,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
 	/**
 	 * Retrieves the document from the editor.
+	 *
 	 * @return the document from the editor
 	 */
 	protected IDocument getDocument() {
@@ -246,25 +211,17 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		return provider.getDocument(editor.getEditorInput());
 	}
 
-	/*
-	 * @see IMenuListener#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
-	 */
 	public void menuAboutToShow(IMenuManager manager) {
 		if (action != null) {
 			obtainFindBugsMarkers();
-			action.setEnabled((markers.size() > 0));
+			action.setEnabled(markers.size() > 0);
 		}
 	}
 
-	/*
-	 * @see MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
-	 */
 	public void mouseDoubleClick(MouseEvent e) {
+		//
 	}
 
-	/*
-	 * @see MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
-	 */
 	public void mouseDown(MouseEvent e) {
 		// Only capture left clicks.
 		if (e.button == 1) {
@@ -275,10 +232,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		}
 	}
 
-	/*
-	 * @see MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
-	 */
 	public void mouseUp(MouseEvent e) {
+		//
 	}
 
 }

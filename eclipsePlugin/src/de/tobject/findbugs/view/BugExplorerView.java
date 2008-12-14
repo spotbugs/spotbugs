@@ -36,8 +36,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.CommonViewer;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 
 public class BugExplorerView extends CommonNavigator implements IMarkerSelectionHandler, ISelectionChangedListener {
 
@@ -67,13 +69,21 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 	}
 
 	public void markerSelected(IMarker marker) {
-		getCommonViewer().setSelection(new StructuredSelection(marker), true);
+		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
+		CommonViewer commonViewer = getCommonViewer();
+		if(provider.isFiltered(marker)){
+			Object parent = provider.getParent(marker);
+			if(parent != null) {
+				commonViewer.setSelection(new StructuredSelection(parent), true);
+			}
+		} else {
+			commonViewer.setSelection(new StructuredSelection(marker), true);
+		}
 	}
 
 	@Override
 	public void updateTitle() {
 		super.updateTitle();
-//		setContentDescription(getTitleToolTip());
 	}
 
 	@Override

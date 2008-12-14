@@ -273,7 +273,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		return store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
 	}
 
-	private boolean isFiltered(IMarker marker){
+	public boolean isFiltered(IMarker marker){
 		return filteredMarkers.contains(marker);
 	}
 

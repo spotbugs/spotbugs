@@ -54,14 +54,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -74,6 +72,7 @@ import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
+import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.FindBugs;
@@ -711,9 +710,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		DetailsView.showMarker(marker);
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		IViewPart view = page.findView(TREE_VIEW_ID);
-		if(page.isPartVisible(view) && view instanceof CommonNavigator){
-			CommonNavigator navigator = (CommonNavigator) view;
-			navigator.selectReveal(new StructuredSelection(marker));
+		if(page.isPartVisible(view) && view instanceof IMarkerSelectionHandler){
+			IMarkerSelectionHandler navigator = (IMarkerSelectionHandler) view;
+			navigator.markerSelected(marker);
 		}
 	}
 
