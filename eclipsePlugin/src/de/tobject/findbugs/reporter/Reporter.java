@@ -132,8 +132,10 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 		Set<String> missingClasses = getMissingClasses();
 		if(missingClasses.size() > 0) {
-			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
-					"The following classes needed for FindBugs analysis were missing:", null);
+			MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID,
+					IStatus.WARNING,
+					"The following classes needed for FindBugs analysis on project "
+							+ project.getElementName() + " were missing:", null);
 			for (String missingClass : missingClasses) {
 				status.add(new Status(IStatus.WARNING, FindbugsPlugin.PLUGIN_ID, missingClass));
 			}
