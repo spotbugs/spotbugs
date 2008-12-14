@@ -19,18 +19,14 @@
 
 package de.tobject.findbugs.actions;
 
-import java.util.Iterator;
-
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * Show details on a selected FindBugs marker.
@@ -46,50 +42,20 @@ public class MarkerShowDetailsAction implements IObjectActionDelegate {
 		super();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.ui.IWorkbenchPart)
-	 */
 	public final void setActivePart(final IAction action,
 			final IWorkbenchPart targetPart) {
 		// noop
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.jface.viewers.ISelection)
-	 */
 	public final void selectionChanged(final IAction action,
 			final ISelection newSelection) {
 		this.selection = newSelection;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
 	public final void run(final IAction action) {
-		try {
-			if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				for (Iterator iter = structuredSelection.iterator(); iter
-						.hasNext();) {
-					IMarker marker = (IMarker) iter.next();
-					if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
-						continue;
-					}
-					FindbugsPlugin.showMarker(marker);
-					break;
-				}
-			}
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Exception while parsing content of FindBugs markers.");
+		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(selection);
+		if (marker != null) {
+			FindbugsPlugin.showMarker(marker);
 		}
 	}
 

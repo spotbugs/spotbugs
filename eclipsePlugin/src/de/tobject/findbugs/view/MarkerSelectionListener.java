@@ -19,14 +19,11 @@
 package de.tobject.findbugs.view;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 
-import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 final class MarkerSelectionListener implements ISelectionListener {
 	private final IMarkerSelectionHandler handler;
@@ -37,37 +34,11 @@ final class MarkerSelectionListener implements ISelectionListener {
 
 	public void selectionChanged(IWorkbenchPart thePart,
 			ISelection theSelection) {
-		if (!(theSelection instanceof IStructuredSelection)) {
-			return;
-		}
 		if (thePart == handler || !handler.isVisible()) {
 			return;
 		}
-		IMarker marker = null;
-		Object elt = ((IStructuredSelection) theSelection).getFirstElement();
-		if (elt instanceof IMarker) {
-			marker = (IMarker) elt;
-		}
-
-		// bug 2030157: selections in problems view are not reflected in our views
-		// we cannot use MarkerItem because this is new Eclipse 3.4 API.
-		/* else if (elt instanceof MarkerItem){
-			theMarker = ((MarkerItem)elt).getMarker();
-		}*/
-		// the code below is the workaroound compatible with both 3.3 and 3.4 API
-		else if (elt instanceof IAdaptable) {
-			marker = (IMarker) ((IAdaptable)elt).getAdapter(IMarker.class);
-		}
-
+		IMarker marker = MarkerUtil.getMarkerFromSingleSelection(theSelection);
 		if (marker != null) {
-			try {
-				if(!marker.isSubtypeOf(FindBugsMarker.NAME)){
-					// we are not interested in other markers then FB
-					return;
-				}
-			} catch (CoreException e) {
-				// ignore
-			}
 			handler.markerSelected(marker);
 		}
 	}

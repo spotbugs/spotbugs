@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
@@ -366,14 +365,6 @@ public class DetailsView extends AbstractFindbugsView {
 	}
 
 	public void markerSelected(IMarker newMarker) {
-		try {
-			if(!newMarker.isSubtypeOf(FindBugsMarker.NAME)){
-				// we are not interested in other markers then FB
-				return;
-			}
-		} catch (CoreException e) {
-			// ignore
-		}
 		if (!isVisible()) {
 			showMarker(newMarker);
 		} else {

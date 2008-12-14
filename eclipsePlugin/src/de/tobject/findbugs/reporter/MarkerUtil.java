@@ -663,7 +663,7 @@ public final class MarkerUtil {
 			} else if (next instanceof IAdaptable){
 				IAdaptable adapter = (IAdaptable) next;
 				IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-				if (marker == null || !isFindBugsMarker(marker)) {
+				if (!isFindBugsMarker(marker)) {
 					continue;
 				}
 				markers.add(marker);
@@ -695,7 +695,7 @@ public final class MarkerUtil {
 		} else if (next instanceof IAdaptable){
 			IAdaptable adapter = (IAdaptable) next;
 			IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-			if (marker == null || !isFindBugsMarker(marker)) {
+			if (!isFindBugsMarker(marker)) {
 				return null;
 			}
 			return marker;

@@ -22,7 +22,6 @@ package de.tobject.findbugs.view;
 import java.util.Calendar;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -253,14 +252,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 	}
 
 	public void markerSelected(IMarker newMarker) {
-		try {
-			if(!newMarker.isSubtypeOf(FindBugsMarker.NAME)){
-				// we are not interested in other markers then FB
-				return;
-			}
-		} catch (CoreException e) {
-			// ignore
-		}
 		showMarker(newMarker);
 		if (!isVisible()) {
 			activate();

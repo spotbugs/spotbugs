@@ -21,6 +21,13 @@ package de.tobject.findbugs.view;
 import org.eclipse.core.resources.IMarker;
 
 public interface IMarkerSelectionHandler {
+	/**
+	 * @param marker non null, existing FindBugs marker
+	 */
 	void markerSelected(IMarker marker);
+
+	/**
+	 * @return true if the handler part is visible to user
+	 */
 	boolean isVisible();
 }
