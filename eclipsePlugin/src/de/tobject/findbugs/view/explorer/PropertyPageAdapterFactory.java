@@ -266,7 +266,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 				marker = (IMarker) ((IAdaptable) adaptableObject)
 						.getAdapter(IMarker.class);
 			}
-			if (marker == null || !MarkerUtil.isFindBugsMarker(marker)) {
+			if (marker == null || !marker.exists() || !MarkerUtil.isFindBugsMarker(marker)) {
 				return null;
 			}
 			return new MarkerPropertySource(marker);
