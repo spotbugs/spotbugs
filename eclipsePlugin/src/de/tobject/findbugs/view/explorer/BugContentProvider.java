@@ -431,6 +431,8 @@ public class BugContentProvider implements ICommonContentProvider {
 		if (rootElement.getMarkersCount() == 0 || rootElement.getChildren().length != oldRootSize) {
 			if(oldRootSize == 0 || rootElement.getChildren().length == 0){
 				changedParents.clear();
+			} else {
+				changedParents.add(rootElement);
 			}
 			return changedParents;
 		}
