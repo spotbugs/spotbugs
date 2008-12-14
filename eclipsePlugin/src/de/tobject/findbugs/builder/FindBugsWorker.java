@@ -456,8 +456,12 @@ public class FindBugsWorker {
 	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection,
 			SortedBugCollection secondCollection, boolean incremental) {
 		Update update = new Update();
-		return (SortedBugCollection) (update.mergeCollections(firstCollection,
-				secondCollection, false, incremental));
+		// TODO copyDeadBugs must be true, otherwise incremental compile leads to
+		// unknown bug instances appearing (merged collection doesn't contain all bugs)
+		boolean copyDeadBugs = incremental;
+		SortedBugCollection merged = (SortedBugCollection) (update.mergeCollections(firstCollection,
+				secondCollection, copyDeadBugs, incremental));
+		return merged;
 	}
 
 	private void configureExtendedProps(Collection<String> filterFiles,
