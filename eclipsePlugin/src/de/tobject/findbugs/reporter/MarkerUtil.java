@@ -647,7 +647,7 @@ public final class MarkerUtil {
 			Object next = iter.next();
 			if(next instanceof IMarker){
 				IMarker marker = (IMarker) next;
-				if (!marker.exists() || !isFindBugsMarker(marker)) {
+				if (!isFindBugsMarker(marker)) {
 					continue;
 				}
 				markers.add(marker);
@@ -684,7 +684,7 @@ public final class MarkerUtil {
 		Object next = sSelection.getFirstElement();
 		if(next instanceof IMarker){
 			IMarker marker = (IMarker) next;
-			if (!marker.exists() || !isFindBugsMarker(marker)) {
+			if (!isFindBugsMarker(marker)) {
 				return null;
 			}
 			return marker;
@@ -705,7 +705,7 @@ public final class MarkerUtil {
 
 	public static boolean isFindBugsMarker(IMarker marker) {
 		try {
-			return marker.isSubtypeOf(FindBugsMarker.NAME);
+			return marker != null && marker.exists() && marker.isSubtypeOf(FindBugsMarker.NAME);
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
 			"Exception while checking FindBugs type on marker.");
