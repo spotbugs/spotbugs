@@ -171,8 +171,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			BugGroup groupElement = (BugGroup) element;
 			return groupElement.getParent();
 		}
-		GroupType type = GroupType.getType(element);
-		if (type == GroupType.Marker) {
+		if (element instanceof IMarker) {
 			return findParent((IMarker) element);
 		}
 		return null;

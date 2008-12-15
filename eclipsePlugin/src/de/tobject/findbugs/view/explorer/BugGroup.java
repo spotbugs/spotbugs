@@ -22,18 +22,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.marker.FindBugsMarker.Priority;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.I18N;
 
 /**
  * @author Andrei
@@ -98,28 +93,6 @@ public class BugGroup implements IAdaptable, IActionFilter {
 	public String getShortDescription() {
 		if(shortDescription == null){
 			switch (type) {
-			case Category:
-				shortDescription = I18N.instance().getBugCategoryDescription((String)self);
-				break;
-			case Pattern:
-				shortDescription = ((BugPattern)self).getShortDescription();
-				break;
-			case PatternType:
-				shortDescription = I18N.instance().getBugTypeDescription(((String)self));
-				break;
-			case Priority:
-				Integer prio = (Integer)self;
-				shortDescription = FindBugsMarker.Priority.label(prio.intValue()).name() + " priority";
-				break;
-			case Project:
-				shortDescription = ((IProject)self).getName();
-				break;
-			case Class:
-				shortDescription = ((IJavaElement)self).getElementName();
-				break;
-			case Package:
-				shortDescription = ((IPackageFragment)self).getElementName();
-				break;
 			case Marker:
 				break;
 			case Workspace:
@@ -127,7 +100,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
 			case WorkingSet:
 				return "Overall issues number: ";
 			default:
-				shortDescription = "" + self;
+				shortDescription = type.getMapper().getShortDescription(self);
 			break;
 			}
 		}

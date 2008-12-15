@@ -29,9 +29,13 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IWorkingSet;
 
+import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugCategory;
+import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.I18N;
 
 /**
  * Type of the bug groups, shown inside the bug explorer
@@ -49,16 +53,26 @@ public enum GroupType {
 		IProject getIdentifier(IMarker marker) {
 			return marker.getResource().getProject();
 		}
+		@Override
+		String getShortDescription(Object id) {
+			return ((IProject)id).getName();
+		}
 	}),
 
-	Package(true, new MarkerMapper<IJavaElement>() {
+	Package(true, new MarkerMapper<IPackageFragment>() {
 		@Override
-		IJavaElement getIdentifier(IMarker marker) {
+		IPackageFragment getIdentifier(IMarker marker) {
 			IJavaElement javaElement = JavaCore.create(marker.getResource());
 			if (javaElement != null) {
-				return javaElement.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+				return (IPackageFragment) javaElement
+						.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
 			}
 			return null;
+		}
+
+		@Override
+		String getShortDescription(Object id) {
+			return ((IPackageFragment)id).getElementName();
 		}
 	}),
 
@@ -66,6 +80,11 @@ public enum GroupType {
 		@Override
 		IJavaElement getIdentifier(IMarker marker) {
 			return JavaCore.create(marker.getResource());
+		}
+
+		@Override
+		String getShortDescription(Object id) {
+			return ((IJavaElement)id).getElementName();
 		}
 	}),
 
@@ -75,21 +94,42 @@ public enum GroupType {
 			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
 			return bug == null ? null : Integer.valueOf(bug.getPriority());
 		}
-	}),
 
-	Category(true, new MarkerMapper<String>() {
 		@Override
-		String getIdentifier(IMarker marker) {
-			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-			return bug == null ? null : bug.getBugPattern().getCategory();
+		String getShortDescription(Object id) {
+			return FindBugsMarker.Priority.label(((Integer)id).intValue()).name() + " priority";
 		}
 	}),
 
-	PatternType(true, new MarkerMapper<String>() {
+	Category(true, new MarkerMapper<BugCategory>() {
 		@Override
-		String getIdentifier(IMarker marker) {
+		BugCategory getIdentifier(IMarker marker) {
 			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-			return bug == null ? null : bug.getAbbrev();
+			if(bug == null){
+				return null;
+			}
+			return I18N.instance().getBugCategory(bug.getBugPattern().getCategory());
+		}
+
+		@Override
+		String getShortDescription(Object id) {
+			return ((BugCategory)id).getShortDescription();
+		}
+	}),
+
+	PatternType(true, new MarkerMapper<BugCode>() {
+		@Override
+		BugCode getIdentifier(IMarker marker) {
+			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+			if(bug == null){
+				return null;
+			}
+			return I18N.instance().getBugCode(bug.getAbbrev());
+		}
+
+		@Override
+		String getShortDescription(Object id) {
+			return ((BugCode)id).getDescription();
 		}
 	}),
 
@@ -98,6 +138,11 @@ public enum GroupType {
 		BugPattern getIdentifier(IMarker marker) {
 			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
 			return bug == null ? null : bug.getBugPattern();
+		}
+
+		@Override
+		String getShortDescription(Object id) {
+			return ((BugPattern)id).getShortDescription();
 		}
 	}),
 
@@ -160,6 +205,18 @@ public enum GroupType {
 		}
 		if (element instanceof IJavaElement) {
 			return GroupType.Class;
+		}
+		if (element instanceof BugCode) {
+			return GroupType.PatternType;
+		}
+		if (element instanceof BugPattern) {
+			return GroupType.Pattern;
+		}
+		if (element instanceof BugCategory) {
+			return GroupType.Category;
+		}
+		if (element instanceof Integer) {
+			return GroupType.Priority;
 		}
 		return GroupType.Undefined;
 	}

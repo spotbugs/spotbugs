@@ -49,6 +49,11 @@ abstract class MarkerMapper<Identifier> {
 			return GroupType.Undefined;
 		}
 
+		@Override
+		String getShortDescription(Object id) {
+			return "Undefined";
+		}
+
 	};
 
 	private GroupType type;
@@ -74,6 +79,7 @@ abstract class MarkerMapper<Identifier> {
 	 *         null if the mapping cannot be created
 	 */
 	abstract Identifier getIdentifier(IMarker marker);
+	abstract String getShortDescription(Object id);
 
 	FindBugsMarker.Priority getPrio(Identifier data) {
 		if (getType() == GroupType.Priority) {

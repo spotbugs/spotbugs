@@ -72,12 +72,12 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 			if (propId instanceof Method) {
 				Method method = (Method) propId;
 				try {
-					Object object2 = method.invoke(object, (Object[])null);
+					Object object2 = method.invoke(object, (Object[]) null);
 					if (object2 != null) {
-						if(object2.getClass().isArray()){
+						if (object2.getClass().isArray()) {
 							return new ArrayPropertySource((Object[]) object2);
 						}
-						if(Collection.class.isAssignableFrom(object2.getClass())){
+						if (Collection.class.isAssignableFrom(object2.getClass())) {
 							Collection<?> coll = (Collection<?>) object2;
 							return new ArrayPropertySource(coll.toArray());
 						}
@@ -85,7 +85,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 					return object2;
 				} catch (Exception e) {
 					FindbugsPlugin.getDefault().logException(e,
-						"getPropertyValue: method access failed");
+							"getPropertyValue: method access failed");
 				}
 			}
 			return null;
@@ -94,12 +94,15 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		public Object getEditableValue() {
 			return null;
 		}
+
 		public boolean isPropertySet(Object id) {
 			return false;
 		}
+
 		public void resetPropertyValue(Object id) {
 			//
 		}
+
 		public void setPropertyValue(Object id, Object value) {
 			//
 		}
@@ -114,9 +117,16 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 			this.array = object;
 			List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
 			for (Object obj : array) {
-				props.add(new PropertyDescriptor(obj, "" + obj));
+				props.add(new PropertyDescriptor(obj, getDisplayName(obj)));
 			}
 			propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
+		}
+
+		private String getDisplayName(Object obj) {
+			if (obj instanceof IMarker) {
+				return "Marker " + ((IMarker)obj).getId();
+			}
+			return "" + obj;
 		}
 
 		public IPropertyDescriptor[] getPropertyDescriptors() {
@@ -130,24 +140,28 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		public Object getEditableValue() {
 			return null;
 		}
+
 		public boolean isPropertySet(Object id) {
 			return false;
 		}
+
 		public void resetPropertyValue(Object id) {
 			//
 		}
+
 		public void setPropertyValue(Object id, Object value) {
 			//
 		}
 	}
 
-	static List<Method> getGetters(Object obj){
+	static List<Method> getGetters(Object obj) {
 		List<Method> methodList = new ArrayList<Method>();
 		Method[] methods = obj.getClass().getMethods();
 		for (Method method : methods) {
-			if(method.getParameterTypes().length == 0){
+			if (method.getParameterTypes().length == 0) {
 				String name = method.getName();
-				if(name.startsWith("get") || name.startsWith("is")) {
+				if ((name.startsWith("get") || name.startsWith("is"))
+						&& !name.equals("getClass")) {
 					methodList.add(method);
 				}
 			}
@@ -224,12 +238,15 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		public Object getEditableValue() {
 			return null;
 		}
+
 		public boolean isPropertySet(Object id) {
 			return false;
 		}
+
 		public void resetPropertyValue(Object id) {
 			//
 		}
+
 		public void setPropertyValue(Object id, Object value) {
 			//
 		}
@@ -237,13 +254,14 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IPropertySheetPage.class && (adaptableObject instanceof JavaEditor)) {
+		if (adapterType == IPropertySheetPage.class
+				&& (adaptableObject instanceof JavaEditor)) {
 			IWorkbenchPart part = (IWorkbenchPart) adaptableObject;
 			IViewReference[] references = part.getSite().getPage().getViewReferences();
 			for (IViewReference viewReference : references) {
 				if ("de.tobject.findbugs.view.bugtreeview".equals(viewReference.getId())) {
 					IWorkbenchPart workbenchPart = viewReference.getPart(false);
-					if(workbenchPart != null){
+					if (workbenchPart != null) {
 						return new JavaEditorTabbedPropertySheetPage(workbenchPart);
 					}
 				}
@@ -286,13 +304,13 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public Class[] getAdapterList() {
 		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
 	}
 
-	private static class JavaEditorTabbedPropertySheetPage extends TabbedPropertySheetPage {
+	private static class JavaEditorTabbedPropertySheetPage extends
+			TabbedPropertySheetPage {
 
 		private final IWorkbenchPart workbenchPart;
 
