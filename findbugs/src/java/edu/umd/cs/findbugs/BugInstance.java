@@ -1270,8 +1270,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Add a method annotation for the method which is called by given
 	 * instruction.
 	 *
-	 * @param methodGen the method containing the call
-	 * @param inv       the InvokeInstruction
+	 * @param cpg the constant pool for the method containing the call
+	 * @param inv the InvokeInstruction
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(ConstantPoolGen cpg, InvokeInstruction inv) {
