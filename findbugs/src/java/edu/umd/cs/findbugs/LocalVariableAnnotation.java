@@ -144,6 +144,8 @@ public class LocalVariableAnnotation implements BugAnnotation {
 			}
 		}
 		LineNumberTable lineNumbers = method.getLineNumberTable();
+		if (lineNumbers == null)
+			 return new LocalVariableAnnotation(localName, local, position1);
 		int line = lineNumbers.getSourceLine(position1);
 		return new LocalVariableAnnotation(localName, local, position1, line);
 	}
