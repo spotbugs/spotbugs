@@ -93,7 +93,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 		if (staticMethod && seen == PUTSTATIC
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			OpcodeStack.Item top = stack.getStackItem(0);
-			if (top.isInitialParameter())
+			if (isPotentialCapture(top))
 			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
@@ -104,7 +104,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			OpcodeStack.Item target = stack.getStackItem(1);
-			if (top.isInitialParameter() && target.getRegisterNumber() == 0)
+			if (isPotentialCapture(top) && target.getRegisterNumber() == 0)
 			bugAccumulator.accumulateBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
 					.addClassAndMethod(this)
 					.addReferencedField(this)
@@ -160,4 +160,15 @@ public class FindReturnRef extends OpcodeStackDetector {
 		fieldOnTOS = false;
 		thisOnTOS = false;
 	}
+
+	private boolean isPotentialCapture(OpcodeStack.Item top) {
+	    if (!top.isInitialParameter()) 
+	    	return false;
+	    if ((getMethod().getAccessFlags() & ACC_VARARGS) == 0) 
+	    	return true;
+	    if (top.getRegisterNumber() == parameterCount-1)
+	    	return false; // var-arg parameter
+	    return true;
+	    
+    }
 }	
