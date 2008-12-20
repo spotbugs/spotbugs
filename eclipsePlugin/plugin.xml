@@ -826,6 +826,7 @@
                toolbarPath="collapseExpand"
                tooltip="Expand All">
          </action>
+         <!-- not ready yet
          <action
                class="de.tobject.findbugs.actions.FilterBugsDialogAction"
                icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/filter_ps.gif"
@@ -834,7 +835,7 @@
                menubarPath="filterActionGroupFilters-start"
                toolbarPath="filter"
                tooltip="Filter Bugs by Id...">
-         </action>
+         </action> -->
         </viewContribution>
    </extension>
 
