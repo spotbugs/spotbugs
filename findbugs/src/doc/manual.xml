@@ -1860,7 +1860,7 @@ In other words, each of the children must be true for the predicate to be true.
    <term><literal>&lt;Or&gt;</literal></term>
     <listitem><para>
    This element combines <literal>Match</literal> clauses as disjuncts.  I.e., you can put two
-   <literal>Method</literal> elements in an <literal>Or</literal> clause in order match either method.
+   <literal>Method</literal> elements in an <literal>Or</literal> clause in order to match either method.
    </para></listitem>
  </varlistentry>
 </variablelist>
@@ -1871,7 +1871,7 @@ In other words, each of the children must be true for the predicate to be true.
 <title>Java element name matching</title>
 
 <para>
-If the <literal>name</literal> attribute or <literal>Class</literal>, <literal>Method</literal> or
+If the <literal>name</literal> attribute of <literal>Class</literal>, <literal>Method</literal> or
 <literal>Field</literal> starts with the ~ character the rest of attribute content is interpreted as 
 a Java regular expression that is matched against the names of the Java element in question. 
 </para>
@@ -3054,7 +3054,7 @@ attribute or nest it inside the ant call with a
 			<title>defectDensity</title>
 <para>
 This command lists information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
-In can either be invoked with no files specified on the command line (in which case it reads from standard input)
+It can either be invoked with no files specified on the command line (in which case it reads from standard input)
 or with one file specified on the command line.</para>
 <para>It generates a table with the following columns, and with one
 row for the entire project, and one row for each package or class that contains at least
@@ -3462,7 +3462,7 @@ Here is a complete ant script example for both running findbugs and running a ch
       	                  input="out.xml"
       	                  output="out-rel.xml"/>
 
-      <!-- Checking if history file already exists (findbugs-hist.xml) -->
+      <!-- Checking if history file already exists (out-hist.xml) -->
       <condition property="mining.historyfile.available">
          <available file="out-hist.xml"/>
       </condition>
