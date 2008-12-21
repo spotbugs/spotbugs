@@ -132,6 +132,16 @@ public class Subtypes2 {
 	       return false;
         }
 	}
+	public static boolean instanceOf(ClassDescriptor subDescriptor, @DottedClassName String dottedSupertype) {
+		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+		ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(dottedSupertype);
+		try {
+	        return subtypes2.isSubtype(subDescriptor, superDescriptor);
+        } catch (ClassNotFoundException e) {
+	       AnalysisContext.reportMissingClass(e);
+	       return false;
+        }
+	}
 
 	public static boolean instanceOf(JavaClass subtype, @DottedClassName String dottedSupertype) {
 		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
