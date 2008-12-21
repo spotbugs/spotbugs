@@ -1545,7 +1545,7 @@ to the plugin.
 <title>Requirements</title>
 
 <para>
-To use the &FindBugs; Plugin for Eclipse, you need Eclipse 3.0.1 or later,
+To use the &FindBugs; Plugin for Eclipse, you need Eclipse 3.3 or later,
 and JRE/JDK 1.5 or later.
 </para>
 
