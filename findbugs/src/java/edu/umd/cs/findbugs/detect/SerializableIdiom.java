@@ -513,6 +513,22 @@ public class SerializableIdiom extends OpcodeStackDetector
 	@Override
 	public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
+		if (isEjbImplClass) {
+			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(obj.getSignature());
+			if (fieldType != null) {
+				if (Subtypes2.instanceOf(fieldType, "javax.ejb.SessionContext")
+						|| Subtypes2.instanceOf(fieldType, "javax.transaction.UserTransaction")
+						|| Subtypes2.instanceOf(fieldType, "javax.ejb.EJBHome")
+						|| Subtypes2.instanceOf(fieldType, "javax.ejb.EJBObject")
+						|| Subtypes2.instanceOf(fieldType, "javax.naming.Context")) {
+					if (obj.isTransient()) 
+						bugReporter.reportBug(new BugInstance(this, "UNKNOWN", NORMAL_PRIORITY)
+						.addClass(this)
+						.addVisitedField(this));
+					return;
+				}
+			}
+		}
 
 		if (obj.isTransient()) {
 			if (isSerializable && !isExternalizable) {
