@@ -594,8 +594,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				// Only refine the type if the cast is feasible: i.e., a downcast.
 				// Otherwise, just set it to TOP.
 				try {
-					boolean guaranteed = instanceOfType instanceof ReferenceType
-						&& Hierarchy.isSubtype(
+					boolean guaranteed = Hierarchy.isSubtype(
 								(ReferenceType) checkedType,
 								(ReferenceType) instanceOfType);
 					if (guaranteed) continue;

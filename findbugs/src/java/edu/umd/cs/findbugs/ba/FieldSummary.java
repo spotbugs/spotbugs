@@ -87,13 +87,11 @@ public class FieldSummary {
 	public void mergeSummary(XField fieldOperand, OpcodeStack.Item mergeValue) {
 		if (SystemProperties.ASSERTIONS_ENABLED) {
 			String mSignature = mergeValue.getSignature();
-			int length = mSignature.length();
 			
 			Type mergeType = Type.getType(mSignature);
 			Type fieldType = Type.getType(fieldOperand.getSignature());
 			IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(mergeType, fieldType, false);
 			if (check.getPriority() <= Priorities.NORMAL_PRIORITY) {
-				IncompatibleTypes check2 = IncompatibleTypes.getPriorityForAssumingCompatible(mergeType, fieldType, false);
 				AnalysisContext.logError(fieldOperand + " not compatible with " + mergeValue, 
 						new IllegalArgumentException(check.toString()));
 			}
