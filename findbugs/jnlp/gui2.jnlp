@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <jnlp 
   spec="1.0+" 
-  codebase="http://findbugs.cs.umd.edu/demo/jnlp" 
-  href="gui2.jnlp">
+  codebase="http://findbugs.cs.umd.edu/demo/jnlp" href="gui2.jnlp">
   <information> 
     <title>FindBugs</title>
     <vendor>University of Maryland</vendor> 
     <homepage href="http://findbugs.sourceforge.net"/> 
-    <description>Findbugs Static Bug Finder</description> 
-    <description kind="short">A tool for finding bugs in your classes</description> 
+    <description>FindBugs: Static Analysis for findings bugs</description> 
+    <description kind="short">Using static analysis to find coding mistakes in compiled programs for a JVM</description> 
     <icon href="buggy-sm.png"/> 
     <offline-allowed/> 
   </information> 
@@ -16,8 +15,8 @@
       <all-permissions/> 
   </security> 
   <resources> 
-    <j2se version="1.5+" initial-heap-size="300m" max-heap-size="800m"/>
-    <jar href="findbugs.jar"/>
+    <j2se version="1.5+" initial-heap-size="301m" max-heap-size="800m"/>
+    <jar href="findbugs.jar" main="true"/>
     <jar href="asm-3.1.jar"/>
     <jar href="asm-commons-3.1.jar"/>
     <jar href="asm-tree-3.1.jar"/>
