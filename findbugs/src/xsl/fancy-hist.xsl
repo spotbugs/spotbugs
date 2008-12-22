@@ -243,7 +243,6 @@
 
          // display filter
          function loadFilter() {
-            var versions    = document.findbugsForm.versions;
             var versionsBox = document.findbugsForm.versions.options;
             versionsBox[0] = new Option(" -- All Versions -- ","-1");
             versionsBox.selectedIndex = 0;
