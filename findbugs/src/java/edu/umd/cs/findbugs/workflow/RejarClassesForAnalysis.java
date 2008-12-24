@@ -287,6 +287,7 @@ public class RejarClassesForAnalysis {
 			auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
 		copied.clear();
+		final HashSet<String> mentioned = new HashSet<String>();
 
 		for (File f : inputZipFiles) {
 			System.err.println("Opening " + f);
@@ -297,7 +298,8 @@ public class RejarClassesForAnalysis {
 					String dottedName = name.replace('/', '.');
 					if (commandLine.exclude.matches(dottedName)) return;
 					if (!copied.add(name)) {
-						System.err.println("Skipping duplicate of " + name);
+						if (mentioned.add(name)) 
+							System.err.println("Skipping duplicate of " + name);
 						return;
 
 					}
