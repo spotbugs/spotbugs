@@ -52,15 +52,21 @@ public class BugRenderer extends DefaultTreeCellRenderer
 					c=new Color(0.4f, 0.4f, 0.6f);
 					break;
 				case Detector.NORMAL_PRIORITY:
-					c=Color.black;
+					if (bug.isDead())
+						c = new Color(0.2f, 0.2f, 0.2f);
+					else 
+						c=Color.black;
 					break;
 				case Detector.HIGH_PRIORITY:
-					c=new Color(.85f, 0, 0);
+					if (bug.isDead())
+						c=new Color(.65f, 0.2f, 0.2f);
+					else
+						c=new Color(.85f, 0, 0);
 					break;
 				case Detector.EXP_PRIORITY: 
 				case Detector.IGNORE_PRIORITY:
 				default: 
-					c=Color.black;
+					c=Color.blue;
 					break;
 			}
 			if (leaf)
