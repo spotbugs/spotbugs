@@ -75,7 +75,7 @@ public class IncompatibleTypes {
 	public static final IncompatibleTypes UNCHECKED = new IncompatibleTypes("Actual compile type time of argument is Object, unchecked",
 	        Priorities.LOW_PRIORITY);
 
-	public static final IncompatibleTypes ARRAY_AND_OBJECT = new IncompatibleTypes("Array and Object", Priorities.LOW_PRIORITY);
+	public static final IncompatibleTypes ARRAY_AND_OBJECT = new IncompatibleTypes("Array and Object", Priorities.IGNORE_PRIORITY);
 
 	public static final IncompatibleTypes INCOMPATIBLE_CLASSES = new IncompatibleTypes("Incompatible classes",
 	        Priorities.HIGH_PRIORITY);

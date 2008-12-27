@@ -468,7 +468,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (expectedString.equals(actualString))
 			return IncompatibleTypes.SEEMS_OK;
 
-		if (expectedType == Type.OBJECT)
+		if (expectedType.equals(Type.OBJECT))
 			return IncompatibleTypes.SEEMS_OK; 
 		// if either type is java.lang.Object, then automatically true!
 		// again compare strings...
@@ -494,11 +494,21 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			}
 			return IncompatibleTypes.SEEMS_OK;
 		}
+		
+		if (actualType.equals(Type.OBJECT) && parmCat == TypeCategory.ARRAY_TYPE) 
+			return IncompatibleTypes.ARRAY_AND_OBJECT;
+
+			
 		// -~- plain objects are easy
 		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
-
 			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, actualType, false);
+			
+		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) 
+			return IncompatibleTypes.getPriorityForAssumingCompatible(((GenericObjectType) expectedType).getObjectType(), actualType);
+		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) 
+			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, ((GenericObjectType) actualType).getObjectType());
 
+			
 		// -~- parmType is: "? extends Another Type" OR "? super Another Type"
 		if (parmCat == TypeCategory.WILDCARD_EXTENDS || parmCat == TypeCategory.WILDCARD_SUPER)
 			return compareTypes(((GenericObjectType) expectedType).getExtension(), actualType, ignoreBaseType);
@@ -523,12 +533,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
 		}
 
-		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) {
-			return IncompatibleTypes.getPriorityForAssumingCompatible(((GenericObjectType) expectedType).getObjectType(), actualType);
-		}
-		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) {
-			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, ((GenericObjectType) actualType).getObjectType());
-		}
 		// -~- Parameter Types: compare base type then parameters
 		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
 			GenericObjectType parmGeneric = (GenericObjectType) expectedType;
