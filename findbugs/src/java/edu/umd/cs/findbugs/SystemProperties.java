@@ -27,7 +27,7 @@ public class SystemProperties {
 	public final static boolean ASSERTIONS_ENABLED;
 	static {
 		boolean tmp = false;
-		assert(tmp = true);
+		assert tmp = true; // set tmp to true if assertions are enabled
 		ASSERTIONS_ENABLED = tmp;
 	}
 	/**
