@@ -47,8 +47,8 @@ public class BugLeafNode {
 	@Override
 	public String toString()
 	{
-
-
+		if (bug.isDead())
+			return "\u2620 " + bug.getMessageWithoutPrefix();
 		return bug.getMessageWithoutPrefix();
 	}
 
