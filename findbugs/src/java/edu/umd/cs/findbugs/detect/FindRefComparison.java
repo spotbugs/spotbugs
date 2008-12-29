@@ -927,6 +927,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
+		
 		if (result.getPriority() >= Priorities.LOW_PRIORITY && lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
@@ -988,7 +989,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-		} else if (result.getPriority() <= Priorities.LOW_PRIORITY) {
+		} else if (result != IncompatibleTypes.UNCHECKED && result.getPriority() <= Priorities.LOW_PRIORITY) {
 			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_),

@@ -17,7 +17,9 @@ class BadEquals {
 	}
 
 	public boolean b(int [] a, Object [] b) {
-		// TODO: Report this as a H C EC
+		return a.equals(b); 
+	}
+	public boolean b(int [] a, long [] b) {
 		return a.equals(b); 
 	}
 	public boolean b(int [] a, String b) {
