@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -71,6 +72,11 @@ public class IncompatibleTypes {
 
 	public static final IncompatibleTypes ARRAY_AND_NON_ARRAY = new IncompatibleTypes("Array and non array",
 	        Priorities.HIGH_PRIORITY);
+	
+	public static final IncompatibleTypes PRIMATIVE_ARRAY_AND_OTHER_ARRAY = new IncompatibleTypes("Primitive array and a non-primitive array",
+	        Priorities.HIGH_PRIORITY);
+	public static final IncompatibleTypes INCOMPATIBLE_PRIMATIVE_ARRAYS = new IncompatibleTypes("Incompatible primitive arrays",
+	        Priorities.HIGH_PRIORITY);
 
 	public static final IncompatibleTypes UNCHECKED = new IncompatibleTypes("Actual compile type time of argument is Object, unchecked",
 	        Priorities.LOW_PRIORITY);
@@ -101,11 +107,22 @@ public class IncompatibleTypes {
 		if (!(actualType instanceof ReferenceType))
 			return SEEMS_OK;
 
+		if (expectedType instanceof BasicType ^ actualType instanceof BasicType) {
+			return INCOMPATIBLE_CLASSES;
+		}
 		while (expectedType instanceof ArrayType && actualType instanceof ArrayType) {
 			expectedType = ((ArrayType) expectedType).getElementType();
 			actualType = ((ArrayType) actualType).getElementType();
 		}
 
+		if (expectedType instanceof BasicType ^ actualType instanceof BasicType) {
+			return PRIMATIVE_ARRAY_AND_OTHER_ARRAY;
+		}
+		if (expectedType instanceof BasicType && actualType instanceof BasicType) {
+			if (!expectedType.equals(actualType))
+				return INCOMPATIBLE_PRIMATIVE_ARRAYS;
+			else return SEEMS_OK;
+		}
 		if (expectedType instanceof ArrayType) {
 			return getPriorityForAssumingCompatibleWithArray(actualType);
 		}

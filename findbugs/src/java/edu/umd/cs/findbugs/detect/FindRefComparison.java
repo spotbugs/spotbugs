@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
@@ -904,42 +905,42 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	        priorityModifier = 2;
         }
 
-		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
-			if (rhsType_.getType() == T_NULL) {
-				// A literal null value was passed directly to equals().
-				if (!looksLikeTestCase) {
-	                bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
-					.addClassAndMethod(methodGen, sourceFile),
-					SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
-                }
-			} else if (lhsType_.getType() == T_NULL) {
-				// Hmm...in this case, equals() is being invoked on
-				// a literal null value.  This is really the
-				// purview of FindNullDeref.  So, we'll just do nothing.
-			} else {
-				bugReporter.logError("equals() used to compare non-object type(s) " +
-						lhsType_ + " and " + rhsType_ +
-						" in " +
-						SignatureConverter.convertMethodSignature(methodGen) +
-						" at " + location.getHandle());
+		if (rhsType_.getType() == T_NULL) {
+			// A literal null value was passed directly to equals().
+			if (!looksLikeTestCase) {
+                bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile),
+				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
 			}
 			return;
-		}
-		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
-			bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addFoundAndExpectedType(rhsType_, lhsType_),
-			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
-			);
+		} else if (lhsType_.getType() == T_NULL) {
+			// Hmm...in this case, equals() is being invoked on
+			// a literal null value.  This is really the
+			// purview of FindNullDeref.  So, we'll just do nothing.
+			return;
+		} else if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
+			bugReporter.logError("equals() used to compare non-object type(s) " +
+					lhsType_ + " and " + rhsType_ +
+					" in " +
+					SignatureConverter.convertMethodSignature(methodGen) +
+					" at " + location.getHandle());
+			return;
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
+		if (result.getPriority() >= Priorities.LOW_PRIORITY && lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
+				bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addFoundAndExpectedType(rhsType_, lhsType_),
+				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
+				);
+			} 
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
-	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-        } else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
+		} else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
 			String lhsSig = lhsType_.getSignature();
 			String rhsSig = rhsType_.getSignature();
 			boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
@@ -953,17 +954,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
 				Set<XMethod> targets = null;
 				try {
-		            targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
-		                    false, false);
-		            boolean allOk = targets.size() > 0;
-		            for(XMethod m2 : targets) 
-		            	if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
-		            			allOk = false;
-		            if (allOk) 
-		            	priorityModifier+=2;
-	            } catch (ClassNotFoundException e) {
-		            AnalysisContext.reportMissingClass(e);
-	            }
+					targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
+							false, false);
+					boolean allOk = targets.size() > 0;
+					for(XMethod m2 : targets) 
+						if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
+							allOk = false;
+					if (allOk) 
+						priorityModifier+=2;
+				} catch (ClassNotFoundException e) {
+					AnalysisContext.reportMissingClass(e);
+				}
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsType_, lhsType_)
@@ -974,20 +975,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
 				|| result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
-	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_)
 			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-        } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
-	        bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
+		} else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_)
 			.addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature())),
 			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-        }
+		} else if (result.getPriority() <= Priorities.LOW_PRIORITY) {
+			bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+			.addClassAndMethod(methodGen, sourceFile)
+			.addFoundAndExpectedType(rhsType_, lhsType_),
+			SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+		}
+
 	}
 
 //	public static void main(String[] argv) throws Exception {
