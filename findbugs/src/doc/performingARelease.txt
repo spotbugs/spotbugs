@@ -17,4 +17,9 @@ release daily/candidate/final eclipse plugins
 From findbugs directory, do:
 	rsync -avz web/ username,findbugs@web.sourceforge.net:htdocs/
 
+For a full release, make a branch in the svn repository:
+
+
+svn copy "https://findbugs.googlecode.com/svn/trunk" "https://findbugs.googlecode.com/svn/branches/1.X.X" 
+
 For a release candidate, send email to findbugs-discuss and findbugs-core. For a full release, send email to findbugs-announce.
