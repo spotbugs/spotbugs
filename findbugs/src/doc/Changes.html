@@ -30,6 +30,13 @@
 					    but the only thing the code was doing with the result was 
 					    passing it to assertFalse.
 					<li>Japanese localization and manual by K.Hashimoto. (Thanks!)
+					<li>Added -exclude and -outputDir command line options to rejarForAnalysis
+					<li>Extended -adjustPriorities option to FindBugs analysis textui so that you
+						can modify the priorities of individual bug patterns as well as visitors,
+						and also completely suppress individual bug patterns or visitors. 
+						<ul>
+						<li> e.g., -adjustPriority MS_SHOULD_BE_FINAL=suppress,MS_PKGPROTECT=suppress,EI_EXPOSE_REP=suppress,EI_EXPOSE_REP2=suppress,PZLA_PREFER_ZERO_LENGTH_ARRAYS=raise
+						</ul>
 					</ul>
 					
 
