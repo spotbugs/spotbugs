@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -286,8 +287,11 @@ public class SerializableIdiom extends OpcodeStackDetector
 						priority++;
 					if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
 						priority++;
-					if (obj.isAbstract()) 
+					if (obj.isAbstract()) {
 						priority++;
+						if (priority < Priorities.LOW_PRIORITY)
+						  priority = Priorities.LOW_PRIORITY;
+						}
 
 					try {
 						double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
