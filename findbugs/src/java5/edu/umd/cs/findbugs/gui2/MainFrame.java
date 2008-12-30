@@ -337,7 +337,7 @@ public class MainFrame extends FBFrame implements LogSync
      * @return
      */
     private String getActionWithoutSavingMsg(String action) {
-    	String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_without_saving_txt_txt", null);
+    	String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_without_saving_txt", null);
     	if (msg != null) return msg;
 	    return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_"+action+"_txt", "You are "+action) + " " +
 	    		edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");

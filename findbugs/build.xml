@@ -690,6 +690,7 @@
 	-->
 	<target name="generatedocs">
 		<mkdir dir="${docoutput.dir}"/>
+        <mkdir dir="${docoutput.dir}/ja"/>
 
 		<!-- Filter set used for generating text substitution values for
 			documentation. -->
@@ -719,8 +720,24 @@
 			</fileset>
 		</copy>
 		
+		<!-- overwrite UTF-8 files -->
+		<copy todir="${docoutput.dir}" encoding="UTF-8" overwrite="true">
+			<filterset>
+				<filterset refid="doc.filters"/>
+			</filterset>
+			<fileset dir="${docsrc.dir}">
+				<include name="manual_*.xml"/>
+			</fileset>
+		</copy>
+		
 		<copy todir="${docoutput.dir}">
 			<fileset dir="${docsrc.dir}">
+				<patternset refid="doc.img.pats"/>
+			</fileset>
+		</copy>
+
+		<copy todir="${docoutput.dir}/ja/manual">
+			<fileset dir="${docsrc.dir}/manual">
 				<patternset refid="doc.img.pats"/>
 			</fileset>
 		</copy>
@@ -745,6 +762,16 @@
 			<arg value="manual.xml" />
 			<arg value="manual.xsl" />
 		</java>
+
+        <java fork="true" dir="${docoutput.dir}/ja" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+            <classpath>
+                <pathelement location="${saxon.home}/saxon.jar"/>
+                <pathelement path="${java.class.path}"/>
+            </classpath>
+            <arg value="../manual_ja.xml" />
+            <arg value="../manual.xsl" />
+        </java>
+
 	</target>
 	
 	<!--
