@@ -99,7 +99,7 @@ public class TypeQualifierResolver {
 			
 			try {
 				if (annotationClass.equals(googleNullable)) {
-					resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
+					resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NULLABLE), result, onStack);
 					return;
 				}
 				XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, annotationClass);
