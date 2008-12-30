@@ -217,10 +217,10 @@ public class FindSqlInjection implements Detector {
 		String stringValue = ((String) value).trim();
 		if (stringValue.startsWith(",") || stringValue.endsWith(","))
 			stringAppendState.setSawComma(handle);
+		if (isCloseQuote(stringValue) && stringAppendState.getSawOpenQuote(handle))
+			stringAppendState.setSawCloseQuote(handle);
 		if (isOpenQuote(stringValue))
 			stringAppendState.setSawOpenQuote(handle);
-		if (isCloseQuote(stringValue))
-			stringAppendState.setSawCloseQuote(handle);
 
 		return stringAppendState;
 	}
@@ -410,7 +410,7 @@ public class FindSqlInjection implements Detector {
 			}
 		}
 
-		String description = "";
+		String description = "UNKNOWN";
 		if (isExecuteDatabaseSink(instruction, cpg)) {
 			description = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE";
 		} else if (isPreparedStatementDatabaseSink(instruction, cpg)) {
