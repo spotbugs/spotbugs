@@ -278,11 +278,15 @@ public class SerializableIdiom extends OpcodeStackDetector
 					if (transientFieldsSetInConstructor.contains(e.getKey()))
 						priority--;
 
-					if (isGUIClass) priority++;
-					if (isEjbImplClass) priority++;
+					if (isGUIClass) 
+						priority++;
+					if (isEjbImplClass) 
+						priority++;
 					if (e.getValue() < 3) 
 						priority++;
 					if (transientFieldsSetToDefaultValueInConstructor.contains(e.getKey()))
+						priority++;
+					if (obj.isAbstract()) 
 						priority++;
 
 					try {
