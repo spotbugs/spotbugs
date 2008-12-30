@@ -87,6 +87,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 	private boolean sawReadResolve;
 	private boolean sawWriteObject;
 	private boolean superClassImplementsSerializable;
+	private boolean superClassHasReadObject;
 	private boolean hasPublicVoidConstructor;
 	private boolean superClassHasVoidConstructor;
 	private boolean directlyImplementsExternalizable;
@@ -190,6 +191,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 
 		hasPublicVoidConstructor = false;
 		superClassHasVoidConstructor = true;
+		superClassHasReadObject = false;
 		superClassImplementsSerializable = isSerializable && !implementsSerializableDirectly;
 		ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
 		if (superclassDescriptor != null)
@@ -206,8 +208,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 							&& !m.isPrivate()
 							) {
 						superClassHasVoidConstructor = true;
-						break;
 					}
+					if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V") 
+							&& m.isPrivate())
+						superClassHasReadObject = true;
 				}
 			}
 		} catch (ClassNotFoundException e) {
@@ -271,7 +275,7 @@ public class SerializableIdiom extends OpcodeStackDetector
 			System.out.println("  isGUIClass: " + isGUIClass);
 			System.out.println("  isEjbImplClass: " + isEjbImplClass);
 		}
-		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField) {
+		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField && !superClassHasReadObject) {
 			for(Map.Entry<XField,Integer> e : transientFieldsUpdates.entrySet()) {
 
 					XField fieldX = e.getKey();
