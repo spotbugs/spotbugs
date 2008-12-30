@@ -220,20 +220,13 @@
 		</target>
 
 	<target name="jars" depends="classes, validate,version">
+		<mkdir dir="${plugin.dir}"/>
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
 			<!-- Compiled classes, properties files. -->
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
-<!--
-				<exclude name="${pkg.base}/gui/**"/>
-				<exclude name="${pkg.base}/gui2/**"/>
-				<exclude name="${pkg.base}/sourceViewer/**"/>
--->
-<!--
-				<exclude name="${pkg.base}/detect/**"/>
--->
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/antTask/**"/>
 				<!-- Exclude JUnit tests. -->
@@ -262,37 +255,6 @@
 			</fileset>
 		</jar>
 		
-		<!-- Core detector plugin. -->
-<!--
-		<jar destfile="${plugin.dir}/coreplugin.jar">
-			<fileset dir="etc">
-				<include name="findbugs.xml"/>
-				<include name="messages*.xml"/>
-			</fileset>
-			<fileset dir="${classes.dir}">
-				<include name="${pkg.base}/detect/*.class"/>
-			</fileset>
-		</jar>
--->
-
-		<!-- Swing GUI jar file. -->
-<!--
-		<jar destfile="${gui.jar}"
-				manifest="etc/MANIFEST-findbugsGUI.MF">
-			<fileset dir="${classes.dir}">
-				<include name="${pkg.base}/sourceViewer/**/*.class"/>
-				<include name="${pkg.base}/gui/**/*.class"/>
-				<include name="${pkg.base}/gui/**/*.properties"/>
-				<include name="${pkg.base}/gui/**/*.png"/>
-				<include name="${pkg.base}/gui/**/*.html"/>
-				<include name="${pkg.base}/gui2/**/*.class"/>
-				<include name="${pkg.base}/gui2/**/*.properties"/>
-				<include name="${pkg.base}/gui2/**/*.png"/>
-				<include name="${pkg.base}/gui2/**/*.html"/>
-			</fileset>
-		</jar>
--->
-
 		<!-- Annotations jar file. -->
 		<jar destfile="${annotations.jar}">
 			<fileset dir="${classes.dir}">
@@ -481,6 +443,7 @@
   <target name="runanttask" depends="anttask,jars">
    <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <taskdef name="convertXmlToText" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${anttask.jar}"/>
     <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask" classpath="${anttask.jar}"/>
     <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
@@ -490,6 +453,23 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
+<findbugs home="${findbugs.home}"
+              output="xml"
+              jvmargs="-Xmx640m"
+              outputFile="${sampleoutput.dir}/bcel-3.xml" 
+              projectFile="${sampleoutput.dir}/bcel.fbp" 
+		applySuppression="true"
+     />
+
+<convertXmlToText
+	 home="${findbugs.home}"
+              jvmargs="-Xmx640m"
+              input="${sampleoutput.dir}/bcel-3.xml" 
+              output="${sampleoutput.dir}/bcel-3.txt" 
+              applySuppression="true"
+		/>
+
+
 <setBugDatabaseInfo home="."
 	withMessages="true"
 	name="Set name test"
@@ -876,6 +856,8 @@
 		<patternset id="bindist.jar.pats">
 			<include name="lib/*.jar"/>
 			<include name="plugin/*.jar"/>
+			<include name="plugin/README"/>
+			<include name="plugin"/>
 			<exclude name="lib/AppleJavaExtensions.jar"/>
 			<exclude name="lib/junit.jar"/>
 			<exclude name="lib/plastic.jar"/>
