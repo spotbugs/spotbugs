@@ -364,7 +364,11 @@ public class TypeQualifierApplications {
 		TypeQualifierAnnotation result;
 		Collection<AnnotationValue> values =  TypeQualifierResolver.resolveTypeQualifierDefaults(o.getAnnotations(), elementType);
 		TypeQualifierAnnotation tqa = extractAnnotation(values, typeQualifierValue);
-		if (tqa != null) return tqa;
+		
+		if (tqa != null) {
+			// System.out.println("Found default annotation of " + tqa + " for element " + elementType + " in " + o);
+			return tqa;
+		}
 
 		//
 		// Try one of the FindBugs-specific default annotation mechanisms.
@@ -727,7 +731,7 @@ public class TypeQualifierApplications {
 				if (DEBUG) {
 					System.out.print("  (3) Checking default...");
 				}
-				tqa = getDefaultTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
+				tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue);
 				if (DEBUG) {
 					System.out.println(tqa != null ? "FOUND" : "none");
 				}
@@ -799,18 +803,17 @@ public class TypeQualifierApplications {
 	 * Get the default (outer-scope) TypeQualifierAnnotation on given method parameter.
 	 *
 	 * @param xmethod            a method
-	 * @param parameter          a parameter (0 == first parameter)
 	 * @param typeQualifierValue the kind of TypeQualifierValue we are looking for
 	 * @return the default (outer scope) TypeQualifierAnnotation on the parameter,
 	 *         or null if there is no default TypeQualifierAnnotation
 	 */
-	private static @CheckForNull TypeQualifierAnnotation getDefaultTypeQualifierAnnotation(
+	private static @CheckForNull TypeQualifierAnnotation getDefaultTypeQualifierAnnotationForParameters(
 			XMethod xmethod,
-			int parameter,
 			TypeQualifierValue typeQualifierValue) {
 
 		if (xmethod.isSynthetic())
 			return null;  // synthetic methods don't get default annotations
+		// System.out.println("Looking for default " + typeQualifierValue + " annotation of parameters of " + xmethod);
 		AnnotatedObject o = xmethod;
 		while (true) {
 			o =  o.getContainingScope();
