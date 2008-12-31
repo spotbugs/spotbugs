@@ -792,7 +792,7 @@ public class Subtypes2 {
 	 * 
 	 * @param start   ClassDescriptor naming the class where the traversal should start
 	 * @param visitor an InheritanceGraphVisitor
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException if the start vertex cannot be resolved
 	 */
 	public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor) throws ClassNotFoundException {
 		LinkedList<SupertypeTraversalPath> workList = new LinkedList<SupertypeTraversalPath>();

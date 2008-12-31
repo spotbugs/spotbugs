@@ -72,7 +72,8 @@ public class TypeQualifierResolver {
 	 */
 	public static Collection<AnnotationValue> resolveTypeQualifierDefaults(Collection<AnnotationValue> values, ElementType elementType) {
 		LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-		for(AnnotationValue value : values) resolveTypeQualifierDefaults(value, elementType, result);
+		for(AnnotationValue value : values) 
+			resolveTypeQualifierDefaults(value, elementType, result);
 		return result;
 	}
 	

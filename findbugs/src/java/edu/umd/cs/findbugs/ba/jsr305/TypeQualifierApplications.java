@@ -629,6 +629,7 @@ public class TypeQualifierApplications {
 			result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (result != null) {
 				// Great - found an outer scope with a relevant annotation
+				assert false : "I don't think we should be looking here";
 				return result;
 			}
 
@@ -747,7 +748,7 @@ public class TypeQualifierApplications {
 					System.out.print("  (3) Checking default...");
 				}
 
-				tqa = getDefaultTypeQualifierAnnotation(xmethod, typeQualifierValue, overriddenMethod);
+				tqa = getDefaultTypeQualifierAnnotationForParameters(xmethod, typeQualifierValue, overriddenMethod);
 
 				if (DEBUG) {
 					System.out.println(tqa != null ? "FOUND" : "none");
@@ -848,6 +849,7 @@ public class TypeQualifierApplications {
 			TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
 			if (tqa != null) {
 				// Found matching annotation in outer scope
+				assert false : "I think this code is dead; it shouldn't find anything";
 				return tqa;
 			}
 
