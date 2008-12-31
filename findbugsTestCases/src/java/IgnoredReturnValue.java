@@ -15,6 +15,11 @@ public class IgnoredReturnValue {
 	public static void main(String args[]) throws Exception {
 		String str = " ttesting ";
 		str.trim();
+		str.toLowerCase();
+		str.toUpperCase();
+		str.replace(" ", "");
+		str.replace(' ', '.');
+		str.substring(0,10);
 		str.equals("testing");
 		Semaphore s = new Semaphore(17, true);
 		s.tryAcquire();
