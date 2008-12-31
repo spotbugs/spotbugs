@@ -1813,7 +1813,7 @@ another package.</p>
 
   <BugPattern type="NP_BOOLEAN_RETURN_NULL">
   	<ShortDescription>Method with Boolean return type returns explicit null</ShortDescription>
-  	<LongDescription> {1} has Boolean return type and returns explicit null</LongDescription>
+  	<LongDescription>{1} has Boolean return type and returns explicit null</LongDescription>
   	<Details>
   	 <![CDATA[
   	 <p>
@@ -3730,7 +3730,7 @@ identical then one of the methods would override the other.
     </Details>
   </BugPattern>
   <BugPattern type="NM_VERY_CONFUSING_INTENTIONAL">
-    <ShortDescription>Very confusing method names</ShortDescription>
+    <ShortDescription>Very confusing method names (but perhaps intentional)</ShortDescription>
     <LongDescription>VERY confusing (but perhaps intentional) to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
@@ -4684,40 +4684,46 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-   <ShortDescription>Non-virtual method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
+   <ShortDescription>Non-virtual method call passes null for nonnull parameter</ShortDescription>
+   <LongDescription>Non-virtual method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
-      A possibly-null value is passed to a method which unconditionally
-      dereferences it.  This will almost certainly result in a null pointer exception.
+      A possibly-null value is passed to a nonnull method parameter.
+	Either the parameter is annotated as a parameter that should
+	always be nonnull, or analysis has shown that it will always be 
+	dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
-   <ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
+   <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
+   <LongDescription>Method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
       A possibly-null value is passed at a call site where all known
-      target methods will unconditionally dereference it.
-      This is very likely to result in a null pointer exception.
+      target methods require the parameter to be nonnull.
+	Either the parameter is annotated as a parameter that should
+	always be nonnull, or analysis has shown that it will always be 
+	dereferenced.
       </p>
       ]]>
    </Details>
   </BugPattern>
 
   <BugPattern type="NP_NULL_PARAM_DEREF">
-   <ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
+   <ShortDescription>Method call passes null for nonnull parameter</ShortDescription>
+   <LongDescription>Method call in {1} passes null for nonnull parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
-      This method call passes a null value to a method which might
-      dereference it unconditionally.
+      This method call passes a null value for a nonnull method parameter.
+	Either the parameter is annotated as a parameter that should
+	always be nonnull, or analysis has shown that it will always be 
+	dereferenced.
       </p>
       ]]>
    </Details>
