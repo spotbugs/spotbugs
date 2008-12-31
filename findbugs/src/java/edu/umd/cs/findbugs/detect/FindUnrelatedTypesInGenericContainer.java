@@ -230,7 +230,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
 
-			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(invokedMethod.getName())) {
+			String invokedMethodName = invokedMethod.getName();
+			for (ClassDescriptor interfaceOfInterest : nameToInterfaceMap.get(invokedMethodName)) {
 
 				if (DEBUG) System.out.println("Checking call to " + interfaceOfInterest + " : " + invokedMethod);
 				String argSignature = invokedMethod.getSignature();
@@ -238,11 +239,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				int pos = 0;
 				boolean allMethod = false;
 				if (!argSignature.equals("(Ljava/lang/Object;)")) {
-						if (invokedMethod.getName().equals("removeAll") || invokedMethod.getName().equals("containsAll")
-								|| invokedMethod.getName().equals("retainAll")) {
+						if (invokedMethodName.equals("removeAll") || invokedMethodName.equals("containsAll")
+								|| invokedMethodName.equals("retainAll")) {
 							if (!invokedMethod.getSignature().equals("(Ljava/util/Collection;)Z")) continue;
 							allMethod = true;
-						} else if (invokedMethod.getName().endsWith("ndexOf")
+						} else if (invokedMethodName.endsWith("ndexOf")
 								&& invokedMethod.getClassName().equals("java.util.Vector") && 
 								argSignature.equals("(Ljava/lang/Object;I)"))
 							pos = 1;
@@ -258,7 +259,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				}
 				// OK, we've fold a method call of interest
 
-				int typeArgument = nameToTypeArgumentIndex.get(invokedMethod.getName());
+				int typeArgument = nameToTypeArgumentIndex.get(invokedMethodName);
 
 				TypeFrame frame = typeDataflow.getFactAtLocation(location);
 				if (!frame.isValid()) {
@@ -291,14 +292,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (objectVN.equals(argVN)) {
 					String bugPattern =  "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES";
 					int priority = HIGH_PRIORITY;
-					if (invokedMethod.getName().equals("removeAll")) {
+					if (invokedMethodName.equals("removeAll")) {
 						bugPattern = "DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION";
 						priority = NORMAL_PRIORITY;
-					} else if (invokedMethod.getName().endsWith("All")) {
+					} else if (invokedMethodName.endsWith("All")) {
 						bugPattern = "DMI_VACUOUS_SELF_COLLECTION_CALL";
 						priority = NORMAL_PRIORITY;
 					}
-					if (invokedMethod.getName().startsWith("contains")) {
+					if (invokedMethodName.startsWith("contains")) {
 						InstructionHandle next = handle.getNext();
 						if (next != null) {
 							Instruction nextIns = next.getInstruction();
@@ -365,7 +366,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (!selfOperation && matchResult == IncompatibleTypes.SEEMS_OK)
 					continue;
 
-				if (invokedMethod.getName().startsWith("contains")) {
+				if (invokedMethodName.startsWith("contains") || invokedMethodName.equals("remove")) {
 					InstructionHandle next = handle.getNext();
 					if (next != null) {
 						Instruction nextIns = next.getInstruction();
@@ -373,6 +374,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						if (nextIns instanceof InvokeInstruction) {
 							XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
 							if (nextMethod.getName().equals("assertFalse"))
+								continue;
+						}
+					}
+				} else if (invokedMethodName.equals("get")) {
+					InstructionHandle next = handle.getNext();
+					if (next != null) {
+						Instruction nextIns = next.getInstruction();
+
+						if (nextIns instanceof InvokeInstruction) {
+							XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
+							if (nextMethod.getName().equals("assertNull"))
 								continue;
 						}
 					}
