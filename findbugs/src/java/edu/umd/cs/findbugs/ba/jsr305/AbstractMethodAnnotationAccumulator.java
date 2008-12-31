@@ -72,4 +72,6 @@ public abstract class AbstractMethodAnnotationAccumulator extends OverriddenMeth
 
 	public abstract TypeQualifierAnnotationLookupResult getResult();
 	protected abstract TypeQualifierAnnotation lookupAnnotation(XMethod xm);
+	
+	public abstract boolean overrides();
 }

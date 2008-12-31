@@ -45,6 +45,8 @@ public class TypeQualifierAnnotation {
 		this.when = when;
 	}
 
+	public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION 
+	= new TypeQualifierAnnotation(null, null);
 //	private static DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> ();
 
 	private static ThreadLocal<DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation>> instance =

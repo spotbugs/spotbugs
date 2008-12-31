@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccumulator {
 	private int parameter;
 	private ParameterAnnotationLookupResult result;
+	private boolean overrides = false;
 
 	/**
 	 * Constructor.
@@ -50,12 +51,19 @@ public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccu
 	public TypeQualifierAnnotationLookupResult getResult() {
 		return result;
 	}
+	
+	/** Returns true if the method overrides/implements a method in a superclass or interface */
+	@Override
+	public boolean overrides() {
+		return overrides;
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.jsr305.AbstractMethodAnnotationAccumulator#lookupAnnotation(edu.umd.cs.findbugs.ba.XMethod)
 	 */
 	@Override
 	protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
+		overrides = true;
 		return TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter, getTypeQualifierValue());
 	}
 

@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulator {
 	private TypeQualifierAnnotationLookupResult result;
+	private boolean overrides = false;
 
 	/**
 	 * Constructor.
@@ -45,9 +46,16 @@ class ReturnTypeAnnotationAccumulator extends AbstractMethodAnnotationAccumulato
 	public TypeQualifierAnnotationLookupResult getResult() {
 		return result;
 	}
-
+	
+	/** Returns true if the method overrides/implements a method in a superclass or interface */
+	@Override
+	public boolean overrides() {
+		return overrides;
+	}
+	
 	@Override
 	protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
+		overrides = true;
 		return TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, getTypeQualifierValue());
     }
 
