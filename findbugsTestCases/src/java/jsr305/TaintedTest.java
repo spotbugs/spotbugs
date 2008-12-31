@@ -1,9 +1,10 @@
 package jsr305;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import javax.annotation.Tainted;
 import javax.annotation.Untainted;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class TaintedTest {
 	@Untainted Object sanitize(Object o) {

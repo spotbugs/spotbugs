@@ -17,10 +17,10 @@
 
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2177967 {
 

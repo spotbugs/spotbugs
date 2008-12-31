@@ -1,9 +1,7 @@
 package sfBugs;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public class Bug2033091 {
 

@@ -2,7 +2,6 @@ package sfBugs;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 public class Bug1921523 {
 	public @CheckForNull

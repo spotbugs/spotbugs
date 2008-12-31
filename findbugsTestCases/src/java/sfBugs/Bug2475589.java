@@ -11,9 +11,10 @@
  * **************************************** */
 
 package sfBugs;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
-import java.sql.*;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2475589 {
     private Connection con;

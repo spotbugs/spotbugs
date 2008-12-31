@@ -1,6 +1,5 @@
 package npe;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class ZeroTrip {
 	

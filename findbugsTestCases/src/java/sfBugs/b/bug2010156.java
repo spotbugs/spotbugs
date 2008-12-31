@@ -16,11 +16,10 @@
 
 package sfBugs.b;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import java.io.Externalizable;
-import java.io.Serializable;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /* ********************

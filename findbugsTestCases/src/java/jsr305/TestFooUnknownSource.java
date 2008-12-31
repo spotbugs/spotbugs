@@ -1,8 +1,9 @@
 package jsr305;
 
+import javax.annotation.meta.When;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import javax.annotation.meta.When;
 
 public class TestFooUnknownSource {
 

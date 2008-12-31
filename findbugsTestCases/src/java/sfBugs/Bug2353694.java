@@ -17,6 +17,7 @@ package sfBugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2353694 {

@@ -1,8 +1,8 @@
 package sfBugs;
-import java.sql.Connection;
 import java.sql.CallableStatement;
-import java.sql.SQLException;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 /**
  * This class demonstrates a false positive in Findbugs 1.1.0. If a CallableStatement is
  * created (with prepareCall()) and then closed in the finally block, all is well. If,

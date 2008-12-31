@@ -18,7 +18,6 @@
 
 package sfBugs.a;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 /* this class only exists to induce a warning in another class;
  * see sfBugs/b/bug2010156.java */

@@ -1,12 +1,9 @@
 package jsr305;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.annotation.Tainted;
-import javax.annotation.Untainted;
 import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.When;
 

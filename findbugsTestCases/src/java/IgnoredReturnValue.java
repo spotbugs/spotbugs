@@ -1,5 +1,3 @@
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
@@ -9,6 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class IgnoredReturnValue {
 	@ExpectWarning("RV")

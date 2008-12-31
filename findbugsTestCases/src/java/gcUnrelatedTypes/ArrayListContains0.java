@@ -1,8 +1,5 @@
 package gcUnrelatedTypes;
 
-import gcUnrelatedTypes.ArrayListContains.Dummy;
-import gcUnrelatedTypes.ArrayListContains.DummyChild;
-
 import java.util.ArrayList;
 
 public class ArrayListContains0<T> {

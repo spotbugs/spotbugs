@@ -1,8 +1,9 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import java.io.File;
 import java.io.IOException;
+
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1992566 {
 	@NoWarning("RV")

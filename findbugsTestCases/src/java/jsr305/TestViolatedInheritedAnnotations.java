@@ -1,10 +1,10 @@
 package jsr305;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import javax.annotation.Tainted;
 import javax.annotation.meta.When;
 
 import jsr305.package1.InterfaceWithDefaultUntaintedParams;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class TestViolatedInheritedAnnotations implements I1, I2 {
 	@Foo(when=When.ALWAYS) Object always;

@@ -1,10 +1,12 @@
 package obligation;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.annotation.WillClose;
+
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
  * Test to see if WillClose annotations are understood.

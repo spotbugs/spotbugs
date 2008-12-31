@@ -1,9 +1,10 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2003253 {
 	@Nonnull

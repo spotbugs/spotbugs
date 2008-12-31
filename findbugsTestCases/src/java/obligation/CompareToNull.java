@@ -1,9 +1,10 @@
 package obligation;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
  * Make sure the null-check detection feature of ObligationAnalysis

@@ -11,7 +11,10 @@
 
 package sfBugs;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2207693 {

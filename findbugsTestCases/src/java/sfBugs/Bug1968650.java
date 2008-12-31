@@ -1,6 +1,6 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug1968650 {
 	public void nonNullArgsMethod(@NonNull Object any) {

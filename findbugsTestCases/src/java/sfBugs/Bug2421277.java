@@ -5,9 +5,7 @@ import java.rmi.RemoteException;
 
 import javax.ejb.EJBException;
 import javax.ejb.EJBHome;
-import javax.ejb.EJBLocalHome;
 import javax.ejb.EJBObject;
-import javax.ejb.RemoveException;
 import javax.ejb.SessionContext;
 import javax.naming.Context;
 import javax.transaction.UserTransaction;

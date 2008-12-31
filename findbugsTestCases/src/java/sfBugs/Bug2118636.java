@@ -1,7 +1,5 @@
 package sfBugs;
 
-import java.util.HashMap;
-import java.util.Map;
 
 //
 // 1700 enum types

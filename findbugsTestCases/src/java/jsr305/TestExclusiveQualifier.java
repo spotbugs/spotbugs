@@ -1,7 +1,8 @@
 package jsr305;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import javax.annotation.meta.When;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class TestExclusiveQualifier {
 	@ExclusiveQualifier(value=ExclusiveQualifier.Color.RED, when=When.ALWAYS) Object redField;
