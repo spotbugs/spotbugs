@@ -785,6 +785,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			if (db.parameterMustBeNonNull(m, i)) {
 				boolean definitelyNull = definitelyNullArgSet.get(i);
 				if (DEBUG_NULLARG) {
+					System.out.println("Checking " + m);
 					System.out.println("QQQ2: " + i + " -- " + i + " is null");
 					System.out.println("QQQ nullArgSet: " + nullArgSet);
 					System.out.println("QQQ dnullArgSet: "
