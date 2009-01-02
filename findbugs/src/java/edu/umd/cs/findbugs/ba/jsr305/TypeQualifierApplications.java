@@ -856,6 +856,8 @@ public class TypeQualifierApplications {
 			// Check for default annotation
 			tqa = getDefaultAnnotation(o, typeQualifierValue, ElementType.PARAMETER);
 			if (tqa != null) {
+				if (DEBUG) 
+					System.out.println("Found default of " + tqa + " @ " + o);
 				return tqa;
 			}
 		}
