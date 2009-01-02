@@ -404,7 +404,25 @@ public class Update {
 		if (verbose)
 			System.out.println("Starting with " + origFilename);
 
-		origCollection.readXML(origFilename, project);
+		while (true) 
+			try {
+				while (true) {
+					File f = new File(origFilename);
+					if (f.length() > 0)
+						break;
+					if (verbose)
+						System.out.println("Empty input file: " + f);
+					origFilename = args[argCount++];
+				}
+				origCollection.readXML(origFilename, project);
+				break;
+			} catch (IOException e) {
+				if (verbose) {
+					System.out.println("Error reading " + origFilename);
+					e.printStackTrace(System.out);
+				}
+				origFilename = args[argCount++];
+			}
 
 		if (commandLine.overrideRevisionNames
 				|| origCollection.getReleaseName() == null
