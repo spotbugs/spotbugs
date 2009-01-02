@@ -377,7 +377,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 								continue;
 						}
 					}
-				} else if (invokedMethodName.equals("get")) {
+				} else if (invokedMethodName.equals("get") || invokedMethodName.equals("remove")) {
 					InstructionHandle next = handle.getNext();
 					if (next != null) {
 						Instruction nextIns = next.getInstruction();
