@@ -453,6 +453,7 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
+<!--
 <findbugs home="${findbugs.home}"
               output="xml"
               jvmargs="-Xmx640m"
@@ -468,6 +469,7 @@
               output="${sampleoutput.dir}/bcel-3.txt" 
               applySuppression="true"
 		/>
+-->
 
 
 <setBugDatabaseInfo home="."
