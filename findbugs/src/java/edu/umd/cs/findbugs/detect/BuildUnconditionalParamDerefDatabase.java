@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
+import javax.annotation.meta.When;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -92,7 +94,8 @@ public class BuildUnconditionalParamDerefDatabase {
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
 			CFG cfg = classContext.getCFG(method);
-
+			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			UnconditionalValueDerefDataflow dataflow =
 				classContext.getUnconditionalValueDerefDataflow(method);
@@ -111,7 +114,9 @@ public class BuildUnconditionalParamDerefDatabase {
 				ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(paramLocalOffset);
 
 				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
-					unconditionalDerefSet.set(i);
+					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
+					if (directTypeQualifierAnnotation == null && directTypeQualifierAnnotation.when == When.ALWAYS) 
+						unconditionalDerefSet.set(i);
 				}
 				i++;
 				if (paramSig.equals("D") || paramSig.equals("J")) paramLocalOffset += 2;
@@ -133,7 +138,6 @@ public class BuildUnconditionalParamDerefDatabase {
 			nonnullReferenceParameters += unconditionalDerefSet.cardinality();
 			property.setNonNullParamSet(unconditionalDerefSet);
 
-			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod.getMethodDescriptor(), property);
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
