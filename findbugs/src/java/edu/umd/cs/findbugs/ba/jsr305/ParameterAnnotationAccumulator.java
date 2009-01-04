@@ -64,7 +64,12 @@ public class ParameterAnnotationAccumulator extends AbstractMethodAnnotationAccu
 	@Override
 	protected TypeQualifierAnnotation lookupAnnotation(XMethod xm) {
 		overrides = true;
-		return TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter, getTypeQualifierValue());
+		TypeQualifierAnnotation result = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(xm, parameter, getTypeQualifierValue());
+		if (TypeQualifierApplications.DEBUG && result != null) {
+			System.out.println("Inherit " + result.when + " from " + xm);
+		}
+		return result;
+	
 	}
 
 }

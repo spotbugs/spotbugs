@@ -46,7 +46,13 @@ public class TypeQualifierAnnotation {
 	}
 
 	public static final TypeQualifierAnnotation OVERRIDES_BUT_NO_ANNOTATION 
-	= new TypeQualifierAnnotation(null, null);
+	= new TypeQualifierAnnotation(null, null) {
+		@Override
+		public String toString() {
+			return "Overrides but no annotation";
+		}
+	};
+	
 //	private static DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation> ();
 
 	private static ThreadLocal<DualKeyHashMap <TypeQualifierValue, When, TypeQualifierAnnotation>> instance =

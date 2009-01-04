@@ -504,10 +504,7 @@ public class TypeQualifierApplications {
 	}
 
 	private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue typeQualifierValue, AnnotatedObject o) {
-		if (DEBUG) {
-			System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
-		}
-
+		
 		Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().get(typeQualifierValue);
 		if (map == null) {
 			map = new HashMap<AnnotatedObject, TypeQualifierAnnotation>();
@@ -520,6 +517,10 @@ public class TypeQualifierApplications {
 		if (map.containsKey(o)) {
 			result = map.get(o);
 		} else {
+			if (DEBUG) {
+				System.out.println("Looking up application of " + typeQualifierValue + " on " + o);
+			}
+
 			// Compute answer
 			TypeQualifierAnnotation tqa;
 
@@ -545,9 +546,17 @@ public class TypeQualifierApplications {
 			// Cache computed answer
 			result = tqa;
 			map.put(o, result);
-		}
-		if (DEBUG) {
-			System.out.println("  => Answer: " + result);
+			if (DEBUG && result != null) {
+				if (result == null)
+					System.out.println("  => Answer: no annotation on " + o);
+				else 
+					System.out.println("  => Answer: " + result.when  + " on " + o);
+				if (o instanceof XMethod 
+						&& ((XMethod)o).getClassName().equals("java.lang.StringBuilder")
+					    && ((XMethod)o).getName().equals("toString"))
+					System.out.println("huh");
+			}
+
 		}
 
 		// Return cached answer
@@ -734,7 +743,11 @@ public class TypeQualifierApplications {
 				}
 				tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
 				if (DEBUG) {
-					System.out.println(tqa != null ? "FOUND" : "none");
+					if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) 
+						System.out.println("Overridden, no annotation inherited");
+					else if (tqa != null)
+						System.out.println("Inherited " + tqa.when);
+					else System.out.println("Nothing inherited");
 				}
 			}
 			boolean overriddenMethod = false;
@@ -759,8 +772,11 @@ public class TypeQualifierApplications {
 			result = tqa;
 			map.put(xmethod, parameter, result);
 
-			if (DEBUG) {
-				System.out.println("  => Answer: " + result);
+			if (DEBUG ) {
+				if (result == null)
+					System.out.println("  => Answer: no annotation on parameter " + parameter + " of " + xmethod);
+				else 
+					System.out.println("  => Answer: " + result.when + " on parameter " + parameter + " of " + xmethod);
 			}
 		}
 		
