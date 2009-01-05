@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
@@ -34,7 +35,9 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class NoteUnconditionalParamDerefs extends
 		BuildUnconditionalParamDerefDatabase implements Detector, NonReportingDetector, InterproceduralFirstPassDetector {
 
+	final BugReporter reporter;
 	public NoteUnconditionalParamDerefs(BugReporter bugReporter) {
+		this.reporter = bugReporter;
 	}
 
 	/* (non-Javadoc)
@@ -43,5 +46,11 @@ public class NoteUnconditionalParamDerefs extends
 	public void report() {
 		if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(nonnullReferenceParameters  + "/" + referenceParameters + " method parameters must be nonnull");
 	}
+
+    @Override
+    protected void reportBug(BugInstance bug) {
+	    reporter.reportBug(bug);
+	    
+    }
 
 }

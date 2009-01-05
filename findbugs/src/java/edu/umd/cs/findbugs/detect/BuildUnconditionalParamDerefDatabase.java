@@ -24,11 +24,16 @@ import java.util.Iterator;
 
 import javax.annotation.meta.When;
 
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -47,17 +52,18 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Build database of unconditionally dereferenced parameters.
  * 
  * @author David Hovemeyer
  */
-public class BuildUnconditionalParamDerefDatabase {
+public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 	public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 	public final TypeQualifierValue nonnullTypeQualifierValue;
+	
+	abstract protected void reportBug(BugInstance bug);
 	
 	public BuildUnconditionalParamDerefDatabase() {
 		ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
@@ -92,9 +98,10 @@ public class BuildUnconditionalParamDerefDatabase {
 	protected int nonnullReferenceParameters;
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
+		JavaClass jclass = classContext.getJavaClass();
 		try {
 			CFG cfg = classContext.getCFG(method);
-			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			XMethod xmethod = XFactory.createXMethod(jclass, method);
 			
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			UnconditionalValueDerefDataflow dataflow =
@@ -117,6 +124,18 @@ public class BuildUnconditionalParamDerefDatabase {
 					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
 					if (directTypeQualifierAnnotation == null || directTypeQualifierAnnotation.when == When.ALWAYS) 
 						unconditionalDerefSet.set(i);
+					else {
+						int paramLocal = xmethod.isStatic() ? i : i + 1;
+						int priority = Priorities.NORMAL_PRIORITY;
+						if (directTypeQualifierAnnotation.when != When.UNKNOWN) 
+							priority--;
+						if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || xmethod.getName().equals("<init>") || jclass.isFinal())
+							priority--;
+						reportBug(
+								new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", priority)
+									.addClassAndMethod(jclass, method)
+									.add(LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
+					}
 				}
 				i++;
 				if (paramSig.equals("D") || paramSig.equals("J")) paramLocalOffset += 2;
@@ -143,7 +162,7 @@ public class BuildUnconditionalParamDerefDatabase {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}
 		} catch (CheckedAnalysisException e) {
-			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			XMethod xmethod = XFactory.createXMethod(jclass, method);
 			   AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
 					"Error analyzing " + xmethod + " for unconditional deref training", e);
 		}
