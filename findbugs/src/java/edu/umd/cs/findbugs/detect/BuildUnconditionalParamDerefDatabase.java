@@ -115,7 +115,7 @@ public class BuildUnconditionalParamDerefDatabase {
 
 				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
 					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
-					if (directTypeQualifierAnnotation != null && directTypeQualifierAnnotation.when == When.ALWAYS) 
+					if (directTypeQualifierAnnotation == null || directTypeQualifierAnnotation.when == When.ALWAYS) 
 						unconditionalDerefSet.set(i);
 				}
 				i++;
