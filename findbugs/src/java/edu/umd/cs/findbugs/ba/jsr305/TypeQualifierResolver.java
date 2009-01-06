@@ -112,11 +112,7 @@ public class TypeQualifierResolver {
 					result.add(value);
 				}
 			} catch (MissingClassException e) {
-				// Hmm....this is a tough call.
-				// We probably don't want to bug users about
-				// annotations that are used in their code but aren't available
-				// at analysis time.
-//				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
+				logMissingAnnotationClass(e);
 				return;
 			} catch (CheckedAnalysisException e) {
 				AnalysisContext.logError("Error resolving " + annotationClass, e);
@@ -129,6 +125,11 @@ public class TypeQualifierResolver {
 
 	}
 
+	public static void logMissingAnnotationClass(MissingClassException e) {
+		ClassDescriptor c = e.getClassDescriptor();
+		if (c.getClassName().startsWith("javax.annotation"))
+			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(c);
+	}
 	
 	/**
 	 * Resolve collection of AnnotationValues (which have been used to
@@ -175,11 +176,7 @@ public class TypeQualifierResolver {
 				}
 
 		} catch (MissingClassException e) {
-			// Hmm....this is a tough call.
-			// We probably don't want to bug users about
-			// annotations that are used in their code but aren't available
-			// at analysis time.
-			//				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassDescriptor()); 
+			logMissingAnnotationClass(e);
 		} catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error resolving " + value.getAnnotationClass(), e);
 

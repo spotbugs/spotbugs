@@ -621,7 +621,7 @@ public class TypeQualifierApplications {
 			TypeQualifierValue typeQualifierValue, boolean stopAtClassScope) {
 
 		if (o.isSynthetic())
-				return null; // synthetic methods don't get default annotations
+				return null; // synthetic objects don't get default annotations
 		
 		ElementType elementType = o.getElementType();
 		while (true) {
@@ -711,6 +711,8 @@ public class TypeQualifierApplications {
 		} else {
 			if (DEBUG) {
 				System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
+				if (false && xmethod.getName().equals("assertIncreasing"))
+					System.out.println("Found it");
 			}
 
 //			String desc = xmethod.toString()+":"+parameter+":"+typeQualifierValue;
@@ -852,6 +854,8 @@ public class TypeQualifierApplications {
 		if (xmethod.isSynthetic())
 			return null;  // synthetic methods don't get default annotations
 		// System.out.println("Looking for default " + typeQualifierValue + " annotation of parameters of " + xmethod);
+		if (xmethod.getName().equals("<init>") && xmethod.getClassDescriptor().isAnonymousClass())
+			return null; // constructors for anonymous inner classes don't get default annotations
 		AnnotatedObject o = xmethod;
 		while (true) {
 			o =  o.getContainingScope();
