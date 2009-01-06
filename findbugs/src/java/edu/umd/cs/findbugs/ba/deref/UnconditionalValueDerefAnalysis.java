@@ -24,12 +24,16 @@ import java.util.Set;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
+import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -153,6 +157,47 @@ public class UnconditionalValueDerefAnalysis extends
 		return !fact.isTop() && !fact.isBottom();
 	}
 
+	private static final int NULLCHECK1[] = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW};
+	private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW};
+	
+	
+	private boolean check(InstructionHandle h, int[] opcodes) {
+		for(int opcode : opcodes) {
+			if (h == null) 
+				return false;
+			if (h.getInstruction().getOpcode() != opcode) 
+				return false;
+			h = h.getNext();
+		}
+		return true;
+	}
+	private boolean isNullCheck(InstructionHandle h) {
+		if (!(h.getInstruction() instanceof IFNONNULL)) 
+			return false;
+		h = h.getNext();
+		final Instruction newInstruction = h.getInstruction();
+		if (!(newInstruction instanceof NEW))
+			return false;
+		final ObjectType loadClassType = ((NEW)newInstruction).getLoadClassType(methodGen.getConstantPool());
+		if (!loadClassType.getClassName().equals("java.lang.NullPointerException"))
+			return false;
+		h = h.getNext();
+		return check(h, NULLCHECK1) || check(h, NULLCHECK2);
+		
+	}
+	
+	private void handleNullCheck(Location location,  ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+		if (!invFrame.isValid()) 
+			return;
+
+		IsNullValue value = invFrame.getTopValue();
+		if (value.isDefinitelyNotNull()) return;
+		if (value.isDefinitelyNull()) return;
+		ValueNumber vn = vnaFrame.getTopValue();
+		if (true)  
+			fact.addDeref(vn, location);
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
 	 */
@@ -165,6 +210,7 @@ public class UnconditionalValueDerefAnalysis extends
 	    if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
 
+		
 		// If this is a call to an assertion method,
 		// change the dataflow value to be TOP.
 		// We don't want to report future derefs that would
@@ -187,7 +233,9 @@ public class UnconditionalValueDerefAnalysis extends
 			makeFactTop(fact);
 			return;
 		}
-
+		if (isNullCheck(handle)) {
+			handleNullCheck(location, vnaFrame, fact);
+		}
 
 		// Check for calls to a method that unconditionally dereferences
 		// a parameter.  Mark any such arguments as derefs.
@@ -338,11 +386,12 @@ public class UnconditionalValueDerefAnalysis extends
 		if (database == null) {
 			return;
 		}
+		if (database.getResolvedAnnotation(thisMethod, true) !=  NullnessAnnotation.NONNULL)
+			return;
 		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 		if (!invFrame.isValid()) return;
 
-		if (database.getResolvedAnnotation(thisMethod, true) !=  NullnessAnnotation.NONNULL)
-			return;
+		
 		IsNullValue value = invFrame.getTopValue();
 		if (value.isDefinitelyNotNull()) return;
 		if (value.isDefinitelyNull()) return;

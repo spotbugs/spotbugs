@@ -11,11 +11,20 @@ public class Ideas_2009_01_05 {
 		this.x = x;
 	}
 	
+	void pleaseGiveMeNonnull2(Object x) {
+		if (x == null)
+			throw new NullPointerException("x isn't allowed to be null");
+		this.x = x;
+	}
+	
 	int getHash() {
 		return x.hashCode();
 	}
 	void test() {
 		pleaseGiveMeNonnull(null); // like to generate a warning here
+	}
+	void test2() {
+		pleaseGiveMeNonnull2(null); // like to generate a warning here
 	}
 
 }
