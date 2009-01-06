@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.Instruction;
@@ -44,7 +45,6 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -161,7 +161,7 @@ public class UnconditionalValueDerefAnalysis extends
 	private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW};
 	
 	
-	private boolean check(InstructionHandle h, int[] opcodes) {
+	private static boolean check(InstructionHandle h, int[] opcodes) {
 		for(int opcode : opcodes) {
 			if (h == null) 
 				return false;
@@ -171,14 +171,14 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		return true;
 	}
-	private boolean isNullCheck(InstructionHandle h) {
+	public static boolean isNullCheck(InstructionHandle h, ConstantPoolGen cpg) {
 		if (!(h.getInstruction() instanceof IFNONNULL)) 
 			return false;
 		h = h.getNext();
 		final Instruction newInstruction = h.getInstruction();
 		if (!(newInstruction instanceof NEW))
 			return false;
-		final ObjectType loadClassType = ((NEW)newInstruction).getLoadClassType(methodGen.getConstantPool());
+		final ObjectType loadClassType = ((NEW)newInstruction).getLoadClassType(cpg);
 		if (!loadClassType.getClassName().equals("java.lang.NullPointerException"))
 			return false;
 		h = h.getNext();
@@ -187,17 +187,22 @@ public class UnconditionalValueDerefAnalysis extends
 	}
 	
 	private void handleNullCheck(Location location,  ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
-		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
-		if (!invFrame.isValid()) 
-			return;
-
-		IsNullValue value = invFrame.getTopValue();
-		if (value.isDefinitelyNotNull()) return;
-		if (value.isDefinitelyNull()) return;
-		ValueNumber vn = vnaFrame.getTopValue();
-		if (true)  
-			fact.addDeref(vn, location);
+		if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
+		  ValueNumber vn = vnaFrame.getTopValue();
+		  fact.addDeref(vn, location);
+		}
 	}
+
+	public static boolean reportPotentialDereference(Location location, IsNullValueFrame invFrame) throws DataflowAnalysisException {
+	   if (!invFrame.isValid()) 
+			return false;
+		IsNullValue value = invFrame.getTopValue();
+		if (value.isDefinitelyNotNull()) 
+			return false;
+		if (value.isDefinitelyNull()) 
+			return false;
+		return true;
+    }
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
 	 */
@@ -233,7 +238,7 @@ public class UnconditionalValueDerefAnalysis extends
 			makeFactTop(fact);
 			return;
 		}
-		if (isNullCheck(handle)) {
+		if (isNullCheck(handle, methodGen.getConstantPool())) {
 			handleNullCheck(location, vnaFrame, fact);
 		}
 
@@ -386,17 +391,12 @@ public class UnconditionalValueDerefAnalysis extends
 		if (database == null) {
 			return;
 		}
-		if (database.getResolvedAnnotation(thisMethod, true) !=  NullnessAnnotation.NONNULL)
+		if (database.getResolvedAnnotation(thisMethod, true) != NullnessAnnotation.NONNULL)
 			return;
-		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
-		if (!invFrame.isValid()) return;
-
-		
-		IsNullValue value = invFrame.getTopValue();
-		if (value.isDefinitelyNotNull()) return;
-		if (value.isDefinitelyNull()) return;
-		ValueNumber vn = vnaFrame.getTopValue();
-		if (true)  fact.addDeref(vn, location);
+		if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
+			ValueNumber vn = vnaFrame.getTopValue();
+			fact.addDeref(vn, location);
+		}
 	}
 
 

@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -49,6 +50,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -161,6 +163,10 @@ public class DerefFinder {
 						AnalysisContext.reportMissingClass(e);
 					}
 
+				} else if (ins instanceof IFNONNULL && UnconditionalValueDerefAnalysis.isNullCheck(handle, cpg)) {
+					ValueNumber valueNumber = valueNumberFrame.getTopValue();
+					derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
+							.getPointerNullChecked());
 				} else if (ins instanceof ARETURN && methodAnnotation == NullnessAnnotation.NONNULL) {
 					ValueNumber valueNumber = valueNumberFrame.getTopValue();
 					if (valueNumberForThis != valueNumber) derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue

@@ -77,6 +77,16 @@ public abstract class PointerUsageRequiringNonNullValue {
 		return instance;
 	}
 
+	private static final PointerUsageRequiringNonNullValue nullCheckInstance = new PointerUsageRequiringNonNullValue() {
+
+		@Override
+		public String getDescription() {
+			return  "SOURCE_LINE_NULL_CHECKED";
+		}
+	};
+	public static PointerUsageRequiringNonNullValue getPointerNullChecked() {
+		return nullCheckInstance;
+	}
 	public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
 		return nonNullReturnInstance;
 	}
