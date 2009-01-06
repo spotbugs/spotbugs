@@ -404,7 +404,7 @@ public class ValueNumberFrameModelingVisitor
             	AnalysisContext.reportMissingClass(e);
             }
 			int passed = getNumWordsConsumed(ins);
-			ValueNumber [] arguments = emptyArray(passed);
+			ValueNumber [] arguments = allocateValueNumberArray(passed);
 			getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));
 			getFrame().getTopStackWords(arguments);
 			for(ValueNumber v : arguments)
@@ -534,7 +534,7 @@ public class ValueNumberFrameModelingVisitor
 	 */
 	private ValueNumber[] popInputValues(int numWordsConsumed) {
 		ValueNumberFrame frame = getFrame();
-		ValueNumber[] inputValueList = emptyArray(numWordsConsumed);
+		ValueNumber[] inputValueList = allocateValueNumberArray(numWordsConsumed);
 
 		// Pop off the input operands.
 		try {
@@ -569,7 +569,7 @@ public class ValueNumberFrameModelingVisitor
 		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, inputValueList);
 		ValueNumber[] outputValueList = cache.lookupOutputValues(entry);
 		if (outputValueList == null) {
-			outputValueList = emptyArray(numWordsProduced);
+			outputValueList = allocateValueNumberArray(numWordsProduced);
 			for (int i = 0; i < numWordsProduced; ++i) {
 				ValueNumber freshValue = factory.createFreshValue(flags);
 				outputValueList[i] = freshValue;
@@ -591,7 +591,7 @@ public class ValueNumberFrameModelingVisitor
 	 * @param size array size
 	 * @return if size is zero, returns {@link #EMPTY_INPUT_VALUE_LIST}
 	 */
-	private static ValueNumber[] emptyArray(int size){
+	private static ValueNumber[] allocateValueNumberArray(int size){
 		if(size == 0){
 			return EMPTY_INPUT_VALUE_LIST;
 		}
@@ -714,7 +714,7 @@ public class ValueNumberFrameModelingVisitor
 */
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
 		ValueNumber reference = inputValueList[0];
-		ValueNumber[] storedValue = emptyArray(inputValueList.length - 1);
+		ValueNumber[] storedValue = allocateValueNumberArray(inputValueList.length - 1);
 		System.arraycopy(inputValueList, 1, storedValue, 0, inputValueList.length - 1);
 
 		if (pushStoredValue)
