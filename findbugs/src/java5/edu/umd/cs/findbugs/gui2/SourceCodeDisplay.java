@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.SoftReference;
@@ -202,6 +203,9 @@ public final class SourceCodeDisplay implements Runnable {
 		if (startLine == -1) return;
 		String sourceFile = sourceAnnotation.getSourcePath();
 		String sourceFile2 = src.getSourceFile().getFullFileName();
+		if(!java.io.File.separator.equals(String.valueOf(SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR))) {
+			sourceFile2 = sourceFile2.replace(java.io.File.separatorChar, SourceLineAnnotation.CANONICAL_PACKAGE_SEPARATOR);
+		}
 		if (!sourceFile2.endsWith(sourceFile)) return;
 		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
 	}

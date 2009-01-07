@@ -74,6 +74,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static final String UNKNOWN_SOURCE_FILE = "<Unknown>";
 
+	public static final char CANONICAL_PACKAGE_SEPARATOR = '/';
+	
 	private String description;
 	final private String className;
 	private String sourceFile;
@@ -644,8 +646,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 			StringBuilder buf = new StringBuilder();
 			String pkgName = getPackageName();
 			if (!pkgName.equals("")) {
-				buf.append(pkgName.replace('.', '/'));
-				buf.append('/');
+				buf.append(pkgName.replace('.', CANONICAL_PACKAGE_SEPARATOR));
+				buf.append(CANONICAL_PACKAGE_SEPARATOR);
 			}
 			buf.append(sourceFile);
 			appendLines(buf);
@@ -810,7 +812,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	    String packageName = "";
 		if (classname.indexOf('.') > 0) 
 			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
-		String sourcePath = packageName.replace('.', '/')+sourceFile;
+		String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR)+sourceFile;
 	    return sourcePath;
     }
 
