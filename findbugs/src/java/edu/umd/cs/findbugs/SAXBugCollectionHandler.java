@@ -222,6 +222,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					} else if (qName.equals("FindBugsSummary")) {
 						String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
 						String vmVersion = attributes.getValue("vm_version");
+						String referencedClasses = attributes.getValue("referenced_classes");
+						if (referencedClasses != null && referencedClasses.length() > 0)
+							bugCollection.getProjectStats().setReferencedClasses(Integer.parseInt(referencedClasses));
 						bugCollection.getProjectStats().setVMVersion(vmVersion);
 						try {
 							bugCollection.getProjectStats().setTimestamp(timestamp);

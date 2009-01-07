@@ -890,6 +890,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 
 			}
+			
+			bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
 			for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext();) {
 				AnalysisPass pass = i.next();
 

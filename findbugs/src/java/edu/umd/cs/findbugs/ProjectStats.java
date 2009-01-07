@@ -37,7 +37,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import javax.annotation.WillClose;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -50,7 +52,6 @@ import edu.umd.cs.findbugs.workflow.FileBugHash;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-import javax.annotation.WillClose;
 
 /**
  * Statistics resulting from analyzing a project.
@@ -61,6 +62,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private SortedMap<String, PackageStats> packageStatsMap;
 	private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
 	private int totalClasses;
+	private int referencedClasses;
 	private int totalSize;
 	private Date timestamp;
 	private Footprint baseFootprint;
@@ -236,6 +238,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.addAttribute("timestamp",
 				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(timestamp));
 		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
+		xmlOutput.addAttribute("referenced_classes", String.valueOf(referencedClasses));
+		
 		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
 		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
 		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
@@ -270,7 +274,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.stopTag(false);
 		
 		if (withMessages && fileBugHashes != null) {
-			for(String sourceFile : fileBugHashes.getSourceFiles()) {
+			for(String sourceFile : new TreeSet<String>(fileBugHashes.getSourceFiles())) {
 				xmlOutput.startTag("FileStats");
 				xmlOutput.addAttribute("path", sourceFile);
 				xmlOutput.addAttribute("bugCount", String.valueOf(fileBugHashes.getBugCount(sourceFile)));
@@ -367,4 +371,13 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			}
 		}
 	}
+	/**
+     * @param size
+     */
+    public void setReferencedClasses(int size) {
+	    this.referencedClasses = size;
+    }
+    public int getReferencedClasses() {
+	    return this.referencedClasses;
+    }
 }
