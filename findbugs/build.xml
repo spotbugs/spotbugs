@@ -974,14 +974,15 @@
       <javadoc access="protected" 
        author="true" 
 	    packagenames="*"
-       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/asm-3.1.jar:lib/asm-tree-3.1.jar:lib/asm-commons-3.1.jar:lib/jsr305.jar:lib/AppleJavaExtensions.jar"
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
         Windowtitle="FindBugs ${release.number} API"
         bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/' target='_parent'&gt;FindBugs&lt;/a&gt;&amp;trade; is licenced under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
-        sourcepath="src/java:src/java5" splitindex="true" use="true" version="true"/>
+        sourcepath="src/java:src/java5" splitindex="true" use="true" version="true">
+	<classpath refid="findbugs.classpath"/>
+	</javadoc>
 		</target>
 
     <target name="annotationJavadoc">
