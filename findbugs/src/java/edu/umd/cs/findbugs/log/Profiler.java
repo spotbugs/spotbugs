@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.log;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Stack;
@@ -28,11 +29,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * @author pugh
  */
-public class Profiler {
+public class Profiler implements XMLWriteable {
 
 	final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
 
@@ -146,47 +149,42 @@ public class Profiler {
 		}
 	}
 
+	
+
+	class TotalTimeComparator implements Comparator<Class<?>> {
+		public int compare(Class<?> c1, Class<?> c2) {
+			long v1 = profile.get(c1).get();
+			long v2 = profile.get(c2).get();
+			if (v1 < v2) {
+                return -1;
+            }
+			if (v1 > v2) {
+                return 1;
+            }
+			return c1.getName().compareTo(c2.getName());
+		}
+	}
 	public void report() {
 		if (!REPORT) {
 	        return;
         }
 		System.err.println("PROFILE REPORT");
 		try {
-			Comparator<Pair<Class<?>, AtomicLong>> c = new Comparator<Pair<Class<?>, AtomicLong>>() {
-
-				public int compare(Pair<Class<?>, AtomicLong> o1, Pair<Class<?>, AtomicLong> o2) {
-					long v1 = o1.second.get();
-					long v2 = o2.second.get();
-					if (v1 < v2) {
-	                    return -1;
-                    }
-					if (v1 > v2) {
-	                    return 1;
-                    }
-					return o1.first.getName().compareTo(o2.first.getName());
-				}
-
-			};
-			TreeSet<Pair<Class<?>, AtomicLong>> treeSet = new TreeSet<Pair<Class<?>, AtomicLong>>(c);
-			for (Map.Entry<Class<?>, AtomicLong> e : profile.entrySet()) {
-
-				treeSet.add(new Pair<Class<?>, AtomicLong>(e.getKey(), e.getValue()));
-			}
-			Pair<Class<?>, AtomicLong> prev = null;
-            System.err.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call",
+		
+			TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator());
+			treeSet.addAll(profile.keySet());
+			
+			System.err.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call",
 					"Class");
         
-			for (Pair<Class<?>, AtomicLong> e : treeSet) {
-				long time = e.second.get() / 1000000;
-				AtomicInteger callCount = callCountProfile.get(e.first);
-				if (time > 0 && callCount != null) {
-	                System.err.printf("%8d  %8d  %8d %s\n",time,  callCount.get(), e.second.get()/callCount.get()/1000,
-							e.first.getSimpleName());
+			for (Class<?> c : treeSet) {
+				long time = profile.get(c).get();
+				AtomicInteger callCount = callCountProfile.get(c);
+				if (time > 10000000 && callCount != null) {
+	                System.err.printf("%8d  %8d  %8d %s\n",time/1000000,  callCount.get(), time/callCount.get()/1000,
+							c.getSimpleName());
                 }
-				if (false && prev != null) {
-	                System.err.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
-                }
-				prev = e;
+
 			}
 			System.err.flush();
 		} catch (RuntimeException e) {
@@ -197,4 +195,34 @@ public class Profiler {
 			startTimes.get().clear();
 		}
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml.XMLOutput)
+     */
+    public void writeXML(XMLOutput xmlOutput) throws IOException {
+    	xmlOutput.startTag("FindBugsProfile");
+		xmlOutput.stopTag(false);
+    	TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator());
+		treeSet.addAll(profile.keySet());
+		
+		
+		for (Class<?> c : treeSet) {
+			long time = profile.get(c).get();
+			AtomicInteger callCount = callCountProfile.get(c);
+			if (time > 10000000 && callCount != null) {
+				xmlOutput.startTag("ClassProfile");
+
+				
+				xmlOutput.addAttribute("name", c.getName());
+				xmlOutput.addAttribute("totalMilliseconds", String.valueOf((int)(time/1000000)));
+				xmlOutput.addAttribute("invocations", String.valueOf(callCount.get()));
+				xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf((int)(time/callCount.get()/1000)));
+				
+				xmlOutput.stopTag(true);
+          
+            }
+
+		}
+		xmlOutput.closeTag("FindBugsProfile");
+    }
 }
