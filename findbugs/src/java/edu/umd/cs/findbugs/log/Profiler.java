@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -76,6 +77,7 @@ public class Profiler {
 	};
 
 	ConcurrentHashMap<Class<?>, AtomicLong> profile = new ConcurrentHashMap<Class<?>, AtomicLong>();
+	ConcurrentHashMap<Class<?>, AtomicInteger> callCountProfile = new ConcurrentHashMap<Class<?>, AtomicInteger>();
 
 	public void start(Class<?> c) {
 		long currentNanoTime = System.nanoTime();
@@ -117,6 +119,15 @@ public class Profiler {
             }
 		}
 		counter.addAndGet(accumulatedTime);
+		AtomicInteger callCount = callCountProfile.get(c);
+		if (callCount == null) {
+			callCount = new AtomicInteger();
+			AtomicInteger counter3 = callCountProfile.putIfAbsent(c, callCount);
+			if (counter3 != null) {
+	            callCount = counter3;
+            }
+		}
+		callCount.incrementAndGet();
 	}
 
 	static class Pair<V1, V2> {
@@ -162,10 +173,16 @@ public class Profiler {
 				treeSet.add(new Pair<Class<?>, AtomicLong>(e.getKey(), e.getValue()));
 			}
 			Pair<Class<?>, AtomicLong> prev = null;
+            System.err.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call",
+					"Class");
+        
 			for (Pair<Class<?>, AtomicLong> e : treeSet) {
 				long time = e.second.get() / 1000000;
-				if (time > 0)
-					System.err.printf("%7d  %s\n",time,  e.first.getSimpleName());
+				AtomicInteger callCount = callCountProfile.get(e.first);
+				if (time > 0 && callCount != null) {
+	                System.err.printf("%8d  %8d  %8d %s\n",time,  callCount.get(), e.second.get()/callCount.get()/1000,
+							e.first.getSimpleName());
+                }
 				if (false && prev != null) {
 	                System.err.println(c.compare(prev, e) + " " + prev.second.get() + "  " + e.second.get());
                 }
@@ -176,6 +193,7 @@ public class Profiler {
 			System.err.println(e);
 		} finally {
 			profile.clear();
+			callCountProfile.clear();
 			startTimes.get().clear();
 		}
 	}
