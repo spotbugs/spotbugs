@@ -173,6 +173,10 @@ public class LaunchAppropriateUI {
 			}
 		}
 		
+		for(String a : args) 
+			if (a.equals("-output") || a.equals("-xml"))
+				return TEXTUI;
+		
 		// Check findbugs.launchUI property.
 		// "gui2" is the default if not otherwise specified.
 		String s = System.getProperty("findbugs.launchUI", "gui2");
@@ -187,7 +191,7 @@ public class LaunchAppropriateUI {
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException nfe) {
-			return 2;
+			return GUI2;
 		}
 	}
 
