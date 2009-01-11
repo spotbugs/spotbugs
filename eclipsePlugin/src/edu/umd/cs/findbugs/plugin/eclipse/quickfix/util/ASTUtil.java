@@ -2,19 +2,19 @@
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
- * 
+ *
  * Author: Thierry Wyss, Marco Busarello
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,7 +35,6 @@ import java.util.TreeSet;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -69,7 +68,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotF
  * into <CODE>BodyDeclarations</CODE>. Normally this methods should be used
  * to get a type, field or method declaration for a class, field or method
  * annotation.
- * 
+ *
  * @see ASTUtil#getTypeDeclaration(CompilationUnit, ClassAnnotation)
  * @see ASTUtil#getFieldDeclaration(TypeDeclaration, FieldAnnotation)
  * @see ASTUtil#getMethodDeclaration(TypeDeclaration, MethodAnnotation)
@@ -131,7 +130,7 @@ public class ASTUtil {
      * the import will not be inserted. The imports are inserted in an ordered
 	 * way. The <CODE>Comparator</CODE> of the <CODE>SortedSet</CODE> is
 	 * used to sort the imports.
-	 * 
+	 *
      * @param rewrite
 	 *            the <CODE>ASTRewrite</CODE>, that stores the edits.
 	 * @param compilationUnit
@@ -150,8 +149,9 @@ public class ASTUtil {
 	private static void addImports(ListRewrite importRewrite, Comparator<? super ImportDeclaration> comparator, Iterator<ImportDeclaration> newImports) {
 		try {
 			ImportDeclaration newImport = newImports.next();
-            List<ImportDeclaration> imports = importRewrite.getRewrittenList();
-			for (ImportDeclaration anImport : imports) {
+            List<?> imports = importRewrite.getRewrittenList();
+			for (Object importObj : imports) {
+				ImportDeclaration anImport = (ImportDeclaration) importObj;
 				int comp = comparator.compare(newImport, anImport);
 				if (comp > 0) {
                     continue;
@@ -179,7 +179,7 @@ public class ASTUtil {
 	 * Searchs the first <CODE>ASTNode</CODE> between the specified <CODE>startLine</CODE>
 	 * and <CODE>endLine</CODE>. If the source line doesn't contain an <CODE>ASTNode</CODE>,
      * a <CODE>ASTNodeNotFoundException</CODE> is thrown.
-	 * 
+	 *
 	 * @param compilationUnit
 	 *            the <CODE>CompilationUnit</CODE>, that contains the <CODE>ASTNode</CODE>.
      * @param startLine
@@ -203,7 +203,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>TypeDeclaration</CODE> for the specified <CODE>ClassAnnotation</CODE>.
 	 * The type has to be declared in the specified <CODE>CompilationUnit</CODE>.
-     * 
+     *
 	 * @param compilationUnit
 	 *            The <CODE>CompilationUnit</CODE>, where the <CODE>TypeDeclaration</CODE>
 	 *            is declared in.
@@ -222,7 +222,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>TypeDeclaration</CODE> for the specified type name.
 	 * The type has to be declared in the specified <CODE>CompilationUnit</CODE>.
-     * 
+     *
 	 * @param compilationUnit
 	 *            The <CODE>CompilationUnit</CODE>, where the <CODE>TypeDeclaration</CODE>
 	 *            is declared in.
@@ -252,7 +252,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>FieldDeclaration</CODE> for the specified <CODE>FieldAnnotation</CODE>.
 	 * The field has to be declared in the specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
 	 * @param type
 	 *            The <CODE>TypeDeclaration</CODE>, where the <CODE>FieldDeclaration</CODE>
 	 *            is declared in.
@@ -272,7 +272,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>FieldDeclaration</CODE> for the specified field name.
 	 * The field has to be declared in the specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
 	 * @param type
 	 *            The <CODE>TypeDeclaration</CODE>, where the <CODE>FieldDeclaration</CODE>
 	 *            is declared in.
@@ -287,8 +287,8 @@ public class ASTUtil {
         checkForNull(fieldName, "field name");
 
 		for (FieldDeclaration field : type.getFields()) {
-			List<VariableDeclarationFragment> fragments = field.fragments();
-			for (VariableDeclarationFragment fragment : fragments) {
+			for (Object fragObj : field.fragments()) {
+				VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragObj;
                 if (fieldName.equals(fragment.getName().getIdentifier())) {
 					return field;
 				}
@@ -301,7 +301,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>MethodDeclaration</CODE> for the specified <CODE>MethodAnnotation</CODE>.
 	 * The method has to be declared in the specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
 	 * @param type
 	 *            The <CODE>TypeDeclaration</CODE>, where the <CODE>MethodDeclaration</CODE>
 	 *            is declared in.
@@ -322,7 +322,7 @@ public class ASTUtil {
 	/**
 	 * Returns the <CODE>MethodDeclaration</CODE> for the specified method
 	 * name and signature. The method has to be declared in the specified <CODE>TypeDeclaration</CODE>.
-     * 
+     *
 	 * @param type
 	 *            The <CODE>TypeDeclaration</CODE>, where the <CODE>MethodDeclaration</CODE>
 	 *            is declared in.
@@ -356,7 +356,7 @@ public class ASTUtil {
 	/**
 	 * Return the first <CODE>Statement</CODE> found, that is between the
 	 * specified start and end line.
-     * 
+     *
 	 * @param compilationUnit
 	 * @param method
 	 * @param startLine
@@ -387,7 +387,7 @@ public class ASTUtil {
     }
 
 	@CheckForNull
-	protected static TypeDeclaration searchTypeDeclaration(List<? extends BodyDeclaration> declarations, String typeName) {
+	protected static TypeDeclaration searchTypeDeclaration(List<?> declarations, String typeName) {
 		assert declarations != null;
         assert typeName != null;
 
@@ -398,7 +398,7 @@ public class ASTUtil {
 			typeName = typeName.substring(0, index);
 		}
 
-		for (BodyDeclaration declaration : declarations) {
+		for (Object declaration : declarations) {
 			if (!(declaration instanceof TypeDeclaration)) {
 				continue;
             }
@@ -434,11 +434,12 @@ public class ASTUtil {
     }
 
 	@CheckForNull
-	protected static Statement searchStatement(CompilationUnit compilationUnit, List<Statement> statements, int startLine, int endLine) {
+	protected static Statement searchStatement(CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
 		assert compilationUnit != null;
         assert statements != null;
 
-		for (Statement statement : statements) {
+		for (Object statementObj : statements) {
+			Statement statement = (Statement) statementObj;
 			int lineNumber = compilationUnit.getLineNumber(statement.getStartPosition());
 			if (startLine <= lineNumber && lineNumber <= endLine) {
                 return statement;
@@ -487,7 +488,7 @@ public class ASTUtil {
 		return apackage != null && packageName.equals(apackage.getName().getFullyQualifiedName()) || packageName.length() == 0;
 	}
 
-	private static boolean matchesParams(List<SingleVariableDeclaration> methodParams, String[] paramTypeNames) {
+	private static boolean matchesParams(List<?> methodParams, String[] paramTypeNames) {
 		return matchesParams(methodParams.toArray(new SingleVariableDeclaration[methodParams.size()]), paramTypeNames);
 	}
 

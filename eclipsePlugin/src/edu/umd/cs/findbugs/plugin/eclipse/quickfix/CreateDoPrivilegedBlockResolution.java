@@ -2,19 +2,19 @@
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
- * 
+ *
  * Author: Thierry Wyss, Marco Busarello
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -76,7 +76,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationCompara
  * The class <CODE>CreateDoPrivilegedBlockResolution</CODE> creates a new
  * <CODE>doPrivileged()</CODE>-Block around the <CODE>ClassLoader</CODE>
  * creation.
- * 
+ *
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -108,7 +108,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 	/**
 	 * Returns <CODE>true</CODE> if the imports were updated, otherwise <CODE>false</CODE>.
-	 * 
+	 *
      * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is <CODE>true</CODE>.
 	 */
 	public boolean isUpdateImports() {
@@ -117,7 +117,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 	/**
 	 * Enables or disables the update on the imports.
-	 * 
+	 *
      * @param updateImports
 	 *            the flag.
 	 */
@@ -129,7 +129,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 	 * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
 	 * is imported statically. This feature should only be used under
      * source-level 1.5 or higher.
-	 * 
+	 *
 	 * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is <CODE>false</CODE>.
 	 */
     public boolean isStaticImport() {
@@ -139,7 +139,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 	/**
 	 * Enables or disables static import for the <CODE>doPrivileged()</CODE>-invocation.
 	 * This feature should only be used under source-level 1.5 or higher.
-     * 
+     *
 	 * @param staticImport
 	 *            the flag.
 	 */
@@ -190,12 +190,13 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         }
 	}
 
-	protected void updateMethodParams(ASTRewrite rewrite, Set<String> variables, List<SingleVariableDeclaration> params) {
+	protected void updateMethodParams(ASTRewrite rewrite, Set<String> variables, List<?> params) {
 		assert rewrite != null;
 		assert variables != null;
         assert params != null;
 
-		for (SingleVariableDeclaration param : params) {
+		for (Object paramObj : params) {
+			SingleVariableDeclaration param = (SingleVariableDeclaration) paramObj;
 			if (variables.contains(param.getName().getFullyQualifiedName())) {
 				ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
                 listRewrite.insertLast(rewrite.getAST().newModifier(ModifierKeyword.FINAL_KEYWORD), null);
@@ -269,7 +270,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 		MethodInvocation doPrivilegedInvocation = ast.newMethodInvocation();
 		ClassInstanceCreation privilegedActionCreation = createPrivilegedActionCreation(rewrite, classLoaderCreation);
-		List<Expression> arguments = doPrivilegedInvocation.arguments();
+		List<Expression> arguments = checkedList(doPrivilegedInvocation.arguments());
 
 		if (!isStaticImport()) {
 			Name accessControllerName;
@@ -311,11 +312,15 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 		SimpleType rawPrivilegedActionType = ast.newSimpleType(privilegedActionName);
         ParameterizedType privilegedActionType = ast.newParameterizedType(rawPrivilegedActionType);
 		Type typeArgument = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
-		List<Type> typeArguments = privilegedActionType.typeArguments();
+		List<Type> typeArguments = checkedList(privilegedActionType.typeArguments());
 
 		typeArguments.add(typeArgument);
 
 		return privilegedActionType;
+	}
+
+	<V> List<V> checkedList(List<?> o){
+		return (List<V>) o;
 	}
 
 	private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
@@ -323,7 +328,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 		AnonymousClassDeclaration anonymousClassDeclaration = ast.newAnonymousClassDeclaration();
 		MethodDeclaration runMethodDeclaration = createRunMethodDeclaration(rewrite, classLoaderCreation);
-		List<BodyDeclaration> bodyDeclarations = anonymousClassDeclaration.bodyDeclarations();
+		List<BodyDeclaration> bodyDeclarations = checkedList(anonymousClassDeclaration.bodyDeclarations());
 
 		bodyDeclarations.add(runMethodDeclaration);
 
@@ -337,7 +342,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 		SimpleName methodName = ast.newSimpleName("run");
 		Type returnType = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
         Block methodBody = createRunMethodBody(rewrite, classLoaderCreation);
-		List<Modifier> modifiers = methodDeclaration.modifiers();
+		List<Modifier> modifiers = checkedList(methodDeclaration.modifiers());
 
 		modifiers.add(ast.newModifier(PUBLIC_KEYWORD));
 		methodDeclaration.setName(methodName);
@@ -352,7 +357,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 		Block methodBody = ast.newBlock();
 		ReturnStatement returnStatement = ast.newReturnStatement();
-		List<Statement> statements = methodBody.statements();
+		List<Statement> statements = checkedList(methodBody.statements());
 
 		statements.add(returnStatement);
 		returnStatement.setExpression((ClassInstanceCreation) rewrite.createCopyTarget(classLoaderCreation));
@@ -375,9 +380,10 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 		return findMethodDeclaration(node.getParent());
 	}
 
-	private Set<String> findVariableReferences(List<Expression> arguments) {
+	private Set<String> findVariableReferences(List<?> arguments) {
 		final Set<String> refs = new HashSet<String>();
-		for (Expression argument : arguments) {
+		for (Object argumentObj : arguments) {
+			Expression argument = (Expression) argumentObj;
             argument.accept(new ASTVisitor() {
 
 				@Override
