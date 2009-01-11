@@ -4,25 +4,19 @@ Bundle-Name: FindBugs Plug-in
 Bundle-SymbolicName: edu.umd.cs.findbugs.plugin.eclipse; singleton:=true
 Bundle-Version: 1.3.8.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
- jsr305.jar,
- bcel.jar,
- dom4j-1.6.1.jar,
- jaxen-1.1.1.jar,
- findbugs.jar,
- jFormatString.jar,
- asm-tree-3.1.jar,
- asm-3.1.jar,
- asm-commons-3.1.jar,
- commons-lang-2.4.jar,
- findbugs-ant.jar
+ lib/jsr305.jar,
+ lib/annotations.jar,
+ lib/bcel.jar,
+ lib/dom4j-1.6.1.jar,
+ lib/jaxen-1.1.1.jar,
+ lib/jFormatString.jar,
+ lib/asm-tree-3.1.jar,
+ lib/asm-3.1.jar,
+ lib/asm-commons-3.1.jar,
+ lib/commons-lang-2.4.jar
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
 Bundle-Localization: plugin
-Export-Package: edu.umd.cs.findbugs.anttask,
- org.objectweb.asm,
- org.objectweb.asm.commons,
- org.objectweb.asm.signature,
- org.objectweb.asm.tree
 Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui,
  org.eclipse.ant.core,
@@ -43,6 +37,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.pde.core;resolution:=optional,
  org.eclipse.pde.build;resolution:=optional,
  org.eclipse.core.expressions,
- org.eclipse.ui.views.properties.tabbed
+ org.eclipse.ui.views.properties.tabbed,
+ findbugs;resolution:=optional
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

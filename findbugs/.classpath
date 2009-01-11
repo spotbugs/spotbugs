@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<classpath>
+<classpath>	
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/java"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/antTask"/>
 	<classpathentry excluding="**/CVS/*|edu/umd/cs/findbugs/tools/patcomp/**/*" kind="src" path="src/tools"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
-	<classpathentry kind="src" path="src/java5"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="src" path="etc"/>
+	<classpathentry kind="src" path="src/java5"/>	
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
 		<accessrules>
 			<accessrule kind="accessible" pattern="com/sun/management/*"/>
 			<accessrule kind="nonaccessible" pattern="com/sun/**"/>
 		</accessrules>
 	</classpathentry>
+	
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcel.jar">
+	<classpathentry exported="true" kind="lib" path="lib/bcel.jar" >
 		<attributes>
 			<attribute name="javadoc_location" value="http://jakarta.apache.org/bcel/apidocs/"/>
 		</attributes>
@@ -32,17 +34,16 @@
 		<attributes>
 			<attribute name="javadoc_location" value="http://asm.objectweb.org/current/doc/javadoc/user"/>
 		</attributes>
-	</classpathentry>
+	</classpathentry>	
 	<classpathentry exported="true" kind="lib" path="lib/asm-commons-3.1.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://asm.objectweb.org/current/doc/javadoc/user"/>
 		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
+	</classpathentry>	
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>	
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jFormatString.jar"/>
+	<classpathentry kind="lib" path="lib/jFormatString.jar"/>	
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>

@@ -18,8 +18,8 @@ public class AnnotationClasspathInitializer extends
 	private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
 	private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-	private static final String FINDBUGS_LIBRARY = "/annotations.jar";
-	private static final String JSR305_LIBRARY = "/jsr305.jar";
+	private static final String FINDBUGS_LIBRARY = "/lib/annotations.jar";
+	private static final String JSR305_LIBRARY = "/lib/jsr305.jar";
 
 	@Override
 	public void initialize(String variable) {
@@ -49,6 +49,10 @@ public class AnnotationClasspathInitializer extends
 
 	private String getLibraryPath(Bundle bundle, String libName) {
 		URL installLocation = bundle.getEntry(libName);
+		if(installLocation == null){
+			FindbugsPlugin.getDefault().logError("Library not found in plugin: " + libName);
+			return null;
+		}
 		String fullPath = null;
 		try {
 			URL local = FileLocator.toFileURL(installLocation);
