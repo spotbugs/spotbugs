@@ -296,6 +296,12 @@
             disabled="true"
             hidden="true"
 		/>
+  <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" 
+            speed="fast"
+            reports="TESTING"
+            disabled="true"
+            hidden="true"
+		/>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" 
             speed="fast"
             reports="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"

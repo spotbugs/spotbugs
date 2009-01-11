@@ -208,6 +208,9 @@ public abstract class AnalysisContext {
 		if (unreadFields == null) throw new IllegalStateException("UnreadFields detector not set");
 		return unreadFields;
 	}
+	public boolean unreadFieldsAvailable() {
+		return unreadFields != null;
+	}
 	public void setUnreadFields(@NonNull UnreadFields unreadFields) {
 		if (this.unreadFields != null) throw new IllegalStateException("UnreadFields detector already set");
 		this.unreadFields = unreadFields;

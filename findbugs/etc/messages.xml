@@ -463,6 +463,15 @@ Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref">
+    <Details>
+<![CDATA[
+<p> Noisy detector for null dereferences. Intended to be used as a control in experiments
+about the validity or predictive ability of warnings, not as a way to find problems in code.
+</p>
+]]>
+    </Details>
+  </Detector>
 
 
   <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants">

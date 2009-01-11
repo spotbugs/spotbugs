@@ -73,6 +73,8 @@ public class FieldSummary {
 			return false;
 		if (writtenOutsideOfConstructor.contains(field))
 			return true;
+		if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable())
+			return true;
 		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
 		if (unreadFields.isReflexive(field)) 
 			return true;

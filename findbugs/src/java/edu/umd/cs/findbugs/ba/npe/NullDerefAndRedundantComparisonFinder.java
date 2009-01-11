@@ -707,7 +707,9 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (DEBUG) {
 			System.out.println("For basic block " + basicBlock + " value is " + refValue);
 		}
-		if (!refValue.mightBeNull())
+		if (refValue.isDefinitelyNotNull()) 
+			return;
+		if (false && !refValue.mightBeNull())
 			return;
 
 		// if (!refValue.isDefinitelyNull()) return;
