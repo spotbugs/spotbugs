@@ -298,7 +298,13 @@
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" 
             speed="fast"
-            reports="TESTING"
+            reports="NOISE_NULL_DEREFERENCE"
+            disabled="true"
+            hidden="true"
+		/>
+  <Detector class="edu.umd.cs.findbugs.detect.Noise" 
+            speed="fast"
+            reports="NOISE_METHOD_CALL,NOISE_FIELD_REFERENCE,NOISE_OPERATION"
             disabled="true"
             hidden="true"
 		/>
@@ -833,6 +839,10 @@
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
   <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
   <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS" />
+  <BugPattern abbrev="NOISE" type="NOISE_NULL_DEREFERENCE" category="NOISE" />
+  <BugPattern abbrev="NOISE" type="NOISE_METHOD_CALL" category="NOISE" />
+  <BugPattern abbrev="NOISE" type="NOISE_FIELD_REFERENCE" category="NOISE" />
+  <BugPattern abbrev="NOISE" type="NOISE_OPERATION" category="NOISE" />
   <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 

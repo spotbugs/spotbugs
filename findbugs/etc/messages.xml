@@ -32,6 +32,13 @@ This plugin contains all of the standard FindBugs detectors.
             resulting in code that was probably not what the
             developer intended. We strive for a low false positive rate.</Details>
   </BugCategory>
+  <BugCategory category="NOISE">
+    <Description>Bogus random noise</Description>
+    <Abbreviation>N</Abbreviation>
+    <Details>Bogus random noise: intended to be useful
+	as a control in data mining experiments, not in finding actual bugs in software
+            </Details>
+  </BugCategory>
 
   <BugCategory category="SECURITY">
     <Description>Security</Description>
@@ -459,6 +466,19 @@ that is not compatible with the class defining the equals method.
     <Details>
 <![CDATA[
 <p> This detector is just a hook for testing new detectors.
+Normally, this detector does nothing.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.Noise">
+    <Details>
+<![CDATA[
+<p> This detector generates a random signal: warnings that are just based on
+hash values of the operations performed by methods.
+These warnings are bogus random noise, intended to be useful
+        as a control in data mining experiments, not in finding actual bugs in software
+
+ This detector is just a hook for testing new detectors.
 Normally, this detector does nothing.</p>
 ]]>
     </Details>
@@ -1569,6 +1589,49 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="NOISE_NULL_DEREFERENCE">
+    <ShortDescription>Bogus warning about a null pointer dereference</ShortDescription>
+    <LongDescription>Bogus warning about a null pointer dereference in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>Bogus warning.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NOISE_METHOD_CALL">
+    <ShortDescription>Bogus warning about a method call</ShortDescription>
+    <LongDescription>Bogus warning about a method call {2} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>Bogus warning.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NOISE_FIELD_REFERENCE">
+    <ShortDescription>Bogus warning about a field reference</ShortDescription>
+    <LongDescription>Bogus warning about a reference to {2} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>Bogus warning.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NOISE_OPERATION">
+    <ShortDescription>Bogus warning about an operation</ShortDescription>
+    <LongDescription>Bogus warning about an operation {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>Bogus warning.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
     <ShortDescription>Useless/vacuous call to EasyMock method</ShortDescription>
     <LongDescription>Useless/vacuous call to {2} in {1}</LongDescription>
@@ -7587,6 +7650,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="HRS" >HTTP Response splitting vulnerability</BugCode>
   <BugCode abbrev="XSS" >Cross site scripting vulnerability</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
+  <BugCode abbrev="NOISE">Bogus random warning</BugCode>
   <BugCode abbrev="RpC" >Repeated conditional test</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>

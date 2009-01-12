@@ -139,8 +139,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 	private static final boolean MARK_DOOMED = SystemProperties
 			.getBoolean("fnd.markdoomed", true);
 
-	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
-
 	private static final String METHOD = SystemProperties
 			.getProperty("fnd.method");
 
@@ -161,13 +159,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 
 	private Method method;
 
-	private IsNullValueDataflow invDataflow;
-	
 	private ValueNumberDataflow vnaDataflow;
-
-	private BitSet previouslyDeadBlocks;
-
-	private NullnessAnnotation methodAnnotation;
 
 	public NoiseNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -227,18 +219,12 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		// UsagesRequiringNonNullValues uses =
 		// classContext.getUsagesRequiringNonNullValues(method);
 		this.method = method;
-		this.methodAnnotation = getMethodNullnessAnnotation();
 
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println("FND: "
 					+ SignatureConverter.convertMethodSignature(methodGen));
 
-
-
-		this.previouslyDeadBlocks = findPreviouslyDeadBlocks();
-
-		// Get the IsNullValueDataflow for the method from the ClassContext
-		invDataflow = classContext.getIsNullValueDataflow(method);
+		findPreviouslyDeadBlocks();
 		
 		vnaDataflow = classContext.getValueNumberDataflow(method);
 		
@@ -290,11 +276,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 				.getUnconditionalDerefParamDatabase();
 	}
 
-	private <DatabaseType extends PropertyDatabase<?, ?>> boolean isDatabaseNonEmpty(
-			DatabaseType database) {
-		return database != null && !database.isEmpty();
-	}
-
 	/**
 	 * See if the currently-visited method declares a
 	 * 
@@ -322,54 +303,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 
 	static class CheckCallSitesAndReturnInstructions {}
 
-	private boolean hasManyPreceedingNullTests(int pc) {
-		int ifNullTests = 0;
-		int ifNonnullTests = 0;
-		BitSet seen = new BitSet();
-		try {
-	        for (Iterator<Location> i = classContext.getCFG(method)
-	        		.locationIterator(); i.hasNext();) {
-	        	Location loc = i.next();
-	        	int pc2 = loc.getHandle().getPosition();
-	        	if (pc2 >= pc || pc2 < pc-30) continue;
-	        	Instruction ins = loc.getHandle().getInstruction();
-	        	if (ins instanceof IFNONNULL && !seen.get(pc2)) {
-	        		ifNonnullTests++;
-	        		seen.set(pc2);
-	        	}
-	        	else if (ins instanceof IFNULL && !seen.get(pc2)) {
-	        		ifNullTests++;
-	        		seen.set(pc2);
-	        	}
-	        }
-	        boolean result = ifNullTests + ifNonnullTests > 2;
-			
-	        // System.out.println("Preceeding null tests " + ifNullTests + " " + ifNonnullTests + " " + result);
-			return result;
-        } catch (CFGBuilderException e) {
-	        return false;
-        }
-	}
-	private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
-		if (calledMethod.getClassName().equals("java.lang.Integer")) {
-			int position = location.getHandle().getPosition();
-			ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
-			Code code = method.getCode();
-			int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/NumberFormatException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return true;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/IllegalArgumentException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return true;
-			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
-					"java/lang/RuntimeException", position);
-			if (catchSize < Integer.MAX_VALUE)
-				return true;
-		}
-		return false;
-	}
 	public void report() {
 	}
 
@@ -433,7 +366,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 			return;
 
 		
-		reportNullDeref(propertySet, location, "UNKNOWN", Priorities.NORMAL_PRIORITY, cause, variable);
+		reportNullDeref(propertySet, location, "NOISE_NULL_DEREFERENCE", Priorities.NORMAL_PRIORITY, cause, variable);
 		
 	}
 
