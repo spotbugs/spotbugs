@@ -65,6 +65,9 @@ public class Noise extends OpcodeStackDetector {
 				push(b);
 		}
 
+		public void pushHash(Object x) {
+			push(x.hashCode());
+		}
 		public void push(int x) {
 			push((byte) (x));
 			push((byte) (x >> 8));
@@ -130,7 +133,7 @@ public class Noise extends OpcodeStackDetector {
 	}
 	@Override
 	public void sawString(String s) {
-		hq.push(s);
+		hq.pushHash(s);
 	}
 	@Override
 	public void sawClass() {
@@ -149,10 +152,10 @@ public class Noise extends OpcodeStackDetector {
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
-			hq.push(getClassConstantOperand());
+			hq.pushHash(getClassConstantOperand());
 			if (getNameConstantOperand().indexOf('$') == -1)
-				hq.push(getNameConstantOperand());
-			hq.push(getSigConstantOperand());
+				hq.pushHash(getNameConstantOperand());
+			hq.pushHash(getSigConstantOperand());
 
 			 priority = hq.getPriority();
 			if (priority <= Priorities.LOW_PRIORITY)
@@ -164,14 +167,19 @@ public class Noise extends OpcodeStackDetector {
 		case PUTFIELD:
 		case GETSTATIC:
 		case PUTSTATIC:
-			hq.push(getClassConstantOperand());
+			hq.pushHash(getClassConstantOperand());
 			if (getNameConstantOperand().indexOf('$') == -1)
-				hq.push(getNameConstantOperand());
-			hq.push(getSigConstantOperand());
+				hq.pushHash(getNameConstantOperand());
+			hq.pushHash(getSigConstantOperand());
 			 priority = hq.getPriority();
 			if (priority <= Priorities.LOW_PRIORITY)
 				accumulator.accumulateBug(new BugInstance(this, "NOISE_FIELD_REFERENCE", priority).addClassAndMethod(this)
 				        .addReferencedField(this), this);
+			break;
+		case CHECKCAST:
+		case INSTANCEOF:
+		case NEW:
+			hq.pushHash(getClassConstantOperand());
 			break;
 		case IADD:
 		case IMUL:
