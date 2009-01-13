@@ -27,6 +27,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 
@@ -62,6 +64,7 @@ public class NewProjectWizard extends FBDialog
 
 	private Project project;
 	private boolean projectChanged = false;
+	private boolean projectNameChanged = false;
 	private FBFileChooser chooser = new FBFileChooser();
 	private FileFilter directoryOrArchive = new FileFilter()
 	{
@@ -230,7 +233,9 @@ public class NewProjectWizard extends FBDialog
 					name = Project.UNNAMED_PROJECT;
 					Debug.println("PROJECT NAME IS NULL!!");
 				}
-				MainFrame.getInstance().setTitle(MainFrame.TITLE_START_TXT + name);
+				if(projectNameChanged){
+					MainFrame.getInstance().setTitle(MainFrame.TITLE_START_TXT + name);
+				}
 
 				dispose();
 			}
@@ -260,6 +265,11 @@ public class NewProjectWizard extends FBDialog
 			for (String i : curProject.getSourceDirList())
 				sourceModel.addElement(i);
 			projectName.setText(curProject.getProjectName());
+			projectName.addKeyListener(new KeyAdapter() {
+				public void keyTyped(KeyEvent e) {
+					projectNameChanged = true;
+				}
+			});
 		}
 		else
 		{
