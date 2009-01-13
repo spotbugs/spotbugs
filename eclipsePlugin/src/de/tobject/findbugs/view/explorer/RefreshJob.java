@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -41,12 +42,23 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 	private final List<DeltaInfo> deltaToRefresh;
 	private volatile CommonViewer viewer;
 	private final BugContentProvider contentProvider;
+	private final ResourceChangeListener resourceListener;
 
 	public RefreshJob(String name, BugContentProvider provider) {
 		super(name);
-		this.contentProvider = provider;
+		setSystem(true);
+		setPriority(Job.DECORATE);
+		contentProvider = provider;
 		deltaComparator = new RemovedFirstComparator();
 		deltaToRefresh = new ArrayList<DeltaInfo>();
+		resourceListener = new ResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+	}
+
+	public void dispose(){
+		cancel();
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
+		setViewer(null);
 	}
 
 	@Override

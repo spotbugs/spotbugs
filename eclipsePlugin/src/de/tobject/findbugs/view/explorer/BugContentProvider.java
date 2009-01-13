@@ -29,12 +29,10 @@ import java.util.Map.Entry;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -63,8 +61,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private final static IMarker[] EMPTY = new IMarker[0];
 
-	private final IResourceChangeListener resourceListener;
-	private final RefreshJob refreshJob;
+	private RefreshJob refreshJob;
 	private Grouping grouping;
 
 	private Object input;
@@ -93,19 +90,6 @@ public class BugContentProvider implements ICommonContentProvider {
 		filteredMarkersMap = new HashMap<BugGroup, Integer>();
 		filteredMarkers = new HashSet<IMarker>();
 		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
-		refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
-		refreshJob.setSystem(true);
-		refreshJob.setPriority(Job.DECORATE);
-		resourceListener = new ResourceChangeListener(refreshJob);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
-//		rootModeListener = new IPropertyChangeListener() {
-//			public void propertyChange(PropertyChangeEvent event) {
-//				if (SHOW_TOP_LEVEL_WORKING_SETS.equals(event.getProperty())) {
-//					showWorkingSets = extensionStateModel
-//							.getBooleanProperty(SHOW_TOP_LEVEL_WORKING_SETS);
-//				}
-//			}
-//		};
 	}
 
 	public Object[] getChildren(Object parent) {
@@ -190,8 +174,9 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void dispose() {
-		refreshJob.setViewer(null);
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
+		if(refreshJob != null){
+			refreshJob.dispose();
+		}
 		rootElement.dispose();
 		clearFilters();
 	}
@@ -199,7 +184,9 @@ public class BugContentProvider implements ICommonContentProvider {
 	public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
 		this.viewer = (CommonViewer) viewer1;
 		this.input = newInput;
-		refreshJob.setViewer((CommonViewer) viewer1);
+		if(refreshJob != null){
+			refreshJob.setViewer((CommonViewer) viewer1);
+		}
 		bugFilterActive = isBugFilterActive();
 		clearFilters();
 	}
@@ -381,6 +368,11 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	public void setGrouping(Grouping grouping) {
 		this.grouping = grouping;
+
+		if(refreshJob == null){
+			// will start listening on resource changes
+			refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
+		}
 	}
 
 	public Grouping getGrouping() {
@@ -398,7 +390,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void restoreState(IMemento memento) {
-		grouping = Grouping.restoreFrom(memento);
+		setGrouping(Grouping.restoreFrom(memento));
 	}
 
 	/**

@@ -92,7 +92,12 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 		if(memento == null){
 			IDialogSettings dialogSettings = FindbugsPlugin.getDefault().getDialogSettings();
 			String persistedMemento = dialogSettings.get(TAG_MEMENTO);
-			if (persistedMemento != null) {
+			if(persistedMemento == null){
+				// See bug 2504068. First time user opens a view, no settings are defined
+				// but we still need to enforce initialisation of content provider
+				// which can only happen if memento is not null
+				memento = XMLMemento.createWriteRoot("bugExplorer");
+			} else {
 				try {
 					memento= XMLMemento.createReadRoot(new StringReader(persistedMemento));
 				} catch (WorkbenchException e) {

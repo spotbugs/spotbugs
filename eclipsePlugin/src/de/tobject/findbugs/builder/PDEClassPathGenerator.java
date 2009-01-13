@@ -93,7 +93,10 @@ public class PDEClassPathGenerator {
 		BundleDescription target = model.getBundleDescription();
 
 		Set<BundleDescription> bundles = new HashSet<BundleDescription>();
-		addDependentBundles(target, bundles);
+		// target is null if plugin uses non OSGI format
+		if(target != null){
+			addDependentBundles(target, bundles);
+		}
 
 		// get the default location => relative to wsp
 		IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject
