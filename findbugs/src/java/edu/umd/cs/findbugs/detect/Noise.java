@@ -88,14 +88,16 @@ public class Noise extends OpcodeStackDetector {
 			int hash = getHash();
 		
 			if ((hash & 0xff0) == 0) {
-				hash = hash & 0x7;
-				if (hash == 0)
+				hash = hash & 0xf;
+				if (hash < 1)
 					return Priorities.HIGH_PRIORITY;
-				else if (hash < 3)
+				else if (hash < 1+2)
 					return Priorities.NORMAL_PRIORITY;
-				else return Priorities.LOW_PRIORITY;
+				else if (hash < 1+2+4)
+					return Priorities.LOW_PRIORITY;
+				else return Priorities.IGNORE_PRIORITY;
 		}
-			else return Priorities.IGNORE_PRIORITY;
+			else return Priorities.IGNORE_PRIORITY+1;
 		}
 	}
 
@@ -144,6 +146,7 @@ public class Noise extends OpcodeStackDetector {
 	 * 
 	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
 	 */
+	
 	@Override
 	public void sawOpcode(int seen) {
 		int priority;
@@ -181,13 +184,42 @@ public class Noise extends OpcodeStackDetector {
 		case NEW:
 			hq.pushHash(getClassConstantOperand());
 			break;
+		case IFEQ:
+		case IFNE:
+		case IFNONNULL:
+		case IFNULL:
+		case IF_ICMPEQ:
+		case IF_ICMPNE:
+		case IF_ICMPLE:
+		case IF_ICMPGE:
+		case IF_ICMPGT:
+		case IF_ICMPLT:
+		case IF_ACMPEQ:
+		case IF_ACMPNE:
+		case RETURN:
+		case ARETURN:
+		case IRETURN:
+		case MONITORENTER:
+		case MONITOREXIT:
+		case IINC:
+		case NEWARRAY:
+		case TABLESWITCH:
+		case LOOKUPSWITCH:
+		case LCMP:
+		case INEG:
 		case IADD:
 		case IMUL:
 		case ISUB:
 		case IDIV:
+		case IREM:
+		case IXOR:
 		case ISHL:
 		case ISHR:
 		case IUSHR:
+		case IAND:
+		case IOR:
+		case LAND:
+		case LOR:
 		case LADD:
 		case LMUL:
 		case LSUB:
@@ -202,11 +234,13 @@ public class Noise extends OpcodeStackDetector {
 		case BALOAD:
 		case BASTORE:
 			hq.push(seen);
-			 priority = hq.getPriority();
+			 priority = hq.getPriority()-1;
 				if (priority <= Priorities.LOW_PRIORITY)
 					accumulator.accumulateBug(new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this)
 							.addString(OPCODE_NAMES[seen]), this);
 		}
 	}
+	
+	
 
 }
