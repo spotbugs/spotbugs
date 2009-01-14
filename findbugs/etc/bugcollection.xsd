@@ -214,11 +214,13 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="Errors">
-					<xs:complexType>
+					<xs:complexType>	
 						<xs:sequence>
 							<xs:element name="MissingClass" type="xs:string" minOccurs="0"
 								maxOccurs="unbounded"/>
 						</xs:sequence>
+						<xs:attribute name="errors" type="xs:unsignedInt" use="optional"/>
+						<xs:attribute name="missingClasses" type="xs:unsignedInt" use="optional"/>
 					</xs:complexType>
 				</xs:element>
 

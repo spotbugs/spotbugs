@@ -602,8 +602,11 @@ public class SortedBugCollection implements BugCollection {
 
 	private void emitErrors(XMLOutput xmlOutput) throws IOException {
 		//System.err.println("Writing errors to XML output");
-
-		xmlOutput.openTag(ERRORS_ELEMENT_NAME);
+		XMLAttributeList attributeList = new XMLAttributeList();
+		attributeList.addAttribute("errors", Integer.toString(errorList.size()));
+		attributeList.addAttribute("missingClasses", Integer.toString(missingClassSet.size()));
+		xmlOutput.openTag(ERRORS_ELEMENT_NAME,attributeList);
+		
 
 		// Emit Error elements describing analysis errors
 		for (Iterator<AnalysisError> i = errorIterator(); i.hasNext(); ) {
