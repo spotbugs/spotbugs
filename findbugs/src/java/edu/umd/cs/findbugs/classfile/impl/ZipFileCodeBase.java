@@ -53,6 +53,16 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		this.zipFile = new ZipFile(file);
 		setLastModifiedTime(file.lastModified());
 		} catch (ZipException e) {
+			File parent = file.getParentFile();
+			if (!file.exists()) {
+				if (!(parent.exists() && parent.isDirectory() && parent.canRead()))
+						throw new ZipException("Can't ready directory containing zip file: " + file);
+				throw new ZipException("Zip file doesn't exist: " + file);
+			}
+			if (!file.canRead())
+				throw new ZipException("Can't read file zip file: " + file);
+			if (!file.isFile())
+				throw new ZipException("Zip file isn't a normal file: " + file);
 			throw new ZipException("Error opening " + file);
 		}
 	}
