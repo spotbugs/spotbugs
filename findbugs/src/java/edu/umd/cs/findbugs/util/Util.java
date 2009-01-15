@@ -150,21 +150,23 @@ public class Util {
 	
 	public static void closeSilently(@WillClose InputStream in) {
 		try {
-			in.close();
+			if (in != null)
+				in.close();
 		} catch (IOException e) {
 			assert true;
 		}
 	}
 	public static void closeSilently(@WillClose Reader in) {
 		try {
-			in.close();
+			if (in != null)
+				in.close();
 		} catch (IOException e) {
 			assert true;
 		}
 	}
 	public static void closeSilently(@WillClose OutputStream out) {
 		try {
-			out.close();
+			if (out != null) out.close();
 		} catch (IOException e) {
 			assert true;
 		}
