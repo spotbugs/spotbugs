@@ -103,9 +103,12 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
 	@Override
 		 public void sawOpcode(int seen) {
-		if (DEBUG)   System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + switchHdlr.isOnSwitchOffset(this));
+		boolean isDefaultOffset =  switchHdlr.getDefaultOffset() == getPC();
+		boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
 
-		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
+		if (DEBUG)   System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + isCaseOffset + " " + isDefaultOffset);
+
+		if (reachable && (isDefaultOffset || isCaseOffset)) {
 			if (DEBUG) {
 				System.out.println("Fallthrough at : " + getPC() + ": " + OPCODE_NAMES[seen]);
 			}
@@ -149,7 +152,21 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 			}
 		}
 		
+		if (seen == ATHROW) {
+			int sz =  edu.umd.cs.findbugs.visitclass.Util.getSizeOfSurroundingTryBlock(getMethod(), null, getPC());
+			if (sz == Integer.MAX_VALUE) {
 		
+			BitSet dead = new BitSet();
+			dead.or(potentiallyDeadStores);
+			dead.and(potentiallyDeadStoresFromBeforeFallthrough);
+			if (dead.cardinality() > 0) {
+				int register = dead.nextSetBit(0);
+				priority = HIGH_PRIORITY;
+				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
+				bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+				.addClassAndMethod(this).add(deadStore), this);
+			}}
+		}
 		
 		
 		if (isRegisterLoad())

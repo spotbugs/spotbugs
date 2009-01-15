@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class SwitchHandler
 {
-	private List<SwitchDetails> switchOffsetStack;
+	private final List<SwitchDetails> switchOffsetStack;
 
 	public SwitchHandler() {
 		switchOffsetStack = new ArrayList<SwitchDetails>();
@@ -63,6 +63,8 @@ public class SwitchHandler
 			if (nextSwitchOffset >= 0)
 				return nextSwitchOffset;
 
+			if (dbc.getPC() <= details.getDefaultOffset())
+				return -1;
 			switchOffsetStack.remove(size-1);
 			size--;
 		}
@@ -81,9 +83,9 @@ public class SwitchHandler
 
 	public static class SwitchDetails
 	{
-		int   switchPC;
-		int[] swOffsets;
-		int	  defaultOffset;
+		final int   switchPC;
+		final int[] swOffsets;
+		final int	  defaultOffset;
 		int   nextOffset;
 
 		public SwitchDetails(int pc, int[] offsets, int defOffset) {
