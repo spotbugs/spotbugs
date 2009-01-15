@@ -48,6 +48,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.xml.transform.TransformerException;
 
@@ -62,6 +64,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
@@ -69,8 +72,6 @@ import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -224,17 +225,19 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
+		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
 		try {
 			checkInputStream(in);
 
-			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
-
+			
+			Profiler.getInstance().start(handler.getClass());
 
 			XMLReader xr = null;
 			try {
 				xr = XMLReaderFactory.createXMLReader();
 			} catch (SAXException e) {
 				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
+				throw new DocumentException("Sax error ", e);
 			}
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
@@ -248,7 +251,8 @@ public class SortedBugCollection implements BugCollection {
 			// FIXME: throw SAXException from method?
 			throw new DocumentException("Sax error ", e);
 		} finally {
-			in.close();
+			Util.closeSilently(in);
+			Profiler.getInstance().end(handler.getClass());
 		}
 
 		// Presumably, project is now up-to-date
