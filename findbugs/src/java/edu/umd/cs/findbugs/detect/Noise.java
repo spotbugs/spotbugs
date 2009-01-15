@@ -234,7 +234,7 @@ public class Noise extends OpcodeStackDetector {
 		case BALOAD:
 		case BASTORE:
 			hq.push(seen);
-			 priority = hq.getPriority()-1;
+			 priority = hq.getPriority();
 				if (priority <= Priorities.LOW_PRIORITY)
 					accumulator.accumulateBug(new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this)
 							.addString(OPCODE_NAMES[seen]), this);
