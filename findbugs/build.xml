@@ -201,7 +201,7 @@
 		<xmlvalidate failonerror="no">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
-			<fileset dir="${sampleoutput.dir}" includes="*.html"/>
+			<fileset dir="${sampleoutput.dir}" includes="plain.html"/>
 		</xmlvalidate>
 	</target>
 
