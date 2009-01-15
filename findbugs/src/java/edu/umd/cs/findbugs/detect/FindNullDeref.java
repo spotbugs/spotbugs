@@ -1408,7 +1408,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 			for(Location loc : derefLocationSet) {
 			  int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
-			  if (!linesMentionedMultipleTimes.get(lineNumber)) uniqueDereferenceLocations = true;
+			  if (lineNumber > 0 &&
+				!linesMentionedMultipleTimes.get(lineNumber)) 
+				uniqueDereferenceLocations = true;
 			}
 		}
 	    return uniqueDereferenceLocations;
