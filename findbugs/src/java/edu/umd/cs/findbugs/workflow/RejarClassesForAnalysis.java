@@ -267,7 +267,11 @@ public class RejarClassesForAnalysis {
 
 			if (processZipEntries(f, new ZipElementHandler() {
 				public void handle(ZipFile file, ZipEntry ze) {
-					copied.add(ze.getName());
+					String name = ze.getName();
+					
+					String dottedName = name.replace('/', '.');
+					if (!commandLine.exclude.matches(dottedName)) 
+						copied.add(ze.getName());
 				}
 			}) && oldSize < copied.size())
 				auxZipFiles.add(f);
@@ -290,7 +294,7 @@ public class RejarClassesForAnalysis {
 		final HashSet<String> mentioned = new HashSet<String>();
 
 		for (File f : inputZipFiles) {
-			System.err.println("Opening " + f);
+			System.err.println("Reading " + f);
 			processZipEntries(f, new ZipElementHandler() {
 
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
@@ -340,10 +344,15 @@ public class RejarClassesForAnalysis {
 
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
 					String name = ze.getName();
+					String dottedName = name.replace('/', '.');
+					
+					if (commandLine.exclude.matches(dottedName)) return;
 					if (!copied.add(name)) {
-						System.err.println("Skipping duplicate of " + name);
+						if (mentioned.add(name)) 
+							System.err.println("Skipping duplicate of " + name);
 						return;
 					}
+					
 					auxilaryClassCount++;
 					if (auxilaryClassCount > 29999) {
 						auxilaryClassCount = 0;
