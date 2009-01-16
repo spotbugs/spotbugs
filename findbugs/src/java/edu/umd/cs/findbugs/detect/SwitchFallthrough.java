@@ -163,7 +163,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 				int register = dead.nextSetBit(0);
 				priority = HIGH_PRIORITY;
 				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
-				bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+				bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW", priority)
 				.addClassAndMethod(this).add(deadStore), this);
 			}}
 		}

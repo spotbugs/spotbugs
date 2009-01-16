@@ -299,13 +299,13 @@
   <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" 
             speed="fast"
             reports="NOISE_NULL_DEREFERENCE"
-            disabled="true"
+            disabled="false"
             hidden="true"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.Noise" 
             speed="fast"
             reports="NOISE_METHOD_CALL,NOISE_FIELD_REFERENCE,NOISE_OPERATION"
-            disabled="true"
+            disabled="false"
             hidden="true"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" 
@@ -412,7 +412,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" 
             speed="fast"
-            reports="SF_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" />
+            reports="SF_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" 
             speed="fast"
@@ -1017,6 +1017,7 @@
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484" />
   <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" category="CORRECTNESS" />
+  <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW" category="CORRECTNESS" />
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
