@@ -349,6 +349,11 @@
 			<filterset refid="script.filters"/>
 		</copy>
 
+		<copy todir="${scripts.dir}/experimental" overwrite="true">
+			<fileset dir="${scriptsrc.dir}/experimental"/>
+			<filterset refid="script.filters"/>
+		</copy>
+
 		<mkdir dir="${build.dir}"/>
 
 		<!-- Make the Unix scripts executable. -->
@@ -894,6 +899,7 @@
 		
 		<patternset id="bindist.unixscript.pats">
 			<include name="bin/*"/>
+			<include name="bin/experimental/*"/>
 			<include name="bin/deprecated/*"/>
 			<exclude name="bin/*.bat"/>
 		</patternset>
