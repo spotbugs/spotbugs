@@ -30,12 +30,26 @@ import java.util.Set;
  * @author pugh
  */
 public class Bag<E> {
-	Map<E,Integer> map = new HashMap<E, Integer>();
+	final Map<E,Integer> map;
+	
+	public Bag() {
+		map = new HashMap<E, Integer>();
+	}
+	public Bag(Map<E, Integer> map) {
+	 this.map = map;
+	}
 	public boolean add(E e) {
 		Integer v = map.get(e);
 		if (v == null) 
 			map.put(e, 1);
 		else map.put(e, v+1);
+		return true;
+	}
+	public boolean add(E e, int count) {
+		Integer v = map.get(e);
+		if (v == null) 
+			map.put(e, count);
+		else map.put(e, v+count);
 		return true;
 	}
 	public Set<E> keySet() {
