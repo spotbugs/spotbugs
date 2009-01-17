@@ -12,6 +12,11 @@
 
 <project name="fbeclipse" default="dist">
 
+	<!-- Eclipse plugin id, will never change -->
+	<property name="plugin.id" value="edu.umd.cs.findbugs.plugin.eclipse" />
+	<!-- Plugin id suffix which is the build date -->
+	<tstamp><format property="plugin.date" pattern="yyyyMMdd" /></tstamp>
+
 <!--
 	The local.properties file must contain the location of
 	   - Eclipse platform (key is "eclipsePlugin.dir", value is the 3.3+ Eclipse plugins folder)
@@ -32,7 +37,6 @@
 	<property name="fbeclipse.dir" value="."/>
 
 	<property name="src.dir" value="src"/>
-	<property name="buildtools.dir" value="buildtools"/>
 	<property name="dist.dir" value="dist"/>
 
 	<!-- the binaries/classes, built by javac -->
@@ -75,12 +79,7 @@
 		</fileset>
 	</path>
 
-	<path id="tools.classpath">
-		<pathelement location="${bin.dir}"/>
-	</path>
-
-	<!-- Need these jars for ant target 'srcdist', which uses
-		 subversion.  Grab them at:
+	<!-- Need these jars for ant target 'srcdist', which uses subversion.  Grab them at:
 		 http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip -->
 	<path id="svn.classpath">
 		<pathelement location="${svnant.home}/lib/svnant.jar"/>
@@ -91,14 +90,9 @@
 	</path>
 
 	<target name="init">
-		<!-- true to recompile FB core jars (if findbugs.jar and required jars are not there) -->
+		<!-- true to recompile FB core (if findbugs.jar is not there) -->
 		<condition property="fb.recompile" >
-			  <not>
-			  	<and>
-			  	<available file="${fb.jar}" />
-			  	<available file="${lib.dir}" />
-			  	</and>
-			  </not>
+	        <not><available file="${fb.jar}" /></not>
 	    </condition>
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${bin.dir}"/>
@@ -119,8 +113,7 @@
 	<target name="classes" depends="init,fbjars" description="Compile java source files">
 		<echo message="Compiling FindBugs Eclipse plugin"/>
 	    <fail unless="eclipsePlugin.dir"
-	    	message="Please specify path to the Eclipse 3.3+ plugins folder in local.properties file, like eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
-		<mkdir dir="${bin.dir}"/>
+	    	message="Please specify path to the Eclipse 3.3+ plugins folder in local.properties file, like: eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
 		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
 		  destdir="${bin.dir}"
@@ -130,15 +123,6 @@
 			<classpath refid="plugin.classpath"/>
 			<compilerarg value="-Xlint:all,-path,-unchecked"/>
 		</javac>
-		<!-- Compile build tools. -->
-		<javac srcdir="${buildtools.dir}"
-			destdir="${bin.dir}"
-			source="1.5"
-			target="1.5"
-			debug="on">
-			<classpath refid="tools.classpath"/>
-			<classpath refid="plugin.classpath"/>
-		</javac>
 		<!-- Copy the .properties files from the source directory. -->
 		<copy todir="${bin.dir}">
 			<fileset dir="${src.dir}">
@@ -147,24 +131,39 @@
 		</copy>
 	</target>
 
+	<target name="version" depends="fbjars" description="Extract the plugin id and version">
+		<echo message="Verifying and creating FindBugs Eclipse plugin version info"/>
 
-	<target name="version" depends="clean,classes" description="Extract the plugin id and version">
-		<echo message="Creating FindBugs Eclipse plugin version properties file"/>
-		<!-- Extract the plugin id and version from plugin.xml. -->
-		<java
-			fork="true"
-			dir="."
-			classname="de.tobject.findbugs.tools.PluginInfo"
-			failonerror="true"
-			output="${bin.dir}/plugininfo.properties">
-			<classpath refid="tools.classpath"/>
-			<classpath refid="plugin.classpath"/>
-			<arg value="META-INF/MANIFEST.MF"/>
-			<arg value="${dist.dir}/META-INF/MANIFEST.MF"/>
-		</java>
+		<!-- 1) read FB version from ${bin.dir}/version.properties (copied from core) to ${release.base} -->
+	    <loadproperties srcFile="${bin.dir}/version.properties" >
+	      <filterchain><linecontains><contains value="release.base"/></linecontains></filterchain>
+	    </loadproperties>
 
-		<!-- Read plugin id and plugin version properties. -->
-		<property file="${bin.dir}/plugininfo.properties"/>
+		<!-- 2) read plugin base version from META-INF/MANIFEST.MF to ${eclipse.release.base} -->
+		<loadfile srcFile="META-INF/MANIFEST.MF" property="eclipse.release.base">
+          <filterchain>
+          	<tokenfilter><containsregex pattern="Bundle-Version: (.*)\.qualifier" replace="\1"/></tokenfilter>
+          	<deletecharacters chars=" \n\r"/>
+          </filterchain>
+        </loadfile>
+
+        <!-- 3) check if plugin base version matches FB core version -->
+		<condition property="version-match">
+		  <equals arg1="${eclipse.release.base}" arg2="${release.base}"/>
+		</condition>
+		<fail unless="version-match">
+			Findbugs plugin and Findbugs core versions doesn't match!
+			Plugin MANIFEST.MF version is ${eclipse.release.base},
+			FindBugs version is           ${release.base}
+		</fail>
+
+		<!-- 4) set the values for plugin.version -->
+		<property name="plugin.version" value="${release.base}.${plugin.date}" />
+
+		<!-- 5) Copy META-INF/MANIFEST.MF to ${dist.dir}, "qualifier" to current date -->
+        <copy file="META-INF/MANIFEST.MF" toFile="${dist.dir}/META-INF/MANIFEST.MF" overwrite="true">
+          <filterset begintoken="q" endtoken="r"><filter token="ualifie" value="${plugin.date}"/></filterset>
+        </copy>
 	</target>
 
 	<target name="all" depends="force_recompile,site,srcdist"/>
@@ -213,6 +212,7 @@
 			message="Please specify path to the svnant-1.2.1 root folder in local.properties file, like svnant.home=F:\\java\\libs\\svnant-1.2.1"/>
 
 		<property file="${bin.dir}/plugininfo.properties"/>
+
 		<mkdir dir="${dist.dir}/src"/>
 		<delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
 		<!-- requires svnant-1.2.1 -->
@@ -226,7 +226,7 @@
 					destPath="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
 		</svn>
 
-		<zip destfile="${dist.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
+		<zip destfile="${bin.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
 			<zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
 		</zip>
 	</target>
@@ -293,11 +293,12 @@
 		</copy>
 	</target>
 
-	<target name="fbjars" depends="init,fbbuild" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
+    <!-- Copy required jar files from the main findbugs project (which should be a sibling of this project) -->
+	<target name="fbjars" depends="init,fbcompile">
 		<echo message="Copying Findbugs libraries and classes to Eclipse plugin"/>
-
+		
 		<!-- copy only FB core classes to the plugin bin folder -->
-		<unzip dest="${bin.dir}" src="${fb.jar}">
+		<unzip src="${fb.jar}" dest="${bin.dir}">
 			<patternset>
 				<include name="**/*.*"/>
 				<exclude name="${fbpackage}/gui/**/*.*"/>
@@ -310,12 +311,13 @@
 				<exclude name="META-INF/*.*"/>
 			</patternset>
 		</unzip>
-		<copy todir="${lib.dir}">
+		<copy todir="${lib.dir}" preservelastmodified="true">
 			<fileset dir="${findbugs.dir}/lib" includes="${jars.required}"/>
 		</copy>
 	</target>
 
-	<target name="fbbuild" if="fb.recompile" >
+	<!-- Trigger (re-)compilation of FB core, if findbugs.jar is not available -->
+	<target name="fbcompile" if="fb.recompile" >
 		<echo message="Building Findbugs core libraries"/>
 		<ant dir="${findbugs.dir}" inheritall="false" target="build" />
 	</target>
