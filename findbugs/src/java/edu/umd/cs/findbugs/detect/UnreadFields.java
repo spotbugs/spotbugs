@@ -853,8 +853,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 						int priority = LOW_PRIORITY;
 						if (easyChange && !isAnonymousInnerClass)
 							priority = NORMAL_PRIORITY;
-
-						boolean b = withinAnonymousClass.matcher(getDottedClassName()).find();
+						
 						String bug = "SIC_INNER_SHOULD_BE_STATIC";
 						if (isAnonymousInnerClass)
 							bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
