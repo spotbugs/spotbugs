@@ -249,6 +249,7 @@ public final class MarkerUtil {
 		IType type;
 		String innerName = null;
 		if (m.matches() && m.group(2).length() > 0) {
+
 			String outerQualifiedClassName = m.group(1).replace('$','.');
 			innerName  = m.group(2).substring(1);
 			// second argument is required to find also secondary types
@@ -258,7 +259,9 @@ public final class MarkerUtil {
 			 * code below only points to the first line of inner class
 			 * even if this is not a class bug but field bug
 			 */
-			completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
+			if(!hasLineInfo(primarySourceLineAnnotation)) {
+				completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
+			}
 		} else {
 			// second argument is required to find also secondary types
 			type =  project.findType(qualifiedClassName.replace('$','.'), (IProgressMonitor)null);
@@ -267,8 +270,7 @@ public final class MarkerUtil {
 			// instead of reporting the first line of inner class, they report first line of parent class
 			// in this case we will try to fix this here and point to the right start line
 			if(type != null && type.isMember()){
-				SourceLineAnnotation sourceLines = bug.getPrimaryClass().getSourceLines();
-				if(sourceLines == null || sourceLines.getStartLine() <= 1) {
+				if(!hasLineInfo(primarySourceLineAnnotation)) {
 					completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
 				}
 			}
@@ -299,6 +301,10 @@ public final class MarkerUtil {
 		return null;
 	}
 
+	private static boolean hasLineInfo(SourceLineAnnotation annotation) {
+		return annotation != null && annotation.getStartLine() > 0;
+	}
+
 	private static void completeFieldInfo(String qualifiedClassName, String innerName,
 			IType type, BugInstance bug)  throws JavaModelException  {
 		FieldAnnotation field = bug.getPrimaryField();
@@ -308,11 +314,11 @@ public final class MarkerUtil {
 
 		IField ifield = type.getField(field.getFieldName());
 		if (type instanceof SourceType) {
-			IScanner scanner = initScanner(type);
 			ISourceRange sourceRange = ifield.getNameRange();
 			if(sourceRange == null) {
 				sourceRange = ifield.getSourceRange();
 			}
+			IScanner scanner = initScanner(type, sourceRange);
 			int offset = sourceRange.getOffset();
 			int lineNbr = scanner.getLineNumber(offset);
 			lineNbr = lineNbr <= 0 ? 1 : lineNbr;
@@ -334,7 +340,7 @@ public final class MarkerUtil {
 
 	private static void completeInnerClassInfo(String qualifiedClassName,
 			String innerName, IType type, BugInstance bug) throws JavaModelException {
-		int lineNbr = findChildSourceLine(type, innerName);
+		int lineNbr = findChildSourceLine(type, innerName, bug);
 		// should be always first line, if not found
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
 		String sourceFileStr = ""; //$NON-NLS-1$
@@ -358,11 +364,11 @@ public final class MarkerUtil {
 	private static int getLineStart(SourceType source) throws JavaModelException {
 		IOpenable op = source.getOpenable();
 		if (op instanceof CompilationUnit) {
-			IScanner scanner = initScanner(source);
 			ISourceRange range = source.getNameRange();
 			if(range == null){
 				range = source.getSourceRange();
 			}
+			IScanner scanner = initScanner(source, range);
 			return scanner.getLineNumber(range.getOffset());
 		}
 		// start line of enclosing type
@@ -371,19 +377,24 @@ public final class MarkerUtil {
 
 	/**
 	 * @param source must be not null
+	 * @param sourceRange
 	 * @return may return null, otherwise an initialized scanner which may answer which
 	 * source offset index belongs to which source line
 	 */
-	private static IScanner initScanner(IJavaElement source) throws JavaModelException {
+	private static IScanner initScanner(IJavaElement source, ISourceRange range) throws JavaModelException {
 		IOpenable op = source.getOpenable();
 		if (op instanceof CompilationUnit) {
 			CompilationUnit cu = (CompilationUnit) op;
 			IScanner scanner =
 				ToolFactory.createScanner(false, false, false, true);
 			scanner.setSource(cu.getContents());
+			int offset = range.getOffset();
 			try {
 				while (scanner.getNextToken() != ITerminalSymbols.TokenNameEOF) {
 					// do nothing, just wait for the end of stream
+					if(offset <= scanner.getCurrentTokenEndPosition()){
+						break;
+					}
 				}
 			} catch (InvalidInputException e) {
 				FindbugsPlugin.getDefault().logException(e,
@@ -394,75 +405,32 @@ public final class MarkerUtil {
 		return null;
 	}
 
-	private static int findChildSourceLine(IJavaElement javaElement, String name)
+	private static int findChildSourceLine(IJavaElement parentType, String name, BugInstance bug)
 			throws JavaModelException {
-		if (javaElement == null) {
+		if (parentType == null) {
 			return -1;
 		}
 		char firstChar = name.charAt(0);
 		boolean firstIsDigit = Character.isDigit(firstChar);
 		if (!firstIsDigit) {
-			return findInnerClassSourceLine(javaElement, name);
+			return findInnerClassSourceLine(parentType, name);
 		}
 		boolean innerFromMember = firstIsDigit && name.length() > 1
 			&& !Character.isDigit(name.charAt(1));
 		if(innerFromMember){
-			return findInnerClassSourceLine(javaElement, name.substring(1));
+			return findInnerClassSourceLine(parentType, name.substring(1));
 		}
-		try {
-			int innerNumber = Integer.parseInt(name);
-			return findInnerAnonymousClassSourceLine(javaElement, innerNumber);
-		} catch (NumberFormatException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Could not find source line information for class member");
-		}
-		return -1;
+		return findInnerAnonymousClassSourceLine(parentType, name);
 	}
 
-	private static int findInnerAnonymousClassSourceLine(IJavaElement javaElement, int innerNumber) {
-		IOpenable op = javaElement.getOpenable();
-		if (!(op instanceof CompilationUnit)) {
-			return -1;
+	private static int findInnerAnonymousClassSourceLine(IJavaElement parentType,
+			String innerName) throws JavaModelException {
+		IType anon = JdtUtils.findAnonymous((IType) parentType, innerName);
+		int line = -1;
+		if (anon instanceof SourceType){
+			line = getLineStart((SourceType) anon);
 		}
-		CompilationUnit cu = (CompilationUnit) op;
-		IScanner scanner = ToolFactory.createScanner(false, false, false, true);
-		scanner.setSource(cu.getContents());
-		try {
-			int innerCount = 0;
-			int tokenID = scanner.getNextToken();
-			while (tokenID != ITerminalSymbols.TokenNameEOF) {
-				if (tokenID != ITerminalSymbols.TokenNamenew) {
-					tokenID = scanner.getNextToken();
-					continue;
-				}
-				int startClassPos = scanner.getCurrentTokenStartPosition();
-				tokenID = scanner.getNextToken();
-				if (tokenID != ITerminalSymbols.TokenNameIdentifier) {
-					continue;
-				}
-				tokenID = skipUntil(scanner, ITerminalSymbols.TokenNameLPAREN);
-				if (tokenID != ITerminalSymbols.TokenNameLPAREN) {
-					continue;
-				}
-				tokenID = scanner.getNextToken();
-				if (tokenID != ITerminalSymbols.TokenNameRPAREN) {
-					continue;
-				}
-				tokenID = scanner.getNextToken();
-				if (tokenID != ITerminalSymbols.TokenNameLBRACE) {
-					continue;
-				}
-				tokenID = scanner.getNextToken();
-				innerCount++;
-				if (innerCount == innerNumber) {
-					return scanner.getLineNumber(startClassPos);
-				}
-			}
-		}
-		catch (InvalidInputException e) {
-			FindbugsPlugin.getDefault().logException(e, "Error scanning for inner class start line");
-		}
-		return -1;
+		return line;
 	}
 
 	/**
@@ -477,17 +445,17 @@ public final class MarkerUtil {
 		return tokenID;
 	}
 
-	private static int findInnerClassSourceLine(IJavaElement javaElement,
+	private static int findInnerClassSourceLine(IJavaElement parentType,
 			String name) throws JavaModelException {
-		String elemName = javaElement.getElementName();
+		String elemName = parentType.getElementName();
 		if (name.equals(elemName)) {
-			if (javaElement instanceof SourceType) {
-				SourceType source = (SourceType) javaElement;
+			if (parentType instanceof SourceType) {
+				SourceType source = (SourceType) parentType;
 				return getLineStart(source);
 			}
 		}
-		if (javaElement instanceof IParent) {
-			IJavaElement[] children = ((IParent) javaElement).getChildren();
+		if (parentType instanceof IParent) {
+			IJavaElement[] children = ((IParent) parentType).getChildren();
 			for (int i = 0; i < children.length; i++) {
 				// recursive call
 				int line = findInnerClassSourceLine(children[i], name);
