@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Fri Nov 14 22:02:39 CET 2008
+#Mon Jan 19 07:20:49 CET 2009
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|false
 detectorBadAppletConstructor=BadAppletConstructor|false
@@ -17,7 +17,7 @@ detectorCheckExpectedWarnings=CheckExpectedWarnings|false
 detectorCheckImmutableAnnotation=CheckImmutableAnnotation|true
 detectorCheckTypeQualifiers=CheckTypeQualifiers|true
 detectorCloneIdiom=CloneIdiom|true
-detectorComparatorIdiom=ComparatorIdiom|true
+detectorComparatorIdiom=ComparatorIdiom|false
 detectorConfusedInheritance=ConfusedInheritance|true
 detectorConfusionBetweenInheritedAndOuterMethod=ConfusionBetweenInheritedAndOuterMethod|true
 detectorCrossSiteScripting=CrossSiteScripting|true
@@ -121,7 +121,7 @@ detectorReflectiveClasses=ReflectiveClasses|true
 detectorRepeatedConditionals=RepeatedConditionals|true
 detectorResolveAllReferences=ResolveAllReferences|false
 detectorRuntimeExceptionCapture=RuntimeExceptionCapture|true
-detectorSerializableIdiom=SerializableIdiom|true
+detectorSerializableIdiom=SerializableIdiom|false
 detectorStartInConstructor=StartInConstructor|true
 detectorStaticCalendarDetector=StaticCalendarDetector|true
 detectorStringConcatenation=StringConcatenation|true
