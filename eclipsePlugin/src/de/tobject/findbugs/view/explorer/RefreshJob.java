@@ -52,12 +52,18 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 		deltaComparator = new RemovedFirstComparator();
 		deltaToRefresh = new ArrayList<DeltaInfo>();
 		resourceListener = new ResourceChangeListener(this);
+	}
+
+	private void startListening(){
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
+	}
+
+	private void stopListening(){
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
 	}
 
 	public void dispose(){
 		cancel();
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
 		setViewer(null);
 	}
 
@@ -146,8 +152,14 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 		return false;
 	}
 
-	public void setViewer(CommonViewer viewer) {
-		this.viewer = viewer;
+	public void setViewer(CommonViewer newViewer) {
+		if(newViewer != null){
+			this.viewer = newViewer;
+			startListening();
+		}  else {
+			stopListening();
+			this.viewer = null;
+		}
 	}
 
 	CommonViewer getViewer() {

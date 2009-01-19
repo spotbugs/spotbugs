@@ -61,7 +61,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private final static IMarker[] EMPTY = new IMarker[0];
 
-	private RefreshJob refreshJob;
+	private final RefreshJob refreshJob;
 	private Grouping grouping;
 
 	private Object input;
@@ -90,6 +90,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		filteredMarkersMap = new HashMap<BugGroup, Integer>();
 		filteredMarkers = new HashSet<IMarker>();
 		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
+		refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
 	}
 
 	public Object[] getChildren(Object parent) {
@@ -174,19 +175,15 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void dispose() {
-		if(refreshJob != null){
-			refreshJob.dispose();
-		}
+		refreshJob.dispose();
 		rootElement.dispose();
 		clearFilters();
 	}
 
-	public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
-		this.viewer = (CommonViewer) viewer1;
-		this.input = newInput;
-		if(refreshJob != null){
-			refreshJob.setViewer((CommonViewer) viewer1);
-		}
+	public void inputChanged(Viewer newViewer, Object oldInput, Object newInput) {
+		viewer = (CommonViewer) newViewer;
+		input = newInput;
+		refreshJob.setViewer((CommonViewer) newViewer);
 		bugFilterActive = isBugFilterActive();
 		clearFilters();
 	}
@@ -368,10 +365,9 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	public void setGrouping(Grouping grouping) {
 		this.grouping = grouping;
-
-		if(refreshJob == null){
-			// will start listening on resource changes
-			refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
+		if(viewer != null){
+			// will start listening on resource changes, if not yet started
+			refreshJob.setViewer(viewer);
 		}
 	}
 
