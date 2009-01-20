@@ -444,6 +444,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                         }
 						}
 					if (foundMatch) continue;
+					Instruction prevIns = handle.getPrev().getInstruction();
+					if (prevIns instanceof InvokeInstruction) {
+						String returnValueSig = ((InvokeInstruction)prevIns).getSignature(cpg);
+						if (returnValueSig.endsWith(")Ljava/lang/Object;")) 
+							continue;
+					}
+					
+					
 					bugPattern = "GC_UNCHECKED_TYPE_IN_GENERIC_CALL";
 				}
 				accumulator.accumulateBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen,
