@@ -788,6 +788,7 @@ public class OpcodeStack implements Constants2
 
 	int convertJumpToOneZeroState = 0;
 	int convertJumpToZeroOneState = 0;
+	int registerTestedFoundToBeNonnegative = -1;
 
 	private void setLastUpdate(int reg, int pc) {
 		while (lastUpdate.size() <= reg) lastUpdate.add(0);
@@ -816,7 +817,13 @@ public class OpcodeStack implements Constants2
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
 		 
-	
+		 if (registerTestedFoundToBeNonnegative >= 0) {
+				for(Item item : stack) if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
+						item.setSpecialKind(Item.NON_NEGATIVE);
+				for(Item item : lvValues) if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
+						item.setSpecialKind(Item.NON_NEGATIVE);
+		 }
+		 registerTestedFoundToBeNonnegative = -1;
 		 mergeJumps(dbc);
 
 		 needToMerge = true;
@@ -993,13 +1000,18 @@ public class OpcodeStack implements Constants2
 				 {
 					 Item top = pop();
 
+					 if (seen == IFLT || seen == IFLE ) {
+						 registerTestedFoundToBeNonnegative = top.registerNumber;
+					 }
 					 // if we see a test comparing a special negative value with 0,
 					 // reset all other such values on the opcode stack
 					if (top.valueCouldBeNegative() 
 							&& (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
 						int specialKind = top.getSpecialKind();
-						for(Item item : stack) if (item != null && item.getSpecialKind() == specialKind) item.setSpecialKind(0);
-						for(Item item : lvValues) if (item != null && item.getSpecialKind() == specialKind) item.setSpecialKind(0);
+						for(Item item : stack) if (item != null && item.getSpecialKind() == specialKind) 
+							item.setSpecialKind(0);
+						for(Item item : lvValues) if (item != null && item.getSpecialKind() == specialKind) 
+							item.setSpecialKind(0);
 
 					}
 				 }
@@ -2147,6 +2159,7 @@ public void initialize() {
 	lastUpdate.clear();
 	convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 	zeroOneComing = -1;
+	registerTestedFoundToBeNonnegative = -1;
 	setReachOnlyByBranch(false);
 }
 	 public int resetForMethodEntry(final DismantleBytecode v) {
