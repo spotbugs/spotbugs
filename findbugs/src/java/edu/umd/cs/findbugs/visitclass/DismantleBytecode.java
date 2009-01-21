@@ -365,7 +365,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	@SuppressWarnings("EI")
 	public int[] getSwitchLabels() {
 		if (switchLabels == null)
-			throw new IllegalStateException("getSwitchOffsets called but value not available");
+			throw new IllegalStateException("getSwitchLabels called but value not available");
 		return switchLabels;
 	}
 

@@ -382,7 +382,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 						 	&& getSigConstantOperand().equals("(Ljava/lang/Object;)V")
 				)
 		) {
-				OpcodeStack.Item item = stack.getStackItem(0);
+			OpcodeStack.Item item = stack.getStackItem(0);
 			String signature = item.getSignature();
 			if (signature != null && signature.startsWith("[")) {
 				boolean debuggingContext = signature.equals("[Ljava/lang/StackTraceElement;");
