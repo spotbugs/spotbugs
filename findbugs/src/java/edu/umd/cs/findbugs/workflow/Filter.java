@@ -458,6 +458,9 @@ public class Filter {
 			origCollection.computeBugHashes();
 		commandLine.adjustFilter(project, resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
+		if (commandLine.className != null) {
+			resultCollection.getProjectStats().purgeClassesThatDontMatch(commandLine.className);
+		}
 		sourceSearcher = new SourceSearcher(project);
 		for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(bug)) {

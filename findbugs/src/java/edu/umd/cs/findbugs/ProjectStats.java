@@ -33,11 +33,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
 import javax.xml.transform.Transformer;
@@ -208,6 +210,15 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 	}
 	
+	public void purgeClassesThatDontMatch(Pattern classPattern) {
+		for(Iterator<Map.Entry<String,PackageStats>> i = packageStatsMap.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry<String,PackageStats> e = i.next();
+			PackageStats stats = e.getValue();
+			stats.purgeClassesThatDontMatch(classPattern);
+			if (stats.getClassStats().isEmpty())
+				i.remove();
+		}
+	}
 	public void recomputeFromClassStats() {
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] = 0;

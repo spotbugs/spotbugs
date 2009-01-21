@@ -21,8 +21,11 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -252,6 +255,17 @@ public class PackageStats implements XMLWriteable {
 		}
 
 	}
+
+	/**
+     * @param classPattern
+     */
+    public void purgeClassesThatDontMatch(Pattern classPattern) {
+    	for(Iterator<Map.Entry<String,ClassStats>> i = packageMembers.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry<String,ClassStats> e = i.next();
+			if (!classPattern.matcher(e.getKey()).find())
+				i.remove();
+    	}
+    }
 }
 
 // vim:ts=4
