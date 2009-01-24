@@ -593,13 +593,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * Get the UserPreferences for given project.
 	 *
 	 * @param project the project
+	 * @param forceRead true to enforce reading properties from disk
+	 *
 	 * @return the UserPreferences for the project
 	 */
-	public static UserPreferences getUserPreferences(IProject project) {
+	public static UserPreferences getUserPreferences(IProject project, boolean forceRead) {
 		try {
 			UserPreferences prefs = (UserPreferences) project
 					.getSessionProperty(SESSION_PROPERTY_USERPREFS);
-			if (prefs == null) {
+			if (prefs == null || forceRead) {
 				prefs = readUserPreferences(project);
 				if (prefs == null) {
 					prefs = UserPreferences.createDefaultUserPreferences();
@@ -612,6 +614,15 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 					"Error getting FindBugs preferences for project");
 			return UserPreferences.createDefaultUserPreferences();
 		}
+	}
+	/**
+	 * Get the UserPreferences for given project.
+	 *
+	 * @param project the project
+	 * @return the UserPreferences for the project
+	 */
+	public static UserPreferences getUserPreferences(IProject project) {
+		return getUserPreferences(project, false);
 	}
 
 

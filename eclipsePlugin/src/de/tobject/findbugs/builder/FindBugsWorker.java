@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -466,9 +467,9 @@ public class FindBugsWorker {
 
 	private void configureExtendedProps(Collection<String> filterFiles,
 			IFindBugsEngine findBugs, boolean include, boolean bugsFilter) {
-		for (String fileName : filterFiles) {
-			IFile file = project.getFile(fileName);
-			if (file.exists()) {
+		for (String filePath : filterFiles) {
+			IFile file = getFilterFile(filePath, project);
+			if (file != null && file.exists()) {
 				String filterName = file.getLocation().toOSString();
 				try {
 					if (bugsFilter) {
@@ -488,9 +489,33 @@ public class FindBugsWorker {
 				}
 			} else {
 				FindbugsPlugin.getDefault().logWarning(
-						"Include filter not found: " + fileName);
+						"Bug filter not found: " + filePath);
 			}
 		}
+	}
+
+	/**
+	 * This method is for compatibility purpose.
+	 * @param filePath
+	 *            project relative (before 1.3.8 version) OR workspace relative file path
+	 *            (1.3.8+ version)
+	 * @param project
+	 * @return file in the workspace which exactly matches given path, or null if no one
+	 *         or more then one files are found
+	 */
+	public static IFile getFilterFile(String filePath, IProject project) {
+		IFile file = null;
+		IPath path = new Path(filePath);
+		if(path.segmentCount() == 1 && !path.isAbsolute()){
+			// pre - 1.3.8 code used file names only, see bug 2522989
+			file = project.getFile(filePath);
+		} else {
+			IResource something = project.getWorkspace().getRoot().findMember(path);
+			if(something instanceof IFile){
+				file = (IFile) something;
+			}
+		}
+		return file;
 	}
 
 	/**

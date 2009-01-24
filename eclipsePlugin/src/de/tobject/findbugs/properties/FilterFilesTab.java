@@ -37,6 +37,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -48,7 +49,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -56,6 +56,7 @@ import org.eclipse.ui.model.WorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.FindBugsWorker;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 
@@ -65,6 +66,9 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 public class FilterFilesTab extends Composite {
 
 	private final FindbugsPropertyPage propertyPage;
+	private final TableViewer filterTableIncl;
+	private final TableViewer filterTableExcl;
+	private final TableViewer filterTableExclBugs;
 
 
 	private static final class FilePlaceHolder extends WorkbenchAdapter
@@ -78,7 +82,7 @@ public class FilterFilesTab extends Composite {
 
 		@Override
 		public String getLabel(Object object) {
-			return file.getProjectRelativePath().toString();
+			return file.getFullPath().toString();
 		}
 
 		@Override
@@ -138,9 +142,9 @@ public class FilterFilesTab extends Composite {
 		tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure external bug reporting filters");
 
-		createFilterTable(this, FilterKind.INCLUDE);
-		createFilterTable(this, FilterKind.EXCLUDE);
-		createFilterTable(this, FilterKind.EXCLUDE_BUGS);
+		filterTableIncl = createFilterTable(this, FilterKind.INCLUDE);
+		filterTableExcl = createFilterTable(this, FilterKind.EXCLUDE);
+		filterTableExclBugs = createFilterTable(this, FilterKind.EXCLUDE_BUGS);
 
 	}
 
@@ -153,7 +157,7 @@ public class FilterFilesTab extends Composite {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	private void createFilterTable(Composite parent, final FilterKind kind) {
+	private TableViewer createFilterTable(Composite parent, final FilterKind kind) {
 		Composite tableComposite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 0;
@@ -179,7 +183,10 @@ public class FilterFilesTab extends Composite {
 		final IProject project = propertyPage.getProject();
 		if (filterFiles != null) {
 			for (String s : filterFiles) {
-				filters.add(new FilePlaceHolder(project.getFile(s)));
+				IFile filterFile = FindBugsWorker.getFilterFile(s, project);
+				if(filterFile != null) {
+					filters.add(new FilePlaceHolder(filterFile));
+				}
 			}
 		}
 		viewer.add(filters.toArray());
@@ -195,8 +202,10 @@ public class FilterFilesTab extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				FileSelectionDialog dialog =
 					new FileSelectionDialog(addButton.getShell(), title, ".xml");
-				dialog.setInput(project);
+				dialog.setInput(project.getWorkspace());
+				dialog.setInitialSelection(project);
 				dialog.setAllowMultiple(true);
+				dialog.setMessage("Select xml file(s) containing filters");
 				// The validator checks to see if the user's selection
 				// is valid given the type of the object selected (e.g.
 				// it can't be a folder) and the objects that have
@@ -206,14 +215,14 @@ public class FilterFilesTab extends Composite {
 						for(int i = 0; i < selection.length; i++) {
 							if(selection[i] instanceof IContainer) {
 								return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-										IStatus.ERROR, "Folder selected", null);
+										IStatus.ERROR, "Please select xml file", null);
 							}
 							else if(selection[i] instanceof IFile) {
 								final Collection<String> fFiles = kind.selectedFiles(currentUserPreferences );
 								final Collection<String> fOFiles  = kind.excludedFiles(currentUserPreferences);
 
 								IFile f = (IFile)selection[i];
-								String fn = f.getProjectRelativePath().toString();
+								String fn = f.getFullPath().toString();
 								if(fOFiles.contains(fn)) {
 									// File is already selected in the
 									// other filter
@@ -234,7 +243,7 @@ public class FilterFilesTab extends Composite {
 								IStatus.OK, "", null);
 					}
 				});
-				if (dialog.open() == ElementTreeSelectionDialog.OK) {
+				if (dialog.open() == Window.OK) {
 					Object[] result = dialog.getResult();
 					for (int i = 0; i < result.length; i++) {
 						FilePlaceHolder holder = new FilePlaceHolder((IFile) result[i]);
@@ -243,7 +252,6 @@ public class FilterFilesTab extends Composite {
 					}
 
 					kind.setFiles(currentUserPreferences, filesToStrings(filters));
-
 				}
 			}
 		});
@@ -257,7 +265,7 @@ public class FilterFilesTab extends Composite {
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Iterator selectionIter = ((IStructuredSelection) viewer
+				Iterator<?> selectionIter = ((IStructuredSelection) viewer
 						.getSelection()).iterator();
 				while (selectionIter.hasNext()) {
 					Object element = selectionIter.next();
@@ -275,20 +283,27 @@ public class FilterFilesTab extends Composite {
 				removeButton.setEnabled(!event.getSelection().isEmpty());
 			}
 		});
+		return viewer;
 	}
 
 
 	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
 		Set<String>result = new LinkedHashSet<String>();
 		for (FilePlaceHolder holder : filters) {
-			result.add(holder.getFile().getProjectRelativePath().toString());
+			result.add(holder.getFile().getFullPath().toString());
 		}
 
 		return result;
 	}
 
 	void restoreDefaultSettings() {
-		// XXX restore default filter settings (just made tables empty?)
+		UserPreferences preferences = propertyPage.getCurrentUserPreferences();
+		preferences.setExcludeBugsFiles(new ArrayList<String>());
+		preferences.setIncludeFilterFiles(new ArrayList<String>());
+		preferences.setExcludeFilterFiles(new ArrayList<String>());
+		filterTableExcl.getTable().removeAll();
+		filterTableExclBugs.getTable().removeAll();
+		filterTableIncl.getTable().removeAll();
 	}
 
 	private enum FilterKind {

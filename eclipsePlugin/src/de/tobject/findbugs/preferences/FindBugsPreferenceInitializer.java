@@ -18,26 +18,22 @@
  */
 package de.tobject.findbugs.preferences;
 
-/**
- * @author Andrei
- */
-public final class FindBugsConstants {
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
 
-	private FindBugsConstants() {
-		// never call this
+import de.tobject.findbugs.FindbugsPlugin;
+
+public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer {
+
+	public FindBugsPreferenceInitializer() {
+		super();
 	}
 
-	/** comma separated list of bug patterns which should be omitted on export operation */
-	public final static String LAST_USED_EXPORT_FILTER = "lastUsedExportFilter";
+	@Override
+	public void initializeDefaultPreferences() {
+		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+        store.setDefault(FindBugsConstants.EXPORT_SORT_ORDER, FindBugsConstants.ORDER_BY_NAME);
+        store.setDefault(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, false);
+	}
 
-	/** "sort by" preference for exporting data */
-	public final static String EXPORT_SORT_ORDER = "exportSortOrder";
-
-	public final static String ORDER_BY_NAME = "byName";
-
-	public final static String ORDER_BY_OVERALL_BUGS_COUNT = "byOverallBugsCount";
-
-	public final static String ORDER_BY_NOT_FILTERED_BUGS_COUNT = "byNotFilteredBugsCount";
-
-	public final static String DONT_REMIND_ABOUT_FULL_BUILD = "dontRemindAboutFullBuild";
 }

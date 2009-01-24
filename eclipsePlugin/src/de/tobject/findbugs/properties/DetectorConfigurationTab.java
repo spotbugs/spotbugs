@@ -88,7 +88,7 @@ public class DetectorConfigurationTab extends Composite {
 		private COLUMN sortColumnId;
 		private COLUMN lastSortColumnId;
 		boolean revertOrder;
-		private DetectorConfigurationTab tab;
+		private final DetectorConfigurationTab tab;
 
 		BugPatternTableSorter(DetectorConfigurationTab tab) {
 			this.tab = tab;
@@ -213,7 +213,7 @@ public class DetectorConfigurationTab extends Composite {
 	 */
 	private static final class DetectorFactoryLabelProvider
 		implements ITableLabelProvider, IColorProvider {
-		private DetectorConfigurationTab tab;
+		private final DetectorConfigurationTab tab;
 		DetectorFactoryLabelProvider(DetectorConfigurationTab tab) {
 			this.tab = tab;
 		}
@@ -340,7 +340,7 @@ public class DetectorConfigurationTab extends Composite {
 	private Map<DetectorFactory, String> factoriesToBugAbbrev;
 	private final FindbugsPropertyPage propertyPage;
 	protected CheckboxTableViewer availableFactoriesTableViewer;
-	private Map<Integer,COLUMN> columnsMap;
+	private final Map<Integer,COLUMN> columnsMap;
 
 	/**
 	 * @param parent
@@ -401,16 +401,15 @@ public class DetectorConfigurationTab extends Composite {
 	}
 
 	void restoreDefaultSettings() {
-
 		// Enable only those detectors that are enabled by default
-		TableItem[] itemList =
-			availableFactoriesTableViewer.getTable().getItems();
+		TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
 		for (int i = 0; i < itemList.length; i++) {
 			TableItem item = itemList[i];
 			DetectorFactory factory = (DetectorFactory) item.getData();
 			item.setChecked(factory.isDefaultEnabled());
 		}
 		refreshTable();
+		syncUserPreferencesWithTable();
 	}
 
 	/**
@@ -423,16 +422,14 @@ public class DetectorConfigurationTab extends Composite {
 	/**
 	 * Disables all unchecked detector factories and enables checked factory detectors, leaving
 	 * those not in the table unmodified.
-	 * @param userPrefs the UserPreferences to adjust to match the UI table
 	 */
 	private void syncUserPreferencesWithTable(){
-		TableItem[] itemList =
-			availableFactoriesTableViewer.getTable().getItems();
+		TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
+		UserPreferences currentProps = getCurrentProps();
 		for (int i = 0; i < itemList.length; i++) {
 			DetectorFactory factory = (DetectorFactory) itemList[i].getData();
-
 			//set enabled if defined in configuration
-			getCurrentProps().enableDetector(factory, itemList[i].getChecked());
+			currentProps.enableDetector(factory, itemList[i].getChecked());
 		}
 	}
 

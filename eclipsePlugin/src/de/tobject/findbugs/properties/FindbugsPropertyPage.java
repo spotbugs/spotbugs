@@ -23,18 +23,23 @@ package de.tobject.findbugs.properties;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -55,12 +60,15 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -113,6 +121,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		IAdaptable resource = getElement();
 		this.project = (IProject) resource.getAdapter(IProject.class);
 
+		initPreferencesStore();
+
 		collectUserPreferences();
 
 		createGlobalElements(parent);
@@ -122,6 +132,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 		createDefaultsButton(parent);
 
 		return parent;
+	}
+
+	private void initPreferencesStore() {
+        IScopeContext projectScope = new ProjectScope(project);
+        ScopedPreferenceStore store = new ScopedPreferenceStore(projectScope,
+				FindbugsPlugin.getDefault().getBundle().getSymbolicName());
+        setPreferenceStore(store);
 	}
 
 	/**
@@ -251,7 +268,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	private void collectUserPreferences() {
 		// Get current user preferences for project
-		this.origUserPreferences = FindbugsPlugin.getUserPreferences(project);
+		this.origUserPreferences = FindbugsPlugin.getUserPreferences(project, true);
 		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
 	}
 
@@ -300,20 +317,68 @@ public class FindbugsPropertyPage extends PropertyPage {
 				FindbugsPlugin.getDefault().logException(e,
 						"Could not store FindBugs preferences for project");
 			}
+		}
 
-			// If already enabled (and still enabled) trigger a Findbugs rebuild here
+		// update the flag to match the incremental/not property
+		builderEnabled &= chkRunAtFullBuild.getSelection();
+
+		boolean analysisSettingsChanged = areAnalysisPrefsChanged(
+				currentUserPreferences, origUserPreferences);
+
+		if (analysisSettingsChanged) {
+			// trigger a Findbugs rebuild here
 			if (builderEnabled) {
 				runFindbugsBuilder();
+			} else {
+				IPreferenceStore store = getPreferenceStore();
+				if(!store.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)){
+					MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
+							getShell(), "Full project analysis required",
+							"FindBugs analysis settings are changed." +
+							"\nConsider to run FindBugs analysis on the project.",
+							"Do not show this warning again", false, null, null);
+
+					store.setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog
+							.getToggleState());
+				}
 			}
 		}
 
-		// if filter settings changed, and builder is not enabled, manually trigger update
-		if (!builderEnabled
-				&& !currentUserPreferences.getFilterSettings().equals(
-						origUserPreferences.getFilterSettings())) {
+		boolean reporterSettingsChanged = !currentUserPreferences.getFilterSettings()
+			.equals(origUserPreferences.getFilterSettings());
+
+		if (!builderEnabled && reporterSettingsChanged) {
+			// if filter settings changed, and builder is not enabled, manually trigger update
 			MarkerUtil.redisplayMarkers(JavaCore.create(project), getShell());
 		}
 		return true;
+	}
+
+	private boolean areAnalysisPrefsChanged(UserPreferences pref1, UserPreferences pref2) {
+		String effort1 = "" + pref1.getEffort();
+		String effort2 = pref2.getEffort();
+		return !effort1.equals(effort2) || isDetectorConfigurationChanged(pref1, pref2)
+				|| !pref1.getExcludeBugsFiles().equals(pref2.getExcludeBugsFiles())
+				|| !pref1.getExcludeFilterFiles().equals(pref2.getExcludeFilterFiles())
+				|| !pref1.getIncludeFilterFiles().equals(pref2.getIncludeFilterFiles());
+	}
+
+
+	boolean isDetectorConfigurationChanged(UserPreferences pref1, UserPreferences pref2){
+
+		Iterator<DetectorFactory> iterator =
+			DetectorFactoryCollection.instance().factoryIterator();
+		while (iterator.hasNext()) {
+			DetectorFactory factory = iterator.next();
+			// Only compare non-hidden factories
+			if (factory.isHidden()) {
+				continue;
+			}
+			if(pref1.isDetectorEnabled(factory) ^ pref2.isDetectorEnabled(factory)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

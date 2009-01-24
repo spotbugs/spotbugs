@@ -1067,6 +1067,12 @@
        </propertyTester>
     </extension>
 
+    <extension
+          point="org.eclipse.core.runtime.preferences">
+       <initializer
+             class="de.tobject.findbugs.preferences.FindBugsPreferenceInitializer">
+       </initializer>
+    </extension>
 <!-- uncommented until we define our own context
     <extension
      point="org.eclipse.ui.bindings">
