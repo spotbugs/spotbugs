@@ -6,6 +6,7 @@ package de.tobject.findbugs.view.properties;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenterExtension;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -35,7 +36,7 @@ public class BugPatternSection extends AbstractPropertySection {
 
 	private Browser browser;
 	private StyledText htmlControl;
-	private HTMLTextPresenter presenter;
+	private IInformationPresenterExtension presenter;
 	private Composite rootComposite;
 	private BugPattern pattern;
 	private TextPresentation presentation;
