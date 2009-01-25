@@ -104,10 +104,14 @@ public class Grouping implements IPersistable {
 			return createDefault();
 		}
 		String string = memento.getString("Grouping");
-		if(string == null || string.length() == 0){
+		return restoreFrom(string);
+	}
+
+	static Grouping restoreFrom(String saved) {
+		if(saved == null || saved.length() == 0){
 			return createDefault();
 		}
-		StringTokenizer st = new StringTokenizer(string, "[] ,", false);
+		StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
 		List<GroupType> types = new ArrayList<GroupType>();
 		while(st.hasMoreTokens()){
 			GroupType type = GroupType.valueOf(st.nextToken());
