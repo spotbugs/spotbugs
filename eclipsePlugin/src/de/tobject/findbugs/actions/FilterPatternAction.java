@@ -36,6 +36,7 @@ import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import de.tobject.findbugs.view.explorer.GroupType;
+import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 
 public class FilterPatternAction implements IObjectActionDelegate {
@@ -89,7 +90,7 @@ public class FilterPatternAction implements IObjectActionDelegate {
 			BugPattern pattern = (BugPattern) group.getData();
 			return pattern.getAbbrev();
 		} else if(group.getType() == GroupType.PatternType){
-			return (String) group.getData();
+			return ((BugCode) group.getData()).getAbbrev();
 		}
 		return null;
 	}
