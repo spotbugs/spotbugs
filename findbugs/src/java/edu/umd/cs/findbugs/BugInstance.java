@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -427,7 +428,35 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		throw new IllegalStateException("BugInstance must contain at least one class, method, or field annotation");
 	}
 
+	static final boolean CHECK = false;
+	static int keyCount = 0;
+	static int keyDifferentCount = 0;
+	static {
+		if (CHECK) Util.runLogAtShutdown(new Runnable() {
+
+			public void run() {
+	           System.out.printf("%d/%d instance keys changed\n", keyDifferentCount, keyCount);  
+            }
+			
+		});
+	}
 	public String getInstanceKey() {
+		String newValue = getInstanceKeyNew();
+		if (!CHECK) return newValue;
+		String oldValue = getInstanceKeyOld();
+		
+		keyCount++;
+		if (!oldValue.equals(newValue)) {
+			keyDifferentCount++;
+			System.out.println(keyDifferentCount);
+			System.out.println(getMessageWithoutPrefix());
+			System.out.println(oldValue);
+			System.out.println(newValue);
+
+		}
+		return newValue;
+	}
+	private String getInstanceKeyOld() {
 		StringBuilder buf = new StringBuilder(type);
 		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation || annotation instanceof MethodAnnotation && !annotation.isSignificant()) {
@@ -437,6 +466,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				buf.append(annotation.format("hash", null));
 			}
 		}
+		return buf.toString();
+	}
+	private String getInstanceKeyNew() {
+		StringBuilder buf = new StringBuilder(type);
+		for (BugAnnotation annotation : annotationList) 
+			if (annotation.isSignificant() || annotation instanceof IntAnnotation || annotation instanceof LocalVariableAnnotation) {
+				buf.append(":");
+				buf.append(annotation.format("hash", null));
+			}
+		
 		return buf.toString();
 	}
 	/**
