@@ -39,7 +39,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkingSet;
-import org.eclipse.ui.ResourceWorkingSetFilter;
+import org.eclipse.ui.IWorkingSetManager;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonContentProvider;
@@ -55,8 +56,6 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  */
 public class BugContentProvider implements ICommonContentProvider {
 
-//	private static final String SHOW_TOP_LEVEL_WORKING_SETS = WorkingSetsContentProvider.SHOW_TOP_LEVEL_WORKING_SETS;
-
 	public static boolean DEBUG;
 
 	private final static IMarker[] EMPTY = new IMarker[0];
@@ -65,7 +64,6 @@ public class BugContentProvider implements ICommonContentProvider {
 	private Grouping grouping;
 
 	private Object input;
-//	private boolean showWorkingSets;
 
 	/**
 	 * Root group, either empty OR contains BugGroups OR contains Markers (last one only
@@ -73,7 +71,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	 */
 	private BugGroup rootElement;
 
-	private ResourceWorkingSetFilter resourceFilter;
+	private final WorkingSetsFilter resourceFilter;
 
 	private CommonViewer viewer;
 
@@ -89,8 +87,14 @@ public class BugContentProvider implements ICommonContentProvider {
 		super();
 		filteredMarkersMap = new HashMap<BugGroup, Integer>();
 		filteredMarkers = new HashSet<IMarker>();
+		resourceFilter = new WorkingSetsFilter();
 		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
 		refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
+		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+		String saved = store.getString(FindBugsConstants.LAST_USED_GROUPING);
+		setGrouping(Grouping.restoreFrom(saved));
+		saved = store.getString(FindBugsConstants.LAST_USED_WORKING_SET);
+		initWorkingSet(saved);
 	}
 
 	public Object[] getChildren(Object parent) {
@@ -102,6 +106,11 @@ public class BugContentProvider implements ICommonContentProvider {
 		if (parent instanceof BugGroup) {
 			BugGroup group = (BugGroup) parent;
 			children = group.getChildren();
+			if(rootElement == parent && rootElement.size() == 0){
+				if(DEBUG){
+					System.out.println("Root is empty...");
+				}
+			}
 		} else {
 			if (parent instanceof IWorkspaceRoot || parent instanceof IWorkingSet) {
 				if(input == parent){
@@ -175,13 +184,26 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void dispose() {
+		if(DEBUG){
+			System.out.println("Disposing content provider!");
+		}
 		refreshJob.dispose();
 		rootElement.dispose();
 		clearFilters();
+
+		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+		store.setValue(FindBugsConstants.LAST_USED_GROUPING, getGrouping().toString());
+		IWorkingSet workingSet = getCurrentWorkingSet();
+		String name = workingSet != null ? workingSet.getName() : "";
+		store.setValue(FindBugsConstants.LAST_USED_WORKING_SET, name);
 	}
 
 	public void inputChanged(Viewer newViewer, Object oldInput, Object newInput) {
 		viewer = (CommonViewer) newViewer;
+		if (newInput == null || newInput instanceof IWorkingSet
+				|| newInput instanceof IWorkspaceRoot) {
+			rootElement.dispose();
+		}
 		input = newInput;
 		refreshJob.setViewer((CommonViewer) newViewer);
 		bugFilterActive = isBugFilterActive();
@@ -223,9 +245,9 @@ public class BugContentProvider implements ICommonContentProvider {
 		if(DEBUG){
 			System.out.println("Refreshing filters!");
 		}
-		String filter = getFilter();
+		String patternFilter = getPatternFilter();
 		for (IMarker marker : rootElement.getAllMarkers()) {
-			if(MarkerUtil.isFiltered(marker, filter)) {
+			if(MarkerUtil.isFiltered(marker, patternFilter)) {
 				filteredMarkers.add(marker);
 			}
 		}
@@ -251,7 +273,7 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 
-	private String getFilter() {
+	private String getPatternFilter() {
 		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 		return store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
 	}
@@ -264,9 +286,12 @@ public class BugContentProvider implements ICommonContentProvider {
 		return input;
 	}
 
-	private IWorkingSet getCurrentWorkingSet(){
-		ResourceWorkingSetFilter filter = getResourceFilter();
-		return filter == null? null : filter.getWorkingSet();
+	IWorkingSet getCurrentWorkingSet(){
+		return resourceFilter.getWorkingSet();
+	}
+
+	void setCurrentWorkingSet(IWorkingSet workingSet){
+		resourceFilter.setWorkingSet(workingSet);
 	}
 
 	/**
@@ -283,12 +308,12 @@ public class BugContentProvider implements ICommonContentProvider {
 			BugGroup parent) {
 		Set<IMarker> markerSet = new HashSet<IMarker>();
 		boolean filterActive = isBugFilterActive();
-		String filter = getFilter();
+		String patternFilter = getPatternFilter();
 		for (IResource resource : parents) {
 			IMarker[] markers = getMarkers(resource);
 			for (IMarker marker : markers) {
 				boolean added = markerSet.add(marker);
-				if(filterActive && added && MarkerUtil.isFiltered(marker, filter)) {
+				if(filterActive && added && MarkerUtil.isFiltered(marker, patternFilter)) {
 					filteredMarkers.add(marker);
 				}
 			}
@@ -355,9 +380,7 @@ public class BugContentProvider implements ICommonContentProvider {
 				return EMPTY;
 			}
 		}
-
-		ResourceWorkingSetFilter filter = getResourceFilter();
-		if(filter != null && !filter.select(null, null, resource)){
+		if(!resourceFilter.contains(resource)){
 			return EMPTY;
 		}
 		return MarkerUtil.getAllMarkers(resource);
@@ -376,8 +399,8 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void saveState(IMemento memento) {
-		if (grouping != null) {
-			grouping.saveState(memento);
+		if(DEBUG){
+			System.out.println("Save state!");
 		}
 	}
 
@@ -386,8 +409,26 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 	public void restoreState(IMemento memento) {
-		setGrouping(Grouping.restoreFrom(memento));
+		if(DEBUG){
+			System.out.println("Restore state!");
+		}
 	}
+
+    protected void initWorkingSet(String workingSetName) {
+        IWorkingSet workingSet = null;
+
+        if (workingSetName != null && workingSetName.length() > 0) {
+			IWorkingSetManager workingSetManager = PlatformUI.getWorkbench().getWorkingSetManager();
+			workingSet = workingSetManager.getWorkingSet(workingSetName);
+		} /*else if (PlatformUI.getPreferenceStore().getBoolean(
+						IWorkbenchPreferenceConstants.USE_WINDOW_WORKING_SET_BY_DEFAULT)) {
+			// use the window set by default if the global preference is set
+			workingSet = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getAggregateWorkingSet();
+		} */
+		if (workingSet != null) {
+			setCurrentWorkingSet(workingSet);
+		}
+    }
 
 	/**
 	 * @return list of the *visible* parents with changed chldern to refresh the viewer.
@@ -437,10 +478,9 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents) {
 		MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
-		ResourceWorkingSetFilter filter = getResourceFilter();
 		// filter through working set
 		IMarker marker = toAdd;
-		if (filter != null && !filter.select(null, null, marker.getResource())) {
+		if (!resourceFilter.contains(marker.getResource())) {
 			return;
 		}
 		rootElement.addMarker(marker);
@@ -477,7 +517,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		}
 
 		GroupType childType = grouping.getChildType(mapper.getType());
-		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, getFilter());
+		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, getPatternFilter());
 		if(filtered) {
 			filteredMarkers.add(marker);
 		}
@@ -615,21 +655,6 @@ public class BugContentProvider implements ICommonContentProvider {
 			return (BugContentProvider) provider;
 		}
 		return null;
-	}
-
-	private ResourceWorkingSetFilter getResourceFilter() {
-		if(resourceFilter != null){
-			return resourceFilter;
-		}
-
-		ViewerFilter[] filters = site.getService().getFilterService().getVisibleFilters(true); // viewer.getFilters();
-		for (ViewerFilter filter : filters) {
-			if(filter instanceof ResourceWorkingSetFilter){
-				resourceFilter = (ResourceWorkingSetFilter) filter;
-				break;
-			}
-		}
-		return resourceFilter;
 	}
 
 	public boolean isBugFilterActive(){

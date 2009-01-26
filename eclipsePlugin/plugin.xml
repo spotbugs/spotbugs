@@ -159,7 +159,7 @@
          <menu
                id="findbugs"
                label="Find Bugs"
-               path="additions"/>
+               path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
                icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
@@ -195,7 +195,7 @@
          <menu
                id="findbugs"
                label="Find Bugs"
-               path="additions">
+               path="group.build">
             <separator name="doit" />
             <separator name="save" />
          </menu>
@@ -334,7 +334,7 @@
                icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
                id="de.tobject.findbugs.copyBug"
                label="Copy to Clipboard"
-               menubarPath="additions">
+               menubarPath="fb">
          </action>
          <action
                class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
@@ -342,7 +342,15 @@
                icon="icons/detailsView.png"
                id="de.tobject.findbugs.showDescription"
                label="Show Bug Details"
-               menubarPath="additions">
+               menubarPath="fb">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.OpenPropertiesAction"
+               enablesFor="1"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               id="de.tobject.findbugs.openBugProperties"
+               label="Properties"
+               menubarPath="group.properties">
          </action>
          <filter
                name="superType"
@@ -361,7 +369,7 @@
          <menu
                id="de.tobject.findbugs.filter"
                label="Toggle Filter"
-               path="hallo">
+               path="fb.filter">
             <separator
                   name="toggleSeparator">
             </separator>
@@ -373,25 +381,23 @@
                icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
                id="de.tobject.findbugs.copyBug"
                label="Copy to Clipboard"
-               menubarPath="additions">
+               menubarPath="fb">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.OpenPropertiesAction"
+               enablesFor="1"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               id="de.tobject.findbugs.openBugProperties"
+               label="Properties"
+               menubarPath="group.properties">
          </action>
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
-               definitionId="FindBugs.command.showInPackageExplorer"
                enablesFor="1"
                icon="platform:/plugin/org.eclipse.jdt.ui/icons/full/eview16/package.gif"
                id="de.tobject.findbugs.showInPackageExplorer"
                label="Show In Package Explorer"
-               menubarPath="additions">
-         </action>
-         <action
-               class="de.tobject.findbugs.actions.OpenPropertiesAction"
-               definitionId="FindBugs.command.openProperties"
-               enablesFor="1"
-               icon="icons/detailsView.png"
-               id="de.tobject.findbugs.openProperties"
-               label="Show Details"
-               menubarPath="additions">
+               menubarPath="fb">
          </action>
       </objectContribution>
 
@@ -405,7 +411,6 @@
          </filter>
          <action
                class="de.tobject.findbugs.actions.FilterPatternAction"
-               definitionId="de.tobject.findbugs.filterPatternType"
                enablesFor="1"
                id="de.tobject.findbugs.filterPatternType"
                label="This Pattern Type"
@@ -422,7 +427,6 @@
          </filter>
          <action
                class="de.tobject.findbugs.actions.FilterPatternAction"
-               definitionId="de.tobject.findbugs.filterPatternType2"
                enablesFor="1"
                id="de.tobject.findbugs.filterPatternType2"
                label="This Pattern Type"
@@ -582,13 +586,12 @@
                id="de.tobject.findbugs.view.explorer.BugActionProvider"
                priority="highest">
          </actionProvider>
+
          <possibleChildren>
             <or>
-               <instanceof
-                     value="de.tobject.findbugs.view.explorer.BugGroup">
-               </instanceof>
-               <instanceof value="org.eclipse.core.resources.IMarker">
-               </instanceof>
+               <instanceof value="de.tobject.findbugs.view.explorer.BugGroup" />
+               <instanceof value="org.eclipse.core.resources.IResource" />
+               <instanceof value="org.eclipse.core.resources.IMarker" />
               <adapt
                     type="org.eclipse.core.resources.IMarker">
               </adapt>
@@ -600,8 +603,8 @@
               </adapt>
             </or>
          </possibleChildren>
-
       </navigatorContent>
+
       <commonFilter
             activeByDefault="true"
             class="de.tobject.findbugs.view.explorer.BugByIdFilter"
@@ -609,6 +612,7 @@
             id="de.tobject.findbugs.filter.BugId"
             name="Bugs by Id">
       </commonFilter>
+
       <commonFilter
             activeByDefault="false"
             class="de.tobject.findbugs.view.explorer.EmptyGroupsFilter"
@@ -616,9 +620,6 @@
             id="de.tobject.findbugs.filter.EmptyBugGroup"
             name="Empty Parent Bug Groups">
       </commonFilter>
-
-
-
    </extension>
 
    <extension
@@ -629,21 +630,18 @@
          <options>
             <property name="org.eclipse.ui.navigator.hideLinkWithEditorAction" value="true" />
             <property name="org.eclipse.ui.navigator.hideCollapseAllAction" value="true" />
-            <property name="org.eclipse.ui.navigator.hideAvailableExtensionsTab" value="true" />
+            <!-- MUST be DISABLED as long as we support Eclipse 3.3, see
+             https://bugs.eclipse.org/bugs/show_bug.cgi?id=185561 -->
+            <property name="org.eclipse.ui.navigator.hideAvailableExtensionsTab" value="false" />
          </options>
       </viewer>
 
       <viewerContentBinding
             viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
-            <contentExtension isRoot="true"
-                  pattern="de.tobject.findbugs.view.explorer.BugContentProvider">
-            </contentExtension>
-            <contentExtension pattern="de.tobject.findbugs.*" />
             <contentExtension
-                  pattern="org.eclipse.ui.navigator.resources.workingSets">
-            </contentExtension>
-            <!-- contentExtension pattern="org.eclipse.ui.navigator.resources.*" /-->
+                  isRoot="true"
+                  pattern="de.tobject.findbugs.*"/>
             <!-- contentExtension pattern="org.eclipse.jdt.*" /-->
          </includes>
       </viewerContentBinding>
@@ -652,7 +650,6 @@
             viewerId="de.tobject.findbugs.view.bugtreeview">
          <includes>
             <!-- navigator must be fist, allows us remove some unused menus -->
-            <actionExtension pattern="org.eclipse.ui.navigator.resources.*" />
             <actionExtension pattern="de.tobject.findbugs.*" />
          </includes>
       </viewerActionBinding>
@@ -917,8 +914,12 @@
        <factory
              adaptableType="de.tobject.findbugs.view.BugExplorerView"
              class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
-          <!-- <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" /> -->
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
+       </factory>
+       <factory
+             adaptableType="de.tobject.findbugs.view.BugExplorerView"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
              adaptableType="org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor"
@@ -974,36 +975,36 @@
        <propertyTabs contributorId="de.tobject.findbugs.view.bugtreeview">
           <propertyTab
                 category="general"
-                id="bug.tab.bugInstance"
-                image="icons/buggy-tiny-gray.png"
-                indented="false"
-                label="."/>
-          <propertyTab
-                afterTab="bug.tab.bugInstance"
-                category="general"
                 id="bug.tab.bugPattern"
                 image="icons/treeView.png"
                 indented="false"
-                label="."/>
+                label="&gt;"/>
           <propertyTab
                 afterTab="bug.tab.bugPattern"
+                category="general"
+                id="bug.tab.bugInstance"
+                image="icons/buggy-tiny-gray.png"
+                indented="false"
+                label="&gt;"/>
+          <propertyTab
+                afterTab="bug.tab.bugInstance"
                 category="general"
                 id="bug.tab.userNotes"
                 image="icons/annotationsView.png"
                 indented="false"
-                label="."/>
+                label="&gt;"/>
           <propertyTab
                 category="advanced"
                 id="bug.tab.Advanced"
-                image="platform:/plugin/org.eclipse.ui.views.log/icons/elcl16/properties.gif"
+                image="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
                 indented="false"
-                label="."/>
+                label="&gt;"/>
           <propertyTab
                 category="general"
                 id="bug.tab.bugPatternStandAlone"
                 image="icons/treeView.png"
                 indented="false"
-                label=".">
+                label="&gt;">
           </propertyTab>
        </propertyTabs>
     </extension>
@@ -1066,13 +1067,13 @@
              type="de.tobject.findbugs.view.explorer.BugGroup">
        </propertyTester>
     </extension>
-
     <extension
           point="org.eclipse.core.runtime.preferences">
        <initializer
              class="de.tobject.findbugs.preferences.FindBugsPreferenceInitializer">
        </initializer>
     </extension>
+
 <!-- uncommented until we define our own context
     <extension
      point="org.eclipse.ui.bindings">

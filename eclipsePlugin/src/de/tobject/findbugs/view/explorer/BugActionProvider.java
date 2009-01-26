@@ -21,27 +21,45 @@ package de.tobject.findbugs.view.explorer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.actions.WorkingSetFilterActionGroup;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
+import org.eclipse.ui.navigator.ICommonMenuConstants;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
 public class BugActionProvider extends CommonActionProvider {
+
+	private WorkingSetFilterActionGroup workingSetActionGroup;
+	private IPropertyChangeListener filterChangeListener;
+	boolean hasContributedToViewMenu;
+	private MyAction doubleClickAction;
+	private ICommonActionExtensionSite site;
+	private boolean initDone;
+
+	public BugActionProvider() {
+		super();
+	}
 
 	static class MyAction extends Action implements ISelectionChangedListener {
 		private IMarker marker;
@@ -102,19 +120,45 @@ public class BugActionProvider extends CommonActionProvider {
 
 	}
 
-	boolean hasContributedToViewMenu;
-	private MyAction doubleClickAction;
-	private ICommonActionExtensionSite site;
-
 	@Override
 	public void init(ICommonActionExtensionSite aSite) {
 		site = aSite;
 		super.init(aSite);
+		final StructuredViewer viewer = aSite.getStructuredViewer();
+		final BugContentProvider provider = BugContentProvider.getProvider(site
+				.getContentService());
 
+		filterChangeListener = new IPropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent event) {
+				if(!initDone){
+					return;
+				}
+				IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
+				IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
+				IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
+				if (newWorkingSet != null
+						&& (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
+					return;
+				}
+				if (viewer != null) {
+					provider.setCurrentWorkingSet(newWorkingSet);
+					if (newWorkingSet == null) {
+						viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+					} else if(oldWorkingSet != newWorkingSet) {
+						viewer.setInput(newWorkingSet);
+					}
+				}
+			}
+		};
+
+		workingSetActionGroup = new WorkingSetFilterActionGroup(aSite.getViewSite()
+				.getShell(), filterChangeListener);
+		workingSetActionGroup.setWorkingSet(provider.getCurrentWorkingSet());
 		doubleClickAction = new MyAction();
 		// only if doubleClickAction must know tree selection:
-		aSite.getStructuredViewer().addSelectionChangedListener(doubleClickAction);
-		// aSite.getStructuredViewer().addDoubleClickListener(doubleClickAction);
+		viewer.addSelectionChangedListener(doubleClickAction);
+		initDone = true;
 	}
 
 	@Override
@@ -130,25 +174,16 @@ public class BugActionProvider extends CommonActionProvider {
 		if (!hasContributedToViewMenu) {
 			IMenuManager menuManager = actionBars.getMenuManager();
 
-			// XXX dirty hack to get rid of "Top Level Elements" menu which is meaningless
-			// for us
+			// XXX dirty hack to rename silly "Customize View..." menu
 			IContributionItem[] items = menuManager.getItems();
 			for (IContributionItem item : items) {
-				if (item instanceof MenuManager) {
-					MenuManager mm = (MenuManager) item;
-					if ("Top Level Elements".equals(mm.getMenuText())
-							|| "&Top Level Elements".equals(mm.getMenuText())) {
-						menuManager.remove(item);
-//						break;
-					}
-				}
 				if (item instanceof ActionContributionItem) {
 					ActionContributionItem item2 = (ActionContributionItem) item;
 					String text = item2.getAction().getText();
 					if ("Customize View...".equals(text)
 							|| "&Customize View...".equals(text)) {
 						item2.getAction().setText("Toggle Filters...");
-	//						break;
+						break;
 					}
 				}
 			}
@@ -162,19 +197,29 @@ public class BugActionProvider extends CommonActionProvider {
 				menuManager.remove(mm);
 				menuManager.insertBefore(IWorkbenchActionConstants.MB_ADDITIONS, mm);
 			}
-
+			workingSetActionGroup.fillActionBars(actionBars);
 			hasContributedToViewMenu = true;
 		}
 		actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, doubleClickAction);
+
 	}
+
+	@Override
+	public void fillContextMenu(IMenuManager menu) {
+		super.fillContextMenu(menu);
+
+		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb"));
+		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.project"));
+		menu.insertBefore(ICommonMenuConstants.GROUP_PORT, new Separator("fb.filter"));
+	}
+
 
 //	@Override
 //	public void updateActionBars() {
-//		// IStructuredSelection selection = (IStructuredSelection) getContext()
-//		// .getSelection();
-//		// if (selection.size() == 1 && selection.getFirstElement() instanceof IMarker) {
-//		// // forward doubleClick to doubleClickAction
-//		// doubleClickAction.setSelection((IMarker) selection.getFirstElement());
-//		// }
+//		 IStructuredSelection selection = (IStructuredSelection) getContext()
+//		 	.getSelection();
+//
 //	}
+
+
 }

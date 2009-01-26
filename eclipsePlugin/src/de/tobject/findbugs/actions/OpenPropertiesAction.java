@@ -1,6 +1,6 @@
 /*
- * FindBugs Eclipse Plug-in.
- * Copyright (C) 2003 - 2004, Peter Friese
+ * Contributions to FindBugs
+ * Copyright (C) 2009, Andrei Loskutov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,20 @@ package de.tobject.findbugs.actions;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.IShellProvider;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.dialogs.PropertyDialogAction;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * Show details on a selected FindBugs marker.
@@ -39,6 +48,10 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
 
 	public OpenPropertiesAction() {
 		super();
+	}
+	public OpenPropertiesAction(IWorkbenchPart targetPart) {
+		super();
+		this.targetPart = targetPart;
 	}
 
 	public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
@@ -60,13 +73,36 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
 		}
 		try {
 			if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
-//				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-//					// TODO get id from API
-				targetPart.getSite().getPage().showView("org.eclipse.ui.views.PropertySheet");
-//				for (Iterator<?> iter = structuredSelection.iterator(); iter.hasNext();) {
-////					BugGroup marker = (BugGroup) iter.next();
-//					break;
-//				}
+				IStructuredSelection ssel = (IStructuredSelection) selection;
+				Object element = ssel.getFirstElement();
+				if(element instanceof BugGroup){
+					final BugGroup group = (BugGroup) element;
+					if(group.getType() == GroupType.Project){
+						PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider(){
+							public Shell getShell() {
+								return null;
+							}
+						}, new ISelectionProvider(){
+							public void addSelectionChangedListener(
+									ISelectionChangedListener listener) {
+								// noop
+							}
+							public ISelection getSelection() {
+								return new StructuredSelection(group.getData());
+							}
+							public void removeSelectionChangedListener(
+									ISelectionChangedListener listener) {
+								// noop
+							}
+							public void setSelection(ISelection selection) {
+								// noop
+							}
+						});
+						paction.run();
+						return;
+					}
+				}
+				targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
 			}
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,

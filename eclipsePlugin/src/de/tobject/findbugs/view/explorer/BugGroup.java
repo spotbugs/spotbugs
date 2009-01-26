@@ -198,17 +198,18 @@ public class BugGroup implements IAdaptable, IActionFilter {
 
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
-		if(self.getClass().isInstance(adapter)){
+		if(adapter.isAssignableFrom(self.getClass())){
 			return self;
 		}
 		if(ITaskListResourceAdapter.class == adapter){
 			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=246409
 			return null;
 		}
-		if(self instanceof IAdaptable){
-			IAdaptable adaptable = (IAdaptable) self;
-			return adaptable.getAdapter(adapter);
-		}
+		// followed caused more troubles then uses.
+//		if(self instanceof IAdaptable){
+//			IAdaptable adaptable = (IAdaptable) self;
+//			return adaptable.getAdapter(adapter);
+//		}
 		return null;
 	}
 

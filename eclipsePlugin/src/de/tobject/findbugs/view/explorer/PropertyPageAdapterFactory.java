@@ -44,6 +44,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.BugExplorerView;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 
@@ -254,22 +255,32 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IPropertySheetPage.class
-				&& (adaptableObject instanceof JavaEditor)) {
-			IWorkbenchPart part = (IWorkbenchPart) adaptableObject;
-			IViewReference[] references = part.getSite().getPage().getViewReferences();
-			for (IViewReference viewReference : references) {
-				if ("de.tobject.findbugs.view.bugtreeview".equals(viewReference.getId())) {
-					IWorkbenchPart workbenchPart = viewReference.getPart(false);
-					if (workbenchPart != null) {
-						return new JavaEditorTabbedPropertySheetPage(workbenchPart);
+		if (adapterType == IPropertySheetPage.class){
+			if(adaptableObject instanceof BugExplorerView){
+				final BugExplorerView explorerView = (BugExplorerView) adaptableObject;
+				return new TabbedPropertySheetPage(
+						new ITabbedPropertySheetPageContributor() {
+							public String getContributorId() {
+								return explorerView.getViewSite().getId();
+							}
+						});
+			} else
+			if(adaptableObject instanceof JavaEditor) {
+				IWorkbenchPart part = (IWorkbenchPart) adaptableObject;
+				IViewReference[] references = part.getSite().getPage().getViewReferences();
+				for (IViewReference viewReference : references) {
+					if ("de.tobject.findbugs.view.bugtreeview".equals(viewReference.getId())) {
+						IWorkbenchPart workbenchPart = viewReference.getPart(false);
+						if (workbenchPart != null) {
+							return new JavaEditorTabbedPropertySheetPage(workbenchPart);
+						}
 					}
 				}
+				// return nothing to get rid of errors generated through
+				// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator
+				// class
+				return null;
 			}
-			// return nothing to get rid of errors generated through
-			// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator
-			// class
-			return null;
 		}
 		if (adapterType == IPropertySource.class) {
 			if (adaptableObject instanceof BugPattern

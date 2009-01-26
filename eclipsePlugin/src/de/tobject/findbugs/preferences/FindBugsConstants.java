@@ -40,4 +40,8 @@ public final class FindBugsConstants {
 	public final static String ORDER_BY_NOT_FILTERED_BUGS_COUNT = "byNotFilteredBugsCount";
 
 	public final static String DONT_REMIND_ABOUT_FULL_BUILD = "dontRemindAboutFullBuild";
+
+	public final static String LAST_USED_GROUPING = "lastUsedGrouping";
+
+	public final static String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
 }
