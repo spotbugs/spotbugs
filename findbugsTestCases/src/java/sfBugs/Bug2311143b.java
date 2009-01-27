@@ -24,7 +24,9 @@ public class Bug2311143b {
 	private static List<String> getMagic() {
 		return Collections.emptyList();
 	}
-
+	public int complain() {
+		return getMagic().size();
+	}
 	public static final class InnerClass {
 
 		public void doMagic() {

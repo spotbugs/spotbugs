@@ -15,8 +15,12 @@ public class Bug2311143 {
 		return Collections.emptyList();
 	}
 
+	public int complain() {
+		return getMagic().size();
+	}
 	public static final class InnerClass {
 
+		
 		public void doMagic() {
 			List<String> contextualTabs = getMagic();
 			if (contextualTabs != null) {
