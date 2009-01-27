@@ -838,6 +838,12 @@ public class UnreadFields extends OpcodeStackDetector  {
 				try {
 					JavaClass outerClass = Repository.lookupClass(outerClassName);
 					if (classHasParameter(outerClass)) continue;
+					boolean outerClassIsInnerClass = false;
+					for(Field field : outerClass.getFields()) 
+						if (field.getName().equals("this$0"))
+							outerClassIsInnerClass = true;
+					if (outerClassIsInnerClass)
+						continue;
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
 				}
