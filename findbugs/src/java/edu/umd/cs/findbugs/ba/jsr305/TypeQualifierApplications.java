@@ -551,10 +551,6 @@ public class TypeQualifierApplications {
 					System.out.println("  => Answer: no annotation on " + o);
 				else 
 					System.out.println("  => Answer: " + result.when  + " on " + o);
-				if (o instanceof XMethod 
-						&& ((XMethod)o).getClassName().equals("java.lang.StringBuilder")
-					    && ((XMethod)o).getName().equals("toString"))
-					System.out.println("huh");
 			}
 
 		}
