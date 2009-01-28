@@ -353,7 +353,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		case MAYBE:
 			return NullnessAnnotation.CHECK_FOR_NULL;
 		case NEVER:
-			return NullnessAnnotation.CHECK_FOR_NULL; // FIXME: is this right?
+			return NullnessAnnotation.CHECK_FOR_NULL; 
 		case UNKNOWN:
 			return NullnessAnnotation.UNKNOWN_NULLNESS;
 		}
