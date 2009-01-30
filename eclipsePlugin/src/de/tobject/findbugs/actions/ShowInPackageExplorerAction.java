@@ -18,6 +18,7 @@
  */
 package de.tobject.findbugs.actions;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -36,8 +37,8 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 
-	private BugGroup group;
 	private IWorkbenchPartSite site;
+	private Object data;
 
 	public ShowInPackageExplorerAction() {
 		super();
@@ -48,7 +49,9 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 	}
 
 	public void run(IAction action) {
-		Object data = group.getData();
+		if(data == null){
+			return;
+		}
         IViewPart part = getView(JavaUI.ID_PACKAGES);
         if(part instanceof ISetSelectionTarget){
             ISetSelectionTarget target = (ISetSelectionTarget) part;
@@ -70,28 +73,35 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (!(selection instanceof IStructuredSelection)) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
 		IStructuredSelection ss = (IStructuredSelection) selection;
 		if (ss.size() != 1) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
 		Object firstElement = ss.getFirstElement();
+		if(firstElement instanceof IMarker){
+			IMarker marker = (IMarker) firstElement;
+			data = marker.getResource();
+			action.setEnabled(data != null);
+			return;
+		}
 		if (!(firstElement instanceof BugGroup)) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
-		group = (BugGroup) firstElement;
+		BugGroup group = (BugGroup) firstElement;
 		if (group.getType() == GroupType.Class || group.getType() == GroupType.Package
 				|| group.getType() == GroupType.Project) {
-			action.setEnabled(true);
+			data = group.getData();
+			action.setEnabled(data != null);
 		} else {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 		}
 	}

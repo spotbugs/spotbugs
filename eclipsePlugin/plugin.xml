@@ -356,6 +356,14 @@
                name="superType"
                value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
          </filter>
+         <action
+               class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
+               enablesFor="1"
+               icon="platform:/plugin/org.eclipse.jdt.ui/icons/full/eview16/package.gif"
+               id="de.tobject.findbugs.showInPackageExplorer2"
+               label="Show In Package Explorer"
+               menubarPath="fb">
+         </action>
       </objectContribution>
 
    </extension>
@@ -965,7 +973,7 @@
           point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
        <propertyContributor
              contributorId="de.tobject.findbugs.view.bugtreeview"
-             labelProvider="de.tobject.findbugs.view.explorer.BugLabelProvider">
+             labelProvider="de.tobject.findbugs.view.properties.PropPageTitleProvider">
           <propertyCategory category="general"/>
           <propertyCategory category="advanced"/>
        </propertyContributor>
