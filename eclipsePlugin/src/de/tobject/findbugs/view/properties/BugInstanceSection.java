@@ -32,8 +32,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -44,9 +44,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
@@ -82,24 +84,20 @@ public class BugInstanceSection extends AbstractPropertySection {
 	public void createControls(Composite parent,
 			final TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
-		rootComposite = getWidgetFactory().createFlatFormComposite(parent);
+		rootComposite = new Composite(parent, SWT.NONE);
+		rootComposite.setLayout(new GridLayout(1, true));
 		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
-		Label label = getWidgetFactory().createLabel(rootComposite, "Bug annotations: ");
-		label.setFont(JFaceResources.getBannerFont());
-		FormData labelData = new FormData();
-		labelData.left = new FormAttachment(0, 0);
-		labelData.right = new FormAttachment(100, 0);
-		labelData.top = new FormAttachment(0, 0);
-		labelData.bottom = new FormAttachment(1, 0);
-		label.setLayoutData(labelData);
 
-		annotationList = getWidgetFactory().createList(rootComposite, SWT.NONE);
-		FormData data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(label, 0);
-		data.bottom = new FormAttachment(100, 0);
+		Label label = new Label(rootComposite, SWT.NONE);
+		label.setText("Bug annotations:");
+		label.setFont(JFaceResources.getBannerFont());
+
+		annotationList = new List(rootComposite, SWT.BORDER);
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.horizontalIndent = 0;
+		data.verticalIndent = 0;
 		annotationList.setLayoutData(data);
+
 		annotationList.setFont(JFaceResources.getDialogFont());
 		annotationList.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -115,6 +113,8 @@ public class BugInstanceSection extends AbstractPropertySection {
 		});
 		final Menu menu = new Menu (annotationList);
 		final MenuItem item = new MenuItem (menu, SWT.PUSH);
+		item.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
+				ISharedImages.IMG_TOOL_COPY));
 		item.setText ("Copy To Clipboard");
 		item.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
@@ -205,7 +205,7 @@ public class BugInstanceSection extends AbstractPropertySection {
 			title = "";
 			return;
 		}
-		String shortDescription = pattern.getShortDescription();
+		String shortDescription = bug.getAbridgedMessage();
 		String abbrev = "["
 			+ bug.getPriorityAbbreviation()
 			+ " " + bug.getCategoryAbbrev()
@@ -251,13 +251,17 @@ public class BugInstanceSection extends AbstractPropertySection {
 
 	private void copyInfoToClipboard() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(bug.getPriorityTypeString()).append(" ");
 		sb.append(title);
+		sb.append("\n");
+		sb.append(bug.getPriorityTypeString()).append(" ");
 		sb.append("\n");
 		Iterator<BugAnnotation> iterator = bug.annotationIterator();
 		while (iterator.hasNext()) {
 			BugAnnotation bugAnnotation = iterator.next();
 			sb.append(bugAnnotation.toString()).append("\n");
+		}
+		if(file != null){
+			sb.append(file.getLocation()).append("\n");
 		}
 		Util.copyToClipboard(sb.toString());
 	}

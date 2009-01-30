@@ -12,7 +12,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -40,12 +44,17 @@ public class BugPatternSection extends AbstractPropertySection {
 	private Composite rootComposite;
 	private BugPattern pattern;
 	private TextPresentation presentation;
+	private ScrolledComposite scrolledComposite;
+	private ControlAdapter listener;
+	private String oldText;
+	private final PropPageTitleProvider titleProvider;
 
 	/**
 	 *
 	 */
 	public BugPatternSection() {
 		super();
+		titleProvider = new PropPageTitleProvider();
 	}
 
 	@Override
@@ -58,10 +67,28 @@ public class BugPatternSection extends AbstractPropertySection {
 		data.right = new FormAttachment(100, 0);
 		data.top = new FormAttachment(0, 0);
 		data.bottom = new FormAttachment(100, 0);
+		Composite p = parent.getParent();
+		while(p != null){
+			if(p instanceof ScrolledComposite){
+				listener = new ControlAdapter() {
+					@Override
+					public void controlResized(ControlEvent e) {
+						if(!rootComposite.isDisposed() && rootComposite.isVisible()) {
+							updateDisplay();
+						}
+					}
+				};
+				scrolledComposite = (ScrolledComposite) p;
+				scrolledComposite.addControlListener(listener);
+				break;
+			}
+			p = p.getParent();
+		}
+
 		try {
-			browser = new Browser(rootComposite, SWT.NONE);
+			browser = new Browser(rootComposite, SWT.NO_BACKGROUND);
 			browser.setLayoutData(data);
-			getWidgetFactory().adapt(browser);
+//			getWidgetFactory().adapt(browser);
 		} catch (SWTError e) {
 			presentation = new TextPresentation();
 			htmlControl = new StyledText(rootComposite, SWT.READ_ONLY | SWT.H_SCROLL
@@ -89,20 +116,44 @@ public class BugPatternSection extends AbstractPropertySection {
 			html = "";
 		} else {
 			html = pattern.getDetailHTML();
-		}
-		if (browser != null && !browser.isDisposed()) {
+			if(html.indexOf("</H1>") > html.indexOf("<H1>")){
+				String text = titleProvider.getTitle(pattern);
+				int idx1 = html.indexOf("<H1>");
+				int idx2 = html.indexOf("</H1>");
+				html = html.substring(0, idx1 + 4) + text + html.substring(idx2);
+			}
 			html = html.replaceAll("H1", "H4");
-			browser.setText(html);
+		}
+		Rectangle size = scrolledComposite.getClientArea();
+		Composite child = rootComposite;
+		Composite p = rootComposite.getParent();
+		if(size.width > 0 && size.height > 0){
+			while(p != null){
+				if(p instanceof ScrolledComposite){
+					if(!child.getSize().equals(new Point(size.width, size.height))){
+						child.setSize(size.width, size.height);
+					}
+					break;
+				}
+				child = p;
+				p = p.getParent();
+			}
+		}
+
+		if (browser != null && !browser.isDisposed()) {
+			if(!html.equals(oldText)) {
+				browser.setText(html);
+			}
 		} else {
 			StyledText myHtmlControl = htmlControl;
 			if (myHtmlControl != null && !myHtmlControl.isDisposed() && presenter != null) {
-				Rectangle size = rootComposite.getClientArea();
 				html = presenter.updatePresentation(rootComposite.getShell()
 						.getDisplay(), html, presentation, size.width,
 						size.height);
 				myHtmlControl.setText(html);
 			}
 		}
+		oldText = html;
 	}
 
 	@Override
@@ -135,7 +186,8 @@ public class BugPatternSection extends AbstractPropertySection {
 
 	@Override
 	public void dispose() {
-		if(rootComposite != null) {
+		if(rootComposite != null && !rootComposite.isDisposed()) {
+			scrolledComposite.removeControlListener(listener);
 			rootComposite.dispose();
 		}
 		super.dispose();
