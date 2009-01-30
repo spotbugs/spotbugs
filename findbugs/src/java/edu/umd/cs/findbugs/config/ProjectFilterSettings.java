@@ -97,6 +97,8 @@ public class ProjectFilterSettings implements Cloneable {
 		// using SortedSet to allow better revision control on saved sorted properties
 		this.activeBugCategorySet = new TreeSet<String>( I18N.instance().getBugCategories() );
 		this.hiddenBugCategorySet = new HashSet<String>();
+		activeBugCategorySet.remove("NOISE");
+		hiddenBugCategorySet.add("NOISE");
 		setMinPriority(DEFAULT_PRIORITY);
 		this.displayFalseWarnings = false;
 	}
