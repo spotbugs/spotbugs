@@ -56,9 +56,7 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 				editorArea);
 
 		bottomRight.addView(FindbugsPlugin.DETAILS_VIEW_ID);
-		bottomRight.addView(IPageLayout.ID_BOOKMARKS);
-		bottomRight.addView(IPageLayout.ID_TASK_LIST);
-		bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
+		bottomRight.addView(IPageLayout.ID_PROP_SHEET);
 	}
 
 }
