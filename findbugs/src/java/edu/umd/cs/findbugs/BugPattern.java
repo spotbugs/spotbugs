@@ -37,9 +37,9 @@ public class BugPattern implements Comparable<BugPattern> {
 	final private String shortDescription;
 	final private String longDescription;
 	final private String detailText;
-	 private String detailHTML;
-	 final int cweid;
-	  int priorityAdjustment = 0;
+	private String detailHTML;
+	final int cweid;
+	int priorityAdjustment = 0;
 
 	/**
 	 * Constructor.
@@ -196,6 +196,9 @@ public class BugPattern implements Comparable<BugPattern> {
     public int getCWEid() {
 	    return cweid;
     }
+    
+    @Override
+    public String toString() {
+        return "Bugpattern[" + type + "]";
+    }
 }
-
-// vim:ts=4

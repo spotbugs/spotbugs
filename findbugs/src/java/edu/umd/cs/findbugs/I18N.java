@@ -101,6 +101,15 @@ public class I18N {
 
 		return bugPatternMap.values().iterator();
 	}
+	
+	/**
+	 * Get an Iterator over all registered bug codes.
+	 */
+	public Iterator<BugCode> bugCodeIterator() {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
+		return bugCodeMap.values().iterator();
+	}
 
 	/**
 	 * Register a BugCode.

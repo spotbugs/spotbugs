@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs;
  * @author David Hovemeyer
  * @see BugPattern
  */
-public class BugCode {
+public class BugCode  implements Comparable<BugCode> {
 	private final String abbrev;
 	private final int cweid;
 	private final String description;
@@ -45,6 +45,7 @@ public class BugCode {
 		this.description = description;
 		this.cweid = 0;
 	}
+	
 	public BugCode(String abbrev, String description, int cweid) {
 		this.abbrev = abbrev;
 		this.description = description;
@@ -77,6 +78,25 @@ public class BugCode {
     public int getCWEid() {
 	    return cweid;
     }
+    
+    public int compareTo(BugCode o) {
+	    return abbrev.compareTo(o.abbrev);
+    }
+    
+	@Override
+	public boolean equals(Object o) {
+		if(this == o){
+			return true;
+		}
+		if (!(o instanceof BugCode)){
+			return false;
+		}
+		BugCode other = (BugCode) o;
+		return abbrev.equals(other.abbrev);
+	}
+	
+	@Override
+	public int hashCode() {
+	    return abbrev.hashCode();
+	}
 }
-
-// vim:ts=4
