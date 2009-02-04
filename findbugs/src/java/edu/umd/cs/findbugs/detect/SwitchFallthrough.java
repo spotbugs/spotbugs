@@ -79,12 +79,14 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 	}
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+	Collection<SourceLineAnnotation> foundDefault = new LinkedList<SourceLineAnnotation>();
 
 	@Override
 		 public void visit(Code obj) {
 		reachable = false;
 		lastPC = 0;
 		found.clear();
+		foundDefault.clear();
 		switchHdlr = new SwitchHandler();
 		clearAll();
 		deadStore = null;
@@ -97,6 +99,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 			for(SourceLineAnnotation s : found) 
 			bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
 					.addClassAndMethod(this), s);
+		}
+		if (!foundDefault.isEmpty()) {
+			if (foundDefault.size() >= 4 && priority == NORMAL_PRIORITY) 
+				priority = LOW_PRIORITY;
+			for(SourceLineAnnotation s : foundDefault) 
+				bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", priority)
+				.addClassAndMethod(this), s);
 		}
 		bugAccumulator.reportAccumulatedBugs();
 	}
@@ -119,7 +128,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 				SourceLineAnnotation sourceLineAnnotation =
 					SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, lastPC, getPC());
 				if (sourceLineAnnotation != null) {
-					found.add(sourceLineAnnotation);
+					if(isDefaultOffset){
+						foundDefault.add(sourceLineAnnotation);
+					} else {
+						found.add(sourceLineAnnotation);
+					}
 				}
 			}
 

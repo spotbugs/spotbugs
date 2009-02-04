@@ -4129,6 +4129,16 @@ is generally easy and good defensive programming.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SF_SWITCH_NO_DEFAULT">
+   <ShortDescription>Switch statement found where default case is missing</ShortDescription>
+   <LongDescription>Switch statement found in {1} where default case is missing</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method contains a switch statement where default case is missing.
+  Usually you need to provide a default case.</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
    <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
    <LongDescription>Value of {2.givenClass} from previous case is overwritten here due to switch statement fall through</LongDescription>
