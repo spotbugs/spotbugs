@@ -63,7 +63,7 @@ public class SaveXmlAction extends FindBugsAction {
 		FileDialog fileDialog = createFileDialog(project);
 		boolean validFileName = false;
 		do {
-			String fileName = fileDialog.open();
+			String fileName = openFileDialog(fileDialog);
 			if (fileName == null) {
 				// User cancelled
 				break;
@@ -83,6 +83,10 @@ public class SaveXmlAction extends FindBugsAction {
 			getDialogSettings().put(SAVE_XML_PATH_KEY, fileName);
 			work(project, fileName);
 		} while (!validFileName);
+	}
+
+	protected String openFileDialog(FileDialog dialog) {
+		return dialog.open();
 	}
 
 	private FileDialog createFileDialog(IProject project) {
@@ -147,6 +151,11 @@ public class SaveXmlAction extends FindBugsAction {
 					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
+			}
+
+			@Override
+			public boolean belongsTo(Object family) {
+				return FindbugsPlugin.class.equals(family);
 			}
 		};
 		runFindBugs.setUser(true);

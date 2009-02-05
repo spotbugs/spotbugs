@@ -41,3 +41,8 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  findbugs;resolution:=optional
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: de.tobject.findbugs,
+ de.tobject.findbugs.actions,
+ de.tobject.findbugs.builder,
+ de.tobject.findbugs.reporter,
+ edu.umd.cs.findbugs.plugin.eclipse.util

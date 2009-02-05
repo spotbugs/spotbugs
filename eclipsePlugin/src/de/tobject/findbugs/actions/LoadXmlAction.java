@@ -59,7 +59,7 @@ public class LoadXmlAction extends FindBugsAction {
 		FileDialog dialog = createFileDialog(project);
 		boolean validFileName = false;
 		do {
-			String fileName = dialog.open();
+			String fileName = openFileDialog(dialog);
 			if (fileName == null) {
 				// user cancel
 				return;
@@ -73,6 +73,10 @@ public class LoadXmlAction extends FindBugsAction {
 			getDialogSettings().put(LOAD_XML_PATH_KEY, fileName);
 			work(project, fileName);
 		} while (!validFileName);
+	}
+
+	protected String openFileDialog(FileDialog dialog) {
+		return dialog.open();
 	}
 
 	private boolean validateSelectedFileName(String fileName) {
@@ -124,6 +128,11 @@ public class LoadXmlAction extends FindBugsAction {
 					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
+			}
+
+			@Override
+			public boolean belongsTo(Object family) {
+				return FindbugsPlugin.class.equals(family);
 			}
 		};
 		runFindBugs.setUser(true);
