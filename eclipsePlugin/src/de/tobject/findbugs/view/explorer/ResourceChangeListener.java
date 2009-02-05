@@ -32,7 +32,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 final class ResourceChangeListener implements IResourceChangeListener {
 
-	static final int SHORT_DELAY = 50;
+	static final int SHORT_DELAY = 250;
 	static final int LONG_DELAY = 500;
 
 	final IViewerRefreshJob refreshJob;

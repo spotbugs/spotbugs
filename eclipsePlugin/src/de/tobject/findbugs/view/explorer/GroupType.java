@@ -24,11 +24,13 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IWorkingSet;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugCategory;
@@ -36,6 +38,7 @@ import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Type of the bug groups, shown inside the bug explorer
@@ -91,6 +94,22 @@ public enum GroupType {
 	Priority(true, new MarkerMapper<Integer>() {
 		@Override
 		Integer getIdentifier(IMarker marker) {
+			try {
+				Object attribute = marker.getAttribute(IMarker.PRIORITY);
+				if(attribute instanceof Integer){
+					Integer prio = (Integer) attribute;
+					switch (prio.intValue()) {
+					case IMarker.PRIORITY_HIGH:
+						return Integer.valueOf(Priorities.HIGH_PRIORITY);
+					case IMarker.PRIORITY_NORMAL:
+						return Integer.valueOf(Priorities.NORMAL_PRIORITY);
+					default:
+						return Integer.valueOf(Priorities.LOW_PRIORITY);
+					}
+				}
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e, "Missing priority attribute in marker");
+			}
 			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
 			return bug == null ? null : Integer.valueOf(bug.getPriority());
 		}
@@ -121,6 +140,14 @@ public enum GroupType {
 		@Override
 		BugCode getIdentifier(IMarker marker) {
 			BugCode code = MarkerUtil.findBugCodeForMarker(marker);
+			if(code == null){
+				// can happen only if project was analysed with older plugin version then 1.3.8
+				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+				if(bug == null){
+					return null;
+				}
+				return I18N.instance().getBugCode(bug.getAbbrev());
+			}
 			return code;
 		}
 

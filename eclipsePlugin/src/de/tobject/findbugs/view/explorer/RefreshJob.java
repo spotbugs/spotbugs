@@ -69,12 +69,11 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		int totalWork = deltaToRefresh.size();
+		List<DeltaInfo> deltas = fetchDeltas();
+		int totalWork = deltas.size();
 		monitor.beginTask("Updating bug markers", totalWork);
-		List<DeltaInfo> deltas;
 
-		while (viewer != null && !monitor.isCanceled()
-				&& !(deltas = fetchDeltas()).isEmpty()) {
+		if (viewer != null && !monitor.isCanceled()	&& !deltas.isEmpty()) {
 
 			final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
 			final boolean fullRefreshNeeded = changedParents.isEmpty();
