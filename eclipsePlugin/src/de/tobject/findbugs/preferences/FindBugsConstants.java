@@ -18,6 +18,9 @@
  */
 package de.tobject.findbugs.preferences;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * @author Andrei
  */
@@ -44,4 +47,35 @@ public final class FindBugsConstants {
 	public final static String LAST_USED_GROUPING = "lastUsedGrouping";
 
 	public final static String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
+
+
+	public static final String IDS_PATTERN = "\\s*,\\s*";
+	public static final String IDS_SEPARATOR = ", ";
+
+	public static String encodeIds(Set<String> ids){
+		StringBuilder sb = new StringBuilder();
+		for (String string : ids) {
+			sb.append(string).append(IDS_SEPARATOR);
+		}
+		if(sb.length() > 0) {
+			sb.setLength(sb.length() - IDS_SEPARATOR.length());
+		}
+		return sb.toString();
+	}
+
+	public static Set<String> decodeIds(String text) {
+		Set<String> sortedIds = new TreeSet<String>();
+		if(text == null || text.trim().length() == 0) {
+			return sortedIds;
+		}
+
+		String[] strings = text.split(IDS_PATTERN);
+		for (String string : strings) {
+			string = string.trim();
+			if(string.length() > 0){
+				sortedIds.add(string);
+			}
+		}
+		return sortedIds;
+	}
 }

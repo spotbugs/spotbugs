@@ -27,11 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -74,6 +72,7 @@ import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
 import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
+import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
@@ -753,26 +752,51 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return patterns;
 	}
 
-	public static Map<String, Set<BugPattern>> getFilteredPatterns(){
-		final IPreferenceStore store = getDefault().getPreferenceStore();
+	public static Set<BugCode> getKnownPatternTypes() {
+		Set<BugCode> patterns = new TreeSet<BugCode>();
+		Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+		while (patternIterator.hasNext()){
+			patterns.add(patternIterator.next());
+		}
+		return patterns;
+	}
+
+	public static Set<String> getFilteredIds(){
+		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 		String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+		return FindBugsConstants.decodeIds(lastUsedFilter);
+	}
+
+	public static Set<BugPattern> getFilteredPatterns(){
 		Iterator<BugPattern> patternIterator = I18N.instance().bugPatternIterator();
-		Map<String, Set<BugPattern>> map = new HashMap<String, Set<BugPattern>>();
-		List<String> patternTypes = Arrays.asList(lastUsedFilter.split(","));
+		Set<BugPattern> set = new HashSet<BugPattern>();
+		Set<String> patternTypes = getFilteredIds();
 		while (patternIterator.hasNext()){
 			BugPattern next = patternIterator.next();
-			String patternType = next.getAbbrev();
-			if(!patternTypes.contains(patternType)){
+			String patternId = next.getType();
+			if(!patternTypes.contains(patternId)){
 				continue;
-			}
-			Set<BugPattern> set = map.get(patternType);
-			if(set == null){
-				set = new HashSet<BugPattern>();
-				map.put(patternType, set);
 			}
 			set.add(next);
 		}
-		return map;
+		return set;
 	}
+
+	public static Set<BugCode> getFilteredPatternTypes(){
+		Iterator<BugCode> patternIterator = I18N.instance().bugCodeIterator();
+		Set<BugCode> set = new HashSet<BugCode>();
+		Set<String> patternTypes = getFilteredIds();
+		while (patternIterator.hasNext()){
+			BugCode next = patternIterator.next();
+			String type = next.getAbbrev();
+			if(!patternTypes.contains(type)){
+				continue;
+			}
+			set.add(next);
+		}
+		return set;
+	}
+
+
 }
 

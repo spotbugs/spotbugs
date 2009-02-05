@@ -1,4 +1,7 @@
 Release 1.3.8 - FindBugs team
+- bugfix: fixed bug explorer (common navigator) errors with Eclipse 3.5 (Andrei Loskutov)
+- feature: filtering by specific pattern from bug explorer (Andrei Loskutov)
+- feature (in progress): bug filtering configuration dialog (Andrei Loskutov)
 - fix/new features related to bug 2522989: inconsistent filter files implementation (Andrei Loskutov)
 -- Filter files can be now anywhere in the project OR in the workspace
 -- On changes in relevant FB preferences, user will be asked to run FB analysis again

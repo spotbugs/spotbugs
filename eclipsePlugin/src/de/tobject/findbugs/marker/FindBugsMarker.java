@@ -40,9 +40,13 @@ public interface FindBugsMarker {
 	public static final String NAME_LOW = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow";
 	public static final String NAME_EXPERIMENTAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental";
 	/**
-	 * Marker attribute recording the bug type.
+	 * Marker attribute recording the bug type (specific bug pattern).
 	 */
 	public static final String BUG_TYPE = "BUGTYPE";
+	/**
+	 * Marker attribute recording the pattern type (more general pattern group).
+	 */
+	public static final String PATTERN_TYPE = "PATTERNTYPE";
 
 	/**
 	 * Marker attribute recording the unique id of the BugInstance

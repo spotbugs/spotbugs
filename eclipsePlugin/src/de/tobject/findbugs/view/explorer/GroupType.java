@@ -120,11 +120,8 @@ public enum GroupType {
 	PatternType(true, new MarkerMapper<BugCode>() {
 		@Override
 		BugCode getIdentifier(IMarker marker) {
-			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-			if(bug == null){
-				return null;
-			}
-			return I18N.instance().getBugCode(bug.getAbbrev());
+			BugCode code = MarkerUtil.findBugCodeForMarker(marker);
+			return code;
 		}
 
 		@Override
@@ -136,8 +133,8 @@ public enum GroupType {
 	Pattern(true, new MarkerMapper<BugPattern>() {
 		@Override
 		BugPattern getIdentifier(IMarker marker) {
-			BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-			return bug == null ? null : bug.getBugPattern();
+			BugPattern bug = MarkerUtil.findBugPatternForMarker(marker);
+			return bug;
 		}
 
 		@Override

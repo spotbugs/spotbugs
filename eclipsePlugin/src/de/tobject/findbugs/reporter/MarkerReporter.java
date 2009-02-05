@@ -123,6 +123,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		attributes.put(IMarker.LINE_NUMBER, mp.startLine);
 		attributes.put(FindBugsMarker.PRIMARY_LINE, mp.primaryLine);
 		attributes.put(FindBugsMarker.BUG_TYPE, mp.bug.getType());
+		attributes.put(FindBugsMarker.PATTERN_TYPE, mp.bug.getAbbrev());
 		long seqNum = mp.bug.getFirstVersion();
 		if(seqNum == 0) {
 			attributes.put(FindBugsMarker.FIRST_VERSION, "-1");

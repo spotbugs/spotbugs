@@ -18,6 +18,8 @@
  */
 package de.tobject.findbugs.view.explorer;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -26,7 +28,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
@@ -34,18 +35,14 @@ import de.tobject.findbugs.reporter.MarkerUtil;
  */
 public class BugByIdFilter extends ViewerFilter {
 
-	private static String lastUsedFilter;
+	private static Set<String> lastUsedFilter;
 
 	static {
 		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
-		if(lastUsedFilter == null){
-			lastUsedFilter = "";
-		}
+		lastUsedFilter = FindbugsPlugin.getFilteredIds();
 		store.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
-				lastUsedFilter = store
-						.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+				lastUsedFilter = FindbugsPlugin.getFilteredIds();
 			}
 		});
 	}
@@ -56,7 +53,7 @@ public class BugByIdFilter extends ViewerFilter {
 
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		if(lastUsedFilter.length() == 0){
+		if(lastUsedFilter.size() == 0){
 			return true;
 		}
 		if(element instanceof IMarker){

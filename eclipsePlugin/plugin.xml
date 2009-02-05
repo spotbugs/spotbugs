@@ -337,14 +337,6 @@
                menubarPath="fb">
          </action>
          <action
-               class="de.tobject.findbugs.actions.MarkerShowDetailsAction"
-               enablesFor="1"
-               icon="icons/detailsView.png"
-               id="de.tobject.findbugs.showDescription"
-               label="Show Bug Details"
-               menubarPath="fb">
-         </action>
-         <action
                class="de.tobject.findbugs.actions.OpenPropertiesAction"
                enablesFor="1"
                icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
@@ -363,6 +355,28 @@
                id="de.tobject.findbugs.showInPackageExplorer2"
                label="Show In Package Explorer"
                menubarPath="fb">
+         </action>
+         <menu
+               id="de.tobject.findbugs.filter"
+               label="Toggle Filter"
+               path="fb.filter">
+            <separator
+                  name="toggleSeparator">
+            </separator>
+         </menu>
+         <action
+               class="de.tobject.findbugs.actions.FilterPatternAction"
+               enablesFor="1"
+               id="de.tobject.findbugs.filterPatternType3"
+               label="Bug Pattern Type"
+               menubarPath="de.tobject.findbugs.filter/toggleSeparator">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.FilterPatternAction"
+               enablesFor="1"
+               id="de.tobject.findbugs.filterSpecificPattern2"
+               label="This Specific Bug Pattern"
+               menubarPath="de.tobject.findbugs.filter/toggleSeparator">
          </action>
       </objectContribution>
 
@@ -421,7 +435,14 @@
                class="de.tobject.findbugs.actions.FilterPatternAction"
                enablesFor="1"
                id="de.tobject.findbugs.filterPatternType"
-               label="This Pattern Type"
+               label="Bug Pattern Type"
+               menubarPath="de.tobject.findbugs.filter/toggleSeparator">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.FilterPatternAction"
+               enablesFor="1"
+               id="de.tobject.findbugs.filterSpecificPattern"
+               label="This Specific Bug Pattern"
                menubarPath="de.tobject.findbugs.filter/toggleSeparator">
          </action>
       </objectContribution>
@@ -437,7 +458,7 @@
                class="de.tobject.findbugs.actions.FilterPatternAction"
                enablesFor="1"
                id="de.tobject.findbugs.filterPatternType2"
-               label="This Pattern Type"
+               label="This Bug Pattern Type"
                menubarPath="de.tobject.findbugs.filter/toggleSeparator">
          </action>
       </objectContribution>
@@ -568,24 +589,20 @@
             priority="highest"
             providesSaveables="false">
          <triggerPoints>
-                    <adapt
-                            type="org.eclipse.core.resources.IResource" >
-                    </adapt>
+                <or>
+                    <adapt type="org.eclipse.core.resources.IResource" />
+                    <adapt type="de.tobject.findbugs.view.explorer.BugGroup" />
+                    <adapt type="org.eclipse.core.resources.IMarker" />
+                </or>
             </triggerPoints>
          <commonSorter
                class="de.tobject.findbugs.view.explorer.BugPrioritySorter"
                id="de.tobject.findbugs.view.explorer.BugPrioritySorter">
             <parentExpression>
                <or>
-                  <instanceof
-                        value="de.tobject.findbugs.view.explorer.BugGroup">
-                  </instanceof>
-                  <instanceof
-                        value="org.eclipse.core.resources.IWorkspaceRoot">
-                  </instanceof>
-                  <instanceof
-                        value="org.eclipse.ui.IWorkingSet">
-                  </instanceof>
+                  <instanceof value="de.tobject.findbugs.view.explorer.BugGroup" />
+                  <instanceof value="org.eclipse.core.resources.IWorkspaceRoot" />
+                  <instanceof value="org.eclipse.ui.IWorkingSet" />
                </or>
             </parentExpression>
          </commonSorter>
@@ -593,22 +610,20 @@
                class="de.tobject.findbugs.view.explorer.BugActionProvider"
                id="de.tobject.findbugs.view.explorer.BugActionProvider"
                priority="highest">
+            <enablement>
+                <or>
+                    <adapt type="org.eclipse.core.resources.IResource" />
+                    <adapt type="de.tobject.findbugs.view.explorer.BugGroup" />
+                    <adapt type="org.eclipse.core.resources.IMarker" />
+                </or>
+            </enablement>
          </actionProvider>
 
          <possibleChildren>
             <or>
-               <instanceof value="de.tobject.findbugs.view.explorer.BugGroup" />
-               <instanceof value="org.eclipse.core.resources.IResource" />
-               <instanceof value="org.eclipse.core.resources.IMarker" />
-              <adapt
-                    type="org.eclipse.core.resources.IMarker">
-              </adapt>
-              <adapt
-                    type="org.eclipse.core.resources.IProject">
-              </adapt>
-              <adapt
-                    type="org.eclipse.core.resources.IResource">
-              </adapt>
+                <adapt type="org.eclipse.core.resources.IResource" />
+                <adapt type="de.tobject.findbugs.view.explorer.BugGroup" />
+                <adapt type="org.eclipse.core.resources.IMarker" />
             </or>
          </possibleChildren>
       </navigatorContent>
@@ -831,7 +846,7 @@
                toolbarPath="collapseExpand"
                tooltip="Expand All">
          </action>
-         <!-- not ready yet
+
          <action
                class="de.tobject.findbugs.actions.FilterBugsDialogAction"
                icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/filter_ps.gif"
@@ -840,7 +855,7 @@
                menubarPath="filterActionGroupFilters-start"
                toolbarPath="filter"
                tooltip="Filter Bugs by Id...">
-         </action> -->
+         </action>
         </viewContribution>
    </extension>
 

@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.explorer.BugGroup;
+import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
@@ -539,6 +540,32 @@ public final class MarkerUtil {
 
 	}
 
+	public static @CheckForNull BugCode findBugCodeForMarker(IMarker marker) {
+		try {
+			Object bugCode = marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
+			if(bugCode instanceof String){
+				return I18N.instance().getBugCode((String) bugCode);
+			}
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Marker does not contain bug code");
+			return null;
+		}
+		return null;
+	}
+
+	public static @CheckForNull BugPattern findBugPatternForMarker(IMarker marker) {
+		try {
+			Object patternId = marker.getAttribute(FindBugsMarker.BUG_TYPE);
+			if(patternId instanceof String){
+				return I18N.instance().lookupBugPattern((String) patternId);
+			}
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Marker does not contain pattern id");
+			return null;
+		}
+		return null;
+	}
+
 	/**
 	 * Find the BugInstance associated with given FindBugs marker.
 	 *
@@ -712,22 +739,17 @@ public final class MarkerUtil {
 	 * @param bugIdToFilter might be null
 	 * @return true if marker should be filtered
 	 */
-	public static boolean isFiltered(IMarker marker, String bugIdToFilter) {
+	public static boolean isFiltered(IMarker marker, Set<String> bugIdToFilter) {
 		if(marker == null){
 			return true;
 		}
 		if(bugIdToFilter == null){
 			return false;
 		}
-		String type = marker.getAttribute(FindBugsMarker.BUG_TYPE, "not found");
-		BugPattern result =  I18N.instance().lookupBugPattern(type);
-		if(result == null) {
-			return false;
-		}
-		String id = result.getAbbrev();
-		String[] ids = bugIdToFilter.split(",");
-		for (String badId : ids) {
-			if(badId.equals(id)){
+		String pattern = marker.getAttribute(FindBugsMarker.BUG_TYPE, "not found");
+		String patternType = marker.getAttribute(FindBugsMarker.PATTERN_TYPE, "not found");
+		for (String badId : bugIdToFilter) {
+			if(badId.equals(patternType) || badId.equals(pattern)){
 				return true;
 			}
 		}

@@ -19,13 +19,14 @@
 package de.tobject.findbugs.wizards;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -33,8 +34,10 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -46,16 +49,21 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
+import de.tobject.findbugs.view.explorer.FilterBugsDialog;
+import edu.umd.cs.findbugs.BugCode;
+import edu.umd.cs.findbugs.BugPattern;
 
 /**
  * @author Andrei
  */
 public class ExportWizardPage extends WizardPage {
 
+	private static final String SEPARATOR = ",";
+
 	private static final int BY_NAME = 0;
 	private static final int BY_NOT_FILTERED_COUNT = 1;
 	private static final int BY_OVERALL_COUNT = 2;
-	private static final String SEPARATOR = ",";
+
 	private Composite comp;
 	private int sortBy;
 	private Text filteredBugIdsText;
@@ -79,7 +87,10 @@ public class ExportWizardPage extends WizardPage {
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		comp.setLayout(layout);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
+				| GridData.GRAB_HORIZONTAL);
+		gd.heightHint = 400;
+		gd.widthHint = 400;
 		comp.setLayoutData(gd);
 		setControl(comp);
 
@@ -115,9 +126,39 @@ public class ExportWizardPage extends WizardPage {
 
 		label = new Label(comp, SWT.NONE);
 		label.setText("Filter bug ids:");
-		filteredBugIdsText = new Text(comp, SWT.SHADOW_IN | SWT.BORDER);
-		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL
-				| GridData.GRAB_HORIZONTAL);
+
+		Button button = new Button(comp, SWT.PUSH);
+		button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		button.setText("Browse...");
+		button.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				Set<BugPattern> filtered = FindbugsPlugin.getFilteredPatterns();
+				Set<BugCode> filteredTypes = FindbugsPlugin.getFilteredPatternTypes();
+				FilterBugsDialog dialog = new FilterBugsDialog(getShell(),
+						filtered, filteredTypes);
+				dialog.setTitle("Bug Filter Configuration");
+				int result = dialog.open();
+				if (result != Window.OK) {
+					return;
+				}
+				String selectedIds = dialog.getSelectedIds();
+
+				FindbugsPlugin.getDefault().getPreferenceStore().setValue(
+						FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
+				filteredBugIdsText.setText(selectedIds);
+			}
+		});
+
+		label = new Label(comp, SWT.NONE);
+		label.setText("");
+		filteredBugIdsText = new Text(comp, SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.BORDER | SWT.WRAP | SWT.READ_ONLY);
+		GridData layoutData = new GridData(GridData.FILL_BOTH);
+		layoutData.heightHint = 200;
+		layoutData.widthHint = 400;
 		filteredBugIdsText.setLayoutData(layoutData);
 		filteredBugIdsText.setText(FindbugsPlugin.getDefault().getPreferenceStore().getString(
 				FindBugsConstants.LAST_USED_EXPORT_FILTER));
@@ -133,7 +174,7 @@ public class ExportWizardPage extends WizardPage {
 	public boolean finish() {
 		String data = collectBugsData();
 		copyToClipboard(data);
-		String filters = getLastUsedExportFilters();
+		String filters = FindBugsConstants.encodeIds(getLastUsedExportFilters());
 		FindbugsPlugin.getDefault().getPreferenceStore().setValue(
 				FindBugsConstants.LAST_USED_EXPORT_FILTER, filters);
 		String sortPref;
@@ -154,24 +195,9 @@ public class ExportWizardPage extends WizardPage {
 		return true;
 	}
 
-	/**
-	 * @return
-	 */
-	private String getLastUsedExportFilters() {
+	private Set<String> getLastUsedExportFilters() {
 		String text = filteredBugIdsText.getText();
-		if(text == null || text.trim().length() == 0) {
-			return "";
-		}
-		String[] split = text.split("[^a-zA-Z]+");
-		Arrays.sort(split);
-		StringBuilder sb = new StringBuilder();
-		for (String string : split) {
-			sb.append(string).append(SEPARATOR);
-		}
-		if(sb.length() > 0) {
-			sb.setLength(sb.length() - 1);
-		}
-		return sb.toString();
+		return FindBugsConstants.decodeIds(text);
 	}
 
 	/**
@@ -205,7 +231,7 @@ public class ExportWizardPage extends WizardPage {
 			}
 			int overallBugCount = markerArr.length;
 			int notFilteredBugCount = 0;
-			String usedExportFilters = getLastUsedExportFilters();
+			Set<String> usedExportFilters = getLastUsedExportFilters();
 			for (IMarker marker : markerArr) {
 				if(!MarkerUtil.isFiltered(marker, usedExportFilters)) {
 					notFilteredBugCount ++;

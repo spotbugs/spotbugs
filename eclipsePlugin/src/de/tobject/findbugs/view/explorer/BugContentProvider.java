@@ -245,7 +245,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		if(DEBUG){
 			System.out.println("Refreshing filters!");
 		}
-		String patternFilter = getPatternFilter();
+		Set<String> patternFilter = getPatternFilter();
 		for (IMarker marker : rootElement.getAllMarkers()) {
 			if(MarkerUtil.isFiltered(marker, patternFilter)) {
 				filteredMarkers.add(marker);
@@ -273,9 +273,8 @@ public class BugContentProvider implements ICommonContentProvider {
 	}
 
 
-	private String getPatternFilter() {
-		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		return store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
+	private Set<String> getPatternFilter() {
+		return FindbugsPlugin.getFilteredIds();
 	}
 
 	public boolean isFiltered(IMarker marker){
@@ -308,7 +307,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			BugGroup parent) {
 		Set<IMarker> markerSet = new HashSet<IMarker>();
 		boolean filterActive = isBugFilterActive();
-		String patternFilter = getPatternFilter();
+		Set<String> patternFilter = getPatternFilter();
 		for (IResource resource : parents) {
 			IMarker[] markers = getMarkers(resource);
 			for (IMarker marker : markers) {
@@ -438,6 +437,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		int oldRootSize = rootElement.getChildren().length;
 		Set<BugGroup> changedParents = new HashSet<BugGroup>();
 		bugFilterActive = isBugFilterActive();
+		Set<String> patternFilter = getPatternFilter();
 		for (DeltaInfo delta : deltas) {
 			if (DEBUG) {
 				System.out.println(delta);
@@ -452,7 +452,7 @@ public class BugContentProvider implements ICommonContentProvider {
 				removeMarker(parent, changedMarker, changedParents);
 				break;
 			case IResourceDelta.ADDED:
-				addMarker(changedMarker, changedParents);
+					addMarker(changedMarker, changedParents, patternFilter);
 				break;
 			}
 		}
@@ -476,7 +476,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		removeMarker(parent, marker);
 	}
 
-	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents) {
+	private void addMarker(IMarker toAdd, Set<BugGroup> changedParents, Set<String> patternFilter) {
 		MarkerMapper<?> mapper = grouping.getFirstType().getMapper();
 		// filter through working set
 		IMarker marker = toAdd;
@@ -484,11 +484,11 @@ public class BugContentProvider implements ICommonContentProvider {
 			return;
 		}
 		rootElement.addMarker(marker);
-		addMarker(marker, mapper, rootElement, changedParents);
+		addMarker(marker, mapper, rootElement, changedParents, patternFilter);
 	}
 
 	private <Identifier> void addMarker(IMarker marker, MarkerMapper<Identifier> mapper,
-			BugGroup parent, Set<BugGroup> changedParents) {
+			BugGroup parent, Set<BugGroup> changedParents, Set<String> patternFilter) {
 
 		if (mapper == MarkerMapper.NO_MAPPING){
 			return;
@@ -517,7 +517,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		}
 
 		GroupType childType = grouping.getChildType(mapper.getType());
-		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, getPatternFilter());
+		boolean filtered = bugFilterActive && MarkerUtil.isFiltered(marker, patternFilter);
 		if(filtered) {
 			filteredMarkers.add(marker);
 		}
@@ -539,7 +539,7 @@ public class BugContentProvider implements ICommonContentProvider {
 			}
 			boolean lastlevel = childType == GroupType.Marker;
 			if (!lastlevel) {
-				addMarker(marker, childType.getMapper(), matchingChild, changedParents);
+				addMarker(marker, childType.getMapper(), matchingChild, changedParents, patternFilter);
 			}
 		} else {
 			// if there is no node, create one and recursvely all children to the last

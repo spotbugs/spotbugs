@@ -18,10 +18,9 @@
  */
 package de.tobject.findbugs.actions;
 
-import java.util.Arrays;
 import java.util.Set;
-import java.util.TreeSet;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,16 +32,18 @@ import org.eclipse.ui.navigator.CommonViewer;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import de.tobject.findbugs.view.explorer.BugGroup;
-import de.tobject.findbugs.view.explorer.GroupType;
 import edu.umd.cs.findbugs.BugCode;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 
 public class FilterPatternAction implements IObjectActionDelegate {
 
-	private BugGroup group;
 	private CommonNavigator navigator;
+	private Object data;
+	private boolean useSpecificPattern;
 
 	public FilterPatternAction() {
 		super();
@@ -51,15 +52,13 @@ public class FilterPatternAction implements IObjectActionDelegate {
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		if (targetPart instanceof CommonNavigator) {
 			navigator = (CommonNavigator) targetPart;
+			useSpecificPattern = action.getId().startsWith("de.tobject.findbugs.filterSpecificPattern");
 		}
 	}
 
 	public void run(IAction action) {
-		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-		String lastUsedFilter = store.getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
-		Set<String> sortedIds = new TreeSet<String>();
-		sortedIds.addAll(Arrays.asList(lastUsedFilter.split(",")));
-		String patternType = getPatternType();
+		Set<String> sortedIds = FindbugsPlugin.getFilteredIds();
+		String patternType = getPatternOrPatternType();
 		if(patternType != null) {
 			if(!sortedIds.contains(patternType)) {
 				sortedIds.add(patternType);
@@ -67,14 +66,9 @@ public class FilterPatternAction implements IObjectActionDelegate {
 				sortedIds.remove(patternType);
 			}
 		}
-		StringBuilder sb = new StringBuilder();
-		for (String string : sortedIds) {
-			sb.append(string).append(",");
-		}
-		if(sb.length() > 0) {
-			sb.setLength(sb.length() - 1);
-		}
-		store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, sb.toString());
+		String ids = FindBugsConstants.encodeIds(sortedIds);
+		final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+		store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, ids);
 		BugContentProvider provider = BugContentProvider.getProvider(navigator
 				.getNavigatorContentService());
 		provider.refreshFilters();
@@ -82,39 +76,61 @@ public class FilterPatternAction implements IObjectActionDelegate {
 		Object[] expandedElements = viewer.getExpandedElements();
 		viewer.refresh(true);
 		viewer.setExpandedElements(expandedElements);
-		group = null;
+		data = null;
 	}
 
-	private String getPatternType() {
-		if(group.getType() == GroupType.Pattern){
-			BugPattern pattern = (BugPattern) group.getData();
+	private String getPatternOrPatternType() {
+		if(data instanceof IMarker){
+			BugInstance bug = MarkerUtil.findBugInstanceForMarker((IMarker) data);
+			if(bug == null){
+				return null;
+			}
+			if(useSpecificPattern){
+				// uses specific pattern kind, the naming "Type" is misleading
+				return bug.getType();
+			}
+			// uses pattern type, the naming "Abbrev" is misleading
+			return bug.getAbbrev();
+		} else if(data instanceof BugPattern){
+			BugPattern pattern = (BugPattern) data;
+			if(useSpecificPattern){
+				// uses specific pattern kind, the naming "Type" is misleading
+				return pattern.getType();
+			}
+			// uses pattern type, the naming "Abbrev" is misleading
 			return pattern.getAbbrev();
-		} else if(group.getType() == GroupType.PatternType){
-			return ((BugCode) group.getData()).getAbbrev();
+		} else if(data instanceof BugCode){
+			// same as pattern.getAbbrev(): it's pattern type
+			return ((BugCode) data).getAbbrev();
 		}
 		return null;
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (!(selection instanceof IStructuredSelection)) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
 		IStructuredSelection ss = (IStructuredSelection) selection;
 		if (ss.size() != 1) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
 		Object firstElement = ss.getFirstElement();
+		if(firstElement instanceof IMarker){
+			data = firstElement;
+			action.setEnabled(true);
+			return;
+		}
 		if (!(firstElement instanceof BugGroup)) {
-			group = null;
+			data = null;
 			action.setEnabled(false);
 			return;
 		}
-		group = (BugGroup) firstElement;
-		action.setEnabled(true);
+		data = ((BugGroup) firstElement).getData();
+		action.setEnabled(data != null);
 	}
 
 }
