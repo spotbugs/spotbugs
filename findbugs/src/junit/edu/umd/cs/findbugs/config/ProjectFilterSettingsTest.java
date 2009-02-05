@@ -60,15 +60,15 @@ public class ProjectFilterSettingsTest extends TestCase {
 
 	public void testPlainCategories() {
 		int count = 0;
-		for (String category : I18N.instance().getBugCategories()) {
+		for (String category : I18N.instance().getBugCategories()) if (!category.equals("NOISE")){
 			Assert.assertTrue(plain.containsCategory(category));
 			++count;
 		}
-		Assert.assertTrue(plain.getActiveCategorySet().size() == count);
+		Assert.assertEquals(count, plain.getActiveCategorySet().size());
 	}
 
 	public void testAddCategory() {
-		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unkown categories should be unhidden by default
+		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown categories should be unhidden by default
 		plain.addCategory("FAKE_CATEGORY");
 		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
 	}
