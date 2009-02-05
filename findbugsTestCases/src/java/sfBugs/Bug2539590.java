@@ -17,37 +17,103 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2539590 {
 
-    /* ****************************************
-     * Behavior at filing:
-     *   warning message thrown for fallthrough in switch statement
-     *   does not mention missing default case
-     *
-     * warning thrown => 
-     *   M D SF_SWITCH_FALLTHROUGH SF: Switch statement found in \
-     *   sfBugs.Bug2539590.fallthroughMethod(int) where one case falls  \
-     *   through to the next case  At Bug2539590.java:[lines 33-35]
-     * **************************************** */
-    @ExpectWarning("SF")
-    public static void fallthroughMethod(int which) {
-        switch(which) {
-        case 0: doSomething(); break;
-        }
-    }
+	public static void noFallthroughMethodNoDefault(int which) {
+		switch (which) {
+		case 0:
+			doSomething();
+			break;
+		}
+	}
 
-    /* ****************************************
-     * Behavior at filing:
-     *   correct, no warning thrown
-     * **************************************** */
-    @NoWarning("SF")
-    public static void noFallthroughMethod(int which) {
-        switch(which) {
-        case 0: doSomething(); break;
-        default: break;
-        }
-    }
+	@NoWarning("SF")
+	public static void noFallthroughMethod(int which) {
+		switch (which) {
+		case 0:
+			doSomething();
+			break;
+		default:
+		}
+	}
+	public static void noFallthroughMethod2(int which) {
+		switch (which) {
+		case 0:
+			doSomething();
+			break;
+		default:
+			break;
+		}
+	}
 
-    public static void doSomething() {
-        System.out.println("Hello world!");
-        return;
-    }
+	/*
+	 * Behavior at filing: warning message thrown for fallthrough in switch
+	 * statement does not mention missing default case
+	 * 
+	 * warning thrown => M D SF_SWITCH_FALLTHROUGH SF: Switch statement found in
+	 * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
+	 * to the next case At Bug2539590.java:[lines 33-35]
+	 */
+	@NoWarning("SF")
+	public static void fallthroughMethodNoDefault(int which) {
+		switch (which) {
+		case 0:
+			doSomething();
+		}
+	}
+
+
+	@NoWarning("SF")
+	public static void fallthroughMethod(int which) {
+		switch (which) {
+		case 0:
+			doSomething();
+		default:
+			break;
+		}
+	}
+
+	public static int fallthroughMethodNoDefaultClobber(int which) {
+		int result = 0;
+		switch (which) {
+		case 0:
+			doSomething();
+			result = 1;
+		}
+		result = 2;
+		return result;
+	}
+
+
+	@ExpectWarning("SF")
+	public static int fallthroughMethodClobber(int which) {
+		int result = 0;
+		switch (which) {
+		case 0:
+			doSomething();
+			result = 1;
+		default:
+			result = 2;
+		}
+		return result;
+	}
+
+
+	@ExpectWarning("SF")
+	public static int fallthroughMethodToss(int which) {
+		int result;
+		switch (which) {
+		case 0:
+			doSomething();
+			result = 1;
+			break;
+		case 1:
+			result = 2;
+		default:
+			throw new IllegalArgumentException();
+		}
+		return result;
+	}
+	public static void doSomething() {
+		System.out.println("Hello world!");
+		return;
+	}
 }
