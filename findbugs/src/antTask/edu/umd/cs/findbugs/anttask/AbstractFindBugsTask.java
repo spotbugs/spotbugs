@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.anttask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -38,6 +39,8 @@ import org.apache.tools.ant.types.Reference;
 public abstract class AbstractFindBugsTask extends Task {
 	public static final String FINDBUGS_JAR = "findbugs.jar";
 	public static final long DEFAULT_TIMEOUT = 600000; // ten minutes
+
+	public static final String RESULT_PROPERTY_SUFFIX = "executeReturnCode";
 
 	// A System property to set when FindBugs is run
 	public static class SystemProperty {
@@ -68,11 +71,17 @@ public abstract class AbstractFindBugsTask extends Task {
 
 	private Java findbugsEngine = null;
 
+	public String execResultProperty =
+		"edu.umd.cs.findbugs.anttask.AbstractFindBugsTask" + "." + 
+			RESULT_PROPERTY_SUFFIX;
+	
 	/**
 	 * Constructor.
 	 */
 	protected AbstractFindBugsTask(String mainClass) {
 		this.mainClass = mainClass;
+		this.execResultProperty = mainClass + 
+			"." + RESULT_PROPERTY_SUFFIX;
 	}
 
 	/**
@@ -331,7 +340,31 @@ public abstract class AbstractFindBugsTask extends Task {
 			log(getFindbugsEngine().getCommandLine().describeCommand());    
 		}
 
-		int rc = getFindbugsEngine().executeJava();
+		/*
+		 * set property containing return code of child process using
+		 * a task identifier and a UUID to ensure exit code corresponds
+		 * to this execution (the base Ant Task won't overwrite return code
+		 * once it's been set, so unique identifiers must be used for
+		 * each execution if we want to get the exit code)
+		 */
+		String execReturnCodeIdentifier = execResultProperty + "." +
+			UUID.randomUUID().toString(); 
+		getFindbugsEngine().setResultProperty(execReturnCodeIdentifier);
+
+		/*
+		 * if the execution fails, we'll report it ourself -- prevent the
+		 * underlying Ant Java object from throwing an exception 
+		 */
+		getFindbugsEngine().setFailonerror(false);
+		try {
+			getFindbugsEngine().execute();
+		} catch(BuildException be) {
+			// setFailonerror(false) should ensure that this doesn't happen, but...
+			log(be.toString());
+		}
+		String returnProperty =
+			getFindbugsEngine().getProject().getProperty(execReturnCodeIdentifier);
+		int rc = returnProperty == null ? 0 : Integer.valueOf(returnProperty).intValue();
 
 		afterExecuteJavaProcess(rc);
 	}
