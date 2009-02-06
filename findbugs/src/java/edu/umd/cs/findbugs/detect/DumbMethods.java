@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -49,6 +50,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -160,6 +162,37 @@ public class DumbMethods extends OpcodeStackDetector  {
 	@Override
 	public void sawOpcode(int seen) {
 
+		if (stack.getStackDepth() >= 2)
+			switch(seen) {
+		case IF_ICMPEQ:
+		case IF_ICMPNE:
+		case IF_ICMPLE:
+		case IF_ICMPGE:
+		case IF_ICMPLT:
+		case IF_ICMPGT:
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (item0.getConstant() instanceof Integer) {
+				OpcodeStack.Item tmp = item0;
+				item0 = item1;
+				item1 = tmp;
+			}
+			Object constant1 = item1.getConstant();
+			XMethod returnValueOf = item0.getReturnValueOf();
+			if (constant1 instanceof Integer && returnValueOf != null && returnValueOf.getName().equals("getYear")
+					&& (returnValueOf.getClassName().equals("java.util.Date") || returnValueOf.getClassName().equals("java.sql.Date"))) {
+				int year = (Integer) constant1;
+				if (year > 1900)
+					accumulator.accumulateBug(new BugInstance(this,
+							"UNKNOWN", HIGH_PRIORITY)
+							.addClassAndMethod(this)
+							.addMethod(returnValueOf).describe(MethodAnnotation.METHOD_CALLED)
+							.addInt(year).describe(IntAnnotation.INT_VALUE),
+							this);
+			}
+		}
+		
+		
 		// System.out.printf("%4d %10s: %s\n", getPC(), OPCODE_NAMES[seen], stack);
 		if (seen == IFLT && stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
 			sawCheckForNonNegativeSignedByte = getPC();

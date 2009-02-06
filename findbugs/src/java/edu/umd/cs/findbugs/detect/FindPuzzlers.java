@@ -276,7 +276,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
 
 		if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0
-				&& getClassConstantOperand().equals("java/util/Date")
+				&& (getClassConstantOperand().equals("java/util/Date") 
+						|| getClassConstantOperand().equals("java/sql/Date"))
 				&& getNameConstantOperand().equals("setMonth")
 				&& getSigConstantOperand().equals("(I)V")) {
 			OpcodeStack.Item item = stack.getStackItem(0);
