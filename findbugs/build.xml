@@ -971,7 +971,7 @@
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
 		<delete file="${gui.jar}"/>
-		<delete file="${anttask.jar}"/>
+		<delete file="${anttask.jar}" failonerror="false"/>
 	</target>
 
     <target name="apiJavadoc" depends="version">
