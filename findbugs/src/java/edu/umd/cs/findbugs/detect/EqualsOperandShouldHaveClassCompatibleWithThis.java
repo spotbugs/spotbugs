@@ -61,7 +61,9 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
     public void visit(Code obj) {
     	if (getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z") ) {
     		super.visit(obj);
-    		bugAccumulator.reportAccumulatedBugs();
+    		if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
+    				bugAccumulator.reportAccumulatedBugs();
+    		bugAccumulator.clearBugs();
     	}
     	
     }

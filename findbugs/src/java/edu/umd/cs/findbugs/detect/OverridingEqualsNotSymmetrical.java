@@ -107,6 +107,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 			else if (sawCompare)
 				kind = EqualsKindSummary.KindOfEquals.COMPARE_EQUALS;
 			else {
+				if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
 				bugReporter.reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
 			}
 			ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
@@ -192,11 +193,14 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 			
 		if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_0 ) {
 			alwaysFalse = true;
+			 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
 			bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 
 		}
 		if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_1 ) {
 			alwaysTrue = true;
+			 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()))
+					
 			bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 
 		}
@@ -206,7 +210,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 		if (callToInvoke(seen)) {
 			equalsCalls++;
 			checkForComparingClasses();
-			if (dangerDanger) 
+			 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()) && dangerDanger) 
 				bugReporter.reportBug(new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 		}
 		
@@ -314,7 +318,10 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 	    				sawGoodEqualsClass = true;
 	    			} else { 
 	    				sawBadEqualsClass = true;
+	    				 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
+	    					
 						int priority = Priorities.NORMAL_PRIORITY;
+						
 						BugInstance bug = new BugInstance(this,"EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
                         .addClassAndMethod(this);
 						
@@ -341,7 +348,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
                         }
 						bugAccumulator.accumulateBug(
 								bug, this);
-					}
+					}}
 	    		}
 	    	}
 	    	}

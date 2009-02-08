@@ -223,6 +223,8 @@ public class ExecutionPlan {
 			}
 			appendDetectorsToPass(unassignedSet, lastPass);
 		}
+		if (DEBUG)
+			print();
 	}
 
 	/**
@@ -499,23 +501,25 @@ public class ExecutionPlan {
 	}
 
 	private void print() {
+		System.out.println("\nExecution plan:");
 		int passCount = 0;
 		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ++passCount) {
 			System.out.println("Pass " + passCount);
 			AnalysisPass pass = i.next();
 			for (Iterator<DetectorFactory> j = pass.iterator(); j.hasNext(); ) {
 				DetectorFactory factory = j.next();
-				System.out.println("  " + factory.getFullName());
+				System.out.println("  " + factory.getShortName());
 			}
 		}
+		System.out.println();
 	}
 
 	private void dumpGraph(ConstraintGraph graph) {
 		for (Iterator<ConstraintEdge> i = graph.edgeIterator(); i.hasNext();) {
 			ConstraintEdge edge = i.next();
 			System.out.println(
-				edge.getSource().getFactory().getFullName() + " ==> " +
-				edge.getTarget().getFactory().getFullName());
+				edge.getSource().getFactory().getShortName() + " ==> " +
+				edge.getTarget().getFactory().getShortName());
 		}
 	}
 

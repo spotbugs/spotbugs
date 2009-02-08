@@ -31,6 +31,14 @@
                 <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch" />
         </SplitPass>
 	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
+		<Later class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
+	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats"/>
+		<Later class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
+	</WithinPass>
+	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings"/>
 		<Later class="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis"/>
 	</WithinPass>
