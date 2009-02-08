@@ -147,21 +147,25 @@ public final class MarkerUtil {
 		// default - first class line
 		int primaryLine = bug.getPrimarySourceLineAnnotation().getStartLine();
 
-		int fieldLine = -1;
+		// FindBugs needs originally generated primary line in order to find the bug again.
+		// Sometimes this primary line is <= 0, which causes Eclipse editor to ignore it
+		// So we check if we can replace the "wrong" primary line with a "better" start line
+		// If not, we just provide two values - one for Eclipse, another for FindBugs itself.
+
+		int startLine = -1;
 		if (primaryLine <= 0) {
 			FieldAnnotation primaryField = bug.getPrimaryField();
 			if (primaryField != null && primaryField.getSourceLines() != null) {
-				fieldLine = primaryField.getSourceLines().getStartLine();
-				// Eclipse editor starts with 1, otherwise the marker will not be shown in editor at all
-				if(fieldLine > 0) {
-					primaryLine = fieldLine;
-				}
+				startLine = primaryField.getSourceLines().getStartLine();
+			} else {
+				// We have to provide line number, otherwise editor wouldn't show it
+				startLine = 1;
 			}
 		}
 
 		MarkerParameter parameter;
-		if(fieldLine > 0){
-			parameter = new MarkerParameter(bug, resource, fieldLine, primaryLine);
+		if(startLine > 0){
+			parameter = new MarkerParameter(bug, resource, startLine, primaryLine);
 		} else {
 			parameter = new MarkerParameter(bug, resource, primaryLine, primaryLine);
 		}

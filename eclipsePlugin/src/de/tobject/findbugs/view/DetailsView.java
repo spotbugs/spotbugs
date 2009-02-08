@@ -81,6 +81,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class DetailsView extends AbstractFindbugsView {
 
+	private static final int DEFAULT_LINE_IN_EDITOR = 1;
+
 	private String description;
 
 	private String title;
@@ -190,7 +192,7 @@ public class DetailsView extends AbstractFindbugsView {
 	}
 
 	private static void goToLine(IEditorPart editorPart, int lineNumber) {
-		if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+		if (!(editorPart instanceof ITextEditor) || lineNumber < DEFAULT_LINE_IN_EDITOR) {
 			return;
 		}
 		ITextEditor editor = (ITextEditor) editorPart;
@@ -199,8 +201,7 @@ public class DetailsView extends AbstractFindbugsView {
 		if (document != null) {
 			IRegion lineInfo = null;
 			try {
-				// line count internaly starts with 0, and not with 1 like in
-				// GUI
+				// line count internaly starts with 0, and not with 1 like in GUI
 				lineInfo = document.getLineInformation(lineNumber - 1);
 			} catch (BadLocationException e) {
 				// ignored because line number may not really exist in document,
@@ -436,11 +437,11 @@ public class DetailsView extends AbstractFindbugsView {
 		}
 		if (!(theAnnotation instanceof SourceLineAnnotation)) {
 			// return the line from our initial marker
-			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
+			return marker.getAttribute(IMarker.LINE_NUMBER, DEFAULT_LINE_IN_EDITOR);
 		}
 		SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
 		int startLine = sla.getStartLine();
-		return startLine;
+		return startLine <= 0? DEFAULT_LINE_IN_EDITOR : startLine;
 	}
 
 	/**
