@@ -140,8 +140,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			}
 		}
 		try {
-			attributes.put(IMarker.MESSAGE, mp.bug
-					.getMessageWithPriorityTypeAbbreviation());
+			attributes.put(IMarker.MESSAGE, mp.bug.getAbridgedMessage());
 		} catch (RuntimeException e) {
 			FindbugsPlugin.getDefault().logException(e,
 					"Error generating msg for " + mp.bug.getType());
