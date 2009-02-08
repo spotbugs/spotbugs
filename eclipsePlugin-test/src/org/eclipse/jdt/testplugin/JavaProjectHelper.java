@@ -703,7 +703,9 @@ public class JavaProjectHelper {
 		while (entryPaths.hasMoreElements()) {
 			String path = (String) entryPaths.nextElement();
 			IPath name = new Path(path.substring(bundleSourcePath.length()));
-			if (path.endsWith("/")) {
+			if (path.endsWith("/.svn/")) {
+				continue; // Ignore SVN folders
+			} else if (path.endsWith("/")) {
 				IFolder folder = importTarget.getFolder(name);
 				folder.create(false, true, null);
 				importResources(folder, bundle, path);
