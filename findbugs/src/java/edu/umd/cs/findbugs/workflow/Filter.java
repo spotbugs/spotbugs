@@ -128,7 +128,7 @@ public class Filter {
 		FilterCommandLine() {
 
 			addSwitch("-not", "reverse (all) switches for the filter");
-			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for switch source is available");
+			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for which source is available");
 			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
 			addOption("-excludeBugs", "baseline bug collection", "exclude bugs already contained in the baseline bug collection");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
