@@ -16,13 +16,18 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.internal.views.properties.tabbed.view.TabDescriptor;
+import org.eclipse.ui.internal.views.properties.tabbed.view.TabbedPropertyComposite;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
+import org.eclipse.ui.views.properties.tabbed.ITabDescriptor;
+import org.eclipse.ui.views.properties.tabbed.ITabSelectionListener;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
@@ -48,6 +53,11 @@ public class BugPatternSection extends AbstractPropertySection {
 	private ControlAdapter listener;
 	private String oldText;
 	private final PropPageTitleProvider titleProvider;
+	private BugInstance bug;
+	private Point scrollSize;
+	private boolean inResize;
+	private ITabSelectionListener tabSelectionListener;
+	private TabbedPropertySheetPage page;
 
 	/**
 	 *
@@ -59,134 +69,216 @@ public class BugPatternSection extends AbstractPropertySection {
 
 	@Override
 	public void createControls(Composite parent,
-			final TabbedPropertySheetPage tabbedPropertySheetPage) {
-		super.createControls(parent, tabbedPropertySheetPage);
-		rootComposite = getWidgetFactory().createFlatFormComposite(parent);
-		FormData data = new FormData();
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(0, 0);
-		data.bottom = new FormAttachment(100, 0);
-		Composite p = parent.getParent();
-		while(p != null){
-			if(p instanceof ScrolledComposite){
-				listener = new ControlAdapter() {
-					@Override
-					public void controlResized(ControlEvent e) {
-						if(!rootComposite.isDisposed() && rootComposite.isVisible()) {
-							updateDisplay();
-						}
-					}
-				};
-				scrolledComposite = (ScrolledComposite) p;
-				scrolledComposite.addControlListener(listener);
-				break;
-			}
-			p = p.getParent();
-		}
+			final TabbedPropertySheetPage page1) {
+		super.createControls(parent, page1);
+		page = page1;
 
+		createRootComposite(parent);
+
+		initScrolledComposite(parent);
+
+		createBrowser(rootComposite);
+	}
+
+	private void createRootComposite(Composite parent) {
+		rootComposite = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(1, true);
+		layout.marginLeft = -5;
+		layout.marginTop = -5;
+		layout.marginBottom = -5;
+		layout.marginRight = -5;
+		rootComposite.setLayout(layout);
+		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
+
+		tabSelectionListener = new ITabSelectionListener(){
+			/*
+			 * interface defined in Eclipse 3.3
+			 * remove this crap as soon as we stop supporting Eclipse 3.3
+			 */
+			@SuppressWarnings({ "restriction" })
+			public void tabSelected(TabDescriptor tabDescriptor) {
+				if(!rootComposite.isDisposed() && rootComposite.isVisible()
+						&& !tabDescriptor.isSelected()) {
+					updateBrowserSize();
+				}
+			}
+
+			/*
+			 * interface defined in Eclipse 3.4
+			 */
+			public void tabSelected(ITabDescriptor tabDescriptor) {
+				if(!rootComposite.isDisposed() && rootComposite.isVisible()
+						&& !tabDescriptor.isSelected()) {
+					updateBrowserSize();
+				}
+			}
+		};
+		page.addTabSelectionListener(tabSelectionListener);
+	}
+
+	private void createBrowser(Composite parent) {
+		Color background = page.getWidgetFactory().getColors().getBackground();
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.horizontalIndent = 0;
+		data.verticalIndent = 0;
 		try {
-			browser = new Browser(rootComposite, SWT.NO_BACKGROUND);
+			browser = new Browser(parent, SWT.NO_BACKGROUND);
 			browser.setLayoutData(data);
-//			getWidgetFactory().adapt(browser);
+			browser.setBackground(background);
 		} catch (SWTError e) {
 			presentation = new TextPresentation();
-			htmlControl = new StyledText(rootComposite, SWT.READ_ONLY | SWT.H_SCROLL
-					| SWT.V_SCROLL);
+			htmlControl = new StyledText(parent, SWT.READ_ONLY);
 			getWidgetFactory().adapt(htmlControl);
 			htmlControl.setLayoutData(data);
-			htmlControl.setEditable(false);
+			htmlControl.setBackground(background);
 			try {
 				presenter = new HTMLTextPresenter(false);
 			} catch (Exception e2) {
 				FindbugsPlugin plugin = FindbugsPlugin.getDefault();
 				plugin.logException(new RuntimeException(e.getMessage(), e),
-						"Could not create a org.eclipse.swt.widgets.Composite.Browser");
+						"Could not create org.eclipse.swt.widgets.Composite.Browser");
 				plugin
 						.logException(new RuntimeException(e2.getMessage(), e2),
-								"Could not create a org.eclipse.jface.internal.text.html.HTMLTextPresenter");
+								"Could not create org.eclipse.jface.internal.text.html.HTMLTextPresenter");
 			}
 		}
+	}
 
+	private void initScrolledComposite(Composite parent) {
+		scrolledComposite = ((TabbedPropertyComposite)page.getControl()).getScrolledComposite();
+		// same as above but without warning:
+
+//		Composite p = parent.getParent();
+//		while(p != null){
+//			if(p instanceof ScrolledComposite){
+//				scrolledComposite = (ScrolledComposite) p;
+//				break;
+//			}
+//			p = p.getParent();
+//		}
+
+		if(scrolledComposite != null){
+			listener = new ControlAdapter() {
+				@Override
+				public void controlResized(ControlEvent e) {
+					if(!rootComposite.isDisposed() && rootComposite.isVisible()) {
+						updateBrowserSize();
+					}
+				}
+			};
+			scrolledComposite.addControlListener(listener);
+		}
 	}
 
 	protected void updateDisplay() {
-		String html;
-		if(pattern == null){
-			html = "";
-		} else {
-			html = pattern.getDetailHTML();
-			if(html.indexOf("</H1>") > html.indexOf("<H1>")){
-				String text = titleProvider.getTitle(pattern);
-				int idx1 = html.indexOf("<H1>");
-				int idx2 = html.indexOf("</H1>");
-				html = html.substring(0, idx1 + 4) + text + html.substring(idx2);
-			}
-			html = html.replaceAll("H1", "H4");
-		}
-		Rectangle size = scrolledComposite.getClientArea();
-		Composite child = rootComposite;
-		Composite p = rootComposite.getParent();
-		if(size.width > 0 && size.height > 0){
-			while(p != null){
-				if(p instanceof ScrolledComposite){
-					if(!child.getSize().equals(new Point(size.width, size.height))){
-						child.setSize(size.width, size.height);
-					}
-					break;
-				}
-				child = p;
-				p = p.getParent();
-			}
-		}
-
+		String html = null;
 		if (browser != null && !browser.isDisposed()) {
+			html = getHtml();
+			// required even if html is the same: our client area might be changed
+			updateBrowserSize();
+			// avoid flickering if same input
 			if(!html.equals(oldText)) {
 				browser.setText(html);
 			}
 		} else {
-			StyledText myHtmlControl = htmlControl;
-			if (myHtmlControl != null && !myHtmlControl.isDisposed() && presenter != null) {
-				html = presenter.updatePresentation(rootComposite.getShell()
-						.getDisplay(), html, presentation, size.width,
-						size.height);
-				myHtmlControl.setText(html);
+			if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
+				Rectangle clientArea = updateBrowserSize();
+				htmlControl.setSize(clientArea.width - 5, clientArea.height - 5);
+				html = getHtml();
+				try {
+					html = presenter.updatePresentation(rootComposite.getShell()
+						.getDisplay(), html, presentation, clientArea.width, clientArea.height);
+				} catch (StringIndexOutOfBoundsException e) {
+					// I can't understand why it happens, but it happens...
+				}
+				htmlControl.setText(html);
 			}
 		}
 		oldText = html;
 	}
 
+	/**
+	 * Updates the browser/scrolledComposite size to avoid second pair of scrollbars
+	 */
+	private Rectangle updateBrowserSize() {
+		Point newScrollSize = scrolledComposite.getSize();
+		Rectangle clientArea = scrolledComposite.getClientArea();
+		Point rootSize = rootComposite.getSize();
+		if (!inResize && clientArea.width > 0 && clientArea.height > 0
+				&& (!newScrollSize.equals(scrollSize)
+						|| clientArea.width != rootSize.x || clientArea.height != rootSize.y)) {
+
+			scrollSize = newScrollSize;
+			inResize = true;
+			rootComposite.setSize(clientArea.width, clientArea.height);
+			scrolledComposite.setMinSize(clientArea.width, clientArea.height);
+			scrolledComposite.layout();
+			inResize = false;
+		}
+		return clientArea;
+	}
+
+	private String getHtml() {
+		if(pattern == null){
+			return "";
+		}
+		String html = "<b>Pattern:</b> " + pattern.getShortDescription() + " "
+			+ titleProvider.getDetails(pattern) + "<br><br>";
+		html += pattern.getDetailText();
+		if (bug != null) {
+			html = "<b>Bug:</b> " + bug.getAbridgedMessage() + "<br><br>" + html;
+		}
+		return html;
+	}
+
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
 		super.setInput(part, selection);
-		pattern = getPattern(selection);
-		updateDisplay();
+		boolean contentChanged = contentChanged(selection);
+		if(contentChanged) {
+			updateDisplay();
+		}
 	}
 
-	private BugPattern getPattern(ISelection selection) {
+	/**
+	 * Updates pattern and bug from selection
+	 * @return true if the content is changed
+	 */
+	private boolean contentChanged(ISelection selection) {
+		boolean existsBefore = pattern != null;
 		if(!(selection instanceof IStructuredSelection)){
-			return null;
+			bug = null;
+			pattern = null;
+			return existsBefore;
 		}
 		IStructuredSelection selection2 = (IStructuredSelection) selection;
 		Object object = selection2.getFirstElement();
 		if(object instanceof BugGroup){
 			BugGroup group = (BugGroup) object;
 			if(group.getType() == GroupType.Pattern){
-				return (BugPattern) group.getData();
+				bug = null;
+				BugPattern data = (BugPattern) group.getData();
+				BugPattern old = pattern;
+				pattern = data;
+				return old != data;
 			}
 		} else if(object instanceof IMarker){
 			IMarker marker = (IMarker) object;
 			if(MarkerUtil.isFindBugsMarker(marker)) {
-				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-				return bug != null? bug.getBugPattern() : null;
+				BugInstance bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
+				BugInstance old = bug;
+				bug = bugInstance;
+				pattern = bug != null ? bug.getBugPattern() : null;
+				return  old != bugInstance;
 			}
 		}
-		return null;
+		return existsBefore;
 	}
 
 	@Override
 	public void dispose() {
 		if(rootComposite != null && !rootComposite.isDisposed()) {
+			page.removeTabSelectionListener(tabSelectionListener);
 			scrolledComposite.removeControlListener(listener);
 			rootComposite.dispose();
 		}
