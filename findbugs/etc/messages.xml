@@ -4152,8 +4152,8 @@ is generally easy and good defensive programming.
   </BugPattern>
 
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW">
-   <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
-   <LongDescription>Value of {2.givenClass} from previous case is overwritten here due to switch statement fall through</LongDescription>
+   <ShortDescription>Dead store due to switch statement fall through to throw</ShortDescription>
+   <LongDescription>Value of {2.givenClass} from previous case is lost here due to switch statement fall through to throw</LongDescription>
     <Details>
 <![CDATA[
   <p> A value stored in the previous switch case is ignored here due to a switch fall through to a place where
