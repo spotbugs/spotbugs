@@ -32,11 +32,12 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -69,6 +70,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  */
 public class BugInstanceSection extends AbstractPropertySection {
 
+	private static final int DEFAULT_LINE_IN_EDITOR = 1;
 	private Composite rootComposite;
 	private List annotationList;
 	private BugInstance bug;
@@ -84,15 +86,25 @@ public class BugInstanceSection extends AbstractPropertySection {
 	public void createControls(Composite parent,
 			final TabbedPropertySheetPage tabbedPropertySheetPage) {
 		super.createControls(parent, tabbedPropertySheetPage);
+		Color background = tabbedPropertySheetPage.getWidgetFactory().getColors()
+				.getBackground();
+
 		rootComposite = new Composite(parent, SWT.NONE);
-		rootComposite.setLayout(new GridLayout(1, true));
+		GridLayout layout = new GridLayout(1, true);
+		layout.marginLeft = 5;
+		layout.marginTop = 5;
+		rootComposite.setLayout(layout);
 		rootComposite.setSize(SWT.DEFAULT, SWT.DEFAULT);
 
-		Label label = new Label(rootComposite, SWT.NONE);
-		label.setText("Bug annotations:");
-		label.setFont(JFaceResources.getBannerFont());
+		Group group = new Group(rootComposite, SWT.NONE);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		group.setLayout(new GridLayout(1, false));
+		group.setText("Bug annotations:");
 
-		annotationList = new List(rootComposite, SWT.BORDER);
+		rootComposite.setBackground(background);
+		group.setBackground(background);
+
+		annotationList = new List(group, SWT.NONE);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.horizontalIndent = 0;
 		data.verticalIndent = 0;
@@ -242,11 +254,11 @@ public class BugInstanceSection extends AbstractPropertySection {
 		}
 		if (!(theAnnotation instanceof SourceLineAnnotation)) {
 			// return the line from our initial marker
-			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
+			return marker.getAttribute(IMarker.LINE_NUMBER, DEFAULT_LINE_IN_EDITOR);
 		}
 		SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
 		int startLine = sla.getStartLine();
-		return startLine;
+		return startLine <= 0? DEFAULT_LINE_IN_EDITOR : startLine;
 	}
 
 	private void copyInfoToClipboard() {
@@ -267,7 +279,7 @@ public class BugInstanceSection extends AbstractPropertySection {
 	}
 
 	private static void goToLine(IEditorPart editorPart, int lineNumber) {
-		if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+		if (!(editorPart instanceof ITextEditor) || lineNumber < DEFAULT_LINE_IN_EDITOR) {
 			return;
 		}
 		ITextEditor editor = (ITextEditor) editorPart;

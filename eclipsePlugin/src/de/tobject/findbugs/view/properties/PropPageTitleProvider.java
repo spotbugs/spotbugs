@@ -149,9 +149,6 @@ public class PropPageTitleProvider extends BugLabelProvider {
 		}
 		StringBuilder sb = new StringBuilder("Pattern: ");
 		sb.append(pattern.getShortDescription());
-		sb.append(" (").append(pattern.getType());
-		sb.append(", ").append(pattern.getAbbrev()).append(", ");
-		sb.append(pattern.getCategory()).append(")");
 		return sb.toString();
 	}
 
@@ -161,12 +158,30 @@ public class PropPageTitleProvider extends BugLabelProvider {
 		}
 		StringBuilder sb = new StringBuilder("Bug: ");
 		sb.append(bug.getAbridgedMessage());
+		return sb.toString();
+	}
+	String getDetails(BugInstance bug){
+		if(bug == null){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
 		BugPattern pattern = bug.getBugPattern();
 		sb.append(" (").append(pattern.getType());
 		sb.append(", ").append(pattern.getAbbrev()).append(", ");
 		sb.append(pattern.getCategory()).append(", ");
 		sb.append(bug.getPriorityString());
 		sb.append(")");
+		return sb.toString();
+	}
+
+	String getDetails(BugPattern pattern){
+		if(pattern == null){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(" (").append(pattern.getType());
+		sb.append(", ").append(pattern.getAbbrev()).append(", ");
+		sb.append(pattern.getCategory()).append(")");
 		return sb.toString();
 	}
 }
