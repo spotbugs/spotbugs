@@ -157,7 +157,12 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	public void update() {
 		if (markers.size() > 0) {
 			IMarker marker = markers.get(0);
-			FindbugsPlugin.showMarker(marker);
+			if(action.getId().endsWith("Properties")){
+				FindbugsPlugin.showMarker(marker, FindbugsPlugin.DETAILS_VIEW_ID, editor);
+			} else {
+				// TODO show all
+				FindbugsPlugin.showMarker(marker, FindbugsPlugin.TREE_VIEW_ID, editor);
+			}
 			markers.clear();
 		}
 	}

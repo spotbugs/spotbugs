@@ -258,10 +258,14 @@
                icon="icons/detailsView.png"
                class="de.tobject.findbugs.actions.MarkerRulerAction"
                menubarPath="additions"
-               id="de.tobject.findbugs.actions.markerruleraction">
-            <selection
-                  class="org.eclipse.core.resources.IMarker">
-            </selection>
+               id="de.tobject.findbugs.actions.editor.showInProperties">
+         </action>
+         <action
+               class="de.tobject.findbugs.actions.MarkerRulerAction"
+               icon="icons/treeView.png"
+               id="de.tobject.findbugs.actions.editor.showInBugExplorer"
+               label="Show in Bug Explorer"
+               menubarPath="additions">
          </action>
       </viewerContribution>
       <viewerContribution
@@ -474,13 +478,6 @@
             name="FindBugs"
             id="de.tobject.findbugs.view.findBugsCategory">
       </category>
-      <view
-            name="Bug Details"
-            icon="icons/detailsView.png"
-            category="de.tobject.findbugs.view.findBugsCategory"
-            class="de.tobject.findbugs.view.DetailsView"
-            id="de.tobject.findbugs.view.detailsview">
-      </view>
       <view
             category="de.tobject.findbugs.view.findBugsCategory"
             class="de.tobject.findbugs.view.UserAnnotationsView"

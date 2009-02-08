@@ -1,4 +1,7 @@
 Release 1.3.8 - FindBugs team
+- feature: added "Show Bug Details" action to Java editor ruler (Andrei Loskutov)
+- feature: replaced bug details view with standart properties view, supporting Java editor (Andrei Loskutov)
+-- bug details view exists no more, perspective definition changed
 - bugfix: fixed bug explorer (common navigator) errors with Eclipse 3.5 (Andrei Loskutov)
 - feature: filtering by specific pattern from bug explorer (Andrei Loskutov)
 - feature (in progress): bug filtering configuration dialog (Andrei Loskutov)

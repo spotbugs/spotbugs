@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -50,9 +51,11 @@ import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -585,23 +588,23 @@ public final class MarkerUtil {
 			FindbugsPlugin.getDefault().logError("No project for warning marker");
 			return null;
 		}
-		try {
-			if (!isFindBugsMarker(marker)) {
-				// log disabled because otherwise each selection in problems view generates
-				// 6 new errors (we need refactor all bug views to get rid of this).
+		if (!isFindBugsMarker(marker)) {
+			// log disabled because otherwise each selection in problems view generates
+			// 6 new errors (we need refactor all bug views to get rid of this).
 //				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
 //				FindbugsPlugin.getDefault().logError(marker.getType());
 //				FindbugsPlugin.getDefault().logError(FindBugsMarker.NAME);
-				return null;
-			}
+			return null;
+		}
 
-			// We have a FindBugs marker.  Get the corresponding BugInstance.
-			String bugId = marker.getAttribute(FindBugsMarker.UNIQUE_ID, null);
-			if (bugId == null) {
-				FindbugsPlugin.getDefault().logError("Marker does not contain unique id for warning");
-				return null;
-			}
+		// We have a FindBugs marker.  Get the corresponding BugInstance.
+		String bugId = marker.getAttribute(FindBugsMarker.UNIQUE_ID, null);
+		if (bugId == null) {
+			FindbugsPlugin.getDefault().logError("Marker does not contain unique id for warning");
+			return null;
+		}
 
+		try {
 			BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, null);
 			if (bugCollection == null) {
 				FindbugsPlugin.getDefault().logError("Could not get BugCollection for FindBugs marker");
@@ -609,16 +612,17 @@ public final class MarkerUtil {
 			}
 
 			String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-			Integer lineNumber = (Integer)marker.getAttribute(IMarker.LINE_NUMBER);
 			Integer primaryLineNumber = (Integer)marker.getAttribute(FindBugsMarker.PRIMARY_LINE);
 
 			// compatibility
 			if(primaryLineNumber == null){
-				primaryLineNumber = lineNumber;
+				primaryLineNumber = Integer.valueOf(getEditorLine(marker));
 			}
 
-			if (bugType == null || primaryLineNumber == null) {
-				FindbugsPlugin.getDefault().logError("Could not get find attributes for marker " + marker + ": (" + bugId + ", " + bugType +", " + lineNumber+")");
+			if (bugType == null) {
+				FindbugsPlugin.getDefault()
+						.logError("Could not get find attributes for marker " + marker
+										+ ": (" + bugId + ", " + primaryLineNumber + ")");
 				return null;
 			}
 			BugInstance bug = bugCollection.findBug(bugId, bugType, primaryLineNumber.intValue());
@@ -627,6 +631,10 @@ public final class MarkerUtil {
 			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
 			return null;
 		}
+	}
+
+	private static int getEditorLine(IMarker marker) {
+		return marker.getAttribute(IMarker.LINE_NUMBER, -1);
 	}
 
 	/**
@@ -669,6 +677,23 @@ public final class MarkerUtil {
 			}
 		}
 		return markers;
+	}
+
+	public static IMarker getMarkerFromEditor(ITextSelection selection, IEditorPart editor) {
+		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
+		if(resource == null){
+			return null;
+		}
+		// +1 because it counts real lines, but editor shows lines + 1
+		int startLine = selection.getStartLine() + 1;
+		IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
+		for (IMarker marker : allMarkers) {
+			int line = getEditorLine(marker);
+			if(startLine == line){
+				return marker;
+			}
+		}
+		return null;
 	}
 
 	public static IMarker getMarkerFromSingleSelection(ISelection selection) {

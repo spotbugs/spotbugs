@@ -36,8 +36,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -139,35 +137,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 		selectionListener = new MarkerSelectionListener(this);
 		theService.addSelectionListener(selectionListener);
-
-		/*
-		 * XXX get current marker from details view, if it is open
-		 */
-		// must be executed after view initialization, which is not done yet
-		getSite().getShell().getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				syncWithDetailsView();
-			}
-		});
 		return main;
-	}
-
-	/**
-	 * XXX get current marker from details view, if it is open
-	 */
-	private void syncWithDetailsView() {
-		final IMarker marker;
-		IWorkbenchPage page = getSite().getPage();
-		// first find view, if it is already open - this does not steal focus
-		// from editor
-		IViewPart viewPart = page.findView(FindbugsPlugin.DETAILS_VIEW_ID);
-		if (viewPart instanceof DetailsView) {
-			DetailsView detailsView = (DetailsView) viewPart;
-			marker = detailsView.getMarker();
-		} else {
-			marker = null;
-		}
-		showMarker(marker);
 	}
 
 	@Override
@@ -288,7 +258,6 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 
 	@Override
 	public void setFocus() {
-		syncWithDetailsView();
 		designationComboBox.setFocus();
 	}
 

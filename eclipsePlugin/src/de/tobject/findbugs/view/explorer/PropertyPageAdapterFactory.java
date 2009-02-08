@@ -32,9 +32,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IViewReference;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -256,30 +258,9 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IPropertySheetPage.class){
-			if(adaptableObject instanceof BugExplorerView){
-				final BugExplorerView explorerView = (BugExplorerView) adaptableObject;
-				return new TabbedPropertySheetPage(
-						new ITabbedPropertySheetPageContributor() {
-							public String getContributorId() {
-								return explorerView.getViewSite().getId();
-							}
-						});
-			} else
-			if(adaptableObject instanceof JavaEditor) {
-				IWorkbenchPart part = (IWorkbenchPart) adaptableObject;
-				IViewReference[] references = part.getSite().getPage().getViewReferences();
-				for (IViewReference viewReference : references) {
-					if ("de.tobject.findbugs.view.bugtreeview".equals(viewReference.getId())) {
-						IWorkbenchPart workbenchPart = viewReference.getPart(false);
-						if (workbenchPart != null) {
-							return new JavaEditorTabbedPropertySheetPage(workbenchPart);
-						}
-					}
-				}
-				// return nothing to get rid of errors generated through
-				// TabbedPropertySheetAdapterFactory which is adapting to CommonNavigator
-				// class
-				return null;
+			if (adaptableObject instanceof BugExplorerView
+					|| adaptableObject instanceof JavaEditor) {
+				return new BugPropertySheetPage();
 			}
 		}
 		if (adapterType == IPropertySource.class) {
@@ -320,25 +301,30 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		return new Class[] { IPropertySheetPage.class, IPropertySource.class };
 	}
 
-	private static class JavaEditorTabbedPropertySheetPage extends
-			TabbedPropertySheetPage {
-
-		private final IWorkbenchPart workbenchPart;
+	private static class BugPropertySheetPage extends TabbedPropertySheetPage {
 
 		static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
 			public String getContributorId() {
-				return "de.tobject.findbugs.view.bugtreeview";
+				return FindbugsPlugin.TREE_VIEW_ID;
 			}
 		};
 
-		public JavaEditorTabbedPropertySheetPage(IWorkbenchPart workbenchPart) {
+		public BugPropertySheetPage() {
 			super(contributor);
-			this.workbenchPart = workbenchPart;
 		}
 
 		@Override
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			selection = workbenchPart.getSite().getSelectionProvider().getSelection();
+			// adapt text selection in java editor to FB marker
+			if(part instanceof ITextEditor && selection instanceof ITextSelection){
+				IMarker marker = MarkerUtil.getMarkerFromEditor(
+						(ITextSelection) selection, (ITextEditor) part);
+				if(marker != null) {
+					selection = new StructuredSelection(marker);
+				} else {
+					selection = new StructuredSelection();
+				}
+			}
 			super.selectionChanged(part, selection);
 		}
 	}

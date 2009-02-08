@@ -179,9 +179,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 			manager.add(actionShowAnnotationsView);
 		}
 		manager.add(actionShowBugTreeView);
-		if(!(this instanceof DetailsView)) {
-			manager.add(actionShowDetailsView);
-		}
 	}
 
 	protected void fillContextMenu(IMenuManager manager) {
@@ -197,9 +194,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 			manager.add(actionShowAnnotationsView);
 		}
 		manager.add(actionShowBugTreeView);
-		if(!(this instanceof DetailsView)) {
-			manager.add(actionShowDetailsView);
-		}
 	}
 
 	protected void hookDoubleClickAction() {

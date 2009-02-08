@@ -52,11 +52,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -69,7 +74,6 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.Reporter;
-import de.tobject.findbugs.view.DetailsView;
 import de.tobject.findbugs.view.IMarkerSelectionHandler;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugCode;
@@ -89,7 +93,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final String ICON_PATH = "icons/";
 
-	public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.detailsview";
+	public static final String DETAILS_VIEW_ID = IPageLayout.ID_PROP_SHEET;
 	public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
 	public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
@@ -716,13 +720,24 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return loader.loadBugResolutions(xmlFile);
 	}
 
-	public static void showMarker(IMarker marker) {
-		DetailsView.showMarker(marker);
+	public static void showMarker(IMarker marker, String viewId, IWorkbenchPart source) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IViewPart view = page.findView(TREE_VIEW_ID);
-		if(page.isPartVisible(view) && view instanceof IMarkerSelectionHandler){
-			IMarkerSelectionHandler navigator = (IMarkerSelectionHandler) view;
-			navigator.markerSelected(marker);
+		IViewPart view = page.findView(viewId);
+		if(!page.isPartVisible(view)){
+			try {
+				view = page.showView(viewId);
+			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(
+						e, "Could not open view: " + viewId);
+				return;
+			}
+		}
+		if(view instanceof IMarkerSelectionHandler){
+			IMarkerSelectionHandler handler = (IMarkerSelectionHandler) view;
+			handler.markerSelected(marker);
+		} else if(DETAILS_VIEW_ID.equals(viewId) && view instanceof ISelectionListener){
+			ISelectionListener listener = (ISelectionListener) view;
+			listener.selectionChanged(source, new StructuredSelection(marker));
 		}
 	}
 
