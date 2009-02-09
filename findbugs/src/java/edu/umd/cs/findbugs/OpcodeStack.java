@@ -537,6 +537,11 @@ public class OpcodeStack implements Constants2
 			this.specialKind = specialKind;
 		}
 
+		public Item cloneAndSetSpecialKind(@SpecialKind int specialKind) {
+			Item that = new Item(this);
+			that.specialKind = specialKind;
+			return that;
+		}
 		/**
 		 * @return Returns the specialKind.
 		 */
@@ -814,18 +819,11 @@ public class OpcodeStack implements Constants2
 		 Item it, it2, it3;
 		 Constant cons;
 	
+		 // System.out.printf("%3d %3d %s\n", dbc.getPC(), registerTestedFoundToBeNonnegative, OPCODE_NAMES[seen]);
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
 		 
-		 if (registerTestedFoundToBeNonnegative >= 0) {
-				for(Item item : stack) if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
-						item.setSpecialKind(Item.NON_NEGATIVE);
-				for(Item item : lvValues) if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
-						item.setSpecialKind(Item.NON_NEGATIVE);
-		 }
-		 registerTestedFoundToBeNonnegative = -1;
-		 mergeJumps(dbc);
-
+		 precomputation(dbc);
 		 needToMerge = true;
 		 try
 		 {
@@ -1588,6 +1586,23 @@ public class OpcodeStack implements Constants2
 			 }
 		 }
 	 }
+
+	 public void precomputation(DismantleBytecode dbc) {
+	    if (registerTestedFoundToBeNonnegative >= 0) {
+			 	for(int i = 0; i < stack.size(); i++) {
+			    	Item item = stack.get(i);
+			    	if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
+						stack.set(i, item.cloneAndSetSpecialKind(Item.NON_NEGATIVE));
+			    }
+			    for(int i = 0; i < lvValues.size(); i++) {
+			    	Item item = lvValues.get(i);
+			    	if (item != null && item.registerNumber == registerTestedFoundToBeNonnegative) 
+			    		lvValues.set(i, item.cloneAndSetSpecialKind(Item.NON_NEGATIVE));
+			    }
+		 }
+		 registerTestedFoundToBeNonnegative = -1;
+		 mergeJumps(dbc);
+    }
 
 	/**
 	 * @param it
