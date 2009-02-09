@@ -21,11 +21,14 @@ package de.tobject.findbugs.view.explorer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -33,8 +36,12 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.ui.IMemento;
@@ -669,5 +676,62 @@ public class BugContentProvider implements ICommonContentProvider {
 			}
 		}
 		return false;
+	}
+
+	public Set<Object> getShowInTargets(Object obj){
+		Set<Object> supported = new HashSet<Object>();
+		if (obj instanceof BugGroup) {
+			supported.add(obj);
+		} else if (obj instanceof IMarker) {
+			supported.add(obj);
+		} else if (obj instanceof IJavaProject) {
+			return getShowInTargets(((IJavaProject)obj).getProject());
+		} else if (obj instanceof IFile) {
+			IJavaElement javaElement = JavaCore.create((IFile)obj);
+			return getShowInTargets(javaElement);
+		} else if (obj instanceof IFolder) {
+			IJavaElement javaElement = JavaCore.create((IFolder)obj);
+			return getShowInTargets(javaElement);
+		} else if(obj instanceof IStructuredSelection){
+			IStructuredSelection selection = (IStructuredSelection) obj;
+			Iterator<?> iter = selection.iterator();
+			while (iter.hasNext()) {
+				Object object = iter.next();
+				supported.add(getShowInTargets(object));
+			}
+		} else {
+			// TODO think how improve performance for project/package objects?
+			Set<IMarker> markers = MarkerUtil.getMarkers(obj);
+			boolean found = false;
+			main: for (IMarker marker : markers) {
+				BugGroup group = findParent(marker);
+				if(group == null){
+					continue;
+				}
+				List<BugGroup> selfAndParents = getSelfAndParents(group);
+				for (BugGroup bugGroup : selfAndParents) {
+					if(obj.equals(bugGroup.getData())){
+						supported.add(bugGroup);
+						found = true;
+						break main;
+					}
+				}
+			}
+			if(!found){
+				supported.addAll(markers);
+			}
+		}
+		return supported;
+	}
+
+	public Object getAdapter(Class<?> adapter, Object obj) {
+		if(adapter.isAssignableFrom(obj.getClass())){
+			return obj;
+		}
+		if(obj instanceof IAdaptable){
+			IAdaptable adaptable = (IAdaptable) obj;
+			return adaptable.getAdapter(adapter);
+		}
+		return null;
 	}
 }

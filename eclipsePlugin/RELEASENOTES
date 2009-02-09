@@ -1,4 +1,5 @@
 Release 1.3.8 - FindBugs team
+- feature: added "navigate - Show In - Bug Explorer" menu entry in all Java perspectives (Andrei Loskutov)
 - feature: added "Show Bug Details" action to Java editor ruler (Andrei Loskutov)
 - feature: replaced bug details view with standart properties view, supporting Java editor (Andrei Loskutov)
 -- bug details view exists no more, perspective definition changed

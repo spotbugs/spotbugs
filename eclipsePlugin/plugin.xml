@@ -562,7 +562,6 @@
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaHierarchyPerspective"/>
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
 
-         <viewShortcut id="de.tobject.findbugs.view.detailsview"/>
          <viewShortcut id="de.tobject.findbugs.view.userannotationsview"/>
          <viewShortcut id="de.tobject.findbugs.view.bugtreeview"/>
          <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/>
@@ -570,9 +569,29 @@
          <viewShortcut id="org.eclipse.ui.views.BookmarkView"/>
          <viewShortcut id="org.eclipse.ui.views.TaskList"/>
          <viewShortcut id="org.eclipse.ui.views.ProgressView"/>
+         <viewShortcut id="org.eclipse.ui.views.PropertySheet" />
+      </perspectiveExtension>
+
+      <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <viewShortcut id="de.tobject.findbugs.view.bugtreeview" />
+         <showInPart id="de.tobject.findbugs.view.bugtreeview" />
+      </perspectiveExtension>
+
+      <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaBrowsingPerspective">
+         <viewShortcut id="de.tobject.findbugs.view.bugtreeview" />
+         <showInPart id="de.tobject.findbugs.view.bugtreeview" />
+      </perspectiveExtension>
+
+      <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaHierarchyPerspective">
+         <viewShortcut id="de.tobject.findbugs.view.bugtreeview" />
+         <showInPart id="de.tobject.findbugs.view.bugtreeview" />
+      </perspectiveExtension>
+
+      <perspectiveExtension targetID="org.eclipse.pde.ui.PDEPerspective">
+         <viewShortcut id="de.tobject.findbugs.view.bugtreeview" />
+         <showInPart id="de.tobject.findbugs.view.bugtreeview" />
       </perspectiveExtension>
    </extension>
-
 
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">

@@ -21,9 +21,13 @@ package de.tobject.findbugs.view;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -41,7 +45,8 @@ import org.eclipse.ui.navigator.CommonViewer;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 
-public class BugExplorerView extends CommonNavigator implements IMarkerSelectionHandler, ISelectionChangedListener {
+public class BugExplorerView extends CommonNavigator implements IMarkerSelectionHandler,
+		ISelectionChangedListener {
 
 	private MarkerSelectionListener selectionListener;
 
@@ -151,6 +156,28 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 		} else {
 			setContentDescription(getFrameToolTipText(selection));
 		}
+	}
+
+	@Override
+	public void selectReveal(ISelection selection) {
+		if(!(selection instanceof IStructuredSelection)){
+			super.selectReveal(selection);
+			return;
+		}
+		selection = adaptSelection((IStructuredSelection) selection);
+		super.selectReveal(selection);
+	}
+
+	private ISelection adaptSelection(IStructuredSelection selection) {
+		BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
+		Set<Object> accepted = new HashSet<Object>();
+		Iterator<?> iter = selection.iterator();
+		while (iter.hasNext()) {
+			Object object = iter.next();
+			Set<Object> supported = provider.getShowInTargets(object);
+			accepted.addAll(supported);
+		}
+		return new StructuredSelection(accepted.toArray());
 	}
 
 }

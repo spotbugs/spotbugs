@@ -21,6 +21,7 @@
 package de.tobject.findbugs.reporter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -652,27 +653,38 @@ public final class MarkerUtil {
 		IStructuredSelection sSelection = (IStructuredSelection) selection;
 		for (Iterator<?> iter = sSelection.iterator(); iter.hasNext();) {
 			Object next = iter.next();
-			if(next instanceof IMarker){
-				IMarker marker = (IMarker) next;
-				if (!isFindBugsMarker(marker)) {
-					continue;
-				}
+			markers.addAll(getMarkers(next));
+		}
+		return markers;
+	}
+
+	public static Set<IMarker> getMarkers(Object obj){
+		Set<IMarker> markers = new HashSet<IMarker>();
+		if(obj instanceof IMarker){
+			IMarker marker = (IMarker) obj;
+			if (isFindBugsMarker(marker)) {
 				markers.add(marker);
-			} else if (next instanceof BugGroup){
-				BugGroup group = (BugGroup) next;
-				markers.addAll(group.getAllMarkers());
-			} else if (next instanceof IResource){
-				IResource res = (IResource) next;
-				IMarker[] markers2 = MarkerUtil.getAllMarkers(res);
-				for (IMarker marker : markers2) {
-					markers.add(marker);
+			}
+		} else if (obj instanceof BugGroup){
+			BugGroup group = (BugGroup) obj;
+			markers.addAll(group.getAllMarkers());
+		} else if (obj instanceof IResource){
+			IResource res = (IResource) obj;
+			IMarker[] markers2 = MarkerUtil.getAllMarkers(res);
+			for (IMarker marker : markers2) {
+				markers.add(marker);
+			}
+		} else if (obj instanceof IAdaptable){
+			IAdaptable adapter = (IAdaptable) obj;
+			IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+			if(marker == null){
+				IResource resource = (IResource) adapter.getAdapter(IResource.class);
+				if(resource == null){
+					return markers;
 				}
-			} else if (next instanceof IAdaptable){
-				IAdaptable adapter = (IAdaptable) next;
-				IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
-				if (!isFindBugsMarker(marker)) {
-					continue;
-				}
+				IMarker[] markers2 = getMarkers(resource, IResource.DEPTH_INFINITE);
+				markers.addAll(Arrays.asList(markers2));
+			} else if (isFindBugsMarker(marker)) {
 				markers.add(marker);
 			}
 		}
