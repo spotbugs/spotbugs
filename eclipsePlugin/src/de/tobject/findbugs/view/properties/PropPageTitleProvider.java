@@ -178,10 +178,10 @@ public class PropPageTitleProvider extends BugLabelProvider {
 		if(pattern == null){
 			return null;
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append(" (").append(pattern.getType());
-		sb.append(", ").append(pattern.getAbbrev()).append(", ");
-		sb.append(pattern.getCategory()).append(")");
+		StringBuilder sb = new StringBuilder("<b>id:</b> ");
+		sb.append(pattern.getType());
+		sb.append(", <b>type:</b> ").append(pattern.getAbbrev()).append(", <b>category:</b> ");
+		sb.append(pattern.getCategory());
 		return sb.toString();
 	}
 }

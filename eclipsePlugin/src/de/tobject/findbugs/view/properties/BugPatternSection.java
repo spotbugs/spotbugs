@@ -222,13 +222,33 @@ public class BugPatternSection extends AbstractPropertySection {
 		if(pattern == null){
 			return "";
 		}
-		String html = "<b>Pattern:</b> " + pattern.getShortDescription() + " "
-			+ titleProvider.getDetails(pattern) + "<br><br>";
-		html += pattern.getDetailText();
-		if (bug != null) {
-			html = "<b>Bug:</b> " + bug.getAbridgedMessage() + "<br><br>" + html;
+		boolean hasBug = bug != null;
+		StringBuilder text = new StringBuilder();
+		if(!hasBug){
+			text.append("<b>Pattern:</b> ");
+			text.append(pattern.getShortDescription());
+			text.append("<br>");
+		} else {
+			text.append("<b>Pattern</b> ");
+		}
+		text.append(titleProvider.getDetails(pattern));
+		text.append("<br><br>");
+		text.append(pattern.getDetailText());
+		String html = text.toString();
+		if (hasBug) {
+			html = "<b>Bug:</b> " + toSafeHtml(bug.getAbridgedMessage()) + "<br>\n" + html;
 		}
 		return html;
+	}
+
+	private String toSafeHtml(String s) {
+		if(s.indexOf(">") >= 0){
+			s = s.replace(">", "&gt;");
+		}
+		if(s.indexOf("<") >= 0){
+			s = s.replace("<", "&lt;");
+		}
+		return s;
 	}
 
 	@Override
