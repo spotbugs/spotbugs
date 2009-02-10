@@ -108,10 +108,10 @@ public class ReportConfigurationTab extends Composite {
 		// Use the default minimum priority (which is medium)
 		minPriorityCombo.setText(ProjectFilterSettings.DEFAULT_PRIORITY);
 		getCurrentProps().getFilterSettings().setMinPriority(minPriorityCombo.getText());
-
 		// By default, all bug categories are enabled
+		ProjectFilterSettings defaultSettings = ProjectFilterSettings.createDefault();
 		for (Button checkBox: chkEnableBugCategoryList) {
-			checkBox.setSelection(true);
+			checkBox.setSelection(defaultSettings.containsCategory((String) checkBox.getData()));
 		}
 		syncSelectedCategories();
 	}
@@ -136,7 +136,6 @@ public class ReportConfigurationTab extends Composite {
 			Button checkBox = new Button(checkBoxGroup, SWT.CHECK);
 			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
 			checkBox.setSelection(origFilterSettings.containsCategory(category));
-
 			GridData layoutData = new GridData();
 			layoutData.horizontalIndent = 10;
 			checkBox.setLayoutData(layoutData);
