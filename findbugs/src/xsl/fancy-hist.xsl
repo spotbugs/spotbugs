@@ -202,10 +202,12 @@
          var selectedVersion  = -1;
          var selectedPriority = 4;
          var lastVersion      = 0;
+         var includeFixedIntroducedBugs;
 
          var bPackageNamesPopulated = false;
 
          var filterContainerId              = "filterWrapper";
+         var historyControlContainerId      = "historyControlWrapper";
          var messageContainerId             = "messageContainer";
          var summaryContainerId             = "summaryContainer";
          var infoContainerId                = "infoContainer";
@@ -287,10 +289,19 @@
             selectMenu(selectedMenuId);
          }
 
+         // includeFixedBugs callback function
+         function includeFixedIntroducedBugsInHistory() {
+            includeFixedIntroducedBugs =
+              document.findbugsHistoryControlForm.includeFixedIntroducedBugs.checked;
+
+            selectMenu(selectedMenuId);
+         }
+
          // display summary tab
          function displaySummary() {
             resetMessage();
             hide(filterContainerId);
+            hide(historyControlContainerId);
             var container = document.getElementById(summaryContainerId);
             container.style.display="block";
          }
@@ -299,6 +310,7 @@
          function displayInfo() {
             resetMessage();
             hide(filterContainerId);
+            hide(historyControlContainerId);
             var container = document.getElementById(infoContainerId);
             container.style.display="block";
          }
@@ -307,6 +319,7 @@
          function displayHistory() {
             displayMessage("Loading history...");
             hide(filterContainerId);
+            show(historyControlContainerId);
             var container = document.getElementById(historyContainerId);
             var content = "";
             var i=0;
@@ -315,19 +328,48 @@
 
             content += "<table><tr><th>Release</th><th>Bugs</th><th>Bugs p1</th><th>Bugs p2</th><th>Bugs p3</th><th>Bugs Exp.</th></tr>";
 
-            for (i=(versions.length-1); i>0; i--) {
-               v = countBugsVersion(i, 4);
-               t = countTotalBugsVersion(i);
-               o = countFixedButActiveBugsVersion(i);
-               f = countFixedBugsInVersion(i);
-               content += "<tr>";
-               content += "<td class='summary-name'>" + versions[i][1] + "</td>";
-               content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + v[0] + " / -" + f[0] + ") </td>";
-               content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " (+" + v[1] + " / -" + f[1] + ") </td>";
-               content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " (+" + v[2] + " / -" + f[2] + ") </td>";
-               content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " (+" + v[3] + " / -" + f[3] + ") </td>";
-               content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " (+" + v[4] + " / -" + f[4] + ") </td>";
-               content += "</tr>";
+            var aSpan   = "<span title='Bugs introduced in this release that have not been fixed.'>";
+            var fSpan   = "<span title='Bugs fixed in this release.'>";
+            var fiSpan  = "<span title='Bugs introduced in this release that were fixed in later releases.'>";
+            var afiSpan = "<span title='Total number of bugs introduced in this release.'>";
+            var eSpan   = "</span>";
+
+            if(includeFixedIntroducedBugs) {
+                for (i=(versions.length-1); i>0; i--) {
+                    v = countBugsVersion(i, 4);
+                    t = countTotalBugsVersion(i);
+                    o = countFixedButActiveBugsVersion(i);
+                    f = countFixedBugsInVersion(i);
+                    fi = countFixedBugsIntroducedInVersion(i);
+                    content += "<tr>";
+                    content += "<td class='summary-name'>" + versions[i][1] + "</td>";
+                    content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + afiSpan + (v[0] + fi[0]) + eSpan +
+                      " [" + aSpan + v[0] + eSpan + " / " + fiSpan + fi[0] + eSpan + "] " + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-1'> " + (t[1] + o[1]) + " (+" + afiSpan + (v[1] + fi[1]) + eSpan +
+                      " [" + aSpan + v[1] + eSpan + " / " + fiSpan + fi[1] + eSpan + "] " + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-2'> " + (t[2] + o[2]) + " (+" + afiSpan + (v[2] + fi[2]) + eSpan +
+                      " [" + aSpan + v[2] + eSpan + " / " + fiSpan + fi[2] + eSpan + "] " + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-3'> " + (t[3] + o[3]) + " (+" + afiSpan + (v[3] + fi[3]) + eSpan +
+                      " [" + aSpan + v[3] + eSpan + " / " + fiSpan + fi[3] + eSpan + "] " + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-4'> " + (t[4] + o[4]) + " (+" + afiSpan + (v[4] + fi[4]) + eSpan +
+                      " [" + aSpan + v[4] + eSpan + " / " + fiSpan + fi[4] + eSpan + "] " + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
+                    content += "</tr>";
+                }
+            } else {
+                for (i=(versions.length-1); i>0; i--) {
+                    v = countBugsVersion(i, 4);
+                    t = countTotalBugsVersion(i);
+                    o = countFixedButActiveBugsVersion(i);
+                    f = countFixedBugsInVersion(i);
+                    content += "<tr>";
+                    content += "<td class='summary-name'>" + versions[i][1] + "</td>";
+                    content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + aSpan + v[0] + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " (+" + aSpan + v[1] + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " (+" + aSpan + v[2] + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " (+" + aSpan + v[3] + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
+                    content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " (+" + aSpan + v[4] + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
+                    content += "</tr>";
+                }
             }
 
             t = countTotalBugsVersion(0);
@@ -349,6 +391,7 @@
 
          // display list by cat tab
          function displayListByCategories() {
+            hide(historyControlContainerId);
             show(filterContainerId);
             var container = document.getElementById(listByCategoriesContainerId);
             container.innerHTML = "";
@@ -360,6 +403,7 @@
 
          // display list by package tab
          function displayListByPackages() {
+            hide(historyControlContainerId);
             show(filterContainerId);
             var container = document.getElementById(listByPackagesContainerId);
             container.style.display="block";
@@ -780,6 +824,22 @@
             return count;
          }
 
+         function countFixedBugsIntroducedInVersion(version) {
+            var count = [0,0,0,0,0];
+            var last=1000000;
+            for (var x=0; x<fixedBugs.length-1; x++) {
+               var bug = fixedBugs[x];
+
+               var bugP = bug[4];
+
+               if ( version==-1 || version==(bug[5])) {
+                  count[bug[4]]++;
+               }
+            }
+            count[0] = count[1] + count[2] + count[3] + count[4];
+            return count;
+         }
+
          function countFixedButActiveBugsVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
@@ -1005,6 +1065,16 @@
                   </select>
                </div>
             </form>
+         </div>
+         <div id='historyControlWrapper' style='display:none;'>
+           <form name="findbugsHistoryControlForm">
+             <div id='historyControlContainer'>
+               <input type='checkbox' name='includeFixedIntroducedBugs'
+                      value='checked' alt='Include fixed introduced bugs.'
+                      onclick='includeFixedIntroducedBugsInHistory()' />
+               Include counts of introduced bugs that were fixed in later releases.
+             </div>
+           </form>
          </div>
       </div>
          <div id='summaryContainer'          class='displayContainer'>
