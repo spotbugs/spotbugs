@@ -20,14 +20,14 @@ public class TestDefaultAnnotations {
 		requiresFoo(x);
 	}
 	
-	@NoWarning("TQ")
-	public void ok(Object x) {
-		requiresFoo(x);
-	}
-	
-	@NoWarning("TQ")
-	public void ok2(@Foo(when=When.ALWAYS) Object x) {
-		requiresFoo(x);
-	}
+//	@NoWarning("TQ")
+//	public void ok(Object x) {
+//		requiresFoo(x);
+//	}
+//	
+//	@NoWarning("TQ")
+//	public void ok2(@Foo(when=When.ALWAYS) Object x) {
+//		requiresFoo(x);
+//	}
 
 }
