@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -33,7 +35,17 @@ public class LaunchBrowser {
 
 	private static final @CheckForNull Method jnlpShowMethod;
 	private static final Object jnlpShowObject; // will not be null if jnlpShowMethod!=null
+	
+	private static Object desktopObject;
+	private static Method desktopBrowseMethod;
 	static {
+		try {
+			Class <?> desktopClass = Class.forName("java.awt.Desktop");
+			desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
+			desktopBrowseMethod = desktopClass.getMethod("browse", URI.class);
+		}  catch (Exception e) {
+			assert true;
+		} 
 		// attempt to set the JNLP BasicService object and its showDocument(URL) method
 		Method showMethod = null;
 		Object showObject = null;
@@ -64,87 +76,31 @@ public class LaunchBrowser {
 	 * @return true on success
 	 */
 	public static boolean showDocument(URL url) {
-
+		
+		if (desktopObject != null && desktopBrowseMethod != null) try { 
+			return (Boolean) desktopBrowseMethod.invoke(desktopObject, url.toURI());
+		} catch (InvocationTargetException ite) {
+			assert true;
+		} catch (IllegalAccessException iae) {
+			assert true;
+		} catch (IllegalArgumentException e) {
+			assert true;
+        } catch (URISyntaxException e) {
+        	assert true;
+        }
 		if (jnlpShowMethod != null) try {
-			Object result = jnlpShowMethod.invoke(jnlpShowObject, new Object [] { url });
+			Object result = jnlpShowMethod.invoke(jnlpShowObject,  url );
 			return (Boolean.TRUE.equals(result));
 		} catch (InvocationTargetException ite) {
-			// do nothing
+			assert true;
 		} catch (IllegalAccessException iae) {
-			// do nothing
+			assert true;
 		}
-
-		// fallback to exec()
-		return showViaExec( url.toString() ); // or url.toExternalForm()
-	}
-
-
-	/** attempt to show the given URL string.
-	 *  will first attempt via the JNLP api, then will try showViaExec().
-	 * @param url the url srtring
-	 * @return true on success
-	 */
-	public static boolean showDocument(String url) {
-
-		if (jnlpShowMethod != null) {
-			try {
-				new URL(url);
-			} catch (MalformedURLException mue) {
-				return false;
-			}
-			try {
-				Object result = jnlpShowMethod.invoke(jnlpShowObject, new Object[] { url });
-				System.out.println("jnlp result is " + result);
-				return (Boolean.TRUE.equals(result));
-			} catch (InvocationTargetException ite) {
-				assert true; // do nothing
-			} catch (IllegalAccessException iae) {
-				assert true; // do nothing
-			}
-		}
-		// fallback to exec()
-		return showViaExec(url);
-	}
-
-
-	/**
-	 * DISABLED -- simply returns false
-	 * 
-	 * Attempts to show the given URL in the OS's web browser.
-	 * @param url url to show
-	 * @return true if the show operation was successful, false otherwise.
-	 */
-	private static boolean showViaExec(String url){
 		return false;
-		/*
-		String os = SystemProperties.getProperty("os.name").toLowerCase();
-		Runtime rt = Runtime.getRuntime();
-		try{
-			if (os.indexOf( "win" ) >= 0) {
-				// this doesn't support showing urls in the form of "page.html#nameLink" 
-				rt.exec( "rundll32 url.dll,FileProtocolHandler " + url);
-			} else if (os.indexOf( "mac" ) >= 0) {
-				rt.exec( "open " + url);
-			} else if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0) {
-				// Do a best guess on unix until we get a platform independent way
-				// Build a list of browsers to try, in this order.
-				String[] browsers = {"epiphany", "firefox", "mozilla", "konqueror",
-						"netscape","opera","links","lynx"};
-
-				// Build a command string which looks like "browser1 "url" || browser2 "url" ||..."
-				StringBuffer cmd = new StringBuffer();
-				for (int i=0; i<browsers.length; i++)
-					cmd.append( (i==0  ? "" : " || " ) + browsers[i] +" \"" + url + "\" ");
-
-				rt.exec(new String[] { "sh", "-c", cmd.toString() });
-			} else {
-				return false;
-			}
-		}catch (IOException e){
-			return false;
-		}
-		return true;
-		*/
 	}
 
+
+	
+
+	
 }
