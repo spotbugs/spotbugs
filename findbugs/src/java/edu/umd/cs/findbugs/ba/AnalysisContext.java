@@ -178,11 +178,13 @@ public abstract class AnalysisContext {
 
 	ClassSummary classSummary;
 	public ClassSummary getClassSummary() {
-		if (classSummary == null) throw new IllegalStateException("ClassSummary  not set");
+		if (classSummary == null) 
+			throw new IllegalStateException("ClassSummary not set");
 		return classSummary;
 	}
 	public void setClassSummary(@NonNull ClassSummary classSummary) {
-		if (this.classSummary != null) throw new IllegalStateException("ClassSummary  already set");
+		if (this.classSummary != null) 
+			throw new IllegalStateException("ClassSummary already set");
 		this.classSummary = classSummary;
 	}
 	
