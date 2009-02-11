@@ -20,14 +20,13 @@
 package edu.umd.cs.findbugs.xml;
 
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.util.Strings;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import javax.annotation.WillCloseWhenClosed;
-
-import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Write XML to an output stream.
@@ -141,7 +140,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 	}
 
 	public void writeText(String text) throws IOException {
-		out.write(StringEscapeUtils.escapeXml(text));
+		out.write(Strings.escapeXml(text));
 	}
 
 	public void writeCDATA(String cdata) throws IOException {

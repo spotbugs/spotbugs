@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -107,7 +106,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	}
 
 	public String getTextContents() {
-		return StringEscapeUtils.unescapeXml(textBuffer.toString());
+		return Strings.unescapeXml(textBuffer.toString());
 	}
 	
 	private static boolean DEBUG = false;
@@ -398,7 +397,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	bugAnnotation = bugAnnotationWithSourceLines = typeAnnotation = new TypeAnnotation(typeDescriptor);
 	    	String typeParameters = attributes.getValue("typeParameters");
 	    	if (typeParameters != null)
-	    		typeAnnotation.setTypeParameters(StringEscapeUtils.unescapeXml(typeParameters));
+	    		typeAnnotation.setTypeParameters(Strings.unescapeXml(typeParameters));
 
 	    } else if (qName.equals("Method") || qName.equals("Field")) {
 	    	String classname = getRequiredAttribute(attributes, "classname", qName);
@@ -613,7 +612,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String value = attributes.getValue(attrName);
 		if (value == null)
 			throw new SAXException(elementName + " element missing " + attrName + " attribute");
-		return StringEscapeUtils.unescapeXml(value);
+		return Strings.unescapeXml(value);
 	}
 
 

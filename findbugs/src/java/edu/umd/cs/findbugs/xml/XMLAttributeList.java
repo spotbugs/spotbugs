@@ -23,10 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Helper class to format attributes in an XML tag.
@@ -122,7 +121,7 @@ public class XMLAttributeList {
 	 * @return a properly quoted representation of the value
 	 */
 	public static String getQuotedAttributeValue(@NonNull String rawValue) {
-		return StringEscapeUtils.escapeXml(rawValue);
+		return Strings.escapeXml(rawValue);
 	}
 }
 
