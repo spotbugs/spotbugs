@@ -96,7 +96,7 @@ public class BugContentProvider implements ICommonContentProvider {
 		filteredMarkers = new HashSet<IMarker>();
 		resourceFilter = new WorkingSetsFilter();
 		rootElement = new BugGroup(null, null, GroupType.Undefined, null);
-		refreshJob = new RefreshJob("Updating bugs in bug exporer", this);
+		refreshJob = new RefreshJob("Updating bugs in bug explorer", this);
 		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
 		String saved = store.getString(FindBugsConstants.LAST_USED_GROUPING);
 		setGrouping(Grouping.restoreFrom(saved));
