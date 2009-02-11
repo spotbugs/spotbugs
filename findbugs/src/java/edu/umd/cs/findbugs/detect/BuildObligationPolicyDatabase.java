@@ -264,7 +264,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			false,
 			ObligationPolicyDatabaseActionType.DEL,
 			ObligationPolicyDatabaseEntryType.STRONG,
-			connection, statement, resultSet));
+			connection));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
 			new ExactStringMatcher("close"),

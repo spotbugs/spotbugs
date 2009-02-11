@@ -55,7 +55,9 @@ public class ObligationSet {
 
 	public void remove(Obligation obligation) {
 		invalidate();
-		countList[obligation.getId()]--;  // = (short)(count - 1);
+		int count = countList[obligation.getId()];
+		if (count > 0)
+		  countList[obligation.getId()]--;  // = (short)(count - 1);
 	}
 
 	public int getCount(int id) {
