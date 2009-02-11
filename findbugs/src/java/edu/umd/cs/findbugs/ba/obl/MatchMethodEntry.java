@@ -39,7 +39,7 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	private final StringMatcher signature;
 	private final boolean isStatic;
 	private final ObligationPolicyDatabaseActionType action;
-	private final Obligation obligation;
+	private final Obligation [] obligations;
 	private final ObligationPolicyDatabaseEntryType entryType;
 	
 	/**
@@ -48,20 +48,20 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	 * 
 	 * @param xmethod      an XMethod
 	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
-	 * @param obligation   Obligation to be added or deleted
 	 * @param entryType    entry type
+	 * @param obligations   Obligation to be added or deleted
 	 */
 	public MatchMethodEntry(
 			XMethod xmethod,
 			ObligationPolicyDatabaseActionType action,
-			Obligation obligation,
-			ObligationPolicyDatabaseEntryType entryType) {
+			ObligationPolicyDatabaseEntryType entryType,
+			Obligation... obligations) {
 		this(
 			new SubtypeTypeMatcher(xmethod.getClassDescriptor()),
 			new ExactStringMatcher(xmethod.getName()),
 			new ExactStringMatcher(xmethod.getSignature()),
 			xmethod.isStatic(),
-			action, obligation, entryType);
+			action, entryType, obligations);
 	}
 
 	/**
@@ -72,22 +72,22 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 	 * @param signature    StringMatcher to match signature of called method
 	 * @param isStatic     true if matched method must be static, false otherwise
 	 * @param action       ActionType (ADD or DEL, depending on whether obligation is added or deleted)
-	 * @param obligation   Obligation to be added or deleted
 	 * @param entryType    entry type
+	 * @param obligations   Obligation to be added or deleted
 	 */
 	public MatchMethodEntry(
 			TypeMatcher receiverType,
 			StringMatcher methodName, StringMatcher signature,
 			boolean isStatic,
 			ObligationPolicyDatabaseActionType action,
-			Obligation obligation,
-			ObligationPolicyDatabaseEntryType entryType) {
+			ObligationPolicyDatabaseEntryType entryType,
+			Obligation... obligations) {
 		this.receiverType = receiverType;
 		this.methodName = methodName;
 		this.signature = signature;
 		this.isStatic = isStatic;
 		this.action = action;
-		this.obligation = obligation;
+		this.obligations = obligations;
 		this.entryType = entryType;
 	}
 
@@ -106,7 +106,8 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 			&& this.isStatic == isStatic 
 			&& this.receiverType.matches(receiverType)
 			) {
-			actionList.add(new ObligationPolicyDatabaseAction(action, obligation));
+			for(Obligation o : obligations)
+			  actionList.add(new ObligationPolicyDatabaseAction(action, o));
 			return true;
 		}
 		return false;
@@ -114,6 +115,6 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
 	@Override
 	public String toString() {
-		return "(" + receiverType + "," + methodName + "," + signature + "," + isStatic + "," + action + "," + obligation + "," + entryType +  ")";
+		return "(" + receiverType + "," + methodName + "," + signature + "," + isStatic + "," + action + "," + obligations + "," + entryType +  ")";
 	}
 }

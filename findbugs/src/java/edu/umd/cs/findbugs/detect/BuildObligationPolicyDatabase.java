@@ -107,8 +107,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 					database.addEntry(new MatchMethodEntry(
 						xmethod,
 						ObligationPolicyDatabaseActionType.ADD,
-						thisClassObligation,
-						ObligationPolicyDatabaseEntryType.STRONG));
+						ObligationPolicyDatabaseEntryType.STRONG,
+						thisClassObligation));
 				}
 
 				// Is this method marked with @DischargesObligation?
@@ -116,8 +116,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 					database.addEntry(new MatchMethodEntry(
 						xmethod,
 						ObligationPolicyDatabaseActionType.DEL,
-						thisClassObligation,
-						ObligationPolicyDatabaseEntryType.STRONG));
+						ObligationPolicyDatabaseEntryType.STRONG,
+						thisClassObligation));
 				}
 			}
 
@@ -229,32 +229,32 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new RegexStringMatcher("^.*\\)Ljava/sql/Connection;$"),
 			false,
 			ObligationPolicyDatabaseActionType.ADD,
-			connection,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			connection));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
 			new ExactStringMatcher("createStatement"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/Statement;$"),
 			false,
 			ObligationPolicyDatabaseActionType.ADD,
-			statement,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			statement));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Connection")),
 			new ExactStringMatcher("prepareStatement"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"),
 			false,
 			ObligationPolicyDatabaseActionType.ADD,
-			statement,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			statement));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
 			new ExactStringMatcher("executeQuery"),
 			new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"),
 			false,
 			ObligationPolicyDatabaseActionType.ADD,
-			resultSet,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			resultSet));
 		
 		// Add close method entries for database obligation types
 		database.addEntry(new MatchMethodEntry(
@@ -263,24 +263,24 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new ExactStringMatcher("()V"),
 			false,
 			ObligationPolicyDatabaseActionType.DEL,
-			connection,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			connection, statement, resultSet));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.Statement")),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
 			ObligationPolicyDatabaseActionType.DEL,
-			statement,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			statement, resultSet));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.sql.ResultSet")),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
 			ObligationPolicyDatabaseActionType.DEL,
-			resultSet,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			resultSet));
 	}
 
 	/**
@@ -293,16 +293,16 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 			new ExactStringMatcher("<init>"),
 			new RegexStringMatcher(".*"),
 			false, ObligationPolicyDatabaseActionType.ADD,
-			obligation,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			obligation));
 		database.addEntry(new MatchMethodEntry(
 			new SubtypeTypeMatcher(ObjectType.getInstance("java.io." + kind)),
 			new ExactStringMatcher("close"),
 			new ExactStringMatcher("()V"),
 			false,
 			ObligationPolicyDatabaseActionType.DEL,
-			obligation,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			obligation));
 	}
 
 	/**
@@ -319,8 +319,8 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		ObligationPolicyDatabaseEntry entry = new MatchMethodEntry(
 			xmethod,
 			ObligationPolicyDatabaseActionType.DEL,
-			obligation,
-			entryType);
+			entryType,
+			obligation);
 		database.addEntry(entry);
 		if (DEBUG_ANNOTATIONS) {
 			System.out.println("Added entry: " + entry);
@@ -372,13 +372,13 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		database.addEntry(new MatchMethodEntry(
 			xmethod,
 			ObligationPolicyDatabaseActionType.DEL,
-			deletedObligation,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			deletedObligation));
 		database.addEntry(new MatchMethodEntry(
 			xmethod,
 			ObligationPolicyDatabaseActionType.ADD,
-			createdObligation,
-			ObligationPolicyDatabaseEntryType.STRONG));
+			ObligationPolicyDatabaseEntryType.STRONG,
+			createdObligation));
 	}
 
 	private void scanForResourceTypes() {
