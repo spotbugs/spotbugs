@@ -60,15 +60,14 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
 	}
 
     private IViewPart getView(String id){
-        IViewPart part = site.getPage().findView(id);
-        if(part == null){
-            try {
-                part = site.getPage().showView(id);
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Can't open view: " + id);
-            }
+        IViewPart part;
+        try {
+            part = site.getPage().showView(id);
+            return part;
+        } catch (PartInitException e) {
+            FindbugsPlugin.getDefault().logException(e, "Can't open view: " + id);
+            return null;
         }
-        return part;
     }
 
 	public void selectionChanged(IAction action, ISelection selection) {
