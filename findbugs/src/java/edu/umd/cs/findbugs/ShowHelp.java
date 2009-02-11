@@ -28,12 +28,7 @@ import edu.umd.cs.findbugs.gui2.GUI2CommandLine;
  */
 public class ShowHelp {
 	public static void main(String[] args) {
-		// NOTE: this method references classes in findbugsGUI.jar.
-		// Normally, this would not be a good idea (as findbugs.jar is supposed
-		// to be standalone), but this main() method is only
-		// used from the "findbugs" script, which can safely
-		// assume that findbugsGUI.jar is available.
-
+		
 		System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
 		FindBugsFrame.showSynopsis();
 		FindBugs.showSynopsis();

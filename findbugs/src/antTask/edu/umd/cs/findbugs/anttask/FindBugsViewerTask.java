@@ -78,7 +78,6 @@ import edu.umd.cs.findbugs.ExitCodes;
  */
 public class FindBugsViewerTask extends Task {
 
-	private static final String FINDBUGSGUI_JAR = "findbugsGUI.jar";
 	private static final long DEFAULT_TIMEOUT = -1; // ten minutes
 
 	//location to load bug report from
@@ -238,15 +237,6 @@ public class FindBugsViewerTask extends Task {
 			else if (findBugsFindBugs.exists())
 				findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
 			else throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
-
-			File findbugsGuiLibFindBugs = new File(findbugsLib, "findbugsGUI.jar");
-			File findBugsGuiFindBugs =  new File(homeDir, "findbugsGUI.jar");
-			//log("executing using home dir [" + homeDir + "]");
-			if (findbugsGuiLibFindBugs.exists())
-				findbugsEngine.setClasspath(new Path(getProject(), findbugsGuiLibFindBugs.getPath()));
-			else if (findBugsGuiFindBugs.exists())
-				findbugsEngine.setClasspath(new Path(getProject(), findBugsGuiFindBugs.getPath()));
-			else throw new IllegalArgumentException("Can't find findbugsGUI.jar in " + homeDir);
 
 			findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
 			findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());

@@ -44,8 +44,6 @@
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
 	<property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
-	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
-	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
 	<property name="sampleoutput.dir" value="build/sampleoutput"/>
 	<property name="junittests.jar" value="build/junittests.jar"/>
@@ -237,19 +235,12 @@
 				<include name="**/*.properties"/>
 				<include name="**/*.db"/>
 				<include name="**/*.xsl"/>
+				<include name="**/*.png"/>
+				<include name="**/*.html"/>
 
-				<!-- The GUI classes/resources are now housed in findbugs.jar. -->
-				<include name="${pkg.base}/sourceViewer/**/*.class"/>
-				<include name="${pkg.base}/gui/**/*.class"/>
-				<include name="${pkg.base}/gui/**/*.properties"/>
-				<include name="${pkg.base}/gui/**/*.png"/>
-				<include name="${pkg.base}/gui/**/*.html"/>
-				<include name="${pkg.base}/gui2/**/*.class"/>
-				<include name="${pkg.base}/gui2/**/*.properties"/>
-				<include name="${pkg.base}/gui2/**/*.png"/>
-				<include name="${pkg.base}/gui2/**/*.html"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
+				<include name="*.xsd"/>
 				<include name="findbugs.xml"/>
 				<include name="messages*.xml"/>
 			</fileset>
@@ -840,11 +831,7 @@
 	
 	<!-- Generate jnlp jars -->
 	<target name="jnlp" depends="jars">
-		<mkdir dir="${jnlp.dir}/plugin"/>
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
-<!--
-		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
--->
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jsr305.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.1.jar"/>
@@ -854,9 +841,6 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jaxen-1.1.1.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/jFormatString.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/commons-lang-2.4.jar"/>		
-<!--
-		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
--->
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
 			<fileset dir="${jnlp.dir}">
@@ -969,8 +953,6 @@
 		<delete dir="${doc.dir}"/>
 		<delete dir="${web.dir}"/>
 		<delete file="${engine.jar}"/>
-		<delete file="${coreplugin.jar}"/>
-		<delete file="${gui.jar}"/>
 		<delete file="${anttask.jar}" failonerror="false"/>
 	</target>
 
