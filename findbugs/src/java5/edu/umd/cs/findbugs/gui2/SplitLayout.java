@@ -21,10 +21,12 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+
 
 /**
  * @author pugh
@@ -66,6 +68,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 		sourcePanel.setLayout(new BorderLayout());
 		sourceTitle = new JLabel();
 		sourceTitle.setText(edu.umd.cs.findbugs.L10N.getLocalString("txt.source_listing", "<source listing>"));
+		
 		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
 		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
 		sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
@@ -115,6 +118,14 @@ public class SplitLayout implements FindBugsLayoutManager {
 	 */
 	public void setSourceTitle(String title) {
 		sourceTitle.setText(title);
+		
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
+     */
+    public JComponent getSourceTitleComponent() {
+	    return sourceTitle;
+    }
 
 }

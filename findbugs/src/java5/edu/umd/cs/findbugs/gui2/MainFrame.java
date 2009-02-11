@@ -54,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nonnull;
@@ -64,6 +65,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -114,6 +116,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
@@ -123,6 +126,7 @@ import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 @SuppressWarnings("serial")
 
@@ -263,6 +267,16 @@ public class MainFrame extends FBFrame implements LogSync
 		this.guiLayout = factory.getInstance(this);
 		this.comments = new CommentsArea(this);
 		FindBugsDisplayFeatures.setAbridgedMessages(true);
+		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
+		String sf  = SystemProperties.getProperty("findbugs.sourcelink.format");
+		if (sp != null && sf != null) {
+			try {
+			this.sourceFileLinkPattern = Pattern.compile(sp);
+			this.sourceFileLinkFormat = sf;
+			} catch (RuntimeException e) {
+				AnalysisContext.logError("Could not compile pattern " + sp, e);
+			}
+		}
 	}
 
 	/**
@@ -1552,7 +1566,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 void clearSourcePane(){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
-				setSourceTabTitle("Source");				
+				setSourceTab("Source", null);				
 				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
 			}
 		});	
@@ -1800,6 +1814,8 @@ public class MainFrame extends FBFrame implements LogSync
 		return label;
 	}
 
+	Pattern sourceFileLinkPattern;
+	String sourceFileLinkFormat;
 	/**
 	 * @author pugh
 	 */
@@ -2086,13 +2102,58 @@ public class MainFrame extends FBFrame implements LogSync
 	 * Sets the title of the source tabs for either docking or non-docking
 	 * versions.
 	 * @param title
+	 * @param source TODO
 	 */
-	 void setSourceTabTitle(String title){
+	 void setSourceTab(String title, SourceFile source){
+		JComponent label = guiLayout.getSourceTitleComponent();
+		if (label != null) {
+			
+			if (source != null) {
+				String name = source.getFullFileName();
+				java.util.regex.Matcher m = sourceFileLinkPattern.matcher(name);
+				if (m.matches()) {
+				
+                    try {
+                    	URL link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
+	                    addLink(label, link);
+                    } catch (MalformedURLException e) {
+                    	removeLink(label);
+                    }
+					
+					
+				} else {
+					removeLink(label);
+				}
+			} else
+				removeLink(label);
+		}
 		guiLayout.setSourceTitle(title);
-
 	}
 
+	 
+	 
 
+	 URL sourceLink;
+	 boolean listenerAdded = false;
+	 void addLink(JComponent component, URL source) {
+		 this.sourceLink = source;
+		 if (!listenerAdded) {
+			 listenerAdded = true;
+			 component.addMouseListener(new MouseAdapter(){
+				    @Override
+                    public void mouseClicked(MouseEvent e) {
+	                        LaunchBrowser.showDocument(sourceLink);
+                        
+				    	
+				    }
+			 });
+		 }
+		 component.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	 }
+	 void removeLink(JComponent component) {
+		 this.sourceLink = null;
+		 component.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	 }
 
 
 	/**

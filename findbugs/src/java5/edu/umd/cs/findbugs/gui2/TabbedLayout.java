@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+
 
 /**
  * @author pugh
@@ -124,4 +126,11 @@ public class TabbedLayout implements FindBugsLayoutManager {
 
 		return bottomTabs;
 	}
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
+     */
+    public JComponent getSourceTitleComponent() {
+	    return null;
+    }
 }

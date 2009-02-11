@@ -19,35 +19,28 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
+
 
 /**
  * @author pugh
  */
 public interface FindBugsLayoutManager {
 
-	/**
-	 * 
-	 */
-	public abstract JMenu createWindowMenu();
 
-	public abstract void initialize();
+	public JMenu createWindowMenu();
 
-	/**
-	 * 
-	 */
-	public abstract void makeCommentsVisible();
+	public void initialize();
 
-	/**
-	 * 
-	 */
-	public abstract void makeSourceVisible();
+	public void makeCommentsVisible();
 
-	/**
-	 * 
-	 */
-	public abstract void saveState();
+	public void makeSourceVisible();
 
-	public abstract void setSourceTitle(final String title);
+	public void saveState();
+
+	public void setSourceTitle(String title);
+	
+	public JComponent getSourceTitleComponent();
 
 }
