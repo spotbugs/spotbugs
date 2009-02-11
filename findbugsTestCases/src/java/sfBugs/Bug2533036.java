@@ -23,7 +23,14 @@ public class Bug2533036 {
     	this.x = x;
     }
     
-    int foo() {
+    int fooField() {
+    	if (x instanceof Z) {
+    		Z z = (Z) x;
+    		return z.f();
+    	}
+    	return x.hashCode();
+    	}
+      int foo(X x) {
     	if (x instanceof Z) {
     		Z z = (Z) x;
     		return z.f();
