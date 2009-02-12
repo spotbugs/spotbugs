@@ -114,12 +114,17 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				new String[]{"java.io.StringWriter", "java.io.CharArrayWriter", "java.io.PipedWriter"},
 				"OS_OPEN_STREAM"));
 
+		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class",
+				"getResourceAsStream", "(Ljava/lang/String;)Ljava/io/InputStream;",
+				"OS_OPEN_STREAM"));
+		
 		// Ignore socket input and output streams
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket",
 				"getInputStream", "()Ljava/io/InputStream;"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket",
 				"getOutputStream", "()Ljava/io/OutputStream;"));
 
+		
 		// Ignore System.{in,out,err}
 		streamFactoryCollection.add(new StaticFieldLoadStreamFactory("java.io.InputStream",
 				"java.lang.System", "in", "Ljava/io/InputStream;"));

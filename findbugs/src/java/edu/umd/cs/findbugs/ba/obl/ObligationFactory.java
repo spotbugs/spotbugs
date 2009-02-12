@@ -175,6 +175,9 @@ public class ObligationFactory {
 		return null;
 	}
 
+	public Obligation getObligationByName(@DottedClassName String className) {
+		return classNameToObligationMap.get(className);
+	}
 	public ObligationSet createObligationSet() {
 		return new ObligationSet(/*getMaxObligationTypes(), */this);
 	}
