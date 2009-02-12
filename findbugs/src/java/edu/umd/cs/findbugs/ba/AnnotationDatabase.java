@@ -121,7 +121,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	@CheckForNull
 	public AnnotationEnum getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
 
-		AnnotationEnum n = directAnnotations.get(o);
+		AnnotationEnum n = getDirectAnnotation(o);
 		if (n != null)
 			return n;
 
@@ -253,6 +253,14 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		}
 
 	}
+
+	/**
+     * @param o
+     * @return
+     */
+    public AnnotationEnum getDirectAnnotation(final Object o) {
+	    return directAnnotations.get(o);
+    }
 
 	
 
