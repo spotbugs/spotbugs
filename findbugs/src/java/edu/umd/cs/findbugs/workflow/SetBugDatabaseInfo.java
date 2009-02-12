@@ -58,6 +58,7 @@ public class SetBugDatabaseInfo {
 		String exclusionFilterFile;
 
 		boolean withMessages = false;
+		boolean purgeStats = false;
 
 		long revisionTimestamp = 0L;
 
@@ -70,6 +71,7 @@ public class SetBugDatabaseInfo {
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
 			addSwitch("-resetSource", "remove all source search paths");
 			addOption("-source", "directory", "Add this directory to the source search path");
+			addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
 			addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
 			addSwitch("-withMessages", "Add bug descriptions");
@@ -81,6 +83,8 @@ public class SetBugDatabaseInfo {
 				withMessages = true;
 			else if (option.equals("-resetSource"))
 				sourcePaths.clear();
+			else if (option.equals("-purgeStats"))
+				purgeStats = true;
 			else
 				throw new IllegalArgumentException("no option " + option);
 
@@ -134,6 +138,8 @@ public class SetBugDatabaseInfo {
 		}
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
+		if (commandLine.purgeStats)
+			origCollection.getProjectStats().getPackageStats().clear();
 
 		Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
 		if (!commandLine.searchSourcePaths.isEmpty()) {
