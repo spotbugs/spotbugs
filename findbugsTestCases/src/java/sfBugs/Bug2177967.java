@@ -19,60 +19,34 @@ package sfBugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2177967 {
 
-    static class TestReader {
-        String fileName;
+	Properties properties = new Properties();
 
-        public TestReader(String newFileName) {
-            fileName = newFileName;
-        }
+	public void init(Class loader, String propertiesFile) throws IOException {
 
-        /* creates and immediately returns open resource */
-        public FileInputStream getStream() {
-            try {
-                return new FileInputStream(fileName);
-            } catch (IOException ex) {
-                System.out.println("Got IO Execption");
-            }
-            return null;
-        }
-    }
+		// Load the properties from the file
+		InputStream in = loader.getResourceAsStream(propertiesFile);
+		if (in == null) {
+			throw new RuntimeException("Cound not locate " + propertiesFile);
+		}
+		properties.load(in);
 
-    /* ********************
-     * Behavior at filing:
-     *   no warning thrown
-     *
-     * Expected:
-     *  Open stream error for 'in', which is never closed
-     *    (might alternatively/additionally be an OBL warning)
-     * ******************** */
-    @ExpectWarning("OS")
-    public void testMethod(String fileName) {
-        TestReader reader = new TestReader(fileName);
-        byte[] data = new byte[100];
+	}
 
-        // test code adapted from bug report
+	public void init(String propertiesFile) throws IOException {
 
-        // accepts open file stream from inner class
-        FileInputStream in = reader.getStream();
-        if(in == null) {
-            System.out.println("input stream is null!");
-        } else {
-            try{
-                // do something with the stream we just received
-                int read_bytes = in.read(data);
-                if(read_bytes == -1) {
-                    System.out.println("No bytes read");
-                }
-            } catch (IOException e) {
-                System.out.println("Got IO Exception");
-            }
-        }
-        // 'in' is not closed before return
-        return;
-    }
-}
+		// Load the properties from the file
+		InputStream in = new FileInputStream(propertiesFile);
+		if (in == null) {
+			throw new RuntimeException("Cound not locate " + propertiesFile);
+		}
+		properties.load(in);
+
+	}
+	}
