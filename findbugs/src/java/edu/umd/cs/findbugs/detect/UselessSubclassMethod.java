@@ -40,16 +40,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements StatelessDetector {
 
-	public static final int SEEN_NOTHING = 0;
-	public static final int SEEN_PARM = 1;
-	public static final int SEEN_LAST_PARM = 2;
-	public static final int SEEN_INVOKE = 3;
-	public static final int SEEN_RETURN = 4;
-	public static final int SEEN_INVALID = 5;
+	enum State { SEEN_NOTHING, SEEN_PARM, SEEN_LAST_PARM, SEEN_INVOKE, SEEN_RETURN, SEEN_INVALID };
+	
 
 	private BugReporter bugReporter;
 	private String superclassName;
-	private int state;
+	private State state;
 	private int curParm;
 	private int curParmOffset;
 	private int invokePC;
@@ -124,10 +120,10 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				if ((codeBytes.length == 0) || (codeBytes[0] != ALOAD_0))
 					return;
 
-				state = SEEN_NOTHING;
+				state = State.SEEN_NOTHING;
 				invokePC = 0;
 				super.visitCode(obj);
-				if ((state == SEEN_RETURN) && (invokePC != 0)) {
+				if ((state == State.SEEN_RETURN) && (invokePC != 0)) {
 					//Do this check late, as it is potentially expensive
 					Method superMethod = findSuperclassMethod(superclassName, getMethod());
 					if ((superMethod == null) || accessModifiersAreDifferent(getMethod(), superMethod))
@@ -146,7 +142,6 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
 	@Override
 	public void sawOpcode(int seen) {
-		// System.out.printf("%3d %9s %3d\n", getPC(), OPCODE_NAMES[seen], state);
 		switch (state) {
 		case SEEN_NOTHING:
 			if (seen == ALOAD_0) {
@@ -154,16 +149,16 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				curParm = 0;
 				curParmOffset = 1;
 				if (argTypes.length > 0)
-					state = SEEN_PARM;
+					state = State.SEEN_PARM;
 				else
-					state = SEEN_LAST_PARM;
+					state = State.SEEN_LAST_PARM;
 			} else
-				state = SEEN_INVALID;	
+				state = State.SEEN_INVALID;	
 			break;
 
 		case SEEN_PARM:
 			if (curParm >= argTypes.length)
-				state = SEEN_INVALID;
+				state = State.SEEN_INVALID;
 			else {
 				String signature = argTypes[curParm++].getSignature();
 				char typeChar0 = signature.charAt(0);
@@ -176,14 +171,16 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				else if (typeChar0 == 'F') {
 					checkParm(seen, FLOAD_0, FLOAD, 1);
 				}
-				else if (typeChar0 == 'I') {
+				else if (typeChar0 == 'I' || typeChar0 == 'Z' || typeChar0 == 'S' || typeChar0 == 'C' ) {
 					checkParm(seen, ILOAD_0, ILOAD, 1);
 				}
 				else if (typeChar0 == 'J') {
 					checkParm(seen, LLOAD_0, LLOAD, 2);
-				}
-				if ((state != SEEN_INVALID) && (curParm >= argTypes.length))
-					state = SEEN_LAST_PARM;
+				} else 
+					state = State.SEEN_INVALID;
+				
+				if ((state != State.SEEN_INVALID) && (curParm >= argTypes.length))
+					state = State.SEEN_LAST_PARM;
 
 			}
 			break;
@@ -191,36 +188,35 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		case SEEN_LAST_PARM:
 			if ((seen == INVOKENONVIRTUAL) && getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())) {
 				invokePC = getPC();
-				state = SEEN_INVOKE;
+				state = State.SEEN_INVOKE;
 			}
 			else
-				state = SEEN_INVALID;
+				state = State.SEEN_INVALID;
 			break;
 
 		case SEEN_INVOKE:
 			Type returnType = getMethod().getReturnType();
 			char retSigChar0 = returnType.getSignature().charAt(0);
 			if ((retSigChar0 == 'V') && (seen == RETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else if (((retSigChar0 == 'L') || (retSigChar0 == '[')) && (seen == ARETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else if ((retSigChar0 == 'D') && (seen == DRETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else if ((retSigChar0 == 'F') && (seen == FRETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else if ((retSigChar0 == 'I' || retSigChar0 == 'S'  || retSigChar0 == 'C'  || retSigChar0 == 'B'  || retSigChar0 == 'Z' ) && (seen == IRETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else if ((retSigChar0 == 'J') && (seen == LRETURN))
-				state = SEEN_RETURN;
+				state = State.SEEN_RETURN;
 			else
-				state = SEEN_INVALID;
+				state = State.SEEN_INVALID;
 			break;
 
 		case SEEN_RETURN:
-			state = SEEN_INVALID;
+			state = State.SEEN_INVALID;
 			break;
 		}
-		// System.out.printf("  -> %2d\n", state);
 	}
 
 	private void checkParm(int seen, int fastOpBase, int slowOp, int parmSize) {
@@ -228,14 +224,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 			if (seen == (fastOpBase + curParmOffset))
 				curParmOffset += parmSize;
 			else
-				state = SEEN_INVALID;
+				state = State.SEEN_INVALID;
 		}
 		else if (curParmOffset == 0)
-			state = SEEN_INVALID;
+			state = State.SEEN_INVALID;
 		else if ((seen == slowOp) && (getRegisterOperand() == curParmOffset))
 			curParmOffset += parmSize;
 		else
-			state = SEEN_INVALID;
+			state = State.SEEN_INVALID;
 	}
 
 	private Method findSuperclassMethod(String superclassName, Method subclassMethod) 
