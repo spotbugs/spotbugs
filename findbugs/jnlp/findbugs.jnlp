@@ -21,7 +21,6 @@
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
     <jar href="dom4j-1.6.1.jar"/>
-    <jar href="junit.jar"/>
     <jar href="asm-3.1.jar"/>
     <jar href="asm-tree-3.1.jar"/>
     <jar href="asm-commons-3.1.jar"/>
