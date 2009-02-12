@@ -66,6 +66,8 @@ public class TreemapVisualization {
 		if (buggyPackages.contains(superpackage) || interiorPackages.contains(superpackage) || superpackage.length() == 0) {
 			goodCodeCount.add(packageName,classes);
 			goodCodeSize.add(packageName, loc);
+			if (superpackage.length() > 0)
+				interiorPackages.add(superpackage);
 			
 		} else 
 			cleanCode(superpackage, loc,classes);
