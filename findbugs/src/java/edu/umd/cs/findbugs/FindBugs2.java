@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,9 +38,11 @@ import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
@@ -669,6 +672,35 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		Set<ClassDescriptor> badAppClassSet = new HashSet<ClassDescriptor>();
 		HashSet<ClassDescriptor> knownDescriptors = new HashSet<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
 		int count = 0;
+		Set<ClassDescriptor> addedToWorkList = new HashSet<ClassDescriptor>(appClassList);
+
+		// add fields
+		if (false)
+		for(ClassDescriptor classDesc : appClassList) {
+			try {
+				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+				for(XField f  : classNameAndInfo.getXFields()) {
+					String sig = f.getSignature();
+					ClassDescriptor d =
+						DescriptorFactory.createClassDescriptorFromFieldSignature(sig);
+					if (d != null && addedToWorkList.add(d))
+						workList.addLast(d);
+				}
+			} catch (RuntimeException e) {
+				bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
+				if (appClassSet.contains(classDesc)) {
+					badAppClassSet.add(classDesc);
+				}
+			} catch (MissingClassException e) {
+				// Just log it as a missing class
+				bugReporter.reportMissingClass(e.getClassDescriptor());
+				if (appClassSet.contains(classDesc)) {
+					badAppClassSet.add(classDesc);
+				}
+			}
+		}
+		
+		
 		while (!workList.isEmpty()) {
 			if (Thread.interrupted()) {
 	            throw new InterruptedException();
@@ -695,13 +727,16 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			try {
 				XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
 
-				if (classNameAndInfo.getSuperclassDescriptor() != null) {
-					workList.addLast(classNameAndInfo.getSuperclassDescriptor());
+				ClassDescriptor superclassDescriptor = classNameAndInfo.getSuperclassDescriptor();
+				if (superclassDescriptor != null && addedToWorkList.add(superclassDescriptor)) {
+					workList.addLast(superclassDescriptor);
 				}
 
 				for (ClassDescriptor ifaceDesc : classNameAndInfo.getInterfaceDescriptorList()) {
-					workList.addLast(ifaceDesc);
+					if (addedToWorkList.add(ifaceDesc))
+						workList.addLast(ifaceDesc);
 				}
+
 			} catch (RuntimeException e) {
 				bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
 				if (appClassSet.contains(classDesc)) {
