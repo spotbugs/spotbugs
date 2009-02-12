@@ -38,6 +38,9 @@ public class PropPageTitleProvider extends BugLabelProvider {
 	public String getText(Object element) {
 		if(element instanceof IStructuredSelection){
 			IStructuredSelection selection = (IStructuredSelection) element;
+			if(selection.size() > 1){
+				return super.getText(element);
+			}
 			element = selection.getFirstElement();
 		}
 		String title = getTitle(element);
@@ -86,12 +89,12 @@ public class PropPageTitleProvider extends BugLabelProvider {
 		return null;
 	}
 
-	String getTitle(IJavaElement pack){
-		if(pack == null){
+	String getTitle(IJavaElement elem){
+		if(elem == null){
 			return null;
 		}
 		StringBuilder sb = new StringBuilder("Class: ");
-		sb.append(pack.getElementName());
+		sb.append(elem.getElementName());
 		return sb.toString();
 	}
 
@@ -109,7 +112,12 @@ public class PropPageTitleProvider extends BugLabelProvider {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder("Package: ");
-		sb.append(pack.getElementName());
+		String name = pack.getElementName();
+		if(name == null || name.length() == 0){
+			sb.append("default package");
+		} else {
+			sb.append(name);
+		}
 		return sb.toString();
 	}
 

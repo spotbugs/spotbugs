@@ -1015,14 +1015,14 @@
           <propertyTab
                 category="general"
                 id="bug.tab.bugPattern"
-                image="icons/treeView.png"
+                image="icons/detailsView.png"
                 indented="false"
                 label="&gt;"/>
           <propertyTab
                 afterTab="bug.tab.bugPattern"
                 category="general"
                 id="bug.tab.bugInstance"
-                image="icons/buggy-tiny-gray.png"
+                image="icons/runFindbugs.png"
                 indented="false"
                 label="&gt;"/>
           <propertyTab
@@ -1041,6 +1041,14 @@
           <propertyTab
                 category="general"
                 id="bug.tab.bugPatternStandAlone"
+                image="icons/buggy-tiny.png"
+                indented="false"
+                label="&gt;">
+          </propertyTab>
+          <propertyTab
+                afterTab="bug.tab.bugPatternStandAlone"
+                category="general"
+                id="bug.tab.genericGroupTab"
                 image="icons/treeView.png"
                 indented="false"
                 label="&gt;">
@@ -1056,6 +1064,14 @@
                 id="bug.section.Advanced"
                 tab="bug.tab.Advanced">
              <input type="org.eclipse.core.resources.IMarker"/>
+          </propertySection>
+          <propertySection
+                class="de.tobject.findbugs.view.properties.BugGroupSection"
+                id="bug.section.genericGroupTab"
+                tab="bug.tab.genericGroupTab">
+             <input
+                   type="de.tobject.findbugs.view.explorer.BugGroup">
+             </input>
           </propertySection>
           <propertySection
                 class="de.tobject.findbugs.view.properties.BugInstanceSection"

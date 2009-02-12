@@ -100,10 +100,10 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 			}
 		}
 		if(element instanceof IStructuredSelection){
-			return getDescriptionAndMarkersCount(((IStructuredSelection)element).toArray());
+			return getDescriptionAndBugCount(((IStructuredSelection)element).toArray());
 		}
 		if(element instanceof Object[]){
-			return getDescriptionAndMarkersCount((Object[]) element);
+			return getDescriptionAndBugCount((Object[]) element);
 		}
 		return wbProvider.getText(element);
 	}
@@ -115,13 +115,29 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 		return provider.getFilteredMarkersCount(group);
 	}
 
-	private String getDescriptionAndMarkersCount(Object[] objects) {
+	private String getDescriptionAndBugCount(Object[] objects) {
 		if(objects.length == 0){
 			return "Nothing...";
 		}
 		if(objects.length == 1){
 			return getText(objects[0]);
 		}
+		int count = getBugCountsSum(objects);
+		StringBuffer sb = new StringBuffer("Selection contains ");
+		if(count == 1){
+			sb.append("exactly one single bug");
+		} else if(count == 0){
+			sb.append("zero bugs (change filter settings to see more...)");
+		} else {
+			sb.append(count).append(" bugs");
+		}
+		if(isStandalone()){
+			sb.append(" (not filtered)");
+		}
+		return sb.toString();
+	}
+
+	private int getBugCountsSum(Object[] objects) {
 		List<BugGroup> groups = new ArrayList<BugGroup>();
 		List<IMarker> markers = new ArrayList<IMarker>();
 		for (Object object : objects) {
@@ -131,7 +147,7 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 				markers.add((IMarker) object);
 			}
 		}
-		if(groups.size() > 1) {
+		if(groups.size() > 1 && !isStandalone()) {
 			Collections.sort(groups, new Comparator<BugGroup>(){
 				Grouping grouping = getGrouping();
 				public int compare(BugGroup o1, BugGroup o2) {
@@ -173,15 +189,7 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 				count ++;
 			}
 		}
-		StringBuffer sb = new StringBuffer("Selection contains ");
-		if(count == 1){
-			sb.append("exactly one single bug");
-		} else if(count == 0){
-			sb.append("zero bugs (change filter settings to see more...)");
-		} else {
-			sb.append(count).append(" bugs");
-		}
-		return sb.toString();
+		return count;
 	}
 
 	public void init(ICommonContentExtensionSite config) {
@@ -189,7 +197,7 @@ public class BugLabelProvider implements ILabelProvider, IDescriptionProvider, I
 	}
 
 	Grouping getGrouping(){
-		return provider.getGrouping();
+		return provider == null? null : provider.getGrouping();
 	}
 
 	public void addListener(ILabelProviderListener listener) {

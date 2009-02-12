@@ -153,5 +153,5 @@ detector_threshold=2
 effort=max
 excludefilter0=findbugsExclude.xml
 filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false
-filter_settings_neg=MALICIOUS_CODE,NOISE,EXPERIMENTAL|
+filter_settings_neg=MALICIOUS_CODE,EXPERIMENTAL|
 run_at_full_build=false
