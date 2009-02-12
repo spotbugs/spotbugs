@@ -114,6 +114,27 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 				files.add(project);
 			} else {
 				files = ResourceUtils.collectIncremental(resourceDelta);
+				/*
+				 * Here we expect to have only ONE file as a result of a post-save
+				 * trigger. In this case incremental builder should run and analyse 1 file
+				 * again. For some reason, JDT uses "AUTO" kind for such incremental
+				 * compile. Unfortunately, Eclipse also triggers "AUTO" build on startup,
+				 * if it detects that some project files are changed (I think also on team
+				 * update operations). This causes sometimes a real startup slowdown for
+				 * workspaces with many projects. Because we cannot distinguish between
+				 * first and second build, and if "fullBuildEnabled" id OFF, we will
+				 * analyse incrementally ONLY ONE SINGLE FILE. This is not nice, but there
+				 * is no other ways today... May be we can use preferences to define
+				 * "how many" is "incremental"...
+				 */
+				if(files.size() > 1){
+					if(DEBUG){
+						FindbugsPlugin.getDefault().logInfo(
+								"Incremental builder: too many resources to analyse for project "
+										+ project + ", files: " + files);
+					}
+					return;
+				}
 			}
 		} else {
 			files = new ArrayList<IResource>();
