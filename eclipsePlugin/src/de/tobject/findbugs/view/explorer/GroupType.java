@@ -75,7 +75,11 @@ public enum GroupType {
 
 		@Override
 		String getShortDescription(Object id) {
-			return ((IPackageFragment)id).getElementName();
+			String name = ((IPackageFragment)id).getElementName();
+			if(name == null || name.length() == 0){
+				name = "default package";
+			}
+			return name;
 		}
 	}),
 
