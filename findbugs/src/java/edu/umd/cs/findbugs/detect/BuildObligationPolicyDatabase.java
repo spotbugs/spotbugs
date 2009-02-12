@@ -220,7 +220,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 		Obligation javaIoInputStreamObligation = database.getFactory().getObligationByName("java.io.InputStream");
 		database.addEntry(new MatchMethodEntry(
 				new SubtypeTypeMatcher(ObjectType.getInstance("java.lang.Class")),
-				new ExactStringMatcher("getResourceAsString"),
+				new ExactStringMatcher("getResourceAsStream"),
 				new ExactStringMatcher("(Ljava/lang/String;)Ljava/io/InputStream;"),
 				false,
 				ObligationPolicyDatabaseActionType.ADD,
