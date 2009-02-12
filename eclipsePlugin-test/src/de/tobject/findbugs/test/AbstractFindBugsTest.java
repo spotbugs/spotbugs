@@ -227,8 +227,7 @@ public abstract class AbstractFindBugsTest {
 	 * Configures the test project to use the filter file.
 	 */
 	protected void setFilterFile() throws CoreException, IOException {
-		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject(),
-				true);
+		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
 		preferences.setExcludeFilterFiles(Collections
 				.singletonList(getFilterFileLocation()));
 		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
