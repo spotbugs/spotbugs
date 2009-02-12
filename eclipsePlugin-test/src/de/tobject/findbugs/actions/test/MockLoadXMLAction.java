@@ -22,6 +22,12 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.tobject.findbugs.actions.LoadXmlAction;
 
+/**
+ * Test subclass of LoadXmlAction that overrides the opening of the FileDialog for testing
+ * purposes.
+ * 
+ * @author Tomás Pollak
+ */
 public class MockLoadXMLAction extends LoadXmlAction {
 	private final String filePath;
 

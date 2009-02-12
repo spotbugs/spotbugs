@@ -38,19 +38,22 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.junit.After;
 import org.junit.Before;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for FindBugs tests.
  * 
- * @author tpollak
+ * @author Tomás Pollak
  */
 public abstract class AbstractFindBugsTest {
 
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
+	protected static final String FILTER_FILE = "/src/filter.xml";
 	private IJavaProject project;
 
 	public AbstractFindBugsTest() {
@@ -72,8 +75,8 @@ public abstract class AbstractFindBugsTest {
 		addSourceContainer(getJavaProject(), "src");
 
 		// Copy test workspace
-		importResources(getProject().getFolder("src"), FindbugsTestPlugin
-				.getDefault().getBundle(), "/testFiles");
+		importResources(getProject().getFolder("src"), FindbugsTestPlugin.getDefault()
+				.getBundle(), "/testFiles");
 
 		// Compile project
 		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
@@ -81,11 +84,6 @@ public abstract class AbstractFindBugsTest {
 
 		// Start with a clean FindBugs state
 		clearBugsState();
-	}
-
-	protected void clearBugsState() throws CoreException {
-		removeMarkers(getProject());
-		getBugCollection(getProject(), null).clearBugInstances();
 	}
 
 	/**
@@ -116,6 +114,16 @@ public abstract class AbstractFindBugsTest {
 		assertEquals(expected, bugs.getCollection().size());
 	}
 
+	protected void assertExpectedBugs() throws CoreException {
+		assertBugsCount(2, getProject());
+		assertReportedBugs("EI_EXPOSE_REP", 1, getProject());
+		assertReportedBugs("EI_EXPOSE_REP2", 1, getProject());
+	}
+
+	protected void assertNoBugs() throws CoreException {
+		assertBugsCount(0, getProject());
+	}
+
 	/**
 	 * Asserts that there are number of detected bugs of the given type match the given
 	 * expected count.
@@ -142,10 +150,36 @@ public abstract class AbstractFindBugsTest {
 				+ " but seen " + seenBugCount, expectedBugCount, seenBugCount);
 	}
 
+	protected void clearBugsState() throws CoreException {
+		removeMarkers(getProject());
+		getBugCollection(getProject(), null).clearBugInstances();
+	}
+
+	protected FindBugsWorker createFindBugsWorker() throws CoreException {
+		FindBugsWorker worker = new FindBugsWorker(getProject(),
+				new NullProgressMonitor());
+		return worker;
+	}
+
+	/**
+	 * Returns the bug file path of the test project.
+	 * 
+	 * @return The absolute filesystem path of the bugs file.
+	 */
 	protected String getBugsFileLocation() {
 		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
 		String bugsFileLocation = bugsFile.getLocation().toOSString();
 		return bugsFileLocation;
+	}
+
+	/**
+	 * Returns the filter file path of the test project.
+	 * 
+	 * @return The absolute path (relative to the workspace root) of the filter file.
+	 */
+	protected String getFilterFileLocation() {
+		IResource filterFile = getProject().findMember(FILTER_FILE);
+		return filterFile.getFullPath().toPortableString();
 	}
 
 	/**
@@ -185,28 +219,25 @@ public abstract class AbstractFindBugsTest {
 		}
 	}
 
-	protected void assertExpectedBugs() throws CoreException {
-		assertBugsCount(2, getProject());
-		assertReportedBugs("EI_EXPOSE_REP", 1, getProject());
-		assertReportedBugs("EI_EXPOSE_REP2", 1, getProject());
-	}
-
-	protected void assertNoBugs() throws CoreException {
-		assertBugsCount(0, getProject());
-	}
-
-	protected void work(FindBugsWorker worker) throws CoreException {
-		worker.work(Collections.singletonList((IResource) getProject()));
-	}
-
-	protected FindBugsWorker createFindBugsWorker() throws CoreException {
-		FindBugsWorker worker = new FindBugsWorker(getProject(),
-				new NullProgressMonitor());
-		return worker;
-	}
-
 	protected void loadXml(FindBugsWorker worker, String fileName) throws CoreException {
 		worker.loadXml(fileName);
 	}
 
+	/**
+	 * Configures the test project to use the filter file.
+	 */
+	protected void setFilterFile() throws CoreException, IOException {
+		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject(),
+				true);
+		preferences.setExcludeFilterFiles(Collections
+				.singletonList(getFilterFileLocation()));
+		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+	}
+
+	/**
+	 * Runs the FindBugs worker on the test project.
+	 */
+	protected void work(FindBugsWorker worker) throws CoreException {
+		worker.work(Collections.singletonList((IResource) getProject()));
+	}
 }

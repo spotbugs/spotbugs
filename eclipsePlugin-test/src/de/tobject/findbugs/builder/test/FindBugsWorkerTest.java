@@ -18,6 +18,8 @@
  */
 package de.tobject.findbugs.builder.test;
 
+import java.io.IOException;
+
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
@@ -26,7 +28,7 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
 /**
  * This class tests the public methods for FindBugsWorker.
  * 
- * @author tpollak
+ * @author Tomás Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	@Test
@@ -45,5 +47,15 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 		loadXml(createFindBugsWorker(), getBugsFileLocation());
 
 		assertExpectedBugs();
+	}
+
+	@Test
+	public void testFilter() throws CoreException, IOException {
+		assertNoBugs();
+
+		setFilterFile();
+		work(createFindBugsWorker());
+
+		assertNoBugs();
 	}
 }

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 /**
  * This class tests the FindBugsAction.
  * 
- * @author tpollak
+ * @author Tomás Pollak
  */
 public class FindBugsTest extends AbstractFindBugsTest {
 	@Test

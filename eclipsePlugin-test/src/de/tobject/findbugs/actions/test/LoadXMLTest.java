@@ -29,7 +29,7 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
 /**
  * This class tests the LoadXMLAction.
  * 
- * @author tpollak
+ * @author Tomás Pollak
  */
 public class LoadXMLTest extends AbstractFindBugsTest {
 

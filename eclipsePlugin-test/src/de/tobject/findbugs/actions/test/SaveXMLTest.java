@@ -36,7 +36,7 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
 /**
  * This class tests the SaveXMLAction.
  * 
- * @author tpollak
+ * @author Tomás Pollak
  */
 public class SaveXMLTest extends AbstractFindBugsTest {
 
@@ -47,8 +47,7 @@ public class SaveXMLTest extends AbstractFindBugsTest {
 	public void setUp() throws CoreException, IOException {
 		super.setUp();
 		tempFile = File.createTempFile("bugs", "xml");
-		tempFile.delete();
-		assertFalse(tempFile.exists());
+		assertTrue(tempFile.delete());
 	}
 
 	@Override

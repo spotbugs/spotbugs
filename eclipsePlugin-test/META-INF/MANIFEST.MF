@@ -12,7 +12,8 @@ Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse;bundle-version="1.3.8",
  org.eclipse.core.resources;bundle-version="[3.3.0,3.4.2)",
  org.eclipse.ui.ide;bundle-version="3.3.0",
  org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ findbugs
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
