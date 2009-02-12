@@ -52,6 +52,7 @@ public class FileBugHash {
 
 		Map<String, StringBuilder> hashes = new LinkedHashMap<String, StringBuilder>();
 		Map<String, Integer> counts = new HashMap<String, Integer>();
+		Map<String, Integer> sizes = new HashMap<String, Integer>();
 		MessageDigest digest;
 		
 		FileBugHash(BugCollection bugs)  {
@@ -67,6 +68,10 @@ public class FileBugHash {
             			path = cStat.getSourceFile();
             		else path = path.substring(0,path.lastIndexOf('.')+1).replace('.','/') + cStat.getSourceFile();
             		counts.put(path, 0);
+            		Integer size = sizes.get(path);
+            		if (size == null) 
+            			size = 0;
+            		sizes.put(path, size + cStat.size());
             	}
 			for (BugInstance bug : bugs.getCollection()) {
 				SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
@@ -109,6 +114,11 @@ public class FileBugHash {
 			Integer count = counts.get(sourceFile);
 			if (count == null) return 0;
 			return count;
+		}
+		public int getSize(String sourceFile) {
+			Integer size = sizes.get(sourceFile);
+			if (size == null) return 0;
+			return size;
 		}
 		
 
