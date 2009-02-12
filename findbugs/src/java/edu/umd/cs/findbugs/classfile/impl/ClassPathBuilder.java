@@ -623,7 +623,8 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 			if (!NO_PARSE_CLASS_NAMES
 					&& codeBase.isApplicationCodeBase()
-					&& DescriptorFactory.isClassResource(entry.getResourceName())) {
+					&& DescriptorFactory.isClassResource(entry.getResourceName())
+					&& !(entry instanceof SingleFileCodeBaseEntry)) {
 				parseClassName(entry);
 			}
 
