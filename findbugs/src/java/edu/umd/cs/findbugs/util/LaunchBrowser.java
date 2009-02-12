@@ -78,7 +78,8 @@ public class LaunchBrowser {
 	public static boolean showDocument(URL url) {
 		
 		if (desktopObject != null && desktopBrowseMethod != null) try { 
-			return (Boolean) desktopBrowseMethod.invoke(desktopObject, url.toURI());
+			 desktopBrowseMethod.invoke(desktopObject, url.toURI());
+			 return true;
 		} catch (InvocationTargetException ite) {
 			assert true;
 		} catch (IllegalAccessException iae) {
