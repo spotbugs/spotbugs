@@ -146,6 +146,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
 	@Override
 	public void sawOpcode(int seen) {
+		// System.out.printf("%3d %9s %3d\n", getPC(), OPCODE_NAMES[seen], state);
 		switch (state) {
 		case SEEN_NOTHING:
 			if (seen == ALOAD_0) {
@@ -219,6 +220,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 			state = SEEN_INVALID;
 			break;
 		}
+		// System.out.printf("  -> %2d\n", state);
 	}
 
 	private void checkParm(int seen, int fastOpBase, int slowOp, int parmSize) {
