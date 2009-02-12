@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -71,6 +72,12 @@ public class FilterPatternAction implements IObjectActionDelegate {
 		store.setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER, ids);
 		BugContentProvider provider = BugContentProvider.getProvider(navigator
 				.getNavigatorContentService());
+		if(!provider.isBugFilterActive()){
+			MessageDialog.openWarning(null, "Toggle Filter",
+					"Filtering by pattern or type id is currently not enabled!\n"+
+					"To enable it, please select \"Toggle Filters...->Bugs by Id\" filter!");
+
+		}
 		provider.refreshFilters();
 		CommonViewer viewer = navigator.getCommonViewer();
 		Object[] expandedElements = viewer.getExpandedElements();
