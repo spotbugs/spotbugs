@@ -232,6 +232,8 @@
 									<xs:attribute name="path" type="xs:string" use="required"/>
 									<xs:attribute name="bugCount" type="xs:unsignedInt"
 										use="required"/>
+									<xs:attribute name="size" type="xs:unsignedInt"
+										use="optional"/>
 									<xs:attribute name="bugHash" type="xs:string" use="optional"/>
 								</xs:complexType>
 							</xs:element>

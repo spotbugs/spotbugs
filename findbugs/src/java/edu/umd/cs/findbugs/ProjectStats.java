@@ -290,6 +290,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 				xmlOutput.startTag("FileStats");
 				xmlOutput.addAttribute("path", sourceFile);
 				xmlOutput.addAttribute("bugCount", String.valueOf(fileBugHashes.getBugCount(sourceFile)));
+				xmlOutput.addAttribute("size", String.valueOf(fileBugHashes.getSize(sourceFile)));
+				
 				String hash = fileBugHashes.getHash(sourceFile);
 				if (hash != null)
 					xmlOutput.addAttribute("bugHash", hash);
