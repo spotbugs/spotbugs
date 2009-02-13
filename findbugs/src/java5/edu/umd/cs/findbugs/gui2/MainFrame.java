@@ -1814,7 +1814,7 @@ public class MainFrame extends FBFrame implements LogSync
 		return label;
 	}
 
-	Pattern sourceFileLinkPattern;
+	@CheckForNull Pattern sourceFileLinkPattern;
 	String sourceFileLinkFormat;
 	/**
 	 * @author pugh
@@ -2108,7 +2108,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JComponent label = guiLayout.getSourceTitleComponent();
 		if (label != null) {
 			
-			if (source != null) {
+			if (source != null && sourceFileLinkPattern != null) {
 				String name = source.getFullFileName();
 				java.util.regex.Matcher m = sourceFileLinkPattern.matcher(name);
 				if (m.matches()) {
