@@ -3116,6 +3116,7 @@ build file:
 <row><entry></entry>                   <entry>input="&lt;filename&gt;"</entry>         <entry>use file as input</entry></row>
 <row><entry></entry>                   <entry>output="&lt;filename&gt;"</entry>        <entry>output results to file</entry></row>
 <row><entry>-longBugCodes</entry>      <entry>longBugCodes="[true|false]"</entry>      <entry>use the full bug pattern code instead of two-letter abbreviation</entry></row>
+<row><entry></entry>                   <entry>format="text"</entry>                    <entry>generate plain text output with one bug per line (command-line default)</entry></row>
 <row><entry>-html[:stylesheet]</entry> <entry>format="html:&lt;stylesheet&gt;"</entry> <entry>generate output with specified stylesheet (see below), or default.xsl if unspecified</entry></row>
 				</tbody>
 			</tgroup>
@@ -3126,6 +3127,9 @@ build file:
 			or your own XSL stylesheet for the -html/format option.
 			Despite the name of this option, you may specify
 			a stylesheet that emits something other than html.
+			When applying a stylesheet other than those included
+			with FindBugs (listed above), the -html/format option should be used
+			with a path or URL to the stylesheet.
 			</para>
 		</sect2>
 		
