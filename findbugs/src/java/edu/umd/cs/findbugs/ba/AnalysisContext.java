@@ -197,11 +197,17 @@ public abstract class AnalysisContext {
 	FieldSummary fieldSummary;
 	
 	public FieldSummary getFieldSummary() {
-		if (fieldSummary == null) throw new IllegalStateException("FieldSummary  not set");
+		if (fieldSummary == null) {
+			AnalysisContext.logError("Field Summary not set", new IllegalStateException());
+			fieldSummary = new FieldSummary();
+		}
 		return fieldSummary;
 	}
 	public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
-		if (this.fieldSummary != null) throw new IllegalStateException("FieldSummary  already set");
+		if (this.fieldSummary != null) {
+			AnalysisContext.logError("Field Summary already set", new IllegalStateException());
+			this.fieldSummary = fieldSummary;
+		}
 		this.fieldSummary = fieldSummary;
 	}
 	
