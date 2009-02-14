@@ -168,8 +168,17 @@ public abstract class AbstractFindBugsTest {
 	 */
 	protected String getBugsFileLocation() {
 		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
-		String bugsFileLocation = bugsFile.getLocation().toOSString();
-		return bugsFileLocation;
+		return bugsFile.getLocation().toOSString();
+	}
+
+	/**
+	 * Returns the bug file path of the test project.
+	 * 
+	 * @return The absolute path (relative to the workspace root) of the bugs file.
+	 */
+	protected String getBugsFilePath() {
+		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
+		return bugsFile.getFullPath().toPortableString();
 	}
 
 	/**
@@ -177,7 +186,7 @@ public abstract class AbstractFindBugsTest {
 	 * 
 	 * @return The absolute path (relative to the workspace root) of the filter file.
 	 */
-	protected String getFilterFileLocation() {
+	protected String getFilterFilePath() {
 		IResource filterFile = getProject().findMember(FILTER_FILE);
 		return filterFile.getFullPath().toPortableString();
 	}
@@ -224,12 +233,20 @@ public abstract class AbstractFindBugsTest {
 	}
 
 	/**
+	 * Configures the test project to use the baseline bugs file.
+	 */
+	protected void setBaselineBugsFile() throws CoreException, IOException {
+		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+		preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFilePath()));
+		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+	}
+
+	/**
 	 * Configures the test project to use the filter file.
 	 */
 	protected void setFilterFile() throws CoreException, IOException {
 		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		preferences.setExcludeFilterFiles(Collections
-				.singletonList(getFilterFileLocation()));
+		preferences.setExcludeFilterFiles(Collections.singletonList(getFilterFilePath()));
 		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
 	}
 

@@ -32,12 +32,23 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	@Test
-	public void testRunFindBugs() throws CoreException {
+	public void testBaselineBugs() throws CoreException, IOException {
 		assertNoBugs();
 
+		setBaselineBugsFile();
 		work(createFindBugsWorker());
 
-		assertExpectedBugs();
+		assertNoBugs();
+	}
+
+	@Test
+	public void testFilter() throws CoreException, IOException {
+		assertNoBugs();
+
+		setFilterFile();
+		work(createFindBugsWorker());
+
+		assertNoBugs();
 	}
 
 	@Test
@@ -50,12 +61,11 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 	}
 
 	@Test
-	public void testFilter() throws CoreException, IOException {
+	public void testRunFindBugs() throws CoreException {
 		assertNoBugs();
 
-		setFilterFile();
 		work(createFindBugsWorker());
 
-		assertNoBugs();
+		assertExpectedBugs();
 	}
 }
