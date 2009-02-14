@@ -46,7 +46,7 @@ public class SaveXMLTest extends AbstractFindBugsTest {
 	@Before
 	public void setUp() throws CoreException, IOException {
 		super.setUp();
-		tempFile = File.createTempFile("bugs", "xml");
+		tempFile = File.createTempFile("bugs", ".xml");
 		assertTrue(tempFile.delete());
 	}
 
