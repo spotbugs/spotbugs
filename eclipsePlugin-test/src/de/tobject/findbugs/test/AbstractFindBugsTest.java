@@ -18,8 +18,6 @@
  */
 package de.tobject.findbugs.test;
 
-import static de.tobject.findbugs.FindbugsPlugin.*;
-import static de.tobject.findbugs.reporter.MarkerUtil.*;
 import static org.eclipse.core.runtime.jobs.Job.*;
 import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
 import static org.junit.Assert.*;
@@ -27,7 +25,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -41,6 +41,8 @@ import org.junit.Before;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
+import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -94,7 +96,7 @@ public abstract class AbstractFindBugsTest {
 	@After
 	public void tearDown() throws CoreException {
 		// Clean the FindBugs state
-		removeMarkers(getProject());
+		MarkerUtil.removeMarkers(getProject());
 
 		// Delete the test project
 		delete(project);
@@ -110,28 +112,71 @@ public abstract class AbstractFindBugsTest {
 	 * @throws CoreException
 	 */
 	protected void assertBugsCount(int expected, IProject project) throws CoreException {
-		SortedBugCollection bugs = getBugCollection(project, null);
+		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
 		assertEquals(expected, bugs.getCollection().size());
 	}
 
 	protected void assertExpectedBugs() throws CoreException {
-		assertBugsCount(2, getProject());
+		assertBugsCount(getExpectedBugsCount(), getProject());
 		assertReportedBugs("EI_EXPOSE_REP", 1, getProject());
 		assertReportedBugs("EI_EXPOSE_REP2", 1, getProject());
+	}
+
+	protected void assertExpectedMarkers(IMarker[] markers) throws CoreException {
+		assertEquals(getExpectedBugsCount(), markers.length);
+		for (int i = 0; i < markers.length; i++) {
+			assertTrue(markers[i].isSubtypeOf(FindBugsMarker.NAME));
+		}
+		assertMarkers("EI_EXPOSE_REP", 1, markers);
+		assertMarkers("EI_EXPOSE_REP2", 1, markers);
+	}
+
+	protected void assertExpectedMarkers(Set<IMarker> markers) throws CoreException {
+		assertExpectedMarkers(markers.toArray(new IMarker[0]));
+	}
+
+	/**
+	 * Asserts that the number of present markers of the given type match the given
+	 * expected count.
+	 * 
+	 * @param expectedBugType
+	 *            The expected bug type.
+	 * @param expectedBugCount
+	 *            The expected bug type count.
+	 * @param markers
+	 *            The array of markers to assert on.
+	 * @throws CoreException
+	 */
+	protected void assertMarkers(String expectedBugType, int expectedBugTypeCount,
+			IMarker[] markers) throws CoreException {
+		int seenBugTypeCount = 0;
+		for (int i = 0; i < markers.length; i++) {
+			IMarker marker = markers[i];
+			if (expectedBugType.equals(marker.getAttribute(FindBugsMarker.BUG_TYPE))) {
+				seenBugTypeCount++;
+			}
+		}
+		assertEquals("Expected " + expectedBugTypeCount + " of markers "
+				+ expectedBugType + " but seen " + seenBugTypeCount,
+				expectedBugTypeCount, seenBugTypeCount);
 	}
 
 	protected void assertNoBugs() throws CoreException {
 		assertBugsCount(0, getProject());
 	}
 
+	protected void assertNoMarkers(IMarker[] markers) {
+		assertEquals(0, markers.length);
+	}
+
 	/**
-	 * Asserts that there are number of detected bugs of the given type match the given
-	 * expected count.
+	 * Asserts that the number of detected bugs of the given type match the given expected
+	 * count.
 	 * 
 	 * @param expectedBugType
 	 *            The expected bug type.
 	 * @param expectedBugCount
-	 *            The expected bug type.
+	 *            The expected bug type count.
 	 * @param project
 	 *            The IProject that contains the bugs.
 	 * @throws CoreException
@@ -139,7 +184,7 @@ public abstract class AbstractFindBugsTest {
 	protected void assertReportedBugs(String expectedBugType, int expectedBugCount,
 			IProject project) throws CoreException {
 		int seenBugCount = 0;
-		SortedBugCollection bugs = getBugCollection(project, null);
+		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
 		for (Iterator<BugInstance> i = bugs.iterator(); i.hasNext();) {
 			BugInstance bug = i.next();
 			if (expectedBugType.equals(bug.getType())) {
@@ -151,8 +196,8 @@ public abstract class AbstractFindBugsTest {
 	}
 
 	protected void clearBugsState() throws CoreException {
-		removeMarkers(getProject());
-		getBugCollection(getProject(), null).clearBugInstances();
+		MarkerUtil.removeMarkers(getProject());
+		FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
 	}
 
 	protected FindBugsWorker createFindBugsWorker() throws CoreException {
@@ -179,6 +224,10 @@ public abstract class AbstractFindBugsTest {
 	protected String getBugsFilePath() {
 		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
 		return bugsFile.getFullPath().toPortableString();
+	}
+
+	protected int getExpectedBugsCount() {
+		return 2;
 	}
 
 	/**
@@ -228,8 +277,9 @@ public abstract class AbstractFindBugsTest {
 		}
 	}
 
-	protected void loadXml(FindBugsWorker worker, String fileName) throws CoreException {
-		worker.loadXml(fileName);
+	protected void loadXml(FindBugsWorker worker, String bugsFileLocation)
+			throws CoreException {
+		worker.loadXml(bugsFileLocation);
 	}
 
 	/**

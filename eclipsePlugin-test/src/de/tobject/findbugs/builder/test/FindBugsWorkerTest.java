@@ -38,7 +38,7 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 		setBaselineBugsFile();
 		work(createFindBugsWorker());
 
-		assertNoBugs();
+		assertExpectedBugsWithBaseline();
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 		setFilterFile();
 		work(createFindBugsWorker());
 
-		assertNoBugs();
+		assertExpectedBugsWithFilter();
 	}
 
 	@Test
@@ -67,5 +67,13 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
 		work(createFindBugsWorker());
 
 		assertExpectedBugs();
+	}
+
+	private void assertExpectedBugsWithBaseline() throws CoreException {
+		assertNoBugs();
+	}
+
+	private void assertExpectedBugsWithFilter() throws CoreException {
+		assertNoBugs();
 	}
 }
