@@ -337,7 +337,7 @@ after being checked for non-null.  </p>
 <![CDATA[
 <p> Looks for uses of this.getClass().getResource(...), which can give
 unexpected results if the class is extended by a class in
-another package. /p>
+another package. </p>
 
 ]]>
     </Details>
@@ -636,7 +636,7 @@ such as the no-argument String constructor.
     <Details>
 <![CDATA[
 <p> Looks for calls to Number constructors with primitive arguments.
-/p>                      
+</p>                      
 ]]>
     </Details>
   </Detector>
