@@ -40,26 +40,32 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
@@ -69,14 +75,11 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class DetectorConfigurationTab extends Composite {
 
 	private enum COLUMN {
-		BUG_DESCRIPTION,
 		BUG_CODES,
 		BUG_CATEGORIES,
-		BUG_EXPERIMENTAL,
-
 		DETECTOR_NAME,
 		DETECTOR_SPEED,
-		DETECTOR_DEFAULT, UNKNOWN
+		UNKNOWN
 	}
 
 	/**
@@ -99,11 +102,6 @@ public class DetectorConfigurationTab extends Composite {
 			return compare((DetectorFactory)e1, (DetectorFactory)e2);
 		}
 
-		/**
-		 * @param e1
-		 * @param e2
-		 * @return
-		 */
 		public int compare(DetectorFactory factory1, DetectorFactory factory2) {
 			int result = 0;
 			String s1, s2;
@@ -217,45 +215,28 @@ public class DetectorConfigurationTab extends Composite {
 		DetectorFactoryLabelProvider(DetectorConfigurationTab tab) {
 			this.tab = tab;
 		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
-		 */
+
 		public void addListener(ILabelProviderListener listener) {
 			// ignored
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-		 */
 		public void dispose() {
 			// ignored
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-		 */
 		public boolean isLabelProperty(Object element, String property) {
 			return false;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-		 */
 		public void removeListener(ILabelProviderListener listener) {
 			// ignored
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
-		 */
 		public Image getColumnImage(Object element, int columnIndex) {
 			// TODO ignored - but if we have images for different detectors ...
 			return null;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
-		 */
 		public String getColumnText(Object element, int columnIndex) {
 
 			if (!(element instanceof DetectorFactory)) {
@@ -273,24 +254,11 @@ public class DetectorConfigurationTab extends Composite {
 					return tab.getBugsCategories(factory);
 				case DETECTOR_NAME :
 					return factory.getShortName();
-				case BUG_DESCRIPTION :
-					StringBuffer sb = new StringBuffer();
-					Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-					for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
-						BugPattern pattern = iter.next();
-						sb.append(pattern.getShortDescription());
-						if (iter.hasNext()) {
-							sb.append(" | "); //$NON-NLS-1$
-						}
-					}
-					return sb.toString();
 				default :
 					return null;
 			}
 		}
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IColorProvider#getBackground(java.lang.Object)
-		 */
+
 		public Color getBackground(Object element) {
 			if (!(element instanceof DetectorFactory)) {
 				return null;
@@ -309,7 +277,6 @@ public class DetectorConfigurationTab extends Composite {
 		 * @return true if the factory reports bug patterns in one of the
 		 *         currently-enabled bug categories, false if not
 		 */
-
 		private boolean isFactoryVisible(DetectorFactory factory) {
 			Map<DetectorFactory, Boolean> enabledDetectors = tab.propertyPage.getVisibleDetectors();
 			Boolean enabled = enabledDetectors.get(factory);
@@ -328,25 +295,18 @@ public class DetectorConfigurationTab extends Composite {
 			return false;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IColorProvider#getForeground(java.lang.Object)
-		 */
 		public Color getForeground(Object element) {
 			return null;
 		}
-
 	}
 
 	private Map<DetectorFactory, String> factoriesToBugAbbrev;
 	private final FindbugsPropertyPage propertyPage;
 	protected CheckboxTableViewer availableFactoriesTableViewer;
 	private final Map<Integer,COLUMN> columnsMap;
+	private final Button hiddenVisible;
 
-	/**
-	 * @param parent
-	 * @param style
-	 */
-	public DetectorConfigurationTab(TabFolder tabFolder, FindbugsPropertyPage page, int style) {
+	public DetectorConfigurationTab(TabFolder tabFolder, final FindbugsPropertyPage page, int style) {
 		super(tabFolder, style);
 		columnsMap = new HashMap<Integer, COLUMN>();
 		this.propertyPage = page;
@@ -360,15 +320,116 @@ public class DetectorConfigurationTab extends Composite {
 		Label info = new Label(this, SWT.WRAP);
 		info.setText("Disabled detectors will not participate in FindBugs analysis. \n" +
 				"'Grayed out' detectors will run, however they will not report" +
-				" any results to the UI.");
+		" any results to the UI.");
+
+		hiddenVisible = new Button(this, SWT.CHECK);
+		hiddenVisible.setText("Show hidden detectors");
+		hiddenVisible.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				populateAvailableRulesTable(page.getProject());
+			}
+		});
+
+		final SashForm sash = new SashForm(this, SWT.VERTICAL);
+		GridData layoutData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
+				| GridData.GRAB_HORIZONTAL);
+		layoutData.heightHint = 400;
+		layoutData.widthHint = 550;
+
+		sash.setLayoutData(layoutData);
+
 		Table availableRulesTable =
-			createDetectorsTableViewer(this, page.getProject());
+			createDetectorsTableViewer(sash, page.getProject());
 		GridData tableLayoutData = new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL | GridData.GRAB_HORIZONTAL
 				| GridData.GRAB_VERTICAL);
-		tableLayoutData.heightHint = 400;
+		tableLayoutData.heightHint = 300;
 		tableLayoutData.widthHint = 550;
 		availableRulesTable.setLayoutData(tableLayoutData);
+
+		Group group = new Group(sash, SWT.NONE);
+		group.setLayout(new GridLayout());
+		GridData data = new GridData(GridData.FILL_BOTH);
+		group.setLayoutData(data);
+		group.setText("Detector details");
+
+		final Text text = new Text(group, SWT.READ_ONLY | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.WRAP);
+		GridData layoutData2 = new GridData(GridData.FILL_BOTH);
+		text.setLayoutData(layoutData2);
+		text.setBackground(getShell().getDisplay().getSystemColor(
+				SWT.COLOR_LIST_BACKGROUND));
+		sash.setWeights(new int []{3,1});
+
+		availableRulesTable.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				TableItem item = (TableItem) e.item;
+				DetectorFactory factory = (DetectorFactory) item.getData();
+				String description = getDetailedText(factory);
+				text.setText(description);
+			}
+		});
+	}
+
+	private static String getDetailedText(DetectorFactory factory) {
+		if(factory == null){
+			return "";
+		}
+		StringBuffer sb = new StringBuffer(factory.getFullName());
+		sb.append("\n");
+		sb.append(getDescriptionWithoutHtml(factory));
+		sb.append("\n\nReported patterns:\n");
+		Collection<BugPattern> patterns = factory.getReportedBugPatterns();
+		for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
+			BugPattern pattern = iter.next();
+			sb.append(pattern.getType()).append(" ").append(" (").append(
+					pattern.getAbbrev()).append(", ").append(pattern.getCategory())
+					.append("):").append("  ");
+			sb.append(pattern.getShortDescription());
+			if (iter.hasNext()) {
+				sb.append("\n");
+			}
+		}
+		if(patterns.isEmpty()){
+			sb.append("none");
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Tries to trim all the html out of the {@link DetectorFactory#getDetailHTML()}
+	 * return value. See also private {@link PluginLoader} .init() method.
+	 */
+	private static String getDescriptionWithoutHtml(DetectorFactory factory) {
+		String detailHTML = factory.getDetailHTML();
+		// cut beginning and the end of the html document
+		detailHTML = trimHtml(detailHTML, "<BODY>", "</BODY>");
+		// replace any amount of white space with newline inbetween through one space
+		detailHTML = detailHTML.replaceAll("\\s*[\\n]+\\s*", " ");
+		// remove all valid html tags
+		detailHTML = detailHTML.replaceAll("<[a-zA-Z]+>", "");
+		detailHTML = detailHTML.replaceAll("</[a-zA-Z]+>", "");
+		// convert some of the entities which are used in current FB messages.xml
+		detailHTML = detailHTML.replaceAll("&nbsp;", "");
+		detailHTML = detailHTML.replaceAll("&lt;", "<");
+		detailHTML = detailHTML.replaceAll("&gt;", ">");
+		detailHTML = detailHTML.replaceAll("&amp;", "&");
+		return detailHTML.trim();
+	}
+
+	private static String trimHtml(String detailHTML, String startTag, String endTag) {
+		if(detailHTML.indexOf(startTag) > 0){
+			detailHTML = detailHTML.substring(detailHTML.indexOf(startTag) + startTag.length());
+		}
+		if(detailHTML.indexOf(endTag) > 0){
+			detailHTML = detailHTML.substring(0, detailHTML.lastIndexOf(endTag));
+		}
+		return detailHTML;
 	}
 
 	/**
@@ -412,9 +473,6 @@ public class DetectorConfigurationTab extends Composite {
 		syncUserPreferencesWithTable();
 	}
 
-	/**
-	 *
-	 */
 	void refreshTable() {
 		availableFactoriesTableViewer.refresh(true);
 	}
@@ -485,27 +543,23 @@ public class DetectorConfigurationTab extends Composite {
 
 
 		TableColumn factoryNameColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.detectorName"), 150, COLUMN.DETECTOR_NAME);
+				getMessage("property.detectorName"), 250, COLUMN.DETECTOR_NAME);
 		addColumnSelectionListener(sorter, factoryNameColumn, COLUMN.DETECTOR_NAME);
 
 		currentColumnIdx++;
 		TableColumn bugsAbbrevColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.bugCodes"), 80, COLUMN.BUG_CODES);
+				getMessage("property.bugCodes"), 100, COLUMN.BUG_CODES);
 		addColumnSelectionListener(sorter, bugsAbbrevColumn, COLUMN.BUG_CODES);
 
 		currentColumnIdx++;
 		TableColumn speedColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.speed"), 50, COLUMN.DETECTOR_SPEED);
+				getMessage("property.speed"), 75, COLUMN.DETECTOR_SPEED);
 		addColumnSelectionListener(sorter, speedColumn, COLUMN.DETECTOR_SPEED);
 
 		currentColumnIdx++;
 		TableColumn categoryColumn = createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.category"), 100, COLUMN.BUG_CATEGORIES);
+				getMessage("property.category"), 75, COLUMN.BUG_CATEGORIES);
 		addColumnSelectionListener(sorter, categoryColumn, COLUMN.BUG_CATEGORIES);
-
-		currentColumnIdx++;
-		createColumn(currentColumnIdx, factoriesTable,
-				getMessage("property.detectorDescription"), 700, COLUMN.BUG_DESCRIPTION);
 
 		factoriesTable.setLinesVisible(true);
 		factoriesTable.setHeaderVisible(true);
@@ -518,12 +572,6 @@ public class DetectorConfigurationTab extends Composite {
 			new DetectorFactoriesContentProvider());
 		availableFactoriesTableViewer.setLabelProvider(
 			new DetectorFactoryLabelProvider(this));
-		availableFactoriesTableViewer.setColumnProperties(
-			new String[] {
-				COLUMN.BUG_CODES.name(),
-				COLUMN.DETECTOR_NAME.name(),
-				COLUMN.BUG_DESCRIPTION.name()
-				});
 
 		availableFactoriesTableViewer.setSorter(sorter);
 
@@ -577,7 +625,7 @@ public class DetectorConfigurationTab extends Composite {
 			DetectorFactory factory = iterator.next();
 
 			// Only configure non-hidden factories
-			if (factory.isHidden()) {
+			if (factory.isHidden() && !isHiddenVisible()) {
 				continue;
 			}
 
@@ -596,6 +644,10 @@ public class DetectorConfigurationTab extends Composite {
 				itemList[i].setChecked(true);
 			}
 		}
+	}
+
+	private boolean isHiddenVisible() {
+		return hiddenVisible.getSelection();
 	}
 
 	/**
