@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import javax.annotation.WillClose;
 
-public interface BugCollection
+public interface BugCollection extends Iterable<BugInstance>
 {
 	static final String ROOT_ELEMENT_NAME = "BugCollection";
 	static final String SRCMAP_ELEMENT_NAME = "SrcMap";
