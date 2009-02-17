@@ -20,9 +20,7 @@ package de.tobject.findbugs.reporter.test;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -77,8 +75,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
 
 		// Get the markers
 		IMarker marker = getAnyMarker();
-		assertTrue(MarkerUtil.isFiltered(marker, new HashSet(Arrays.asList(
-				"EI_EXPOSE_REP", "EI_EXPOSE_REP2"))));
+		assertTrue(MarkerUtil.isFiltered(marker, getExpectedBugPatterns()));
 	}
 
 	@Test

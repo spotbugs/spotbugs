@@ -23,8 +23,9 @@ import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -34,7 +35,10 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaModelException;
 import org.junit.After;
 import org.junit.Before;
 
@@ -54,6 +58,8 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public abstract class AbstractFindBugsTest {
 
+	private static final String SRC = "src";
+	private static final String TEST_PROJECT = "TestProject";
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
 	protected static final String FILTER_FILE = "/src/filter.xml";
 	private IJavaProject project;
@@ -72,12 +78,12 @@ public abstract class AbstractFindBugsTest {
 	@Before
 	public void setUp() throws CoreException, IOException {
 		// Create the test project
-		project = createJavaProject("TestProject", "bin");
+		project = createJavaProject(TEST_PROJECT, "bin");
 		addRTJar(getJavaProject());
-		addSourceContainer(getJavaProject(), "src");
+		addSourceContainer(getJavaProject(), SRC);
 
 		// Copy test workspace
-		importResources(getProject().getFolder("src"), FindbugsTestPlugin.getDefault()
+		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
 				.getBundle(), "/testFiles");
 
 		// Compile project
@@ -96,7 +102,7 @@ public abstract class AbstractFindBugsTest {
 	@After
 	public void tearDown() throws CoreException {
 		// Clean the FindBugs state
-		MarkerUtil.removeMarkers(getProject());
+		clearBugsState();
 
 		// Delete the test project
 		delete(project);
@@ -185,8 +191,7 @@ public abstract class AbstractFindBugsTest {
 			IProject project) throws CoreException {
 		int seenBugCount = 0;
 		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
-		for (Iterator<BugInstance> i = bugs.iterator(); i.hasNext();) {
-			BugInstance bug = i.next();
+		for (BugInstance bug : bugs) {
 			if (expectedBugType.equals(bug.getType())) {
 				seenBugCount++;
 			}
@@ -224,6 +229,16 @@ public abstract class AbstractFindBugsTest {
 	protected String getBugsFilePath() {
 		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
 		return bugsFile.getFullPath().toPortableString();
+	}
+
+	protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
+		IPackageFragment fragment = getJavaProject().findPackageFragment(
+				new Path("/" + TEST_PROJECT + "/" + SRC));
+		return fragment;
+	}
+
+	protected Set<String> getExpectedBugPatterns() {
+		return new HashSet<String>(Arrays.asList("EI_EXPOSE_REP", "EI_EXPOSE_REP2"));
 	}
 
 	protected int getExpectedBugsCount() {

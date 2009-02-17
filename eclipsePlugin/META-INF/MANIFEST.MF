@@ -46,4 +46,6 @@ Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.builder,
  de.tobject.findbugs.marker,
  de.tobject.findbugs.reporter,
+ de.tobject.findbugs.view,
+ de.tobject.findbugs.view.explorer,
  edu.umd.cs.findbugs.plugin.eclipse.util
