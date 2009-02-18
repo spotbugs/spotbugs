@@ -179,6 +179,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 				bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW", priority)
 				.addClassAndMethod(this).add(deadStore), this);
 			}}
+			clearAll();
 		}
 		
 		
