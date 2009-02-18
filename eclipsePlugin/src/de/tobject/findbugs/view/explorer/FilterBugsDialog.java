@@ -213,6 +213,11 @@ public class FilterBugsDialog extends SelectionDialog {
 	private final TreeContentProvider contentProvider;
 	private final TreeLabelProvider labelProvider;
 
+	/**
+	 * Final result stored after dialog is closed
+	 */
+	private String selectedAsText;
+
 	public FilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns,
 			Set<BugCode> filteredTypes) {
 		super(parentShell);
@@ -260,7 +265,25 @@ public class FilterBugsDialog extends SelectionDialog {
 		sortCheckedElements();
 	}
 
+	@Override
+	public boolean close() {
+		String text = selectedIds.getText();
+		String computed = getSelectedIds();
+		if(text.length() > 0 && !computed.equals(text)){
+			// allow to specify filters using text area (no validation checks yet)
+			// TODO validate text entered by user and throw away invalide/duplicated entries
+			selectedAsText = text;
+		} else {
+			selectedAsText = computed;
+		}
+		return super.close();
+	}
+
 	public String getSelectedIds(){
+		// in case dialog was closed, use well known result
+		if(selectedAsText != null){
+			return selectedAsText;
+		}
 		StringBuilder sb = new StringBuilder();
 		for (Object object : checkedElements) {
 			if(checkList.getGrayed(object)){
@@ -350,7 +373,7 @@ public class FilterBugsDialog extends SelectionDialog {
 		presenter = new HTMLTextPresenter(false);
 
 		Group group2 = createGroup(rightPane, "Filtered pattern types and patterns");
-		selectedIds = new Text(group2, SWT.READ_ONLY | SWT.H_SCROLL
+		selectedIds = new Text(group2, SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
 
 		selectedIds.setLayoutData(new GridData(GridData.FILL_BOTH));
