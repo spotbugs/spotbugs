@@ -3,6 +3,9 @@
  */
 package de.tobject.findbugs.view.properties;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.TextPresentation;
@@ -12,6 +15,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.OpenWindowListener;
+import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
@@ -23,6 +30,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.views.properties.tabbed.view.TabDescriptor;
 import org.eclipse.ui.internal.views.properties.tabbed.view.TabbedPropertyComposite;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
@@ -58,6 +69,8 @@ public class BugPatternSection extends AbstractPropertySection {
 	private boolean inResize;
 	private ITabSelectionListener tabSelectionListener;
 	private TabbedPropertySheetPage page;
+	protected String browserId;
+	private boolean allowUrlChange;
 
 	/**
 	 *
@@ -125,6 +138,25 @@ public class BugPatternSection extends AbstractPropertySection {
 			browser = new Browser(parent, SWT.NO_BACKGROUND);
 			browser.setLayoutData(data);
 			browser.setBackground(background);
+			browser.addOpenWindowListener(new OpenWindowListener() {
+				public void open(WindowEvent event) {
+					event.required = true; // Cancel opening of new windows
+				}
+			});
+			browser.addLocationListener(new LocationListener(){
+				public void changed(LocationEvent event) {
+					// ignore
+				}
+				public void changing(LocationEvent event) {
+					if(allowUrlChange){
+						return;
+					}
+					// disallow changing of property view content
+					event.doit = false;
+					// for any external url clicked by user we should leave property view
+					openBrowserInEditor(event);
+				}
+			});
 		} catch (SWTError e) {
 			presentation = new TextPresentation();
 			htmlControl = new StyledText(parent, SWT.READ_ONLY);
@@ -178,7 +210,9 @@ public class BugPatternSection extends AbstractPropertySection {
 			updateBrowserSize();
 			// avoid flickering if same input
 			if(!html.equals(oldText)) {
+				allowUrlChange = true;
 				browser.setText(html);
+				allowUrlChange = false;
 			}
 		} else {
 			if (htmlControl != null && !htmlControl.isDisposed() && presenter != null) {
@@ -308,5 +342,19 @@ public class BugPatternSection extends AbstractPropertySection {
 	@Override
 	public boolean shouldUseExtraSpace() {
 		return true;
+	}
+
+	private void openBrowserInEditor(LocationEvent event) {
+		IWorkbenchBrowserSupport support= PlatformUI.getWorkbench().getBrowserSupport();
+		try {
+			IWebBrowser newBrowser= support.createBrowser(browserId);
+			browserId = newBrowser.getId();
+			newBrowser.openURL(new URL(event.location));
+			return;
+		} catch (PartInitException e) {
+			FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
+		} catch (MalformedURLException e) {
+			FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
+		}
 	}
 }
