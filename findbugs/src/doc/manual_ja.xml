@@ -36,15 +36,8 @@
 </copyright>
 
 <legalnotice>
-<para>
-This manual is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
-To view a copy of this license, visit
-<ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
-or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
-</para>
-<para>
-The name FindBugs and the FindBugs logo are trademarked by the University of Maryland.
-</para>
+<para>このマニュアルは、クリエイティブ・コモンズ表示-非営利-継承に基づく使用許諾がなされています。使用許諾書をご覧になる場合は、 <ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/deed.ja">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink> にアクセスするか、クリエイティブ・コモンズ(559 Nathan Abbott Way, Stanford, California 94305, USA)に書簡を送付してください。</para>
+<para>名称「FindBugs」および FindBugs のロゴは、メリーランド大学の登録商標です。</para>
 </legalnotice>
 
 <edition>@VERSION@</edition>
@@ -1097,7 +1090,7 @@ Command Line Interface.
 <chapter id="filter">
 <title>フィルターファイル</title>
 
-<para>フィルターファイルを使用することで、特定のクラスやメソッドをバグ報告に含めたりバグ報告から除外したりすることが出来ます。この章では、フィルターファイルの使用方法を説明します。<note>
+<para>フィルターファイルを使用することで、特定のクラスやメソッドをバグ報告に含めたりバグ報告から除外したりすることができます。この章では、フィルターファイルの使用方法を説明します。<note>
 <title>計画されている機能</title>
 <para>フィルターは現在、コマンドラインインタフェースでのみサポートされています。最終的には、フィルターのサポートは GUI にも追加される予定です。</para>
 </note>
@@ -1387,7 +1380,7 @@ Command Line Interface.
        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
-</FindBugsFilter&gt;
+</FindBugsFilter>
 ]]>
 </programlisting>
 
@@ -2165,12 +2158,13 @@ Used to indicate that the nullness of the target is unknown, or my vary in unkno
 <row><entry/>                   <entry>input=&quot;&lt;filename&gt;&quot;</entry>         <entry>入力ファイルを指定します。</entry></row>
 <row><entry/>                   <entry>output=&quot;&lt;filename&gt;&quot;</entry>        <entry>出力ファイルを指定します。</entry></row>
 <row><entry>-longBugCodes</entry>      <entry>longBugCodes=&quot;[true|false]&quot;</entry>      <entry>2 文字のバグ略称の代わりに、省略なしのバグパターンコードを使用します。</entry></row>
+<row><entry/>                   <entry>format=&quot;text&quot;</entry>                    <entry>プレーンテキストの出力が作成されます。1 行につき 1 つのバグが出力されます。コマンドライン時のデフォルトです。</entry></row>
 <row><entry>-html[:stylesheet]</entry> <entry>format=&quot;html:&lt;stylesheet&gt;&quot;</entry> <entry>指定されたスタイルシートを使用して出力が作成されます (下記参照) 。省略した場合は、 default.xsl が使用されます。</entry></row>
 				</tbody>
 			</tgroup>
 		    </table>
 			
-			<para>-html/format オプションには、plain.xsl 、 default.xsl 、 fancy.xsl 、 fancy-hist.xsl または ユーザ自身が作成した XSL スタイルシートのいずれかを指定することができます。オプション名をよそに、 html 以外の形式を出力するスタイルシートを指定することもできます。</para>
+			<para>-html/format オプションには、plain.xsl 、 default.xsl 、 fancy.xsl 、 fancy-hist.xsl または ユーザ自身が作成した XSL スタイルシートのいずれかを指定することができます。オプション名をよそに、 html 以外の形式を出力するスタイルシートを指定することもできます。FindBugs に含まれているスタイルシート(上述)以外のスタイルシートを使用する場合は、オプション -html/format で当該スタイルシートへのパスまたは URL を指定してください。</para>
 		</sect2>
 		
 		<sect2 id="setBugDatabaseInfo">
@@ -2536,19 +2530,9 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 <chapter id="license">
 <title>ライセンス</title>
 
-<para>
-The name FindBugs and the FindBugs logo is trademarked by the University
-of Maryland.
-FindBugs is free software distributed under the terms of the
-<ulink url="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</ulink>.
-You should have received a copy of the license in the file <filename>LICENSE.txt</filename>
-in the &FindBugs; distribution.
-</para>
+<para>名称「FindBugs」および FindBugs のロゴは、メリーランド大学の登録商標です。FindBugs はフリーソフトウェアであり、 <ulink url="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</ulink> の条件で配布されています。使用承諾書を入手したい場合は、 &FindBugs; 配布物に含まれる <filename>LICENSE.txt</filename> ファイルを参照してください。</para>
 
-<para>
-You can find the latest version of FindBugs, along with its source code, from the
-<ulink url="@WEBSITE@">FindBugs web page</ulink>.
-</para>
+<para>最新バージョンの FindBugs および そのソースコードは <ulink url="@WEBSITE@">FindBugs web ページ</ulink> で入手できます。</para>
 
 </chapter>
 
