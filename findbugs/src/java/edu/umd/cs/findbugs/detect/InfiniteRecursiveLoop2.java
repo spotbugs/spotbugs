@@ -191,7 +191,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 
 		if (report) {
 			JavaClass javaClass = classContext.getJavaClass();
-			BugInstance warning = new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
+			BugInstance warning = new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 					.addClassAndMethod(javaClass, method)
 					.addSourceLine(classContext, method, thrower);
 			bugReporter.reportBug(warning);
@@ -326,7 +326,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 			}
 			if (top.equals(next)) {
 				JavaClass javaClass = classContext.getJavaClass();
-				BugInstance warning = new BugInstance("IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
+				BugInstance warning = new BugInstance(this, "IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
 					.addClassAndMethod(javaClass, method)
 					.addSourceLine(classContext, method, thrower);
 				bugReporter.reportBug(warning);

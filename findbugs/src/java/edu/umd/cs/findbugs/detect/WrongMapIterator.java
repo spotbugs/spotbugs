@@ -225,7 +225,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
 				&&  ("(Ljava/lang/Object;)Ljava/lang/Object;".equals(getSigConstantOperand()))) {
 					MethodAnnotation ma = MethodAnnotation.fromVisitedMethod(this);
 					bugAccumulator.accumulateBug(
-						new BugInstance("WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY)
+						new BugInstance(this, "WMI_WRONG_MAP_ITERATOR", NORMAL_PRIORITY)
 														.addClass(this)
 														.addMethod(ma),this);
 					state = SAW_NOTHING;

@@ -61,7 +61,7 @@ public class UseObjectEquals extends OpcodeStackDetector implements StatelessDet
 								if (!AnalysisContext.currentAnalysisContext().isApplicationClass(cls))
 									return;
 
-								bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, "UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
 									.addClassAndMethod(this)
 									.addSourceLine(this));	
 							}

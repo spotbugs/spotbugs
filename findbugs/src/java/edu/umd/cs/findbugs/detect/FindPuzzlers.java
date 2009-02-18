@@ -197,7 +197,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 
 			if (item0.isArray() || item1.isArray()) {
-				bugAccumulator.accumulateBug(new BugInstance("EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+				bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 				.addClassAndMethod(this), this);
 			}
 		}

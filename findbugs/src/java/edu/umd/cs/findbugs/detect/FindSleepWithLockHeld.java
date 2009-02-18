@@ -110,7 +110,7 @@ public class FindSleepWithLockHeld implements Detector {
 
 			LockSet lockSet = lockDataflow.getFactAtLocation(location);
 			if (lockSet.getNumLockedObjects() > 0) {
-				bugAccumulator.accumulateBug(new BugInstance("SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
+				bugAccumulator.accumulateBug(new BugInstance(this, "SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
 						.addClassAndMethod(classContext.getJavaClass(), method),
 						classContext, method, location);
 			}

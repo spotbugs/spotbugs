@@ -67,7 +67,7 @@ public class TestASM extends ClassNodeDetector {
 			public void visitMethodInsn(int opcode, String owner, String invokedName, String invokedDesc) {
 				if (prevPC + 1 == getPC() && prevOpcode == I2D && opcode == INVOKESTATIC && owner.equals("java/lang/Math")
 				        && invokedName.equals("ceil") && invokedDesc.equals("(D)D")) {
-					BugInstance bug0 = new BugInstance("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
+					BugInstance bug0 = new BugInstance(TestASM.this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", NORMAL_PRIORITY);
 					MethodAnnotation methodAnnotation = MethodAnnotation.fromForeignMethod(TestASM.this.name, name, desc, access);
 					bug0.addClass(TestASM.this).addMethod(methodAnnotation);
 					bugReporter.reportBug(bug0);

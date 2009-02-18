@@ -145,7 +145,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 						break;
 					}
 				if (code != null && code.getLength() == 1) priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
-				bugReporter.reportBug(new BugInstance("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
+				bugReporter.reportBug(new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
 						priority).addClassAndMethod(this));
 
 			}

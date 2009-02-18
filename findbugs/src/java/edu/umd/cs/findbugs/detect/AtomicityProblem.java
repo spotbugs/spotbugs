@@ -90,7 +90,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 				String methodName = getNameConstantOperand();
 				if (methodName.equals("put")) {
 					if((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
-						bugReporter.reportBug(new BugInstance("AT_CONCURRENTHASHMAP_GET_PUT", priority).addClassAndMethod(this).addSourceLine(this));
+						bugReporter.reportBug(new BugInstance(this, "AT_CONCURRENTHASHMAP_GET_PUT", priority).addClassAndMethod(this).addSourceLine(this));
 					}
 				}
 			}

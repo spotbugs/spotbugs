@@ -136,7 +136,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 					if (((constValue == 0.0) && zeroMethods.contains(methodName))
 					||  ((constValue == 1.0) && oneMethods.contains(methodName))
 					||   (anyMethods.contains(methodName))) {
-						bugReporter.reportBug(new BugInstance("UM_UNNECESSARY_MATH", LOW_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, "UM_UNNECESSARY_MATH", LOW_PRIORITY)
 												.addClassAndMethod(this)
 												.addSourceLine(this));				
 					}
