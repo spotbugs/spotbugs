@@ -100,13 +100,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 			bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
 					.addClassAndMethod(this), s);
 		}
-		if (false && !foundDefault.isEmpty()) {
-			if (foundDefault.size() >= 4 && priority == NORMAL_PRIORITY) 
-				priority = LOW_PRIORITY;
-			for(SourceLineAnnotation s : foundDefault) 
-				bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", priority)
+
+		for(SourceLineAnnotation s : foundDefault) 
+			bugAccumulator.accumulateBug(new BugInstance(this, "SF_SWITCH_NO_DEFAULT", LOW_PRIORITY)
 				.addClassAndMethod(this), s);
-		}
+		
 		bugAccumulator.reportAccumulatedBugs();
 	}
 
