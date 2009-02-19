@@ -365,8 +365,11 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		if (caught && skipIfInsideCatchNull())
 			return;
 
+		int basePriority = Priorities.NORMAL_PRIORITY;
 		
-		reportNullDeref(propertySet, location, "NOISE_NULL_DEREFERENCE", Priorities.NORMAL_PRIORITY, cause, variable);
+		if (!refValue.isNullOnComplicatedPath2())
+			basePriority--;
+		reportNullDeref(propertySet, location, "NOISE_NULL_DEREFERENCE", basePriority, cause, variable);
 		
 	}
 

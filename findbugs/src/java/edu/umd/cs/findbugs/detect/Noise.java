@@ -87,7 +87,7 @@ public class Noise extends OpcodeStackDetector {
 		public int getPriority() {
 			int hash = getHash();
 		
-			if ((hash & 0xff0) == 0) {
+			if ((hash & 0x1ff0) == 0) {
 				hash = hash & 0xf;
 				if (hash < 1)
 					return Priorities.HIGH_PRIORITY;
