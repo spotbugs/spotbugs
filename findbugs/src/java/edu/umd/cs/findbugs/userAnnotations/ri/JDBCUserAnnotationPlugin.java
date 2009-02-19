@@ -83,6 +83,9 @@ public class JDBCUserAnnotationPlugin implements Plugin {
 				System.out.println("Count is " + count);
 				return true;
 			}
+			rs.close();
+			stmt.close();
+			c.close();
 
 		} catch (Exception e) {
 			AnalysisContext.logError("Unable to connect to database", e);
@@ -106,33 +109,60 @@ public class JDBCUserAnnotationPlugin implements Plugin {
 	public void loadUserAnnotations(BugCollection bugs) {
 		try {
 			Connection c = getConnection();
-			PreparedStatement stmt = c.prepareStatement("SELECT status, updated, who, comment from findbugsIssues where hash=?");
+			java.sql.Date now = new java.sql.Date(bugs.getAnalysisTimestamp());
+			PreparedStatement stmt = c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
+			PreparedStatement stmt2 = c
+	        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
+			PreparedStatement stmt3 = 
+		        c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
+		
+			int existingIssues = 0;
+			int newIssues = 0;
 			for (BugInstance bug : bugs.getCollection()) {
 				stmt.setString(1, bug.getInstanceHash());
 				ResultSet rs = stmt.executeQuery();
 				if (rs.next()) {
-					String designationString = rs.getString(1);
-					Date when = rs.getDate(2);
-					String who = rs.getString(3);
-					String comment = rs.getString(4);
+					int col = 1;
+					existingIssues++;
+					int id = rs.getInt(col++);
+					String designationString = rs.getString(col++);
+					Date when = rs.getDate(col++);
+					Date lastSeen = rs.getDate(col++);
+					String who = rs.getString(col++);
+					String comment = rs.getString(col++);
 					if (designationString.length() != 0) {
 						BugDesignation bd = new BugDesignation(designationString, when.getTime(), comment, who);
 						bug.setUserDesignation(bd);
 					}
-
+					if (lastSeen.compareTo(now) < 0) {
+						stmt3.setInt(2, id);
+						stmt3.setDate(1, now);
+						stmt3.execute();
+					} else {
+						System.out.println("Issue lastSeen " + lastSeen + ", now is " + now);
+					}
+					
 				} else {
-					PreparedStatement stmt2 = c
-					        .prepareStatement("INSERT into findbugsIssues (firstSeen, who, hash) VALUES (?,?,?)");
-					stmt2.setDate(1, new java.sql.Date(System.currentTimeMillis()));
-					stmt2.setString(2, findbugsUser);
-					stmt2.setString(3, bug.getInstanceHash());
+					newIssues++;
+					int col = 1;
+					stmt2.setDate(col++, now);
+					stmt2.setDate(col++, now);
+					stmt2.setDate(col++, now);
+					stmt2.setString(col++, findbugsUser);
+					stmt2.setString(col++, bug.getInstanceHash());
+					stmt2.setString(col++, bug.getBugPattern().getType());
+					stmt2.setInt(col++, bug.getPriority());
+					stmt2.setString(col++, bug.getPrimaryClass().getClassName());
 					stmt2.execute();
-					stmt2.close();
 				}
 				rs.close();
-				stmt.close();
 			}
+			stmt.close();
+			stmt2.close();
+			stmt3.close();
 			c.close();
+			System.out.printf("%d issues are new, %d issues are preexisting\n",
+					newIssues, existingIssues);
 		} catch (SQLException e) {
 			AnalysisContext.logError("Problems looking up user annotations", e);
 		}
@@ -144,7 +174,7 @@ public class JDBCUserAnnotationPlugin implements Plugin {
 		if (bd == null)
 			return;
 		PreparedStatement stmt = c
-		        .prepareStatement("INSERT into  findbugsIssues (status, firstSeen, who, comment, hash) VALUES (?,?,?,?,?)");
+		        .prepareStatement("INSERT into  findbugsIssues (status, updated, who, comment, hash) VALUES (?,?,?,?,?)");
 		stmt.setString(1, bd.getDesignationKey());
 		stmt.setDate(2, new java.sql.Date(bd.getTimestamp()));
 		stmt.setString(3, bd.getUser());
