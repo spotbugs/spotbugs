@@ -285,6 +285,8 @@
 												<xs:attribute name="totalMilliseconds" type="xs:unsignedInt" use="required"/>
 												<xs:attribute name="invocations" type="xs:unsignedInt" use="required"/>
 												<xs:attribute name="avgMicrosecondsPerInvocation" type="xs:unsignedInt" use="required"/>
+												<xs:attribute name="maxMicrosecondsPerInvocation" type="xs:unsignedInt" use="optional"/>
+												<xs:attribute name="standardDeviationMircosecondsPerInvocation" type="xs:unsignedInt" use="optional"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
