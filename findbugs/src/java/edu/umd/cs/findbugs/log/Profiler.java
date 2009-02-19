@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -48,6 +49,25 @@ public class Profiler implements XMLWriteable {
 
 	public static Profiler getInstance() {
 		return instance;
+	}
+	
+	static class Profile {
+		final AtomicLong totalTime = new AtomicLong();
+		final AtomicInteger totalCalls = new AtomicInteger();
+		final AtomicLong maxTime = new AtomicLong();
+		final AtomicLong totalSquareMicroseconds = new AtomicLong();
+		
+		public void handleCall(long nanoTime) {
+			totalCalls.incrementAndGet();
+			totalTime.addAndGet(nanoTime);
+			long oldMax = maxTime.get();
+			if (nanoTime > oldMax)
+				maxTime.compareAndSet(oldMax, nanoTime);
+			long microseconds = TimeUnit.MICROSECONDS.convert(nanoTime, TimeUnit.NANOSECONDS);
+			totalSquareMicroseconds.addAndGet(microseconds*microseconds);
+		}
+		
+		
 	}
 
 	static class Clock {
@@ -79,9 +99,8 @@ public class Profiler implements XMLWriteable {
 		}
 	};
 
-	ConcurrentHashMap<Class<?>, AtomicLong> profile = new ConcurrentHashMap<Class<?>, AtomicLong>();
-	ConcurrentHashMap<Class<?>, AtomicInteger> callCountProfile = new ConcurrentHashMap<Class<?>, AtomicInteger>();
-
+	ConcurrentHashMap<Class<?>, Profile> profile = new ConcurrentHashMap<Class<?>, Profile>();
+	
 	public void start(Class<?> c) {
 		long currentNanoTime = System.nanoTime();
 
@@ -113,24 +132,16 @@ public class Profiler implements XMLWriteable {
 		if (accumulatedTime == 0) {
 	        return;
         }
-		AtomicLong counter = profile.get(c);
+		Profile counter = profile.get(c);
 		if (counter == null) {
-			counter = new AtomicLong();
-			AtomicLong counter2 = profile.putIfAbsent(c, counter);
+			counter = new Profile();
+			Profile counter2 = profile.putIfAbsent(c, counter);
 			if (counter2 != null) {
 	            counter = counter2;
             }
 		}
-		counter.addAndGet(accumulatedTime);
-		AtomicInteger callCount = callCountProfile.get(c);
-		if (callCount == null) {
-			callCount = new AtomicInteger();
-			AtomicInteger counter3 = callCountProfile.putIfAbsent(c, callCount);
-			if (counter3 != null) {
-	            callCount = counter3;
-            }
-		}
-		callCount.incrementAndGet();
+		counter.handleCall(accumulatedTime);
+		
 	}
 
 	static class Pair<V1, V2> {
@@ -153,8 +164,8 @@ public class Profiler implements XMLWriteable {
 
 	class TotalTimeComparator implements Comparator<Class<?>> {
 		public int compare(Class<?> c1, Class<?> c2) {
-			long v1 = profile.get(c1).get();
-			long v2 = profile.get(c2).get();
+			long v1 = profile.get(c1).totalTime.get();
+			long v2 = profile.get(c2).totalTime.get();
 			if (v1 < v2) {
                 return -1;
             }
@@ -178,10 +189,12 @@ public class Profiler implements XMLWriteable {
 					"Class");
         
 			for (Class<?> c : treeSet) {
-				long time = profile.get(c).get();
-				AtomicInteger callCount = callCountProfile.get(c);
-				if (time > 10000000 && callCount != null) {
-	                System.err.printf("%8d  %8d  %8d %s\n",time/1000000,  callCount.get(), time/callCount.get()/1000,
+				Profile p = profile.get(c);
+				long time = p.totalTime.get();
+				int callCount = p.totalCalls.get();
+				if (time > 10000000) {
+	                System.err.printf("%8d  %8d  %8d %s\n",TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS),
+	                					callCount, TimeUnit.MICROSECONDS.convert(time/callCount, TimeUnit.NANOSECONDS),
 							c.getSimpleName());
                 }
 
@@ -191,7 +204,6 @@ public class Profiler implements XMLWriteable {
 			System.err.println(e);
 		} finally {
 			profile.clear();
-			callCountProfile.clear();
 			startTimes.get().clear();
 		}
 	}
@@ -207,17 +219,29 @@ public class Profiler implements XMLWriteable {
 		
 		
 		for (Class<?> c : treeSet) {
-			long time = profile.get(c).get();
-			AtomicInteger callCount = callCountProfile.get(c);
-			if (time > 10000000 && callCount != null) {
+			Profile p = profile.get(c);
+			if (p == null) continue;
+			long time = p.totalTime.get();
+			int callCount = p.totalCalls.get();
+			long maxTimeMicros = TimeUnit.MICROSECONDS.convert(p.maxTime.get(), TimeUnit.NANOSECONDS);
+			long timeMillis = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
+			long timeMicros = TimeUnit.MICROSECONDS.convert(time, TimeUnit.NANOSECONDS);
+			
+			long averageTimeMicros = timeMicros / callCount;
+			long totalSquareMicros = p.totalSquareMicroseconds.get();
+			long averageSquareMicros = totalSquareMicros / callCount;
+			long timeVariance = averageSquareMicros - averageTimeMicros * averageTimeMicros;
+			long timeStandardDeviation = (long) Math.sqrt(timeVariance);
+			if (timeMillis > 10) {
 				xmlOutput.startTag("ClassProfile");
 
 				
 				xmlOutput.addAttribute("name", c.getName());
-				xmlOutput.addAttribute("totalMilliseconds", String.valueOf((int)(time/1000000)));
-				xmlOutput.addAttribute("invocations", String.valueOf(callCount.get()));
-				xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf((int)(time/callCount.get()/1000)));
-				
+				xmlOutput.addAttribute("totalMilliseconds", String.valueOf(timeMillis));
+				xmlOutput.addAttribute("invocations", String.valueOf(callCount));
+				xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
+				xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
+				xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
 				xmlOutput.stopTag(true);
           
             }
