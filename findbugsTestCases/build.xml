@@ -25,7 +25,7 @@
 
 	<target name="classes">
 		<mkdir dir="build/classes"/>
-		<javac  destdir="build/classes" source="1.5" debug="on">
+		<javac  destdir="build/classes" source="1.6" debug="on">
 			<src path="src/java"/>
 			<src path="src/fakeAnnotations"/>
 			<src path="src/fakeLibraries"/>
