@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.userAnnotations.Plugin;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -56,7 +56,7 @@ import org.dom4j.io.XMLWriter;
  * 
  * @author David Hovemeyer
  */
-public class XMLFileUserAnnotationPlugin implements Plugin {
+public class XMLFileUserAnnotationPlugin implements UserAnnotationPlugin {
 	public static final boolean DEBUG = SystemProperties.getBoolean("ua.debug");
 	
 	private Map<String, String> properties;

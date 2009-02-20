@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
  * Interface to allow persistence of bug user annotations using arbitrary
  * mechanisms.
  */
-public interface Plugin {
+public interface UserAnnotationPlugin {
 
 	/**
 	 * Get Set of property names defining properties required

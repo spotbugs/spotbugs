@@ -35,12 +35,12 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.userAnnotations.Plugin;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 
 /**
  * @author pwilliam
  */
-public class JDBCUserAnnotationPlugin implements Plugin {
+public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 	/*
 	 * (non-Javadoc)
