@@ -707,6 +707,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 		cmp = startLine - other.startLine;
 		if (cmp != 0)
 			return cmp;
+		cmp = endLine - other.endLine;
+		if (startLine != -1) 
+			return 0;
+		if (cmp != 0)
+			return cmp;
 		cmp = startBytecode - other.startBytecode;
 		if (cmp != 0)
 			return cmp;
@@ -715,7 +720,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	@Override
 	public int hashCode() {
+		if (startLine != -1) 
 		return className.hashCode() + startLine + 3 * endLine;
+		return className.hashCode() + startBytecode + 3 * endBytecode;
 	}
 
 	@Override
@@ -723,9 +730,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (!(o instanceof SourceLineAnnotation))
 			return false;
 		SourceLineAnnotation other = (SourceLineAnnotation) o;
-		return className.equals(other.className)
+		if (startLine != -1) 
+			return className.equals(other.className)
 				&& startLine == other.startLine
 				&& endLine == other.endLine;
+		 return className.equals(other.className)
+			&& startBytecode == other.startBytecode
+			&& endBytecode == other.endBytecode;
+		
 	}
 
 	/* ----------------------------------------------------------------------
