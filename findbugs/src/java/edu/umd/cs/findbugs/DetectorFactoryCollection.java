@@ -19,19 +19,22 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.util.ClassPathUtil;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.swing.JOptionPane;
+
+import edu.umd.cs.findbugs.util.ClassPathUtil;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects
@@ -226,7 +229,6 @@ public class DetectorFactoryCollection {
 	
 	private static final Pattern[] findbugsJarNames = {
 		Pattern.compile("findbugs\\.jar$"),
-		Pattern.compile("findbugs-full-.*\\.jar$"),
 	};
 
 	/**
@@ -293,27 +295,37 @@ public class DetectorFactoryCollection {
 	 * determine where FindBugs is installed, and the plugin files are
 	 * dynamically loaded from the plugin directory.
 	 */
+
+	
+	
 	void loadPlugins() {
 		if (loaded) throw new IllegalStateException();
-
 		//If we are running under jaws, just use the loaded plugin
 		if (SystemProperties.getBoolean("findbugs.jaws")) {
 			URL u = DetectorFactoryCollection.class.getResource("/findbugs.xml");
-			// JOptionPane.showMessageDialog(null, "Loading plugin from " + u);
-			URL[] plugins = new URL[1];
-			if (u != null) {
-				String path = u.toString();
-				path = path.substring(0, path.length() - "findbugs.xml".length());
-				if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
+			String message = "Loading plugin from " + u;
+			jawsDebugMessage(message);
+			String findbugsJarCodeBase =
+				ClassPathUtil.findCodeBaseInClassPath(findbugsJarNames[0], SystemProperties.getProperty("java.class.path"));
+			jawsDebugMessage( "findBugs jar code base = " + findbugsJarCodeBase);
+			List<URL> plugins = new ArrayList<URL>();
+			int i = 1;
+			while (true) {
+				String plugin = SystemProperties.getProperty("findbugs.jaws.plugin"+i);
+				if (plugin == null) 
+					break;
 				try {
-					plugins[0] = new URL(path);
-
-				} catch (MalformedURLException e) {
-					throw new RuntimeException(e);
+				URL url = new URL(plugin);
+				URLConnection urlConnection = url.openConnection();
+				String type = urlConnection.getContentType();
+				jawsDebugMessage( "plugin " + plugin + " has type " + type);
+				plugins.add(url);
+				} catch (Exception e) {
+					jawsDebugMessage( "Unable to load plugin " + plugin);
 				}
-				setPluginList(plugins);
-
+				i++;
 			}
+			setPluginList(plugins.toArray(new URL[plugins.size()]));
 		}
 
 		// Load all detector plugins.
@@ -362,6 +374,17 @@ public class DetectorFactoryCollection {
 
 		//System.out.println("Loaded " + numLoaded + " plugins");
 	}
+
+	final static boolean DEBUG_JAWS = false;
+	/**
+     * @param message
+     */
+	
+	
+    private void jawsDebugMessage(String message) {
+	    if (DEBUG_JAWS)
+	    	JOptionPane.showMessageDialog(null, message);
+    }
 
 	private void loadPlugin(PluginLoader pluginLoader) throws PluginException {
 

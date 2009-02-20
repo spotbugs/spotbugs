@@ -96,9 +96,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String sourceInfoFile = null;
 	private boolean xargs = false;
 	private boolean scanNestedArchives = false;
-	private String userAnnotationPlugin;
-	private Map<String,String> userAnnotationPluginProperties = new HashMap<String, String>();
-	private boolean userAnnotationSync;
 	private boolean applySuppression;
 
 	/**
@@ -137,6 +134,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-outputFile", "filename", "Save output in named file");
 		addOption("-output", "filename", "Save output in named file");
 		makeOptionUnlisted("-outputFile");
+		addSwitchWithOptionalExtraPart("-nested", "true|false",
+		"analyze nested jar/zip archives (default=true)");
 
 		startOptionGroup("Output filtering options:");
 		addOption("-bugCategories", "cat1[,cat2...]", "only report bugs in given categories");
@@ -144,8 +143,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-excludeBugs", "baseline bugs", "exclude bugs that are also reported in the baseline xml output");
 		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
-		addSwitchWithOptionalExtraPart("-nested", "true|false",
-				"analyze nested jar/zip archives (default=true)");
+		addSwitch("-applySuppression", "Exclude any bugs that match suppression filter loaded from fbp file");
 		
 		startOptionGroup("Detector (visitor) configuration options:");
 		addOption("-visitors", "v1[,v2...]", "run only named visitors");
@@ -162,13 +160,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-noClassOk", "output empty warning file if no classes are specified");
 		addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
 		
-		startOptionGroup("User annotation persistence options:");
-		addOption("-uaPlugin", "class name", "class name of user annotation plugin");
-		addOption("-uaPluginProps", "p1=val[,p2=val,...]", "specify configuration properties for user annotation plugin");
-		addSwitch("-uaSync", "fetch user annotations and apply them to new analysis results");
-		addSwitch("-applySuppression", "Exclude any bugs that match suppression filter loaded from fbp file");
-		
-	}
+		}
 
 	@Override
 	public Project getProject() {
@@ -191,35 +183,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	public boolean applySuppression() {
 		return applySuppression;
 	}
-	/**
-	 * Get class name of user annotation plugin.
-	 * 
-	 * @return class name of user annotation plugin, or null if not specified
-	 */
-	public @CheckForNull String getUserAnnotationPlugin() {
-		return userAnnotationPlugin;
-	}
-
-	/**
-	 * Get map of configuration properties for user annotation plugin.
-	 * 
-	 * @return map of configuration properties for user annotation plugin
-	 */
-	public Map<String, String> getUserAnnotationPluginProperties() {
-		return Collections.unmodifiableMap(userAnnotationPluginProperties);
-	}
 	
-	/**
-	 * Return whether or not the user annotation plugin should be used to
-	 * fetch user annotations and apply them to the generated
-	 * analysis results.
-	 * 
-	 * @return true if user annotations should be fetched/applied, false if not
-	 */
-	public boolean getUserAnnotationSync() {
-		return userAnnotationSync;
-	}
-
 	@SuppressWarnings("DM_EXIT")
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
@@ -300,8 +264,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			noClassOk = true;
 		} else if (option.equals("-xargs")) {
 			xargs = true;
-		} else if (option.equals("-uaSync")) {
-			userAnnotationSync = true;
 		} else {
 			super.handleOption(option, optionExtraPart);
 		}
@@ -445,18 +407,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
 			while (tok.hasMoreTokens())
 				project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
-		} else if (option.equals("-uaPlugin")) {
-			userAnnotationPlugin = argument;
-		} else if (option.equals("-uaPluginProps")) {
-			StringTokenizer t = new StringTokenizer(argument, ",");
-			while (t.hasMoreTokens()) {
-				String pair = t.nextToken();
-				int eq = pair.indexOf('=');
-				if (eq < 0) {
-					throw new IllegalArgumentException("Bad user annotatin plugin configuration property: " + pair);
-				}
-				userAnnotationPluginProperties.put(pair.substring(0, eq), pair.substring(eq+1));
-			}
 		} else {
 			super.handleOptionWithArgument(option, argument);
 		}
@@ -577,13 +527,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setScanNestedArchives(scanNestedArchives);
 		findBugs.setNoClassOk(noClassOk);
 
-		if (userAnnotationPlugin != null) {
-			if (!(findBugs instanceof IFindBugsEngine2)) {
-				throw new IllegalStateException();
-			}
-			((IFindBugsEngine2)findBugs).loadUserAnnotationPlugin(userAnnotationPlugin, userAnnotationPluginProperties);
-			((IFindBugsEngine2)findBugs).setUserAnnotationSync(userAnnotationSync);
-		}
 		if (applySuppression)
 			findBugs.setApplySuppression(true);
 		
@@ -606,13 +549,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				project.addFile(s);
 			}
 		}
-	}
-
-	/**
-	 * @param userPreferences The userPreferences to set.
-	 */
-	private void setUserPreferences(UserPreferences userPreferences) {
-		this.userPreferences = userPreferences;
 	}
 
 	/**
