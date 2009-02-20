@@ -30,9 +30,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -182,10 +184,16 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 					getMethodName(), "()V", bugReporter);
 			if (we != null && !we.getClassName().equals("junit.framework.TestCase")) {
 				// OK, got a bug
+				int offset = 0;
+				if (getMethodName().equals("tearDown"))
+					offset = obj.getCode().length-1;
+				Method superMethod = Lookup.findImplementation(we, getMethodName(), "()V");
+				Code superCode = superMethod.getCode();
+				if (superCode != null && superCode.getCode().length > 3)
 				bugReporter.reportBug(new BugInstance(this, getMethodName()
 						.equals("setUp") ? "IJU_SETUP_NO_SUPER"
 						: "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY)
-						.addClassAndMethod(this));
+						.addClassAndMethod(this).addMethod(we,superMethod).describe(MethodAnnotation.METHOD_CALLED).addSourceLine(this, offset));
 			}
 		}
 	}

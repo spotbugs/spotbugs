@@ -65,6 +65,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	
 	public static final String METHOD_EQUALS_USED = "METHOD_EQUALS_USED";
 	public static final String METHOD_CALLED = "METHOD_CALLED";
+	public static final String METHOD_OVERRIDDEN = "METHOD_OVERRIDDEN";
 
 
 	/**
@@ -441,6 +442,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * ---------------------------------------------------------------------- */
 
 	private static final String ELEMENT_NAME = "Method";
+
+
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 	}
