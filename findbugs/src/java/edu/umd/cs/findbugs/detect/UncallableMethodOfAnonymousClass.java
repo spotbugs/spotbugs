@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -146,7 +147,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 					}
 				if (code != null && code.getLength() == 1) priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
 				bugReporter.reportBug(new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
-						priority).addClassAndMethod(this));
+						priority).addClassAndMethod(this).addClass(superClass).describe(ClassAnnotation.SUPERCLASS_ROLE));
 
 			}
 

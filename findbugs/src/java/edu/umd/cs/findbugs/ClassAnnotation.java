@@ -40,6 +40,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 	public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
+	public static final String SUPERCLASS_ROLE =  "CLASS_SUPERCLASS";
+
 
 	/**
 	 * Constructor.
@@ -144,6 +146,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 
 	private static final String ELEMENT_NAME = "Class";
 
+	
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, false, false);
 	}
