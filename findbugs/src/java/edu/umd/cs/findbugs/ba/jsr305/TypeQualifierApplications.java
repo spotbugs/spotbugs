@@ -547,9 +547,6 @@ public class TypeQualifierApplications {
 			result = tqa;
 			map.put(o, result);
 			if (DEBUG && result != null) {
-				if (result == null)
-					System.out.println("  => Answer: no annotation on " + o);
-				else 
 					System.out.println("  => Answer: " + result.when  + " on " + o);
 			}
 

@@ -18,13 +18,16 @@
  */
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.apache.bcel.generic.ReferenceType;
+
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.StringMatcher;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import edu.umd.cs.findbugs.util.TypeMatcher;
-import java.util.Collection;
-import org.apache.bcel.generic.ReferenceType;
 
 /**
  * An ObligationPolicyDatabaseEntry which creates or deletes
@@ -115,6 +118,6 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 
 	@Override
 	public String toString() {
-		return "(" + receiverType + "," + methodName + "," + signature + "," + isStatic + "," + action + "," + obligations + "," + entryType +  ")";
+		return "(" + receiverType + "," + methodName + "," + signature + "," + isStatic + "," + action + "," + Arrays.asList(obligations) + "," + entryType +  ")";
 	}
 }
