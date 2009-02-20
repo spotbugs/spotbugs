@@ -122,12 +122,9 @@ public class Lookup
 				if (c == null)
 					return null;
 				Method m = findImplementation(c, name, signature);
-				if (m != null) {
-					if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
-						return null;
-					else
-						return c;
-				}
+				if (m != null && !m.isAbstract())
+					return c;
+				
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
@@ -144,12 +141,9 @@ public class Lookup
 				if (c == null)
 					return null;
 				Method m = findImplementation(c, name, signature);
-				if (m != null) {
-					if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
-						return null;
-					else
+				if (m != null && !m.isAbstract())
 						return XFactory.createXMethod(c, m);
-				}
+				
 			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
@@ -176,12 +170,9 @@ public class Lookup
 
 		for (JavaClass aClazz : clazz) {
 			Method m = findImplementation(aClazz, name, signature);
-			if (m != null) {
-				if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
-					return null;
-				else
+			if (m != null && !m.isAbstract())
 					return aClazz;
-			}
+			
 		}
 		return null;
 	}
@@ -192,8 +183,8 @@ public class Lookup
 		for (Method aM : m)
 			if (aM.getName().equals(name)
 					&& aM.getSignature().equals(signature)
-					&& ((aM.getAccessFlags() & ACC_PRIVATE) == 0)
-					&& ((aM.getAccessFlags() & ACC_STATIC) == 0)
+					&& !aM.isPrivate()
+					&& !aM.isStatic()
 					)
 				return aM;
 		return null;
