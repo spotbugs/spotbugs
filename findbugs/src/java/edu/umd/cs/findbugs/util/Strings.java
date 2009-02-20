@@ -162,7 +162,7 @@ public class Strings {
 
     private static final String unicodeUnescapeMatchExpression = "(\\\\*)(\\\\u)(\\p{XDigit}{4})";
     private static Pattern unescapePattern = null;
-    private static boolean paternIsInitialized = false;
+    private static volatile boolean paternIsInitialized = false;
     private static final Object unescapeInitLockObject = new Object();
 
     /**
