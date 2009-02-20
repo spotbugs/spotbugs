@@ -268,11 +268,15 @@ public class MainFrame extends FBFrame implements LogSync
 		this.comments = new CommentsArea(this);
 		FindBugsDisplayFeatures.setAbridgedMessages(true);
 		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
-		String sf  = SystemProperties.getProperty("findbugs.sourcelink.format");
+		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
+		if (sf != null)
+			sf = sf.replace("ESCAPEDPERCENT", "%");
+		String stt  = SystemProperties.getProperty("findbugs.sourcelink.tooltip");
 		if (sp != null && sf != null) {
 			try {
 			this.sourceFileLinkPattern = Pattern.compile(sp);
 			this.sourceFileLinkFormat = sf;
+			this.sourceFileLinkToolTip = stt;
 			} catch (RuntimeException e) {
 				AnalysisContext.logError("Could not compile pattern " + sp, e);
 			}
@@ -1816,6 +1820,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	@CheckForNull Pattern sourceFileLinkPattern;
 	String sourceFileLinkFormat;
+	String sourceFileLinkToolTip;
 	/**
 	 * @author pugh
 	 */
@@ -2107,11 +2112,11 @@ public class MainFrame extends FBFrame implements LogSync
 	 void setSourceTab(String title, SourceFile source){
 		JComponent label = guiLayout.getSourceTitleComponent();
 		if (label != null) {
-			
 			if (source != null && sourceFileLinkPattern != null) {
 				String name = source.getFullFileName();
 				java.util.regex.Matcher m = sourceFileLinkPattern.matcher(name);
-				if (m.matches()) {
+				boolean isMatch = m.matches();
+				if (isMatch) {
 				
                     try {
                     	URL link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
@@ -2142,17 +2147,22 @@ public class MainFrame extends FBFrame implements LogSync
 			 component.addMouseListener(new MouseAdapter(){
 				    @Override
                     public void mouseClicked(MouseEvent e) {
-	                        LaunchBrowser.showDocument(sourceLink);
+				    	URL u = sourceLink;
+				    	if (u != null) 
+	                        LaunchBrowser.showDocument(u);
                         
 				    	
 				    }
 			 });
 		 }
 		 component.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		 if (sourceFileLinkToolTip != null)
+			 component.setToolTipText(sourceFileLinkToolTip);
 	 }
 	 void removeLink(JComponent component) {
 		 this.sourceLink = null;
 		 component.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		 component.setToolTipText("");
 	 }
 
 
