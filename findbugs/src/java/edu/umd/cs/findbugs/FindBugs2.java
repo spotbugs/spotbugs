@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
@@ -115,7 +116,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private boolean applySuppression;
 	
 	private boolean noClassOk;
-	private edu.umd.cs.findbugs.userAnnotations.Plugin userAnnotationPlugin;
+	private UserAnnotationPlugin userAnnotationPlugin;
 	private boolean userAnnotationSync;
 	private boolean mergeSimilarWarnings = true;
 
@@ -511,14 +512,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			// FIXME: need to think of how to specify what codebase
 			// the user annotation plugin should be loaded from.
 			Class<?> cls = Class.forName(userAnnotationPluginClassName);
-			if (!edu.umd.cs.findbugs.userAnnotations.Plugin.class.isAssignableFrom(cls)) {
+			if (!UserAnnotationPlugin.class.isAssignableFrom(cls)) {
 				throw new IOException("Class " + userAnnotationPluginClassName + " is not a user annotation plugin");
 			}
 
 			Object instance = cls.newInstance();
 			
 			this.userAnnotationPlugin =
-				edu.umd.cs.findbugs.userAnnotations.Plugin.class.cast(instance);
+				UserAnnotationPlugin.class.cast(instance);
 			
 			this.userAnnotationPlugin.setProperties(configurationProperties);
 			
