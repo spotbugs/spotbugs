@@ -135,7 +135,7 @@ public class Profiler implements XMLWriteable {
 		if (accumulatedTime == 0) {
 			return;
 		}
-		Profile counter = getProfile(c);
+		Profile counter = profile.get(c);
 		if (counter == null) {
 			counter = new Profile();
 			Profile counter2 = profile.putIfAbsent(c, counter);
