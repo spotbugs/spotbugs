@@ -172,31 +172,44 @@ public class InfiniteLoop extends OpcodeStackDetector {
 		backwardBranchLoop: for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
 			int myBackwardsReach = getBackwardsReach(bb.to);
+			
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
 				if (myBackwardsReach < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
+			
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
 			for(Jump fj : forwardJumps) 
 				if (fcb.from != fj.from && myBackwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
+			
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
+				SourceLineAnnotation loopBottom = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
+				int loopBottomLine = loopBottom.getStartLine();
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
-						this, fcb.from).addSourceLine(
-								this, bb.from).describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
+						this, fcb.from).addSourceLine(loopBottom).describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
 				int reg0 = fcb.item0.getRegisterNumber();
 				boolean reg0Invariant = true;
 				if (reg0 >= 0) {
 					reg0Invariant = !isRegModified(reg0, myBackwardsReach, bb.from);
+					SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, constantSince(fcb.item0));
+					int lastChangeLine = lastChange.getEndLine();
+					if (loopBottomLine != -1 && lastChangeLine != -1 && lastChangeLine < loopBottomLine) 
+						continue backwardBranchLoop;
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
-					.addSourceLine(this, constantSince(fcb.item0)).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+					.addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
 				}
 				int reg1 = fcb.item1.getRegisterNumber();
-				if (reg1 >= 0 && reg1 != reg0) 
+				if (reg1 >= 0 && reg1 != reg0) {
+					SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, constantSince(fcb.item1));
+					int lastChangeLine = lastChange.getEndLine();
+					if (loopBottomLine != -1 && lastChangeLine != -1 && lastChangeLine < loopBottomLine) 
+						continue backwardBranchLoop;
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
-										.addSourceLine(this, constantSince(fcb.item1)).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+										.addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
+				}
 				  boolean reg1Invariant = true;
 				if (reg1 >= 0) 
 					reg1Invariant = !isRegModified(reg1, myBackwardsReach, bb.from);
