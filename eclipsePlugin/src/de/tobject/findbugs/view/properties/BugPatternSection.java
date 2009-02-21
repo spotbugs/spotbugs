@@ -345,15 +345,19 @@ public class BugPatternSection extends AbstractPropertySection {
 	}
 
 	private void openBrowserInEditor(LocationEvent event) {
+		URL url;
+		try {
+			url = new URL(event.location);
+		} catch (MalformedURLException e) {
+			return;
+		}
 		IWorkbenchBrowserSupport support= PlatformUI.getWorkbench().getBrowserSupport();
 		try {
 			IWebBrowser newBrowser= support.createBrowser(browserId);
 			browserId = newBrowser.getId();
-			newBrowser.openURL(new URL(event.location));
+			newBrowser.openURL(url);
 			return;
 		} catch (PartInitException e) {
-			FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
-		} catch (MalformedURLException e) {
 			FindbugsPlugin.getDefault().logException(e, "Can't open external browser");
 		}
 	}
