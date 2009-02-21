@@ -97,12 +97,13 @@ public class Project implements XMLWriteable {
 	/**
 	 * Options.
 	 */
+	@Deprecated
 	private Map<String, Boolean> optionsMap;
 
 	/**
-	 * The list of project files.
+	 * List of jars/directories to analyze
 	 */
-	private List<String> fileList;
+	private List<String> analysisTargets;
 
 	/**
 	 * The list of source directories.
@@ -124,7 +125,7 @@ public class Project implements XMLWriteable {
 	 */
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
-	private long timestamp = 0L;
+	private long timestampForAnalyzedClasses = 0L;
 
 	@NonNull private Filter suppressionFilter = new Filter();
 
@@ -135,7 +136,7 @@ public class Project implements XMLWriteable {
 		this.projectFileName = UNNAMED_PROJECT;
 		optionsMap = new HashMap<String, Boolean>();
 		optionsMap.put(RELATIVE_PATHS, Boolean.FALSE);
-		fileList = new LinkedList<String>();
+		analysisTargets = new LinkedList<String>();
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
 		isModified = false;
@@ -150,10 +151,10 @@ public class Project implements XMLWriteable {
 		dup.currentWorkingDirectory = this.currentWorkingDirectory;
 		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
-		dup.fileList.addAll(this.fileList);
+		dup.analysisTargets.addAll(this.analysisTargets);
 		dup.srcDirList.addAll(this.srcDirList);
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
-		dup.timestamp = timestamp;
+		dup.timestampForAnalyzedClasses = timestampForAnalyzedClasses;
 
 		return dup;
 	}
@@ -162,7 +163,7 @@ public class Project implements XMLWriteable {
 	 */
 	public void add(Project project2) {
 		optionsMap.putAll(project2.optionsMap);
-		fileList = appendWithoutDuplicates(fileList, project2.fileList);
+		analysisTargets = appendWithoutDuplicates(analysisTargets, project2.analysisTargets);
 		srcDirList = appendWithoutDuplicates(srcDirList, project2.srcDirList);
 		auxClasspathEntryList = appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
 
@@ -217,7 +218,7 @@ public class Project implements XMLWriteable {
 	 *         file was already present
 	 */
 	public boolean addFile(String fileName) {
-		return addToListInternal(fileList, makeAbsoluteCWD(fileName));
+		return addToListInternal(analysisTargets, makeAbsoluteCWD(fileName));
 	}
 
 	/**
@@ -236,6 +237,7 @@ public class Project implements XMLWriteable {
 	 * @param option the name of option to get
 	 * @return the value of the option
 	 */
+	@Deprecated
 	public boolean getOption(String option) {
 		Boolean value = optionsMap.get(option);
 		return value != null && value.booleanValue();
@@ -247,7 +249,7 @@ public class Project implements XMLWriteable {
 	 * @return the number of files in the project
 	 */
 	public int getFileCount() {
-		return fileList.size();
+		return analysisTargets.size();
 	}
 
 	/**
@@ -257,7 +259,7 @@ public class Project implements XMLWriteable {
 	 * @return the name of the file
 	 */
 	public String getFile(int num) {
-		return fileList.get(num);
+		return analysisTargets.get(num);
 	}
 
 	/**
@@ -266,7 +268,7 @@ public class Project implements XMLWriteable {
 	 * @param num index of the file to remove in the list of project files
 	 */
 	public void removeFile(int num) {
-		fileList.remove(num);
+		analysisTargets.remove(num);
 		isModified = true;
 	}
 
@@ -274,7 +276,7 @@ public class Project implements XMLWriteable {
 	 * Get the list of files, directories, and zip files in the project.
 	 */
 	public List<String> getFileList() {
-		return fileList;
+		return analysisTargets;
 	}
 
 	/**
@@ -310,7 +312,7 @@ public class Project implements XMLWriteable {
 	 * Get project files as an array of Strings.
 	 */
 	public String[] getFileArray() {
-		return fileList.toArray(new String[fileList.size()]);
+		return analysisTargets.toArray(new String[analysisTargets.size()]);
 	}
 
 	/**
@@ -479,7 +481,7 @@ public class Project implements XMLWriteable {
 
 		// Prime the worklist by adding the zip/jar files
 		// in the project.
-		for (String fileName : fileList) {
+		for (String fileName : analysisTargets) {
 			try {
 				URL url = workList.createURL(fileName);
 				WorkListItem item = new WorkListItem(url);
@@ -575,7 +577,7 @@ public class Project implements XMLWriteable {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
 			writer.println(JAR_FILES_KEY);
-			for (String jarFile : fileList) {
+			for (String jarFile : analysisTargets) {
 				if (useRelativePaths) {
 	                jarFile = convertToRelative(jarFile, relativeBase);
                 }
@@ -660,6 +662,7 @@ public class Project implements XMLWriteable {
 	 * @param inputFile name of the input file to read the project from
 	 * @throws IOException if an error occurs while reading
 	 */
+	@Deprecated
 	public void read(String inputFile) throws IOException {
 		if (isModified) {
 	        throw new IllegalStateException("Reading into a modified Project!");
@@ -685,7 +688,7 @@ public class Project implements XMLWriteable {
 	            throw new IOException("Bad format: missing jar files key");
             }
 			while ((line = getLine(reader)) != null && !line.equals(SRC_DIRS_KEY)) {
-				addToListInternal(fileList, line);
+				addToListInternal(analysisTargets, line);
 			}
 
 			if (line == null) {
@@ -717,7 +720,7 @@ public class Project implements XMLWriteable {
 			// paths, using the absolute path of the project
 			// file as a base directory.
 			if (getOption(RELATIVE_PATHS)) {
-				makeListAbsoluteProject(fileList);
+				makeListAbsoluteProject(analysisTargets);
 				makeListAbsoluteProject(srcDirList);
 				makeListAbsoluteProject(auxClasspathEntryList);
 			}
@@ -875,7 +878,7 @@ public class Project implements XMLWriteable {
 				attributeList
 				);
 
-		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
+		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
@@ -1093,19 +1096,19 @@ public class Project implements XMLWriteable {
 	 * @param timestamp The timestamp to set.
 	 */
 	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+		this.timestampForAnalyzedClasses = timestamp;
 	}
 
 	public void addTimestamp(long timestamp) {
-		if (this.timestamp < timestamp) {
-	        this.timestamp = timestamp;
+		if (this.timestampForAnalyzedClasses < timestamp) {
+	        this.timestampForAnalyzedClasses = timestamp;
         }
 	}
 	/**
 	 * @return Returns the timestamp.
 	 */
 	public long getTimestamp() {
-		return timestamp;
+		return timestampForAnalyzedClasses;
 	}
 
 	/**

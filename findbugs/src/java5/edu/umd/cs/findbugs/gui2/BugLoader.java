@@ -259,16 +259,16 @@ public class BugLoader {
 	 */
 	public static @CheckForNull  BugCollection redoAnalysisKeepComments(@NonNull Project p)
 	{
-		if (p == null) throw new NullPointerException("null project");
+		if (p == null) 
+			throw new NullPointerException("null project");
 
 		BugSet oldSet=BugSet.getMainBugSet();
 		BugCollection current=MainFrame.getInstance().bugCollection;//Now we should no longer get this December 31st 1969 business.
-		for (BugLeafNode node: oldSet)
+		// Sourceforge bug 1800962 indicates 'current' can be null here
+		if(current != null) for (BugLeafNode node: oldSet)
 		{
 			BugInstance bug=node.getBug();
-			// Sourceforge bug 1800962 indicates 'current' can be null here
-			if(current != null)
-				current.add(bug);
+			current.add(bug);
 		}
 		Update update = new Update();
 
@@ -277,7 +277,6 @@ public class BugLoader {
 		new AnalyzingDialog(p,ac,true);
 
 		if(current == null)
-			// Sourceforge bug 1800962 indicates 'current' can be null here
 			return ac.getBugCollection();
 		else if (ac.finished)
 			return update.mergeCollections(current, ac.getBugCollection(), true, false);

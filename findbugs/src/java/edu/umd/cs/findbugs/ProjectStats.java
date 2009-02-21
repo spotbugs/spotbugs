@@ -67,7 +67,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private int totalClasses;
 	private int referencedClasses;
 	private int totalSize;
-	private Date timestamp;
+	private Date analysisTimestamp;
 	private Footprint baseFootprint;
 	private String java_vm_version = SystemProperties.getProperty("java.vm.version");
 
@@ -86,7 +86,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	public ProjectStats() {
 		this.packageStatsMap = new TreeMap<String, PackageStats>();
 		this.totalClasses = 0;
-		this.timestamp = new Date();
+		this.analysisTimestamp = new Date();
 		this.baseFootprint = new Footprint();
 	}
 
@@ -117,11 +117,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 *                   reported by writeXML.
 	 */
 	public void setTimestamp(String timestamp) throws ParseException {
-		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
+		this.analysisTimestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
 	}
 
 	public void setTimestamp(long timestamp) {
-		this.timestamp = new Date(timestamp);
+		this.analysisTimestamp = new Date(timestamp);
 	}
 
 	public void setVMVersion(String vm_version) {
@@ -248,7 +248,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.startTag("FindBugsSummary");
 
 		xmlOutput.addAttribute("timestamp",
-				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(timestamp));
+				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(analysisTimestamp));
 		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
 		xmlOutput.addAttribute("referenced_classes", String.valueOf(referencedClasses));
 		

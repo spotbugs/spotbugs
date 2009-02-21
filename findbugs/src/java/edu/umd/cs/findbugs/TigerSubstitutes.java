@@ -32,6 +32,7 @@ import org.w3c.dom.NodeList;
  * FindBugs.
  * 
  */
+@Deprecated
 public class TigerSubstitutes {
 
 	@SuppressWarnings("unchecked")

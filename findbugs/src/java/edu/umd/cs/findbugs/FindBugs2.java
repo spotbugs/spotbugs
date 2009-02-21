@@ -68,7 +68,6 @@ import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
@@ -100,32 +99,23 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private Collection<ClassDescriptor> referencedClassSet;
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
-	private UserPreferences userPreferences;
+	
 	private String currentClassName;
-	private String releaseName;
-	private String projectName;
-	private String sourceInfoFileName;
-	private AnalysisFeatureSetting[] analysisFeatureSettingList;
-	private boolean relaxedReportingMode;
-	private boolean abridgedMessages;
-	private String trainingInputDir;
-	private String trainingOutputDir;
+
+
 	private FindBugsProgress progress;
 	private IClassScreener classScreener;
-	private boolean scanNestedArchives;
-	private boolean applySuppression;
 	
-	private boolean noClassOk;
-	private UserAnnotationPlugin userAnnotationPlugin;
-	private boolean userAnnotationSync;
-	private boolean mergeSimilarWarnings = true;
+	private edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin userAnnotationPlugin;
+	private AnalysisOptions analysisOptions = new AnalysisOptions(true);
+
 
 	/**
 	 * Constructor.
 	 */
 	public FindBugs2() {
 		this.classObserverList = new LinkedList<IClassObserver>();
-		this.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
+		this.analysisOptions.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
 		this.progress = new NoOpFindBugsProgress();
 
 		// By default, do not exclude any classes via the class screener
@@ -143,7 +133,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		};
 
 		// By default, we do not want to scan nested archives
-		this.scanNestedArchives = false;
+		this.analysisOptions.scanNestedArchives = false;
 	}
 
 	/**
@@ -191,14 +181,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			buildReferencedClassSet();
 
 			// Create BCEL compatibility layer
-			createAnalysisContext(project, appClassList, sourceInfoFileName);
+			createAnalysisContext(project, appClassList, analysisOptions.sourceInfoFileName);
 
 			// Configure the BugCollection (if we are generating one)
 			FindBugs.configureBugCollection(this);
 
 			// Enable/disabled relaxed reporting mode
-			FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
-			FindBugsDisplayFeatures.setAbridgedMessages(abridgedMessages);
+			FindBugsAnalysisFeatures.setRelaxedMode(analysisOptions.relaxedReportingMode);
+			FindBugsDisplayFeatures.setAbridgedMessages(analysisOptions.abridgedMessages);
 
 			// Configure training databases
 			FindBugs.configureTrainingDatabases(this);
@@ -226,7 +216,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			}
 
 			if (appClassList.size() == 0) {
-				if (noClassOk) {
+				if (analysisOptions.noClassOk) {
 					System.err.println("No classfiles specified; output will have no warnings");
 				} else {
 					throw new NoClassesFoundToAnalyzeException(classPath);
@@ -278,7 +268,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		if (classObserverList != null)  classObserverList.clear();
 		if (referencedClassSet != null) referencedClassSet.clear();
 		analysisCache = null;
-	    analysisFeatureSettingList = null;
+	    analysisOptions.analysisFeatureSettingList = null;
 	    bugReporter = null;
 	    classFactory = null;
 	    classPath = null;
@@ -287,7 +277,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	    executionPlan = null;
 	    progress = null;
 	    project = null;
-	    userPreferences = null;
+	    analysisOptions.userPreferences = null;
     }
 
 	/* (non-Javadoc)
@@ -327,14 +317,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
 	 */
 	public void enableTrainingInput(String trainingInputDir) {
-		this.trainingInputDir = trainingInputDir;
+		this.analysisOptions.trainingInputDir = trainingInputDir;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
 	 */
 	public void enableTrainingOutput(String trainingOutputDir) {
-		this.trainingOutputDir = trainingOutputDir;
+		this.analysisOptions.trainingOutputDir = trainingOutputDir;
 	}
 
 	/* (non-Javadoc)
@@ -370,21 +360,21 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 */
 
 	public String getReleaseName() {
-		return releaseName;
+		return analysisOptions.releaseName;
 	}
 
 	public String getProjectName() {
-		return projectName;
+		return analysisOptions.projectName;
 	}
 	public void setProjectName(String name) {
-		projectName = name;
+		analysisOptions.projectName = name;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
 	 */
 	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
-		this.analysisFeatureSettingList = settingList;
+		this.analysisOptions.analysisFeatureSettingList = settingList;
 	}
 
 	/* (non-Javadoc)
@@ -420,14 +410,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
 	 */
 	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
-		this.relaxedReportingMode = relaxedReportingMode;
+		this.analysisOptions.relaxedReportingMode = relaxedReportingMode;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
 	 */
 	public void setReleaseName(String releaseName) {
-		this.releaseName = releaseName;
+		this.analysisOptions.releaseName = releaseName;
 	}
 
 
@@ -436,28 +426,28 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
 	 */
 	public void setSourceInfoFile(String sourceInfoFile) {
-		this.sourceInfoFileName = sourceInfoFile;
+		this.analysisOptions.sourceInfoFileName = sourceInfoFile;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
 	 */
 	public void setUserPreferences(UserPreferences userPreferences) {
-		this.userPreferences = userPreferences;
+		this.analysisOptions.userPreferences = userPreferences;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
 	 */
 	public boolean emitTrainingOutput() {
-		return trainingOutputDir != null;
+		return analysisOptions.trainingOutputDir != null;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
 	 */
 	public UserPreferences getUserPreferences() {
-		return userPreferences;
+		return analysisOptions.userPreferences;
 	}
 
 	/**
@@ -471,35 +461,35 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
 	 */
 	public String getTrainingInputDir() {
-		return trainingInputDir;
+		return analysisOptions.trainingInputDir;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
 	 */
 	public String getTrainingOutputDir() {
-		return trainingOutputDir;
+		return analysisOptions.trainingOutputDir;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
 	 */
 	public boolean useTrainingInput() {
-		return trainingInputDir != null;
+		return analysisOptions.trainingInputDir != null;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
 	 */
 	public void setScanNestedArchives(boolean scanNestedArchives) {
-		this.scanNestedArchives = scanNestedArchives;
+		this.analysisOptions.scanNestedArchives = scanNestedArchives;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setNoClassOk(boolean)
 	 */
 	public void setNoClassOk(boolean noClassOk) {
-		this.noClassOk = noClassOk;
+		this.analysisOptions.noClassOk = noClassOk;
 	}
 
 	public void loadUserAnnotationPlugin(String userAnnotationPluginClassName, Map<String,String> configurationProperties)
@@ -512,14 +502,14 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			// FIXME: need to think of how to specify what codebase
 			// the user annotation plugin should be loaded from.
 			Class<?> cls = Class.forName(userAnnotationPluginClassName);
-			if (!UserAnnotationPlugin.class.isAssignableFrom(cls)) {
+			if (!edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.class.isAssignableFrom(cls)) {
 				throw new IOException("Class " + userAnnotationPluginClassName + " is not a user annotation plugin");
 			}
 
 			Object instance = cls.newInstance();
 			
 			this.userAnnotationPlugin =
-				UserAnnotationPlugin.class.cast(instance);
+				edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.class.cast(instance);
 			
 			this.userAnnotationPlugin.setProperties(configurationProperties);
 			
@@ -540,7 +530,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		if (DEBUG_UA) {
 			System.out.println("Will synchronize user annotations");
 		}
-		this.userAnnotationSync = userAnnotationSync;
+		this.analysisOptions.userAnnotationSync = userAnnotationSync;
 	}
 
 	/**
@@ -625,7 +615,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), false);
 		}
 
-		builder.scanNestedArchives(scanNestedArchives);
+		builder.scanNestedArchives(analysisOptions.scanNestedArchives);
 
 		builder.build(classPath, progress);
 
@@ -842,10 +832,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * Configure analysis feature settings.
 	 */
 	private void configureAnalysisFeatures() {
-		for (AnalysisFeatureSetting setting : analysisFeatureSettingList) {
+		for (AnalysisFeatureSetting setting : analysisOptions.analysisFeatureSettingList) {
 			setting.configure(AnalysisContext.currentAnalysisContext());
 		}
-		AnalysisContext.currentAnalysisContext().setBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, mergeSimilarWarnings);
+		AnalysisContext.currentAnalysisContext().setBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, analysisOptions.mergeSimilarWarnings);
 	}
 
 	/**
@@ -1049,7 +1039,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			// If the user requested it,
 			// try to load user annotations from the loaded
 			// user annotation plugin.
-			if (userAnnotationPlugin != null && userAnnotationSync) {
+			if (userAnnotationPlugin != null && analysisOptions.userAnnotationSync) {
 				syncUserAnnotations();
 			}
 
@@ -1111,7 +1101,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
 	 */
 	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
-		abridgedMessages = xmlWithAbridgedMessages;
+		analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
 
 	}
 
@@ -1139,7 +1129,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setMergeSimilarWarnings(boolean)
      */
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
-	    this.mergeSimilarWarnings = mergeSimilarWarnings;
+	    this.analysisOptions.mergeSimilarWarnings = mergeSimilarWarnings;
 	    
     }
 
@@ -1147,12 +1137,12 @@ public class FindBugs2 implements IFindBugsEngine2 {
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setApplySuppression(boolean)
      */
     public void setApplySuppression(boolean applySuppression) {
-    	this.applySuppression = applySuppression;
+    	this.analysisOptions.applySuppression = applySuppression;
 	  
     }
     
     public void finishSettings() {
-    	  if (applySuppression) {
+    	  if (analysisOptions.applySuppression) {
     		BugReporter origBugReporter = bugReporter.getDelegate();
   			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, getProject().getSuppressionFilter(), false);
   			bugReporter.setDelegate(filterBugReporter);
