@@ -553,6 +553,7 @@
       <perspectiveExtension targetID="de.tobject.findbugs.FindBugsPerspective">
          <showInPart id="org.eclipse.ui.views.ResourceNavigator"/>
          <showInPart id="org.eclipse.jdt.ui.PackageExplorer"/>
+         <showInPart id="de.tobject.findbugs.view.bugtreeview" />
 
          <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
          <actionSet id="org.eclipse.jdt.ui.SearchActionSet"/>
