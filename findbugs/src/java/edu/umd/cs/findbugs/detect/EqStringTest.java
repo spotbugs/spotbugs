@@ -34,7 +34,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 	boolean callToInternSeen = false;
 	boolean callToEqualsSeen = false;
 	private BugAccumulator bugAccumulator;
-	// String stringOnTop;
+	boolean stringOnTop;
 
 	public EqStringTest(BugReporter bugReporter) {
 		this.bugAccumulator = new BugAccumulator(bugReporter);;
@@ -62,12 +62,13 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 		switch (seen) {
 		case LDC:
 		case LDC_W:
-			constantOnTOS = true;
-			// stringOnTop = stringConstant;
+			constantOnTOS = true;			
 			return;
 		case INVOKEVIRTUAL:
 			String refConstantOperand = getRefConstantOperand();
-			System.out.println(refConstantOperand);
+			if(false){
+				System.out.println(refConstantOperand);
+			}
 			if (refConstantOperand.equals("java.lang.String.intern : ()Ljava.lang.String;"))
 				callToInternSeen = true;
 			if (refConstantOperand.equals("java.lang.String.equals : (Ljava.lang.Object;)Z")
@@ -76,7 +77,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			break;
 		case IF_ACMPEQ:
 		case IF_ACMPNE:
-			if (constantOnTOS && !callToInternSeen)
+			if (stringOnTop && constantOnTOS && !callToInternSeen)
 				bugAccumulator.accumulateBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE), this);
@@ -85,5 +86,12 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			break;
 		}
 		constantOnTOS = false;
+	}
+	
+	@Override
+	public void sawString(String seen) {
+		// only enable detector if comparing string constants, otherwise it detects such
+		// constructs too: if(clazz == BlaBla.class) 
+		stringOnTop = true;
 	}
 }
