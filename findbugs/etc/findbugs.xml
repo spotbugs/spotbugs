@@ -1053,7 +1053,7 @@
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS" />
-  <BugPattern abbrev="NP" type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />
@@ -1112,7 +1112,7 @@
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
-  <BugPattern abbrev="SA" type="SA_LOCAL_DOUBLE_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="SA" type="SA_LOCAL_DOUBLE_ASSIGNMENT" category="STYLE" />
   <BugPattern abbrev="SA" type="SA_FIELD_DOUBLE_ASSIGNMENT" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPUTATION" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS" />
