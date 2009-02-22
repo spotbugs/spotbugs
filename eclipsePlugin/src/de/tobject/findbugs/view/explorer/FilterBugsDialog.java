@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
@@ -68,6 +69,8 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 /**
@@ -196,6 +199,8 @@ public class FilterBugsDialog extends SelectionDialog {
 	private final Set<BugCode> preSelectedTypes;
 	private final Set<BugCode> allowedTypes;
 	private final Map<BugCode, Set<BugPattern>> codeToPattern;
+	private final Map<BugPattern, Set<DetectorFactory>> patternToFactory;
+
 	private ContainerCheckedTreeViewer checkList;
 	private TextPresentation presentation;
 	private StyledText htmlControl;
@@ -222,6 +227,7 @@ public class FilterBugsDialog extends SelectionDialog {
 			Set<BugCode> filteredTypes) {
 		super(parentShell);
 		codeToPattern = new HashMap<BugCode, Set<BugPattern>>();
+		patternToFactory = new HashMap<BugPattern, Set<DetectorFactory>>();
 		allowedPatterns = FindbugsPlugin.getKnownPatterns();
 		allowedTypes = FindbugsPlugin.getKnownPatternTypes();
 		preSelectedPatterns = filteredPatterns;
@@ -263,7 +269,33 @@ public class FilterBugsDialog extends SelectionDialog {
 		}
 		checkedElements = merged.toArray();
 		sortCheckedElements();
+
+		initDetectorMaps();
 	}
+
+	private void initDetectorMaps() {
+
+		Iterator<DetectorFactory> iterator =
+			DetectorFactoryCollection.instance().factoryIterator();
+		while (iterator.hasNext()) {
+			DetectorFactory factory = iterator.next();
+			Set<BugPattern> patterns = factory.getReportedBugPatterns();
+			for (BugPattern pattern : patterns) {
+				Set<DetectorFactory> set = patternToFactory.get(pattern);
+				if(set == null){
+					set = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>(){
+						public int compare(DetectorFactory f1, DetectorFactory f2) {
+							return f1.getFullName().compareTo(f2.getFullName());
+						}
+					});
+					patternToFactory.put(pattern, set);
+				}
+				set.add(factory);
+			}
+		}
+	}
+
+
 
 	@Override
 	public boolean close() {
@@ -559,17 +591,60 @@ public class FilterBugsDialog extends SelectionDialog {
 			txt = pattern.getDetailText();
 		} else if(element instanceof BugCode) {
 			BugCode code = (BugCode) element;
-			txt = code.getDescription();
-			txt += "<p><br>Patterns:<br>";
-			Set<BugPattern> patterns = getPatterns(code);
-			for (BugPattern bugPattern : patterns) {
-				txt += bugPattern.getType() + "<br>";
-			}
+			txt = getPatternTypeDescription(code);
 		}
 		Rectangle size = htmlControl.getClientArea();
 		txt = presenter.updatePresentation(getShell()
 				.getDisplay(), txt, presentation, size.width,
 				size.height);
 		htmlControl.setText(txt);
+	}
+
+
+
+	private String getPatternTypeDescription(BugCode code) {
+		StringBuilder sb = new StringBuilder(code.getDescription());
+		sb.append("<p><br>Patterns:<br>");
+		Set<BugPattern> patterns = getPatterns(code);
+		for (BugPattern bugPattern : patterns) {
+			sb.append(bugPattern.getType()).append("<br>");
+		}
+		// add reported by...
+		Set<DetectorFactory> allFactories = new TreeSet<DetectorFactory>(
+				new Comparator<DetectorFactory>() {
+					public int compare(DetectorFactory f1, DetectorFactory f2) {
+						return f1.getFullName().compareTo(f2.getFullName());
+					}
+				});
+		for (BugPattern bugPattern : patterns) {
+			Set<DetectorFactory> set = patternToFactory.get(bugPattern);
+			if(set != null) {
+				allFactories.addAll(set);
+			} else {
+				if(shouldReportMissing(bugPattern)){
+					FindbugsPlugin.getDefault().logError(
+							"Pattern not reported by any detector, but defined in findbugs.xml: "
+									+ bugPattern);
+				}
+			}
+		}
+		sb.append("<p>Reported by:<br>");
+		for (DetectorFactory factory : allFactories) {
+			sb.append(factory.getFullName()).append("<br>");
+		}
+		return sb.toString();
+	}
+
+
+
+	private boolean shouldReportMissing(BugPattern bugPattern) {
+		return !bugPattern.isDeprecated()
+			// not reported but defined. TODO ask Bill to clarify what is the state of it
+			&& !"VA_FORMAT_STRING_ARG_MISMATCH".equals(bugPattern.getType())
+			// reported many times by some test code
+			&& !"UNKNOWN".equals(bugPattern.getType())
+			// reported by FindBugs2 itself (no one detector factory exists):
+			&& !"SKIPPED_CLASS_TOO_BIG".equals(bugPattern.getType()
+					);
 	}
 }

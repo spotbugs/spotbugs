@@ -39,7 +39,8 @@ public class BugPattern implements Comparable<BugPattern> {
 	final private String detailText;
 	private String detailHTML;
 	final int cweid;
-	int priorityAdjustment = 0;
+	int priorityAdjustment;
+	private boolean deprecated;
 
 	/**
 	 * Constructor.
@@ -200,5 +201,22 @@ public class BugPattern implements Comparable<BugPattern> {
     @Override
     public String toString() {
         return "Bugpattern[" + type + "]";
+    }
+    
+    /**
+     * The method is not public to disallow modification of this attribute
+     * @param deprecated true if this bug pattern is not used anymore and exists for
+	 *         backward compatibility only
+     */
+	/*package protected*/ void setDeprecated(boolean deprecated) {
+	    this.deprecated = deprecated;
+    }
+	
+	/**
+	 * @return true if this bug pattern is not used anymore and exists for
+	 *         backward compatibility only
+	 */
+	public boolean isDeprecated() {
+	    return deprecated;
     }
 }

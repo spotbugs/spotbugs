@@ -402,6 +402,17 @@ public class PluginLoader {
 			BugPattern bugPattern = new BugPattern(type, abbrev, category,
 					Boolean.valueOf(experimental).booleanValue(),
 					shortDesc, longDesc, detailText, cweid);
+			
+			try {
+				String deprecatedStr = bugPatternNode.valueOf("@deprecated");
+				boolean deprecated = Boolean.valueOf(deprecatedStr).booleanValue();
+				if(deprecated){
+					bugPattern.setDeprecated(deprecated);
+				}
+			} catch (RuntimeException e) {
+				assert true; // ignore
+			}
+			
 			plugin.addBugPattern(bugPattern);
 			boolean unknownCategory = (null == i18n.getBugCategory(category));
 			if (unknownCategory) {

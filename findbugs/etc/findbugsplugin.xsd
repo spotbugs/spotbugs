@@ -47,6 +47,7 @@
 		<xsd:attribute name="category" type="IdentifierType"/>
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
 		<xsd:attribute name="cweid" type="xsd:positiveInteger" use="optional"/>
+		<xsd:attribute name="deprecated" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="BugCodeType">

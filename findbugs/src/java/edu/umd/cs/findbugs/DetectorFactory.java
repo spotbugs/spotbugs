@@ -22,9 +22,12 @@ package edu.umd.cs.findbugs;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -288,12 +291,12 @@ public class DetectorFactory {
 	}
 
 	/**
-	 * Get Collection of all BugPatterns this detector reports.
-	 * An empty Collection means that we don't know what kind of
+	 * Get set of all BugPatterns this detector reports.
+	 * An empty set means that we don't know what kind of
 	 * bug patterns might be reported.
 	 */
-	public Collection<BugPattern> getReportedBugPatterns() {
-		List<BugPattern> result = new LinkedList<BugPattern>();
+	public Set<BugPattern> getReportedBugPatterns() {
+		Set<BugPattern> result = new TreeSet<BugPattern>();
 		StringTokenizer tok = new StringTokenizer(reports, ",");
 		while (tok.hasMoreTokens()) {
 			String type = tok.nextToken();
