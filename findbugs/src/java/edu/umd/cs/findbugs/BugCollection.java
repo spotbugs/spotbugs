@@ -28,6 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import javax.annotation.WillClose;
 
@@ -305,4 +306,6 @@ public interface BugCollection extends Iterable<BugInstance>
 	public boolean isApplySuppressions();
 
 	public void setApplySuppressions(boolean applySuppressions);
+	
+	public UserAnnotationPlugin getUserAnnotationPlugin();
 }

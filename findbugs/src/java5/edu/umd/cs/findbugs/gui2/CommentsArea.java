@@ -40,7 +40,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 
-import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -265,10 +264,11 @@ public class CommentsArea {
 			return;
 
 		String comments = getCurrentUserCommentsText();
-		if (node.getBug().getAnnotationText().equals(comments))
+		final BugInstance bug = node.getBug();
+		if (bug.getAnnotationText().equals(comments))
 			return;
 
-		node.getBug().setAnnotationText(comments);
+		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
 		setProjectChanged(true);
 		changed = false;
 		addToPrevComments(comments);
@@ -489,9 +489,11 @@ public class CommentsArea {
 	}
 
 	protected boolean changeDesignationOfBug(BugLeafNode theNode, String selection) {
-		BugDesignation userDesignation = theNode.getBug().getNonnullUserDesignation();
-		if (userDesignation.getDesignationKey().equals(selection)) return false;
-		userDesignation.setDesignationKey(selection);
+		BugInstance bug = theNode.getBug();
+		String oldValue = bug.getUserDesignationKey();
+		if (selection.equals(oldValue))
+			return false;
+		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
 		return true;
 	}
 
@@ -501,7 +503,8 @@ public class CommentsArea {
 		else {
 			int selectedIndex = designationComboBox
 								.getSelectedIndex();
-			if (selectedIndex >= 0) setDesignationComboBox(designationKeys.get(selectedIndex));
+			if (selectedIndex >= 0) 
+				setDesignationComboBox(designationKeys.get(selectedIndex));
 			else
 				Debug.println("Couldn't find selected index in designationComboBox: " + designationComboBox.getSelectedItem());
 		}

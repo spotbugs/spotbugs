@@ -315,8 +315,14 @@ public class I18N {
 	 */
 	public List<String> getUserDesignationKeys(boolean sort) {
 		List<String> result = getUserDesignationKeys();
-		if (sort) Collections.sort(result, designationKeyComparator);
+		if (sort) 
+			Collections.sort(result, designationKeyComparator);
 		return result;
+	}
+	
+	public String getUserDesignationKey(int index) {
+		List<String> keys = getUserDesignationKeys(true);
+		return keys.get(index);
 	}
 
 

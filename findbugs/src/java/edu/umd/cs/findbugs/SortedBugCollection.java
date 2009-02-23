@@ -66,6 +66,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
+import edu.umd.cs.findbugs.userAnnotations.ri.JDBCUserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -86,6 +88,11 @@ public class SortedBugCollection implements BugCollection {
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
 	private boolean applySuppressions = false;
+	private UserAnnotationPlugin userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
+	
+	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin() {
+		return userAnnotationPlugin;
+	}
 	
 	public boolean isApplySuppressions() {
     	return applySuppressions;
@@ -254,7 +261,8 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			Profiler.getInstance().end(handler.getClass());
 		}
-
+		if (userAnnotationPlugin != null)
+			userAnnotationPlugin.loadUserAnnotations(this);
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}
@@ -1123,6 +1131,7 @@ public class SortedBugCollection implements BugCollection {
 	public String getAnalysisVersion() {
 		return this.analysisVersion;
 	}
+
 }
 
 // vim:ts=4

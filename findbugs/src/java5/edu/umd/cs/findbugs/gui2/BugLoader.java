@@ -83,7 +83,6 @@ public class BugLoader {
 		List<String> possibleDirectories=p.getSourceDirList();
 		MainFrame instance = MainFrame.getInstance();
 
-		//			System.out.println("List of directories: "+p.getSourceDirList());
 		instance.setSourceFinder(new SourceFinder());
 		instance.getSourceFinder().setSourceBaseList(possibleDirectories);
 
@@ -238,8 +237,8 @@ public class BugLoader {
 	 */
 	public static @CheckForNull BugCollection doAnalysis(@NonNull Project p)
 	{
-		if (p == null) throw new NullPointerException("null project");
-
+		if (p == null) 
+			throw new NullPointerException("null project");
 
 		RedoAnalysisCallback ac= new RedoAnalysisCallback();
 

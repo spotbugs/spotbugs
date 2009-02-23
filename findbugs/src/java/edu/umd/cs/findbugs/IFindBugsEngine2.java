@@ -29,22 +29,4 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public interface IFindBugsEngine2 extends IFindBugsEngine {
-	/**
-	 * Load given user annotation plugin.
-	 * 
-	 * @param userAnnotationPluginClassName name of user annotation plugin class
-	 * @param configurationProperties       user annotation plugin configuration properties
-	 * @throws java.io.IOException
-	 */
-	public void loadUserAnnotationPlugin(String userAnnotationPluginClassName, Map<String,String> configurationProperties)
-		throws IOException;
-	
-	/**
-	 * Set whether or not the user annotation plugin should be used to
-	 * load user annotations to be applied to generated analysis results.
-	 * 
-	 * @param userAnnotationSync true if user annotations should be sync'ed with generated analysis results,
-	 *                           false if not
-	 */
-	public void setUserAnnotationSync(boolean userAnnotationSync);
 }

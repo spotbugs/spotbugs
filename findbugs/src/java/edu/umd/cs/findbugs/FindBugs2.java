@@ -106,7 +106,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private FindBugsProgress progress;
 	private IClassScreener classScreener;
 	
-	private edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin userAnnotationPlugin;
 	private AnalysisOptions analysisOptions = new AnalysisOptions(true);
 
 
@@ -492,46 +491,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		this.analysisOptions.noClassOk = noClassOk;
 	}
 
-	public void loadUserAnnotationPlugin(String userAnnotationPluginClassName, Map<String,String> configurationProperties)
-			throws IOException {
-		if (DEBUG_UA) {
-			System.out.println("Attempting to load user annotation plugin " + userAnnotationPluginClassName + "...");
-		}
-		
-		try {
-			// FIXME: need to think of how to specify what codebase
-			// the user annotation plugin should be loaded from.
-			Class<?> cls = Class.forName(userAnnotationPluginClassName);
-			if (!edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.class.isAssignableFrom(cls)) {
-				throw new IOException("Class " + userAnnotationPluginClassName + " is not a user annotation plugin");
-			}
-
-			Object instance = cls.newInstance();
-			
-			this.userAnnotationPlugin =
-				edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.class.cast(instance);
-			
-			this.userAnnotationPlugin.setProperties(configurationProperties);
-			
-			if (DEBUG_UA) {
-				System.out.println("  Successfully loaded and configured " + userAnnotationPluginClassName);
-			}
-
-		} catch (ClassNotFoundException e) {
-			Util.throwIOException("Could not load user annotation plugin", e);
-		} catch (InstantiationException e) {
-			Util.throwIOException("Could not create instance of user annotation plugin object", e);
-		} catch (IllegalAccessException e) {
-			Util.throwIOException("Could not create instance of user annotation plugin object", e);
-		}
-	}
-
-	public void setUserAnnotationSync(boolean userAnnotationSync) {
-		if (DEBUG_UA) {
-			System.out.println("Will synchronize user annotations");
-		}
-		this.analysisOptions.userAnnotationSync = userAnnotationSync;
-	}
+	
 
 	/**
 	 * Create the analysis cache object.
@@ -1036,13 +996,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 				passCount++;
 			}
 			
-			// If the user requested it,
-			// try to load user annotations from the loaded
-			// user annotation plugin.
-			if (userAnnotationPlugin != null && analysisOptions.userAnnotationSync) {
-				syncUserAnnotations();
-			}
-
 			// Flush any queued bug reports
 			bugReporter.finish();
 
@@ -1102,27 +1055,6 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 */
 	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
 		analysisOptions.abridgedMessages = xmlWithAbridgedMessages;
-
-	}
-
-	private void syncUserAnnotations() {
-		if (DEBUG_UA) {
-			System.out.println("About to sync user annotations...");
-		}
-		
-		BugReporter realBugReporter = bugReporter.getRealBugReporter();
-
-		if (!(realBugReporter instanceof BugCollectionBugReporter)) {
-			bugReporter.logError("Cannot load user annotations because there is no BugCollection: use -xml output option");
-		} else {
-			BugCollection bugCollection = ((BugCollectionBugReporter) realBugReporter).getBugCollection();
-
-			try {
-				userAnnotationPlugin.loadUserAnnotations(bugCollection);
-			} catch (Exception e) {
-				bugReporter.logError("Could not sync user annotations using plugin", e);
-			}
-		}
 	}
 
 	/* (non-Javadoc)
@@ -1130,24 +1062,21 @@ public class FindBugs2 implements IFindBugsEngine2 {
      */
     public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
 	    this.analysisOptions.mergeSimilarWarnings = mergeSimilarWarnings;
-	    
     }
 
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setApplySuppression(boolean)
      */
     public void setApplySuppression(boolean applySuppression) {
-    	this.analysisOptions.applySuppression = applySuppression;
-	  
+    	this.analysisOptions.applySuppression = applySuppression;  
     }
     
     public void finishSettings() {
-    	  if (analysisOptions.applySuppression) {
-    		BugReporter origBugReporter = bugReporter.getDelegate();
-  			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, getProject().getSuppressionFilter(), false);
-  			bugReporter.setDelegate(filterBugReporter);
-  	    }  
-    }
-
+		if (analysisOptions.applySuppression) {
+			BugReporter origBugReporter = bugReporter.getDelegate();
+			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, getProject().getSuppressionFilter(), false);
+			bugReporter.setDelegate(filterBugReporter);
+		}
+	}
 
 }
