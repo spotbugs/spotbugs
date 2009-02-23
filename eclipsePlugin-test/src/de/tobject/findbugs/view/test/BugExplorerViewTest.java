@@ -52,7 +52,7 @@ import de.tobject.findbugs.view.explorer.Grouping;
  */
 public class BugExplorerViewTest extends AbstractFindBugsTest {
 
-	private static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
+	static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
 	private static <T> Set<T> setOf(T... a) {
 		return new HashSet<T>(Arrays.asList(a));
