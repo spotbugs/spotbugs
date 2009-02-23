@@ -31,20 +31,6 @@ import edu.umd.cs.findbugs.BugInstance;
  */
 public interface UserAnnotationPlugin {
 
-	/**
-	 * Get Set of property names defining properties required
-	 * for the plugin to persist the user annotations.
-	 */
-	Set<String> getPropertyNames();
-	
-	/**
-	 * Set the key/value pairs defining properties required
-	 * for the plugin to persist the user annotations.
-	 * 
-	 * @param properties set of key/value pairs defining properties required by the plugin
-	 * @return FIXME: what does this mean?
-	 */
-	boolean setProperties(Map<String,String> properties);
 
 	/**
 	 * For the given BugCollection, load the user annotations

@@ -57,6 +57,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	final private String source;
 	private final boolean usesConcurrency;
 
+
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
 		private List<FieldInfo>fieldDescriptorList = new LinkedList<FieldInfo>();
 
@@ -330,38 +331,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		return source;
 	}
 	
-	static final private AnnotatedObject NOT_CACHED = new AnnotatedObject() {
-
-		public AnnotationValue getAnnotation(ClassDescriptor desc) {
-	        throw new UnsupportedOperationException();
-        }
-
-		public Collection<ClassDescriptor> getAnnotationDescriptors() {
-			throw new UnsupportedOperationException();
-        }
-
-		public Collection<AnnotationValue> getAnnotations() {
-			throw new UnsupportedOperationException();
-        }
-
-		public ClassDescriptor getClassDescriptor() {
-			throw new UnsupportedOperationException();
-        }
-
-		public AnnotatedObject getContainingScope() {
-			throw new UnsupportedOperationException();
-        }
-
-		public ElementType getElementType() {
-			throw new UnsupportedOperationException();
-        }
-
-		public boolean isSynthetic() {
-			throw new UnsupportedOperationException();
-        }};
-	@CheckForNull AnnotatedObject containingScope = NOT_CACHED;
+	@CheckForNull AnnotatedObject containingScope;
+	private boolean containingScopeCached = false;
 	public @CheckForNull AnnotatedObject getContainingScope() {
-		if (containingScope == NOT_CACHED) {
+		if (!containingScopeCached) {
 			containingScope = getContainingScope0();
 		}
 		return containingScope;

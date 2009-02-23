@@ -88,7 +88,7 @@ public class Churn {
 
 
 	public void dump(PrintStream out) {
-		System.out.printf("%3s %5s %5s %5s  %s\n", "%", "const", "fix", "new");
+		System.out.printf("%3s %5s %5s  %s\n", "%", "const", "fix", "new");
 		for(Map.Entry<String, Data> e : data.entrySet()) {
 			Data d = e.getValue();
 			int total = d.persist + d.fixed;

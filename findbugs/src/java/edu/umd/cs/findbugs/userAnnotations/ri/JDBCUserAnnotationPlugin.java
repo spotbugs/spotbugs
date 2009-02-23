@@ -34,6 +34,7 @@ import java.util.Set;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 
@@ -42,22 +43,20 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
  */
 public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.userAnnotations.Plugin#getPropertyNames()
-	 */
-	public Set<String> getPropertyNames() {
-		HashSet<String> result = new HashSet<String>();
-		result.add("dbDriver");
-		result.add("dbUrl");
-		result.add("dbUser");
-		result.add("dbPassword");
-		result.add("findbugsUser");
-		return result;
+	public static JDBCUserAnnotationPlugin getPlugin() {
+
+		JDBCUserAnnotationPlugin plugin = new JDBCUserAnnotationPlugin();
+		if (!plugin.setProperties())
+			return null;
+		return plugin;
 	}
 
-	// dbDriver=com.mysql.jdbc.Driver,dbUrl=jdbc:mysql://localhost/findbugs,dbUser=root,dbPassword=
+	//dbDriver=com.mysql.jdbc.Driver,dbUrl=jdbc:mysql://localhost/findbugs,dbUser
+	// =root,dbPassword=
+
+	private String getProperty(String propertyName) {
+		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -65,32 +64,36 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	 * @see
 	 * edu.umd.cs.findbugs.userAnnotations.Plugin#setProperties(java.util.Map)
 	 */
-	public boolean setProperties(Map<String, String> properties) {
-		String sqlDriver = properties.get("dbDriver");
-		url = properties.get("dbUrl");
-		dbUser = properties.get("dbUser");
-		dbPassword = properties.get("dbPassword");
-		findbugsUser = properties.get("findbugsUser");
+	private boolean setProperties() {
+		String sqlDriver = getProperty("dbDriver");
+		url = getProperty("dbUrl");
+		dbUser = getProperty("dbUser");
+		dbPassword = getProperty("dbPassword");
+		findbugsUser = getProperty("findbugsUser");
+		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null)
+			return false;
 		if (findbugsUser == null)
 			findbugsUser = System.getProperty("user.name", "");
 		try {
 			Class.forName(sqlDriver);
 			Connection c = getConnection();
 			Statement stmt = c.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT COUNT (hash) from  findbugsIssues");
+			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugsIssues");
+			boolean result = false;
 			if (rs.next()) {
 				int count = rs.getInt(1);
 				System.out.println("Count is " + count);
-				return true;
+				result = true;
 			}
 			rs.close();
 			stmt.close();
 			c.close();
+			return result;
 
 		} catch (Exception e) {
 			AnalysisContext.logError("Unable to connect to database", e);
+			return false;
 		}
-		return false;
 	}
 
 	String url, dbUser, dbPassword, findbugsUser;
@@ -110,12 +113,12 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 		try {
 			Connection c = getConnection();
 			java.sql.Date now = new java.sql.Date(bugs.getAnalysisTimestamp());
-			PreparedStatement stmt = c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
+			PreparedStatement stmt = c
+			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
 			PreparedStatement stmt2 = c
-	        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
-			PreparedStatement stmt3 = 
-		        c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
-		
+			        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
+			PreparedStatement stmt3 = c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
+
 			int existingIssues = 0;
 			int newIssues = 0;
 			for (BugInstance bug : bugs.getCollection()) {
@@ -141,19 +144,10 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 					} else {
 						System.out.println("Issue lastSeen " + lastSeen + ", now is " + now);
 					}
-					
+
 				} else {
 					newIssues++;
-					int col = 1;
-					stmt2.setDate(col++, now);
-					stmt2.setDate(col++, now);
-					stmt2.setDate(col++, now);
-					stmt2.setString(col++, findbugsUser);
-					stmt2.setString(col++, bug.getInstanceHash());
-					stmt2.setString(col++, bug.getBugPattern().getType());
-					stmt2.setInt(col++, bug.getPriority());
-					stmt2.setString(col++, bug.getPrimaryClass().getClassName());
-					stmt2.execute();
+					addEntry(stmt2, now, bug);
 				}
 				rs.close();
 			}
@@ -161,27 +155,54 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			stmt2.close();
 			stmt3.close();
 			c.close();
-			System.out.printf("%d issues are new, %d issues are preexisting\n",
-					newIssues, existingIssues);
+			System.out.printf("%d issues are new, %d issues are preexisting\n", newIssues, existingIssues);
 		} catch (SQLException e) {
 			AnalysisContext.logError("Problems looking up user annotations", e);
 		}
 
 	}
 
-	public void storeUserAnnotation(Connection c, BugInstance bug) throws SQLException {
+	private void addEntry(PreparedStatement stmt2, java.sql.Date now, BugInstance bug) throws SQLException {
+		int col = 1;
+		stmt2.setDate(col++, now);
+		stmt2.setDate(col++, now);
+		stmt2.setDate(col++, now);
+		stmt2.setString(col++, findbugsUser);
+		stmt2.setString(col++, bug.getInstanceHash());
+		stmt2.setString(col++, bug.getBugPattern().getType());
+		stmt2.setInt(col++, bug.getPriority());
+		stmt2.setString(col++, bug.getPrimaryClass().getClassName());
+		stmt2.execute();
+	}
+
+	private void updatedUserAnnotation(Connection c, BugInstance bug) throws SQLException {
 		BugDesignation bd = bug.getUserDesignation();
 		if (bd == null)
 			return;
+		PreparedStatement stmt0 = c.prepareStatement("SELECT id FROM findbugsIssues WHERE hash=?");
+		stmt0.setString(1, bug.getInstanceHash());
+		ResultSet rs = stmt0.executeQuery();
+		if (!rs.next()) {
+			PreparedStatement stmt2 = c
+			        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
+			addEntry(stmt2, new java.sql.Date(System.currentTimeMillis()), bug);
+			stmt2.close();
+		}
+
 		PreparedStatement stmt = c
-		        .prepareStatement("INSERT into  findbugsIssues (status, updated, who, comment, hash) VALUES (?,?,?,?,?)");
+		        .prepareStatement("UPDATE findbugsIssues SET status=?, updated=?, who=?, comment=? WHERE hash=?");
 		stmt.setString(1, bd.getDesignationKey());
 		stmt.setDate(2, new java.sql.Date(bd.getTimestamp()));
-		stmt.setString(3, bd.getUser());
-		stmt.setString(4, bd.getAnnotationText());
+		stmt.setString(3, findbugsUser);
+		String annotationText = bd.getAnnotationText();
+		if (annotationText == null)
+			annotationText = "";
+		stmt.setString(4, annotationText);
+
 		stmt.setString(5, bug.getInstanceHash());
-		stmt.execute();
+		boolean result = stmt.execute();
 		stmt.close();
+		return;
 
 	}
 
@@ -195,10 +216,11 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	public void storeUserAnnotation(BugInstance bug) {
 		try {
 			Connection c = getConnection();
-			storeUserAnnotation(c, bug);
+			updatedUserAnnotation(c, bug);
 			c.close();
 		} catch (SQLException e) {
 			AnalysisContext.logError("Problems looking up user annotations", e);
+			e.printStackTrace();
 		}
 
 	}
@@ -214,7 +236,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 		try {
 			Connection c = getConnection();
 			for (BugInstance bug : bugs.getCollection()) {
-				storeUserAnnotation(c, bug);
+				updatedUserAnnotation(c, bug);
 			}
 			c.close();
 		} catch (SQLException e) {

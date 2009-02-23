@@ -3444,7 +3444,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private void synchBugAnnotation(BugInstance selected) {
 		if (currentBugInstance != null) {
 			String text = annotationTextArea.getText();
-			currentBugInstance.setAnnotationText(text);
+			currentBugInstance.setAnnotationText(text, null);
 		}
 
 		//annotationTextArea.setText(selected.getAnnotationText());
