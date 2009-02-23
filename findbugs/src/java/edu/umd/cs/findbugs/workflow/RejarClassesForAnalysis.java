@@ -465,7 +465,7 @@ public class RejarClassesForAnalysis {
 			zipInputFile = new ZipFile(f);
 			for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
 				ZipEntry ze = e.nextElement();
-				if (!ze.isDirectory() && ze.getName().endsWith(".class"))
+				if (!ze.isDirectory() && ze.getName().endsWith(".class") && ze.getSize() != 0)
 					handler.handle(zipInputFile, ze);
 
 			}
