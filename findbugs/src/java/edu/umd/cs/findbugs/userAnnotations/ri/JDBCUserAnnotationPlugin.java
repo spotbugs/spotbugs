@@ -92,6 +92,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 		} catch (Exception e) {
 			AnalysisContext.logError("Unable to connect to database", e);
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -118,7 +119,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			PreparedStatement stmt2 = c
 			        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
 			PreparedStatement stmt3 = c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
-
+			long startTime = System.currentTimeMillis();
 			int existingIssues = 0;
 			int newIssues = 0;
 			for (BugInstance bug : bugs.getCollection()) {
@@ -155,7 +156,8 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			stmt2.close();
 			stmt3.close();
 			c.close();
-			System.out.printf("%d issues are new, %d issues are preexisting\n", newIssues, existingIssues);
+			long timeTaken = System.currentTimeMillis() - startTime;
+			System.out.printf("%d issues are new, %d issues are preexisting, %d milliseconds, %d milliseconds/issue\n", newIssues, existingIssues, timeTaken, timeTaken / (newIssues + existingIssues));
 		} catch (SQLException e) {
 			AnalysisContext.logError("Problems looking up user annotations", e);
 		}
