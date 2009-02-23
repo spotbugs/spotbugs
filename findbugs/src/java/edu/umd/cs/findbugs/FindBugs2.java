@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +37,6 @@ import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -69,9 +67,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
-import java.util.Map;
 
 /**
  * FindBugs driver class.
@@ -865,18 +861,21 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			}
 			progress.predictPassCount(classesPerPass);
 			XFactory factory = AnalysisContext.currentXFactory();
+			Collection<ClassDescriptor> badClasses = new LinkedList<ClassDescriptor>();
 			for (ClassDescriptor desc : referencedClassSet) {
-
 				try {
 					XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
 					factory.intern(info);
 				} catch (CheckedAnalysisException e) {
 					AnalysisContext.logError("Couldn't get class info for " + desc, e);
+					badClasses.add(desc);
+				} catch (RuntimeException e) {
+					AnalysisContext.logError("Couldn't get class info for " + desc, e);
+					badClasses.add(desc);
 				}
-
-
 			}
 			
+			referencedClassSet.removeAll(badClasses);
 			bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
 			for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext();) {
 				AnalysisPass pass = i.next();

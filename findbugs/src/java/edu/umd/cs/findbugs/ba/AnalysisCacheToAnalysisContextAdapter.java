@@ -29,7 +29,6 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
-//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.jsr305.DirectlyRelevantTypeQualifiersDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysisFeatures;
@@ -320,7 +319,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
 
 		Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
-		for (ClassDescriptor appClass : allClassDescriptors) {
+		for (ClassDescriptor appClass : allClassDescriptors) try {
 				XClass xclass = currentXFactory().getXClass(appClass);
 
 				if (xclass == null) continue;
@@ -330,6 +329,8 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 				else if (xclass instanceof ClassInfo)
 						getSubtypes2().addClass(xclass);
 					
+		} catch (Exception e) {
+			AnalysisContext.logError("Unable to get XClass for " + appClass, e);
 		}
 		
 		if (Subtypes2.ENABLE_SUBTYPES2 && Subtypes2.DEBUG) {
