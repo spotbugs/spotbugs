@@ -1,6 +1,8 @@
 package bugIdeas;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Ideas_2009_02_05 {
 	
@@ -23,6 +25,11 @@ public class Ideas_2009_02_05 {
 	}
 	public boolean isSaturday(Date d) {
 		return d.getDay() == 7;
+	}
+	
+	// month is 0 based; this call is bogus
+	public Calendar endDate() {
+		return new GregorianCalendar(2008, 12, 31);
 	}
 
 }
