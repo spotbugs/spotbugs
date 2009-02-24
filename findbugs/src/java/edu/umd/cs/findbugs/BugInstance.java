@@ -610,7 +610,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (u.getAnnotationText() != null && u.getAnnotationText().equals(annotationText))
 			return;
 		u.setAnnotationText(annotationText);
-		UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}
