@@ -27,8 +27,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.*;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -45,7 +43,6 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Visitor to model the effects of bytecode instructions on the
@@ -356,6 +353,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	@Override
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+		String methodName = obj.getMethodName(cpg);
+		String signature = obj.getSignature(cpg);
+		String className = obj.getClassName(cpg);
+		if (methodName.equals("asList") && className.equals("java.util.Arrays") && signature.equals("([Ljava/lang/Object;)Ljava/util/List;")) {
+			consumeStack(obj);
+			Type returnType = Type.getType("Ljava/util/Arrays$ArrayList;");
+			pushValue(returnType);
+			return;
+		}
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
@@ -459,6 +465,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean handleToArray(InvokeInstruction obj) {
 		try {
 		TypeFrame frame = getFrame();
+		Type topValue = frame.getTopValue();
 		if (obj.getName(getCPG()).equals("toArray")) {
 			ReferenceType target = obj.getReferenceType(getCPG());
 			String signature = obj.getSignature(getCPG());
@@ -470,7 +477,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				frame.pushValue(resultType);
 				frame.setExact(frame.getStackLocation(0), topIsExact);
 				return true;
-			} else if (signature.equals("()[Ljava/lang/Object;")  && isCollection(target)) {
+			} else if (signature.equals("()[Ljava/lang/Object;")  && isCollection(target) && !topValue.getSignature().equals("Ljava/util/Arrays$ArrayList;")) {
 				consumeStack(obj);
 				pushReturnType(obj);
 				frame.setExact(frame.getStackLocation(0), true);
