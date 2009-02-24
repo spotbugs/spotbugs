@@ -64,7 +64,6 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationComparator;
@@ -275,7 +274,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 		if (!isStaticImport()) {
 			Name accessControllerName;
 			if (isUpdateImports()) {
-                accessControllerName = ast.newSimpleName(TigerSubstitutes.getSimpleName(AccessController.class));
+                accessControllerName = ast.newSimpleName(AccessController.class.getSimpleName());
 			} else {
 				accessControllerName = ast.newName(AccessController.class.getName());
 			}
@@ -305,7 +304,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 		Name privilegedActionName;
 		if (isUpdateImports()) {
-			privilegedActionName = ast.newSimpleName(TigerSubstitutes.getSimpleName(PrivilegedAction.class));
+			privilegedActionName = ast.newSimpleName(PrivilegedAction.class.getSimpleName());
         } else {
 			privilegedActionName = ast.newName(PrivilegedAction.class.getName());
 		}
@@ -401,7 +400,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
 	protected static class ClassLoaderCreationFinder extends ASTVisitor {
 
-		private ClassInstanceCreation classLoaderCreation = null;
+		private ClassInstanceCreation classLoaderCreation;
 
 		@Override
 		public boolean visit(ClassInstanceCreation node) {
@@ -418,15 +417,15 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 			return classLoaderCreation;
 		}
 
-		private boolean isClassLoaderCreation(ClassInstanceCreation classLoaderCreation) {
-			return isClassLoader(classLoaderCreation.getType());
+		private static boolean isClassLoaderCreation(ClassInstanceCreation node) {
+			return isClassLoader(node.getType());
 		}
 
-		private boolean isClassLoader(Type type) {
+		private static boolean isClassLoader(Type type) {
 			return isClassLoader(type.resolveBinding());
 		}
 
-		private boolean isClassLoader(ITypeBinding typeBinding) {
+		private static boolean isClassLoader(ITypeBinding typeBinding) {
 			if (typeBinding.getQualifiedName().equals(ClassLoader.class.getName())) {
 				return true;
             }

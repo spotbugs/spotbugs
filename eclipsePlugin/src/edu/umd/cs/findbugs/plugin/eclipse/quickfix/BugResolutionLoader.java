@@ -2,19 +2,19 @@
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
- * 
+ *
  * Author: Thierry Wyss, Marco Busarello
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -22,10 +22,6 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
-import static java.lang.Double.parseDouble;
-import static java.lang.Float.parseFloat;
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +45,6 @@ import org.xml.sax.SAXException;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -65,9 +60,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * &lt;/bug&gt;<br><br>
  * </CODE>
  * The attributes specified for a <CODE>BugResolution</CODE> supports all
- * primitive types and strings. If an error occurs while loading a 
- * <CODE>BugResolution</CODE>, the error will be reported to the error log. 
- * 
+ * primitive types and strings. If an error occurs while loading a
+ * <CODE>BugResolution</CODE>, the error will be reported to the error log.
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
@@ -113,7 +108,7 @@ public class BugResolutionLoader {
 	/**
 	 * Loades the <CODE>BugResolutions</CODE> from the given XML-Document into
 	 * the specified <CODE>BugResolutionAssociations</CODE>.
-     * 
+     *
 	 * @param fixesDoc
 	 *            the XML-Document that contains the quick-fixes.
 	 * @param associations
@@ -177,8 +172,8 @@ public class BugResolutionLoader {
 			loadAttributes(resolution, attributes);
 			return resolution;
 		} catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate BugResolution '" + 
-					TigerSubstitutes.getSimpleName(resolutionClass)+ "'.");
+            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate BugResolution '" +
+            		resolutionClass.getSimpleName()+ "'.");
 			return null;
 		} catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
@@ -221,7 +216,7 @@ public class BugResolutionLoader {
 	/**
 	 * Parse a given string value into the specified type. Only primitive types
 	 * are currently supported.
-     * 
+     *
 	 * @param value
 	 *            the string value
 	 * @param type
@@ -235,19 +230,19 @@ public class BugResolutionLoader {
 			return value;
         }
 		if (boolean.class == type || Boolean.class == type) {
-			return TigerSubstitutes.parseBoolean(value);
+			return Boolean.valueOf(value);
 		}
         if (int.class == type || Integer.class == type) {
-			return parseInt(value);
+			return Integer.valueOf(value);
 		}
 		if (long.class == type || Long.class == type) {
-            return parseLong(value);
+            return Long.valueOf(value);
 		}
 		if (float.class == type || Float.class == type) {
-			return parseFloat(value);
+			return Float.valueOf(value);
         }
 		if (double.class == type || Double.class == type) {
-			return parseDouble(value);
+			return Double.valueOf(value);
 		}
         throw new IllegalArgumentException("Unknown value type '" + type.getName() + "'.");
 	}
@@ -262,7 +257,7 @@ public class BugResolutionLoader {
         try {
 			Class<?> resolutionClass = Class.forName(className);
 			if (IMarkerResolution.class.isAssignableFrom(resolutionClass)) {
-				return TigerSubstitutes.asSubclass(resolutionClass, IMarkerResolution.class);
+				return resolutionClass.asSubclass(IMarkerResolution.class);
             }
 
 			FindbugsPlugin.getDefault().logError("BugResolution '" + className + "' not a IMarkerResolution");
@@ -280,7 +275,7 @@ public class BugResolutionLoader {
 			for (int i = 0; i < length; i++) {
 				Element attrElement = (Element) attrList.item(i);
                 String name = attrElement.getAttribute(ATTR_NAME);
-				String value = TigerSubstitutes.getTextContent(attrElement);
+				String value = attrElement.getTextContent();
 				if (false && SystemProperties.ASSERTIONS_ENABLED) {
 					if (value.equals(attrElement.getTextContent())) {
                         System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);

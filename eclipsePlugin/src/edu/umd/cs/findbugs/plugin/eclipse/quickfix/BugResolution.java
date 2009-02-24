@@ -26,7 +26,6 @@ import org.eclipse.ui.IMarkerResolution;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
@@ -47,7 +46,7 @@ public abstract class BugResolution implements IMarkerResolution {
 		+ "The bugs somehow got out of sync with the memory representation. "
 		+ "Try running FindBugs again. If that does not work, check the error log and remove the *.fbwarnings files.";
 
-	private String label = TigerSubstitutes.getSimpleName(getClass());
+	private String label = getClass().getSimpleName();
 
 	private IProgressMonitor monitor = null;
 
