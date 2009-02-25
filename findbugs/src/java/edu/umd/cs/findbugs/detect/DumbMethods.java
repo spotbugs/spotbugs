@@ -893,11 +893,12 @@ public class DumbMethods extends OpcodeStackDetector  {
 	}
 	/**
      * @param seen
-     * @param item1
+     * @param item
      */
-    private void reportVacuousBitOperation(int seen, OpcodeStack.Item item1) {
-	    accumulator.accumulateBug(new BugInstance(this, "INT_VACUOUS_BIT_OPERATION" , NORMAL_PRIORITY)
-	    .addClassAndMethod(this).addString(OPCODE_NAMES[seen]).addOptionalAnnotation(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), item1, getPC())), this);
+    private void reportVacuousBitOperation(int seen, OpcodeStack.Item item) {
+	    if (item.getConstant() == null)
+	    	accumulator.accumulateBug(new BugInstance(this, "INT_VACUOUS_BIT_OPERATION" , NORMAL_PRIORITY)
+	    .addClassAndMethod(this).addString(OPCODE_NAMES[seen]).addOptionalAnnotation(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), item, getPC())), this);
     }
 
 	/**
