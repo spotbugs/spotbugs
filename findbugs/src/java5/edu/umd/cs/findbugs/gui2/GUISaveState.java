@@ -66,7 +66,8 @@ public class GUISaveState{
 		}
 	}
 	private static final int MAXNUMPREVCOMMENTS= 10;
-	private static final String[] COMMENTKEYS= new String[MAXNUMPREVCOMMENTS];
+	private static final String[] COMMENTKEYS= new String[MAXNUMPREVCOMMENTS];	
+
 	static
 	{
 		for (int x=0; x<COMMENTKEYS.length;x++)
@@ -104,15 +105,26 @@ public class GUISaveState{
 	private int tabSize; //Tab size in the source code display.
 	private static final String FONT_SIZE = "FontSize";
 	private float fontSize; //Font size of entire GUI.
+	private int packagePrefixSegments;
+
+	private static final String PACKAGE_PREFIX_SEGEMENTS = "PackagePrefixSegments";
 
 	public int getTabSize() {
 		return tabSize;
 	}
-
+	
 	public void setTabSize(int tabSize) {
 		this.tabSize = tabSize;
 	}
 
+	public int getPackagePrefixSegments() {
+		return packagePrefixSegments;
+	}
+	public void setPackagePrefixSegments(int packagePrefixSegments) {
+		this.packagePrefixSegments = packagePrefixSegments;
+	}
+
+	
 	public byte[] getDockingLayout()
 	{
 		return dockingLayout;
@@ -289,7 +301,7 @@ public class GUISaveState{
 		newInstance.splitSummary = p.getInt(SPLIT_SUMMARY, 85);
 		newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
 		newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
-
+		newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
 		instance=newInstance;
 	}
 
@@ -345,6 +357,7 @@ public class GUISaveState{
 		p.putInt(SPLIT_SUMMARY, splitSummary);
 		p.putInt(SPLIT_TOP, splitTop);
 		p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
+		p.putInt(PACKAGE_PREFIX_SEGEMENTS, packagePrefixSegments);
 	}
 
 	static void clear()

@@ -81,6 +81,7 @@ public class PreferencesFrame extends FBDialog {
 	//Variables for Properties tab.
 	private JTextField tabTextField;
 	private JTextField fontTextField;
+	private JTextField packagePrefixLengthTextField;
 	private static int TAB_MIN = 1;
 	private static int TAB_MAX = 20;
 	private static int FONT_MIN = 10;
@@ -172,23 +173,29 @@ public class PreferencesFrame extends FBDialog {
 		float currFS = Driver.getFontSize();
 
 		JPanel temp = new JPanel();
-		temp.add(new JLabel("Tab Size"));
+		temp.add(new JLabel("Tab size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
 		tabTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.3)));
 		temp.add(tabTextField);
-
 		mainPanel.add(temp);
 		mainPanel.add(Box.createVerticalStrut(5));
 
 		temp = new JPanel();
-		temp.add(new JLabel("Font Size"));
+		temp.add(new JLabel("Font size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
 		fontTextField.setPreferredSize(new Dimension((int)(currFS*3), (int)(currFS*1.3)));
 		temp.add(fontTextField);
-
 		mainPanel.add(temp);
 		mainPanel.add(Box.createVerticalGlue());
 
+		temp = new JPanel();
+		temp.add(new JLabel("Package prefix length"));
+		packagePrefixLengthTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getPackagePrefixSegments()));
+		packagePrefixLengthTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.3)));
+		temp.add(packagePrefixLengthTextField);
+		mainPanel.add(temp);
+		mainPanel.add(Box.createVerticalGlue());
+		
 		contentPanel.add(mainPanel, BorderLayout.CENTER);
 
 		JPanel bottomPanel = new JPanel();
@@ -198,6 +205,7 @@ public class PreferencesFrame extends FBDialog {
 			{
 				changeTabSize();
 				changeFontSize();
+				changePackagePrefixLength();
 			}
 		}));
 
@@ -234,7 +242,7 @@ public class PreferencesFrame extends FBDialog {
 		}
 
 		if(tabSize < TAB_MIN || tabSize > TAB_MAX){
-			JOptionPane.showMessageDialog(instance,	"Tab size excedes range ("+TAB_MIN+" - "+TAB_MAX+").",
+			JOptionPane.showMessageDialog(instance,	"Tab size exceedes range ("+TAB_MIN+" - "+TAB_MAX+").",
 					"Tab Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
@@ -260,8 +268,8 @@ public class PreferencesFrame extends FBDialog {
 		}
 
 		if(fontSize < FONT_MIN || fontSize > FONT_MAX){
-			JOptionPane.showMessageDialog(instance,	"Font size excedes range ("+FONT_MIN+" - "+FONT_MAX+").",
-					"Font Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(instance,	"Font size exceedes range ("+FONT_MIN+" - "+FONT_MAX+").",
+					"Font Size Exceedes Range", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 
@@ -271,7 +279,34 @@ public class PreferencesFrame extends FBDialog {
 					"Changing Font", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
+	private void changePackagePrefixLength(){
+		int value = 0;
 
+		try{
+			value = Integer.parseInt(packagePrefixLengthTextField.getText());		
+		}
+		catch(NumberFormatException exc){
+			JOptionPane.showMessageDialog(instance,	"Error in package prefix length field.",
+					"Package Prefix Length Error", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		if(value < 1 || value > 12){
+			JOptionPane.showMessageDialog(instance,	"package prefix length exceedes range ("+1+" - "+12+").",
+					"package prefix lengthe exceedes range", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		if (value !=GUISaveState.getInstance().getPackagePrefixSegments()) {
+			GUISaveState.getInstance().setPackagePrefixSegments(value);
+			BugTreeModel bt=(BugTreeModel) (MainFrame.getInstance().getTree().getModel());
+			bt.needToRebuild();
+			bt.checkSorter();
+		}
+		
+		
+	}
+	
 	private void resetPropertiesPane()
 	{
 		tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));

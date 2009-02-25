@@ -347,6 +347,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			//rebuild();
 		}
 
+		public void needToRebuild()
+		{
+			sortOrderChanged=true;
+		}
+
 
 		void changeSet(BugSet set)
 		{
