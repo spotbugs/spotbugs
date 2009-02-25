@@ -91,8 +91,10 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 						getSigConstantOperand());
 				if (possibleMatch != null)
 					priority = HIGH_PRIORITY;
+				else 
+					possibleMatch = LocalVariableAnnotation.findUniqueMatchingParameter(getClassContext(), getMethod(), 
+							getSigConstantOperand());
 				
-
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
 						.addClassAndMethod(this)
 						.addReferencedField(this)

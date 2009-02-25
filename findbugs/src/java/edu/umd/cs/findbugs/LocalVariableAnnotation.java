@@ -312,6 +312,27 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		}
 		return null;
 	}
+	public static @CheckForNull
+	LocalVariableAnnotation findUniqueMatchingParameter(ClassContext classContext, Method method, String signature) {
+		LocalVariableAnnotation match = null;
+		int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
+		int startIndex = 0;
+		if (!method.isStatic())
+			startIndex = 1;
+		SignatureParser parser = new SignatureParser(method.getSignature());
+		Iterator<String> signatureIterator = parser.parameterSignatureIterator();
+		for(int i = startIndex; i < localsThatAreParameters+startIndex; i++) {
+			String sig = signatureIterator.next();
+			if (signature.equals(sig)) {
+				// signatures match
+				if (match != null)
+					return null; // no unique match
+				match = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
+				match.setDescription(DID_YOU_MEAN_ROLE);
+			}
+		}
+		return match;
+	}
 }
 
 // vim:ts=4
