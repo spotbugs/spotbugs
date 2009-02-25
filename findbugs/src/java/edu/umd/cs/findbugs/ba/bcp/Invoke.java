@@ -191,8 +191,9 @@ public class Invoke extends PatternElement {
 		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
 		boolean isCtor = methodName.equals("<init>");
 
-		int actualMode = isStatic? STATIC : 0;
+		int actualMode = 0;
 
+		if (isStatic) actualMode |= STATIC;
 		if (isCtor) actualMode |= CONSTRUCTOR;
 		if (!isStatic && !isCtor) actualMode |= INSTANCE;
 

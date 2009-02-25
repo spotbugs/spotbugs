@@ -141,7 +141,8 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 				boolean someChecked = exceptionSet.containsCheckedExceptions();
 				boolean someExplicit = exceptionSet.containsExplicitExceptions();
 
-				int flags = someChecked? CHECKED_EXCEPTIONS_FLAG : 0;
+				int flags = 0;
+				if (someChecked) flags |= CHECKED_EXCEPTIONS_FLAG;
 				if (someExplicit) flags |= EXPLICIT_EXCEPTIONS_FLAG;
 
 				markedEdgeList.add(new MarkedEdge(edge, flags));
