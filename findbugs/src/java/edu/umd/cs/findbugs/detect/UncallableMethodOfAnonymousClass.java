@@ -131,10 +131,18 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 					&& (obj.isStatic() || 
 							!definedInSuperClassOrInterface(clazz, obj.getName() + ":" + obj.getSignature()))) {
 				int priority = NORMAL_PRIORITY;
+				String role = ClassAnnotation.SUPERCLASS_ROLE;
 				JavaClass superClass = clazz.getSuperClass();
 				String superClassName = superClass.getClassName();
-				if (superClass.isInterface() || superClassName.equals("java.lang.Object"))
+				if (superClassName.equals("java.lang.Object")) {
 						priority = NORMAL_PRIORITY;
+						JavaClass interfaces[] = clazz.getInterfaces();
+						if (interfaces.length == 1) {
+							superClassName = interfaces[0].getClassName();
+							role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;
+							// If anonymous inner class extends Object but has a single interface, list interface
+						}
+				}
 				else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
 						priority = NORMAL_PRIORITY;
 				else
@@ -145,7 +153,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 						code = (Code) a;
 						break;
 					}
-				if (code != null && code.getLength() == 1) priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
+				if (code != null && code.getLength() == 1) 
+					priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
 				bugReporter.reportBug(new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
 						priority).addClassAndMethod(this).addClass(superClass).describe(ClassAnnotation.SUPERCLASS_ROLE));
 
