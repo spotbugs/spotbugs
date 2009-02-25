@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
@@ -523,6 +524,24 @@ public class DumbMethods extends OpcodeStackDetector  {
 
 			}
 		}
+		
+		switch(seen) {
+		case IAND:
+		case LAND:
+		case IOR:
+		case LOR:
+		case IXOR:
+		case LXOR:
+			long badValue = (seen == IAND  || seen == LAND) ? -1 : 0;
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (item1.hasConstantValue(badValue) )
+	            reportVacuousBitOperation(seen, item0);
+			else if (item0.hasConstantValue(badValue) )
+	            reportVacuousBitOperation(seen, item1);
+		}
+		
+		
 		if (checkForBitIorofSignedByte && seen != I2B) {
 			String pattern = (prevOpcode == LOR || prevOpcode == IOR) ? "BIT_IOR_OF_SIGNED_BYTE" : "BIT_ADD_OF_SIGNED_BYTE";
 			int priority = (prevOpcode == LOR || prevOpcode == LADD) ? HIGH_PRIORITY : NORMAL_PRIORITY;
@@ -868,6 +887,14 @@ public class DumbMethods extends OpcodeStackDetector  {
 		prevOpcode = seen;
 	}
 	}
+	/**
+     * @param seen
+     * @param item1
+     */
+    private void reportVacuousBitOperation(int seen, OpcodeStack.Item item1) {
+	    accumulator.accumulateBug(new BugInstance(this, "INT_VACUOUS_BIT_OPERATION" , NORMAL_PRIORITY)
+	    .addClassAndMethod(this).addString(OPCODE_NAMES[seen]).addOptionalAnnotation(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), item1, getPC())), this);
+    }
 
 	/**
 	 * Return index of stack entry that must be nonnegative.
