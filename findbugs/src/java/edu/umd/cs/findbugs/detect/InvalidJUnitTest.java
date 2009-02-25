@@ -163,9 +163,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 				.addClassAndMethod(this));
 
 		}
-
-
-
 	}
 
 	private boolean sawSuperCall;
