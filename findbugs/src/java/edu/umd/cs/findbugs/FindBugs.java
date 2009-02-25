@@ -339,9 +339,7 @@ public abstract class FindBugs  {
 		}
 
 		if (commandLine.setExitCode()) {
-			int exitCode = 0;
-			if (errorCount > 0)
-				exitCode |= ExitCodes.ERROR_FLAG;
+			int exitCode = errorCount > 0? ExitCodes.ERROR_FLAG : 0;			
 			if (missingClassCount > 0)
 				exitCode |= ExitCodes.MISSING_CLASS_FLAG;
 			if (bugCount > 0)

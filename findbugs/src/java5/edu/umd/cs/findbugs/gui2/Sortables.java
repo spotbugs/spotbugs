@@ -196,7 +196,6 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public String getFrom(BugInstance bug)
 		{
-			MainFrame mf = MainFrame.getInstance();
 			int count = 3;
 			
 			String packageName = bug.getPrimarySourceLineAnnotation().getPackageName();

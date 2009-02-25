@@ -607,7 +607,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
 		final BugDesignation u = getNonnullUserDesignation();
-		if (u.getAnnotationText() != null && u.getAnnotationText().equals(annotationText))
+		String existingText = u.getAnnotationText();
+		if (existingText != null && existingText.equals(annotationText))
 			return;
 		u.setAnnotationText(annotationText);
 		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;

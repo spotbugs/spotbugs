@@ -647,8 +647,7 @@ public class FindInconsistentSync2 implements Detector {
 					}
 				}
 
-				int kind = 0;
-				kind |= isLocked ? LOCKED : UNLOCKED;
+				int kind = isLocked ? LOCKED : UNLOCKED;
 				kind |= isWrite ? WRITE : isNullCheck ? NULLCHECK : READ;
 
 				//if (isLocked || !isConstructor(method.getName())) {
