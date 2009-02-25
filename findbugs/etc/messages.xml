@@ -2207,7 +2207,7 @@ Consider using <code>java.net.URI</code> instead.
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
-    <LongDescription>{1} uses reflection to check for the presence the annotation {3} which doesn't have runtime</LongDescription>
+    <LongDescription>{1} uses reflection to check for the presence the annotation {3} which doesn't have runtime retention</LongDescription>
     <Details>
 <![CDATA[
   <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
