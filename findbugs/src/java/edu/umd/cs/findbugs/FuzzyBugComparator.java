@@ -299,7 +299,9 @@ public class FuzzyBugComparator implements WarningComparator {
 		significantDescriptionSet.add("CLASS_DEFAULT");
 		significantDescriptionSet.add("CLASS_EXCEPTION");
 		significantDescriptionSet.add("CLASS_REFTYPE");
-		significantDescriptionSet.add("INTERFACE_TYPE");
+		significantDescriptionSet.add(ClassAnnotation.SUPERCLASS_ROLE);
+		significantDescriptionSet.add(ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE);
+		significantDescriptionSet.add(ClassAnnotation.INTERFACE_ROLE);
 		significantDescriptionSet.add("METHOD_DEFAULT");
 		significantDescriptionSet.add(MethodAnnotation.METHOD_CALLED);
 		significantDescriptionSet.add("METHOD_DANGEROUS_TARGET"); // but do NOT use safe targets

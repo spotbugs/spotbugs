@@ -41,6 +41,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	private static final String DEFAULT_ROLE = "CLASS_DEFAULT";
 	public static final String SUBCLASS_ROLE = "CLASS_SUBCLASS";
 	public static final String SUPERCLASS_ROLE =  "CLASS_SUPERCLASS";
+	public static final String IMPLEMENTED_INTERFACE_ROLE =  "CLASS_IMPLEMENTED_INTERFACE";
+	public static final String INTERFACE_ROLE =  "INTERFACE_TYPE";
 
 
 	/**
