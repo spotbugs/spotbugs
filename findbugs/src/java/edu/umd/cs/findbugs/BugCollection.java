@@ -68,15 +68,14 @@ public interface BugCollection extends Iterable<BugInstance>
 	public ProjectStats getProjectStats();
 
 	/**
-	 * Get the timestamp for the analyzed code
+	 * Get the timestamp for the analyzed code (when it was compiled)
 	 * 
 	 * @param timestamp the  timestamp.
 	 */
 	public void setTimestamp(long timestamp);
 
 	/**
-	 * Get the timestamp for the analyzed code
-	 * return the  timestamp.
+	 * Get the timestamp for the analyzed code (when it was compiled)
 	 */
 	public long getTimestamp();
 

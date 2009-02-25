@@ -115,7 +115,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	public void loadUserAnnotations(BugCollection bugs) {
 		try {
 			Connection c = getConnection();
-			java.sql.Date now = new java.sql.Date(bugs.getAnalysisTimestamp());
+			java.sql.Date now = new java.sql.Date(bugs.getTimestamp());
 			PreparedStatement stmt = c
 			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
 			PreparedStatement stmt2 = c
@@ -223,7 +223,6 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
 			addEntry(stmt2, new java.sql.Date(System.currentTimeMillis()), bug);
 			stmt2.close();
-			System.out.println("Inserted new entry");
 		}
 
 		PreparedStatement stmt = c
@@ -239,7 +238,6 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 		stmt.setString(5, bug.getInstanceHash());
 		boolean result = stmt.execute();
-		System.out.println("updated entry " + result);
 		stmt.close();
 		return;
 
@@ -253,7 +251,6 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	 * .cs.findbugs.BugInstance)
 	 */
 	public void storeUserAnnotation(BugInstance bug) {
-		System.out.println("Storing user annotation for " + bug.getMessage());
 		try {
 			Connection c = getConnection();
 			updatedUserAnnotation(c, bug);
