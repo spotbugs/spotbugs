@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.When;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -49,8 +48,6 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
-
-//import sun.tools.tree.NewInstanceExpression;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -91,6 +88,10 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class OpcodeStack implements Constants2
 {
+	/**
+     * 
+     */
+    private static final String JAVA_UTIL_ARRAYS_ARRAY_LIST = "Ljava/util/Arrays$ArrayList;";
 	private static final boolean DEBUG 
 		= SystemProperties.getBoolean("ocstack.debug");
 	private static final boolean DEBUG2 = DEBUG;
@@ -677,6 +678,11 @@ public class OpcodeStack implements Constants2
         public boolean hasConstantValue(int value) {
 	        if (constValue instanceof Number)
 	        	return ((Number) constValue).intValue() == value;
+	        return false;
+        }
+        public boolean hasConstantValue(long value) {
+	        if (constValue instanceof Number)
+	        	return ((Number) constValue).longValue() == value;
 	        return false;
         }
 	}
@@ -1988,8 +1994,23 @@ public class OpcodeStack implements Constants2
 				result.setPC(dbc.getPC());
 				 push(result);
 				 return;
+		 } else if (seen == INVOKESTATIC && methodName.equals("asList")
+				&& clsName.equals("java/util/Arrays")) {
+			 Item requestParameter = pop();
+			 Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+			 push(result);
+			 return;
+		 }else if (seen == INVOKESTATIC && signature.equals("(Ljava/util/List;)Ljava/util/List;")
+					&& clsName.equals("java/util/Collections")) {
+			 Item requestParameter = pop();
+			 if (requestParameter.getSignature().equals(JAVA_UTIL_ARRAYS_ARRAY_LIST)) {
+				 Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+				 push(result);
+				 return;
+			 }
+			 push(requestParameter); // fall back to standard logic
 		 }
-
+			 
 
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
 
