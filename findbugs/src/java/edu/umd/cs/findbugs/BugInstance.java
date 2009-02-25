@@ -568,12 +568,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
         setUserDesignationKey(key, null);
     }
 
-	public void setUserDesignationKey(String key, BugCollection bugCollection) {
+	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
 		BugDesignation userDesignation = getNonnullUserDesignation();
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
 		userDesignation.setDesignationKey(key);
-		UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}
@@ -584,7 +584,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
         setUserDesignationKeyIndex(index, null);
     }
 
-	public void setUserDesignationKeyIndex(int index, BugCollection bugCollection) {
+	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
 		setUserDesignationKey(
 				I18N.instance().getUserDesignationKey(index), bugCollection);
 		}
@@ -605,7 +605,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param annotationText the user annotation text
 	 * @param bugCollection TODO
 	 */
-	public void setAnnotationText(String annotationText, BugCollection bugCollection) {
+	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
 		final BugDesignation u = getNonnullUserDesignation();
 		if (u.getAnnotationText() != null && u.getAnnotationText().equals(annotationText))
 			return;
