@@ -192,6 +192,31 @@ public enum Sortables implements Comparator<SortableValue>
 			return value;
 		}
 	},
+	PACKAGE_PREFIX(edu.umd.cs.findbugs.L10N.getLocalString("sort.package_prefix", "Package prefix")) {
+		@Override
+		public String getFrom(BugInstance bug)
+		{
+			MainFrame mf = MainFrame.getInstance();
+			int count = 3;
+			
+			String packageName = bug.getPrimarySourceLineAnnotation().getPackageName();
+			int dotsSeen = 0;
+			int prefixLength = 0;
+			while (dotsSeen < count) {
+				int p = packageName.indexOf('.', prefixLength);
+				if (p < 0) return packageName;
+				prefixLength = p+1;
+				dotsSeen++;
+			}
+			return packageName.substring(0, prefixLength-1);
+		}
+
+		@Override
+		public String formatValue(String value)
+		{
+			return value;
+		}
+	},
 	CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category"))
 	{
 		@Override
