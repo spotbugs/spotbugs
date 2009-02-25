@@ -175,7 +175,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		if (!directChildOfTestCase
 				&& (getMethodName().equals("setUp") || getMethodName().equals(
 						"tearDown"))
-				&& !getMethod().isPrivate()) {
+				&& !getMethod().isPrivate()
+				&& getMethodSig().equals("()V")) {
 			sawSuperCall = false;
 			super.visit(obj);
 			if (sawSuperCall)
@@ -209,7 +210,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		case SEEN_ALOAD_0:
 			if ((seen == INVOKESPECIAL)
 					&& (getNameConstantOperand().equals(getMethodName()))
-					&& (getMethodSig().equals("()V")))
+					&& (getSigConstantOperand().equals("()V")))
 				sawSuperCall = true;
 			state = SEEN_NOTHING;
 			break;
