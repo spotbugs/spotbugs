@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 public class NoteAnnotationRetention extends AnnotationVisitor implements
 		Detector, NonReportingDetector {
 
-		private boolean classfileRetention;
+		private boolean runtimeRetention;
 
 
 	public NoteAnnotationRetention(BugReporter bugReporter) {
@@ -47,15 +47,13 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 		if (!annotationClass.equals("java.lang.annotation.Retention"))
 			return;
 		Object value = map.get("value");
-		if ("java.lang.annotation.RetentionPolicy.RUNTIME".equals(value)
-				|| "java.lang.annotation.RetentionPolicy.CLASSFILE"
-						.equals(value))
-			classfileRetention = true;
+		if ("java.lang.annotation.RetentionPolicy.RUNTIME".equals(value))
+			runtimeRetention = true;
 	}
 
 	@Override
 	public void visit(JavaClass obj) {
-		classfileRetention = false;
+		runtimeRetention = false;
 	}
 
 	@Override
@@ -63,8 +61,8 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 		for (String i : obj.getInterfaceNames())
 			if (i.equals("java.lang.annotation.Annotation"))
 				AnalysisContext.currentAnalysisContext()
-				.getAnnotationRetentionDatabase().setClassfileRetention(getDottedClassName(),
-						classfileRetention);
+				.getAnnotationRetentionDatabase().setRuntimeRetention(getDottedClassName(),
+						runtimeRetention);
 
 	}
 

@@ -2206,13 +2206,12 @@ Consider using <code>java.net.URI</code> instead.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
-    <ShortDescription>Can't use reflection to check for presence of annotation with default retention</ShortDescription>
-    <LongDescription>{1} uses reflection to check for the presence of an annotation that has default retention</LongDescription>
+    <ShortDescription>Can't use reflection to check for presence of annotation without runtime retention</ShortDescription>
+    <LongDescription>{1} uses reflection to check for the presence the annotation {3} which doesn't have runtime</LongDescription>
     <Details>
 <![CDATA[
-  <p> Unless an annotation has itself been annotated with a @Retention other than the default
-of source-only retention, the annotation isn't retained in the classfile and can't be observed using reflection
-	(e.g., by using the isAnnotationPresent method).
+  <p> Unless an annotation has itself been annotated with  @Retention(RetentionPolicy.RUNTIME), the annotation can't be observed using reflection
+(e.g., by using the isAnnotationPresent method).
    .</p>
 ]]>
     </Details>
@@ -5901,8 +5900,8 @@ in the test failing.
     </Details>
   </BugPattern>
   <BugPattern type="IJU_SETUP_NO_SUPER">
-    <ShortDescription>TestCase implements setUp but doesn't call super.setUp()</ShortDescription>
-    <LongDescription>TestCase {0} implements setUp but doesn't call super.setUp()</LongDescription>
+    <ShortDescription>TestCase defines setUp that doesn't call super.setUp()</ShortDescription>
+    <LongDescription>TestCase {0} defines setUp that doesn't call super.setUp()</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the setUp method. The setUp method should call
@@ -5912,8 +5911,8 @@ super.setUp(), but doesn't.</p>
   </BugPattern>
 
   <BugPattern type="IJU_TEARDOWN_NO_SUPER">
-    <ShortDescription>TestCase implements tearDown but doesn't call super.tearDown()</ShortDescription>
-    <LongDescription>TestCase {0} implements tearDown but doesn't call super.tearDown()</LongDescription>
+    <ShortDescription>TestCase defines tearDown that doesn't call super.tearDown()</ShortDescription>
+    <LongDescription>TestCase {0} defines tearDown that doesn't call super.tearDown()</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the tearDown method. The tearDown method should call

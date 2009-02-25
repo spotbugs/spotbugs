@@ -38,6 +38,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
@@ -54,6 +55,8 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class DumbMethods extends OpcodeStackDetector  {
 
@@ -677,12 +680,13 @@ public class DumbMethods extends OpcodeStackDetector  {
 			if (value instanceof String) {
 				String annotationClassName = (String) value;
 				boolean lacksClassfileRetention
-				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().lacksClassfileRetention(
+				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().lacksRuntimeRetention(
 						annotationClassName.replace('/','.'));
 				if (lacksClassfileRetention) {
+					ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptor(annotationClassName);
 					accumulator.accumulateBug(new BugInstance(this, "DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION",
 						HIGH_PRIORITY)
-						.addClassAndMethod(this).addCalledMethod(this), this);
+						.addClassAndMethod(this).addCalledMethod(this).addClass(annotationClass).describe(ClassAnnotation.ANNOTATION_ROLE), this);
 				}
 
 			}

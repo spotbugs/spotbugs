@@ -24,20 +24,20 @@ import java.util.HashMap;
 public class AnnotationRetentionDatabase {
 	private HashMap<String, Boolean> annotationRetention = new HashMap<String, Boolean>();
 
-	public boolean hasClassfileRetention(String dottedClassName) {
+	public boolean hasRuntimeRetention(String dottedClassName) {
 		Boolean result = annotationRetention.get(dottedClassName);
 		if (result == null) return false;
 		return result;
 	}
 
 	/** return false if it has class retention *or* if the retention is unknown */
-	public boolean lacksClassfileRetention(String dottedClassName) {
+	public boolean lacksRuntimeRetention(String dottedClassName) {
 		Boolean result = annotationRetention.get(dottedClassName);
 		if (result == null) return false;
 		return !result;
 	}
 
-	public void setClassfileRetention(String dottedClassName, boolean value) {
+	public void setRuntimeRetention(String dottedClassName, boolean value) {
 		annotationRetention.put(dottedClassName, Boolean.valueOf(value));
 	}
 

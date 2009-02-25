@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -98,7 +100,7 @@ public class DescriptorFactory {
 	 * @param className a class name in VM (slashed) format
 	 * @return ClassDescriptor for that class
 	 */
-	public ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
+	public @Nonnull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
 		assert className.indexOf('.') == -1;
 		className = canonicalizeString(className);
 		ClassDescriptor classDescriptor = classDescriptorMap.get(className);
