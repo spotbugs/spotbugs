@@ -18,6 +18,7 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,7 +117,9 @@ public class CopyBuggySource {
 							out.write(buf, 0, sz);
 						}
 						System.out.println("Copied " + file);
-					} catch (IOException e) {
+					} catch (FileNotFoundException e) {
+						System.out.println("Did not find " + file);
+					} catch (IOException e) {	
 						System.out.println("Problem copying " + file);
 						e.printStackTrace(System.out);
 					} finally {
