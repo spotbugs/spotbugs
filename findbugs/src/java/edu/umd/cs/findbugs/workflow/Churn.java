@@ -92,7 +92,7 @@ public class Churn {
 		for(Map.Entry<String, Data> e : data.entrySet()) {
 			Data d = e.getValue();
 			int total = d.persist + d.fixed;
-			if (total < 10) 
+			if (total < 2) 
 				continue;
 			System.out.printf("%3d %5d %5d  %s\n", d.fixed * 100 / total, d.persist, d.fixed, e.getKey());
 		}
