@@ -70,7 +70,7 @@ public class BugPatternSection extends AbstractPropertySection {
 	private ITabSelectionListener tabSelectionListener;
 	private TabbedPropertySheetPage page;
 	protected String browserId;
-	private boolean allowUrlChange;
+	private volatile boolean allowUrlChange;
 
 	/**
 	 *
@@ -148,7 +148,9 @@ public class BugPatternSection extends AbstractPropertySection {
 					// ignore
 				}
 				public void changing(LocationEvent event) {
-					if(allowUrlChange){
+					// fix for SWT code on Won32 platform: it uses "about:blank" before
+					// set any non-null url. We ignore this url
+					if(allowUrlChange || "about:blank".equals(event.location)){
 						return;
 					}
 					// disallow changing of property view content
