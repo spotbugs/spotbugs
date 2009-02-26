@@ -763,8 +763,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         }
 
 		int numSlots = frame.getNumSlots();
-		Type lhsType = frame.getValue(numSlots - 1);
-		Type rhsType = frame.getValue(numSlots - 2);
+		Type lhsType = frame.getValue(numSlots - 2);
+		Type rhsType = frame.getValue(numSlots - 1);
 
 		if (lhsType instanceof NullType || rhsType instanceof NullType) {
 			return;
