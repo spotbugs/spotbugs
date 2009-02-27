@@ -33,8 +33,10 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 //import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
@@ -328,12 +330,24 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		addDirectAnnotation(m, annotation);
 	}
 
-	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
-//		if (!Subtypes.DO_NOT_USE) {
-//			subtypes.addNamedClass(cName);
-//		}
+	protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
 		if (addClassOnly) return;
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
+		if (false && !m.isResolved()) {
+			System.out.println("Unable to add annotation " + annotation + " to " + m);
+			ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(cName);
+			if (false) try {
+			XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+			if (xClass != null) {
+				System.out.println("class has methods: ");
+				for(XMethod m2 : xClass.getXMethods())
+					System.out.println("  " + m2);
+			}
+			} catch (CheckedAnalysisException e) {
+	            e.printStackTrace();
+            }
+		}
+		
 		addDirectAnnotation(m, annotation);
 	}
 
