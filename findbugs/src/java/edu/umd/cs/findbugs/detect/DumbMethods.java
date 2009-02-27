@@ -536,11 +536,12 @@ public class DumbMethods extends OpcodeStackDetector  {
 		case IXOR:
 		case LXOR:
 			long badValue = (seen == IAND  || seen == LAND) ? -1 : 0;
-			OpcodeStack.Item item0 = stack.getStackItem(0);
-			OpcodeStack.Item item1 = stack.getStackItem(1);
+			OpcodeStack.Item rhs = stack.getStackItem(0);
+			OpcodeStack.Item lhs = stack.getStackItem(1);
 			int prevOpcode = getPrevOpcode(1);
-			if (item1.hasConstantValue(badValue) && (prevOpcode == LDC || prevOpcode == ICONST_0 || prevOpcode == ICONST_M1 || prevOpcode == LCONST_0))
-	            reportVacuousBitOperation(seen, item0);
+			int prevPrevOpcode = getPrevOpcode(2);
+			if (rhs.hasConstantValue(badValue) && (prevOpcode == LDC || prevOpcode == ICONST_0 || prevOpcode == ICONST_M1 || prevOpcode == LCONST_0) && prevPrevOpcode != GOTO)
+	            reportVacuousBitOperation(seen, lhs);
 			
 		}
 		
