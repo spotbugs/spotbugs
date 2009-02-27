@@ -9,6 +9,10 @@ public class Ideas_2009_02_24 {
 	
 	public static void main(String args[]) {
 		falsePositive();
+		System.out.println(makeNonnegative(Integer.MIN_VALUE));
+	}
+	public static int makeNonnegative(int x) {
+		return x & 0xffffffff;
 	}
 	public static void falsePositive() {
 		String [] a = (String[]) NAMES.toArray();
