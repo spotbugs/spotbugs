@@ -5529,7 +5529,7 @@ use <code>0xff &amp; b</code>
 
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>Vacuous bit mask operation on integer value</ShortDescription>
-    <LongDescription>Vacuous bit mark operation on {2} in {1}</LongDescription>
+    <LongDescription>Vacuous {2} operation on {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This is an integer bit operation (and, or, or exclusive or) that doesn't do any useful work
