@@ -140,7 +140,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 					&& !initializedFields.contains(f) 
 					&& declaredFields.contains(f)
 					&& !containerFields.contains(f)) {
-				LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), xField.getSignature());
+				LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), getNameConstantOperand(), xField.getSignature());
 				
 				int priority = unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY;
 				if (possibleTarget != null) priority--;

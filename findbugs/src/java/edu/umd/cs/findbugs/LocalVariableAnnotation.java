@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.util.EditDistance;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -281,13 +282,14 @@ public class LocalVariableAnnotation implements BugAnnotation {
     }
     
 	public static @CheckForNull
-	LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String signature) {
+	LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String name, String signature) {
 		try {
 			Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow = classContext.getLiveLocalStoreDataflow(method);
 			CFG cfg;
 
 			cfg = classContext.getCFG(method);
-
+			LocalVariableAnnotation match = null;
+			int lowestCost = Integer.MAX_VALUE;
 			BitSet liveStoreSetAtEntry = llsaDataflow.getAnalysis().getResultFact(cfg.getEntry());
 			int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
 			int startIndex = 0;
@@ -299,12 +301,24 @@ public class LocalVariableAnnotation implements BugAnnotation {
 				String sig = signatureIterator.next();
 				if (!liveStoreSetAtEntry.get(i) && signature.equals(sig)) {
 					// parameter isn't live and signatures match
-					LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
-					localVariableAnnotation.setDescription(DID_YOU_MEAN_ROLE);
-					return localVariableAnnotation;
+					LocalVariableAnnotation potentialMatch = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
+					potentialMatch.setDescription(DID_YOU_MEAN_ROLE);
+					if (!potentialMatch.isNamed()) 
+						return potentialMatch;
+					int distance = EditDistance.editDistance(name, potentialMatch.getName());
+					if (distance < lowestCost) {
+						match = potentialMatch;
+						match.setDescription(DID_YOU_MEAN_ROLE);
+						lowestCost = distance;
+					} else if (distance == lowestCost) {
+						// not unique best match
+						match = null;
+					}
+	
 					
 				}
 			}
+			return match;
 		} catch (DataflowAnalysisException e) {
 			AnalysisContext.logError("", e);
 		} catch (CFGBuilderException e) {
@@ -313,7 +327,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		return null;
 	}
 	public static @CheckForNull
-	LocalVariableAnnotation findUniqueMatchingParameter(ClassContext classContext, Method method, String signature) {
+	LocalVariableAnnotation findUniqueBestMatchingParameter(ClassContext classContext, Method method, String name, String signature) {
 		LocalVariableAnnotation match = null;
 		int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
 		int startIndex = 0;
@@ -321,17 +335,28 @@ public class LocalVariableAnnotation implements BugAnnotation {
 			startIndex = 1;
 		SignatureParser parser = new SignatureParser(method.getSignature());
 		Iterator<String> signatureIterator = parser.parameterSignatureIterator();
+		int lowestCost = Integer.MAX_VALUE;
 		for(int i = startIndex; i < localsThatAreParameters+startIndex; i++) {
 			String sig = signatureIterator.next();
 			if (signature.equals(sig)) {
+				LocalVariableAnnotation potentialMatch = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
+				if (!potentialMatch.isNamed()) 
+					continue;
+				int distance = EditDistance.editDistance(name, potentialMatch.getName());
+				if (distance < lowestCost) {
+					match = potentialMatch;
+					match.setDescription(DID_YOU_MEAN_ROLE);
+					lowestCost = distance;
+				} else if (distance == lowestCost) {
+					// not unique best match
+					match = null;
+				}
 				// signatures match
-				if (match != null)
-					return null; // no unique match
-				match = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, 0, 0);
-				match.setDescription(DID_YOU_MEAN_ROLE);
 			}
 		}
-		return match;
+		if (lowestCost < 5)
+			return match;
+		return null;
 	}
 }
 

@@ -88,13 +88,13 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 				int priority = NORMAL_PRIORITY;
 				
 				LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), 
-						getSigConstantOperand());
+						getNameConstantOperand(), getSigConstantOperand());
 				if (possibleMatch != null)
 					priority = HIGH_PRIORITY;
 				else {
-					possibleMatch = LocalVariableAnnotation.findUniqueMatchingParameter(getClassContext(), getMethod(), 
-							getSigConstantOperand());
-					if (possibleMatch != null && possibleMatch.getName().toLowerCase().equals(f.toLowerCase()))
+					possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(), 
+							getNameConstantOperand(), getSigConstantOperand());
+					if (possibleMatch != null)
 						priority--;
 				}
 				
