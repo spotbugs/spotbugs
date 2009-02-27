@@ -36,18 +36,19 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
- * Mine historical information from a BugCollection.
- * The BugCollection should be built using UpdateBugCollection
- * to record the history of analyzing all versions over time.
+ * Mine historical information from a BugCollection. The BugCollection should be
+ * built using UpdateBugCollection to record the history of analyzing all
+ * versions over time.
  * 
  * @author David Hovemeyer
  * @author William Pugh
  */
 public class Churn {
-		BugCollection bugCollection;
-	
+	BugCollection bugCollection;
+
 	public Churn() {
 	}
+
 	public Churn(BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
 	}
@@ -56,20 +57,18 @@ public class Churn {
 		this.bugCollection = bugCollection;
 	}
 
-	
-
 	String getKey(BugInstance b) {
-		return b.getPriorityAbbreviation() +"-" + b.getType();
+		return b.getPriorityAbbreviation() + "-" + b.getType();
 	}
 
 	static class Data {
 		int persist, fixed;
 	}
 
-	Map<String,Data> data = new HashMap<String,Data>();
-	
+	Map<String, Data> data = new HashMap<String, Data>();
+
 	public Churn execute() {
-		
+
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();
 
@@ -79,44 +78,34 @@ public class Churn {
 				data.put(key, d = new Data());
 			if (bugInstance.isDead())
 				d.fixed++;
-			else d.persist++;
+			else
+				d.persist++;
 		}
 		return this;
 	}
 
-
-
-
 	public void dump(PrintStream out) {
 		System.out.printf("%3s %5s %5s  %s\n", "%", "const", "fix", "new");
-		for(Map.Entry<String, Data> e : data.entrySet()) {
+		for (Map.Entry<String, Data> e : data.entrySet()) {
 			Data d = e.getValue();
 			int total = d.persist + d.fixed;
-			if (total < 2) 
+			if (total < 2)
 				continue;
 			System.out.printf("%3d %5d %5d  %s\n", d.fixed * 100 / total, d.persist, d.fixed, e.getKey());
 		}
 
 	}
 
-
-
-	 class ChurnCommandLine extends CommandLine {
-
-		 ChurnCommandLine() {
-			
-		}
+	class ChurnCommandLine extends CommandLine {
 
 		@Override
 		public void handleOption(String option, String optionalExtraPart) {
-			
-				throw new IllegalArgumentException("unknown option: " + option);
+			throw new IllegalArgumentException("unknown option: " + option);
 		}
 
 		@Override
 		public void handleOptionWithArgument(String option, String argument) {
-
-				throw new IllegalArgumentException("unknown option: " + option);
+			throw new IllegalArgumentException("unknown option: " + option);
 		}
 	}
 
@@ -125,26 +114,24 @@ public class Churn {
 
 		Churn churn = new Churn();
 		ChurnCommandLine commandLine = churn.new ChurnCommandLine();
-		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Churn.class.getName()
-				+ " [options] [<xml results> [<history]] ");
+		int argCount = commandLine
+		        .parse(args, 0, 2, "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history]] ");
 
-		System.out.println("reading");
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		if (argCount < args.length)  
+		if (argCount < args.length)
 			bugCollection.readXML(args[argCount++], new Project());
-		else bugCollection.readXML(System.in, new Project());
+		else
+			bugCollection.readXML(System.in, new Project());
 		churn.setBugCollection(bugCollection);
-		System.out.println("analyzing");
 		churn.execute();
 		PrintStream out = System.out;
-		System.out.println("printing");
 		try {
-		if (argCount < args.length)  {
-			out = new PrintStream(new FileOutputStream(args[argCount++]), true);
+			if (argCount < args.length) {
+				out = new PrintStream(new FileOutputStream(args[argCount++]), true);
 			}
-		churn.dump(out);
+			churn.dump(out);
 		} finally {
-		out.close();
+			out.close();
 		}
 
 	}
