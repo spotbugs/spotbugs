@@ -68,7 +68,17 @@ class DeltaInfo{
 			sb.append(" ? ").append(changeKind);
 			break;
 		}
-		sb.append(" ").append(marker);
+		sb.append(" marker id ").append(marker.getId()).append(
+				marker.toString().replace("org.eclipse.core.internal.resources.Marker@",
+						"/"));
 		return sb.toString();
+	}
+
+	public boolean isAdded(){
+		return changeKind == IResourceDelta.ADDED;
+	}
+
+	public boolean isRemoved(){
+		return changeKind == IResourceDelta.REMOVED;
 	}
 }

@@ -143,9 +143,9 @@ public class BugGroup implements IAdaptable, IActionFilter {
 	}
 
 	void addMarker(IMarker marker){
-		allMarkers.add(marker);
+		boolean added = allMarkers.add(marker);
 		if(BugContentProvider.DEBUG) {
-			System.out.println("Adding marker: " + marker + " to " + this);
+			System.out.println("Adding marker: " + marker.getId() + " to " + this + ", new? " + added);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
 			return;
 		}
 		if(BugContentProvider.DEBUG) {
-			System.out.println("Removing marker: " + marker + " from " + this);
+			System.out.println("Removing marker: " + marker.getId() + " from " + this);
 		}
 		allMarkers.remove(marker);
 		if(parent instanceof BugGroup){
@@ -168,7 +168,7 @@ public class BugGroup implements IAdaptable, IActionFilter {
 		}
 		if(BugContentProvider.DEBUG) {
 			for (IMarker marker : markers) {
-				System.out.println("Removing marker: " + marker + " from " + this);
+				System.out.println("Removing marker: " + marker.getId() + " from " + this);
 			}
 		}
 		if(markers == allMarkers){

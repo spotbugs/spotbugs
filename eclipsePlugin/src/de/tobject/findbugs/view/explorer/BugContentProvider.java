@@ -212,8 +212,12 @@ public class BugContentProvider implements ICommonContentProvider {
 			rootElement.dispose();
 		}
 		input = newInput;
-		refreshJob.setViewer((CommonViewer) newViewer);
-		bugFilterActive = isBugFilterActive();
+		if(newInput == null){
+			refreshJob.setViewer(null);
+		} else {
+			refreshJob.setViewer((CommonViewer) newViewer);
+			bugFilterActive = isBugFilterActive();
+		}
 		clearFilters();
 	}
 
@@ -447,19 +451,30 @@ public class BugContentProvider implements ICommonContentProvider {
 		Set<String> patternFilter = getPatternFilter();
 		for (DeltaInfo delta : deltas) {
 			if (DEBUG) {
-				System.out.println(delta);
+				System.out.println(delta + " (contentProvider.updateContent)");
 			}
 			IMarker changedMarker = delta.marker;
 			switch (delta.changeKind) {
 			case IResourceDelta.REMOVED:
 				BugGroup parent = findParent(changedMarker);
 				if (parent == null) {
+					if (DEBUG) {
+						System.out.println(delta
+								+ " IGNORED because marker does not have parent!");
+					}
 					continue;
 				}
 				removeMarker(parent, changedMarker, changedParents);
 				break;
 			case IResourceDelta.ADDED:
-					addMarker(changedMarker, changedParents, patternFilter);
+				if (!changedMarker.exists()) {
+					if (DEBUG) {
+						System.out.println(delta
+								+ " IGNORED because marker does not exists anymore!");
+					}
+					continue;
+				}
+				addMarker(changedMarker, changedParents, patternFilter);
 				break;
 			}
 		}

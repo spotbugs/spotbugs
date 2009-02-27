@@ -33,7 +33,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 final class ResourceChangeListener implements IResourceChangeListener {
 
 	static final int SHORT_DELAY = 250;
-	static final int LONG_DELAY = 500;
+	static final int LONG_DELAY = 750;
 
 	final IViewerRefreshJob refreshJob;
 
@@ -56,7 +56,12 @@ final class ResourceChangeListener implements IResourceChangeListener {
 			if(marker == null){
 				continue;
 			}
-			accepted |= refreshJob.addToQueue(new DeltaInfo(marker, mdelta.getKind()));
+			DeltaInfo deltaInfo = new DeltaInfo(marker, mdelta.getKind());
+			if(BugContentProvider.DEBUG){
+				System.out.println("resource change for: " + deltaInfo);
+			}
+
+			accepted |= refreshJob.addToQueue(deltaInfo);
 		}
 
 		if (!accepted) {

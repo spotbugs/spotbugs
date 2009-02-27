@@ -134,6 +134,9 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 			deltaToRefresh.clear();
 		}
 		Collections.sort(deltas, deltaComparator);
+		if(BugContentProvider.DEBUG){
+			System.out.println("Job: going to update markers:\n" + deltas);
+		}
 		return deltas;
 	}
 
