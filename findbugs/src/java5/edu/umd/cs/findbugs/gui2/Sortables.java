@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * A useful enum for dealing with all the types of filterable and sortable data in BugInstances
@@ -201,18 +202,7 @@ public enum Sortables implements Comparator<SortableValue>
 			if (count < 1) 
 				count = 1;
 			String packageName = bug.getPrimarySourceLineAnnotation().getPackageName();
-			int dotsSeen = 0;
-			int prefixLength = 0;
-			while (dotsSeen < count) {
-				int p = packageName.indexOf('.', prefixLength);
-				if (p < 0) 
-					return packageName;
-				prefixLength = p+1;
-				dotsSeen++;
-			}
-			if (prefixLength == 0)
-				return "";
-			return packageName.substring(0, prefixLength-1);
+			return ClassName.extractPackagePrefix(packageName, count);
 		}
 
 		@Override

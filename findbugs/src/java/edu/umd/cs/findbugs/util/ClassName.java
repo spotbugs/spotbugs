@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -161,5 +162,21 @@ public abstract class ClassName {
     		name = name.substring(1, name.length() - 1);
     	if (name.charAt(0) == '[') throw new IllegalArgumentException("Bad class name: " + originalName);
     	return name;
+    }
+
+
+	public static String extractPackagePrefix(String packageName, int count) {
+        int dotsSeen = 0;
+        int prefixLength = 0;
+        while (dotsSeen < count) {
+        	int p = packageName.indexOf('.', prefixLength);
+        	if (p < 0) 
+        		return packageName;
+        	prefixLength = p+1;
+        	dotsSeen++;
+        }
+        if (prefixLength == 0)
+        	return "";
+        return packageName.substring(0, prefixLength-1);
     }
 }
