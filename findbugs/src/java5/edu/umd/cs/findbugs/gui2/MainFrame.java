@@ -246,15 +246,14 @@ public class MainFrame extends FBFrame implements LogSync
 		instance=new MainFrame(factory);
 		instance.initializeGUI();
 	}
-	/**
-	 * @param string
-	 * @param vkF
-	 * @return
-	 */
 
-	static MainFrame getInstance() {
+	public static MainFrame getInstance() {
 		if (instance==null) throw new IllegalStateException();
 		return instance;
+	}
+	
+	public static boolean isAvailable() {
+		return instance != null;
 	}
 
 

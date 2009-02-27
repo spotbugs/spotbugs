@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.userAnnotations.ri;
 
+import java.awt.GraphicsEnvironment;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,12 +31,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 
 /**
@@ -67,6 +71,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	private boolean setProperties() {
 		String sqlDriver = getProperty("dbDriver");
 		url = getProperty("dbUrl");
+		String dbName = getProperty("dbName");
 		dbUser = getProperty("dbUser");
 		dbPassword = getProperty("dbPassword");
 		findbugsUser = getProperty("findbugsUser");
@@ -82,7 +87,11 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			boolean result = false;
 			if (rs.next()) {
 				int count = rs.getInt(1);
-				System.out.println("Count is " + count);
+				if (!GraphicsEnvironment.isHeadless() && MainFrame.isAvailable()) {
+					int choice = JOptionPane.showConfirmDialog(MainFrame.getInstance(), "Store comments in " + dbName + " as user " + findbugsUser + "?", "Connect to database?", JOptionPane.YES_NO_OPTION);
+					return choice == JOptionPane.YES_OPTION;
+					
+				}
 				result = true;
 			}
 			rs.close();
@@ -92,6 +101,9 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 		} catch (Exception e) {
 			AnalysisContext.logError("Unable to connect to database", e);
+			if (!GraphicsEnvironment.isHeadless() && MainFrame.isAvailable()) {
+				JOptionPane.showMessageDialog(MainFrame.getInstance(), "Unable to connect to database: " + e.getMessage());
+			}
 			e.printStackTrace();
 			return false;
 		}
