@@ -38,7 +38,7 @@ public class LoadXMLTest extends AbstractFindBugsTest {
 		assertNoBugs();
 
 		StructuredSelection selection = new StructuredSelection(getProject());
-		IActionDelegate action = new MockLoadXMLAction(getBugsFileLocation());
+		IActionDelegate action = new LoadXMLActionTestSubclass(getBugsFileLocation());
 		action.selectionChanged(null, selection);
 		action.run(null);
 

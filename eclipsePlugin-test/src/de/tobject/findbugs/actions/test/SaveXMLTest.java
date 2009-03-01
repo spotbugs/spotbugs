@@ -64,7 +64,7 @@ public class SaveXMLTest extends AbstractFindBugsTest {
 		assertExpectedBugs();
 
 		StructuredSelection selection = new StructuredSelection(getProject());
-		IActionDelegate action = new MockSaveXMLAction(getTempFilePath());
+		IActionDelegate action = new SaveXMLActionTestSubclass(getTempFilePath());
 		action.selectionChanged(null, selection);
 		action.run(null);
 

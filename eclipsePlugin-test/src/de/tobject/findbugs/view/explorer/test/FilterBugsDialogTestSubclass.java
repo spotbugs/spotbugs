@@ -32,9 +32,9 @@ import edu.umd.cs.findbugs.BugPattern;
  * 
  * @author Tomás Pollak
  */
-public class MockFilterBugsDialog extends FilterBugsDialog {
+public class FilterBugsDialogTestSubclass extends FilterBugsDialog {
 
-	public MockFilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns,
+	public FilterBugsDialogTestSubclass(Shell parentShell, Set<BugPattern> filteredPatterns,
 			Set<BugCode> filteredTypes) {
 		super(parentShell, filteredPatterns, filteredTypes);
 	}

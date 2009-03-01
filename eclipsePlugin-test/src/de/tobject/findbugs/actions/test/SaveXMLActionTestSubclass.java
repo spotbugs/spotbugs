@@ -20,18 +20,18 @@ package de.tobject.findbugs.actions.test;
 
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.tobject.findbugs.actions.LoadXmlAction;
+import de.tobject.findbugs.actions.SaveXmlAction;
 
 /**
- * Test subclass of LoadXmlAction that overrides the opening of the FileDialog for testing
+ * Test subclass of SaveXmlAction that overrides the opening of the FileDialog for testing
  * purposes.
  * 
  * @author Tomás Pollak
  */
-public class MockLoadXMLAction extends LoadXmlAction {
+public class SaveXMLActionTestSubclass extends SaveXmlAction {
 	private final String filePath;
 
-	public MockLoadXMLAction(String filePath) {
+	public SaveXMLActionTestSubclass(String filePath) {
 		this.filePath = filePath;
 	}
 

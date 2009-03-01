@@ -63,7 +63,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	@Test
 	public void testEmptyFilter() {
 		// Open the dialog
-		MockFilterBugsDialog dialog = openFilterBugsDialog(Collections
+		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
 				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
 		// Close the dialog
@@ -77,7 +77,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	@Test
 	public void testFullFilter() {
 		// Open the dialog
-		MockFilterBugsDialog dialog = openFilterBugsDialog(FindbugsPlugin
+		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(FindbugsPlugin
 				.getKnownPatterns(), FindbugsPlugin.getKnownPatternTypes());
 
 		// Close the dialog
@@ -92,7 +92,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	@Test
 	public void testOnePatternSelectsPattern() {
 		// Open the dialog
-		MockFilterBugsDialog dialog = openFilterBugsDialog(Collections
+		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
 				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
 		// Add one BugPattern
@@ -111,7 +111,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	@Test
 	public void testOnePatternSelectsType() {
 		// Open the dialog
-		MockFilterBugsDialog dialog = openFilterBugsDialog(Collections
+		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
 				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
 		// Add one BugPattern
@@ -132,7 +132,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	@Test
 	public void testOneType() {
 		// Open the dialog
-		MockFilterBugsDialog dialog = openFilterBugsDialog(Collections
+		FilterBugsDialogTestSubclass dialog = openFilterBugsDialog(Collections
 				.<BugPattern> emptySet(), Collections.<BugCode> emptySet());
 
 		// Add one BugCode
@@ -164,9 +164,9 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 		return shell;
 	}
 
-	private MockFilterBugsDialog openFilterBugsDialog(Set<BugPattern> filteredPatterns,
+	private FilterBugsDialogTestSubclass openFilterBugsDialog(Set<BugPattern> filteredPatterns,
 			Set<BugCode> filteredTypes) {
-		MockFilterBugsDialog dialog = new MockFilterBugsDialog(getParentShell(),
+		FilterBugsDialogTestSubclass dialog = new FilterBugsDialogTestSubclass(getParentShell(),
 				filteredPatterns, filteredTypes);
 		dialog.open();
 		return dialog;
