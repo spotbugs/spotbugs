@@ -95,13 +95,15 @@ public class SortedBugCollection implements BugCollection {
 		if(runningWithoutSwingUI){
 			return null;
 		}
-		try {
-	    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
-        } catch (NoClassDefFoundError e) {
-        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
-        	// and can't instantiate JDBCUserAnnotationPlugin here...
-        	runningWithoutSwingUI = true;
-        }
+		if(userAnnotationPlugin == null){
+			try {
+		    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
+	        } catch (NoClassDefFoundError e) {
+	        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
+	        	// and can't instantiate JDBCUserAnnotationPlugin here...
+	        	runningWithoutSwingUI = true;
+	        }
+		}
 		return userAnnotationPlugin;
 	}
 	
