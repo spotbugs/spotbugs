@@ -69,6 +69,8 @@ public class Churn {
 
 	public Churn execute() {
 
+		Data all = new Data();
+		data.put("all", all);
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();
 
@@ -76,10 +78,18 @@ public class Churn {
 			Data d = data.get(key);
 			if (d == null)
 				data.put(key, d = new Data());
-			if (bugInstance.isDead())
+			if (bugInstance.isDead()) {
 				d.fixed++;
-			else
+				all.fixed++;
+			}
+			else {
 				d.persist++;
+				all.persist++;
+			}
+			long first = bugInstance.getFirstVersion();
+			long last = bugInstance.getLastVersion();
+			if (first != 0 && last != -1)
+				System.out.printf("%3d age\n", (last-first));
 		}
 		return this;
 	}
