@@ -39,6 +39,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
 
@@ -47,6 +50,8 @@ import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -62,6 +67,7 @@ public abstract class AbstractFindBugsTest {
 	private static final String TEST_PROJECT = "TestProject";
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
 	protected static final String FILTER_FILE = "/src/filter.xml";
+	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	private IJavaProject project;
 
 	public AbstractFindBugsTest() {
@@ -320,5 +326,17 @@ public abstract class AbstractFindBugsTest {
 	 */
 	protected void work(FindBugsWorker worker) throws CoreException {
 		worker.work(Collections.singletonList((IResource) getProject()));
+	}
+
+	protected BugContentProvider getBugContentProvider() throws PartInitException {
+		BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
+		BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator
+				.getNavigatorContentService());
+		return bugContentProvider;
+	}
+
+	protected IViewPart showBugExplorerView() throws PartInitException {
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+				.showView(BUG_EXPLORER_VIEW_ID);
 	}
 }

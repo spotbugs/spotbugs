@@ -34,7 +34,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,8 +50,6 @@ import de.tobject.findbugs.view.explorer.Grouping;
  * @author Tomás Pollak
  */
 public class BugExplorerViewTest extends AbstractFindBugsTest {
-
-	static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
 	private static <T> Set<T> setOf(T... a) {
 		return new HashSet<T>(Arrays.asList(a));
@@ -87,6 +84,7 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 		// Get the content provider
 		ITreeContentProvider contentProvider = getNavigatorContentProvider();
 		assertNotNull(contentProvider);
+		setGroupingInBugContentProvider(getDefaultGrouping());
 
 		// Assert expected view contents
 		Object projectBugGroup = getSingleElement(contentProvider);
@@ -114,7 +112,7 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 		// Get the content provider
 		ITreeContentProvider contentProvider = getNavigatorContentProvider();
 		assertNotNull(contentProvider);
-		setProjectPatternPackageMarkerGrouping();
+		setGroupingInBugContentProvider(getProjectPatternPackageMarkerGrouping());
 
 		// Assert expected view contents
 		Object projectBugGroup = getSingleElement(contentProvider);
@@ -169,13 +167,6 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 		return expectedProject;
 	}
 
-	private BugContentProvider getBugContentProvider() throws PartInitException {
-		BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
-		BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator
-				.getNavigatorContentService());
-		return bugContentProvider;
-	}
-
 	private ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
 		BugExplorerView view = (BugExplorerView) showBugExplorerView();
 		assertNotNull(view);
@@ -201,20 +192,30 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 		bugContentProvider.reSetInput();
 	}
 
-	private void setProjectPatternPackageMarkerGrouping() throws PartInitException {
+	private void setGroupingInBugContentProvider(Grouping grouping)
+			throws PartInitException {
 		BugContentProvider bugContentProvider = getBugContentProvider();
 		assertNotNull(bugContentProvider);
+		bugContentProvider.setGrouping(grouping);
+		bugContentProvider.reSetInput();
+	}
+
+	private Grouping getProjectPatternPackageMarkerGrouping() {
 		List<GroupType> types = new ArrayList<GroupType>();
 		types.add(GroupType.Project);
 		types.add(GroupType.Pattern);
 		types.add(GroupType.Package);
 		types.add(GroupType.Marker);
-		bugContentProvider.setGrouping(Grouping.createFrom(types));
-		bugContentProvider.reSetInput();
+		Grouping grouping = Grouping.createFrom(types);
+		return grouping;
 	}
 
-	private IViewPart showBugExplorerView() throws PartInitException {
-		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-				.showView(BUG_EXPLORER_VIEW_ID);
+	private Grouping getDefaultGrouping() {
+		List<GroupType> types = new ArrayList<GroupType>();
+		types.add(GroupType.Project);
+		types.add(GroupType.Pattern);
+		types.add(GroupType.Marker);
+		Grouping grouping = Grouping.createFrom(types);
+		return grouping;
 	}
 }

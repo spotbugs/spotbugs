@@ -48,7 +48,7 @@ public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
 
 		// Assert the FindBugs explorer view is visible
 		IViewPart bugExplorerView = page
-				.findView(BugExplorerViewTest.BUG_EXPLORER_VIEW_ID);
+				.findView(AbstractFindBugsTest.BUG_EXPLORER_VIEW_ID);
 		assertNotNull(bugExplorerView);
 		assertTrue(page.isPartVisible(bugExplorerView));
 	}
