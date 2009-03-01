@@ -22,6 +22,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 
+import de.tobject.findbugs.FindbugsPlugin;
+
 /** a simple scheduling rule for mutually exclusivity, more-or-less copied from:
  *  http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/runtime_jobs_rules.htm
  */
@@ -41,6 +43,10 @@ public class MutexSchedulingRule implements ISchedulingRule {
 
 	public boolean isConflicting(ISchedulingRule rule) {
 		if(rule instanceof MutexSchedulingRule) {
+			if(project == null){
+				// we don't know the project, so better to say we have conflict
+				return true;
+			}
 			MutexSchedulingRule mRule = (MutexSchedulingRule) rule;
 			if(MULTICORE) {
 				return mRule.project.equals(project) || tooManyJobsThere();
@@ -51,7 +57,7 @@ public class MutexSchedulingRule implements ISchedulingRule {
 	}
 
 	private static boolean tooManyJobsThere() {
-		Job[] fbJobs = Job.getJobManager().find(MutexSchedulingRule.class);
+		Job[] fbJobs = Job.getJobManager().find(FindbugsPlugin.class);
 		int runningCount = 0;
 		for (Job job : fbJobs) {
 			if(job.getState() == Job.RUNNING){
@@ -63,12 +69,17 @@ public class MutexSchedulingRule implements ISchedulingRule {
 	}
 
 	public boolean contains(ISchedulingRule rule) {
-		if(rule instanceof IProject){
+		if(rule instanceof IProject && project != null){
 			return project.equals(rule);
 		}
 		return isConflicting(rule);
 		/* from the URL above: "If you do not need to create hierarchies of locks,
 		   you can implement the contains method to simply call isConflicting." */
+	}
+
+	@Override
+	public String toString() {
+		return "MutexSchedulingRule, project: " + project;
 	}
 
 }

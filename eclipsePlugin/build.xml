@@ -296,13 +296,14 @@
     <!-- Copy required jar files from the main findbugs project (which should be a sibling of this project) -->
 	<target name="fbjars" depends="init,fbcompile">
 		<echo message="Copying Findbugs libraries and classes to Eclipse plugin"/>
-		
+
 		<!-- copy only FB core classes to the plugin bin folder -->
 		<unzip src="${fb.jar}" dest="${bin.dir}">
 			<patternset>
 				<include name="**/*.*"/>
 				<exclude name="${fbpackage}/gui/**/*.*"/>
 				<exclude name="${fbpackage}/gui2/**/*.*"/>
+				<exclude name="${fbpackage}/userAnnotations/ri/**/*.*"/>
 				<exclude name="${fbpackage}/sourceViewer/**/*.*"/>
 				<exclude name="${fbpackage}/anttask/**/*.*"/>
 				<exclude name="${fbpackage}/tools/**/*.*"/>

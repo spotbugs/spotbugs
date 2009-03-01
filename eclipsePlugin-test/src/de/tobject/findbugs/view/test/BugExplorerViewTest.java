@@ -46,169 +46,169 @@ import de.tobject.findbugs.view.explorer.Grouping;
 
 /**
  * This class tests the BugExplorerView and its related classes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class BugExplorerViewTest extends AbstractFindBugsTest {
 
-	private static <T> Set<T> setOf(T... a) {
-		return new HashSet<T>(Arrays.asList(a));
-	}
+    private static <T> Set<T> setOf(T... a) {
+        return new HashSet<T>(Arrays.asList(a));
+    }
 
-	@Override
-	@Before
-	public void setUp() throws CoreException, IOException {
-		resetBugContentProviderInput();
-		super.setUp();
-	}
+    @Override
+    @Before
+    public void setUp() throws CoreException, IOException {
+        resetBugContentProviderInput();
+        super.setUp();
+    }
 
-	@Override
-	@After
-	public void tearDown() throws CoreException {
-		super.tearDown();
-		resetBugContentProviderInput();
-	}
+    @Override
+    @After
+    public void tearDown() throws CoreException {
+        super.tearDown();
+        resetBugContentProviderInput();
+    }
 
-	@Test
-	public void testShowView() throws PartInitException {
-		// Show the view
-		IViewPart view = showBugExplorerView();
-		assertNotNull(view);
-	}
+    @Test
+    public void testShowView() throws PartInitException {
+        // Show the view
+        IViewPart view = showBugExplorerView();
+        assertNotNull(view);
+    }
 
-	@Test
-	public void testViewContents_Project_Pattern_Marker() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testViewContents_Project_Pattern_Marker() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Get the content provider
-		ITreeContentProvider contentProvider = getNavigatorContentProvider();
-		assertNotNull(contentProvider);
+        // Get the content provider
+        ITreeContentProvider contentProvider = getNavigatorContentProvider();
+        assertNotNull(contentProvider);
 		setGroupingInBugContentProvider(getDefaultGrouping());
 
-		// Assert expected view contents
-		Object projectBugGroup = getSingleElement(contentProvider);
-		ExpectedViewElement expectedProject = createProjectPatternMarkerExpectedContents();
-		expectedProject.assertEquals(projectBugGroup, contentProvider);
-	}
+        // Assert expected view contents
+        Object projectBugGroup = getSingleElement(contentProvider);
+        ExpectedViewElement expectedProject = createProjectPatternMarkerExpectedContents();
+        expectedProject.assertEquals(projectBugGroup, contentProvider);
+    }
 
-	@Test
-	public void testViewContents_Empty() throws PartInitException {
-		// Get the content provider
-		ITreeContentProvider contentProvider = getNavigatorContentProvider();
-		assertNotNull(contentProvider);
+    @Test
+    public void testViewContents_Empty() throws PartInitException {
+        // Get the content provider
+        ITreeContentProvider contentProvider = getNavigatorContentProvider();
+        assertNotNull(contentProvider);
 
-		// Get the top level elements from the content provider
-		Object[] projects = contentProvider.getElements(getWorkspaceRoot());
-		assertNotNull(projects);
-		assertEquals(0, projects.length);
-	}
+        // Get the top level elements from the content provider
+        Object[] projects = contentProvider.getElements(getWorkspaceRoot());
+        assertNotNull(projects);
+        assertEquals(0, projects.length);
+    }
 
-	@Test
-	public void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testViewContents_Project_Pattern_Package_Marker() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Get the content provider
-		ITreeContentProvider contentProvider = getNavigatorContentProvider();
-		assertNotNull(contentProvider);
+        // Get the content provider
+        ITreeContentProvider contentProvider = getNavigatorContentProvider();
+        assertNotNull(contentProvider);
 		setGroupingInBugContentProvider(getProjectPatternPackageMarkerGrouping());
 
-		// Assert expected view contents
-		Object projectBugGroup = getSingleElement(contentProvider);
-		ExpectedViewElement expectedProject = createProjectPatternPackageMarkerExpectedContents();
-		expectedProject.assertEquals(projectBugGroup, contentProvider);
-	}
+        // Assert expected view contents
+        Object projectBugGroup = getSingleElement(contentProvider);
+        ExpectedViewElement expectedProject = createProjectPatternPackageMarkerExpectedContents();
+        expectedProject.assertEquals(projectBugGroup, contentProvider);
+    }
 
-	private ExpectedViewElement createProjectPatternMarkerExpectedContents() {
-		// Creates the expected elements tree
-		// Project
-		// -- Pattern
-		// ---- Marker
-		// -- Pattern
-		// ---- Marker
-		ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("EI_EXPOSE_REP");
-		ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("EI_EXPOSE_REP2");
-		ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
-				GroupType.Pattern, null, setOf(expectedMarker1), setOf(expectedMarker1));
-		ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
-				GroupType.Pattern, null, setOf(expectedMarker2), setOf(expectedMarker2));
-		ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
-				getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
-						expectedMarker1, expectedMarker2));
-		return expectedProject;
-	}
+    private ExpectedViewElement createProjectPatternMarkerExpectedContents() {
+        // Creates the expected elements tree
+        // Project
+        // -- Pattern
+        // ---- Marker
+        // -- Pattern
+        // ---- Marker
+        ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("DM_STRING_CTOR");
+        ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("URF_UNREAD_FIELD");
+        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
+                GroupType.Pattern, null, setOf(expectedMarker1), setOf(expectedMarker1));
+        ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
+                GroupType.Pattern, null, setOf(expectedMarker2), setOf(expectedMarker2));
+        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
+                getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
+                        expectedMarker1, expectedMarker2));
+        return expectedProject;
+    }
 
-	private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents()
-			throws JavaModelException {
-		// Creates the expected elements tree
-		// Project
-		// -- Pattern
-		// ---- Package
-		// ------ Marker
-		// -- Pattern
-		// ---- Package
-		// ------ Marker
-		ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("EI_EXPOSE_REP");
-		ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("EI_EXPOSE_REP2");
-		ExpectedViewElement expectedPackage1 = new ExpectedViewBugGroup(
-				GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker1),
-				setOf(expectedMarker1));
-		ExpectedViewElement expectedPackage2 = new ExpectedViewBugGroup(
-				GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker2),
-				setOf(expectedMarker2));
-		ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
-				GroupType.Pattern, null, setOf(expectedPackage1), setOf(expectedMarker1));
-		ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
-				GroupType.Pattern, null, setOf(expectedPackage2), setOf(expectedMarker2));
-		ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
-				getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
-						expectedMarker1, expectedMarker2));
-		return expectedProject;
-	}
+    private ExpectedViewElement createProjectPatternPackageMarkerExpectedContents()
+            throws JavaModelException {
+        // Creates the expected elements tree
+        // Project
+        // -- Pattern
+        // ---- Package
+        // ------ Marker
+        // -- Pattern
+        // ---- Package
+        // ------ Marker
+        ExpectedViewElement expectedMarker1 = new ExpectedViewMarker("DM_STRING_CTOR");
+        ExpectedViewElement expectedMarker2 = new ExpectedViewMarker("URF_UNREAD_FIELD");
+        ExpectedViewElement expectedPackage1 = new ExpectedViewBugGroup(
+                GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker1),
+                setOf(expectedMarker1));
+        ExpectedViewElement expectedPackage2 = new ExpectedViewBugGroup(
+                GroupType.Package, getDefaultPackageInSrc(), setOf(expectedMarker2),
+                setOf(expectedMarker2));
+        ExpectedViewElement expectedPattern1 = new ExpectedViewBugGroup(
+                GroupType.Pattern, null, setOf(expectedPackage1), setOf(expectedMarker1));
+        ExpectedViewElement expectedPattern2 = new ExpectedViewBugGroup(
+                GroupType.Pattern, null, setOf(expectedPackage2), setOf(expectedMarker2));
+        ExpectedViewElement expectedProject = new ExpectedViewBugGroup(GroupType.Project,
+                getProject(), setOf(expectedPattern1, expectedPattern2), setOf(
+                        expectedMarker1, expectedMarker2));
+        return expectedProject;
+    }
 
-	private ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
-		BugExplorerView view = (BugExplorerView) showBugExplorerView();
-		assertNotNull(view);
+    private ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
+        BugExplorerView view = (BugExplorerView) showBugExplorerView();
+        assertNotNull(view);
 
-		ITreeContentProvider contentProvider = (ITreeContentProvider) view
-				.getCommonViewer().getContentProvider();
-		return contentProvider;
-	}
+        ITreeContentProvider contentProvider = (ITreeContentProvider) view
+                .getCommonViewer().getContentProvider();
+        return contentProvider;
+    }
 
-	private Object getSingleElement(ITreeContentProvider contentProvider) {
-		Object[] elements = contentProvider.getElements(getWorkspaceRoot());
-		assertNotNull(elements);
-		assertEquals(1, elements.length);
-		return elements[0];
-	}
+    private Object getSingleElement(ITreeContentProvider contentProvider) {
+        Object[] elements = contentProvider.getElements(getWorkspaceRoot());
+        assertNotNull(elements);
+        assertEquals(1, elements.length);
+        return elements[0];
+    }
 
-	private IWorkspaceRoot getWorkspaceRoot() {
-		return ResourcesPlugin.getWorkspace().getRoot();
-	}
+    private IWorkspaceRoot getWorkspaceRoot() {
+        return ResourcesPlugin.getWorkspace().getRoot();
+    }
 
-	private void resetBugContentProviderInput() throws PartInitException {
-		BugContentProvider bugContentProvider = getBugContentProvider();
-		bugContentProvider.reSetInput();
-	}
+    private void resetBugContentProviderInput() throws PartInitException {
+        BugContentProvider bugContentProvider = getBugContentProvider();
+        bugContentProvider.reSetInput();
+    }
 
 	private void setGroupingInBugContentProvider(Grouping grouping)
 			throws PartInitException {
-		BugContentProvider bugContentProvider = getBugContentProvider();
-		assertNotNull(bugContentProvider);
+        BugContentProvider bugContentProvider = getBugContentProvider();
+        assertNotNull(bugContentProvider);
 		bugContentProvider.setGrouping(grouping);
 		bugContentProvider.reSetInput();
 	}
 
 	private Grouping getProjectPatternPackageMarkerGrouping() {
-		List<GroupType> types = new ArrayList<GroupType>();
-		types.add(GroupType.Project);
-		types.add(GroupType.Pattern);
-		types.add(GroupType.Package);
-		types.add(GroupType.Marker);
+        List<GroupType> types = new ArrayList<GroupType>();
+        types.add(GroupType.Project);
+        types.add(GroupType.Pattern);
+        types.add(GroupType.Package);
+        types.add(GroupType.Marker);
 		Grouping grouping = Grouping.createFrom(types);
 		return grouping;
-	}
+    }
 
 	private Grouping getDefaultGrouping() {
 		List<GroupType> types = new ArrayList<GroupType>();
@@ -217,5 +217,5 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 		types.add(GroupType.Marker);
 		Grouping grouping = Grouping.createFrom(types);
 		return grouping;
-	}
+    }
 }

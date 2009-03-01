@@ -17,7 +17,7 @@
       <page
             name="FindBugs"
             class="de.tobject.findbugs.properties.FindbugsPropertyPage"
-            id="de.tobject.findbugs.properties.findbugsPropertyPage">
+            id="FindBugsPropertyPage">
          <filter
                name="nature"
                value="org.eclipse.jdt.core.javanature">
@@ -1010,6 +1010,7 @@
           <propertyCategory category="advanced"/>
        </propertyContributor>
     </extension>
+
     <extension
           point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
        <propertyTabs contributorId="de.tobject.findbugs.view.bugtreeview">
@@ -1019,6 +1020,7 @@
                 image="icons/detailsView.png"
                 indented="false"
                 label="&gt;"/>
+
           <propertyTab
                 afterTab="bug.tab.bugPattern"
                 category="general"
@@ -1026,6 +1028,7 @@
                 image="icons/runFindbugs.png"
                 indented="false"
                 label="&gt;"/>
+
           <propertyTab
                 afterTab="bug.tab.bugInstance"
                 category="general"
@@ -1033,12 +1036,14 @@
                 image="icons/annotationsView.png"
                 indented="false"
                 label="&gt;"/>
+
           <propertyTab
                 category="advanced"
                 id="bug.tab.Advanced"
                 image="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
                 indented="false"
                 label="&gt;"/>
+
           <propertyTab
                 category="general"
                 id="bug.tab.bugPatternStandAlone"
@@ -1046,6 +1051,7 @@
                 indented="false"
                 label="&gt;">
           </propertyTab>
+
           <propertyTab
                 afterTab="bug.tab.bugPatternStandAlone"
                 category="general"
@@ -1056,6 +1062,7 @@
           </propertyTab>
        </propertyTabs>
     </extension>
+
     <extension
           point="org.eclipse.ui.views.properties.tabbed.propertySections">
        <propertySections contributorId="de.tobject.findbugs.view.bugtreeview">
@@ -1066,6 +1073,7 @@
                 tab="bug.tab.Advanced">
              <input type="org.eclipse.core.resources.IMarker"/>
           </propertySection>
+
           <propertySection
                 class="de.tobject.findbugs.view.properties.BugGroupSection"
                 id="bug.section.genericGroupTab"
@@ -1074,6 +1082,7 @@
                    type="de.tobject.findbugs.view.explorer.BugGroup">
              </input>
           </propertySection>
+
           <propertySection
                 class="de.tobject.findbugs.view.properties.BugInstanceSection"
                 enablesFor="1"
@@ -1083,6 +1092,7 @@
                    type="org.eclipse.core.resources.IMarker">
              </input>
           </propertySection>
+
           <propertySection
                 class="de.tobject.findbugs.view.properties.BugPatternSection"
                 enablesFor="1"
@@ -1093,6 +1103,7 @@
                    type="de.tobject.findbugs.view.explorer.BugGroup">
              </input>
           </propertySection>
+
           <propertySection
                 class="de.tobject.findbugs.view.properties.BugPatternSection"
                 enablesFor="1"
@@ -1102,6 +1113,7 @@
                    type="org.eclipse.core.resources.IMarker">
              </input>
           </propertySection>
+
           <propertySection
                 class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
                 enablesFor="1"
@@ -1113,6 +1125,7 @@
           </propertySection>
        </propertySections>
     </extension>
+
     <extension
           point="org.eclipse.core.expressions.propertyTesters">
        <propertyTester
@@ -1123,11 +1136,22 @@
              type="de.tobject.findbugs.view.explorer.BugGroup">
        </propertyTester>
     </extension>
+
     <extension
           point="org.eclipse.core.runtime.preferences">
        <initializer
              class="de.tobject.findbugs.preferences.FindBugsPreferenceInitializer">
        </initializer>
+    </extension>
+
+    <extension
+          point="org.eclipse.ui.preferencePages">
+       <page
+             category="org.eclipse.jdt.ui.preferences.JavaBasePreferencePage"
+             class="de.tobject.findbugs.properties.FindbugsPropertyPage"
+             id="FindBugsPreferencePage"
+             name="FindBugs">
+       </page>
     </extension>
 
 <!-- uncommented until we define our own context

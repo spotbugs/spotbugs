@@ -58,275 +58,277 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for FindBugs tests.
- * 
+ *
  * @author Tomás Pollak
  */
 public abstract class AbstractFindBugsTest {
 
-	private static final String SRC = "src";
-	private static final String TEST_PROJECT = "TestProject";
-	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
-	protected static final String FILTER_FILE = "/src/filter.xml";
+    private static final String SRC = "src";
+    private static final String TEST_PROJECT = "TestProject";
+    protected static final String BUGS_XML_FILE = "/src/bugs.xml";
+    protected static final String FILTER_FILE = "/src/filter.xml";
 	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
-	private IJavaProject project;
+    private IJavaProject project;
 
-	public AbstractFindBugsTest() {
-		super();
-	}
+    public AbstractFindBugsTest() {
+        super();
+    }
 
-	/**
-	 * Create a new Java project with a source folder and copy the test files of the
-	 * plugin to the source folder. Compile the project.
-	 * 
-	 * @throws CoreException
-	 * @throws IOException
-	 */
-	@Before
-	public void setUp() throws CoreException, IOException {
-		// Create the test project
-		project = createJavaProject(TEST_PROJECT, "bin");
-		addRTJar(getJavaProject());
-		addSourceContainer(getJavaProject(), SRC);
+    /**
+     * Create a new Java project with a source folder and copy the test files of the
+     * plugin to the source folder. Compile the project.
+     *
+     * @throws CoreException
+     * @throws IOException
+     */
+    @Before
+    public void setUp() throws CoreException, IOException {
+        // Create the test project
+        project = createJavaProject(TEST_PROJECT, "bin");
+        addRTJar(getJavaProject());
+        addSourceContainer(getJavaProject(), SRC);
 
-		// Copy test workspace
-		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
-				.getBundle(), "/testFiles");
+        // Copy test workspace
+        importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
+                .getBundle(), "/testFiles");
 
-		// Compile project
-		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
-		performDummySearch();
+        // Compile project
+        getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
+        performDummySearch();
 
-		// Start with a clean FindBugs state
-		clearBugsState();
-	}
+        // Start with a clean FindBugs state
+        clearBugsState();
+    }
 
-	/**
-	 * Delete the Java project used for this test.
-	 * 
-	 * @throws CoreException
-	 */
-	@After
-	public void tearDown() throws CoreException {
-		// Clean the FindBugs state
-		clearBugsState();
+    /**
+     * Delete the Java project used for this test.
+     *
+     * @throws CoreException
+     */
+    @After
+    public void tearDown() throws CoreException {
+        // Clean the FindBugs state
+        clearBugsState();
 
-		// Delete the test project
-		delete(project);
-	}
+        // Delete the test project
+        delete(project);
+    }
 
-	/**
-	 * Assert the total number of bugs in the given resource.
-	 * 
-	 * @param expected
-	 *            The expected number of bugs.
-	 * @param project
-	 *            The IProject that contains the bugs.
-	 * @throws CoreException
-	 */
-	protected void assertBugsCount(int expected, IProject project) throws CoreException {
-		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
-		assertEquals(expected, bugs.getCollection().size());
-	}
+    /**
+     * Assert the total number of bugs in the given resource.
+     *
+     * @param expected
+     *            The expected number of bugs.
+     * @param project
+     *            The IProject that contains the bugs.
+     * @throws CoreException
+     */
+    protected void assertBugsCount(int expected, IProject project) throws CoreException {
+        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
+        assertEquals(expected, bugs.getCollection().size());
+    }
 
-	protected void assertExpectedBugs() throws CoreException {
-		assertBugsCount(getExpectedBugsCount(), getProject());
-		assertReportedBugs("EI_EXPOSE_REP", 1, getProject());
-		assertReportedBugs("EI_EXPOSE_REP2", 1, getProject());
-	}
+    protected void assertExpectedBugs() throws CoreException {
+        assertBugsCount(getExpectedBugsCount(), getProject());
+        assertReportedBugs("URF_UNREAD_FIELD", 1, getProject());
+        assertReportedBugs("DM_STRING_CTOR", 1, getProject());
+    }
 
-	protected void assertExpectedMarkers(IMarker[] markers) throws CoreException {
-		assertEquals(getExpectedBugsCount(), markers.length);
-		for (int i = 0; i < markers.length; i++) {
-			assertTrue(markers[i].isSubtypeOf(FindBugsMarker.NAME));
-		}
-		assertMarkers("EI_EXPOSE_REP", 1, markers);
-		assertMarkers("EI_EXPOSE_REP2", 1, markers);
-	}
+    protected void assertExpectedMarkers(IMarker[] markers) throws CoreException {
+        assertEquals(getVisibleBugsCount(), markers.length);
+        for (int i = 0; i < markers.length; i++) {
+            assertTrue(markers[i].isSubtypeOf(FindBugsMarker.NAME));
+        }
+        assertMarkers("URF_UNREAD_FIELD", 1, markers);
+        assertMarkers("DM_STRING_CTOR", 1, markers);
+    }
 
-	protected void assertExpectedMarkers(Set<IMarker> markers) throws CoreException {
-		assertExpectedMarkers(markers.toArray(new IMarker[0]));
-	}
+    protected void assertExpectedMarkers(Set<IMarker> markers) throws CoreException {
+        assertExpectedMarkers(markers.toArray(new IMarker[0]));
+    }
 
-	/**
-	 * Asserts that the number of present markers of the given type match the given
-	 * expected count.
-	 * 
-	 * @param expectedBugType
-	 *            The expected bug type.
-	 * @param expectedBugCount
-	 *            The expected bug type count.
-	 * @param markers
-	 *            The array of markers to assert on.
-	 * @throws CoreException
-	 */
-	protected void assertMarkers(String expectedBugType, int expectedBugTypeCount,
-			IMarker[] markers) throws CoreException {
-		int seenBugTypeCount = 0;
-		for (int i = 0; i < markers.length; i++) {
-			IMarker marker = markers[i];
-			if (expectedBugType.equals(marker.getAttribute(FindBugsMarker.BUG_TYPE))) {
-				seenBugTypeCount++;
-			}
-		}
-		assertEquals("Expected " + expectedBugTypeCount + " of markers "
-				+ expectedBugType + " but seen " + seenBugTypeCount,
-				expectedBugTypeCount, seenBugTypeCount);
-	}
+    /**
+     * Asserts that the number of present markers of the given type match the given
+     * expected count.
+     *
+     * @param expectedBugType
+     *            The expected bug type.
+     * @param expectedBugCount
+     *            The expected bug type count.
+     * @param markers
+     *            The array of markers to assert on.
+     * @throws CoreException
+     */
+    protected void assertMarkers(String expectedBugType, int expectedBugTypeCount,
+            IMarker[] markers) throws CoreException {
+        int seenBugTypeCount = 0;
+        for (int i = 0; i < markers.length; i++) {
+            IMarker marker = markers[i];
+            if (expectedBugType.equals(marker.getAttribute(FindBugsMarker.BUG_TYPE))) {
+                seenBugTypeCount++;
+            }
+        }
+        assertEquals("Expected " + expectedBugTypeCount + " of markers "
+                + expectedBugType + " but seen " + seenBugTypeCount,
+                expectedBugTypeCount, seenBugTypeCount);
+    }
 
-	protected void assertNoBugs() throws CoreException {
-		assertBugsCount(0, getProject());
-	}
+    protected void assertNoBugs() throws CoreException {
+        assertBugsCount(0, getProject());
+    }
 
-	protected void assertNoMarkers(IMarker[] markers) {
-		assertEquals(0, markers.length);
-	}
+    protected void assertNoMarkers(IMarker[] markers) {
+        assertEquals(0, markers.length);
+    }
 
-	/**
-	 * Asserts that the number of detected bugs of the given type match the given expected
-	 * count.
-	 * 
-	 * @param expectedBugType
-	 *            The expected bug type.
-	 * @param expectedBugCount
-	 *            The expected bug type count.
-	 * @param project
-	 *            The IProject that contains the bugs.
-	 * @throws CoreException
-	 */
-	protected void assertReportedBugs(String expectedBugType, int expectedBugCount,
-			IProject project) throws CoreException {
-		int seenBugCount = 0;
-		SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
-		for (BugInstance bug : bugs) {
-			if (expectedBugType.equals(bug.getType())) {
-				seenBugCount++;
-			}
-		}
-		assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType
-				+ " but seen " + seenBugCount, expectedBugCount, seenBugCount);
-	}
+    /**
+     * Asserts that the number of detected bugs of the given type match the given expected
+     * count.
+     *
+     * @param expectedBugType
+     *            The expected bug type.
+     * @param expectedBugCount
+     *            The expected bug type count.
+     * @param project
+     *            The IProject that contains the bugs.
+     * @throws CoreException
+     */
+    protected void assertReportedBugs(String expectedBugType, int expectedBugCount,
+            IProject project) throws CoreException {
+        int seenBugCount = 0;
+        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
+        for (BugInstance bug : bugs) {
+            if (expectedBugType.equals(bug.getType())) {
+                seenBugCount++;
+            }
+        }
+        assertEquals("Expected " + expectedBugCount + " of bugs " + expectedBugType
+                + " but seen " + seenBugCount, expectedBugCount, seenBugCount);
+    }
 
-	protected void clearBugsState() throws CoreException {
-		MarkerUtil.removeMarkers(getProject());
-		FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
-	}
+    protected void clearBugsState() throws CoreException {
+        MarkerUtil.removeMarkers(getProject());
+        FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
+    }
 
-	protected FindBugsWorker createFindBugsWorker() throws CoreException {
-		FindBugsWorker worker = new FindBugsWorker(getProject(),
-				new NullProgressMonitor());
-		return worker;
-	}
+    protected FindBugsWorker createFindBugsWorker() throws CoreException {
+        FindBugsWorker worker = new FindBugsWorker(getProject(),
+                new NullProgressMonitor());
+        return worker;
+    }
 
-	/**
-	 * Returns the bug file path of the test project.
-	 * 
-	 * @return The absolute filesystem path of the bugs file.
-	 */
-	protected String getBugsFileLocation() {
-		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
-		return bugsFile.getLocation().toOSString();
-	}
+    /**
+     * Returns the bug file path of the test project.
+     *
+     * @return The absolute filesystem path of the bugs file.
+     */
+    protected String getBugsFileLocation() {
+        IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
+        return bugsFile.getLocation().toOSString();
+    }
 
-	/**
-	 * Returns the bug file path of the test project.
-	 * 
-	 * @return The absolute path (relative to the workspace root) of the bugs file.
-	 */
-	protected String getBugsFilePath() {
-		IResource bugsFile = getProject().findMember(BUGS_XML_FILE);
-		return bugsFile.getFullPath().toPortableString();
-	}
+    protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
+        IPackageFragment fragment = getJavaProject().findPackageFragment(
+                new Path("/" + TEST_PROJECT + "/" + SRC));
+        return fragment;
+    }
 
-	protected IPackageFragment getDefaultPackageInSrc() throws JavaModelException {
-		IPackageFragment fragment = getJavaProject().findPackageFragment(
-				new Path("/" + TEST_PROJECT + "/" + SRC));
-		return fragment;
-	}
+    protected Set<String> getExpectedBugPatterns() {
+        return new HashSet<String>(Arrays.asList("URF_UNREAD_FIELD", "DM_STRING_CTOR"));
+    }
 
-	protected Set<String> getExpectedBugPatterns() {
-		return new HashSet<String>(Arrays.asList("EI_EXPOSE_REP", "EI_EXPOSE_REP2"));
-	}
+    protected int getExpectedBugsCount() {
+        return getFilteredBugsCount() + getVisibleBugsCount();
+    }
 
-	protected int getExpectedBugsCount() {
-		return 2;
-	}
+    protected int getFilteredBugsCount() {
+        return 2;
+    }
 
-	/**
-	 * Returns the filter file path of the test project.
-	 * 
-	 * @return The absolute path (relative to the workspace root) of the filter file.
-	 */
-	protected String getFilterFilePath() {
-		IResource filterFile = getProject().findMember(FILTER_FILE);
-		return filterFile.getFullPath().toPortableString();
-	}
+    protected int getVisibleBugsCount() {
+        return 2;
+    }
 
-	/**
-	 * Returns the Java project for this test.
-	 * 
-	 * @return An IJavaProject.
-	 */
-	protected IJavaProject getJavaProject() {
-		return project;
-	}
+    /**
+     * Returns the filter file path of the test project.
+     *
+     * @return The absolute path of the filter file.
+     */
+    protected String getFilterFileLocation() {
+        IResource filterFile = getProject().findMember(FILTER_FILE);
+        return filterFile.getLocation().toOSString();
+    }
 
-	/**
-	 * Returns the project for this test.
-	 * 
-	 * @return An IProject.
-	 */
-	protected IProject getProject() {
-		return getJavaProject().getProject();
-	}
+    /**
+     * Returns the Java project for this test.
+     *
+     * @return An IJavaProject.
+     */
+    protected IJavaProject getJavaProject() {
+        return project;
+    }
 
-	/**
-	 * Suspend the calling thread until all the background jobs belonging to the given
-	 * family are done.
-	 * 
-	 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
-	 * 
-	 * @param family
-	 *            The family object that groups the jobs.
-	 */
-	protected void joinJobFamily(Object family) {
-		try {
-			getJobManager().join(family, null);
-		} catch (OperationCanceledException e) {
-			// continue
-		} catch (InterruptedException e) {
-			// continue
-		}
-	}
+    /**
+     * Returns the project for this test.
+     *
+     * @return An IProject.
+     */
+    protected IProject getProject() {
+        return getJavaProject().getProject();
+    }
 
-	protected void loadXml(FindBugsWorker worker, String bugsFileLocation)
-			throws CoreException {
-		worker.loadXml(bugsFileLocation);
-	}
+    /**
+     * Suspend the calling thread until all the background jobs belonging to the given
+     * family are done.
+     *
+     * @see org.eclipse.core.runtime.jobs.Job#belongsTo(Object)
+     *
+     * @param family
+     *            The family object that groups the jobs.
+     */
+    protected void joinJobFamily(Object family) {
+        try {
+            getJobManager().join(family, null);
+        } catch (OperationCanceledException e) {
+            // continue
+        } catch (InterruptedException e) {
+            // continue
+        }
+    }
 
-	/**
-	 * Configures the test project to use the baseline bugs file.
-	 */
-	protected void setBaselineBugsFile() throws CoreException, IOException {
-		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFilePath()));
-		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
-	}
+    protected void loadXml(FindBugsWorker worker, String bugsFileLocation)
+            throws CoreException {
+        worker.loadXml(bugsFileLocation);
+    }
 
-	/**
-	 * Configures the test project to use the filter file.
-	 */
-	protected void setFilterFile() throws CoreException, IOException {
-		UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
-		preferences.setExcludeFilterFiles(Collections.singletonList(getFilterFilePath()));
-		FindbugsPlugin.saveUserPreferences(getProject(), preferences);
-	}
+    /**
+     * Configures the test project to use the baseline bugs file.
+     */
+    protected void setBaselineBugsFile() throws CoreException {
+        // per default, workspace settings are used. We enable project settings here
+        FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
+        UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+        preferences.setExcludeBugsFiles(Collections.singletonList(getBugsFileLocation()));
+        FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+    }
 
-	/**
-	 * Runs the FindBugs worker on the test project.
-	 */
-	protected void work(FindBugsWorker worker) throws CoreException {
-		worker.work(Collections.singletonList((IResource) getProject()));
-	}
+    /**
+     * Configures the test project to use the filter file.
+     */
+    protected void setFilterFile() throws CoreException {
+        // per default, workspace settings are used. We enable project settings here
+        FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
+        UserPreferences preferences = FindbugsPlugin.getUserPreferences(getProject());
+        preferences.setExcludeFilterFiles(Collections.singletonList(getFilterFileLocation()));
+        FindbugsPlugin.saveUserPreferences(getProject(), preferences);
+    }
+
+    /**
+     * Runs the FindBugs worker on the test project.
+     */
+    protected void work(FindBugsWorker worker) throws CoreException {
+        worker.work(Collections.singletonList((IResource) getProject()));
+    }
 
 	protected BugContentProvider getBugContentProvider() throws PartInitException {
 		BugExplorerView navigator = (BugExplorerView) showBugExplorerView();

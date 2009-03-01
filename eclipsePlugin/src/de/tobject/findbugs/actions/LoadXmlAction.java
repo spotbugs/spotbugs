@@ -23,9 +23,6 @@ import java.io.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,9 +30,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 public class LoadXmlAction extends FindBugsAction {
 
@@ -88,7 +85,7 @@ public class LoadXmlAction extends FindBugsAction {
 	}
 
 	private FileDialog createFileDialog(IProject project) {
-		FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(),
+		FileDialog fileDialog = new FileDialog(FindbugsPlugin.getShell(),
 				SWT.APPLICATION_MODAL | SWT.OPEN);
 		fileDialog.setText("Select bug result xml for project: " + project.getName());
 		String initialFileName = getDialogSettings().get(LOAD_XML_PATH_KEY);
@@ -115,29 +112,14 @@ public class LoadXmlAction extends FindBugsAction {
 	 *            The resource to load XMl to.
 	 */
 	private void work(final IProject project, final String fileName) {
-
-		Job runFindBugs = new Job("Loading XML data from " + fileName + "...") {
-
+		FindBugsJob runFindBugs = new FindBugsJob("Loading XML data from " + fileName + "...", project) {
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					FindBugsWorker worker = new FindBugsWorker(project, monitor);
-					worker.loadXml(fileName);
-				} catch (CoreException e) {
-					FindbugsPlugin.getDefault().logException(e, "Analysis exception");
-					return Status.CANCEL_STATUS;
-				}
-				return Status.OK_STATUS;
-			}
-
-			@Override
-			public boolean belongsTo(Object family) {
-				return FindbugsPlugin.class.equals(family);
+			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+				FindBugsWorker worker = new FindBugsWorker(project, monitor);
+				worker.loadXml(fileName);
 			}
 		};
-		runFindBugs.setUser(true);
-		runFindBugs.setRule(new MutexSchedulingRule(project));
-		runFindBugs.schedule();
+		runFindBugs.scheduleInteractive();
 	}
 
 }

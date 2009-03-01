@@ -22,27 +22,50 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.junit.Test;
 
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.actions.ClearMarkersAction;
 import de.tobject.findbugs.actions.FindBugsAction;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 /**
  * This class tests the FindBugsAction.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FindBugsTest extends AbstractFindBugsTest {
-	@Test
-	public void testRunFindBugs() throws CoreException {
-		assertNoBugs();
+    @Test
+    public void testRunFindBugs() throws CoreException {
+        assertNoBugs();
 
-		StructuredSelection selection = new StructuredSelection(getProject());
-		FindBugsAction action = new FindBugsAction();
-		action.selectionChanged(null, selection);
-		action.run(null);
+        StructuredSelection selection = new StructuredSelection(getProject());
+        FindBugsAction action = new FindBugsAction();
+        action.selectionChanged(null, selection);
+        action.run(null);
 
-		joinJobFamily(MutexSchedulingRule.class);
+        joinJobFamily(FindbugsPlugin.class);
 
-		assertExpectedBugs();
-	}
+        assertExpectedBugs();
+    }
+
+    @Test
+    public void testClearFindBugs() throws CoreException {
+        assertNoBugs();
+
+        StructuredSelection selection = new StructuredSelection(getProject());
+        FindBugsAction action = new FindBugsAction();
+        action.selectionChanged(null, selection);
+        action.run(null);
+
+        joinJobFamily(FindbugsPlugin.class);
+
+        assertExpectedBugs();
+
+        ClearMarkersAction clearAction = new ClearMarkersAction();
+        clearAction.selectionChanged(null, selection);
+        clearAction.run(null);
+
+        joinJobFamily(FindbugsPlugin.class);
+
+        assertBugsCount(0, getProject());
+    }
 }

@@ -327,7 +327,7 @@ public class DetectorConfigurationTab extends Composite {
 		hiddenVisible.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				populateAvailableRulesTable(page.getProject());
+				populateAvailableRulesTable(propertyPage.getProject());
 			}
 		});
 
@@ -461,13 +461,13 @@ public class DetectorConfigurationTab extends Composite {
 		return category;
 	}
 
-	void restoreDefaultSettings() {
-		// Enable only those detectors that are enabled by default
+	void refreshUI(UserPreferences preferences) {
+		// Enable only those detectors that are enabled by preferences
 		TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
 		for (int i = 0; i < itemList.length; i++) {
 			TableItem item = itemList[i];
 			DetectorFactory factory = (DetectorFactory) item.getData();
-			item.setChecked(factory.isDefaultEnabled());
+			item.setChecked(preferences.isDetectorEnabled(factory));
 		}
 		refreshTable();
 		syncUserPreferencesWithTable();
@@ -646,7 +646,7 @@ public class DetectorConfigurationTab extends Composite {
 		}
 	}
 
-	private boolean isHiddenVisible() {
+	boolean isHiddenVisible() {
 		return hiddenVisible.getSelection();
 	}
 
@@ -685,6 +685,13 @@ public class DetectorConfigurationTab extends Composite {
 			}
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		availableFactoriesTableViewer.getTable().setEnabled(enabled);
+		hiddenVisible.setEnabled(enabled);
+		super.setEnabled(enabled);
 	}
 
 }

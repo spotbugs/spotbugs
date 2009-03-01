@@ -19,105 +19,50 @@
 
 package de.tobject.findbugs.actions;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 /**
- * Remove all bug markers for the currently selectedt project.
+ * Remove all bug markers for the currently selected editor.
  *
  * @author Peter Friese
  * @author Phil Crosby
- * @version 1.0
+ * @author Andrei Loskutov
+ * @version 2.0
  * @since 25.09.2003
  */
 public class ClearMarkersEditorAction implements IEditorActionDelegate {
 
 	private IEditorPart currentEditor;
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.ui.IWorkbenchPart)
-	 */
 	public final void setActiveEditor(final IAction action,
 			final IEditorPart targetPart) {
 		currentEditor = targetPart;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.jface.viewers.ISelection)
-	 */
 	public final void selectionChanged(final IAction action,
 			final ISelection selection) {
 		// noop
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
 	public final void run(final IAction action) {
 		if(currentEditor != null) {
-			work(((FileEditorInput)(currentEditor.getEditorInput())).getFile());
+			IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
+			Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new IResource[]{file}));
+			job.setUser(true);
+			job.setPriority(Job.INTERACTIVE);
+			IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor
+					.getEditorSite().getService(IWorkbenchSiteProgressService.class);
+			service.schedule(job);
 		}
 	}
-
-	/**
-	 * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
-	 *
-	 * @param selection
-	 */
-	private void work(final IFile theFile) {
-		try {
-
-			IRunnableWithProgress r = new IRunnableWithProgress() {
-				public void run(IProgressMonitor pm) throws InvocationTargetException {
-					try {
-							Object resource = ((IAdaptable)theFile).getAdapter(IResource.class);
-                            IResource res = (resource instanceof IResource ? (IResource) resource : null);
-							if (res != null) {
-								pm.subTask("Clearing FindBugs markers from " + res.getName());
-								MarkerUtil.removeMarkers(res);
-                        }
-
-					} catch (CoreException ex) {
-						FindbugsPlugin.getDefault().logException(ex, "CoreException on clear markers");
-						throw new InvocationTargetException(ex);
-
-					} catch (RuntimeException ex) {
-						FindbugsPlugin.getDefault().logException(ex, "RuntimeException on clear markers");
-						throw ex;
-                    }
-				}
-			};
-
-			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
-			progress.run(true, true, r);
-		} catch (InvocationTargetException e) {
-			FindbugsPlugin.getDefault().logException(e, "InvocationTargetException on clear markers");
-		} catch (InterruptedException e) {
-			FindbugsPlugin.getDefault().logException(e, "InterruptedException on clear markers");
-		}
-	}
-
 }

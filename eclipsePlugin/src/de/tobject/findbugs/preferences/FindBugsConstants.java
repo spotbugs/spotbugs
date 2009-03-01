@@ -48,8 +48,25 @@ public final class FindBugsConstants {
 
 	public final static String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
 
+	//////////////////////////////////////////////////////////
+	// FB workspace level settings
+
+	public final static String DISABLED_CATEGORIES = "disabledCategories";
+
+	public final static String DISABLED_DETECTORS = "disabledDetectors";
+
+	public final static String DISABLED_PATTERN_TYPES = "disabledPatternTypes";
+
+	public final static String DISABLED_PATTERNS = "disabledPatterns";
+
+	public final static String RUN_ANALYSIS_AUTOMATICALLY = "runAnalysisAutomatically";
+
+	public final static String RUN_ANALYSIS_ON_FULL_BUILD = "runAnalysisOnFullBuild";
+
+	public final static String PROJECT_PROPS_DISABLED = "disableProjectProps";
 
 	public static final String IDS_PATTERN = "\\s*,\\s*";
+
 	public static final String IDS_SEPARATOR = ", ";
 
 	public static String encodeIds(Set<String> ids){

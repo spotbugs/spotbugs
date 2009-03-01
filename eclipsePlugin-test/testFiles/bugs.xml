@@ -28,6 +28,24 @@
     <LocalVariable name="creationDate" register="1" pc="2" role="LOCAL_VARIABLE_NAMED"/>
     <SourceLine classname="A" start="11" end="11" startBytecode="2" endBytecode="2" sourcefile="A.java" sourcepath="A.java"/>
   </BugInstance>
+  <BugInstance type="DM_STRING_CTOR" priority="2" abbrev="Dm" category="PERFORMANCE" first="3">
+    <Class classname="B">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Class>
+    <Method classname="B" name="&lt;init&gt;" signature="()V" isStatic="false">
+      <SourceLine classname="B" start="2" end="2" startBytecode="0" endBytecode="67" sourcefile="B.java" sourcepath="B.java"/>
+    </Method>
+    <SourceLine classname="B" start="4" end="4" startBytecode="11" endBytecode="11" sourcefile="B.java" sourcepath="B.java"/>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE" first="3">
+    <Class classname="B">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Class>
+    <Field classname="B" name="s" signature="Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="B" sourcefile="B.java" sourcepath="B.java"/>
+    </Field>
+    <SourceLine classname="B" start="4" end="4" startBytecode="14" endBytecode="14" sourcefile="B.java" sourcepath="B.java"/>
+  </BugInstance>
   <Errors errors="0" missingClasses="0"></Errors>
   <FindBugsSummary timestamp="Sat, 14 Feb 2009 12:53:55 -0500" total_classes="1" referenced_classes="6" total_bugs="0" total_size="9" num_packages="1" vm_version="1.5.0_12-b04" cpu_seconds="0.28" clock_seconds="0.28" peak_mbytes="81.38" alloc_mbytes="63.56" gc_seconds="0.04">
     <PackageStats package="" total_bugs="0" total_types="1" total_size="9">

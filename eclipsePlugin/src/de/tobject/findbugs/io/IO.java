@@ -19,101 +19,82 @@
 package de.tobject.findbugs.io;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Input/output helper methods.
- * 
+ *
  * @author David Hovemeyer
  */
 public abstract class IO {
 	/**
 	 * Write the contents of a file in the Eclipse workspace.
-	 * 
+	 *
 	 * @param file    the file to write to
 	 * @param output  the FileOutput object responsible for generating the data
 	 * @param monitor a progress monitor (or null if none)
-	 * @throws IOException
 	 * @throws CoreException
 	 */
-	public static void writeFile(
-			IFile file, final FileOutput output, IProgressMonitor monitor)
-			throws IOException, CoreException {
-		PipedInputStream pin = new PipedInputStream();
-		final PipedOutputStream pout = new PipedOutputStream();
-
-		// Create a thread to write bug collection to output stream
-		Thread worker = new Thread() {
-			@Override
-			public void run() {
-				try {
-					//bugCollection.writeXML(pout, findbugsProject);
-					output.writeFile(pout);
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(
-							e, "Exception while " + output.getTaskDescription());
-				} finally {
-					try {
-						pout.close();
-					} catch (IOException e) {
-						// ignore
-					}
-				}
-			}
-		};		
+	public static void writeFile(IFile file, final FileOutput output,
+			IProgressMonitor monitor) throws CoreException {
 
 		try {
-			pin.connect(pout);
-			worker.start();			
-
-			if (!file.exists())
-				file.create(pin, true, monitor);
-			else
-				file.setContents(pin, true, false, monitor);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			output.writeFile(bos);
+			ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+			if (!file.exists()) {
+				file.create(bis, true, monitor);
+			} else {
+				file.setContents(bis, true, false, monitor);
+			}
 
 			// Need to refresh here?
 			file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		} finally {
-			try {
-				pin.close();
-			} catch (IOException e) {
-				// ignore
-			}
+		} catch (IOException e) {
+			IStatus status = FindbugsPlugin.createErrorStatus("Exception while "
+					+ output.getTaskDescription(), e);
+			throw new CoreException(status);
 		}
-
 	}
 
 	/**
 	 * Write the contents of a java.io.File
-	 * 
+	 *
 	 * @param file    the file to write to
 	 * @param output  the FileOutput object responsible for generating the data
 	 */
-	public static void writeFile(
-			final File file, final FileOutput output, final IProgressMonitor monitor) {
-		FileOutputStream fout=null;
+	public static void writeFile(final File file, final FileOutput output,
+			final IProgressMonitor monitor) throws CoreException {
+		FileOutputStream fout = null;
 		try {
 			fout = new FileOutputStream(file);
 			BufferedOutputStream bout = new BufferedOutputStream(fout);
-			if (monitor!=null) monitor.subTask("writing data to "+file.getName());
+			if (monitor != null) {
+				monitor.subTask("writing data to " + file.getName());
+			}
 			output.writeFile(bout);
+			bout.flush();
 		} catch (IOException e) {
-			FindbugsPlugin.getDefault().logException(
-					e, "Exception while " + output.getTaskDescription());
+			IStatus status = FindbugsPlugin.createErrorStatus("Exception while "
+					+ output.getTaskDescription(), e);
+			throw new CoreException(status);
 		} finally {
 			try {
-				if (fout!=null) fout.close();
+				if (fout != null) {
+					fout.close();
+				}
 			} catch (IOException e) {
 				// ignore
 			}

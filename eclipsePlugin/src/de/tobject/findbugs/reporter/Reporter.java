@@ -124,8 +124,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 					"The following errors occurred during FindBugs analysis:", null);
 
 			for (Error error : errorList) {
-				status.add(new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID, error
-						.getMessage(), error.getCause()));
+				status.add(FindbugsPlugin.createErrorStatus(error.getMessage(), error.getCause()));
 			}
 			FindbugsPlugin.getDefault().getLog().log(status);
 		}

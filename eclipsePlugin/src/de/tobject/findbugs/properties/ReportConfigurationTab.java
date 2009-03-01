@@ -69,9 +69,6 @@ public class ReportConfigurationTab extends Composite {
 		createBugCategoriesGroup(this, page.getProject());
 	}
 
-	/**
-	 * @param reportConfigurationTab
-	 */
 	private void createPriorityGroup(ReportConfigurationTab parent) {
 		Composite prioGroup = new Composite(parent, SWT.NONE);
 		prioGroup.setLayout(new GridLayout(2, false));
@@ -104,17 +101,6 @@ public class ReportConfigurationTab extends Composite {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	void restoreDefaultSettings() {
-		// Use the default minimum priority (which is medium)
-		minPriorityCombo.setText(ProjectFilterSettings.DEFAULT_PRIORITY);
-		getCurrentProps().getFilterSettings().setMinPriority(minPriorityCombo.getText());
-		// By default, all bug categories are enabled
-		ProjectFilterSettings defaultSettings = ProjectFilterSettings.createDefault();
-		for (Button checkBox: chkEnableBugCategoryList) {
-			checkBox.setSelection(defaultSettings.containsCategory((String) checkBox.getData()));
-		}
-		syncSelectedCategories();
-	}
 
 	/**
 	 * Build list of bug categories to be enabled or disabled.
@@ -176,6 +162,24 @@ public class ReportConfigurationTab extends Composite {
 	 */
 	private UserPreferences getCurrentProps() {
 		return propertyPage.getCurrentUserPreferences();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		minPriorityCombo.setEnabled(enabled);
+		for (Button checkBox : chkEnableBugCategoryList) {
+			checkBox.setEnabled(enabled);
+		}
+		super.setEnabled(enabled);
+	}
+
+	void refreshUI(UserPreferences prefs) {
+		ProjectFilterSettings filterSettings = prefs.getFilterSettings();
+		minPriorityCombo.setText(filterSettings.getMinPriority());
+		for (Button checkBox: chkEnableBugCategoryList) {
+			checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
+		}
+		syncSelectedCategories();
 	}
 }
 

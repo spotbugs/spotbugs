@@ -25,102 +25,97 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.junit.Test;
 
-import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 
 /**
  * This class tests the MarkerUtil class.
- * 
+ *
  * @author Tomás Pollak
  */
 public class MarkerUtilTest extends AbstractFindBugsTest {
-	@Test
-	public void testGetAllMarkers() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testGetAllMarkers() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Get the markers
-		IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
-		assertExpectedMarkers(markers);
-	}
+        // Get the markers
+        IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
+        assertExpectedMarkers(markers);
+    }
 
-	@Test
-	public void testGetAllMarkers_Empty() {
-		// Get the markers for an empty project
-		IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
-		assertNoMarkers(markers);
-	}
+    @Test
+    public void testGetAllMarkers_Empty() {
+        // Get the markers for an empty project
+        IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
+        assertNoMarkers(markers);
+    }
 
-	@Test
-	public void testGetMarkersFromSelection() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testGetMarkersFromSelection() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Get the markers from a project selection
-		Set<IMarker> markers = MarkerUtil.getMarkerFromSelection(new StructuredSelection(
-				getProject()));
-		assertExpectedMarkers(markers);
-	}
+        // Get the markers from a project selection
+        Set<IMarker> markers = MarkerUtil.getMarkerFromSelection(new StructuredSelection(
+                getProject()));
+        assertExpectedMarkers(markers);
+    }
 
-	@Test
-	public void testIsFiltered() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testIsFiltered() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		// Get the markers
-		IMarker marker = getAnyMarker();
-		assertTrue(MarkerUtil.isFiltered(marker, getExpectedBugPatterns()));
-	}
+        // Get the markers
+        IMarker marker = getAnyMarker();
+        assertTrue(MarkerUtil.isFiltered(marker, getExpectedBugPatterns()));
+    }
 
-	@Test
-	public void testIsFiltered_EmptyFilters() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testIsFiltered_EmptyFilters() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		IMarker marker = getAnyMarker();
-		assertFalse(MarkerUtil.isFiltered(marker, Collections.<String> emptySet()));
-	}
+        IMarker marker = getAnyMarker();
+        assertFalse(MarkerUtil.isFiltered(marker, Collections.<String> emptySet()));
+    }
 
-	@Test
-	public void testIsFiltered_NullFilters() throws CoreException {
-		// Load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
+    @Test
+    public void testIsFiltered_NullFilters() throws CoreException {
+        // Load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
 
-		IMarker marker = getAnyMarker();
-		assertFalse(MarkerUtil.isFiltered(marker, null));
-	}
+        IMarker marker = getAnyMarker();
+        assertFalse(MarkerUtil.isFiltered(marker, null));
+    }
 
-	@Test
-	public void testIsFiltered_NullMarker() throws CoreException {
-		assertTrue(MarkerUtil.isFiltered(null, Collections.<String> emptySet()));
-	}
+    @Test
+    public void testIsFiltered_NullMarker() throws CoreException {
+        assertTrue(MarkerUtil.isFiltered(null, Collections.<String> emptySet()));
+    }
 
-	@Test
-	public void testRemoveCreateMarkers() throws CoreException {
-		// Setup the initial state, load bugs from a file
-		loadXml(createFindBugsWorker(), getBugsFileLocation());
-		assertExpectedMarkers(MarkerUtil.getAllMarkers(getProject()));
+    @Test
+    public void testRemoveCreateMarkers() throws CoreException {
+        // Setup the initial state, load bugs from a file
+        loadXml(createFindBugsWorker(), getBugsFileLocation());
+        assertExpectedMarkers(MarkerUtil.getAllMarkers(getProject()));
+        assertBugsCount(getExpectedBugsCount(), getProject());
 
-		// Remove the markers
-		MarkerUtil.removeMarkers(getProject());
-		assertNoMarkers(MarkerUtil.getAllMarkers(getProject()));
+        // Remove the markers
+        MarkerUtil.removeMarkers(getProject());
 
-		// Create the markers again from the BugCollection
-		IProgressMonitor monitor = new NullProgressMonitor();
-		MarkerUtil.createMarkers(getJavaProject(), FindbugsPlugin.getBugCollection(
-				getProject(), monitor), monitor);
-		assertExpectedMarkers(MarkerUtil.getAllMarkers(getProject()));
-	}
+        // Project should be markers - free now, bug collection is empty
+        assertNoMarkers(MarkerUtil.getAllMarkers(getProject()));
+        assertNoBugs();
+    }
 
-	private IMarker getAnyMarker() {
-		IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
-		IMarker marker = markers[0];
-		return marker;
-	}
+    private IMarker getAnyMarker() {
+        IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
+        IMarker marker = markers[0];
+        return marker;
+    }
 }

@@ -39,6 +39,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.internal.core.subscribers.ChangeSet;
 
+import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.Project;
 
@@ -211,7 +212,7 @@ public class ResourceUtils {
 			return;
 		}
 		IProject project = resource.getProject();
-		if (checkJavaProject && !Util.isJavaProject(project)) {
+		if (checkJavaProject && !ProjectUtilities.isJavaProject(project)) {
 			// non java projects: can happen only for changesets
 			return;
 		}
@@ -234,7 +235,15 @@ public class ResourceUtils {
 	 */
 	public static IResource[] getResources(ChangeSet set) {
 		if (set != null && !set.isEmpty()) {
-			return set.getResources();
+			IResource[] resources = set.getResources();
+			List<IResource> filtered = new ArrayList<IResource>();
+			for (IResource resource : resources) {
+				if(resource.exists()){
+					// add only resources which are NOT deleted
+					filtered.add(resource);
+				}
+			}
+			return filtered.toArray(new IResource[0]);
 		}
 		return EMPTY;
 	}

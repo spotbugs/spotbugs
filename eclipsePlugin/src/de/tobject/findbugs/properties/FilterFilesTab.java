@@ -20,24 +20,23 @@ package de.tobject.findbugs.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,86 +44,190 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ISelectionStatusValidator;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.model.WorkbenchAdapter;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 
 /**
  * @author Andrei Loskutov
  */
 public class FilterFilesTab extends Composite {
 
+	private static IPath lastUsedPath;
 	private final FindbugsPropertyPage propertyPage;
-	private final TableViewer filterTableIncl;
-	private final TableViewer filterTableExcl;
-	private final TableViewer filterTableExclBugs;
+	private final FilterProvider filterIncl;
+	private final FilterProvider filterExcl;
+	private final FilterProvider filterExclBugs;
 
+	private final class SelectionValidator {
+		private final UserPreferences prefs;
+		private final Collection<String> exclFiles;
 
-	private static final class FilePlaceHolder extends WorkbenchAdapter
-			implements IAdaptable {
+		public SelectionValidator(FilterKind kind) {
+			prefs = propertyPage.getCurrentUserPreferences();
+			exclFiles = kind.excludedPaths(prefs);
+		}
 
-		private final IFile file;
+		public IStatus validate(String path) {
+			if (exclFiles.contains(path)) {
+				return FindbugsPlugin.createErrorStatus("Filter selected in a conflicting list", null);
+			}
+			return FindbugsPlugin.createStatus(IStatus.OK, "", null);
+		}
+	}
 
-		public FilePlaceHolder(IFile file) {
-			this.file = file;
+	private final class FilterProvider extends SelectionAdapter implements IStructuredContentProvider {
+
+		private final List<PathElement> paths;
+		private final FilterKind kind;
+		private final Control control;
+		private final ListViewer viewer;
+
+		private FilterProvider(ListViewer viewer, FilterKind kind) {
+			this.paths = new ArrayList<PathElement>();
+			this.viewer = viewer;
+			this.control = viewer.getList();
+			this.kind = kind;
+			setFilters(propertyPage.getCurrentUserPreferences());
+		}
+
+		void setFilters(UserPreferences prefs) {
+			paths.clear();
+			paths.addAll(getFilterFiles(kind, prefs));
 		}
 
 		@Override
-		public String getLabel(Object object) {
-			return file.getFullPath().toString();
+		public void widgetSelected(SelectionEvent e) {
+			FileDialog dialog = new FileDialog(e.display.getActiveShell(), SWT.OPEN | SWT.MULTI);
+			dialog.setFilterExtensions(new String[]{"*.xml"});
+			dialog.setText(getMessage(kind.propertyName) + ": select xml file(s) containing filters");
+
+			IPath lastUsed = getLastUsedPath();
+			String filterPath = null;
+			if(lastUsed != null && lastUsed.toFile().isDirectory()){
+				filterPath = lastUsed.toOSString();
+				dialog.setFilterPath(filterPath);
+			}
+
+			// The validator checks to see if the user's selection
+			// is valid given the type of the object selected (e.g.
+			// it can't be a folder) and the objects that have
+			// already been selected
+			String pathStr = dialog.open();
+			if (pathStr == null) {
+				return;
+			}
+			setLastUsedPath(lastUsed);
+			String[] names = dialog.getFileNames();
+			filterPath = dialog.getFilterPath();
+			for (String fileName : names) {
+				IPath path = new Path(filterPath).append(fileName);
+				PathElement pathElt = new PathElement(path, Status.OK_STATUS);
+				if(!paths.contains(pathElt)) {
+					paths.add(pathElt);
+				}
+			}
+			applyToPreferences();
+			validateAllFilters();
+		}
+
+		public void dispose() {
+			//
+		}
+
+		public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
+			//
+		}
+
+		public Object[] getElements(Object inputElement) {
+			return paths.toArray();
+		}
+
+		boolean contains(Object o){
+			return paths.contains(o);
+		}
+
+		void setControlEnabled(boolean enabled){
+			control.setEnabled(enabled);
+		}
+
+		void refresh(){
+			validate();
+			viewer.setSelection(null);
+			viewer.setInput(new Object());
+			viewer.refresh(true);
+		}
+
+		private void validate() {
+			SelectionValidator validator = new SelectionValidator(kind);
+			IStatus bad = null;
+			for (PathElement path : paths) {
+				IStatus status = validator.validate(path.getPath());
+				path.setStatus(status);
+				if(!status.isOK()){
+					bad = status;
+				}
+			}
+			if(bad != null){
+				propertyPage.setErrorMessage(bad.getMessage());
+			}
+		}
+
+		public void remove(PathElement holder) {
+			paths.remove(holder);
+			applyToPreferences();
+			validateAllFilters();
+		}
+
+		private void applyToPreferences() {
+			validate();
+			kind.setPaths(propertyPage.getCurrentUserPreferences(),	pathsToStrings(paths));
+		}
+	}
+
+	private static final class PathElement {
+
+		private final IPath path;
+		private IStatus status;
+
+		public PathElement(IPath path, IStatus status) {
+			this.path = path;
+			this.status = status;
+		}
+
+		public void setStatus(IStatus status) {
+			this.status = status;
 		}
 
 		@Override
-		public ImageDescriptor getImageDescriptor(Object object) {
-			IWorkbenchAdapter adapter = (IWorkbenchAdapter) file
-					.getAdapter(IWorkbenchAdapter.class);
-			if (adapter != null) {
-				return adapter.getImageDescriptor(file);
-			}
-
-			return super.getImageDescriptor(object);
+		public String toString() {
+			return path.toString() + (status.isOK()? "" : " (" + status.getMessage() + ")");
 		}
 
-		public Object getAdapter(Class adapter) {
-			if (adapter.equals(IWorkbenchAdapter.class)) {
-				return this;
-			}
-			return null;
-		}
-
-		public IFile getFile() {
-			return file;
+		public String getPath() {
+			return path.toOSString();
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
 			if (obj == this) {
 				return true;
 			}
-			if (obj instanceof FilePlaceHolder) {
-				return file.equals(((FilePlaceHolder) obj).file);
+			if (obj instanceof PathElement) {
+				return path.equals(((PathElement) obj).path);
 			}
-
 			return false;
 		}
 
 		@Override
 		public int hashCode() {
-			return file.hashCode();
+			return path.hashCode();
 		}
 	}
 
@@ -142,10 +245,27 @@ public class FilterFilesTab extends Composite {
 		tabDetector.setControl(this);
 		tabDetector.setToolTipText("Configure external bug reporting filters");
 
-		filterTableIncl = createFilterTable(this, FilterKind.INCLUDE);
-		filterTableExcl = createFilterTable(this, FilterKind.EXCLUDE);
-		filterTableExclBugs = createFilterTable(this, FilterKind.EXCLUDE_BUGS);
+		filterIncl = createFilter(this, FilterKind.INCLUDE);
+		filterExcl = createFilter(this, FilterKind.EXCLUDE);
+		filterExclBugs = createFilter(this, FilterKind.EXCLUDE_BUGS);
+		validateAllFilters();
+	}
 
+	public void validateAllFilters() {
+		propertyPage.setErrorMessage(null);
+		filterIncl.refresh();
+		filterExcl.refresh();
+		filterExclBugs.refresh();
+	}
+
+	public static void setLastUsedPath(IPath lastUsed) {
+		// TODO write to preferences
+		lastUsedPath = lastUsed;
+	}
+
+	public static IPath getLastUsedPath() {
+		// TODO read from preferences
+		return lastUsedPath;
 	}
 
 	/**
@@ -157,124 +277,46 @@ public class FilterFilesTab extends Composite {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
-	private TableViewer createFilterTable(Composite parent, final FilterKind kind) {
+	private FilterProvider createFilter(final Composite parent, final FilterKind kind) {
 		Composite tableComposite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		tableComposite.setLayout(layout);
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true, 2, 1));
+		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		Label titleLabel = new Label(tableComposite, SWT.NULL);
 		final String title = getMessage(kind.propertyName);
 
 		titleLabel.setText(title);
-		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true,
-				false, 2, 1));
-		final TableViewer viewer = new TableViewer(tableComposite, SWT.MULTI
-				| SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new BaseWorkbenchContentProvider());
-		viewer.setLabelProvider(new WorkbenchLabelProvider());
+		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
+		final ListViewer viewer = new ListViewer(tableComposite, SWT.MULTI | SWT.BORDER
+				| SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		Collection<String> filterFiles = kind.selectedFiles(propertyPage.getCurrentUserPreferences());
 
-		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
-		final IProject project = propertyPage.getProject();
-		if (filterFiles != null) {
-			for (String s : filterFiles) {
-				IFile filterFile = FindBugsWorker.getFilterFile(s, project);
-				if(filterFile != null) {
-					filters.add(new FilePlaceHolder(filterFile));
-				}
-			}
-		}
-		viewer.add(filters.toArray());
+		final FilterProvider contentProvider = new FilterProvider(viewer, kind);
+		viewer.setContentProvider(contentProvider);
 		final Button addButton = new Button(tableComposite, SWT.PUSH);
-		String addButtonLabel = getMessage(kind.propertyName +"addbutton");
+		String addButtonLabel = getMessage(kind.propertyName + "addbutton");
 
 		addButton.setText(addButtonLabel);
-		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
-				false));
-		final UserPreferences currentUserPreferences = propertyPage.getCurrentUserPreferences();
-		addButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileSelectionDialog dialog =
-					new FileSelectionDialog(addButton.getShell(), title, ".xml");
-				dialog.setInput(project.getWorkspace());
-				dialog.setInitialSelection(project);
-				dialog.setAllowMultiple(true);
-				dialog.setMessage("Select xml file(s) containing filters");
-				// The validator checks to see if the user's selection
-				// is valid given the type of the object selected (e.g.
-				// it can't be a folder) and the objects that have
-				// already been selected
-				dialog.setValidator(new ISelectionStatusValidator() {
-					public IStatus validate(Object[] selection) {
-						for(int i = 0; i < selection.length; i++) {
-							if(selection[i] instanceof IContainer) {
-								return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-										IStatus.ERROR, "Please select xml file", null);
-							}
-							else if(selection[i] instanceof IFile) {
-								final Collection<String> fFiles = kind.selectedFiles(currentUserPreferences );
-								final Collection<String> fOFiles  = kind.excludedFiles(currentUserPreferences);
+		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 
-								IFile f = (IFile)selection[i];
-								String fn = f.getFullPath().toString();
-								if(fOFiles.contains(fn)) {
-									// File is already selected in the
-									// other filter
-									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-											IStatus.ERROR, "File " + fn +
-											" already selected in a conflicting list", null);
-								}
-								else if(fFiles.contains(fn)) {
-									// File is already selected in this
-									// filter
-									return new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID,
-											IStatus.ERROR, "File " + fn +
-											" already selected for this filter", null);
-								}
-							}
-						}
-						return new Status(IStatus.OK, PlatformUI.PLUGIN_ID,
-								IStatus.OK, "", null);
-					}
-				});
-				if (dialog.open() == Window.OK) {
-					Object[] result = dialog.getResult();
-					for (int i = 0; i < result.length; i++) {
-						FilePlaceHolder holder = new FilePlaceHolder((IFile) result[i]);
-						filters.add(holder);
-						viewer.add(holder);
-					}
-
-					kind.setFiles(currentUserPreferences, filesToStrings(filters));
-				}
-			}
-		});
+		addButton.addSelectionListener(contentProvider);
 		final Button removeButton = new Button(tableComposite, SWT.PUSH);
-		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
-				true));
-		String removeButtonLabel = getMessage(kind.propertyName +"removebutton");
+		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
+		String removeButtonLabel = getMessage(kind.propertyName + "removebutton");
 
 		removeButton.setText(removeButtonLabel);
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Iterator<?> selectionIter = ((IStructuredSelection) viewer
-						.getSelection()).iterator();
+				Iterator<?> selectionIter = ((IStructuredSelection) viewer.getSelection())
+						.iterator();
 				while (selectionIter.hasNext()) {
-					Object element = selectionIter.next();
-					FilePlaceHolder holder = (FilePlaceHolder) element;
-					filters.remove(holder);
-					viewer.remove(holder);
+					contentProvider.remove((PathElement) selectionIter.next());
 				}
-				kind.setFiles(currentUserPreferences, filesToStrings(filters));
-
 			}
 		});
 
@@ -283,75 +325,88 @@ public class FilterFilesTab extends Composite {
 				removeButton.setEnabled(!event.getSelection().isEmpty());
 			}
 		});
-		return viewer;
+		return contentProvider;
 	}
 
-
-	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
-		Set<String>result = new LinkedHashSet<String>();
-		for (FilePlaceHolder holder : filters) {
-			result.add(holder.getFile().getFullPath().toString());
+	private List<PathElement> getFilterFiles(FilterKind kind, UserPreferences prefs) {
+		IProject project = propertyPage.getProject();
+		final List<PathElement> paths = new ArrayList<PathElement>();
+		Collection<String> filterPaths = kind.selectedPaths(prefs);
+		if (filterPaths != null) {
+			for (String path : filterPaths) {
+				IPath filterPath = FindBugsWorker.getFilterPath(path, project);
+				if(filterPath != null && filterPath.toFile().exists()) {
+					paths.add(new PathElement(filterPath, Status.OK_STATUS));
+				}
+			}
 		}
-
-		return result;
+		return paths;
 	}
 
-	void restoreDefaultSettings() {
-		UserPreferences preferences = propertyPage.getCurrentUserPreferences();
-		preferences.setExcludeBugsFiles(new ArrayList<String>());
-		preferences.setIncludeFilterFiles(new ArrayList<String>());
-		preferences.setExcludeFilterFiles(new ArrayList<String>());
-		filterTableExcl.getTable().removeAll();
-		filterTableExclBugs.getTable().removeAll();
-		filterTableIncl.getTable().removeAll();
+
+	private static Set<String> pathsToStrings(List<PathElement> paths) {
+		Set<String>result = new LinkedHashSet<String>();
+		for (PathElement path : paths) {
+			result.add(path.getPath());
+		}
+		return result;
 	}
 
 	private enum FilterKind {
 		INCLUDE("property.includefilter") {
 			@Override
-			Collection<String> selectedFiles(UserPreferences u) {
+			Collection<String> selectedPaths(UserPreferences u) {
 				return u.getIncludeFilterFiles();
 			}
 
 			@Override
-			Collection<String> excludedFiles(UserPreferences u) {
-				return u.getExcludeFilterFiles();
+			Collection<String> excludedPaths(UserPreferences u) {
+				Set<String> excl = new HashSet<String>();
+				excl.addAll(u.getExcludeFilterFiles());
+				excl.addAll(u.getExcludeBugsFiles());
+				return excl;
 			}
 
 			@Override
-			void setFiles(UserPreferences u, Collection<String> files) {
+			void setPaths(UserPreferences u, Collection<String> files) {
 				u.setIncludeFilterFiles(files);
 			}
 		},
 		EXCLUDE("property.excludefilter") {
 			@Override
-			Collection<String> selectedFiles(UserPreferences u) {
+			Collection<String> selectedPaths(UserPreferences u) {
 				return u.getExcludeFilterFiles();
 			}
 
 			@Override
-			Collection<String> excludedFiles(UserPreferences u) {
-				return u.getIncludeFilterFiles();
+			Collection<String> excludedPaths(UserPreferences u) {
+				Set<String> excl = new HashSet<String>();
+				excl.addAll(u.getIncludeFilterFiles());
+				excl.addAll(u.getExcludeBugsFiles());
+				return excl;
 			}
 
 			@Override
-			void setFiles(UserPreferences u, Collection<String> files) {
+			void setPaths(UserPreferences u, Collection<String> files) {
 				u.setExcludeFilterFiles(files);
 			}
 		},
 		EXCLUDE_BUGS("property.excludebugs") {
 			@Override
-			Collection<String> selectedFiles(UserPreferences u) {
+			Collection<String> selectedPaths(UserPreferences u) {
 				return u.getExcludeBugsFiles();
 			}
 
 			@Override
-			Collection<String> excludedFiles(UserPreferences u) {
-				return Collections.emptyList();
+			Collection<String> excludedPaths(UserPreferences u) {
+				Set<String> excl = new HashSet<String>();
+				excl.addAll(u.getIncludeFilterFiles());
+				excl.addAll(u.getExcludeFilterFiles());
+				return excl;
 			}
 
 			@Override
-			void setFiles(UserPreferences u, Collection<String> files) {
+			void setPaths(UserPreferences u, Collection<String> files) {
 				u.setExcludeBugsFiles(files);
 			}
 		};
@@ -361,12 +416,25 @@ public class FilterFilesTab extends Composite {
 			this.propertyName = propertyName;
 		}
 
-		abstract Collection<String> selectedFiles(UserPreferences u);
+		abstract Collection<String> selectedPaths(UserPreferences u);
 
-		abstract Collection<String> excludedFiles(UserPreferences u);
+		abstract Collection<String> excludedPaths(UserPreferences u);
 
-		abstract void setFiles(UserPreferences u, Collection<String> files);
+		abstract void setPaths(UserPreferences u, Collection<String> files);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		filterExcl.setControlEnabled(enabled);
+		filterIncl.setControlEnabled(enabled);
+		filterExclBugs.setControlEnabled(enabled);
+		super.setEnabled(enabled);
+	}
+
+	void refreshUI(UserPreferences prefs) {
+		filterExcl.setFilters(prefs);
+		filterExclBugs.setFilters(prefs);
+		filterIncl.setFilters(prefs);
+		validateAllFilters();
 	}
 }
-
-

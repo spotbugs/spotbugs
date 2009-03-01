@@ -20,53 +20,51 @@
 
 package de.tobject.findbugs.properties;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.model.WorkbenchAdapter;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.actions.FindBugsAction;
 import de.tobject.findbugs.preferences.FindBugsConstants;
+import de.tobject.findbugs.preferences.FindBugsPreferenceInitializer;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.ProjectUtilities;
-import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -78,12 +76,12 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author Peter Friese
  * @author David Hovemeyer
  * @author Phil Crosby
- * @version 1.0
+ * @version 2.0
  * @since 17.06.2004
  */
-public class FindbugsPropertyPage extends PropertyPage {
+public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPreferencePage {
 
-	private boolean initialEnabled;
+	private boolean natureEnabled;
 	private UserPreferences origUserPreferences;
 	private UserPreferences currentUserPreferences;
 	private IProject project;
@@ -92,12 +90,19 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private Button chkRunAtFullBuild;
 	private Button restoreDefaultsButton;
 	private ComboViewer effortViewer;
-	private EffortPlaceHolder defaultEffortLevel;
 	private TabFolder tabFolder;
 	private DetectorConfigurationTab detectorTab;
 	private FilterFilesTab filterFilesTab;
 	private ReportConfigurationTab reportConfigurationTab;
 	private final Map<DetectorFactory, Boolean> visibleDetectors;
+	private Button enableProjectCheck;
+	private Link workspaceSettingsLink;
+	private boolean projectPropsInitiallyEnabled;
+	/** can be null */
+	private ScopedPreferenceStore projectStore;
+	/** never null */
+	private ScopedPreferenceStore workspaceStore;
+
 
 	/**
 	 * Constructor for FindbugsPropertyPage.
@@ -119,11 +124,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// getElement returns the element this page has been opened for,
 		// in our case this is a Java Project (IJavaProject).
 		IAdaptable resource = getElement();
-		this.project = (IProject) resource.getAdapter(IProject.class);
+		if(resource != null) {
+			project = (IProject) resource.getAdapter(IProject.class);
+		}
 
-		initPreferencesStore();
-
-		collectUserPreferences();
+		initPreferencesStore(project);
 
 		createGlobalElements(parent);
 
@@ -131,14 +136,41 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		createDefaultsButton(parent);
 
+		setProjectEnabled(enableProjectCheck == null || enableProjectCheck.getSelection());
+
 		return parent;
 	}
 
-	private void initPreferencesStore() {
-        IScopeContext projectScope = new ProjectScope(project);
-        ScopedPreferenceStore store = new ScopedPreferenceStore(projectScope,
-				FindbugsPlugin.getDefault().getBundle().getSymbolicName());
-        setPreferenceStore(store);
+	private void initPreferencesStore(IProject currProject) {
+		workspaceStore =  new ScopedPreferenceStore(new InstanceScope(),
+				FindbugsPlugin.PLUGIN_ID);
+        if(currProject != null) {
+        	projectStore = new ScopedPreferenceStore(new ProjectScope(currProject),
+					FindbugsPlugin.PLUGIN_ID);
+        	projectPropsInitiallyEnabled = FindbugsPlugin.isProjectSettingsEnabled(currProject);
+			if(!projectPropsInitiallyEnabled){
+				// use workspace properties instead
+				currProject = null;
+			}
+			setPreferenceStore(projectStore);
+		} else {
+			setPreferenceStore(workspaceStore);
+		}
+        loadPreferences(currProject);
+	}
+
+	/**
+	 * @param currProject if null, workspace properties are used
+	 */
+	private UserPreferences loadPreferences(IProject currProject) {
+		// Get current user preferences for project
+		if(currProject == null){
+			origUserPreferences = FindbugsPlugin.getUserPreferences(null, true);
+		} else {
+			origUserPreferences = FindbugsPlugin.getProjectPreferences(currProject, true);
+		}
+		currentUserPreferences = (UserPreferences) origUserPreferences.clone();
+		return currentUserPreferences;
 	}
 
 	/**
@@ -164,9 +196,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 		restoreDefaultsButton.setText(getMessage("property.restoreSettings"));
 		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		restoreDefaultsButton.addSelectionListener(new SelectionAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				restoreDefaultSettings();
@@ -179,8 +208,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param parent
 	 */
 	private void createGlobalElements(Composite parent) {
+		if(getProject() != null) {
+			createWorkspaceButtons(parent);
+		}
+
 		Composite globalGroup = new Composite(parent, SWT.TOP);
-		GridLayout layout = new GridLayout(3,false);
+		GridLayout layout = new GridLayout(4,false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		globalGroup.setLayout(layout);
@@ -190,38 +223,36 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		globalGroup.setLayoutData(layoutData);
 
+		natureEnabled = ProjectUtilities.hasFindBugsNature(getProject());
 
-		initialEnabled = isEnabled();
+		if(getProject() != null){
+			chkEnableFindBugs = new Button(globalGroup, SWT.CHECK);
+			chkEnableFindBugs.setText(getMessage("property.runAuto"));
+			chkEnableFindBugs.setSelection(natureEnabled);
+			chkEnableFindBugs.setToolTipText(getMessage("property.runAuto.tip"));
 
-		chkEnableFindBugs = new Button(globalGroup, SWT.CHECK);
-		chkEnableFindBugs.setText(getMessage("property.runAuto"));
-		chkEnableFindBugs.setSelection(initialEnabled);
-		chkEnableFindBugs.setToolTipText(getMessage("property.runAuto.tip"));
+			chkEnableFindBugs.addSelectionListener(new SelectionAdapter() {
 
-		chkEnableFindBugs.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+						boolean enabled = chkEnableFindBugs.getSelection();
+						chkRunAtFullBuild.setEnabled(enabled);
+					}
+				});
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-					boolean enabled = chkEnableFindBugs.getSelection();
-					chkRunAtFullBuild.setEnabled(enabled);
-//					chkRunAtFullBuild.setSelection(enabled);
+			chkRunAtFullBuild = new Button(globalGroup, SWT.CHECK);
+			chkRunAtFullBuild.setText(getMessage("property.runFull"));
+			chkRunAtFullBuild.setSelection(origUserPreferences.isRunAtFullBuild());
+			chkRunAtFullBuild.setToolTipText(getMessage("property.runFull.tip"));
+			chkRunAtFullBuild.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent event) {
+					boolean selection = chkRunAtFullBuild.getSelection();
+					currentUserPreferences.setRunAtFullBuild(selection);
 				}
 			});
-
-		chkRunAtFullBuild = new Button(globalGroup, SWT.CHECK);
-		chkRunAtFullBuild.setText(getMessage("property.runFull"));
-		chkRunAtFullBuild.setSelection(origUserPreferences.isRunAtFullBuild());
-		chkRunAtFullBuild.setToolTipText(getMessage("property.runFull.tip"));
-		chkRunAtFullBuild.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				boolean selection = chkRunAtFullBuild.getSelection();
-
-				currentUserPreferences.setRunAtFullBuild(selection);
-			}
-		});
-		chkRunAtFullBuild.setEnabled(chkEnableFindBugs.getSelection());
-
+			chkRunAtFullBuild.setEnabled(chkEnableFindBugs.getSelection());
+		}
 
 		Composite prioGroup = new Composite(globalGroup, SWT.NONE);
 		GridLayout prioLayout = new GridLayout(2, false);
@@ -235,29 +266,14 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// effort
 		Label effortLabel = new Label(prioGroup, SWT.NULL);
 		effortLabel.setText(getMessage("property.effort"));
-		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN
-				| SWT.READ_ONLY);
-		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
-		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		defaultEffortLevel = new EffortPlaceHolder(getMessage("property.effortdefault"),
-				UserPreferences.EFFORT_DEFAULT);
-		EffortPlaceHolder[] effortLevels = new EffortPlaceHolder[] {
-				new EffortPlaceHolder(getMessage("property.effortmin"),
-						UserPreferences.EFFORT_MIN),
-				defaultEffortLevel,
-				new EffortPlaceHolder(getMessage("property.effortmax"),
-						UserPreferences.EFFORT_MAX) };
-		effortViewer.add(effortLevels);
+		effortViewer = new ComboViewer(prioGroup, SWT.DROP_DOWN	| SWT.READ_ONLY);
+		effortViewer.add(Effort.values());
 
-		String effort = currentUserPreferences.getEffort();
-		for (int i = 0; i < effortLevels.length; i++) {
-			if (effortLevels[i].getEffortLevel().equals(effort)) {
-				effortViewer.setSelection(new StructuredSelection(effortLevels[i]), true);
-			}
-		}
+		String effortLevel = currentUserPreferences.getEffort();
+		effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);
 		effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
+				Effort placeHolder = (Effort) ((IStructuredSelection) event
 						.getSelection()).getFirstElement();
 				currentUserPreferences.setEffort(placeHolder.getEffortLevel());
 			}
@@ -266,11 +282,106 @@ public class FindbugsPropertyPage extends PropertyPage {
 		effortViewer.getCombo().setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
 	}
 
-	private void collectUserPreferences() {
-		// Get current user preferences for project
-		this.origUserPreferences = FindbugsPlugin.getUserPreferences(project, true);
-		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
+    private void createWorkspaceButtons(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setFont(parent.getFont());
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        layout.numColumns = 2;
+        composite.setLayout(layout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        enableProjectCheck = createLabeledCheck(
+                "Enable project specific settings",
+                "These settings would be used for the current project only",
+                projectPropsInitiallyEnabled, composite);
+
+        enableProjectCheck.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                boolean enabled = enableProjectCheck.getSelection();
+                IProject currProject;
+				if (enabled) {
+					currProject = getProject();
+				} else {
+					currProject = null;
+				}
+                refreshUI(loadPreferences(currProject));
+                setProjectEnabled(enabled);
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // ignored
+            }
+        });
+
+        workspaceSettingsLink = createLink(composite, "Configure Workspace Settings...");
+        workspaceSettingsLink
+                .setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
+
+        Label sep = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        gridData.horizontalSpan = 2;
+		sep.setLayoutData(gridData);
+    }
+
+    protected void refreshUI(UserPreferences prefs) {
+    	visibleDetectors.clear();
+		effortViewer.setSelection(new StructuredSelection(Effort.getEffort(prefs.getEffort())), true);
+		detectorTab.refreshUI(prefs);
+		filterFilesTab.refreshUI(prefs);
+		reportConfigurationTab.refreshUI(prefs);
 	}
+
+	private Link createLink(Composite composite, String text) {
+        Link link = new Link(composite, SWT.NONE);
+        link.setFont(composite.getFont());
+        link.setText("<A>" + text + "</A>");
+        link.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                String id = "FindBugsPreferencePage";
+                int result = PreferencesUtil.createPreferenceDialogOn(getShell(), id,
+                        new String[] { id }, null).open();
+                if(result == Window.OK){
+                	// refresh prefs: workspace settings may change
+	                refreshUI(loadPreferences(null));
+                }
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+        });
+        link.setToolTipText("Configure global workspace (user) settings");
+        return link;
+    }
+
+    /**
+     * Enable/disable all UI elements except for project props enabled check
+     * @param selection
+     */
+    protected void setProjectEnabled(boolean selection) {
+//        chkEnableFindBugs.setEnabled(selection);
+//        chkRunAtFullBuild.setEnabled(selection && chkEnableFindBugs.getSelection());
+    	if(enableProjectCheck != null) {
+			workspaceSettingsLink.setEnabled(!selection);
+		}
+        detectorTab.setEnabled(selection);
+        filterFilesTab.setEnabled(selection);
+        reportConfigurationTab.setEnabled(selection);
+        restoreDefaultsButton.setEnabled(selection);
+        effortViewer.getCombo().setEnabled(selection);
+    }
+
+    protected static Button createLabeledCheck(String title, String tooltip, boolean value, Composite defPanel) {
+        Button fButton = new Button(defPanel, SWT.CHECK | SWT.LEFT);
+        GridData data = new GridData();
+        fButton.setLayoutData(data);
+        fButton.setText(title);
+        fButton.setSelection(value);
+        fButton.setToolTipText(tooltip);
+        return fButton;
+    }
 
 	/**
 	 * Restore default settings.
@@ -278,16 +389,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * to confirm by clicking the "OK" button.
 	 */
 	private void restoreDefaultSettings() {
-		visibleDetectors.clear();
-
-		// By default, don't run FindBugs automatically
-		chkEnableFindBugs.setSelection(false);
-
-		effortViewer.setSelection(new StructuredSelection(defaultEffortLevel), true);
-
-		getDetectorTab().restoreDefaultSettings();
-		reportConfigurationTab.restoreDefaultSettings();
-		filterFilesTab.restoreDefaultSettings();
+		if(getProject() != null) {
+			// By default, don't run FindBugs automatically
+			chkEnableFindBugs.setSelection(false);
+			chkRunAtFullBuild.setEnabled(false);
+		}
+		currentUserPreferences = FindBugsPreferenceInitializer.createDefaultUserPreferences();
+		refreshUI(currentUserPreferences);
 	}
 
 	/**
@@ -296,62 +404,86 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	@Override
 	public boolean performOk() {
-		boolean builderEnabled = chkEnableFindBugs.getSelection();
-
-		// Update whether or not FindBugs is run automatically.
-		if (!initialEnabled && builderEnabled) {
-			addNature();
-		} else if (initialEnabled && !builderEnabled) {
-			removeNature();
-		}
-
 		// Have user preferences for project changed?
 		// If so, write them to the user preferences file & re-run builder
 		if (!currentUserPreferences.equals(origUserPreferences)) {
-			try {
-				FindbugsPlugin.saveUserPreferences(project, currentUserPreferences);
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not store FindBugs preferences for project");
-			} catch (IOException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not store FindBugs preferences for project");
-			}
-		}
-
-		// update the flag to match the incremental/not property
-		builderEnabled &= chkRunAtFullBuild.getSelection();
-
-		boolean analysisSettingsChanged = areAnalysisPrefsChanged(
-				currentUserPreferences, origUserPreferences);
-
-		if (analysisSettingsChanged) {
-			// trigger a Findbugs rebuild here
-			if (builderEnabled) {
-				runFindbugsBuilder();
-			} else {
-				IPreferenceStore store = getPreferenceStore();
-				if(!store.getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)){
-					MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
-							getShell(), "Full project analysis required",
-							"FindBugs analysis settings are changed." +
-							"\nConsider to run FindBugs analysis on the project.",
-							"Do not show this warning again", false, null, null);
-
-					store.setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog
-							.getToggleState());
+			// save only if we in the workspace page OR in the project page with enabled
+			// project settings
+			if(getProject() == null || enableProjectCheck.getSelection()) {
+				try {
+					FindbugsPlugin.saveUserPreferences(getProject(), currentUserPreferences);
+				} catch (CoreException e) {
+					FindbugsPlugin.getDefault().logException(e,
+					"Could not store FindBugs preferences for project");
 				}
 			}
 		}
 
+		boolean analysisSettingsChanged = areAnalysisPrefsChanged(
+				currentUserPreferences, origUserPreferences);
+
 		boolean reporterSettingsChanged = !currentUserPreferences.getFilterSettings()
 			.equals(origUserPreferences.getFilterSettings());
 
-		if (!builderEnabled && reporterSettingsChanged) {
-			// if filter settings changed, and builder is not enabled, manually trigger update
-			MarkerUtil.redisplayMarkers(JavaCore.create(project), getShell());
+		boolean needRedisplayMarkers = reporterSettingsChanged;
+		if(getProject() != null) {
+			boolean builderEnabled = chkEnableFindBugs.getSelection();
+
+			// Update whether or not FindBugs is run automatically.
+			if (!natureEnabled && builderEnabled) {
+				addNature();
+			} else if (natureEnabled && !builderEnabled) {
+				removeNature();
+			}
+
+			// update the flag to match the incremental/not property
+			builderEnabled &= chkRunAtFullBuild.getSelection();
+			boolean newSelection = enableProjectCheck.getSelection();
+			if(projectPropsInitiallyEnabled != newSelection){
+				analysisSettingsChanged = true;
+				FindbugsPlugin.setProjectSettingsEnabled(project, getPreferenceStore(), newSelection);
+			}
+			if (analysisSettingsChanged) {
+				// trigger a Findbugs rebuild here
+				if (builderEnabled) {
+					runFindbugsBuilder();
+					needRedisplayMarkers = false;
+				} else {
+					if(!getPreferenceStore().getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)){
+						MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
+								getShell(), "Full FindBugs build required",
+								"FindBugs analysis settings are changed." +
+								"\nConsider to execute FindBugs analysis again.",
+								"Do not show this warning again", false, null, null);
+
+						getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog
+								.getToggleState());
+					}
+				}
+			}
+		} else {
+			// workspace change, nothing to do
+		}
+
+		if (needRedisplayMarkers) {
+			redisplayMarkers();
 		}
 		return true;
+	}
+
+	private void redisplayMarkers() {
+		// if filter settings changed, and builder is not enabled, manually trigger update
+		if (project != null) {
+			MarkerUtil.redisplayMarkers(JavaCore.create(project));
+		} else {
+			// trigger redisplay for workbench change too
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (IProject aProject : projects) {
+				if(ProjectUtilities.hasFindBugsNature(aProject)) {
+					MarkerUtil.redisplayMarkers(JavaCore.create(aProject));
+				}
+			}
+		}
 	}
 
 	private boolean areAnalysisPrefsChanged(UserPreferences pref1, UserPreferences pref2) {
@@ -371,7 +503,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		while (iterator.hasNext()) {
 			DetectorFactory factory = iterator.next();
 			// Only compare non-hidden factories
-			if (factory.isHidden()) {
+			if (factory.isHidden() && !detectorTab.isHiddenVisible()) {
 				continue;
 			}
 			if(pref1.isDetectorEnabled(factory) ^ pref2.isDetectorEnabled(factory)){
@@ -381,113 +513,57 @@ public class FindbugsPropertyPage extends PropertyPage {
 		return false;
 	}
 
-	/**
-	 * Using the natures name, check whether the current
-	 * project has the given nature.
-	 *
-	 * @return boolean <code>true</code>, if the nature is
-	 *   assigned to the project, <code>false</code> otherwise.
-	 */
-	private boolean isEnabled() {
-		try {
-			return project.hasNature(FindbugsPlugin.NATURE_ID) && Util.isJavaProject(project);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e,
-			"Error while testing FindBugs nature for project " + project);
-		}
-		return false;
-	}
-
 	protected IProject getProject() {
 		return project;
 	}
 
 	private void runFindbugsBuilder() {
-		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
-		try {
-			dialog.run(true, true, new IRunnableWithProgress() {
-
-				public void run(IProgressMonitor monitor) {
-					try {
-						getProject().build(IncrementalProjectBuilder.CLEAN_BUILD,
-								FindbugsPlugin.BUILDER_ID, null, monitor);
-					} catch (OperationCanceledException e) {
-						// Do nothing when operation cancelled.
-					} catch (CoreException e) {
-						FindbugsPlugin.getDefault().logException(e,
-								"Error while runnning FindBugs builder for project");
-					}
-				}
-
-			});
-		} catch (InvocationTargetException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Error while runnning FindBugs builder for project");
-		} catch (InterruptedException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Findbugs builder was interrupted");
+		if(getProject() == null){
+			// TODO workspace settings change: trigger workspace build
+			return;
 		}
+
+		StructuredSelection selection = new StructuredSelection(getProject());
+        FindBugsAction action = new FindBugsAction();
+        action.selectionChanged(null, selection);
+        action.run(null);
 	}
 
 	/**
 	 * Add the nature to the current project. The real work is
 	 * done by the inner class NatureWorker
-	 * @return boolean <code>true</code> if the nature could
-	 *   be added successfully, <code>false</code> otherwise.
 	 */
-	private boolean addNature() {
-		try {
-			NatureWorker worker = new NatureWorker(true);
-			ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
-			monitor.run(true, true, worker);
-			return true;
-		} catch (InvocationTargetException e) {
-			FindbugsPlugin.getDefault().logException(e, "'Add nature' failed");
-		} catch (InterruptedException e) {
-			FindbugsPlugin.getDefault().logException(e, "'Add nature' interrupted");
-		}
-		return false;
+	private void addNature() {
+		NatureWorker worker = new NatureWorker(true);
+		worker.scheduleInteractive();
 	}
 
 	/**
 	 * Remove the nature from the project.
-	 * @return boolean <code>true</code> if the nature could
-	 *   be added successfully, <code>false</code> otherwise.
 	 */
-	private boolean removeNature() {
-		try {
-			NatureWorker worker = new NatureWorker(false);
-			ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
-			monitor.run(true, true, worker);
-			return true;
-		} catch (InvocationTargetException e) {
-			FindbugsPlugin.getDefault().logException(e, "'Remove nature' failed");
-		} catch (InterruptedException e) {
-			FindbugsPlugin.getDefault().logException(e, "'Remove nature' interrupted");
-		}
-		return false;
+	private void removeNature() {
+		NatureWorker worker = new NatureWorker(false);
+		worker.scheduleInteractive();
 	}
 
-	private final class NatureWorker implements IRunnableWithProgress {
+
+	private final class NatureWorker extends FindBugsJob {
 		private boolean add = true;
 
 		public NatureWorker(boolean add) {
+			super((add ? "Adding FindBugs nature to " : "Removing FindBugs nature from ")
+					+ getProject(), getProject());
 			this.add = add;
+			// adding/removing nature uses workspace scope
+			setRule(ResourcesPlugin.getWorkspace().getRoot());
 		}
 
-		/**
-		 * @see IRunnableWithProgress#run(IProgressMonitor)
-		 */
-		public void run(IProgressMonitor monitor) {
-			try {
-				if (add) {
-					ProjectUtilities.addFindBugsNature(project, monitor);
-				} else {
-					ProjectUtilities.removeFindBugsNature(project, monitor);
-				}
-			} catch (CoreException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Core exception in NatureWorker");
+		@Override
+		protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+			if (add) {
+				ProjectUtilities.addFindBugsNature(getProject(), monitor);
+			} else {
+				ProjectUtilities.removeFindBugsNature(getProject(), monitor);
 			}
 		}
 	}
@@ -497,7 +573,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param key a message key
 	 * @return requested message
 	 */
-	protected String getMessage(String key) {
+	protected static String getMessage(String key) {
 		return FindbugsPlugin.getDefault().getMessage(key);
 	}
 
@@ -529,35 +605,49 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	/**
-	 * Helper class to hold an effort level and internationalizable label value.
-	 *
-	 * @author Peter Hendriks
+	 * Enum to hold an effort level and internationalizable label value.
 	 */
-	private static final class EffortPlaceHolder extends WorkbenchAdapter
-			implements IAdaptable {
+	private enum Effort {
 
-		private final String name;
+		MIN(UserPreferences.EFFORT_MIN, "property.effortmin"),
+		DEFAULT(UserPreferences.EFFORT_DEFAULT, "property.effortdefault"),
+		MAX(UserPreferences.EFFORT_MAX, "property.effortmax");
+
 		private final String effortLevel;
-
-		public EffortPlaceHolder(String name, String effortLevel) {
-			this.name = name;
-			this.effortLevel = effortLevel;
+		private final String message;
+		private Effort(String level, String messageKey){
+			effortLevel = level;
+			message = getMessage(messageKey);
 		}
 
 		@Override
-		public String getLabel(Object object) {
-			return name;
+		public String toString() {
+			return message;
 		}
 
 		public String getEffortLevel() {
 			return effortLevel;
 		}
 
-		public Object getAdapter(Class adapter) {
-			if (adapter.equals(IWorkbenchAdapter.class)) {
-				return this;
+		static Effort getEffort(String level){
+			Effort[] efforts = values();
+			for (Effort effort : efforts) {
+				if(effort.getEffortLevel().equals(level)){
+					return effort;
+				}
 			}
-			return null;
+			return DEFAULT;
 		}
 	}
+
+	@Override
+	public void setErrorMessage(String newMessage) {
+		setValid(newMessage == null);
+		super.setErrorMessage(newMessage);
+	}
+
+	public void init(IWorkbench workbench) {
+		// noop
+	}
+
 }

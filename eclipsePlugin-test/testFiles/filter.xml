@@ -6,4 +6,10 @@
     <Match>
         <Bug code="EI2" />
     </Match>
+    <Match>
+        <Bug code="UrF" />
+    </Match>
+    <Match>
+        <Bug code="Dm" />
+    </Match>
 </FindBugsFilter>

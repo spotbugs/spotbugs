@@ -23,15 +23,11 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
 
-import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Eclipse-specific utilities.
@@ -88,16 +84,6 @@ public class Util{
 		String ex = resource.getFileExtension();
 		return ("java".equalsIgnoreCase(ex)
 				|| "class".equalsIgnoreCase(ex));
-	}
-
-	public static boolean isJavaProject(IProject project) {
-		try {
-			return project != null && project.isOpen()
-					&& project.hasNature(JavaCore.NATURE_ID);
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
-			return false;
-		}
 	}
 
 	/**

@@ -18,10 +18,15 @@
  */
 package de.tobject.findbugs.preferences;
 
+import static de.tobject.findbugs.preferences.FindBugsConstants.*;
+
+import java.util.Set;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.config.UserPreferences;
 
 public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -32,8 +37,33 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-        store.setDefault(FindBugsConstants.EXPORT_SORT_ORDER, FindBugsConstants.ORDER_BY_NAME);
-        store.setDefault(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, false);
+        store.setDefault(EXPORT_SORT_ORDER, ORDER_BY_NAME);
+        store.setDefault(DONT_REMIND_ABOUT_FULL_BUILD, false);
+
+        store.setDefault(DISABLED_CATEGORIES, "EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY");
+        store.setDefault(RUN_ANALYSIS_AUTOMATICALLY, false);
+        store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
+        // disabled to be able to distinguish between default and current value
+        // store.setDefault(PROJECT_PROPS_DISABLED, true);
+	}
+
+	public static UserPreferences createDefaultUserPreferences() {
+		UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
+		IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+		String categoriesStr = store.getString(DISABLED_CATEGORIES);
+		Set<String> ids = decodeIds(categoriesStr);
+		for (String categoryId : ids) {
+			prefs.getFilterSettings().removeCategory(categoryId);
+		}
+
+		// Do not need, as per default the factory default is used if key is missing
+		// TODO later we can use custom workspace settings to disable detectors here
+//		Iterator<DetectorFactory> iterator = DetectorFactoryCollection.instance().factoryIterator();
+//		while (iterator.hasNext()) {
+//			DetectorFactory factory = iterator.next();
+//			prefs.enableDetector(factory, factory.isDefaultEnabled());
+//		}
+		return prefs;
 	}
 
 }

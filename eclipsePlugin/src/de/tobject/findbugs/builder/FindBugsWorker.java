@@ -41,9 +41,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -53,7 +51,6 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.reporter.MarkerParameter;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
@@ -100,9 +97,8 @@ public class FindBugsWorker {
 		this.javaProject = JavaCore.create(project);
 		if (javaProject == null || !javaProject.exists()
 				|| !javaProject.getProject().isOpen()) {
-			throw new CoreException(new Status(IStatus.ERROR, FindbugsPlugin.PLUGIN_ID,
-					IStatus.ERROR, "Java project is not open or does not exist: "
-							+ project, null));
+			throw new CoreException(FindbugsPlugin.createErrorStatus(
+					"Java project is not open or does not exist: " + project, null));
 		}
 		this.monitor = monitor;
 		this.userPrefs = FindbugsPlugin.getUserPreferences(project);
@@ -425,10 +421,6 @@ public class FindBugsWorker {
 			boolean incremental) {
 		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
 
-		// will eventually update bug collection with right source lines
-		st.newPoint("createBugParameters");
-		List<MarkerParameter> bugParameters = MarkerUtil.createBugParameters(javaProject,
-				newBugCollection, monitor);
 		try {
 			st.newPoint("getBugCollection");
 			SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project,
@@ -450,8 +442,8 @@ public class FindBugsWorker {
 		}
 
 		// will store bugs as markers in Eclipse workspace
-		st.newPoint("addMarkers");
-		MarkerUtil.addMarkers(bugParameters, project, newBugCollection, monitor);
+		st.newPoint("createMarkers");
+		MarkerUtil.createMarkers(javaProject, newBugCollection, monitor);
 	}
 
 	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection,
@@ -468,9 +460,9 @@ public class FindBugsWorker {
 	private void configureExtendedProps(Collection<String> filterFiles,
 			IFindBugsEngine findBugs, boolean include, boolean bugsFilter) {
 		for (String filePath : filterFiles) {
-			IFile file = getFilterFile(filePath, project);
-			if (file != null && file.exists()) {
-				String filterName = file.getLocation().toOSString();
+			IPath path = getFilterPath(filePath, project);
+			if (path != null && path.toFile().exists()) {
+				String filterName = path.toOSString();
 				try {
 					if (bugsFilter) {
 						findBugs.excludeBaselineBugs(filterName);
@@ -497,25 +489,22 @@ public class FindBugsWorker {
 	/**
 	 * This method is for compatibility purpose.
 	 * @param filePath
-	 *            project relative (before 1.3.8 version) OR workspace relative file path
+	 *            project relative (before 1.3.8 version) OR absolute OS file path
 	 *            (1.3.8+ version)
 	 * @param project
-	 * @return file in the workspace which exactly matches given path, or null if no one
-	 *         or more then one files are found
+	 * @return file which exactly matches given path
 	 */
-	public static IFile getFilterFile(String filePath, IProject project) {
+	public static IPath getFilterPath(String filePath, IProject project) {
 		IFile file = null;
 		IPath path = new Path(filePath);
 		if(path.segmentCount() == 1 && !path.isAbsolute()){
 			// pre - 1.3.8 code used file names only, see bug 2522989
 			file = project.getFile(filePath);
-		} else {
-			IResource something = project.getWorkspace().getRoot().findMember(path);
-			if(something instanceof IFile){
-				file = (IFile) something;
+			if(file != null && file.exists()){
+				path = file.getLocation();
 			}
 		}
-		return file;
+		return path;
 	}
 
 	/**

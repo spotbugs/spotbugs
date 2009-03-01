@@ -23,7 +23,7 @@ import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ResourcesPlugin;
 
-import de.tobject.findbugs.util.Util;
+import de.tobject.findbugs.util.ProjectUtilities;
 
 /**
  * Callback object responsible for saving the uncomitted state
@@ -61,7 +61,7 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
 	private void fullSave() {
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject project : projectList) {
-			if(project.isAccessible() && Util.isJavaProject(project)) {
+			if(project.isAccessible() && ProjectUtilities.isJavaProject(project)) {
 			saveBugCollection(project);
 		}
 		}

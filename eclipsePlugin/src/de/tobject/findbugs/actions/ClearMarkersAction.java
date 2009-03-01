@@ -19,33 +19,30 @@
 
 package de.tobject.findbugs.actions;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.team.internal.core.subscribers.ChangeSet;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.builder.ResourceUtils;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.Util;
 
 /**
- * Remove all bug markers for the currently selectedt project.
+ * Remove all bug markers for the given selection.
  *
  * @author Peter Friese
  * @author Phil Crosby
- * @version 1.0
+ * @author Andrei Loskutov
+ * @version 2.0
  * @since 25.09.2003
  */
 public class ClearMarkersAction implements IObjectActionDelegate {
@@ -53,96 +50,54 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 	/** The current selection. */
 	private ISelection currentSelection;
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.ui.IWorkbenchPart)
-	 */
 	public final void setActivePart(final IAction action,
 			final IWorkbenchPart targetPart) {
 		// noop
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.jface.viewers.ISelection)
-	 */
 	public final void selectionChanged(final IAction action,
 			final ISelection selection) {
 		this.currentSelection = selection;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
 	public final void run(final IAction action) {
 		if (!currentSelection.isEmpty()) {
 			if (currentSelection instanceof IStructuredSelection) {
-				IStructuredSelection structuredSelection = (IStructuredSelection) currentSelection;
-				work(structuredSelection);
+				IStructuredSelection sSelection = (IStructuredSelection) currentSelection;
+				Map<IProject, List<IResource>> projectMap =
+					ResourceUtils.getResourcesPerProject(sSelection);
+
+				for(Map.Entry<IProject, List<IResource>> e : projectMap.entrySet()) {
+					work(e.getKey(), e.getValue());
+				}
 			}
 		}
 	}
 
 	/**
 	 * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
-	 *
-	 * @param selection
 	 */
-	private void work(final IStructuredSelection selection) {
-		try {
+	private void work(IProject project, List<IResource> resources) {
+		FindBugsJob job = new ClearMarkersJob(project, resources);
+		job.scheduleInteractive();
+	}
+}
 
-			IRunnableWithProgress r = new IRunnableWithProgress() {
-				public void run(IProgressMonitor pm) throws InvocationTargetException {
-					try {
-						for (Iterator<?> it = selection.iterator(); it.hasNext();) {
-							Object next = it.next();
-							if(!(next instanceof IAdaptable)){
-								continue;
-							}
-							IAdaptable adaptable = (IAdaptable) next;
-                            Object resource = adaptable.getAdapter(IResource.class);
-							IResource res = (resource instanceof IResource ? (IResource) resource : null);
-							if (res != null) {
-								pm.subTask("Clearing FindBugs markers from " + res.getName());
-                                MarkerUtil.removeMarkers(res);
-							} else {
-								// Support for active changesets
-								ChangeSet set = (ChangeSet) adaptable
-										.getAdapter(ChangeSet.class);
-								for (IResource change : ResourceUtils.getResources(set)) {
-									if (Util.isJavaArtifact(change)) {
-										pm.subTask("Clearing FindBugs markers from "
-												+ change.getName());
-										MarkerUtil.removeMarkers(change);
-									}
-								}
-							}
-						}
+final class ClearMarkersJob extends FindBugsJob {
+	private final List<IResource> resources;
 
-					} catch (CoreException ex) {
-						FindbugsPlugin.getDefault().logException(ex, "CoreException on clear markers");
-						throw new InvocationTargetException(ex);
-
-					} catch (RuntimeException ex) {
-						FindbugsPlugin.getDefault().logException(ex, "RuntimeException on clear markers");
-						throw ex;
-                    }
-				}
-			};
-
-			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
-			progress.run(true, true, r);
-		} catch (InvocationTargetException e) {
-			FindbugsPlugin.getDefault().logException(e, "InvocationTargetException on clear markers");
-		} catch (InterruptedException e) {
-			FindbugsPlugin.getDefault().logException(e, "InterruptedException on clear markers");
-		}
+	ClearMarkersJob(IProject project, List<IResource> resources) {
+		super("Removing FindBugs markers", project);
+		this.resources = resources;
 	}
 
+	@Override
+	protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+		monitor.beginTask(getName(), resources.size());
+		for (IResource res : resources) {
+			monitor.subTask(res.getName());
+			MarkerUtil.removeMarkers(res);
+			monitor.worked(1);
+		}
+	}
 }

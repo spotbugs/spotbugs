@@ -50,14 +50,12 @@ import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.SourceType;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.explorer.BugGroup;
@@ -96,15 +94,29 @@ public final class MarkerUtil {
 	/**
 	 * Create an Eclipse marker for given BugInstance.
 	 *
-	 * @param project the project
+	 * @param javaProject the project
 	 * @param monitor
 	 */
-	public static void createMarkers(IJavaProject project, BugCollection theCollection,
+	public static void createMarkers(IJavaProject javaProject, BugCollection theCollection,
 			IProgressMonitor monitor) {
-
-		List<MarkerParameter> bugParameters = createBugParameters(project, theCollection,
+		if(monitor.isCanceled()){
+			return;
+		}
+		List<MarkerParameter> bugParameters = createBugParameters(javaProject, theCollection,
 				monitor);
-		addMarkers(bugParameters, project.getProject(), theCollection, monitor);
+		if(monitor.isCanceled()){
+			return;
+		}
+		IProject project = javaProject.getProject();
+		try {
+			project.getWorkspace().run(
+				new MarkerReporter(bugParameters, theCollection, project), // action
+				project,  // scheduling rule (null if there are no scheduling restrictions)
+				0,     // flags (could specify IWorkspace.AVOID_UPDATE)
+				monitor); // progress monitor (null if progress reporting is not desired)
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
+		}
 	}
 
 	/**
@@ -205,22 +217,6 @@ public final class MarkerUtil {
 		+ bug.getAnnotationText() + " / Source Line: "
 		+ bug.getPrimarySourceLineAnnotation());
 	}
-
-
-	public static void addMarkers(List<MarkerParameter> bugParameter, IProject project,
-			BugCollection theCollection, IProgressMonitor monitor) {
-
-		try {
-			project.getWorkspace().run(
-				new MarkerReporter(bugParameter, theCollection, project), // action
-				project,  // scheduling rule (null if there are no scheduling restrictions)
-				0,     // flags (could specify IWorkspace.AVOID_UPDATE)
-				monitor); // progress monitor (null if progress reporting is not desired)
-		} catch (CoreException e) {
-			FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
-		}
-	}
-
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
@@ -477,7 +473,8 @@ public final class MarkerUtil {
 	}
 
 	/**
-	 * Remove all FindBugs problem markers for given resource.
+	 * Remove all FindBugs problem markers for given resource. If the given resource is
+	 * project, will also clear bug collection.
 	 *
 	 * @param res the resource
 	 */
@@ -485,6 +482,10 @@ public final class MarkerUtil {
 		// remove any markers added by our builder
 		// This triggers resource update on IResourceChangeListener's (BugTreeView)
 		res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+		if(res instanceof IProject){
+			IProject project = (IProject) res;
+			FindbugsPlugin.clearBugCollection(project);
+		}
 	}
 
 	/**
@@ -505,47 +506,22 @@ public final class MarkerUtil {
 	 * given project.
 	 *
 	 * @param javaProject the project
-	 * @param shell   Shell the progress dialog should be tied to
 	 */
-	public static void redisplayMarkers(final IJavaProject javaProject, Shell shell) {
-
-		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
+	public static void redisplayMarkers(final IJavaProject javaProject) {
 		final IProject project = javaProject.getProject();
-
-		try {
-			progressDialog.run(false, false, new IRunnableWithProgress() {
-
-				public void run(IProgressMonitor monitor) {
-
-					try {
-						// Get the saved bug collection for the project
-						SortedBugCollection bugCollection =
-							FindbugsPlugin.getBugCollection(project, monitor);
-						if (bugCollection != null) {
-							// Remove old markers
-							MarkerUtil.removeMarkers(project);
-							// Display warnings
-							MarkerUtil.createMarkers(javaProject, bugCollection, monitor);
-						}
-
-					} catch (RuntimeException e) {
-						throw e;
-					} catch (Exception e) {
-						// Multiple checked exception types caught here
-						FindbugsPlugin.getDefault().logException(
-								e, "Error redisplaying FindBugs warning markers");
-					}
-				}
-
-			});
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			// Multiple checked exception types caught here
-			FindbugsPlugin.getDefault().logException(
-					e, "Error redisplaying FindBugs warning markers");
-		}
-
+		FindBugsJob job = new FindBugsJob("Refreshing FindBugs markers", project){
+			@Override
+			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+				// Get the saved bug collection for the project
+				SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project,
+						monitor);
+				// Remove old markers
+				project.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+				// Display warnings
+				createMarkers(javaProject, bugs, monitor);
+			}
+		};
+		job.scheduleInteractive();
 	}
 
 	public static @CheckForNull BugCode findBugCodeForMarker(IMarker marker) {

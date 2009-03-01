@@ -26,9 +26,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ISelection;
@@ -36,10 +33,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.builder.ResourceUtils;
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 
 
@@ -133,33 +130,14 @@ public class FindBugsAction implements IObjectActionDelegate {
 	 * @param resources The resource to run the analysis on.
 	 */
 	protected final void work(final IProject project, final List<IResource> resources) {
-
-		Job runFindBugs = new Job("Finding bugs in " + project.getName() + "...") {
+		FindBugsJob runFindBugs = new FindBugsJob("Finding bugs in " + project.getName() + "...", project) {
 
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					FindBugsWorker worker =	new FindBugsWorker(project, monitor);
-					worker.work(resources);
-				} catch (CoreException e) {
-					FindbugsPlugin.getDefault().logException(e, "Analysis exception");
-					return Status.CANCEL_STATUS;
-				}
-				return Status.OK_STATUS;
-			}
-
-			/**
-			 * Overriden to be able to control the max number of running FB jobs
-			 */
-			@Override
-			public boolean belongsTo(Object family) {
-				return MutexSchedulingRule.class == family;
+			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+				FindBugsWorker worker =	new FindBugsWorker(project, monitor);
+				worker.work(resources);
 			}
 		};
-
-		runFindBugs.setUser(true);
-		runFindBugs.setPriority(Job.BUILD);
-		runFindBugs.setRule(new MutexSchedulingRule(project));
-		runFindBugs.schedule();
+		runFindBugs.scheduleInteractive();
 	}
 }

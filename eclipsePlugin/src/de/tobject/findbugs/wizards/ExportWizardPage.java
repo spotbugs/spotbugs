@@ -48,7 +48,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.util.Util;
+import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.view.explorer.FilterBugsDialog;
 import edu.umd.cs.findbugs.BugCode;
 import edu.umd.cs.findbugs.BugPattern;
@@ -224,7 +224,7 @@ public class ExportWizardPage extends WizardPage {
 	}
 
 	private Record createProjectLine(IProject project) {
-		if(Util.isJavaProject(project) /* TODO why not working ?? && project.hasNature(FindbugsPlugin.NATURE_ID) */) {
+		if(ProjectUtilities.isJavaProject(project) /* TODO why not working ?? && project.hasNature(FindbugsPlugin.NATURE_ID) */) {
 			IMarker[] markerArr = MarkerUtil.getAllMarkers(project);
 			if (markerArr.length == 0) {
 				return null;
