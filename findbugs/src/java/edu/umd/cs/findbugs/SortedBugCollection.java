@@ -88,9 +88,20 @@ public class SortedBugCollection implements BugCollection {
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
 	private boolean applySuppressions = false;
-	private UserAnnotationPlugin userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
+	private UserAnnotationPlugin userAnnotationPlugin;
+	boolean runningWithoutSwingUI;
 	
 	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin() {
+		if(runningWithoutSwingUI){
+			return null;
+		}
+		try {
+	    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
+        } catch (NoClassDefFoundError e) {
+        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
+        	// and can't instantiate JDBCUserAnnotationPlugin here...
+        	runningWithoutSwingUI = true;
+        }
 		return userAnnotationPlugin;
 	}
 	
