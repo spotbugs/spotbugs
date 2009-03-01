@@ -211,7 +211,7 @@ public class FilterBugsDialog extends SelectionDialog {
 	 * Contains logically consistent set of filtered elements. This set is NOT the same as
 	 * shown in the tree. The difference is: if parent is checked in the tree, all the children are
 	 * checked too. If child is checked in the tree, the parent is checked too (grayed).
-	 * Hovewer, we don't want to have each child pattern if it's parent type is checked,
+	 * However, we don't want to have each child pattern if it's parent type is checked,
 	 * and we don't want to have parent type if only a subset of children is checked.
 	 */
 	private Object[] checkedElements;
@@ -532,7 +532,7 @@ public class FilterBugsDialog extends SelectionDialog {
 		}
 	}
 
-	private void elementChecked(Object element, boolean checked) {
+	protected void elementChecked(Object element, boolean checked) {
 		Set<Object> selected = new HashSet<Object>();
 		selected.addAll(Arrays.asList(checkedElements));
 		toggleElement(checked, element, selected);
