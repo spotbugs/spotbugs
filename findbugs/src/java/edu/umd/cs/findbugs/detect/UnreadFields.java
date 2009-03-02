@@ -413,22 +413,21 @@ public class UnreadFields extends OpcodeStackDetector  {
 				// Eclipse bundles which implements start/stop *very* often assigns static instances there
 				if (getMethodName().equals("start") || getMethodName().equals("stop")
 				        && getMethodSig().equals("(Lorg/osgi/framework/BundleContext;)V")) {
-					String superclassName = getClassContext().getJavaClass().getSuperclassName();
-					if(isEclipsePluginClass(superclassName)){
-						priority ++;
-						try {
-							JavaClass fieldClass = Repository.lookupClass(f.getClassName());
-							superclassName = fieldClass.getSuperclassName();
-							if(isEclipsePluginClass(superclassName)){
-								// the code "plugin = this;" unfortunately exists in the 
-								// template for new Eclipse plugin classes, so nearly every one 
-								// plugin has this pattern => decrease to very low prio
-								priority ++;
-							}						
-						} catch (ClassNotFoundException e) {
-							bugReporter.reportMissingClass(e);
-						}
-					}
+					try {
+                    	JavaClass bundleClass = Repository.lookupClass("org.osgi.framework.BundleActivator");
+                    	if(getClassContext().getJavaClass().instanceOf(bundleClass)){
+                    		priority ++;
+                    	}
+                    	JavaClass fieldClass = Repository.lookupClass(f.getClassName());
+                    	if(fieldClass.instanceOf(bundleClass)){
+                    		// the code "plugin = this;" unfortunately exists in the
+                    		// template for new Eclipse plugin classes, so nearly every one
+                    		// plugin has this pattern => decrease to very low prio
+                    		priority ++;
+                    	}
+                    } catch (ClassNotFoundException e) {
+                    	bugReporter.reportMissingClass(e);
+                    }
 				}				
 				bugAccumulator.accumulateBug(
 						new BugInstance(this, 
@@ -614,15 +613,6 @@ public class UnreadFields extends OpcodeStackDetector  {
 		previousPreviousOpcode = previousOpcode;
 		previousOpcode = seen;
 	}
-	
-	/**
-	 * @param dottedClassName non null
-	 * @return true if the given dotted class name represents one of Eclipse plugin classes
-	 */
-	private boolean isEclipsePluginClass(String dottedClassName) {
-	    return "org.eclipse.ui.plugin.AbstractUIPlugin".equals(dottedClassName)||
-	    		"org.eclipse.core.runtime.Plugin".equals(dottedClassName);
-    }
 
 	public boolean isReflexive(XField f) {
 		return reflectiveFields.contains(f);
