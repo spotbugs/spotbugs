@@ -395,7 +395,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
 					if (!staticFieldsReadInThisMethod.contains(f)) {
-				int priority = LOW_PRIORITY;
+				int priority = LOW_PRIORITY;				
 				if (!publicOrProtectedConstructor)
 					priority--;
 				if (!seenInvokeStatic 
@@ -409,6 +409,27 @@ public class UnreadFields extends OpcodeStackDetector  {
 					priority++;
 				if (getClassName().indexOf('$') != -1 || getMethod().isSynthetic() || f.isSynthetic() || f.getName().indexOf('$') >= 0)
 					priority++;
+				
+				// Eclipse bundles which implements start/stop *very* often assigns static instances there
+				if (getMethodName().equals("start") || getMethodName().equals("stop")
+				        && getMethodSig().equals("(Lorg/osgi/framework/BundleContext;)V")) {
+					String superclassName = getClassContext().getJavaClass().getSuperclassName();
+					if(isEclipsePluginClass(superclassName)){
+						priority ++;
+						try {
+							JavaClass fieldClass = Repository.lookupClass(f.getClassName());
+							superclassName = fieldClass.getSuperclassName();
+							if(isEclipsePluginClass(superclassName)){
+								// the code "plugin = this;" unfortunately exists in the 
+								// template for new Eclipse plugin classes, so nearly every one 
+								// plugin has this pattern => decrease to very low prio
+								priority ++;
+							}						
+						} catch (ClassNotFoundException e) {
+							bugReporter.reportMissingClass(e);
+						}
+					}
+				}				
 				bugAccumulator.accumulateBug(
 						new BugInstance(this, 
 						"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
@@ -593,6 +614,15 @@ public class UnreadFields extends OpcodeStackDetector  {
 		previousPreviousOpcode = previousOpcode;
 		previousOpcode = seen;
 	}
+	
+	/**
+	 * @param dottedClassName non null
+	 * @return true if the given dotted class name represents one of Eclipse plugin classes
+	 */
+	private boolean isEclipsePluginClass(String dottedClassName) {
+	    return "org.eclipse.ui.plugin.AbstractUIPlugin".equals(dottedClassName)||
+	    		"org.eclipse.core.runtime.Plugin".equals(dottedClassName);
+    }
 
 	public boolean isReflexive(XField f) {
 		return reflectiveFields.contains(f);
