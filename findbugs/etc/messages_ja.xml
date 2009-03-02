@@ -1500,16 +1500,6 @@ ASMƒoƒCƒgƒR[ƒh‰ðÍƒtƒŒ[ƒ€ƒ[ƒN‚ðŽg—p‚µ‚½ƒfƒBƒeƒNƒ^‚Ìì¬•û–@‚ðŽ¦‚·‚½‚ß‚ÌƒTƒ“ƒ
     </Details>
   </BugPattern>
 
-  <BugPattern type="DM_STRING_EMPTY_EQUALS">
-    <ShortDescription>ƒƒ\ƒbƒh‚Í”ñŒø—¦‚ÈString.equals("")ŒÄ‚Ño‚µ‚ðs‚Á‚Ä‚¢‚Ü‚·BString.length() == 0‚ð‘Ö‚í‚è‚ÉŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</ShortDescription>
-    <LongDescription>ƒƒ\ƒbƒh{1}‚Í”ñŒø—¦‚ÈString.equals("")ŒÄ‚Ño‚µ‚ðs‚Á‚Ä‚¢‚Ü‚·BString.length() == 0‚ð‘Ö‚í‚è‚ÉŽg—p‚µ‚Ä‚­‚¾‚³‚¢B</LongDescription>
-    <Details>
-<![CDATA[
-<p> eauals()‚ðŽg‚Á‚Ä‹ó•¶Žš—ñ‚Æ‚Ì”äŠr‚ðs‚Á‚Ä‚¢‚Ü‚·Blength()ƒƒ\ƒbƒh‚ðŽg‚Á‚Ä’·‚³0‚©‚Ç‚¤‚©’²‚×‚é•û‚ª‚‘¬‚Å‚·B‚Ü‚½A‚±‚Ì‚æ‚¤‚É‚·‚é‚±‚Æ‚ÅƒNƒ‰ƒXƒtƒ@ƒCƒ‹‚©‚ç–³‘Ê‚È•¶Žš—ñ‚ðíœ‚·‚é‚±‚Æ‚ªo—ˆ‚Ü‚·B</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Locale‚ðˆø”‚É‚Æ‚éƒƒ\ƒbƒh‚ÌŽg—p‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B</ShortDescription>
     <LongDescription>ƒ[ƒJƒ‰ƒCƒY‚É‘Î‰ž‚µ‚Ä‚¢‚È‚¢String.toUpperCase()AString.toLowerCase‚ÌŽg—pB</LongDescription>

@@ -1200,15 +1200,6 @@ La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la r
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="DM_STRING_EMPTY_EQUALS">
-  <ShortDescription>La méthode invoque String.equals("") ; utilisez String.length() == 0 à la place</ShortDescription>
-  <LongDescription>La méthode {1} invoque String.equals("") ; utilisez String.length() == 0 à la place</LongDescription>
-  <Details>
-<![CDATA[
-<p>Un objet est ici comparé à l'objet <code>String</code> vide au moyen de la méthode <code>equals()</code>. Vérifier que l'objet <code>String</code> à une longueur de zéro peut-être plus rapide, et retire des constantes <code>String</code> du fichier de la classe.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="DM_CONVERT_CASE">
   <ShortDescription>La méthode appelle les String.toUpperCase() ou String.toLowerCase ; utilisez plutôt la version paramètrée par une Locale</ShortDescription>
   <LongDescription>La méthode {1} invoque String.toUpperCase() ou String.toLowerCase ; utilisez plutôt la version acceptant une Locale</LongDescription>
