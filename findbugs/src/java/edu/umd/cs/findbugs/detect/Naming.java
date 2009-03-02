@@ -323,6 +323,16 @@ public class Naming extends PreorderVisitor implements Detector {
 	boolean hasBadMethodNames;
 	boolean hasBadFieldNames;
 
+	/**
+	 * Eclipse uses reflection to initialize NLS message bundles. Classes which using this
+	 * mechanism are usualy extending org.eclipse.osgi.util.NLS class and contains lots
+	 * of public static String fields which are used as message constants. Unfortunately
+	 * these fields often has bad names which does not follow Java code convention, so FB 
+	 * reports tons of warnings for such Eclipse message fields. 
+	 * @see edu.umd.cs.findbugs.detect.MutableStaticFields
+	 */
+	private boolean isEclipseNLS;
+
 	@Override
 	public void visit(JavaClass obj) {
 		String name = obj.getClassName();
@@ -350,6 +360,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		for(Method m : obj.getMethods()) 
 			if (badMethodName(m.getName())) badNames++;
 		hasBadMethodNames = badNames > 5 && badNames > obj.getMethods().length/2;
+		isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
 		super.visit(obj);
 	}
 
@@ -358,6 +369,13 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (getFieldName().length() == 1)
 			return;
 
+		if (isEclipseNLS) {
+			int flags = obj.getAccessFlags();
+			if ((flags & ACC_STATIC) != 0 && ((flags & ACC_PUBLIC) != 0) && getFieldSig().equals("Ljava/lang/String;")) {
+				// ignore "public statis String InstallIUCommandTooltip;" messages from Eclipse NLS bundles
+				return;
+			}
+		}
 		if (badFieldName(obj)) {
 			bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
 			        && (obj.isPublic() || obj.isProtected())  && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addVisitedField(
