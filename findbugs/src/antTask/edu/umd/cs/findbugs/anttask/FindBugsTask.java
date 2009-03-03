@@ -101,6 +101,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>systemProperty     (a system property to set)
  * <li>timestampNow       (boolean - default false)
  * <li>visitors           (collection - comma seperated)
+ * <li>chooseVisitors     (selectively enable/disable visitors)
  * <li>workHard           (boolean default false)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
@@ -144,6 +145,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	private String outputFormat = "xml";
 	private String reportLevel ;
 	private String visitors ;
+	private String chooseVisitors ;
 	private String omitVisitors ;
 	private String outputFileName ;
 	private String stylesheet ;
@@ -216,6 +218,12 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	 */
 	public void setVisitors(String commaSeperatedString) {
 		this.visitors = commaSeperatedString;
+	}
+	/**
+	 * Set the specific visitors to use 
+	 */
+	public void setChooseVisitors(String commaSeperatedString) {
+		this.chooseVisitors = commaSeperatedString;
 	}
 
 	/**
@@ -614,6 +622,11 @@ public class FindBugsTask extends AbstractFindBugsTask {
 			addArg("-omitVisitors");
 			addArg(omitVisitors);
 		}
+		if ( chooseVisitors != null ) {
+			addArg("-chooseVisitors");
+			addArg(chooseVisitors);
+		}
+
 		if ( auxClasspath != null ) {
 			try {
 				// Try to dereference the auxClasspath.
