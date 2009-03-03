@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -59,9 +58,6 @@ public abstract class IO {
 			} else {
 				file.setContents(bis, true, false, monitor);
 			}
-
-			// Need to refresh here?
-			file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException e) {
 			IStatus status = FindbugsPlugin.createErrorStatus("Exception while "
 					+ output.getTaskDescription(), e);
