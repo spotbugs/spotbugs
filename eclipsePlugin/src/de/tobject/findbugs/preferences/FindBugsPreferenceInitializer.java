@@ -55,6 +55,7 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
 		for (String categoryId : ids) {
 			prefs.getFilterSettings().removeCategory(categoryId);
 		}
+		prefs.setRunAtFullBuild(false);
 
 		// Do not need, as per default the factory default is used if key is missing
 		// TODO later we can use custom workspace settings to disable detectors here
