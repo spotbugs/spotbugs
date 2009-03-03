@@ -812,6 +812,7 @@
  <BugCode abbrev="HRS" cweid="113"/>
  <BugCode abbrev="STCAL" cweid="366"/>
  <BugCode abbrev="ICAST" cweid="192"/>
+ <BugCode abbrev="FB" />
           
           
  
@@ -1228,4 +1229,6 @@
   <BugPattern abbrev="TQ" type="TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK" category="CORRECTNESS"/>
   <BugPattern abbrev="OBL" type="OBL_UNSATISFIED_OBLIGATION" category="EXPERIMENTAL" 
     experimental="true"/>
+  <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="EXPERIMENTAL" />
+  <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="EXPERIMENTAL" />
 </FindbugsPlugin>

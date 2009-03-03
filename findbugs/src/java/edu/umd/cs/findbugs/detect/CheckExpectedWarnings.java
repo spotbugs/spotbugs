@@ -165,9 +165,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 					System.out.println("  *** Found " + count + " " + bugCode + " warnings");
 				}
 				if (expectWarnings && count == 0 && possibleBugCodes.contains(bugCode)) {
-					complain("Expected %s warning(s)", bugCode, xmethod);
+					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", NORMAL_PRIORITY).addClassAndMethod(xmethod.getMethodDescriptor()).
+							addString(bugCode));
 				} else if (!expectWarnings && count > 0) {
-					complain("Did not expect %s warning(s)", bugCode, xmethod);
+					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", NORMAL_PRIORITY).addClassAndMethod(xmethod.getMethodDescriptor()).
+							addString(bugCode));
 				}
 			}
 		}
@@ -186,12 +188,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 		}
 		return count;
 	}
-
-	private void complain(String format, String bugCode, XMethod xmethod) {
-		String msg = String.format(format, bugCode);
-		System.out.println("CheckExpectedWarnings: " + msg + " in " + xmethod.toString());
-	}
-
+	
 	public void finishPass() {
 		// Nothing to do
 	}
