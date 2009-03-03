@@ -53,7 +53,7 @@ public class MineBugHistory {
 	static final int ACTIVE_NOW = 6;
 	static final int TUPLE_SIZE = 7;
 
-	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH:mm");
+	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
 
 	static class Version {
 		long sequence;
@@ -202,8 +202,8 @@ public class MineBugHistory {
 			out.print(appVersion != null ? appVersion.getReleaseName() : "");
 			out.print('\t');
 			if (formatDates)
-				out.print("\"" + (appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : "") + "\"");
-			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+				out.print("\"" + (appVersion != null ?  dateFormat.format(new Date(appVersion.getTimestamp())) : "") + "\"");
+			else out.print(appVersion != null ? appVersion.getTimestamp()/1000 : 0L);
 			out.print('\t');
 			if (appVersion != null) {
 				out.print(appVersion.getNumClasses());
@@ -249,16 +249,16 @@ public class MineBugHistory {
 		out.print(' ');
 		print(19, false, out, "version");
 		out.print(' ');
-		print(16, false, out, "time");
+		print(formatDates ? 12 : 10, false, out, "time");
 		print(1+7, true, out, "classes");
-		print(1+7, true, out, "NCSS");
-		print(1+7, true, out, "added");
-		print(1+7, true, out, "newCode");
-		print(1+7, true, out, "fixed");
-		print(1+7, true, out, "removed");
+		print(1+8, true, out, "NCSS");
+		print(1+8, true, out, "added");
+		print(1+8, true, out, "newCode");
+		print(1+8, true, out, "fixed");
+		print(1+8, true, out, "removed");
 		print(1+8, true, out, "retained");
-		print(1+6, true, out, "dead");
-		print(1+7, true, out, "active");
+		print(1+8, true, out, "dead");
+		print(1+8, true, out, "active");
 		out.println();
 		//note: if we were allowed to depend on JDK 1.5 we could use out.printf():
 		//Object line[] = { "seq", "version", "time", "classes", "NCSS", "added", "newCode", "fixed", "removed", "retained", "dead", "active" };
@@ -273,17 +273,17 @@ public class MineBugHistory {
 
 			long ts = (appVersion != null ? appVersion.getTimestamp(): 0L);
 			if (formatDates)
-				print(16, false, out, dateFormat.format(ts));
-			else print(16, false, out, ts);
+				print(12, false, out, dateFormat.format(ts));
+			else print(10, false, out, ts/1000);
 			out.print(' ');
 
 			print(7, true, out, appVersion != null ? appVersion.getNumClasses() : 0);
 			out.print(' ');
-			print(7, true, out, appVersion != null ? appVersion.getCodeSize() : 0);
+			print(8, true, out, appVersion != null ? appVersion.getCodeSize() : 0);
 
 			for (int j = 0; j < TUPLE_SIZE; ++j) {
 				out.print(' ');
-				print(7, true, out, version.get(j));
+				print(8, true, out, version.get(j));
 			}
 			out.println();
 		}
