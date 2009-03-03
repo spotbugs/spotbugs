@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -57,7 +58,7 @@ public class Update {
 	 * 
 	 */
 	private static final String USAGE = "Usage: " + Update.class.getName()
-			+ " [options]  data1File data2File data3File ... ";
+	+ " [options]  data1File data2File data3File ... ";
 
 	private Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<BugInstance, BugInstance>();
 
@@ -77,39 +78,39 @@ public class Update {
 
 		UpdateCommandLine() {
 			addSwitch("-overrideRevisionNames",
-					"override revision names for each version with names computed filenames");
+			"override revision names for each version with names computed filenames");
 			addSwitch(
 					"-noPackageMoves",
-					"if a class seems to have moved from one package to another, treat warnings in that class as two seperate warnings");
+			"if a class seems to have moved from one package to another, treat warnings in that class as two seperate warnings");
 			addSwitch("-preciseMatch",
-					"require bug patterns to match precisely");
+			"require bug patterns to match precisely");
 			addSwitch("-precisePriorityMatch",
-					"only consider two warnings to be the same if their priorities match exactly");
+			"only consider two warnings to be the same if their priorities match exactly");
 			addOption("-output", "output file",
-					"explicit filename for merged results (standard out used if not specified)");
+			"explicit filename for merged results (standard out used if not specified)");
 			addSwitch("-quiet",
-					"don't generate any outout to standard out unless there is an error");
+			"don't generate any outout to standard out unless there is an error");
 			addSwitch("-withMessages",
-					"Add bug description");
+			"Add bug description");
 			addOption("-onlyMostRecent", "number", "only use the last # input files");
 
 		}
 
 		@Override
 		protected void handleOption(String option, String optionExtraPart)
-				throws IOException {
+		throws IOException {
 			if (option.equals("-overrideRevisionNames")) {
 				if (optionExtraPart.length() == 0)
 					overrideRevisionNames = true;
 				else
 					overrideRevisionNames = Boolean
-							.parseBoolean(optionExtraPart);
+					.parseBoolean(optionExtraPart);
 			} else if (option.equals("-noPackageMoves")) {
 				if (optionExtraPart.length() == 0)
 					noPackageMoves = true;
 				else
 					noPackageMoves = Boolean
-							.parseBoolean(optionExtraPart);
+					.parseBoolean(optionExtraPart);
 			} else if (option.equals("-preciseMatch")) {
 				preciseMatch = true;
 			} else if (option.equals("-precisePriorityMatch")) {
@@ -127,14 +128,14 @@ public class Update {
 
 		@Override
 		protected void handleOptionWithArgument(String option, String argument)
-				throws IOException {
+		throws IOException {
 			if (option.equals("-output"))
 				outputFilename = argument;
 			else if (option.equals("-onlyMostRecent")) {
 				mostRecent = Integer.parseInt(argument);
 			}
 			else throw new IllegalArgumentException("Can't handle option "
-						+ option);
+					+ option);
 
 		}
 
@@ -156,32 +157,32 @@ public class Update {
 		}
 		return result;
 	}
-	
+
 	public void removeBaselineBugs(BugCollection baselineCollection,
 			BugCollection bugCollection) {
 
 		matchBugs(baselineCollection, bugCollection);
 		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
-				baselineCollection, bugCollection, false);
+				baselineCollection, bugCollection, false, false);
 		matchBugs(versionInsensitiveBugComparator, baselineCollection,
-				bugCollection, false);
+				bugCollection, false, false);
 		for (Iterator<BugInstance> i  = bugCollection.getCollection().iterator(); i.hasNext(); ) {
 			BugInstance bug = i.next();
 			if (matchedOldBugs.containsKey(bug)) i.remove();
 		}
-			
-	
+
+
 	}
 
 	public BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection, boolean copyDeadBugs, boolean incrementalAnalysis) {
 
-		
+
 		mapFromNewToOldBug.clear();
 
 		matchedOldBugs.clear();
 		BugCollection resultCollection = newCollection
-				.createEmptyCollectionWithMetadata();
+		.createEmptyCollectionWithMetadata();
 		// Previous sequence number
 		long lastSequence = origCollection.getSequenceNumber();
 		// The AppVersion history is retained from the orig collection,
@@ -189,7 +190,7 @@ public class Update {
 		// of the orig collection.
 		resultCollection.clearAppVersions();
 		for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i
-				.hasNext();) {
+		.hasNext();) {
 			AppVersion appVersion = i.next();
 			resultCollection.addAppVersion((AppVersion) appVersion.clone());
 		}
@@ -237,7 +238,7 @@ public class Update {
 					String className = classBugFoundIn.getClassName();
 					String sourceFile = classBugFoundIn.getSourceFileName();
 					boolean fixed = sourceFile != null && analyzedSourceFiles.contains(sourceFile) 
-					                  || newCollection.getProjectStats().getClassStats(className) != null;
+					|| newCollection.getProjectStats().getClassStats(className) != null;
 					if (fixed) {
 						if (!copyDeadBugs)
 							continue;
@@ -259,7 +260,7 @@ public class Update {
 			BugInstance newBug = (BugInstance) bug.clone();
 			if (mapFromNewToOldBug.containsKey(bug)) {
 				BugInstance origWarning = mapFromNewToOldBug.get(bug);
-				
+
 				mergeBugHistory(origWarning, newBug);
 				// handle getAnnotationText()/setAnnotationText() and
 				// designation key
@@ -324,47 +325,50 @@ public class Update {
 		return count;
 	}
 	/**
-     * @param origCollection
-     * @param newCollection
-     */
-    private void matchBugs(BugCollection origCollection, BugCollection newCollection) {
-	    matchBugs(SortedBugCollection.BugInstanceComparator.instance,
-				origCollection, newCollection, false);
-	    
+	 * @param origCollection
+	 * @param newCollection
+	 */
+	private void matchBugs(BugCollection origCollection, BugCollection newCollection) {
+		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
+				origCollection, newCollection, false, false);
+
 		mapFromNewToOldBug.clear();
 		matchedOldBugs.clear();
 		if (false) {
-		System.out.printf("%d old bugs, %d new bugs\n", size(origCollection), size(newCollection));
-		System.out.println("Matched old bugs: " + matchedOldBugs.size());
+			System.out.printf("%d old bugs, %d new bugs\n", size(origCollection), size(newCollection));
+			System.out.println("Matched old bugs: " + matchedOldBugs.size());
 		}
 		matchBugs(versionInsensitiveBugComparator, origCollection,
-				newCollection, false);
+				newCollection, false, false);
 		if (false) 
-		System.out.println("Matched old bugs: " + matchedOldBugs.size());
+			System.out.println("Matched old bugs: " + matchedOldBugs.size());
 		matchBugs(versionInsensitiveBugComparator, origCollection,
-				newCollection, true);
+				newCollection, true, false);
+		if (doMatchFixedBugs)
+			matchBugs(versionInsensitiveBugComparator, origCollection,
+				newCollection, true, true);
 		if (!preciseMatch) {
-			matchBugs(fuzzyBugPatternMatcher, origCollection, newCollection, false);
+			matchBugs(fuzzyBugPatternMatcher, origCollection, newCollection, false, false);
 			if (false) System.out.println("Matched old bugs: " + matchedOldBugs.size());
-			
+
 		}
 		if (!noPackageMoves) {
 			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
 			MovedClassMap movedClassMap = new MovedClassMap(
-								origCollection, newCollection).execute();
+					origCollection, newCollection).execute();
 			if (!movedClassMap.isEmpty()) {
 				movedBugComparator.setClassNameRewriter(movedClassMap);
 				movedBugComparator.setComparePriorities(precisePriorityMatch);
-				matchBugs(movedBugComparator, origCollection, newCollection, false);
+				matchBugs(movedBugComparator, origCollection, newCollection, false, false);
 				if (!preciseMatch) {
 					movedBugComparator.setExactBugPatternMatch(false);
-					matchBugs(movedBugComparator, origCollection, newCollection, false);
+					matchBugs(movedBugComparator, origCollection, newCollection, false, false);
 				}
 			}
 			if (false) System.out.println("Matched old bugs: " + matchedOldBugs.size());
-			
+
 		}
-    }
+	}
 
 	boolean verbose = true;
 
@@ -374,7 +378,7 @@ public class Update {
 	}
 
 	public static void main(String[] args) throws IOException,
-			DocumentException {
+	DocumentException {
 		new Update().doit(args);
 	}
 
@@ -424,75 +428,75 @@ public class Update {
 				origFilename = args[argCount++];
 			}
 
-		if (commandLine.overrideRevisionNames
-				|| origCollection.getReleaseName() == null
-				|| origCollection.getReleaseName().length() == 0) {
-			
-			if (commonPrefix >= firstPathParts.length) {
-				// This should only happen if either
-				//
-				//   (1) there is only one input file, or
-				//   (2) all of the input files have the same name
-				//
-				// In either case, make the release name the same
-				// as the file part of the input file(s).
-				commonPrefix = firstPathParts.length - 1;
-			}
-			
-			origCollection.setReleaseName(firstPathParts[commonPrefix]);
-		}
-		
-		for (BugInstance bug : origCollection.getCollection())
-			if (bug.getLastVersion() >= 0
-					&& bug.getFirstVersion() > bug.getLastVersion())
-				throw new IllegalStateException("Illegal Version range: "
-						+ bug.getFirstVersion() + ".." + bug.getLastVersion());
+			if (commandLine.overrideRevisionNames
+					|| origCollection.getReleaseName() == null
+					|| origCollection.getReleaseName().length() == 0) {
 
-		while (argCount <= (args.length - 1)) {
-
-			BugCollection newCollection = new SortedBugCollection();
-
-			String newFilename = args[argCount++];
-			if (verbose)
-				System.out.println("Merging " + newFilename);
-			project = new Project();
-			try {
-				File f = new File(newFilename);
-				if (f.length() == 0) {
-					if (verbose)
-						System.out.println("Empty input file: " + f);
-					continue;
+				if (commonPrefix >= firstPathParts.length) {
+					// This should only happen if either
+					//
+					//   (1) there is only one input file, or
+					//   (2) all of the input files have the same name
+					//
+					// In either case, make the release name the same
+					// as the file part of the input file(s).
+					commonPrefix = firstPathParts.length - 1;
 				}
-				newCollection.readXML(newFilename, project);
 
-				if (commandLine.overrideRevisionNames
-						|| newCollection.getReleaseName() == null
-						|| newCollection.getReleaseName().length() == 0)
-					newCollection
-							.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
-
-				origCollection = mergeCollections(origCollection,
-						newCollection, true, false);
-			} catch (IOException e) {
-				IOException e2 = new IOException("Error parsing " + newFilename);
-				e2.initCause(e);
-				if (verbose)
-					e2.printStackTrace();
-				throw e2;
-			} catch (DocumentException e) {
-				DocumentException e2 = new DocumentException("Error parsing " + newFilename);
-				e2.initCause(e);
-				if (verbose)
-					e2.printStackTrace();
-				throw e2;
+				origCollection.setReleaseName(firstPathParts[commonPrefix]);
 			}
-		}
 
-		origCollection.setWithMessages(commandLine.withMessages);
-		if (commandLine.outputFilename != null)
-			origCollection.writeXML(commandLine.outputFilename, project);
-		else
-			origCollection.writeXML(System.out, project);
+			for (BugInstance bug : origCollection.getCollection())
+				if (bug.getLastVersion() >= 0
+						&& bug.getFirstVersion() > bug.getLastVersion())
+					throw new IllegalStateException("Illegal Version range: "
+							+ bug.getFirstVersion() + ".." + bug.getLastVersion());
+
+			while (argCount <= (args.length - 1)) {
+
+				BugCollection newCollection = new SortedBugCollection();
+
+				String newFilename = args[argCount++];
+				if (verbose)
+					System.out.println("Merging " + newFilename);
+				project = new Project();
+				try {
+					File f = new File(newFilename);
+					if (f.length() == 0) {
+						if (verbose)
+							System.out.println("Empty input file: " + f);
+						continue;
+					}
+					newCollection.readXML(newFilename, project);
+
+					if (commandLine.overrideRevisionNames
+							|| newCollection.getReleaseName() == null
+							|| newCollection.getReleaseName().length() == 0)
+						newCollection
+						.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
+
+					origCollection = mergeCollections(origCollection,
+							newCollection, true, false);
+				} catch (IOException e) {
+					IOException e2 = new IOException("Error parsing " + newFilename);
+					e2.initCause(e);
+					if (verbose)
+						e2.printStackTrace();
+					throw e2;
+				} catch (DocumentException e) {
+					DocumentException e2 = new DocumentException("Error parsing " + newFilename);
+					e2.initCause(e);
+					if (verbose)
+						e2.printStackTrace();
+					throw e2;
+				}
+			}
+
+			origCollection.setWithMessages(commandLine.withMessages);
+			if (commandLine.outputFilename != null)
+				origCollection.writeXML(commandLine.outputFilename, project);
+			else
+				origCollection.writeXML(System.out, project);
 
 	}
 
@@ -509,11 +513,21 @@ public class Update {
 		newer.setFirstVersion(older.getFirstVersion());
 		newer.setIntroducedByChangeOfExistingClass(older
 				.isIntroducedByChangeOfExistingClass());
-		
+
+	}
+	static final boolean doMatchFixedBugs = SystemProperties.getBoolean("findbugs.matchFixedBugs");
+	static final int maxResurrection = SystemProperties.getInteger("findbugs.maxResurrection", 2);
+
+	/**
+	 * @deprecated Use {@link #matchBugs(Comparator<BugInstance>,BugCollection,BugCollection,boolean,boolean)} instead
+	 */
+	private void matchBugs(Comparator<BugInstance> bugInstanceComparator,
+			BugCollection origCollection, BugCollection newCollection, boolean matchDeadBugsInRemovedClasses) {
+		matchBugs(bugInstanceComparator, origCollection, newCollection, matchDeadBugsInRemovedClasses, false);
 	}
 
 	private void matchBugs(Comparator<BugInstance> bugInstanceComparator,
-			BugCollection origCollection, BugCollection newCollection, boolean matchDeadBugsInRemovedClasses) {
+			BugCollection origCollection, BugCollection newCollection, boolean matchDeadBugsInRemovedClasses, boolean matchFixedBugs) {
 
 		TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<BugInstance, LinkedList<BugInstance>>(
 				bugInstanceComparator);
@@ -522,38 +536,43 @@ public class Update {
 		int matchedBugs = 0;
 		if (false) System.out.printf("%d old, %d new\n", size(origCollection), size(newCollection));
 		for (BugInstance bug : origCollection.getCollection())
-			if ( !matchedOldBugs.containsKey(bug) && (!bug.isDead() || bug.isDead() && matchDeadBugsInRemovedClasses && !bug.isRemovedByChangeOfPersistingClass())) {
-				oldBugs++;
-				LinkedList<BugInstance> q = set.get(bug);
-				if (q == null) {
-					q = new LinkedList<BugInstance>();
-					set.put(bug, q);
+			if ( !matchedOldBugs.containsKey(bug)) {
+				if (!bug.isDead() || matchDeadBugsInRemovedClasses || matchDeadBugsInRemovedClasses && !bug.isRemovedByChangeOfPersistingClass() ) {
+					oldBugs++;
+					LinkedList<BugInstance> q = set.get(bug);
+					if (q == null) {
+						q = new LinkedList<BugInstance>();
+						set.put(bug, q);
+					}
+					q.add(bug);
 				}
-				q.add(bug);
+
+				if (false) for(Map.Entry<BugInstance, LinkedList<BugInstance>> e : set.entrySet()) {
+					System.out.println(e.getKey() + " " + e.getValue().size());
+				}
 			}
-		if (false) for(Map.Entry<BugInstance, LinkedList<BugInstance>> e : set.entrySet()) {
-			System.out.println(e.getKey() + " " + e.getValue().size());
-		}
+		long newVersion = origCollection.getCurrentAppVersion().getSequenceNumber()+1;
 		for (BugInstance bug : newCollection.getCollection())
 			if (!mapFromNewToOldBug.containsKey(bug)) {
 				newBugs++;
 				LinkedList<BugInstance> q = set.get(bug);
-				if (q != null && !q.isEmpty()) {
+				if (q == null)
+					continue;
+				for(Iterator<BugInstance> i = q.iterator(); i.hasNext(); ) {
+					BugInstance matchedBug = i.next();
+					if (matchedBug.isDead() && matchedBug.isRemovedByChangeOfPersistingClass()) {
+						if (newVersion - matchedBug.getLastVersion() > maxResurrection)
+							continue;
+					}
 					matchedBugs++;
-					BugInstance matchedBug = q.removeFirst();
 					mapFromNewToOldBug.put(bug, matchedBug);
 					matchedOldBugs.put(matchedBug, null);
-					if (false) System.out.println(newBugs + " Matched " + bug);
+					i.remove();
 					if (q.isEmpty()) 
 						set.remove(bug);
-				} else if (false) System.out.println(newBugs + " No match " + bug);
-			} else if (false) {
-				System.out.println(newBugs + " skipping " + bug);
+					break;
+				}
 			}
-		if (false && verbose)
-			System.out.println("matched " + matchedBugs + " of " + oldBugs
-					+ "o/" + newBugs + "n bugs using "
-					+ bugInstanceComparator.getClass().getName());
 	}
 
 }
