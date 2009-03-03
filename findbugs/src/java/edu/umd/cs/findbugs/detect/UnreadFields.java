@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -54,6 +55,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -409,21 +411,31 @@ public class UnreadFields extends OpcodeStackDetector  {
 					priority++;
 				if (getClassName().indexOf('$') != -1 || getMethod().isSynthetic() || f.isSynthetic() || f.getName().indexOf('$') >= 0)
 					priority++;
-				
+
+				// Decrease priority for boolean fileds used to control debug/test settings
+				if(f.getName().indexOf("DEBUG") >= 0 || f.getName().indexOf("VERBOSE") >= 0
+						&& f.getSignature().equals("Z")){
+					priority ++;
+					priority ++;
+				}
 				// Eclipse bundles which implements start/stop *very* often assigns static instances there
 				if (getMethodName().equals("start") || getMethodName().equals("stop")
 				        && getMethodSig().equals("(Lorg/osgi/framework/BundleContext;)V")) {
 					try {
                     	JavaClass bundleClass = Repository.lookupClass("org.osgi.framework.BundleActivator");
-                    	if(getClassContext().getJavaClass().instanceOf(bundleClass)){
+                    	if(getThisClass().instanceOf(bundleClass)){
                     		priority ++;
                     	}
-                    	JavaClass fieldClass = Repository.lookupClass(f.getClassName());
-                    	if(fieldClass.instanceOf(bundleClass)){
-                    		// the code "plugin = this;" unfortunately exists in the
-                    		// template for new Eclipse plugin classes, so nearly every one
-                    		// plugin has this pattern => decrease to very low prio
-                    		priority ++;
+                    	if(f.isReferenceType()){
+                    		FieldDescriptor fieldInfo = f.getFieldDescriptor();
+                    		String dottedClass = DeepSubtypeAnalysis.getComponentClass(fieldInfo.getSignature());
+                    		JavaClass fieldClass = Repository.lookupClass(dottedClass);
+                    		if(fieldClass != null && fieldClass.instanceOf(bundleClass)){
+                    			// the code "plugin = this;" unfortunately exists in the
+                    			// template for new Eclipse plugin classes, so nearly every one
+                    			// plugin has this pattern => decrease to very low prio
+                    			priority ++;
+                    		}
                     	}
                     } catch (ClassNotFoundException e) {
                     	bugReporter.reportMissingClass(e);
