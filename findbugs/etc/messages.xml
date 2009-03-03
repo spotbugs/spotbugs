@@ -7619,29 +7619,29 @@ public @NonNegative Integer example(@Negative Integer value) {
 		  ]]>
 	  </Details>
   </BugPattern>
+
+  <BugPattern type="FB_UNEXPECTED_WARNING">
+	  <ShortDescription>Unexpected/undesired warning from FindBugs</ShortDescription>
+	  <LongDescription>Unexpected/undesired {2} FindBugs warning in {1}</LongDescription>
+	  <Details>
+		  <![CDATA[
+		  <p>FindBugs generated a warning that, according to a @NoWarning annotated,
+			is unexpected or undesired</p>
+		  ]]>
+	  </Details>
+  </BugPattern>
   
   <BugPattern type="FB_MISSING_EXPECTED_WARNING">
-	  <ShortDescription>Missing expected FindBugs warning</ShortDescription>
-	  <LongDescription>Missing {2} warning in {1}</LongDescription>
+	  <ShortDescription>Missing expected or desired warning from FindBugs</ShortDescription>
+	  <LongDescription>Missing expected or desired {2} FindBugs warning in {1}</LongDescription>
 	  <Details>
 		  <![CDATA[
-			This method is annotated with the warnings that
-			we expect FindBugs to generate, and the warning was not seen.
+		  <p>FindBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
+			is expected or desired</p>
 		  ]]>
 	  </Details>
   </BugPattern>
-  <BugPattern type="FB_UNEXPECTED_WARNING">
-	  <ShortDescription>Unexpected FindBugs warning</ShortDescription>
-	  <LongDescription>Unexpected {2} warning in {1}</LongDescription>
-	  <Details>
-		  <![CDATA[
-			This method is annotated way that no warnings
-			of a particular kind were expected, yet FindBugs generated
-			such warnings.
-		  ]]>
-	  </Details>
-  </BugPattern>
-			
+  
   <!--
   **********************************************************************
    BugCodes
@@ -7775,7 +7775,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="STCAL">Static use of type Calendar or DateFormat</BugCode>
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
-  <BugCode abbrev="FB">Issues related to findbugs annotations and results</BugCode>
+  <BugCode abbrev="FB">FindBugs did not produce the expected warnings on a method</BugCode>
   </MessageCollection>
 
 
