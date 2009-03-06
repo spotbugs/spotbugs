@@ -1,19 +1,29 @@
-Release 1.3.8 - FindBugs team
-- feature: property view shows bug counts info for elements selected in bug explorer (Andrei Loskutov)
-- feature: added "navigate - Show In - Bug Explorer" menu entry in all Java perspectives (Andrei Loskutov)
-- feature: added "Show Bug Details" action to Java editor ruler (Andrei Loskutov)
-- feature: replaced bug details view with standart properties view, supporting Java editor (Andrei Loskutov)
--- bug details view exists no more, perspective definition changed
-- bugfix: fixed bug explorer (common navigator) errors with Eclipse 3.5 (Andrei Loskutov)
-- feature: filtering by specific pattern from bug explorer (Andrei Loskutov)
-- feature (in progress): bug filtering configuration dialog (Andrei Loskutov)
-- fix/new features related to bug 2522989: inconsistent filter files implementation (Andrei Loskutov)
--- Filter files can be now anywhere in the project OR in the workspace
--- On changes in relevant FB preferences, user will be asked to run FB analysis again
--- "Reset to defaults" now *really* reset to defaults (detectors configuration and filters fixed)
--- User preferences will be now re-read from disk if file was changed or before opening prefs dialog
-- bug fix: sometimes bugs in anonymous inner classes was shown at wrong locations (Andrei Loskutov)
-- feature: changes in build.xml and plugin folder structure (Andrei Loskutov)
+Release 1.3.8 - Andrei Loskutov
+- feature: added FindBugs perspective link to all Java perspectives
+- feature 2022229: have workspace level preferences for FindBugs
+    per default, workspace settings are used for new plugins
+    plugins with existing .fbprefs files are assumed to have custom preferences until they explicitely disable project prefs
+    per default, Eclipse will not enable categories EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY for new projects
+    FilterFiles tab: now dialog will disallow invalid selection of filter files
+- internal rework of job scheduling: use same rule for all FB jobs.
+- code cleanup of ClearMarkers and ClearMarkersEditor actions
+- bugfix clear bug collection file if user run "clear markers" action on project.
+- bugfix: fixed NPE in changesets if they contains deleted files
+- feature: property view shows bug counts info for elements selected in bug explorer
+- feature: added "navigate - Show In - Bug Explorer" menu entry in all Java perspectives
+- feature: added "Show Bug Details" action to Java editor ruler
+- feature: replaced bug details view with standart properties view, supporting Java editor
+    bug details view exists no more, perspective definition changed
+- bugfix: fixed bug explorer (common navigator) errors with Eclipse 3.5
+- feature: filtering by specific pattern from bug explorer
+- feature (in progress): bug filtering configuration dialog
+- feature 1516701/bug 2522989: Allow external and/or network filter files: now Eclipse plugin supports (any) absolute OS paths for filter files
+    Filter files can be now anywhere in the project OR in the file system
+    On changes in relevant FB preferences, user will be asked to run FB analysis again
+    "Reset to defaults" now *really* reset to defaults (detectors configuration and filters fixed)
+    User preferences will be now re-read from disk if file was changed or before opening prefs dialog
+- bug fix: sometimes bugs in anonymous inner classes was shown at wrong locations
+- feature: changes in build.xml and plugin folder structure
 - bugfix: applied patch 2143140 (Unchecked conversion fixes for Eclipse plugin) (Jerry James)
 
 Release 1.3.7 - Andrei Loskutov
