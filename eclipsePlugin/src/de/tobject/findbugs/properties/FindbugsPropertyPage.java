@@ -183,9 +183,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		layoutData.verticalIndent = -5;
 		tabFolder.setLayoutData(layoutData);
 
-		detectorTab = new DetectorConfigurationTab(tabFolder, this, SWT.NONE);
-		reportConfigurationTab = new ReportConfigurationTab(tabFolder, this, SWT.NONE);
-		filterFilesTab = new FilterFilesTab(tabFolder, this, SWT.NONE);
+		detectorTab = createDetectorConfigurationTab(tabFolder);
+		reportConfigurationTab = createReportConfigurationTab(tabFolder);
+		filterFilesTab = createFilterFilesTab(tabFolder);
 	}
 
 	/**
@@ -580,7 +580,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	/**
 	 * @return the currentUserPreferences
 	 */
-	UserPreferences getCurrentUserPreferences() {
+	protected UserPreferences getCurrentUserPreferences() {
 		return currentUserPreferences;
 	}
 	/**
@@ -607,7 +607,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	/**
 	 * Enum to hold an effort level and internationalizable label value.
 	 */
-	private enum Effort {
+	public enum Effort {
 
 		MIN(UserPreferences.EFFORT_MIN, "property.effortmin"),
 		DEFAULT(UserPreferences.EFFORT_DEFAULT, "property.effortdefault"),
@@ -650,4 +650,23 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		// noop
 	}
 
+	protected Button getChkEnableFindBugs() {
+		return chkEnableFindBugs;
+	}
+
+	protected Button getEnableProjectCheck() {
+		return enableProjectCheck;
+	}
+
+	protected DetectorConfigurationTab createDetectorConfigurationTab(TabFolder parentTabFolder) {
+		return new DetectorConfigurationTab(parentTabFolder, this, SWT.NONE);
+	}
+
+	protected ReportConfigurationTab createReportConfigurationTab(TabFolder parentTabFolder) {
+		return new ReportConfigurationTab(parentTabFolder, this, SWT.NONE);
+	}
+
+	protected FilterFilesTab createFilterFilesTab(TabFolder parentTabFolder) {
+		return new FilterFilesTab(parentTabFolder, this, SWT.NONE);
+	}
 }

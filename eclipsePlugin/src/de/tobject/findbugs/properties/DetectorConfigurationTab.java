@@ -481,7 +481,7 @@ public class DetectorConfigurationTab extends Composite {
 	 * Disables all unchecked detector factories and enables checked factory detectors, leaving
 	 * those not in the table unmodified.
 	 */
-	private void syncUserPreferencesWithTable(){
+	protected void syncUserPreferencesWithTable(){
 		TableItem[] itemList = availableFactoriesTableViewer.getTable().getItems();
 		UserPreferences currentProps = getCurrentProps();
 		for (int i = 0; i < itemList.length; i++) {

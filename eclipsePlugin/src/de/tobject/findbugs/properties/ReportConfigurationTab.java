@@ -143,7 +143,7 @@ public class ReportConfigurationTab extends Composite {
 	/**
 	 * Synchronize selected bug category checkboxes with the current user preferences.
 	 */
-	private void syncSelectedCategories() {
+	protected void syncSelectedCategories() {
 		ProjectFilterSettings filterSettings = getCurrentProps().getFilterSettings();
 		for (Button checkBox: chkEnableBugCategoryList) {
 			String category = (String) checkBox.getData();
@@ -160,7 +160,7 @@ public class ReportConfigurationTab extends Composite {
 	/**
 	 * @return
 	 */
-	private UserPreferences getCurrentProps() {
+	protected UserPreferences getCurrentProps() {
 		return propertyPage.getCurrentUserPreferences();
 	}
 
@@ -180,6 +180,10 @@ public class ReportConfigurationTab extends Composite {
 			checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
 		}
 		syncSelectedCategories();
+	}
+	
+	protected List<Button> getChkEnableBugCategoryList() {
+		return chkEnableBugCategoryList;
 	}
 }
 
