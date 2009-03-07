@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.WillClose;
+
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -158,7 +160,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		}
 	}
 
-	public final void reportBugsFromXml(InputStream in, Project theProject) throws IOException, DocumentException
+	public final void reportBugsFromXml(@WillClose InputStream in, Project theProject) throws IOException, DocumentException
 	{
 		SortedBugCollection theCollection = new SortedBugCollection();
 		theCollection.readXML(in, theProject);
