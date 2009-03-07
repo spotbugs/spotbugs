@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Eclipse 3.5">
+<locations>
+<location id="org.eclipse.cvs.source" path="F:\java\eclipse35M5a" type="Feature" version="1.1.100.v20090123-7E79FBV9BJ99r9HIQ37c77"/>
+<location id="org.eclipse.cvs" path="F:\java\eclipse35M5a" type="Feature" version="1.1.100.v20090123-7E79FBV9BJ99r9HIQ37c77"/>
+<location id="org.eclipse.equinox.p2.user.ui.source" path="F:\java\eclipse35M5a" type="Feature" version="1.1.0.v20090212-7Y2FUGFS4vz-1F-7LS4GWMS"/>
+<location id="org.eclipse.equinox.p2.user.ui" path="F:\java\eclipse35M5a" type="Feature" version="1.1.0.v20090212-7Y2FUGFS4vz-1F-7LS4GWMS"/>
+<location id="org.eclipse.help.source" path="F:\java\eclipse35M5a" type="Feature" version="1.1.0.v20090202-7e7eCGFEx2XZhZcnWO-50B"/>
+<location id="org.eclipse.help" path="F:\java\eclipse35M5a" type="Feature" version="1.1.0.v20090202-7e7eCGFEx2XZhZcnWO-50B"/>
+<location id="org.eclipse.jdt.source" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090303-0800-7p85FGDFHmHun4aQgXGgsst"/>
+<location id="org.eclipse.jdt" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090303-0800-7p85FGDFHmHun4aQgXGgsst"/>
+<location id="org.eclipse.pde.source" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090123-7Z7YF8NFE-z0VXgX7_Jai6cD"/>
+<location id="org.eclipse.pde" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090123-7Z7YF8NFE-z0VXgX7_Jai6cD"/>
+<location id="org.eclipse.platform.source" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090212-9hD9G1EFttfZqsi1iTYkJ0SC5ddfrepA"/>
+<location id="org.eclipse.platform" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090212-9hD9G1EFttfZqsi1iTYkJ0SC5ddfrepA"/>
+<location id="org.eclipse.rcp.source" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090212-9WA5FsHFtoeUCa9xG9ZZ6Qh"/>
+<location id="org.eclipse.rcp" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090212-9WA5FsHFtoeUCa9xG9ZZ6Qh"/>
+<location id="org.eclipse.sdk" path="F:\java\eclipse35M5a" type="Feature" version="3.5.0.v20090223-7Q7bA7DPP-tJA0W3EVjYu0-nDmPn0CxGgQ21OVOdjpYY_"/>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+<launcherArgs>
+<vmArgs>-Xmx900m</vmArgs>
+</launcherArgs>
+</target>
