@@ -1,4 +1,7 @@
 Release 1.3.8 - Andrei Loskutov
+- feature 1516701: if filter file is located inside workspace/project, do not use
+    absolute pathname for it. Solves the issue if projects on different workstations are
+    located in different roots, but use shared config file.
 - feature: added FindBugs perspective link to all Java perspectives
 - feature 2022229: have workspace level preferences for FindBugs
     per default, workspace settings are used for new plugins

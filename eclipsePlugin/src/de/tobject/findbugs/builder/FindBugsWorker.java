@@ -38,6 +38,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -461,51 +462,110 @@ public class FindBugsWorker {
 			IFindBugsEngine findBugs, boolean include, boolean bugsFilter) {
 		for (String filePath : filterFiles) {
 			IPath path = getFilterPath(filePath, project);
-			if (path != null && path.toFile().exists()) {
-				String filterName = path.toOSString();
-				try {
-					if (bugsFilter) {
-						findBugs.excludeBaselineBugs(filterName);
-					} else {
-						findBugs.addFilter(filterName, include);
-					}
-				} catch (RuntimeException e) {
-					FindbugsPlugin.getDefault().logException(e,
-							"Error while loading filter \"" + filterName + "\".");
-				} catch (DocumentException e) {
-					FindbugsPlugin.getDefault().logException(e,
-							"Error while loading excluded bugs \"" + filterName + "\".");
-				} catch (IOException e) {
-					FindbugsPlugin.getDefault().logException(e,
-							"Error while reading filter \"" + filterName + "\".");
+			if (!path.toFile().exists()) {
+				FindbugsPlugin.getDefault().logWarning("Filter not found: " + filePath);
+				continue;
+			}
+			String filterName = path.toOSString();
+			try {
+				if (bugsFilter) {
+					findBugs.excludeBaselineBugs(filterName);
+				} else {
+					findBugs.addFilter(filterName, include);
 				}
-			} else {
-				FindbugsPlugin.getDefault().logWarning(
-						"Bug filter not found: " + filePath);
+			} catch (RuntimeException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Error while loading filter \"" + filterName + "\".");
+			} catch (DocumentException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Error while loading excluded bugs \"" + filterName + "\".");
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Error while reading filter \"" + filterName + "\".");
 			}
 		}
 	}
 
 	/**
-	 * This method is for compatibility purpose.
+	 * Checks the given path and convert it to absolute path if it is specified relative
+	 * to the given project or workspace
+	 *
 	 * @param filePath
-	 *            project relative (before 1.3.8 version) OR absolute OS file path
-	 *            (1.3.8+ version)
+	 *            project relative OR workspace relative OR absolute OS file path (1.3.8+
+	 *            version)
 	 * @param project
-	 * @return file which exactly matches given path
+	 *            might be null (only for workspace relative or absulute paths)
+	 * @return absolute path which matches given relative or absolute path, never null
 	 */
 	public static IPath getFilterPath(String filePath, IProject project) {
-		IFile file = null;
 		IPath path = new Path(filePath);
-		if(path.segmentCount() == 1 && !path.isAbsolute()){
-			// pre - 1.3.8 code used file names only, see bug 2522989
-			file = project.getFile(filePath);
-			if(file != null && file.exists()){
-				path = file.getLocation();
+		if(path.isAbsolute()) {
+			return path;
+		}
+		IPath wspLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		if(project == null) {
+			IPath newPath = wspLocation.append(path);
+			if(newPath.toFile().exists()){
+				return newPath;
+			}
+		} else {
+			// try first project relative location
+			IPath newPath = project.getLocation().append(path);
+			if(newPath.toFile().exists()){
+				return newPath;
+			}
+			// try to resolve relative to workspace (if we use workspace properties for project)
+			newPath = wspLocation.append(path);
+			if(newPath.toFile().exists()){
+				return newPath;
 			}
 		}
+		// something which we have no idea what it can be (or missing/wrong file path)
 		return path;
 	}
+
+	/**
+	 * Checks the given absolute path and convert it to relative path if it is relative to
+	 * the given project or workspace. This representation can be used to store filter
+	 * paths in user preferences file
+	 *
+	 * @param filePath
+	 *            absolute OS file path
+	 * @param project
+	 *            might be null
+	 * @return filter file path as stored in preferences which matches given path
+	 */
+	public static IPath toFilterPath(String filePath, IProject project) {
+		IPath path = new Path(filePath);
+		IPath commonPath;
+		if(project != null){
+			commonPath = project.getLocation();
+		} else {
+			commonPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		}
+		return getRelativePath(path, commonPath);
+	}
+
+	/**
+	 * @param filePath
+	 *            path (eventually absolute) to a file
+	 * @param commonPath
+	 *            absolute path of some common location
+	 * @return path relative to common root if given path is contained under the common
+	 *         directory, otherwise unchanged path
+	 */
+    private static IPath getRelativePath(IPath filePath, IPath commonPath){
+    	// TODO in Eclipse 3.5 we can use IPath.makeRelativeTo(IPath)
+        if (!filePath.isAbsolute()) {
+        	return filePath;
+        }
+		int matchingSegments = commonPath.matchingFirstSegments(filePath);
+		if (matchingSegments == commonPath.segmentCount()) {
+			// cut common prefix and discard device information
+		    filePath = filePath.removeFirstSegments(matchingSegments).setDevice(null);
+		}
+        return filePath;
+    }
 
 	/**
 	 * @return array with required class directories / libs on the classpath

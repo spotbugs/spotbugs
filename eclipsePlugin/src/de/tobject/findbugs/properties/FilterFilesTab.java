@@ -167,8 +167,10 @@ public class FilterFilesTab extends Composite {
 		private void validate() {
 			SelectionValidator validator = new SelectionValidator(kind);
 			IStatus bad = null;
+			IProject project = propertyPage.getProject();
 			for (PathElement path : paths) {
-				IStatus status = validator.validate(path.getPath());
+				String filterPath = FindBugsWorker.toFilterPath(path.getPath(), project).toOSString();
+				IStatus status = validator.validate(filterPath);
 				path.setStatus(status);
 				if(!status.isOK()){
 					bad = status;
@@ -335,7 +337,7 @@ public class FilterFilesTab extends Composite {
 		if (filterPaths != null) {
 			for (String path : filterPaths) {
 				IPath filterPath = FindBugsWorker.getFilterPath(path, project);
-				if(filterPath != null && filterPath.toFile().exists()) {
+				if(filterPath.toFile().exists()) {
 					paths.add(new PathElement(filterPath, Status.OK_STATUS));
 				}
 			}
@@ -344,10 +346,12 @@ public class FilterFilesTab extends Composite {
 	}
 
 
-	private static Set<String> pathsToStrings(List<PathElement> paths) {
+	private Set<String> pathsToStrings(List<PathElement> paths) {
+		IProject project = propertyPage.getProject();
 		Set<String>result = new LinkedHashSet<String>();
 		for (PathElement path : paths) {
-			result.add(path.getPath());
+			IPath filterPath = FindBugsWorker.toFilterPath(path.getPath(), project);
+			result.add(filterPath.toOSString());
 		}
 		return result;
 	}
