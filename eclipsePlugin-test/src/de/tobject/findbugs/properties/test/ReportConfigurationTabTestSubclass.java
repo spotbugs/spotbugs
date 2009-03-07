@@ -43,4 +43,11 @@ public class ReportConfigurationTabTestSubclass extends ReportConfigurationTab {
 		syncSelectedCategories();
 	}
 
+	public void selectBugCategory(String category) {
+		for (Button button : getChkEnableBugCategoryList()) {
+			button.setSelection(button.getData().equals(category));
+		}
+		syncSelectedCategories();
+	}
+
 }

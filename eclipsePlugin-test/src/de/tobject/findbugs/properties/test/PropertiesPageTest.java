@@ -73,13 +73,13 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
 		PropertiesTestDialog dialog = createAndOpenDialog(page);
 
-		// Disable all detectors
+		// Remove all categories
 		page.getReportTab().deselectAllBugCategories();
 
 		// Accept the dialog
 		dialog.okPressed();
 
-		// Check that all detectors are disabled
+		// Check that no categories are selected
 		assertAllBugCategoriesSelected(false);
 	}
 
@@ -145,6 +145,27 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testSelectOneCategory() throws CoreException {
+		// Remove all categories
+		removeAllBugCategories();
+		assertAllBugCategoriesSelected(false);
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenDialog(page);
+
+		// Select one category
+		String category = "BAD_PRACTICE";
+		page.getReportTab().selectBugCategory(category);
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that one category is selected
+		assertOnlySelectedBugCategory(category);
+	}
+
+	@Test
 	public void testSetEffort() throws CoreException {
 		// Reset the effort
 		getProjectPreferences().setEffort(UserPreferences.EFFORT_DEFAULT);
@@ -165,9 +186,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	private void addAllBugCategories() {
-		for (String category : I18N.instance().getBugCategories()) {
-			getProjectPreferences().getFilterSettings().addCategory(category);
-		}
+		getProjectPreferences().getFilterSettings().clearAllCategories();
 	}
 
 	private void assertAllBugCategoriesSelected(boolean enabled) {
@@ -185,6 +204,14 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 				assertEquals(enabled, getProjectPreferences().isDetectorEnabled(
 						detectorFactory));
 			}
+		}
+	}
+
+	private void assertOnlySelectedBugCategory(String categoryName) {
+		for (String currentCategory : I18N.instance().getBugCategories()) {
+			boolean expectedEnablement = currentCategory.equals(categoryName);
+			assertEquals(expectedEnablement, getProjectPreferences().getFilterSettings()
+					.containsCategory(currentCategory));
 		}
 	}
 
@@ -222,5 +249,11 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 	private UserPreferences getProjectPreferences() {
 		return FindbugsPlugin.getProjectPreferences(getProject(), false);
+	}
+
+	private void removeAllBugCategories() {
+		for (String category : I18N.instance().getBugCategories()) {
+			getProjectPreferences().getFilterSettings().removeCategory(category);
+		}
 	}
 }
