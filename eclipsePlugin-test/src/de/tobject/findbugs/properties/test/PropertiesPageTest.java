@@ -205,7 +205,6 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
 		dialog.create();
 		page.enableProjectProperties();
-		page.dontRemindAboutFullBuild();
 		dialog.open();
 		return dialog;
 	}

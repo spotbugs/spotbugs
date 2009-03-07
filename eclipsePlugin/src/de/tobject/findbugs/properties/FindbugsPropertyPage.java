@@ -450,14 +450,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 					needRedisplayMarkers = false;
 				} else {
 					if(!getPreferenceStore().getBoolean(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD)){
-						MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
-								getShell(), "Full FindBugs build required",
-								"FindBugs analysis settings are changed." +
-								"\nConsider to execute FindBugs analysis again.",
-								"Do not show this warning again", false, null, null);
-
-						getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog
-								.getToggleState());
+						remindAboutFullBuild();
 					}
 				}
 			}
@@ -469,6 +462,17 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 			redisplayMarkers();
 		}
 		return true;
+	}
+	
+	protected void remindAboutFullBuild() {
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
+				getShell(), "Full FindBugs build required",
+				"FindBugs analysis settings are changed." +
+				"\nConsider to execute FindBugs analysis again.",
+				"Do not show this warning again", false, null, null);
+
+		getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog
+				.getToggleState());
 	}
 
 	private void redisplayMarkers() {

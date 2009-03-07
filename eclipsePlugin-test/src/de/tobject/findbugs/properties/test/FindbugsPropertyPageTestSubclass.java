@@ -21,7 +21,6 @@ package de.tobject.findbugs.properties.test;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.properties.DetectorConfigurationTab;
 import de.tobject.findbugs.properties.FilterFilesTab;
 import de.tobject.findbugs.properties.FindbugsPropertyPage;
@@ -39,11 +38,6 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 	private ReportConfigurationTabTestSubclass reportTab;
 
 	public FindbugsPropertyPageTestSubclass() {
-	}
-
-	public void dontRemindAboutFullBuild() {
-		getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD,
-				true);
 	}
 
 	public void enableFindBugs(boolean enable) {
@@ -81,5 +75,10 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 	protected ReportConfigurationTab createReportConfigurationTab(TabFolder tabFolder) {
 		reportTab = new ReportConfigurationTabTestSubclass(tabFolder, this, SWT.NONE);
 		return reportTab;
+	}
+
+	@Override
+	protected void remindAboutFullBuild() {
+		// Don't do anything
 	}
 }
