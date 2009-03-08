@@ -92,10 +92,10 @@ public class GroupSelectionDialog extends SelectionDialog {
 		composite.setLayout(new GridLayout(columns, false));
 		GridData layoutData = new GridData(GridData.FILL_BOTH
                 | GridData.GRAB_HORIZONTAL| GridData.GRAB_HORIZONTAL);
-		layoutData.minimumHeight = 100;
-		layoutData.minimumWidth = 150;
+		layoutData.minimumHeight = 200;
+		layoutData.minimumWidth = 250;
 		layoutData.heightHint = 200;
-		layoutData.widthHint = 200;
+		layoutData.widthHint = 250;
 
 		composite.setLayoutData(layoutData);
 
@@ -108,9 +108,9 @@ public class GroupSelectionDialog extends SelectionDialog {
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		TableColumn nameColumn = new TableColumn(table, SWT.NONE);
-		nameColumn.setText("Group Type / Sort Order");
+		nameColumn.setText("Group Visibility / Sort Order");
 		nameColumn.setResizable(true);
-		nameColumn.setWidth(150);
+		nameColumn.setWidth(170);
 		checkList.setContentProvider(new ArrayContentProvider());
 		//		ITableLabelProvider labelProvider= new SeparateTableLabelProvider();
 		//		checkList.setLabelProvider(labelProvider);
@@ -147,6 +147,7 @@ public class GroupSelectionDialog extends SelectionDialog {
 
 		upButton= new Button(composite, SWT.PUSH | SWT.CENTER);
 		upButton.setText("Up");
+		upButton.setEnabled(false);
 		upButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -165,6 +166,7 @@ public class GroupSelectionDialog extends SelectionDialog {
 
 		downButton= new Button(composite, SWT.PUSH | SWT.CENTER);
 		downButton.setText("Down");
+		downButton.setEnabled(false);
 		downButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
