@@ -38,7 +38,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.pde.build;resolution:=optional,
  org.eclipse.core.expressions,
  org.eclipse.ui.views.properties.tabbed,
- findbugs;resolution:=optional
+ findbugs;resolution:=optional;visibility:=reexport
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: de.tobject.findbugs,
