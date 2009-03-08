@@ -46,12 +46,14 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class PropertiesPageTest extends AbstractFindBugsTest {
 
 	private UserPreferences originalProjectPreferences;
+	private UserPreferences originalWorkspacePreferences;
 
 	@Override
 	public void setUp() throws CoreException, IOException {
 		super.setUp();
 
 		// Save the preferences and restore them after the test
+		originalWorkspacePreferences = getWorkspacePreferences();
 		originalProjectPreferences = getProjectPreferences();
 	}
 
@@ -71,7 +73,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Remove all categories
 		page.getReportTab().deselectAllBugCategories();
@@ -91,7 +93,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Disable all detectors
 		page.getDetectorTab().disableAllDetectors();
@@ -104,6 +106,39 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testDisableProjectProperties() throws CoreException {
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+		
+		// Accept the dialog, the plugin should have the project settings enabled
+		dialog.okPressed();
+		assertTrue(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
+
+		// Create another properties page and another dialog
+		page = createProjectPropertiesPage();
+		dialog = createAndOpenProjectPropertiesDialog(page);
+		page.assertProjectSettingsEnabled(true);
+		
+		// Disable the project settings
+		page.enableProjectProperties(false);
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the project settings are disabled
+		assertFalse(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
+
+		// Create the third properties page and dialog, this time the project settings should be disabled
+		page = createProjectPropertiesPage();
+		dialog = createAndOpenProjectPropertiesDialog(page);
+		page.assertProjectSettingsEnabled(false);
+
+		// Accept the dialog
+		dialog.okPressed();
+	}
+
+	@Test
 	public void testEnableFindBugs() throws CoreException {
 		// Reset the nature
 		ProjectUtilities.removeFindBugsNature(getProject(), new NullProgressMonitor());
@@ -111,7 +146,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Enable FindBugs
 		page.enableFindBugs(true);
@@ -131,7 +166,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Enable one detector
 		String detectorShortName = "FindReturnRef";
@@ -145,6 +180,30 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testOpenProjectPreferencePage() throws CoreException {
+		// Create the preferences page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		page.assertProjectControlsVisible(true);
+
+		// Accept the dialog
+		dialog.okPressed();
+	}
+
+	@Test
+	public void testOpenWorkspacePreferencePage() throws CoreException {
+		// Create the preferences page and the dialog
+		FindbugsPropertyPageTestSubclass page = createWorkspacePropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenWorkspacePreferencesDialog(page);
+
+		page.assertProjectControlsVisible(false);
+
+		// Accept the dialog
+		dialog.okPressed();
+	}
+
+	@Test
 	public void testSelectOneCategory() throws CoreException {
 		// Remove all categories
 		removeAllBugCategories();
@@ -152,7 +211,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Select one category
 		String category = "BAD_PRACTICE";
@@ -173,7 +232,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
-		PropertiesTestDialog dialog = createAndOpenDialog(page);
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
 
 		// Set 'max' effort
 		page.setEffort(Effort.MAX);
@@ -228,10 +287,17 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		}
 	}
 
-	private PropertiesTestDialog createAndOpenDialog(FindbugsPropertyPageTestSubclass page) {
+	private PropertiesTestDialog createAndOpenProjectPropertiesDialog(FindbugsPropertyPageTestSubclass page) {
 		PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
 		dialog.create();
-		page.enableProjectProperties();
+		page.enableProjectProperties(true);
+		dialog.open();
+		return dialog;
+	}
+
+	private PropertiesTestDialog createAndOpenWorkspacePreferencesDialog(FindbugsPropertyPageTestSubclass page) {
+		PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
+		dialog.create();
 		dialog.open();
 		return dialog;
 	}
@@ -242,6 +308,11 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		return page;
 	}
 
+	private FindbugsPropertyPageTestSubclass createWorkspacePropertiesPage() {
+		FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
+		return page;
+	}
+
 	private Shell getParentShell() {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		return shell;
@@ -249,6 +320,10 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 	private UserPreferences getProjectPreferences() {
 		return FindbugsPlugin.getProjectPreferences(getProject(), false);
+	}
+
+	private UserPreferences getWorkspacePreferences() {
+		return FindbugsPlugin.getUserPreferences(null);
 	}
 
 	private void removeAllBugCategories() {

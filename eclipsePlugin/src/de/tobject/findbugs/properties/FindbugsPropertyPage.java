@@ -662,6 +662,10 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		return enableProjectCheck;
 	}
 
+	protected ComboViewer getEffortViewer() {
+		return effortViewer;
+	}
+	
 	protected DetectorConfigurationTab createDetectorConfigurationTab(TabFolder parentTabFolder) {
 		return new DetectorConfigurationTab(parentTabFolder, this, SWT.NONE);
 	}
