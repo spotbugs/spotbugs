@@ -1104,7 +1104,7 @@
   <BugPattern abbrev="INT" type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE"    category="CORRECTNESS" />
   <BugPattern abbrev="INT" type="INT_BAD_REM_BY_1"    category="CORRECTNESS" />
   <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON"    category="STYLE" />
-  <BugPattern abbrev="INT" type="INT_VACUOUS_BIT_OPERATION"    category="CORRECTNESS" />
+  <BugPattern abbrev="INT" type="INT_VACUOUS_BIT_OPERATION"    category="STYLE" />
   <BugPattern abbrev="BIT" type="BIT_ADD_OF_SIGNED_BYTE"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_SIGNED_CHECK"    category="BAD_PRACTICE" />
