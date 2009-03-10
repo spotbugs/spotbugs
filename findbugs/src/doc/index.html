@@ -185,28 +185,77 @@
 					</h1>
 					<p> The current version of FindBugs is s @VERSION@.</p>
 
-				
-					<p> Changes since version 1.3.6</p>
+
+                                        <p> Changes since version 1.3.7</p>
 					<ul>
-					<li>Overall, a small bugfix release. 
-					<li>New detection of accidental vacuous/useless calls to EasyMock methods,
-					and of generic signatures that proclaim the use of unhashable classes
-					in ways that require that they be hashed.
-					<li>Eliminate some false positives where we were warning about 
-					    a useless call (e.g., comparing two incompatible types for equality),
-					    but the only thing the code was doing with the result was 
-					    passing it to assertFalse.
-					<li>Japanese localization and manual by K.Hashimoto. (Thanks!)
-					<li>Added -exclude and -outputDir command line options to rejarForAnalysis
-					<li>Extended -adjustPriorities option to FindBugs analysis textui so that you
-						can modify the priorities of individual bug patterns as well as visitors,
-						and also completely suppress individual bug patterns or visitors. 
-						<ul>
-						<li> e.g., -adjustPriority MS_SHOULD_BE_FINAL=suppress,MS_PKGPROTECT=suppress,EI_EXPOSE_REP=suppress,EI_EXPOSE_REP2=suppress,PZLA_PREFER_ZERO_LENGTH_ARRAYS=raise
-						</ul>
-					</ul>
-					
-					<p>
+                                          <li>Primarily another small bugfix release.</li>
+                                          <li>FindBugs base:</li>
+                                            <ul>
+                                              <li>New Reports:</li>
+                                              <ul>
+                                                <li>SF_SWITCH_NO_DEFAULT: missing default case in switch statement.</li>
+                                                <li>SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW: value ignored when switch fallthrough leads to
+                                                thrown exception.</li>
+                                                <li>INT_VACUOUS_BIT_OPERATION: bit operations that don't do any meaningful work.</li>
+                                                <li>FB_UNEXPECTED_WARNING: warning generated that conflicts with @NoWarning FindBugs annotation.</li>
+                                                <li>FB_MISSING_EXPECTED_WARNING: warning not generated despite presence of @ExpectedWarning FindBugs annotation.</li>
+                                                <li>NOISE category: intended for use in data mining experiments.</li>
+                                                <ul>
+                                                  <li>NOISE_NULL_DEREFERENCE: fake null point dereference warning.</li>
+                                                  <li>NOISE_METHOD_CALL:  fake method call warning.</li>
+                                                  <li>NOISE_FIELD_REFERENCE:  fake field dereference warning.</li>
+                                                  <li>NOISE_OPERATION:  fake operation warning.</li>
+                                                </ul>
+                                              </ul>
+                                              <li>Other:</li>
+                                              <ul>
+                                                <li>Garvin Leclaire has created a new Apache Maven repository for FindBugs at
+                                                <a href="http://code.google.com/p/findbugs/">the Google Code FindBugs SVN repository</a>.  (Thanks Garvin!)</li>
+                                              </ul>
+                                              <li>Fixes:</li>
+                                              <ul>
+                                                <li>[ 2317842 ] Highlighting broken in Windows</li>
+                                                <li>[ 2515908 ] check for oddness should track sign of argument</li>
+                                                <li>[ 2487936 ] &quot;L B GC&quot; false pos cast from Map.Entry.getKey() to Map.get()</li>
+                                                <li>[ 2528264 ] Ant tasks not compatible with Ant 1.7.1</li>
+                                                <li>[ 2539590 ] SF_SWITCH_FALLTHROUGH wrong message reported 	</li>
+                                                <li>[ 2020066 ] Bug history displayed in fancy-hist.xsl is incorrect</li>
+                                                <li>[ 2545098 ] Invalid character in analysis results file</li>
+                                                <li>[ 2492673 ] Plugin sites should specify &apos;requires Eclipse 3.3 or newer&apos;</li>
+                                                <li>[ 2588044 ] a tiny typing error</li>
+                                                <li>[ 2589048 ] Documentation for convertXmlToText insufficient</li>
+                                                <li>[ 2638739 ] NullPointerException when building</li>
+                                              </ul>
+                                              <li>Patches:</li>
+                                              <ul>
+                                                <li>[ 2538184 ] Make BugCollection implement Iterable&lt;BugInstance&gt; (thanks to Tomas Pollak)</li>
+                                                <li>[ 2249771 ] Add Maven2 Findbugs plugin link to the Links page (thanks to Garvin Leclaire)</li>
+                                                <li>[ 2609526 ] Japanese manual update (thanks to K. Hashimoto)</li>
+                                                <li>[ 2119482 ] CheckBcel checks for nonexistent classes (thanks to Jerry James)</li>
+                                              </ul>
+                                            </ul>
+                                          <li>FindBugs Eclipse plugin:</li>
+                                            <ul>
+                                              <li>Major feature enhancements (thanks to Andrei Loskutov).
+                                              See <a href="http://andrei.gmxhome.de/findbugs/index.html">this overview</a> for more information.</li>
+                                              <li>Major test improvements (thanks to Tomas Pollak).</li>
+                                              <li>Fixes:</li>
+                                              <ul>
+                                                <li>[ 2532365 ] Compiler warning</li>
+                                                <li>[ 2522989 ] Fix filter files selection</li>
+                                                <li>[ 2504068 ] NullPointerException</li>
+                                                <li>[ 2640849 ] NPE in Eclipse plugin 1.3.7 and Eclipse 3.5 M5</li>
+                                              </ul>
+                                              <li>Patches:</li>
+                                              <ul>
+                                                <li>[ 2143140 ] Unchecked conversion fixes for Eclipse plugin (thanks to Jerry James)
+                                              </ul>
+                                            </ul>
+                                          </ul>
+                                        </ul>
+
+
+                                        <p>
 						<a href="Changes.html">Older versions...</a>
 					</p>
 					
