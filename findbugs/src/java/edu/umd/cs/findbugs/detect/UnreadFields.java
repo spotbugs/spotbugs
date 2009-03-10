@@ -74,6 +74,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 		SourceLineAnnotation sourceLine;
 		}
 
+	public boolean isContainerField(XField f) {
+		return containerFields.contains(f);
+	}
 	Map<XField,HashSet<ProgramPoint> >
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
 	Set<XField> nullTested = new HashSet<XField>();
@@ -222,6 +225,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		super.visit(obj);
 		XField f = XFactory.createXField(this);
 		allMyFields.add(f);
+		String signature = obj.getSignature();
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) == 0
 				&& !getFieldName().equals("serialVersionUID")) {
@@ -230,7 +234,16 @@ public class UnreadFields extends OpcodeStackDetector  {
 			if (obj.getName().equals("_jspx_dependants"))
 				containerFields.add(f);
 		}
+		if (isSeleniumWebElement(signature))
+			containerFields.add(f);
 	}
+	/**
+     * @param signature
+     * @return
+     */
+    public static boolean isSeleniumWebElement(String signature) {
+	    return signature.equals("Lorg/openqa/selenium/RenderedWebElement;") || signature.equals("Lorg/openqa/selenium/WebElement;");
+    }
 
 	@Override
 	public void visitAnnotation(String annotationClass,
