@@ -93,23 +93,31 @@ public class UnionResults {
 				+ " [options] [<results1> <results2> ... <resultsn>] ");
 		
 
-		SortedBugCollection results = new SortedBugCollection();
-		Project project = new Project();
-		results.readXML(argv[argCount++], project);
+		SortedBugCollection results = null;
+		Project project = null;
 		for(int i = argCount; i < argv.length; i++) {
 			try {
-			SortedBugCollection more = new SortedBugCollection();
-			Project newProject = new Project();
-			more.readXML(argv[i], newProject);
-			project.add(newProject);
-			results = union(results, more);
+				SortedBugCollection more = new SortedBugCollection();
+				Project newProject = new Project();
+				more.readXML(argv[i], newProject);
+				if (project != null) {
+					project.add(newProject);
+					results = union(results, more);
+				} else {
+					project = newProject;
+					results = more;
+				}
 			} catch (IOException e) {
 				System.err.println("Trouble reading/parsing " + argv[i]);
-            } catch (DocumentException e) {
-            	System.err.println("Trouble reading/parsing " + argv[i]);
-            }
+			} catch (DocumentException e) {
+				System.err.println("Trouble reading/parsing " + argv[i]);
+			}
 		}
 
+		if (results == null) {
+			System.err.println("No files successfully read");
+			System.exit(1);
+		}
 		results.setWithMessages(commandLine.withMessages);
 		if (commandLine.outputFile == null)
 			results.writeXML(System.out, project);
