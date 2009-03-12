@@ -26,8 +26,10 @@ import org.dom4j.DocumentException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -62,6 +64,8 @@ public class CountByPackagePrefix {
 		else
 			origCollection.readXML(args[1], project);
 		Map<String, Integer> map = new TreeMap<String,Integer>();
+		Map<String, Integer> ncss = new TreeMap<String,Integer>();
+		
 		for(BugInstance b : origCollection.getCollection()) {
 			String prefix = ClassName.extractPackagePrefix(b.getPrimaryClass().getPackageName(), prefixLength);
 			Integer v = map.get(prefix);
@@ -69,8 +73,30 @@ public class CountByPackagePrefix {
 				map.put(prefix,1);
 			else map.put(prefix,v+1);
 		}
+		for(PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
+			String prefix  = ClassName.extractPackagePrefix(ps.getPackageName(), prefixLength);
+
+			Integer v = ncss.get(prefix);
+			if (v == null)
+				ncss.put(prefix, ps.size());
+			else 
+				ncss.put(prefix, v + ps.size());
+			
+		}
 		for(Map.Entry<String,Integer> e : map.entrySet()) {
-			System.out.printf("%4d %s\n",e.getValue(), e.getKey());
+			String prefix = e.getKey();
+			int warnings = e.getValue();
+			if (warnings == 0) 
+				continue;
+			Integer v = ncss.get(prefix);
+			if (v == null || v.intValue() == 0)
+				v = 1;
+
+			int density = warnings * 1000000 / v;
+			if (warnings < 3 || v < 2000)
+				System.out.printf("%4s %4d %4d %s\n"," ", warnings, v/1000, prefix);
+			else
+				System.out.printf("%4d %4d %4d %s\n",density, warnings, v/1000, prefix);
 		}
 		
 
