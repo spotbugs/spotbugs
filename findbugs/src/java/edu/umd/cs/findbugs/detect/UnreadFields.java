@@ -267,7 +267,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 				|| annotationClass.startsWith("javax.persistence")
 				|| annotationClass.endsWith("SpringBean")
 				|| annotationClass.equals("com.google.inject.Inject")
-				|| annotationClass.startsWith("org.nuxeo.common.xmap.annotation"))
+				|| annotationClass.startsWith("org.nuxeo.common.xmap.annotation")
+				|| annotationClass.startsWith("com.google.gwt.uibinder.client"))
 			return true;
 		int lastDot = annotationClass.lastIndexOf('.');
 		String lastPart = annotationClass.substring(lastDot+1);
