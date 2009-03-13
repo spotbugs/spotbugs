@@ -806,7 +806,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 				&& getNameConstantOperand().equals("toString")
 				&& getSigConstantOperand().equals("()Ljava/lang/String;")) {
 
-				accumulator.accumulateBug(new BugInstance(this, "DM_STRING_TOSTRING", NORMAL_PRIORITY)
+				accumulator.accumulateBug(new BugInstance(this, "DM_STRING_TOSTRING", LOW_PRIORITY)
 						.addClassAndMethod(this), this);
 			
 		}
