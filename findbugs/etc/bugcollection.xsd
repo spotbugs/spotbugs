@@ -388,6 +388,7 @@
 			<xs:enumeration value="MOSTLY_HARMLESS"/>
 			<xs:enumeration value="SHOULD_FIX"/>
 			<xs:enumeration value="MUST_FIX"/>
+			<xs:enumeration value="OBSOLETE_CODE"/>
 		</xs:restriction>
 	</xs:simpleType>
 

@@ -348,6 +348,8 @@ public class I18N {
 				case 'N': if ("NEEDS_STUDY".equals(key)) return -22;
 						  if ("NOT_A_BUG".equals(key)) return -15;
 						  break;
+				case 'O': if ("OBSOLETE_CODE".equals(key)) return 30;
+				  		break;
 				case 'M': if ("MOSTLY_HARMLESS".equals(key)) return -10;
 						  if ("MUST_FIX".equals(key)) return 10;
 						  break;
