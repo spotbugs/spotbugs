@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.net.URLDecoder;
+
 /**
  * @author pugh
  */
@@ -77,11 +79,16 @@ public class SystemProperties {
 	 * @return string value (or null if the property does not exist)
 	 */
 	public static String getProperty(String arg0) {
+		String value = null;
 		try {
-		return System.getProperty(arg0);
+			value = System.getProperty(arg0);
+			String urlEncoded = "URLENCODED:";
+			if (value.startsWith(urlEncoded))
+				value = URLDecoder.decode(value.substring(urlEncoded.length()), "UTF-8");
 		} catch (Exception e) {
-			return null;
+			assert true;
 		}
+		return value;
 	}
 
 	/**
