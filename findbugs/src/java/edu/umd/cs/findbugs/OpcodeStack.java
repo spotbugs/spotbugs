@@ -2387,47 +2387,53 @@ public void initialize() {
 				newValue = new Item("I", lhsValue % rhsValue);
 			else if (seen == IUSHR)
 				newValue = new Item("I", lhsValue >>> rhsValue);
-			} else if (rhs.getConstant() != null && (seen == ISHL || seen == ISHR || seen == IUSHR)) { 
-				int constant = (Integer) rhs.getConstant();
-				if ((constant & 0x1f) == 0)
-					newValue = new Item(lhs);
-				else if (seen == ISHL && (constant & 0x1f) >= 8)
-					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-			} else if (lhs.getConstant() != null && seen == IAND) {
-				int value = (Integer) lhs.getConstant();
-				if (value == 0)
+		} else if ((seen == ISHL || seen == ISHR || seen == IUSHR)) { 
+			if (rhs.getConstant() != null) {
+			int constant = (Integer) rhs.getConstant();
+			if ((constant & 0x1f) == 0)
+				newValue = new Item(lhs);
+			else if (seen == ISHL && (constant & 0x1f) >= 8)
+				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
+			} else if (lhs.getConstant() != null) {
+				int constant = (Integer) lhs.getConstant();
+				if (constant == 0)
 					newValue = new Item("I", 0);
-				else if ((value & 0xff) == 0)
-					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-				else if (value >= 0)
-					newValue.setSpecialKind(Item.NON_NEGATIVE);
-			} else if (rhs.getConstant() != null && seen == IAND) {
-				int value = (Integer) rhs.getConstant();
-				if (value == 0)
-					newValue = new Item("I", 0);
-				else if ((value & 0xff) == 0)
-					newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-				else if (value >= 0)
-					newValue.setSpecialKind(Item.NON_NEGATIVE);
-			} else if (seen == IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
-				newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
-				newValue.setPC(lhs.getPC());
-			} else if (seen == IAND && rhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
-				newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
-				newValue.setPC(rhs.getPC());
-			} else if (seen == IOR && lhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
-				newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
-				newValue.setPC(lhs.getPC());
-			} else if (seen == IOR && rhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
-				newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
-				newValue.setPC(rhs.getPC());
 			}
-			} catch (ArithmeticException e) {
-				assert true; // ignore it
-			} catch (RuntimeException e) {
-			String msg = "Error processing2 " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
-			AnalysisContext.logError(msg , e);
-			
+		} else if (lhs.getConstant() != null && seen == IAND) {
+			int value = (Integer) lhs.getConstant();
+			if (value == 0)
+				newValue = new Item("I", 0);
+			else if ((value & 0xff) == 0)
+				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
+			else if (value >= 0)
+				newValue.setSpecialKind(Item.NON_NEGATIVE);
+		} else if (rhs.getConstant() != null && seen == IAND) {
+			int value = (Integer) rhs.getConstant();
+			if (value == 0)
+				newValue = new Item("I", 0);
+			else if ((value & 0xff) == 0)
+				newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
+			else if (value >= 0)
+				newValue.setSpecialKind(Item.NON_NEGATIVE);
+		} else if (seen == IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+			newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
+			newValue.setPC(lhs.getPC());
+		} else if (seen == IAND && rhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+			newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
+			newValue.setPC(rhs.getPC());
+		} else if (seen == IOR && lhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+			newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
+			newValue.setPC(lhs.getPC());
+		} else if (seen == IOR && rhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+			newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
+			newValue.setPC(rhs.getPC());
+		}
+		 } catch (ArithmeticException e) {
+			 assert true; // ignore it
+		 } catch (RuntimeException e) {
+			 String msg = "Error processing2 " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in " + dbc.getFullyQualifiedMethodName();
+			 AnalysisContext.logError(msg , e);
+
 		 }
 		if (lhs.getSpecialKind() == Item.INTEGER_SUM && rhs.getConstant() != null ) {
 			int rhsValue = (Integer) rhs.getConstant();

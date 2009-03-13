@@ -167,8 +167,13 @@ private void checkForSelfOperation(int opCode, String op) {
 					"SA_FIELD_SELF_" + op, NORMAL_PRIORITY)
 			.addClassAndMethod(this).addField(field0), this);
 
-
-		else if (opCode == ISUB  && registerLoadCount >= 2) { // let FindSelfComparison2 report this; more accurate
+		else if (opCode == IXOR && item0.equals(item1)) {
+			bugAccumulator.accumulateBug(new BugInstance(this,
+					"SA_LOCAL_SELF_" + op,  HIGH_PRIORITY)
+			.addClassAndMethod(this).add(
+					LocalVariableAnnotation
+					.getLocalVariableAnnotation(this, item0)),this);
+		} else if (opCode == ISUB  && registerLoadCount >= 2) { // let FindSelfComparison2 report this; more accurate
 			bugAccumulator.accumulateBug(new BugInstance(this,
 					"SA_LOCAL_SELF_" + op, (opCode == ISUB || opCode == LSUB  || opCode == INVOKEINTERFACE || opCode == INVOKEVIRTUAL) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 			.addClassAndMethod(this).add(

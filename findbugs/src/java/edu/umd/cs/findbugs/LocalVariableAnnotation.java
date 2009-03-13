@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.util.EditDistance;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -280,6 +281,12 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	   return getLocalVariableAnnotation(method, reg, pc, item.getPC());
 	   
     }
+    public static @CheckForNull LocalVariableAnnotation getLocalVariableAnnotation(DismantleBytecode visitor, Item item) {
+ 	   int reg = item.getRegisterNumber();
+ 	   if (reg < 0) return null;
+ 	   return getLocalVariableAnnotation(visitor.getMethod(), reg, visitor.getPC(), item.getPC());
+ 	   
+     }
     
 	public static @CheckForNull
 	LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String name, String signature) {

@@ -258,7 +258,9 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					valueOfConstantArgumentToShift = ((Integer) rightHandSide);
 					if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
 						bugAccumulator.accumulateBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
-								valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : HIGH_PRIORITY)
+								valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY 
+										: (valueOfConstantArgumentToShift == 32 && getMethodName().equals("hashCode") 
+												? NORMAL_PRIORITY : HIGH_PRIORITY))
 						.addClassAndMethod(this)
 						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT), this);
 				}

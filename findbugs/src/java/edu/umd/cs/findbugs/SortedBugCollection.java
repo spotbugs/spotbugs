@@ -274,8 +274,9 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			Profiler.getInstance().end(handler.getClass());
 		}
-		if (userAnnotationPlugin != null)
-			userAnnotationPlugin.loadUserAnnotations(this);
+		UserAnnotationPlugin plugin = getUserAnnotationPlugin();
+		if (plugin != null)
+			plugin.loadUserAnnotations(this);
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}
