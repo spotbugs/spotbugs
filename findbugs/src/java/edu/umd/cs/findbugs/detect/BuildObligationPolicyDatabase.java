@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
+import edu.umd.cs.findbugs.annotations.CreatesObligation;
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntryType;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
@@ -42,6 +45,11 @@ import edu.umd.cs.findbugs.util.RegexStringMatcher;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.annotation.WillClose;
+import javax.annotation.WillCloseWhenClosed;
+import javax.annotation.WillNotClose;
+
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -78,12 +86,13 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	
 	public BuildObligationPolicyDatabase(BugReporter bugReporter) {
 		this.reporter = bugReporter;
-		this.willClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillClose");
-		this.willNotClose = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillNotClose");
-		this.willCloseWhenClosed = DescriptorFactory.instance().getClassDescriptor("javax/annotation/WillCloseWhenClosed");
-		this.cleanupObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CleanupObligation");
-		this.createsObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/CreatesObligation");
-		this.dischargesObligation = DescriptorFactory.instance().getClassDescriptor("edu/umd/cs/findbugs/annotations/DischargesObligation");
+		final DescriptorFactory instance = DescriptorFactory.instance();
+		this.willClose = instance.getClassDescriptor(WillClose.class);
+		this.willNotClose = instance.getClassDescriptor(WillNotClose.class);
+		this.willCloseWhenClosed = instance.getClassDescriptor(WillCloseWhenClosed.class);
+		this.cleanupObligation = instance.getClassDescriptor(CleanupObligation.class);
+		this.createsObligation = instance.getClassDescriptor(CreatesObligation.class);
+		this.dischargesObligation = instance.getClassDescriptor(DischargesObligation.class);
 	
 		database = new ObligationPolicyDatabase();
 		addBuiltInPolicies();
