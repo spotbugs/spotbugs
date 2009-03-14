@@ -21,6 +21,7 @@ Export-Package: edu.umd.cs.findbugs,
  edu.umd.cs.findbugs.ba,
  edu.umd.cs.findbugs.classfile,
  edu.umd.cs.findbugs.config,
+ edu.umd.cs.findbugs.log,
  edu.umd.cs.findbugs.workflow,
  org.dom4j
 Require-Bundle: org.apache.ant

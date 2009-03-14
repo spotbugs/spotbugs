@@ -203,10 +203,18 @@ public class Profiler implements XMLWriteable {
 		} catch (RuntimeException e) {
 			System.err.println(e);
 		} finally {
-			profile.clear();
-			startTimes.get().clear();
+			clear();
 		}
 	}
+
+	/**
+	 * Clears the previously accumulated data. This method is public because it can be 
+	 * accessed from clients (like Eclipse)  
+	 */
+	public void clear() {
+	    profile.clear();
+	    startTimes.get().clear();
+    }
 
 	Profile getProfile(Class<?> c) {
 		Profile result = profile.get(c);
