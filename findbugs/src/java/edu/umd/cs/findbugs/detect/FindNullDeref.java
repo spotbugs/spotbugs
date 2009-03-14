@@ -1173,6 +1173,20 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				|| instruction.getOpcode() == Constants.GOTO_W;
 	}
 
+	int minPC(Collection<Location> locs) {
+		int result = 1000000;
+		for(Location l : locs) 
+			if (result > l.getHandle().getPosition())
+				result = l.getHandle().getPosition();
+		return result;
+	}
+	int maxPC(Collection<Location> locs) {
+		int result = -1000000;
+		for(Location l : locs) 
+			if (result < l.getHandle().getPosition())
+				result = l.getHandle().getPosition();
+		return result;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1225,6 +1239,13 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		
 		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
+
+		int distance1 = minPC(derefLocationSet) - maxPC(assignedNullLocationSet);
+		int distance2 = minPC(derefLocationSet) - maxPC(doomedLocations);
+		int distance = Math.max(distance1, distance2);
+		if (false)
+		System.out.printf("%9d %9d %9d RANGE %s.%s%s\n",distance, distance1, distance2, classContext.getClassDescriptor().toDottedClassName(),
+				 method.getName() ,method.getSignature());
 
 		// Create BugInstance
 
@@ -1333,6 +1354,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		
 		
 		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
+		
+		if (!assignedNullLocationSet.isEmpty() && distance > 100)
+			propertySet.addProperty(NullDerefProperty.LONG_RANGE_NULL_SOURCE);
 		
 		propertySet.decorateBugInstance(bugInstance);
 		
