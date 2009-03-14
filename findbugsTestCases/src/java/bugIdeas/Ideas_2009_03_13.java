@@ -1,5 +1,8 @@
 package bugIdeas;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Ideas_2009_03_13 {
 
 	static void checkNotNull(Object o) {
@@ -21,6 +24,15 @@ public class Ideas_2009_03_13 {
 			return x.hashCode();
 		}
 		return 42;
+	}
+	
+	Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+	
+	int noisyBug(String x) {
+		return map.get(x);
+	}
+	Integer silentBug(String x) {
+		return map.get(x);
 	}
 
 }
