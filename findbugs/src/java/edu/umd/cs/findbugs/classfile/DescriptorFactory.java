@@ -94,6 +94,11 @@ public class DescriptorFactory {
 		 dottedClassDescriptorMap.remove(c.getClassName().replace('/','.'));
 		}
 	}
+	
+	public @Nonnull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
+		return getClassDescriptorForDottedClassName(actualClass.getName());
+	}
+
 	/**
 	 * Get a ClassDescriptor for a class name in VM (slashed) format.
 	 *
