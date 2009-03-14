@@ -35,6 +35,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -1881,7 +1883,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (annotation == null) return this;
 		return add(annotation).describe(role);
 	}
-	public BugInstance add(BugAnnotation annotation) {
+	public BugInstance add(@Nonnull BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");
 
