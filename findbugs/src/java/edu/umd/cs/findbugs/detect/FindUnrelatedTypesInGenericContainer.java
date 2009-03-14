@@ -68,6 +68,8 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
@@ -83,6 +85,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.props.GeneralWarningProperty;
+import edu.umd.cs.findbugs.props.WarningProperty;
+import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
@@ -389,7 +394,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						}
 					}
 				}
-				
+				boolean noisy = false;
+				if (invokedMethodName.equals("get")) {
+					UnconditionalValueDerefDataflow unconditionalValueDerefDataflow = classContext
+			        .getUnconditionalValueDerefDataflow(method);
+			
+					UnconditionalValueDerefSet unconditionalDeref 
+					= unconditionalValueDerefDataflow.getFactAtLocation(location);
+					ValueNumberFrame vnAfter= vnDataflow.getFactAfterLocation(location);
+					ValueNumber top = vnAfter.getTopValue();
+					noisy = unconditionalDeref.getValueNumbersThatAreUnconditionallyDereferenced().contains(top);
+				}
 				// Prepare bug report
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
 				        sourceFile, handle);
@@ -454,14 +469,23 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					
 					bugPattern = "GC_UNCHECKED_TYPE_IN_GENERIC_CALL";
 				}
-				accumulator.accumulateBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen,
+					
+				
+				BugInstance bug = new BugInstance(this, bugPattern, priority).addClassAndMethod(methodGen,
 				        sourceFile).addFoundAndExpectedType(actualType, expectedType).addCalledMethod(
 				        methodGen, (InvokeInstruction) ins)
 				        .addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 								location, objectVN, vnFrame, "INVOKED_ON"))
 								.addOptionalAnnotation(ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 										location, argVN, vnFrame, "ARGUMENT"))
-										.addEqualsMethodUsed(targets), sourceLineAnnotation);
+										.addEqualsMethodUsed(targets);
+				if (noisy) {
+					WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+					
+					propertySet.addProperty(GeneralWarningProperty.NOISY_BUG);
+					propertySet.decorateBugInstance(bug);
+				}
+				accumulator.accumulateBug(bug, sourceLineAnnotation);
 			}
 		}
 		accumulator.reportAccumulatedBugs();

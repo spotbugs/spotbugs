@@ -59,5 +59,9 @@ public class GeneralWarningProperty extends AbstractWarningProperty {
 	
 	public static final GeneralWarningProperty FALSE_POSITIVE =
 		new GeneralWarningProperty("FALSE_POSITIVE", PriorityAdjustment.FALSE_POSITIVE);
+	public static final GeneralWarningProperty NOISY_BUG =
+		new GeneralWarningProperty("NOISY_BUG", PriorityAdjustment.AT_MOST_MEDIUM);
+	public static final GeneralWarningProperty SILENT_BUG =
+		new GeneralWarningProperty("SILENT_BUG", PriorityAdjustment.NO_ADJUSTMENT);
 
 }
