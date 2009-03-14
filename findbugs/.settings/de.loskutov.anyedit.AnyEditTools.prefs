@@ -11,5 +11,5 @@ replaceAllSpaces=false
 replaceAllTabs=false
 saveAndAddLine=true
 saveAndConvert=false
-saveAndTrim=true
-useModulo4Tabs=false
+saveAndTrim=false
+useModulo4Tabs=true
