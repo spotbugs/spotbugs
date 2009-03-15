@@ -44,6 +44,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.actions,
  de.tobject.findbugs.builder,
+ de.tobject.findbugs.decorators,
  de.tobject.findbugs.marker,
  de.tobject.findbugs.preferences,
  de.tobject.findbugs.properties,
