@@ -21,6 +21,7 @@ package de.tobject.findbugs.properties.test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -55,14 +56,127 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		// Save the preferences and restore them after the test
 		originalWorkspacePreferences = getWorkspacePreferences();
 		originalProjectPreferences = getProjectPreferences();
+
+		// Enable project settings
+		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
 	}
 
 	@Override
 	public void tearDown() throws CoreException {
 		// Restore the preferences to the original state
 		FindbugsPlugin.saveUserPreferences(getProject(), originalProjectPreferences);
+		FindbugsPlugin.saveUserPreferences(null, originalWorkspacePreferences);
 
 		super.tearDown();
+	}
+
+	@Test
+	public void testAddFileToConflictingFilters() throws CoreException {
+		// Check that there are no filter files
+		assertNoFilterFiles();
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Add a file to the include and exclude filters
+		page.getFilterTab().addFileToIncludeFilter(getFilterFileLocation());
+		page.getFilterTab().addFileToExcludeFilter(getFilterFileLocation());
+
+		// Assert that there is an error message
+		assertNotNull(page.getErrorMessage());
+		
+		// Close the dialog
+		dialog.cancelPressed();
+	}
+
+	@Test
+	public void testAddFileToExcludeBugsFilter() throws CoreException {
+		// Check that there are no filter files
+		assertNoFilterFiles();
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Add a file to the exclude bugs filters
+		page.getFilterTab().addFileToExcludeBugsFilter(getBugsFileLocation());
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the file was added to the filter
+		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
+		assertSelectedFilter(getBugsFileProjectRelativePath(), getProjectPreferences()
+				.getExcludeBugsFiles());
+	}
+
+	@Test
+	public void testAddFileToExcludeFilter() throws CoreException {
+		// Check that there are no filter files
+		assertNoFilterFiles();
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Add a file to the exclude filters
+		page.getFilterTab().addFileToExcludeFilter(getFilterFileLocation());
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the file was added to the filter
+		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
+		assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
+				.getExcludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
+	}
+
+	@Test
+	public void testAddFileToExcludeFilterTwice() throws CoreException {
+		// Check that there are no filter files
+		assertNoFilterFiles();
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Add a file to the exclude filters twice
+		page.getFilterTab().addFileToExcludeFilter(getFilterFileLocation());
+		page.getFilterTab().addFileToExcludeFilter(getFilterFileLocation());
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the file was added to the filter only once
+		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
+		assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
+				.getExcludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
+	}
+
+	@Test
+	public void testAddFileToIncludeFilter() throws CoreException {
+		// Check that there are no filter files
+		assertNoFilterFiles();
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Add a file to the include filters
+		page.getFilterTab().addFileToIncludeFilter(getFilterFileLocation());
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that the file was added to the filter
+		assertSelectedFilter(getFilterFileProjectRelativePath(), getProjectPreferences()
+				.getIncludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
 	}
 
 	@Test
@@ -110,7 +224,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
 		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
-		
+
 		// Accept the dialog, the plugin should have the project settings enabled
 		dialog.okPressed();
 		assertTrue(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
@@ -119,7 +233,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		page = createProjectPropertiesPage();
 		dialog = createAndOpenProjectPropertiesDialog(page);
 		page.assertProjectSettingsEnabled(true);
-		
+
 		// Disable the project settings
 		page.enableProjectProperties(false);
 
@@ -129,7 +243,8 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		// Check that the project settings are disabled
 		assertFalse(FindbugsPlugin.isProjectSettingsEnabled(getProject()));
 
-		// Create the third properties page and dialog, this time the project settings should be disabled
+		// Create the third properties page and dialog, this time the project settings
+		// should be disabled
 		page = createProjectPropertiesPage();
 		dialog = createAndOpenProjectPropertiesDialog(page);
 		page.assertProjectSettingsEnabled(false);
@@ -204,6 +319,31 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testRemoveFileFromExcludeFilter() throws CoreException {
+		// Set the initial preferences with one filter
+		setFilterFile();
+
+		// Check that the filters are populated
+		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
+		assertSelectedFilter(getFilterFileLocation(), getProjectPreferences()
+				.getExcludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Remove the files from the exclude filters
+		page.getFilterTab().removeFilesFromExcludeFilter();
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check that there are no filter files
+		assertNoFilterFiles();
+	}
+
+	@Test
 	public void testSelectOneCategory() throws CoreException {
 		// Remove all categories
 		removeAllBugCategories();
@@ -266,6 +406,16 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		}
 	}
 
+	private void assertEmptyFilter(Collection<String> filters) {
+		assertTrue(filters.isEmpty());
+	}
+
+	private void assertNoFilterFiles() {
+		assertEmptyFilter(getProjectPreferences().getIncludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeFilterFiles());
+		assertEmptyFilter(getProjectPreferences().getExcludeBugsFiles());
+	}
+
 	private void assertOnlySelectedBugCategory(String categoryName) {
 		for (String currentCategory : I18N.instance().getBugCategories()) {
 			boolean expectedEnablement = currentCategory.equals(categoryName);
@@ -287,7 +437,14 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		}
 	}
 
-	private PropertiesTestDialog createAndOpenProjectPropertiesDialog(FindbugsPropertyPageTestSubclass page) {
+	private void assertSelectedFilter(String expectedFilter,
+			Collection<String> actualFilters) {
+		assertEquals(1, actualFilters.size());
+		assertTrue(actualFilters.contains(expectedFilter));
+	}
+
+	private PropertiesTestDialog createAndOpenProjectPropertiesDialog(
+			FindbugsPropertyPageTestSubclass page) {
 		PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
 		dialog.create();
 		page.enableProjectProperties(true);
@@ -295,7 +452,8 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		return dialog;
 	}
 
-	private PropertiesTestDialog createAndOpenWorkspacePreferencesDialog(FindbugsPropertyPageTestSubclass page) {
+	private PropertiesTestDialog createAndOpenWorkspacePreferencesDialog(
+			FindbugsPropertyPageTestSubclass page) {
 		PropertiesTestDialog dialog = new PropertiesTestDialog(getParentShell(), page);
 		dialog.create();
 		dialog.open();
@@ -311,6 +469,15 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	private FindbugsPropertyPageTestSubclass createWorkspacePropertiesPage() {
 		FindbugsPropertyPageTestSubclass page = new FindbugsPropertyPageTestSubclass();
 		return page;
+	}
+
+	private String getBugsFileProjectRelativePath() {
+		return getProject().findMember(BUGS_XML_FILE).getProjectRelativePath()
+				.toOSString();
+	}
+
+	private String getFilterFileProjectRelativePath() {
+		return getProject().findMember(FILTER_FILE).getProjectRelativePath().toOSString();
 	}
 
 	private Shell getParentShell() {

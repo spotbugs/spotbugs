@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -82,14 +83,14 @@ public class FilterFilesTab extends Composite {
 		}
 	}
 
-	private final class FilterProvider extends SelectionAdapter implements IStructuredContentProvider {
+	protected class FilterProvider extends SelectionAdapter implements IStructuredContentProvider {
 
-		private final List<PathElement> paths;
+		protected final List<PathElement> paths;
 		private final FilterKind kind;
 		private final Control control;
 		private final ListViewer viewer;
 
-		private FilterProvider(ListViewer viewer, FilterKind kind) {
+		protected FilterProvider(ListViewer viewer, FilterKind kind) {
 			this.paths = new ArrayList<PathElement>();
 			this.viewer = viewer;
 			this.control = viewer.getList();
@@ -104,7 +105,27 @@ public class FilterFilesTab extends Composite {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			FileDialog dialog = new FileDialog(e.display.getActiveShell(), SWT.OPEN | SWT.MULTI);
+			addFiles(e.display.getActiveShell());
+		}
+		
+		public void addFiles(Shell parentShell) {
+			FileDialog dialog = createFileDialog(parentShell);
+
+			// The validator checks to see if the user's selection
+			// is valid given the type of the object selected (e.g.
+			// it can't be a folder) and the objects that have
+			// already been selected
+			String pathStr = openFileDialog(dialog);
+			if (pathStr == null) {
+				return;
+			}
+			addSelectedPaths(dialog);
+			applyToPreferences();
+			validateAllFilters();
+		}
+		
+		private FileDialog createFileDialog(Shell parentShell) {
+			FileDialog dialog = new FileDialog(parentShell, SWT.OPEN | SWT.MULTI);
 			dialog.setFilterExtensions(new String[]{"*.xml"});
 			dialog.setText(getMessage(kind.propertyName) + ": select xml file(s) containing filters");
 
@@ -114,18 +135,24 @@ public class FilterFilesTab extends Composite {
 				filterPath = lastUsed.toOSString();
 				dialog.setFilterPath(filterPath);
 			}
+			return dialog;
+		}
+		
+		protected String openFileDialog(FileDialog dialog) {
+			return dialog.open();
+		}
 
-			// The validator checks to see if the user's selection
-			// is valid given the type of the object selected (e.g.
-			// it can't be a folder) and the objects that have
-			// already been selected
-			String pathStr = dialog.open();
-			if (pathStr == null) {
-				return;
-			}
-			setLastUsedPath(lastUsed);
-			String[] names = dialog.getFileNames();
-			filterPath = dialog.getFilterPath();
+		protected String[] getFileNames(FileDialog dialog) {
+			return dialog.getFileNames();
+		}
+
+		protected String getFilterPath(FileDialog dialog) {
+			return dialog.getFilterPath();
+		}
+		
+		private void addSelectedPaths(FileDialog dialog) {
+			String[] names = getFileNames(dialog);
+			String filterPath = getFilterPath(dialog);
 			for (String fileName : names) {
 				IPath path = new Path(filterPath).append(fileName);
 				PathElement pathElt = new PathElement(path, Status.OK_STATUS);
@@ -133,8 +160,6 @@ public class FilterFilesTab extends Composite {
 					paths.add(pathElt);
 				}
 			}
-			applyToPreferences();
-			validateAllFilters();
 		}
 
 		public void dispose() {
@@ -193,7 +218,7 @@ public class FilterFilesTab extends Composite {
 		}
 	}
 
-	private static final class PathElement {
+	protected static final class PathElement {
 
 		private final IPath path;
 		private IStatus status;
@@ -296,7 +321,7 @@ public class FilterFilesTab extends Composite {
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 
-		final FilterProvider contentProvider = new FilterProvider(viewer, kind);
+		final FilterProvider contentProvider = createFilterProvider(viewer, kind);
 		viewer.setContentProvider(contentProvider);
 		final Button addButton = new Button(tableComposite, SWT.PUSH);
 		String addButtonLabel = getMessage(kind.propertyName + "addbutton");
@@ -330,6 +355,10 @@ public class FilterFilesTab extends Composite {
 		return contentProvider;
 	}
 
+	protected FilterProvider createFilterProvider(ListViewer viewer, FilterKind kind) {
+		return new FilterProvider(viewer, kind);
+	}
+
 	private List<PathElement> getFilterFiles(FilterKind kind, UserPreferences prefs) {
 		IProject project = propertyPage.getProject();
 		final List<PathElement> paths = new ArrayList<PathElement>();
@@ -356,7 +385,7 @@ public class FilterFilesTab extends Composite {
 		return result;
 	}
 
-	private enum FilterKind {
+	protected enum FilterKind {
 		INCLUDE("property.includefilter") {
 			@Override
 			Collection<String> selectedPaths(UserPreferences u) {
@@ -440,5 +469,17 @@ public class FilterFilesTab extends Composite {
 		filterExclBugs.setFilters(prefs);
 		filterIncl.setFilters(prefs);
 		validateAllFilters();
+	}
+	
+	protected FilterProvider getFilterIncl() {
+		return filterIncl;
+	}
+	
+	protected FilterProvider getFilterExcl() {
+		return filterExcl;
+	}
+	
+	protected FilterProvider getFilterExclBugs() {
+		return filterExclBugs;
 	}
 }
