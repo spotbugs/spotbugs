@@ -39,7 +39,6 @@ import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -51,10 +50,12 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * A dataflow analysis to detect potential null pointer dereferences.
@@ -76,6 +77,8 @@ public class IsNullValueAnalysis
 	private MethodGen methodGen;
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
+	private TypeDataflow typeDataflow;
+	
 	private CFG cfg;
 	private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
 	private final boolean trackValueNumbers;
@@ -86,8 +89,8 @@ public class IsNullValueAnalysis
 
 	private JavaClassAndMethod classAndMethod;
 
-	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
-							   AssertionMethods assertionMethods) {
+	public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
+							   TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
 		super(dfs);
 
 		this.trackValueNumbers = AnalysisContext.currentAnalysisContext().getBoolProperty(
@@ -98,8 +101,9 @@ public class IsNullValueAnalysis
 				methodGen.getConstantPool(),
 				assertionMethods,
 				vnaDataflow,
-				trackValueNumbers);
+				typeDataflow, trackValueNumbers);
 		this.vnaDataflow = vnaDataflow;
+		this.typeDataflow = typeDataflow;
 		this.cfg = cfg;
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
 

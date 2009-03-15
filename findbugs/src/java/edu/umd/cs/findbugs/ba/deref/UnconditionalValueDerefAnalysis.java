@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -288,24 +291,40 @@ public class UnconditionalValueDerefAnalysis extends
 			Location location,
 			ValueNumberFrame vnaFrame,
 			UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		ConstantPoolGen constantPool = methodGen.getConstantPool();
+		
+		for(ValueNumber vn : checkUnconditionalDerefDatabase(location, vnaFrame, constantPool, 
+					invDataflow.getFactAtLocation(location), typeDataflow))
+				fact.addDeref(vn, location);
+	}
+	public static Set<ValueNumber> checkUnconditionalDerefDatabase(
+			Location location,
+			ValueNumberFrame vnaFrame, ConstantPoolGen constantPool,
+			 @CheckForNull IsNullValueFrame invFrame,
+			 TypeDataflow typeDataflow
+		) throws DataflowAnalysisException {
+		if (invFrame != null && !invFrame.isValid())
+			return Collections.emptySet();
+		
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 
-		SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
+		SignatureParser sigParser = new SignatureParser(inv.getSignature(constantPool));
 		int numParams = sigParser.getNumParameters();
-		if (numParams == 0 || !sigParser.hasReferenceParameters()) return;
+		if (numParams == 0 || !sigParser.hasReferenceParameters()) 
+			return Collections.emptySet();
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		if (database == null) {
 			if (DEBUG_CHECK_CALLS) 
 				System.out.println("no database!");
-			return;
+			return Collections.emptySet();
 		}
 
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		if (!typeFrame.isValid()) {
 			if (DEBUG_CHECK_CALLS) 
 				System.out.println("invalid type frame!");
-			return;
+			return Collections.emptySet();
 		}
 
 
@@ -313,9 +332,10 @@ public class UnconditionalValueDerefAnalysis extends
 			Set<XMethod> targetSet = Hierarchy2.resolveMethodCallTargets(
 					inv,
 					typeFrame,
-					methodGen.getConstantPool());
+					constantPool);
 
-			if (targetSet.isEmpty()) return;
+			if (targetSet.isEmpty()) 	
+				return Collections.emptySet();
 
 
 			if (DEBUG_CHECK_CALLS) System.out.println("target set size: " + targetSet.size());
@@ -331,7 +351,7 @@ public class UnconditionalValueDerefAnalysis extends
 					// assume it doesn't dereference anything
 					if (DEBUG_CHECK_CALLS) 
 						System.out.println("==> no information, assume no guaranteed dereferences");
-					return;
+					return Collections.emptySet();
 				}
 
 				if (DEBUG_CHECK_CALLS) {
@@ -347,31 +367,31 @@ public class UnconditionalValueDerefAnalysis extends
 
 			if (derefParamSet == null || derefParamSet.isEmpty()) {
 				if (DEBUG) System.out.println("** Nothing");
-				return;
+				return Collections.emptySet();
 			}
 			if (DEBUG_CHECK_CALLS) {
 				System.out.println("** Summary of call @ " + location.getHandle().getPosition() 
 						+ ": " + derefParamSet);
 			}
 
-			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 
-			if (invFrame != null && invFrame.isValid()) {
+				HashSet<ValueNumber> requiredToBeNonnull = new HashSet<ValueNumber>();
 				for (int i = 0; i < numParams; i++) {
 					if (!derefParamSet.isNonNull(i)) {
 						continue;
 					}
 						int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
-					if (!reportDereference(invFrame, argSlot)) continue;
+					if (invFrame != null && !reportDereference(invFrame, argSlot)) continue;
 					if (DEBUG_CHECK_CALLS)  System.out.println("  dereference @ " + location.getHandle().getPosition()  + " of parameter " + i);
 
-
-					fact.addDeref(vnaFrame.getValue(argSlot), location);
+					requiredToBeNonnull.add(vnaFrame.getValue(argSlot));
 				}
-			}
+				return requiredToBeNonnull;
+			
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
+		return Collections.emptySet();
 	}
 	public static final boolean VERBOSE_NULLARG_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 
@@ -445,25 +465,58 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @throws DataflowAnalysisException
 	 */
 	private void checkNonNullParams(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		ConstantPoolGen constantPool = methodGen.getConstantPool();
+		for(ValueNumber vn : checkNonNullParams(location, vnaFrame, constantPool,  method, invDataflow.getFactAtLocation(location)))
+			fact.addDeref(vn, location);
+	}
+		
+	public static Set<ValueNumber> checkAllNonNullParams(Location location, ValueNumberFrame vnaFrame, ConstantPoolGen constantPool, 
+			@CheckForNull Method method,
+			 @CheckForNull IsNullValueDataflow invDataflow, TypeDataflow typeDataflow
+			) throws DataflowAnalysisException {
+		IsNullValueFrame invFrame = null;
+		if (invDataflow != null) {
+			invFrame = invDataflow.getFactAtLocation(location);
+		}
+		Set<ValueNumber> result1 = checkNonNullParams(location, vnaFrame, constantPool, method, invFrame);
+		Set<ValueNumber> result2 = checkUnconditionalDerefDatabase(location, vnaFrame, constantPool, invFrame, typeDataflow);
+		if (result1.isEmpty()) return result2;
+		if (result2.isEmpty()) return result1;
+		result1.addAll(result2);
+		
+		return result1;
+		
+	}
+			
+	public static Set<ValueNumber> checkNonNullParams(Location location, ValueNumberFrame vnaFrame, ConstantPoolGen constantPool, 
+			@CheckForNull Method method,
+			 @CheckForNull IsNullValueFrame invFrame 
+			) throws DataflowAnalysisException {
+			
+		if (invFrame != null && !invFrame.isValid())
+			return Collections.emptySet();
 		INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 		if (database == null) {
-			return;
+			return Collections.emptySet();
 		}
 
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction(); 
 		XMethod called = XFactory.createXMethod(
 				inv,
-				methodGen.getConstantPool());
+				constantPool
+				);
 		SignatureParser sigParser = new SignatureParser(called.getSignature());
 		int numParams = sigParser.getNumParameters();
-		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 		
-		if (!invFrame.isValid()) return;
+		Set<ValueNumber> result = new HashSet<ValueNumber>();
 		for (int i = 0; i < numParams; i++) {
 			int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
-			int slot = invFrame.getStackLocation(offset);
-			IsNullValue value = invFrame.getValue(slot);
-			if (reportDereference(invFrame, slot) && database.parameterMustBeNonNull(called, i)) {
+			if (invFrame != null) {
+				int slot = invFrame.getStackLocation(offset);
+				if (! reportDereference(invFrame, slot) ) 
+					continue;
+			}
+			if (database.parameterMustBeNonNull(called, i)) {
 				int catchSizeNPE = Util.getSizeOfSurroundingTryBlock(method,
 						"java/lang/NullPointerException", location.getHandle().getPosition());
 				int catchSizeNFE = Util.getSizeOfSurroundingTryBlock(method,
@@ -471,11 +524,12 @@ public class UnconditionalValueDerefAnalysis extends
 				if (catchSizeNPE == Integer.MAX_VALUE && (!called.getClassName().equals("java.lang.Integer")
 						 || catchSizeNFE == Integer.MAX_VALUE)) {
 				// Get the corresponding value number
-				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, sigParser);
-				fact.addDeref(vn, location);
+				ValueNumber vn = vnaFrame.getArgument(inv, constantPool, i, sigParser);
+				result.add(vn);
 				}
 			}
 		}
+		return result;
 	}
 
 	/**
@@ -543,11 +597,11 @@ public class UnconditionalValueDerefAnalysis extends
 
 
 
-	private boolean reportDereference(IsNullValueFrame invFrameAtNullCheck, int instance) {
+	private static boolean reportDereference(IsNullValueFrame invFrameAtNullCheck, int instance) {
 		return reportDereference( invFrameAtNullCheck.getValue(instance));
 	}
 
-	private boolean reportDereference(IsNullValue value) {
+	private static boolean reportDereference(IsNullValue value) {
 		if (value.isDefinitelyNotNull()) return false;
 		if (value.isDefinitelyNull()) return false;
 		if (IGNORE_DEREF_OF_NCP

@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -60,8 +61,9 @@ public class IsNullValueDataflowFactory extends AnalysisFactory<IsNullValueDataf
 		ValueNumberDataflow vnaDataflow = getValueNumberDataflow(analysisCache, descriptor);
 		DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
 		AssertionMethods assertionMethods = getAssertionMethods(analysisCache, descriptor.getClassDescriptor());
-
-		IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
+		TypeDataflow typeDataflow = getTypeDataflow(analysisCache, descriptor);
+		
+		IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(descriptor, methodGen, cfg, vnaDataflow, typeDataflow, dfs, assertionMethods);
 
 		// Set return value and parameter databases
 

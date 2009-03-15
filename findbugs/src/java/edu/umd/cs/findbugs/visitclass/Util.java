@@ -60,7 +60,9 @@ public class Util {
 			}
 		return null;
 	}
-	 public static int getSizeOfSurroundingTryBlock(Method method, String vmNameOfExceptionClass, int pc) {
+	 public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, String vmNameOfExceptionClass, int pc) {
+		 if (method == null)
+			 return Integer.MAX_VALUE;
 		 return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
 	 }
 			

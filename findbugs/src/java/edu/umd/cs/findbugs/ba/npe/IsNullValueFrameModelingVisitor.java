@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ANEWARRAY;
@@ -47,10 +48,13 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
@@ -61,8 +65,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
 	private static final boolean MODEL_NONNULL_RETURN = SystemProperties.getBoolean("fnd.modelNonnullReturn",true);
-	private AssertionMethods assertionMethods;
-	private ValueNumberDataflow vnaDataflow;
+	private final AssertionMethods assertionMethods;
+	private final ValueNumberDataflow vnaDataflow;
+	private final TypeDataflow typeDataflow;
 	private final boolean trackValueNumbers;
 	private int slotContainingNewNullValue;
 
@@ -70,11 +75,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			ConstantPoolGen cpg,
 			AssertionMethods assertionMethods,
 			ValueNumberDataflow vnaDataflow,
-			boolean trackValueNumbers) {
+			TypeDataflow typeDataflow, boolean trackValueNumbers) {
 		super(cpg);
 		this.assertionMethods = assertionMethods;
 		this.vnaDataflow = vnaDataflow;
 		this.trackValueNumbers = trackValueNumbers;
+		this.typeDataflow = typeDataflow;
 	}
 
 	/* (non-Javadoc)
@@ -153,6 +159,28 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		Type callType = obj.getLoadClassType(getCPG());
 		Type returnType = obj.getReturnType(getCPG());
 		
+		Location location = getLocation();
+		
+		if (trackValueNumbers) try {
+	        ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
+			Set<ValueNumber> nonnullParameters = UnconditionalValueDerefAnalysis.checkAllNonNullParams(location, vnaFrame, cpg, null, null, typeDataflow);
+
+	        if (!nonnullParameters.isEmpty()) {
+				IsNullValue kaboom = IsNullValue.noKaboomNonNullValue(location);
+	        	IsNullValueFrame frame = getFrame();
+	        	for(ValueNumber vn : nonnullParameters) {
+	        		IsNullValue knownValue = frame.getKnownValue(vn);
+					if (knownValue != null && knownValue.mightBeNull())
+	        			frame.setKnownValue(vn, kaboom);
+	        		for(int i = 0; i < vnaFrame.getNumSlots(); i++)
+	        			if (vnaFrame.getValue(i).equals(vn) && frame.getValue(i).mightBeNull())
+	        				frame.setValue(i, kaboom);	
+	        	}
+	        	
+	        }
+        } catch (DataflowAnalysisException e) {
+        	AnalysisContext.logError("Error looking up nonnull parameters for invoked method", e);
+        }
 		boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
 
 		// Determine if we are going to model the return value of this call.

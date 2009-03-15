@@ -107,7 +107,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			knownValueMap.remove(oldValueNumber);
 		}
 	}
-	public IsNullValue getKnownValue(ValueNumber valueNumber) {
+	public @CheckForNull IsNullValue getKnownValue(ValueNumber valueNumber) {
 		assert trackValueNumbers;
 		return knownValueMap.get(valueNumber);
 	}
