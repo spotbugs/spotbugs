@@ -153,7 +153,7 @@ public class AccuracyClassificationPulldownAction
 			IProject project = marker.getResource().getProject();
 			try {
 				UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
-				if (!MarkerUtil.displayWarning(warning, userPrefs.getFilterSettings())) {
+				if (!MarkerUtil.shouldDisplayWarning(warning, userPrefs.getFilterSettings())) {
 					if(DEBUG) {
 						System.out.println("Deleting marker for false warning!");
 					}

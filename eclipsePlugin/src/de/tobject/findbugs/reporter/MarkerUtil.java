@@ -497,7 +497,7 @@ public final class MarkerUtil {
 	 * @param filterSettings project filter settings
 	 * @return true if the warning should be displayed, false if not
 	 */
-	public static boolean displayWarning(BugInstance bugInstance, ProjectFilterSettings filterSettings) {
+	public static boolean shouldDisplayWarning(BugInstance bugInstance, ProjectFilterSettings filterSettings) {
 		return filterSettings.displayWarning(bugInstance);
 	}
 

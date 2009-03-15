@@ -60,7 +60,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
 		ProjectFilterSettings filterSettings = userPrefs.getFilterSettings();
 		for (MarkerParameter mp : mpList) {
-			if(!MarkerUtil.displayWarning(mp.bug, filterSettings)){
+			if(!MarkerUtil.shouldDisplayWarning(mp.bug, filterSettings)){
 				continue;
 			}
 			String markerType = getMarkerType(mp.bug);
