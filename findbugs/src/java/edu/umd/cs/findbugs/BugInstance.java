@@ -1885,7 +1885,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 	public BugInstance add(@Nonnull BugAnnotation annotation) {
 		if (annotation == null)
-			throw new IllegalStateException("Missing BugAnnotation!");
+			throw new IllegalArgumentException("Missing BugAnnotation!");
 
 		// Add to list
 		annotationList.add(annotation);

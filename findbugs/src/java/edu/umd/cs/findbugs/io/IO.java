@@ -34,6 +34,7 @@
 
 package edu.umd.cs.findbugs.io;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
@@ -43,6 +44,12 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URLConnection;
+
+import javax.swing.ProgressMonitor;
+import javax.swing.ProgressMonitorInputStream;
+
+import edu.umd.cs.findbugs.gui2.MainFrame;
 
 public class IO {
 	static ThreadLocal<byte[]> myByteBuf  = new ThreadLocal<byte[]>() {
@@ -80,13 +87,26 @@ public class IO {
 	}
 
 
+	
+	public static InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
+		InputStream in = c.getInputStream();
+		if (GraphicsEnvironment.isHeadless() || !MainFrame.isAvailable())
+			return in;
+		// in = new SlowInputStream(in, 10000000);
+		ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(MainFrame.getInstance(), msg, in);
+		ProgressMonitor pm = pmin.getProgressMonitor();
+		int length = c.getContentLength();
+		if (length > 0)
+			pm.setMaximum(length);
+		return pmin;
+	}
 	public static long copy(InputStream in, OutputStream out,
 							long maxBytes)
 
 			throws IOException {
 		long total = 0;
 
-		int sz;
+		int sz = 0;
 
 		byte buf [] =  myByteBuf.get();
 
@@ -98,6 +118,8 @@ public class IO {
 			maxBytes -= sz;
 			out.write(buf, 0, sz);
 		}
+		if (sz < 0 || maxBytes == 0)
+			in.close();
 		return total;
 	}
 

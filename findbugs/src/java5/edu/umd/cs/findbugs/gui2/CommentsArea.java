@@ -21,14 +21,18 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -40,6 +44,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -56,6 +61,8 @@ public class CommentsArea {
 	private JComboBox designationComboBox;
 
 	private ArrayList<String> designationKeys;
+
+	private JLabel whoWhen = new JLabel("          ");
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
@@ -165,7 +172,11 @@ public class CommentsArea {
 		}
 		setUnknownDesignation();
 
-		centerPanel.add(designationComboBox, BorderLayout.NORTH);
+		JPanel comments = new JPanel();
+		comments.setLayout(new FlowLayout(FlowLayout.LEFT));
+		comments.add(designationComboBox);
+		comments.add(whoWhen);
+		centerPanel.add(comments, BorderLayout.NORTH);
 		centerPanel.add(commentsScrollP, BorderLayout.CENTER);
 		centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
 
@@ -215,6 +226,7 @@ public class CommentsArea {
 		designationComboBox.setEnabled(isEnabled);
 	}
 
+	SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 	/**
 	 * Updates comments tab. Takes node passed and sets the designation and
 	 * comments.
@@ -223,6 +235,7 @@ public class CommentsArea {
 	 */
 	void updateCommentsFromLeafInformation(final BugLeafNode node) {
 		SwingUtilities.invokeLater(new Runnable() {
+
 			public void run() {
 				//This so if already saved doesn't make it seem project changed
 				boolean b = frame.getProjectChanged();
@@ -231,6 +244,15 @@ public class CommentsArea {
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug.getNonnullUserDesignation()
 								.getDesignationKey()));
+				BugDesignation bd = bug.getUserDesignation();
+				String user = bd.getUser();
+				long time = bd.getTimestamp();
+				String msg;
+				if (user != null && user.length() > 0) {
+					 msg = user + " @ " + format.format(new Date(time));
+				} else
+					msg = "";
+				whoWhen.setText(msg);
 				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
 				setProjectChanged(b);

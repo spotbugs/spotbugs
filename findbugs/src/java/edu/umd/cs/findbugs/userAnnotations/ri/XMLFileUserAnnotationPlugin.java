@@ -249,4 +249,36 @@ public class XMLFileUserAnnotationPlugin implements UserAnnotationPlugin {
 		}
 	}
 
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#addListener(edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.Listener)
+     */
+    public void addListener(Listener listener) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#getStatusMsg()
+     */
+    public String getStatusMsg() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#removeListener(edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.Listener)
+     */
+    public void removeListener(Listener listener) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#shutdown()
+     */
+    public void shutdown() {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }

@@ -21,21 +21,28 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.ProgressMonitorInputStream;
+
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Class to open input streams on source files.
@@ -112,20 +119,64 @@ public class SourceFinder {
 		}
 	}
 
-	 static class JarURLConnectionSourceRepository extends ZipSourceRepository {
+	static SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
+		final File file = File.createTempFile("jar_cache", null);
+		file.deleteOnExit();
+		final BlockingSourceRepository r = new BlockingSourceRepository();
+		Thread t = new Thread(new Runnable(){
 
-		public JarURLConnectionSourceRepository(String url) throws MalformedURLException, IOException {
-			super(((JarURLConnection) new URL("jar:" + url +"!/").openConnection()).getJarFile());
-
-			if (DEBUG) {
-				System.out.println("JarURLConnectionSourceRepository entries");
-			for(Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements(); ) {
-				ZipEntry ze = e.nextElement();
-				System.out.println(ze.getName());
-			}
-			}
+			public void run() {
+				try {
+				URLConnection connection = new URL(url).openConnection();
+				InputStream in = IO.progessMonitoredInputStream(connection, "Loading source via url");
+				OutputStream out = new FileOutputStream(file);
+				IO.copy(in, out);
+				out.close();
+				r.setBase(new ZipSourceRepository(new ZipFile(file)));
+				} catch (IOException e) {
+					// TODO: Figure out what to do here;
+				}
+            }}, "Source loading thread");
+		t.setDaemon(true);
+		t.start();
+		return r;
+	}
+		
+	static class BlockingSourceRepository implements SourceRepository {
+		SourceRepository base;
+		final CountDownLatch ready = new CountDownLatch(1);
+		public BlockingSourceRepository() {
+        }
+		
+		public boolean isReady() {
+			return ready.getCount() == 0;
 		}
+		public void setBase(SourceRepository base) {
+			this.base = base;
+			ready.countDown();
+		}
+		private void await() {
+			try {
+	            ready.await();
+            } catch (InterruptedException e) {
+	            throw new IllegalStateException("Unexpected interrupt", e);
+            }
+		}
+		public boolean contains(String fileName) {
+			await();
+	        return base.contains(fileName);
+        }
+		public SourceFileDataSource getDataSource(String fileName) {
+			await();
+	        return base.getDataSource(fileName);
+        }
+		public boolean isPlatformDependent() {
+			await();
+	        return base.isPlatformDependent();
+        }
+		
 
+		
 	}
 	/**
 	 * A zip or jar archive containing source files.
@@ -179,11 +230,12 @@ public class SourceFinder {
 				// Zip or jar archive
 				try {
 					if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) 
-						repositoryList.add(new JarURLConnectionSourceRepository(repos));
+						repositoryList.add(makeJarURLConnectionSourceRepository(repos));
 					else 
 						repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));
 				} catch (IOException e) {
 					// Ignored - we won't use this archive
+					e.printStackTrace();
 				}
 			} else {
 				// Directory
@@ -253,6 +305,8 @@ public class SourceFinder {
 		if (DEBUG) System.out.println("Trying " + fileName +  " in package " + packageName + "...");
 		// Query each element of the source path to find the requested source file
 		for (SourceRepository repos : repositoryList) {
+			if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository)repos).isReady())
+				continue;
 			fileName = repos.isPlatformDependent() ? platformName : canonicalName;
 			if (DEBUG) System.out.println("Looking in " + repos  + " for " + fileName);
 			if (repos.contains(fileName)) {

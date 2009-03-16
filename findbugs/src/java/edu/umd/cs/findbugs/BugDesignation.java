@@ -44,7 +44,14 @@ public class BugDesignation implements XMLWriteable, Serializable {
 
 	
 	
-	 
+	private boolean dirty;
+	
+	public boolean isDirty() {
+		return dirty;
+	}
+	public void cleanDirty() {
+		dirty = false;
+	}
 	private @javax.annotation.CheckForNull String user;
 
 	
@@ -106,13 +113,18 @@ public class BugDesignation implements XMLWriteable, Serializable {
 			return timestamp;
 	}
 	public void setTimestamp(long ts) {
+		if (timestamp != ts) {
 			timestamp = ts;
+			dirty = true;
+		}
 	}
 
 	@CheckForNull public String getAnnotationText() {
 			return annotationText;
 	}
 	public void setAnnotationText(String s) {
+			if (!s.toLowerCase().equals(annotationText))
+				dirty = true;
 			annotationText = s;
 	}
 
@@ -142,11 +154,13 @@ public class BugDesignation implements XMLWriteable, Serializable {
 		if ( (annotationText==null || annotationText.length()==0)
 				&& other.annotationText!=null && other.annotationText.length()>0) {
 			annotationText = other.annotationText;
+			dirty = true;
 			changed = true;
 		}
 		if ( (designation==null || UNCLASSIFIED.equals(designation) || designation.length()==0)
 				&& other.designation!=null && other.designation.length()>0) {
 			designation = other.designation;
+			dirty = true;
 			changed = true;
 		}
 		if (!changed) return; // if no changes don't even try to copy user or timestamp

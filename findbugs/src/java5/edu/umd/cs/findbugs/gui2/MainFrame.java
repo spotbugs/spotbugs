@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -82,6 +83,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -125,7 +127,9 @@ import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
+import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 @SuppressWarnings("serial")
@@ -448,12 +452,19 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	BugCollection bugCollection;
+	
+	UserAnnotationPlugin.Listener userAnnotationListener = null;
 	@SwingThread
 	void setProjectAndBugCollection(Project project, @CheckForNull BugCollection bugCollection) {
 		Filter suppressionMatcher = project.getSuppressionFilter();
 		if (suppressionMatcher != null) {
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
+		if (this.bugCollection != null && userAnnotationListener != null) {
+			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin();
+			if (plugin != null) 
+				plugin.removeListener(userAnnotationListener);
+			}
 		// setRebuilding(false);
 		if (bugCollection == null) {
 			showTreeCard();
@@ -484,8 +495,31 @@ public class MainFrame extends FBFrame implements LogSync
 		 * curProject has been changed. Since this method is called by both open methods
 		 * it is put here.*/
 		changeTitle();
+		if (bugCollection != null) {
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			if (plugin != null) {
+				userAnnotationListener = new UserAnnotationPlugin.Listener() {
+
+					public void issueUpdate(BugInstance bug) {
+						// TODO Auto-generated method stub
+
+					}
+
+					public void statusUpdated() {
+						SwingUtilities.invokeLater(updateStatusBarRunner);
+					}
+				};
+				plugin.addListener(userAnnotationListener);
+			}
+		}
 	}
 
+	final Runnable updateStatusBarRunner = new Runnable() {
+
+		public void run() {
+	        updateStatusBar();
+	        
+        }};
 	void updateProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
 		setRebuilding(false);
 		if (bugCollection != null)
@@ -1606,16 +1640,26 @@ public class MainFrame extends FBFrame implements LogSync
 		return statusBar;
 	}
 
+	@SwingThread
 	void updateStatusBar()
 	{
 
 		int countFilteredBugs = BugSet.countFilteredBugs();
-		if (countFilteredBugs == 0)
-			statusBarLabel.setText("  http://findbugs.sourceforge.net/");
-		else if (countFilteredBugs == 1)
-			statusBarLabel.setText("  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden"));
-		else 
-			statusBarLabel.setText("  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden"));
+		String msg = "  http://findbugs.sourceforge.net/";
+		if (countFilteredBugs == 1) {
+	         msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden by filters");
+	    } else 	if (countFilteredBugs > 1) {
+	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
+        }
+		if (bugCollection != null) {
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			if (plugin != null) {
+				String pluginMsg = plugin.getStatusMsg();
+				if (pluginMsg != null && pluginMsg.length() > 1)
+					msg = msg + ";  " + pluginMsg;
+			}
+		}
+		statusBarLabel.setText(msg);
 	}
 
 	private void updateSummaryTab(BugLeafNode node)
@@ -1911,8 +1955,10 @@ public class MainFrame extends FBFrame implements LogSync
 				InputStream in;
 				try {
 					URL url = new URL(loadFromURL);
-					in = url.openConnection().getInputStream();
+					URLConnection urlConnection = url.openConnection();
+					in = IO.progessMonitoredInputStream(urlConnection, "Loading issues via url");
 					if (loadFromURL.endsWith(".gz"))
+						
 						in = new GZIPInputStream(in);
 					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
 					loadAnalysisFromInputStream(in, url);

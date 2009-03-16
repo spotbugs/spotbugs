@@ -30,7 +30,10 @@ import edu.umd.cs.findbugs.BugInstance;
  * mechanisms.
  */
 public interface UserAnnotationPlugin {
-
+	interface Listener {
+		void issueUpdate(BugInstance bug);
+		void statusUpdated();
+	}
 
 	/**
 	 * For the given BugCollection, load the user annotations
@@ -54,5 +57,15 @@ public interface UserAnnotationPlugin {
 	 * @param bugs a BugCollection
 	 */
 	void storeUserAnnotations(BugCollection bugs);
+
+	/**
+     * @return
+     */
+    String getStatusMsg();
+    
+    public void addListener(Listener listener);
+    public void removeListener(Listener listener);
+    
+    public void shutdown();
 
 }
