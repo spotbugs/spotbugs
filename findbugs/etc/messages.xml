@@ -7336,7 +7336,9 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
     <Details>
      <![CDATA[
      <p> If you want to remove all elements from a collection <code>c</code>, use <code>c.clear</code>,
-not <code>c.removeAll(c)</code>.
+not <code>c.removeAll(c)</code>. Calling  <code>c.removeAll(c)</code> to clear a collection
+is less clear, susceptible to errors from typos, less efficient and 
+for some collections, might throw a <code>ConcurrentModificationException</code>.
 	</p>
      ]]>
     </Details>
@@ -7759,6 +7761,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
+  <BugCode abbrev="USELESS_STRING">Useless/non-informative string generated</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
   <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
