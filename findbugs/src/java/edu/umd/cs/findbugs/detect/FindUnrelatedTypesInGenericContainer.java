@@ -525,13 +525,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 		
 		// get a category for each type
-		TypeCategory parmCat = GenericUtilities.getTypeCategory(expectedType);
+		TypeCategory expectedCat = GenericUtilities.getTypeCategory(expectedType);
 		TypeCategory argCat = GenericUtilities.getTypeCategory(actualType);
-		if (actualString.equals(objString) && parmCat == TypeCategory.TYPE_VARIABLE) {
+		if (actualString.equals(objString) && expectedCat == TypeCategory.TYPE_VARIABLE) {
 			return IncompatibleTypes.SEEMS_OK;
 		}
 		if (ignoreBaseType) {
-			if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
+			if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
 				GenericObjectType parmGeneric = (GenericObjectType) expectedType;
 				GenericObjectType argGeneric = (GenericObjectType) actualType;
 				return compareTypeParameters(parmGeneric, argGeneric);
@@ -539,30 +539,30 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			return IncompatibleTypes.SEEMS_OK;
 		}
 		
-		if (actualType.equals(Type.OBJECT) && parmCat == TypeCategory.ARRAY_TYPE) 
+		if (actualType.equals(Type.OBJECT) && expectedCat == TypeCategory.ARRAY_TYPE) 
 			return IncompatibleTypes.ARRAY_AND_OBJECT;
 
 			
 		// -~- plain objects are easy
-		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
+		if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PLAIN_OBJECT_TYPE)
 			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, actualType, false);
 			
-		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) 
-			return IncompatibleTypes.getPriorityForAssumingCompatible(((GenericObjectType) expectedType).getObjectType(), actualType);
-		if (parmCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) 
-			return IncompatibleTypes.getPriorityForAssumingCompatible(expectedType, ((GenericObjectType) actualType).getObjectType());
+		if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PLAIN_OBJECT_TYPE) 
+			return IncompatibleTypes.getPriorityForAssumingCompatible((GenericObjectType) expectedType,  actualType);
+		if (expectedCat == TypeCategory.PLAIN_OBJECT_TYPE && argCat == TypeCategory.PARAMETERIZED) 
+			return IncompatibleTypes.getPriorityForAssumingCompatible((GenericObjectType)actualType, expectedType);
 
 			
 		// -~- parmType is: "? extends Another Type" OR "? super Another Type"
-		if (parmCat == TypeCategory.WILDCARD_EXTENDS || parmCat == TypeCategory.WILDCARD_SUPER)
+		if (expectedCat == TypeCategory.WILDCARD_EXTENDS || expectedCat == TypeCategory.WILDCARD_SUPER)
 			return compareTypes(((GenericObjectType) expectedType).getExtension(), actualType, ignoreBaseType);
 
 		// -~- Not handling type variables
-		if (parmCat == TypeCategory.TYPE_VARIABLE || argCat == TypeCategory.TYPE_VARIABLE)
+		if (expectedCat == TypeCategory.TYPE_VARIABLE || argCat == TypeCategory.TYPE_VARIABLE)
 			return IncompatibleTypes.SEEMS_OK;
 
 		// -~- Array Types: compare dimensions, then base type
-		if (parmCat == TypeCategory.ARRAY_TYPE && argCat == TypeCategory.ARRAY_TYPE) {
+		if (expectedCat == TypeCategory.ARRAY_TYPE && argCat == TypeCategory.ARRAY_TYPE) {
 			ArrayType parmArray = (ArrayType) expectedType;
 			ArrayType argArray = (ArrayType) actualType;
 
@@ -573,12 +573,12 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		}
 		// If one is an Array Type and the other is not, then they
 		// are incompatible. (We already know neither is java.lang.Object)
-		if (parmCat == TypeCategory.ARRAY_TYPE ^ argCat == TypeCategory.ARRAY_TYPE) {
+		if (expectedCat == TypeCategory.ARRAY_TYPE ^ argCat == TypeCategory.ARRAY_TYPE) {
 			return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
 		}
 
 		// -~- Parameter Types: compare base type then parameters
-		if (parmCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
+		if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
 			GenericObjectType parmGeneric = (GenericObjectType) expectedType;
 			GenericObjectType argGeneric = (GenericObjectType) actualType;
 
@@ -595,14 +595,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		// are incompatible. (We already know neither is java.lang.Object)
 		if (false) {
 			// not true. Consider class Foo extends ArrayList<String>
-			if (parmCat == TypeCategory.PARAMETERIZED ^ argCat == TypeCategory.PARAMETERIZED) {
+			if (expectedCat == TypeCategory.PARAMETERIZED ^ argCat == TypeCategory.PARAMETERIZED) {
 				return IncompatibleTypes.SEEMS_OK; // fix this when we know what
 												   // we are doing here
 			}
 		}
 
 		// -~- Wildcard e.g. List<*>.contains(...)
-		if (parmCat == TypeCategory.WILDCARD) // No Way to know
+		if (expectedCat == TypeCategory.WILDCARD) // No Way to know
 			return IncompatibleTypes.SEEMS_OK;
 
 		// -~- Non Reference types

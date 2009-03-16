@@ -79,7 +79,7 @@ public class IncompatibleTypes {
 	        Priorities.HIGH_PRIORITY);
 
 	public static final IncompatibleTypes UNCHECKED = new IncompatibleTypes("Actual compile type time of argument is Object, unchecked",
-	        Priorities.LOW_PRIORITY);
+	        Priorities.IGNORE_PRIORITY);
 
 	public static final IncompatibleTypes ARRAY_AND_OBJECT = new IncompatibleTypes("Array and Object", Priorities.IGNORE_PRIORITY);
 
@@ -94,7 +94,18 @@ public class IncompatibleTypes {
 
 	public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes("Unrelated interfaces",
 	        Priorities.NORMAL_PRIORITY);
+	public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes("Unrelated types but one type matches type parameter of the other",
+	        Priorities.HIGH_PRIORITY);
 
+	static public @NonNull
+	IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
+		IncompatibleTypes result =  IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
+		if (result.getPriority() == Priorities.NORMAL_PRIORITY && genericType.getParameters().contains(plainType)) {
+			result = UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER;
+		}
+		return result;
+		
+	}
 	static public @NonNull
 	IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
 		return getPriorityForAssumingCompatible(lhsType, rhsType, false);
