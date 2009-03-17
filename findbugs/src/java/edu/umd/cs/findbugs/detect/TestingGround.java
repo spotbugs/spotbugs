@@ -22,6 +22,10 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class TestingGround extends OpcodeStackDetector {
@@ -47,15 +51,13 @@ public class TestingGround extends OpcodeStackDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
-		if (seen != INVOKESTATIC) {
+		if (seen != GETSTATIC) {
 			return;
 		}
-		String calledClassName = getClassConstantOperand();
-		String calledMethodName = getNameConstantOperand();
-		String calledMethodSig = getSigConstantOperand();
-		if (calledClassName.equals("java/lang/System") && calledMethodName.equals("gc") && calledMethodSig.equals("()V")) {
-			emitWarning();
-		}
+		XField f = getXFieldOperand();
+		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+		Item summary = fieldSummary.getSummary(f);
+		System.out.println(getFullyQualifiedMethodName() + " " + f + " " + f.isFinal() + " " + summary);
 	}
 
 	private void emitWarning() {

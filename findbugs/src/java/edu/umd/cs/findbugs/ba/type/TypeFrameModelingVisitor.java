@@ -317,10 +317,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				}
 
 				Item summary = fieldSummary.getSummary(xfield);
+				if (xfield.isFinal() && summary.isNull()) {
+					pushValue(TypeFrame.getNullType());
+					return;
+				}
 				if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
 					loadType = Type.getType(summary.getSignature());
 				}
-
+				
 				// [Added: Support for Generics]
 				// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
 				// we can assume, that the signature for obj is still relevant. This should

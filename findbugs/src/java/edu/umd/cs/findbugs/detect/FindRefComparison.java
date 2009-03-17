@@ -60,6 +60,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -67,6 +68,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassSummary;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
@@ -75,6 +77,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
@@ -394,6 +397,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		@Override
 		public void visitGETSTATIC(GETSTATIC obj) {
 			Type type = obj.getType(getCPG());
+			XField xf = XFactory.createXField(obj, cpg);
+			if (xf.isFinal()) {
+				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+				Item summary = fieldSummary.getSummary(xf);
+				if (summary.isNull()) {
+					pushValue(TypeFrame.getNullType());
+					return;
+				}
+				
+			}
 			if (type.getSignature().equals(STRING_SIGNATURE)) {
 				handleLoad(obj);
 			}
