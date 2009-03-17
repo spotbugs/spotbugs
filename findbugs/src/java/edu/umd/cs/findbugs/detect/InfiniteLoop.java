@@ -187,25 +187,27 @@ public class InfiniteLoop extends OpcodeStackDetector {
 					isConstant(fcb.item1, bb)) {
 				SourceLineAnnotation loopBottom = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
 				int loopBottomLine = loopBottom.getStartLine();
+				SourceLineAnnotation loopTop = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.to);
+				int loopTopLine = loopTop.getStartLine();
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from).addSourceLine(loopBottom).describe(SourceLineAnnotation.DESCRIPTION_LOOP_BOTTOM);
 				int reg0 = fcb.item0.getRegisterNumber();
 				boolean reg0Invariant = true;
-				if (reg0 >= 0) {
+				if (reg0 >= 0 && fcb.item0.getConstant() == null) {
 					reg0Invariant = !isRegModified(reg0, myBackwardsReach, bb.from);
 					SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, constantSince(fcb.item0));
 					int lastChangeLine = lastChange.getEndLine();
-					if (loopBottomLine != -1 && lastChangeLine != -1 && lastChangeLine < loopBottomLine) 
+					if (loopBottomLine != -1 && lastChangeLine != -1 && loopTopLine != -1 && loopTopLine <= lastChangeLine && lastChangeLine < loopBottomLine) 
 						continue backwardBranchLoop;
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
 					.addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
 				}
 				int reg1 = fcb.item1.getRegisterNumber();
-				if (reg1 >= 0 && reg1 != reg0) {
+				if (reg1 >= 0 && reg1 != reg0 && fcb.item1.getConstant() == null) {
 					SourceLineAnnotation lastChange = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, constantSince(fcb.item1));
 					int lastChangeLine = lastChange.getEndLine();
-					if (loopBottomLine != -1 && lastChangeLine != -1 && lastChangeLine < loopBottomLine) 
+					if (loopBottomLine != -1 && lastChangeLine != -1 && loopTopLine != -1 && loopTopLine <= lastChangeLine && lastChangeLine < loopBottomLine) 
 						continue backwardBranchLoop;
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
 										.addSourceLine(lastChange).describe(SourceLineAnnotation.DESCRIPTION_LAST_CHANGE);
