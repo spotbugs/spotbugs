@@ -355,11 +355,11 @@ public class Naming extends PreorderVisitor implements Detector {
 		int badFieldNames = 0;
 		for(Field f : obj.getFields()) 
 			if (f.getName().length() >= 2 && badFieldName(f)) badFieldNames++;
-		hasBadFieldNames = badFieldNames > 5 && badFieldNames > obj.getFields().length/2;
+		hasBadFieldNames = badFieldNames > 3 && badFieldNames > obj.getFields().length/3;
 		int badNames = 0;
 		for(Method m : obj.getMethods()) 
 			if (badMethodName(m.getName())) badNames++;
-		hasBadMethodNames = badNames > 5 && badNames > obj.getMethods().length/2;
+		hasBadMethodNames = badNames > 3 && badNames > obj.getMethods().length/3;
 		isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
 		super.visit(obj);
 	}
