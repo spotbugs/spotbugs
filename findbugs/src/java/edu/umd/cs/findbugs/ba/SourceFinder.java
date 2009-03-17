@@ -131,6 +131,7 @@ public class SourceFinder {
 				InputStream in = IO.progessMonitoredInputStream(connection, "Loading source via url");
 				OutputStream out = new FileOutputStream(file);
 				IO.copy(in, out);
+				in.close();
 				out.close();
 				r.setBase(new ZipSourceRepository(new ZipFile(file)));
 				} catch (IOException e) {

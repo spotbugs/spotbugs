@@ -46,6 +46,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URLConnection;
 
+import javax.annotation.WillNotClose;
 import javax.swing.ProgressMonitor;
 import javax.swing.ProgressMonitorInputStream;
 
@@ -76,7 +77,8 @@ public class IO {
 		return w.toString();
 	}
 
-	public static long copy(InputStream in, OutputStream out)
+	public static long copy(@WillNotClose InputStream in, 
+							@WillNotClose OutputStream out)
 			throws IOException {
 		return copy(in, out, Long.MAX_VALUE);
 	}
@@ -100,7 +102,8 @@ public class IO {
 			pm.setMaximum(length);
 		return pmin;
 	}
-	public static long copy(InputStream in, OutputStream out,
+	public static long copy(@WillNotClose InputStream in, 
+							@WillNotClose OutputStream out,
 							long maxBytes)
 
 			throws IOException {
@@ -118,8 +121,7 @@ public class IO {
 			maxBytes -= sz;
 			out.write(buf, 0, sz);
 		}
-		if (sz < 0 || maxBytes == 0)
-			in.close();
+
 		return total;
 	}
 

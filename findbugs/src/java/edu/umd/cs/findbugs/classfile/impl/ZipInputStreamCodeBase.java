@@ -197,7 +197,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 				getNextEntry();
 				return z;
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("Failure getting next entry in " + file, e);
 			}
 		}
 
