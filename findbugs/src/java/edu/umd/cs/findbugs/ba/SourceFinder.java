@@ -43,6 +43,7 @@ import javax.swing.ProgressMonitorInputStream;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Class to open input streams on source files.
@@ -126,16 +127,17 @@ public class SourceFinder {
 		Thread t = new Thread(new Runnable(){
 
 			public void run() {
+				InputStream in = null;
+				OutputStream out = null;
 				try {
 				URLConnection connection = new URL(url).openConnection();
-				InputStream in = IO.progessMonitoredInputStream(connection, "Loading source via url");
-				OutputStream out = new FileOutputStream(file);
+				in = IO.progessMonitoredInputStream(connection, "Loading source via url");
+				out = new FileOutputStream(file);
 				IO.copy(in, out);
-				in.close();
-				out.close();
 				r.setBase(new ZipSourceRepository(new ZipFile(file)));
 				} catch (IOException e) {
-					// TODO: Figure out what to do here;
+					Util.closeSilently(in);
+					Util.closeSilently(out);
 				}
             }}, "Source loading thread");
 		t.setDaemon(true);
