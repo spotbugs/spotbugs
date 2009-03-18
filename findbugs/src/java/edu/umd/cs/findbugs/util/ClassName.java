@@ -41,7 +41,7 @@ public abstract class ClassName {
 	}
 
 
-	public static @CheckForNull String fromFieldSignature(String signature) {
+	public static @CheckForNull @SlashedClassName String fromFieldSignature(String signature) {
 		if (signature.charAt(0) != 'L') return null;
 		return signature.substring(1, signature.length()-1);
 	}

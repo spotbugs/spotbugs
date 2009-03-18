@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 
 /**
@@ -47,7 +48,7 @@ public class ObjectTypeFactory {
 		instance.remove();
 	}
 
-	public static ObjectType getInstance(String s) {
+	public static ObjectType getInstance(@DottedClassName String s) {
 		if (FindBugs.DEBUG && s.startsWith("[")) {
 			throw new IllegalArgumentException("Cannot create an ObjectType to represent an array type: " + s);
 		}
