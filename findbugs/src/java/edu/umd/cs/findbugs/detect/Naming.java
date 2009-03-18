@@ -269,6 +269,8 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	@Override
 	public void visitJavaClass(JavaClass obj) {
+		if (obj.isSynthetic()) 
+			return;
 		String name = obj.getClassName();
 		if (!visited.add(name))
 			return;
@@ -338,8 +340,9 @@ public class Naming extends PreorderVisitor implements Detector {
 		String name = obj.getClassName();
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
-		for(String p : obj.getClassName().split("[.]")) if (p.length() == 1) return;
-		  if (name.indexOf("Proto$") > 0)
+		for(String p : name.split("[.]")) 
+			if (p.length() == 1) return;
+		if (name.indexOf("Proto$") >= 0)
 	        	return;
 		classIsPublicOrProtected = obj.isPublic() || obj.isProtected();
 		if (Character.isLetter(baseClassName.charAt(0)) && !Character.isUpperCase(baseClassName.charAt(0))
