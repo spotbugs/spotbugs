@@ -412,6 +412,8 @@ public class RejarClassesForAnalysis {
 			auxilaryOut.close();
 		for(ZipOutputStream out : analysisOutputFiles.values())
 			out.close();
+		
+		System.out.println("All done");
 	}
 
 	/**
