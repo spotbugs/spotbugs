@@ -395,7 +395,7 @@ public class Filter {
 			else if (option.equals("-designation"))
 				addDesignationKey(argument);
 			else if (option.equals("-class"))
-					className = Pattern.compile(argument);
+					className = Pattern.compile(argument.replace(',', '|'));
 			else if (option.equals("-bugPattern"))
 					bugPattern = Pattern.compile(argument);
 			else if (option.equals("-annotation"))
