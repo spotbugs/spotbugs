@@ -228,11 +228,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 	}
 	
-	public static class StaticFinalPublicConstant extends ObjectType {
+	public static class FinalConstant extends ObjectType {
 		private static final long serialVersionUID = 1L;
 		final XField field;
 
-		public StaticFinalPublicConstant(@DottedClassName String type, XField field) {
+		public FinalConstant(@DottedClassName String type, XField field) {
 			super(type);
 			this.field = field;
 		}
@@ -429,15 +429,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					pushValue(TypeFrame.getNullType());
 					return;
 				}
-				if (xf.isPublic()) {
-					final String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
-					if (slashedClassName != null) {
-						type = new StaticFinalPublicConstant(ClassName.toDottedClassName(slashedClassName), xf);
-						pushValue(type);
-						return;
-					}
 				
+				String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
+				if (slashedClassName != null) {
+					type = new FinalConstant(ClassName.toDottedClassName(slashedClassName), xf);
+					pushValue(type);
+					return;
 				}
+
+
 				
 			}
 			if (type.getSignature().equals(STRING_SIGNATURE)) {
@@ -452,7 +452,27 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (type.getSignature().equals(STRING_SIGNATURE)) {
 				handleLoad(obj);
 			}
-			else super.visitGETFIELD(obj);
+			else {
+				XField xf = XFactory.createXField(obj, cpg);
+				if (xf.isFinal()) {
+					FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+					Item summary = fieldSummary.getSummary(xf);
+					if (summary.isNull()) {
+						consumeStack(obj);
+						pushValue(TypeFrame.getNullType());
+						return;
+					}
+					
+					String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
+					if (slashedClassName != null) {
+						type = new FinalConstant(ClassName.toDottedClassName(slashedClassName), xf);
+						consumeStack(obj);
+						pushValue(type);
+						return;
+					}
+				}
+				super.visitGETFIELD(obj);
+			}
 		}
 
 		private void handleLoad(FieldInstruction obj) {
@@ -905,16 +925,20 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			Location location,
 			String lhs, ReferenceType lhsType, ReferenceType rhsType) {
 		XField xf = null;
-		if (lhsType instanceof StaticFinalPublicConstant)
-			xf = ((StaticFinalPublicConstant)lhsType).getXField();
-		else if (rhsType instanceof StaticFinalPublicConstant)
-				xf = ((StaticFinalPublicConstant)rhsType).getXField();
+		if (lhsType instanceof FinalConstant)
+			xf = ((FinalConstant)lhsType).getXField();
+		else if (rhsType instanceof FinalConstant)
+				xf = ((FinalConstant)rhsType).getXField();
 		String sourceFile = jclass.getSourceFileName();
 		String bugPattern = "RC_REF_COMPARISON";
 		int priority = Priorities.HIGH_PRIORITY;
-		if (lhs.equals("java.lang.Boolean") || xf != null) {
-			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE";
+		if (lhs.equals("java.lang.Boolean")) {
+			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
 			priority = Priorities.NORMAL_PRIORITY;
+		} else if (xf != null) {
+			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE";
+			if (xf.isStatic() && (xf.isPublic() || !methodGen.isPublic()))
+				priority = Priorities.NORMAL_PRIORITY;
 		}
 		BugInstance instance = new BugInstance(this, bugPattern, priority)
 		.addClassAndMethod(methodGen, sourceFile)
