@@ -173,14 +173,17 @@ public class LaunchAppropriateUI {
 			}
 		}
 		
-		for(String a : args) 
-			if (a.equals("-output") || a.equals("-xml"))
-				return TEXTUI;
-		
 		// Check findbugs.launchUI property.
 		// "gui2" is the default if not otherwise specified.
-		String s = System.getProperty("findbugs.launchUI", "gui2");
-
+		String s = System.getProperty("findbugs.launchUI");
+		
+		if (s == null) {
+			for(String a : args) 
+				if (a.equals("-output") || a.equals("-xml") || a.endsWith(".class") || a.endsWith(".jar"))
+					return TEXTUI;
+			s = "gui2";
+		}
+		
 		// See if the property value is one of the human-readable
 		// UI names.
 		if (uiNameToCodeMap.containsKey(s)) {
