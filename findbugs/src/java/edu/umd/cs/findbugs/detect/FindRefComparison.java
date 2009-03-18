@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -90,10 +91,12 @@ import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Find suspicious reference comparisons.
@@ -157,6 +160,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final byte T_DYNAMIC_STRING = T_AVAIL_TYPE + 0;
 	private static final byte T_STATIC_STRING = T_AVAIL_TYPE + 1;
 	private static final byte T_PARAMETER_STRING = T_AVAIL_TYPE + 2;
+	private static final byte T_STATIC_FINAL_PUBLIC_CONSTANT = T_AVAIL_TYPE + 3;
 
 	private static final String STRING_SIGNATURE = "Ljava/lang/String;";
 
@@ -223,6 +227,26 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return "<dynamic string>";
 		}
 	}
+	
+	public static class StaticFinalPublicConstant extends ObjectType {
+		private static final long serialVersionUID = 1L;
+		final XField field;
+
+		public StaticFinalPublicConstant(@DottedClassName String type, XField field) {
+			super(type);
+			this.field = field;
+		}
+
+		public XField getXField() {
+			return field;
+		}
+
+		@Override
+		public String toString() {
+			return super.toString() + " " + field;
+		}
+	}
+
 
 	private static final Type dynamicStringTypeInstance = new DynamicStringType();
 
@@ -404,6 +428,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				if (summary.isNull()) {
 					pushValue(TypeFrame.getNullType());
 					return;
+				}
+				if (xf.isPublic()) {
+					final String slashedClassName = ClassName.fromFieldSignature(type.getSignature());
+					if (slashedClassName != null) {
+						type = new StaticFinalPublicConstant(ClassName.toDottedClassName(slashedClassName), xf);
+						pushValue(type);
+						return;
+					}
+				
 				}
 				
 			}
@@ -803,7 +836,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (lhs.equals("java.lang.String")) {
 				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
 			} else if (suspiciousSet.contains(lhs)) {
-				handleSuspiciousRefComparison(jclass, methodGen, refComparisonList, location, lhs);
+				handleSuspiciousRefComparison(jclass, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
 			}
 		}
 	}
@@ -870,12 +903,25 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			MethodGen methodGen,
 			List<WarningWithProperties> refComparisonList,
 			Location location,
-			String lhs) {
+			String lhs, ReferenceType lhsType, ReferenceType rhsType) {
+		XField xf = null;
+		if (lhsType instanceof StaticFinalPublicConstant)
+			xf = ((StaticFinalPublicConstant)lhsType).getXField();
+		else if (rhsType instanceof StaticFinalPublicConstant)
+				xf = ((StaticFinalPublicConstant)rhsType).getXField();
 		String sourceFile = jclass.getSourceFileName();
-		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", lhs.equals("java.lang.Boolean") ? NORMAL_PRIORITY : HIGH_PRIORITY)
+		String bugPattern = "RC_REF_COMPARISON";
+		int priority = Priorities.HIGH_PRIORITY;
+		if (lhs.equals("java.lang.Boolean") || xf != null) {
+			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE";
+			priority = Priorities.NORMAL_PRIORITY;
+		}
+		BugInstance instance = new BugInstance(this, bugPattern, priority)
 		.addClassAndMethod(methodGen, sourceFile)
-		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE)
-		.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
+		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE);
+		if (xf != null)
+			instance.addField(xf).describe(FieldAnnotation.LOADED_FROM_ROLE);
+		instance.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), location));
 	}

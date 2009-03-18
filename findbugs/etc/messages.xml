@@ -5138,7 +5138,25 @@ for using a JSR-166 lock is:
 <![CDATA[
 <p> This method compares two reference values using the == or != operator,
 where the correct way to compare instances of this type is generally
-with the equals() method.  Examples of classes which should generally
+with the equals() method. 
+It is possible to create distinct instances that are equal (but do not compare as == since
+they are different objects).
+Examples of classes which should generally
+not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="RC_REF_COMPARISON_BAD_PRACTICE">
+    <ShortDescription>Suspicious reference comparison</ShortDescription>
+    <LongDescription>Suspicious comparison of {2} references in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares two reference values using the == or != operator,
+where the correct way to compare instances of this type is generally
+with the equals() method.  
+It is possible to create distinct instances that are equal (but do not compare as == since
+they are different objects).
+Examples of classes which should generally
 not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 ]]>
     </Details>
@@ -6908,7 +6926,7 @@ The code here uses <code>File.separator</code>
 where a regular expression is required. This will fail on Windows
 platforms, where the <code>File.separator</code> is a backslash, which is interpreted in a
 regular expression as an escape character. Amoung other options, you can just use
-<code>File.separatorChar=='\\' &amp; "\\\\" : File.separator</code> instead of
+<code>File.separatorChar=='\\' ? "\\\\" : File.separator</code> instead of
 <code>File.separator</code>
 
 </p>
