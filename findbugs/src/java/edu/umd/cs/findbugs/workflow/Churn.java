@@ -21,13 +21,11 @@ package edu.umd.cs.findbugs.workflow;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
-import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -46,6 +44,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class Churn {
 	BugCollection bugCollection;
 
+	int fixRate = -1;
 	public Churn() {
 	}
 
@@ -58,55 +57,113 @@ public class Churn {
 	}
 
 	String getKey(BugInstance b) {
-		return b.getPriorityAbbreviation() + "-" + b.getType();
+		return b.getType();
+		// return b.getPriorityAbbreviation() + "-" + b.getType();
 	}
 
 	static class Data {
 		int persist, fixed;
+		int maxRemovedAtOnce() {
+			int count = 0;
+			for(int c : lastCount.values()) 
+				if (count < c)
+					count = c;
+			return count;
+		}
+		Map<Long, Integer> lastCount = new HashMap<Long,Integer>();
+		
+		void update(BugInstance bug) {
+			if (bug.isDead())
+				fixed++;
+			else persist++;
+			final long lastVersion = bug.getLastVersion();
+			if (lastVersion != -1) {
+			Integer v = lastCount.get(lastVersion);
+			if (v == null) 
+				lastCount.put(lastVersion, 0);
+			else 
+				lastCount.put(lastVersion, v+1);
+			}
+		}
 	}
 
-	Map<String, Data> data = new HashMap<String, Data>();
-
+	Map<String, Data> data = new TreeMap<String, Data>();
+	Data all = new Data();
+	int[] aliveAt;
+	int [] diedAfter;
 	public Churn execute() {
 
-		Data all = new Data();
 		data.put("all", all);
+		aliveAt = new int[(int)bugCollection.getSequenceNumber()+1];
+		diedAfter = new int[(int)bugCollection.getSequenceNumber()+1];
+		
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();
+			
 
 			String key = getKey(bugInstance);
 			Data d = data.get(key);
 			if (d == null)
 				data.put(key, d = new Data());
-			if (bugInstance.isDead()) {
-				d.fixed++;
-				all.fixed++;
-			}
-			else {
-				d.persist++;
-				all.persist++;
-			}
+			d.update(bugInstance);
+			all.update(bugInstance);
+		
 			long first = bugInstance.getFirstVersion();
 			long last = bugInstance.getLastVersion();
-			if (first != 0 && last != -1)
-				System.out.printf("%3d age\n", (last-first));
+			
+			if (last != -1) {
+				System.out.printf("%3d #fixed %s\n", last, key);
+			}
+			if (first != 0 && last != -1) {
+				int lifespan = (int)(last-first+1);
+				
+				System.out.printf("%3d #age %s\n", lifespan, key);
+				System.out.printf("%3d %3d #spread %s\n", first, last, key);
+				diedAfter[lifespan]++;
+				for (int t = 1; t < lifespan; t++)
+					aliveAt[t]++;
+			} else if (first != 0) {
+				int lifespan = (int)(bugCollection.getSequenceNumber()-first+1);
+				for (int t = 1; t < lifespan; t++)
+					aliveAt[t]++;
+			}
 		}
 		return this;
 	}
 
 	public void dump(PrintStream out) {
-		System.out.printf("%3s %5s %5s  %s\n", "%", "const", "fix", "new");
+		for(int t = 1; t < aliveAt.length; t++) {
+			if (aliveAt[t] != 0)
+			System.out.printf("%3d%% %4d %5d %3d #decay\n", diedAfter[t] * 100 / aliveAt[t], diedAfter[t], aliveAt[t], t);
+		}
+		System.out.printf("%7s %3s %5s %5s %5s  %s\n", "chi", "%", "const", "fix", "max", "kind");
+		double fixRate;
+		if (this.fixRate == -1)
+			fixRate = ((double) all.fixed)/(all.fixed+all.persist);
+		else fixRate = this.fixRate/100.0;
 		for (Map.Entry<String, Data> e : data.entrySet()) {
 			Data d = e.getValue();
 			int total = d.persist + d.fixed;
 			if (total < 2)
 				continue;
-			System.out.printf("%3d %5d %5d  %s\n", d.fixed * 100 / total, d.persist, d.fixed, e.getKey());
+			
+			double expectedFixed = fixRate*total;
+			double expectedPersist = (1-fixRate) * total;
+			double chiValue = (d.fixed - expectedFixed)*(d.fixed - expectedFixed)/expectedFixed
+							+ (d.persist - expectedPersist)*(d.persist - expectedPersist)/expectedPersist;
+			if (expectedFixed > d.fixed)
+				chiValue = -chiValue;
+			System.out.printf("%7.1f %3d %5d %5d %5d %s\n", chiValue, d.fixed * 100 / total, d.persist, d.fixed, 
+					d.maxRemovedAtOnce(), e.getKey());
 		}
 
 	}
 
 	class ChurnCommandLine extends CommandLine {
+
+		ChurnCommandLine() {
+			this.addOption("-fixRate", "percentage", "expected fix rate for chi test");
+		}
 
 		@Override
 		public void handleOption(String option, String optionalExtraPart) {
@@ -115,6 +172,9 @@ public class Churn {
 
 		@Override
 		public void handleOptionWithArgument(String option, String argument) {
+			if (option.equals("-fixRate"))
+				fixRate = Integer.parseInt(argument);
+			else
 			throw new IllegalArgumentException("unknown option: " + option);
 		}
 	}
