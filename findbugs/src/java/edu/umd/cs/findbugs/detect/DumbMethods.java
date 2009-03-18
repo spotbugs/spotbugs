@@ -294,7 +294,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 		}
 
 
-		if (seen == INVOKESPECIAL && getClassConstantOperand().equals("java/util/concurrent/ScheduledThreadPoolExecutor")
+		/** Since you can change the number of core threads for a scheduled thread pool executor, disabling this for now */
+		if (false && seen == INVOKESPECIAL && getClassConstantOperand().equals("java/util/concurrent/ScheduledThreadPoolExecutor")
 		        && getNameConstantOperand().equals("<init>")) {
 
 			int arguments = getNumberArguments(getSigConstantOperand());
