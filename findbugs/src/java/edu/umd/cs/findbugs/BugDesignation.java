@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -122,6 +124,11 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	@CheckForNull public String getAnnotationText() {
 			return annotationText;
 	}
+	@Nonnull public String getNonnullAnnotationText() {
+		if (annotationText == null) 
+			return "";
+		return annotationText;
+}
 	public void setAnnotationText(String s) {
 			if (!s.toLowerCase().equals(annotationText))
 				dirty = true;
