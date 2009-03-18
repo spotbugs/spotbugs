@@ -300,7 +300,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 						updateUserAnnotation.setString(col++, bd.getDesignationKey());
 						updateUserAnnotation.setDate(col++, new java.sql.Date(bd.getTimestamp()));
 						updateUserAnnotation.setString(col++, findbugsUser);
-						String annotationText = bd.getAnnotationText();
+						String annotationText = bd.getNonnullAnnotationText();
 						updateUserAnnotation.setString(col++, annotationText);
 						updateUserAnnotation.setDate(col++, new java.sql.Date(Math.max(bd.getTimestamp(), when.getTime())));
 						updateUserAnnotation.setInt(col++, id);
@@ -372,9 +372,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			updateUserAnnotation.setString(col++, bd.getDesignationKey());
 			updateUserAnnotation.setDate(col++, new java.sql.Date(bd.getTimestamp()));
 			updateUserAnnotation.setString(col++, findbugsUser);
-			String annotationText = bd.getAnnotationText();
-			if (annotationText == null)
-				annotationText = "";
+			String annotationText = bd.getNonnullAnnotationText();
 			updateUserAnnotation.setString(col++, annotationText);
 			updateUserAnnotation.setDate(col++, new java.sql.Date(Math.max(lastSeen.getTime(), timestamp)));
 			updateUserAnnotation.setInt(col++, id);
