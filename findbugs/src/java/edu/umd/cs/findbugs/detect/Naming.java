@@ -339,11 +339,16 @@ public class Naming extends PreorderVisitor implements Detector {
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
 		for(String p : obj.getClassName().split("[.]")) if (p.length() == 1) return;
+		  if (name.indexOf("Proto$") > 0)
+	        	return;
 		classIsPublicOrProtected = obj.isPublic() || obj.isProtected();
 		if (Character.isLetter(baseClassName.charAt(0)) && !Character.isUpperCase(baseClassName.charAt(0))
-		        && baseClassName.indexOf("_") == -1)
-			bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", classIsPublicOrProtected ? NORMAL_PRIORITY
-			        : LOW_PRIORITY).addClass(this));
+		        && baseClassName.indexOf("_") == -1) {
+	        int priority = classIsPublicOrProtected ? NORMAL_PRIORITY
+			        : LOW_PRIORITY;
+	      
+	        bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", priority).addClass(this));
+        }
 		if (name.endsWith("Exception")) {
 			// Does it ultimately inherit from Throwable?
 			if(!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
