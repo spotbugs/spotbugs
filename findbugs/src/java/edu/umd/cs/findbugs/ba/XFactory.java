@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -475,22 +477,32 @@ public class XFactory {
 	}
 	private XField resolveXField(FieldDescriptor originalDescriptor) {
 		FieldDescriptor desc = originalDescriptor;
+		LinkedList<ClassDescriptor> worklist = new LinkedList<ClassDescriptor>();
+		ClassDescriptor originalClassDescriptor = desc.getClassDescriptor();
+		worklist.add(originalClassDescriptor);
 		try {
-			while (true) {
-				XField m = fields.get(desc);
-				if (m != null)
-					return m;
-				XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc.getClassDescriptor());
+			while (!worklist.isEmpty()) {
+				ClassDescriptor d = worklist.removeFirst();
+				if (!d.equals(originalClassDescriptor)) 
+					desc = DescriptorFactory.instance().getFieldDescriptor(d.getClassName(), desc.getName(),
+					        desc.getSignature(), desc.isStatic());
+				
+				XField f = fields.get(desc);
+				if (f != null) 
+					return f;
+				XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
 				if (xClass == null)
 					break;
 				ClassDescriptor superClass = xClass.getSuperclassDescriptor();
-				if (superClass == null)
-					break;
-				desc = DescriptorFactory.instance().getFieldDescriptor(superClass.getClassName(), desc.getName(),
-				        desc.getSignature(), desc.isStatic());
+				if (superClass != null)
+					worklist.add(superClass);
+				if (originalDescriptor.isStatic())
+				  for(ClassDescriptor i : xClass.getInterfaceDescriptorList()) 
+					worklist.add(i);
+
 			}
 		} catch (CheckedAnalysisException e) {
-			assert true;
+			AnalysisContext.logError("Error resolving " + originalDescriptor, e);
 		}
 		return new UnresolvedXField(originalDescriptor);
 	}
