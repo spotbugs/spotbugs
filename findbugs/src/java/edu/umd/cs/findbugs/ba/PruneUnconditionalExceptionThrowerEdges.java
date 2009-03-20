@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
 	private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
-	private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty("findbugs.unconditionalThrower", "").replace(',', '|');
+	private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty("findbugs.unconditionalThrower", " ").replace(',', '|');
 
 	private MethodGen methodGen;
 	private CFG cfg;
@@ -62,13 +62,18 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		RETURN_OPCODE_SET.set(Constants.DRETURN);
 		RETURN_OPCODE_SET.set(Constants.FRETURN);
 		RETURN_OPCODE_SET.set(Constants.RETURN);
-		Pattern p = null;
+		Pattern p;
 		try {
 			p =  Pattern.compile(UNCONDITIONAL_THROWER_METHOD_NAMES);
+			if (DEBUG) {
+				System.out.println("Pattern is '" + p +"'");
+				System.out.println(p.matcher("showInvalidPage").matches());
+			}
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error compiling unconditional thrower pattern " + UNCONDITIONAL_THROWER_METHOD_NAMES, e);
+			p = Pattern.compile(" ");
 		}
-		unconditionalThrowerPattern = Pattern.compile(" ");
+		unconditionalThrowerPattern = p;
 	}
 
 	public PruneUnconditionalExceptionThrowerEdges(/*ClassContext classContext,*/ JavaClass javaClass, Method method,
@@ -108,14 +113,20 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			boolean foundNonThrower = false;
 			boolean isExact = true;
 			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
-			if (unconditionalThrowerPattern.matcher(primaryXMethod.getName()).matches()) {
+			final String methodName = primaryXMethod.getName();
+			final boolean matches = unconditionalThrowerPattern.matcher(methodName).matches();
+			if (DEBUG) 
+				System.out.println("Checking '" + methodName + "' is " + matches );
+			if (matches) {
+				if (DEBUG) System.out.println("\tmatched for " + instructionHandle + " : " + primaryXMethod);
+
 				foundThrower = true; 
 			} else {
 
 				if (inv instanceof INVOKEINTERFACE) continue;
 
 				String className = inv.getClassName(cpg);
-				if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle + " in " + className);
+				if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle+ " : " + primaryXMethod);
 
 				Location loc = new Location(instructionHandle, basicBlock);
 				TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
