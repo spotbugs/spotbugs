@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
 	private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
+	private static final String UNCONDITIONAL_THROWER_METHOD_NAMES = SystemProperties.getProperty("findbugs.unconditionalThrower", "").replace(',', '|');
 
 	private MethodGen methodGen;
 	private CFG cfg;
@@ -51,6 +53,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private AnalysisContext analysisContext;
 	private boolean cfgModified;
 
+	private static final Pattern unconditionalThrowerPattern;
 	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
 	static {
 		RETURN_OPCODE_SET.set(Constants.ARETURN);
@@ -59,6 +62,13 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		RETURN_OPCODE_SET.set(Constants.DRETURN);
 		RETURN_OPCODE_SET.set(Constants.FRETURN);
 		RETURN_OPCODE_SET.set(Constants.RETURN);
+		Pattern p = null;
+		try {
+			p =  Pattern.compile(UNCONDITIONAL_THROWER_METHOD_NAMES);
+		} catch (RuntimeException e) {
+			AnalysisContext.logError("Error compiling unconditional thrower pattern " + UNCONDITIONAL_THROWER_METHOD_NAMES, e);
+		}
+		unconditionalThrowerPattern = Pattern.compile(" ");
 	}
 
 	public PruneUnconditionalExceptionThrowerEdges(/*ClassContext classContext,*/ JavaClass javaClass, Method method,
@@ -96,52 +106,56 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			InvokeInstruction inv = (InvokeInstruction) exceptionThrower;
 			boolean foundThrower = false;
 			boolean foundNonThrower = false;
-
-			if (inv instanceof INVOKEINTERFACE) continue;
-				
-			String className = inv.getClassName(cpg);
-			if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle + " in " + className);
-
-			Location loc = new Location(instructionHandle, basicBlock);
-			TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
-			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
-			// if (primaryXMethod.isAbstract()) continue;
-			Set<XMethod> targetSet = null;
 			boolean isExact = true;
-			try {
+			XMethod primaryXMethod = XFactory.createXMethod(inv, cpg);
+			if (unconditionalThrowerPattern.matcher(primaryXMethod.getName()).matches()) {
+				foundThrower = true; 
+			} else {
 
-				if (className.startsWith("["))
-					continue;
-				String methodSig = inv.getSignature(cpg);
-				if (!methodSig.endsWith("V")) 
-					continue;
+				if (inv instanceof INVOKEINTERFACE) continue;
 
-				targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
+				String className = inv.getClassName(cpg);
+				if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle + " in " + className);
 
-				for(XMethod xMethod : targetSet) {
-					if (DEBUG) System.out.println("\tFound " + xMethod);
+				Location loc = new Location(instructionHandle, basicBlock);
+				TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
+				// if (primaryXMethod.isAbstract()) continue;
+				Set<XMethod> targetSet = null;
+				try {
 
-					// Ignore abstract and native methods
-					if (!( xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate() )) try {
-						isExact = false;
-	                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
-	                    if (xClass.isAbstract()) continue;
-                    } catch (CheckedAnalysisException e) {
-	                    AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
-                    }
-					boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
-					if (isUnconditionalThrower) {
-						foundThrower = true;
-						if (DEBUG) System.out.println("Found thrower");
+					if (className.startsWith("["))
+						continue;
+					String methodSig = inv.getSignature(cpg);
+					if (!methodSig.endsWith("V")) 
+						continue;
+
+					targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
+
+					for(XMethod xMethod : targetSet) {
+						if (DEBUG) System.out.println("\tFound " + xMethod);
+
+						// Ignore abstract and native methods
+						if (!( xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate() )) try {
+							isExact = false;
+							XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, xMethod.getClassDescriptor());
+							if (xClass.isAbstract()) continue;
+						} catch (CheckedAnalysisException e) {
+							AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
+						}
+						boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
+						if (isUnconditionalThrower) {
+							foundThrower = true;
+							if (DEBUG) System.out.println("Found thrower");
+						}
+						else {
+							foundNonThrower = true;
+							if (DEBUG) System.out.println("Found non thrower");
+						}
+
 					}
-					else {
-						foundNonThrower = true;
-						if (DEBUG) System.out.println("Found non thrower");
-					}
-
+				} catch (ClassNotFoundException e) {
+					analysisContext.getLookupFailureCallback().reportMissingClass(e);
 				}
-			} catch (ClassNotFoundException e) {
-				analysisContext.getLookupFailureCallback().reportMissingClass(e);
 			}
 			boolean newResult = foundThrower && !foundNonThrower;
 			if (newResult) {
