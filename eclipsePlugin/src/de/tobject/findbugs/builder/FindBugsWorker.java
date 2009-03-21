@@ -494,7 +494,7 @@ public class FindBugsWorker {
 	 *            project relative OR workspace relative OR absolute OS file path (1.3.8+
 	 *            version)
 	 * @param project
-	 *            might be null (only for workspace relative or absulute paths)
+	 *            might be null (only for workspace relative or absolute paths)
 	 * @return absolute path which matches given relative or absolute path, never null
 	 */
 	public static IPath getFilterPath(String filePath, IProject project) {
@@ -503,23 +503,20 @@ public class FindBugsWorker {
 			return path;
 		}
 		IPath wspLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-		if(project == null) {
-			IPath newPath = wspLocation.append(path);
-			if(newPath.toFile().exists()){
-				return newPath;
-			}
-		} else {
+		if(project != null) {
 			// try first project relative location
 			IPath newPath = project.getLocation().append(path);
 			if(newPath.toFile().exists()){
 				return newPath;
 			}
-			// try to resolve relative to workspace (if we use workspace properties for project)
-			newPath = wspLocation.append(path);
-			if(newPath.toFile().exists()){
-				return newPath;
-			}
 		}
+
+		// try to resolve relative to workspace (if we use workspace properties for project)
+		IPath newPath = wspLocation.append(path);
+		if(newPath.toFile().exists()){
+			return newPath;
+		}
+		
 		// something which we have no idea what it can be (or missing/wrong file path)
 		return path;
 	}

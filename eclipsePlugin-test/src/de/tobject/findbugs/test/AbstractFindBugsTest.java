@@ -64,8 +64,8 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public abstract class AbstractFindBugsTest {
 
-	private static final String SRC = "src";
-	private static final String TEST_PROJECT = "TestProject";
+	protected static final String SRC = "src";
+	protected static final String TEST_PROJECT = "TestProject";
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
 	protected static final String FILTER_FILE = "/src/filter.xml";
 	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
