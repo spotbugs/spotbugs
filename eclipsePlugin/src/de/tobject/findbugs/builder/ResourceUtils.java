@@ -81,7 +81,7 @@ public class ResourceUtils {
 			if (file.isDirectory()) {
 				addFiles(findBugsProject, file, pat);
 			} else {
-				// add the clzs to the list of files to be analysed
+				// add the clzs to the list of files to be analyzed
 				if (pat.matcher(file.getName()).matches()) {
 					findBugsProject.addFile(file.getAbsolutePath());
 				}
@@ -269,7 +269,7 @@ public class ResourceUtils {
 	}
 
 	/**
-	 * Convinient method to get resources from adaptables
+	 * Convenient method to get resources from adaptables
 	 * @param element an IAdaptable object which may provide an adapter for IResource
 	 * @return resource object or null
 	 */
