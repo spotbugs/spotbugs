@@ -220,6 +220,26 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	}
 
 	@Test
+	public void testDisableFindBugs() throws CoreException {
+		// Set the nature
+		ProjectUtilities.addFindBugsNature(getProject(), new NullProgressMonitor());
+		assertTrue(ProjectUtilities.hasFindBugsNature(getProject()));
+
+		// Create the properties page and the dialog
+		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
+		PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);
+
+		// Disable FindBugs
+		page.enableFindBugs(false);
+
+		// Accept the dialog
+		dialog.okPressed();
+
+		// Check the project doesn't have the nature
+		assertFalse(ProjectUtilities.hasFindBugsNature(getProject()));
+	}
+
+	@Test
 	public void testDisableProjectProperties() throws CoreException {
 		// Create the properties page and the dialog
 		FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
