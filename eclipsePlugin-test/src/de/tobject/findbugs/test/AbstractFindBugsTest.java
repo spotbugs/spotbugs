@@ -52,8 +52,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * 
  * @author Tomás Pollak
  */
-// TODO rename to AbstractUITest
-public abstract class AbstractFindBugsTest extends AbstractFindBugsTest2 {
+public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
 	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";

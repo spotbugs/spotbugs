@@ -43,14 +43,13 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * 
  * @author Tomás Pollak
  */
-//TODO rename to AbstractFindBugsTest
-public abstract class AbstractFindBugsTest2 {
+public abstract class AbstractPluginTest {
 
 	protected static final String SRC = "src";
 	protected static final String TEST_PROJECT = "TestProject";
 	private IJavaProject project;
 
-	public AbstractFindBugsTest2() {
+	public AbstractPluginTest() {
 		super();
 	}
 

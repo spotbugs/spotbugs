@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
  * 
  * @author Tomás Pollak
  */
-public abstract class AbstractQuickfixTest extends AbstractFindBugsTest2 {
+public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
 	private IMarkerResolutionGenerator2 resolutionGenerator;
 
