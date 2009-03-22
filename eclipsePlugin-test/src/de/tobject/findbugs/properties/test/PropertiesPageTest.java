@@ -505,10 +505,6 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 		return shell;
 	}
 
-	private UserPreferences getProjectPreferences() {
-		return FindbugsPlugin.getProjectPreferences(getProject(), false);
-	}
-
 	private UserPreferences getWorkspacePreferences() {
 		return FindbugsPlugin.getUserPreferences(null);
 	}

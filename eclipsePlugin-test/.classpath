@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="testFiles"/>
+	<classpathentry kind="src" path="quickfixInput"/>
 	<classpathentry kind="output" path="bin_eclipse"/>
 </classpath>

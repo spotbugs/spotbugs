@@ -19,10 +19,8 @@
 package de.tobject.findbugs.test;
 
 import static org.eclipse.core.runtime.jobs.Job.*;
-import static org.eclipse.jdt.testplugin.JavaProjectHelper.*;
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,26 +29,18 @@ import java.util.Set;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.junit.After;
-import org.junit.Before;
 
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.BugExplorerView;
 import de.tobject.findbugs.view.explorer.BugContentProvider;
 import edu.umd.cs.findbugs.BugInstance;
@@ -58,62 +48,16 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
- * Base class for FindBugs tests.
+ * Base class for FindBugs UI tests (except the quickfix tests).
  * 
  * @author Tomás Pollak
  */
-public abstract class AbstractFindBugsTest {
+// TODO rename to AbstractUITest
+public abstract class AbstractFindBugsTest extends AbstractFindBugsTest2 {
 
-	protected static final String SRC = "src";
-	protected static final String TEST_PROJECT = "TestProject";
+	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	protected static final String BUGS_XML_FILE = "/src/bugs.xml";
 	protected static final String FILTER_FILE = "/src/filter.xml";
-	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
-	private IJavaProject project;
-
-	public AbstractFindBugsTest() {
-		super();
-	}
-
-	/**
-	 * Create a new Java project with a source folder and copy the test files of the
-	 * plugin to the source folder. Compile the project.
-	 * 
-	 * @throws CoreException
-	 * @throws IOException
-	 */
-	@Before
-	public void setUp() throws CoreException, IOException {
-		// Create the test project
-		project = createJavaProject(TEST_PROJECT, "bin");
-		addRTJar(getJavaProject());
-		addSourceContainer(getJavaProject(), SRC);
-
-		// Copy test workspace
-		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
-				.getBundle(), "/testFiles");
-
-		// Compile project
-		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
-		performDummySearch();
-
-		// Start with a clean FindBugs state
-		clearBugsState();
-	}
-
-	/**
-	 * Delete the Java project used for this test.
-	 * 
-	 * @throws CoreException
-	 */
-	@After
-	public void tearDown() throws CoreException {
-		// Clean the FindBugs state
-		clearBugsState();
-
-		// Delete the test project
-		delete(project);
-	}
 
 	/**
 	 * Assert the total number of bugs in the given resource.
@@ -207,17 +151,6 @@ public abstract class AbstractFindBugsTest {
 				+ " but seen " + seenBugCount, expectedBugCount, seenBugCount);
 	}
 
-	protected void clearBugsState() throws CoreException {
-		MarkerUtil.removeMarkers(getProject());
-		FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
-	}
-
-	protected FindBugsWorker createFindBugsWorker() throws CoreException {
-		FindBugsWorker worker = new FindBugsWorker(getProject(),
-				new NullProgressMonitor());
-		return worker;
-	}
-
 	protected BugContentProvider getBugContentProvider() throws PartInitException {
 		BugExplorerView navigator = (BugExplorerView) showBugExplorerView();
 		BugContentProvider bugContentProvider = BugContentProvider.getProvider(navigator
@@ -275,22 +208,9 @@ public abstract class AbstractFindBugsTest {
 		return filterFile.getLocation().toOSString();
 	}
 
-	/**
-	 * Returns the Java project for this test.
-	 * 
-	 * @return An IJavaProject.
-	 */
-	protected IJavaProject getJavaProject() {
-		return project;
-	}
-
-	/**
-	 * Returns the project for this test.
-	 * 
-	 * @return An IProject.
-	 */
-	protected IProject getProject() {
-		return getJavaProject().getProject();
+	@Override
+	protected String getTestFilesPath() {
+		return "/testFiles";
 	}
 
 	protected int getVisibleBugsCount() {
@@ -307,12 +227,14 @@ public abstract class AbstractFindBugsTest {
 	 *            The family object that groups the jobs.
 	 */
 	protected void joinJobFamily(Object family) {
-		try {
-			getJobManager().join(family, null);
-		} catch (OperationCanceledException e) {
-			// continue
-		} catch (InterruptedException e) {
-			// continue
+		boolean finished = false;
+		while (!finished) {
+			try {
+				getJobManager().join(family, null);
+				finished = true;
+			} catch (InterruptedException e) {
+				// continue waiting
+			}
 		}
 	}
 
@@ -347,12 +269,5 @@ public abstract class AbstractFindBugsTest {
 	protected IViewPart showBugExplorerView() throws PartInitException {
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 				.showView(BUG_EXPLORER_VIEW_ID);
-	}
-
-	/**
-	 * Runs the FindBugs worker on the test project.
-	 */
-	protected void work(FindBugsWorker worker) throws CoreException {
-		worker.work(Collections.singletonList((IResource) getProject()));
 	}
 }
