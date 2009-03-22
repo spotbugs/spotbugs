@@ -66,6 +66,7 @@ public abstract class AbstractPluginTest {
 		project = createJavaProject(TEST_PROJECT, "bin");
 		addRTJar(getJavaProject());
 		addSourceContainer(getJavaProject(), SRC);
+		addExtraClassPathEntries();
 
 		// Copy test workspace
 		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
@@ -91,6 +92,14 @@ public abstract class AbstractPluginTest {
 
 		// Delete the test project
 		delete(project);
+	}
+
+	/**
+	 * Hook for subclasses to add extra classpath entries to the test project during the
+	 * setup of the test.
+	 */
+	protected void addExtraClassPathEntries() throws CoreException {
+		// Default implementation
 	}
 
 	protected void clearBugsState() throws CoreException {
@@ -122,6 +131,10 @@ public abstract class AbstractPluginTest {
 		return getJavaProject().getProject();
 	}
 
+	protected UserPreferences getProjectPreferences() {
+		return FindbugsPlugin.getProjectPreferences(getProject(), false);
+	}
+
 	/**
 	 * Subclasses must implement this method and return a path inside of the bundle where
 	 * the test files are located.
@@ -140,9 +153,5 @@ public abstract class AbstractPluginTest {
 	 */
 	protected void work(FindBugsWorker worker, IResource resource) throws CoreException {
 		worker.work(Collections.singletonList(resource));
-	}
-
-	protected UserPreferences getProjectPreferences() {
-		return FindbugsPlugin.getProjectPreferences(getProject(), false);
 	}
 }

@@ -18,13 +18,9 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.IMarkerResolution;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -42,6 +38,7 @@ public class QuickfixTest extends AbstractQuickfixTest {
 	@Test
 	public void testChangePublicToProtectedResolution() throws CoreException, IOException {
 		enableBugCategory("MALICIOUS_CODE");
+
 		doTestQuickfixResolution("ChangePublicToProtectedResolutionExample.java",
 				"FI_PUBLIC_SHOULD_BE_PROTECTED");
 	}
@@ -61,6 +58,7 @@ public class QuickfixTest extends AbstractQuickfixTest {
 	@Test
 	public void testCreateMutableCloneResolution() throws CoreException, IOException {
 		enableBugCategory("MALICIOUS_CODE");
+
 		doTestQuickfixResolution("CreateMutableCloneResolutionExample.java",
 				"EI_EXPOSE_REP");
 	}
@@ -73,40 +71,29 @@ public class QuickfixTest extends AbstractQuickfixTest {
 	}
 
 	@Test
+	public void testMakeFieldFinalResolution() throws CoreException, IOException {
+		enableBugCategory("MALICIOUS_CODE");
+
+		doTestQuickfixResolution("MakeFieldFinalResolutionExample.java",
+				"MS_SHOULD_BE_FINAL");
+	}
+
+	@Test
+	public void testMakeFieldStaticResolution() throws CoreException, IOException {
+		doTestQuickfixResolution("MakeFieldStaticResolutionExample.java",
+				"SS_SHOULD_BE_STATIC");
+	}
+
+	@Test
+	public void testMakeInnerTypeStaticResolution() throws CoreException, IOException {
+		doTestQuickfixResolution("MakeInnerTypeStaticResolutionExample.java",
+				"SIC_INNER_SHOULD_BE_STATIC");
+	}
+
+	@Test
 	public void testUseValueOfResolution() throws CoreException, IOException {
 		doTestQuickfixResolution("UseValueOfResolutionExample.java", "DM_BOOLEAN_CTOR",
 				"DM_NUMBER_CTOR");
 	}
 
-	private void doTestQuickfixResolution(String classFileName,
-			Class<? extends IMarkerResolution> resolutionClass,
-			String... expectedPatterns) throws CoreException, IOException {
-		// Run FindBugs on the input class
-		work(createFindBugsWorker(), getInputResource(classFileName));
-
-		// Assert the expected markers are present
-		IMarker[] markers = getInputFileMarkers(classFileName);
-		assertEquals(expectedPatterns.length, markers.length);
-		assertPresentBugPatterns(expectedPatterns, markers);
-
-		// Assert all markers have resolution
-		assertAllMarkersHaveResolutions(markers);
-
-		// Apply resolution to each marker
-		if (resolutionClass != null) {
-			applySpecificResolutionForAllMarkers(markers, resolutionClass);
-		} else {
-			applySingleResolutionForAllMarkers(markers);
-		}
-
-		// Assert output file
-		assertEqualFiles(getExpectedOutputFile(classFileName),
-				getInputCompilationUnit(classFileName));
-		assertEquals(0, getInputFileMarkers(classFileName).length);
-	}
-
-	private void doTestQuickfixResolution(String classFileName,
-			String... expectedPatterns) throws CoreException, IOException {
-		doTestQuickfixResolution(classFileName, null, expectedPatterns);
-	}
 }

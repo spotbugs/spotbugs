@@ -29,8 +29,11 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
+import org.eclipse.jdt.testplugin.JavaProjectHelper;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
 import org.junit.Assert;
@@ -58,7 +61,8 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
 		resolutionGenerator = new BugResolutionGenerator();
 
-		// We need to enable project settings, because some tests need to modify the reporting preferences
+		// We need to enable project settings, because some tests need to modify the
+		// reporting preferences
 		FindbugsPlugin.setProjectSettingsEnabled(getProject(), null, true);
 	}
 
@@ -69,7 +73,53 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 		super.tearDown();
 	}
 
-	protected void applySingleResolutionForAllMarkers(IMarker[] markers) {
+	protected void addJUnitToProjectClasspath() throws JavaModelException {
+		IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
+		JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
+	}
+
+	protected void doTestQuickfixResolution(String classFileName,
+			Class<? extends IMarkerResolution> resolutionClass,
+			String... expectedPatterns) throws CoreException, IOException {
+		// Run FindBugs on the input class
+		work(createFindBugsWorker(), getInputResource(classFileName));
+
+		// Assert the expected markers are present
+		IMarker[] markers = getInputFileMarkers(classFileName);
+		assertPresentBugPatterns(expectedPatterns, markers);
+		assertEquals(expectedPatterns.length, markers.length);
+
+		// Assert all markers have resolution
+		assertAllMarkersHaveResolutions(markers);
+
+		// Apply resolution to each marker
+		if (resolutionClass != null) {
+			applySpecificResolutionForAllMarkers(markers, resolutionClass);
+		} else {
+			applySingleResolutionForAllMarkers(markers);
+		}
+
+		// Assert output file
+		assertEqualFiles(getExpectedOutputFile(classFileName),
+				getInputCompilationUnit(classFileName));
+		assertEquals(0, getInputFileMarkers(classFileName).length);
+	}
+
+	protected void doTestQuickfixResolution(String classFileName,
+			String... expectedPatterns) throws CoreException, IOException {
+		doTestQuickfixResolution(classFileName, null, expectedPatterns);
+	}
+
+	protected void enableBugCategory(String category) {
+		getProjectPreferences().getFilterSettings().addCategory(category);
+	}
+
+	@Override
+	protected String getTestFilesPath() {
+		return "/quickfixInput";
+	}
+
+	private void applySingleResolutionForAllMarkers(IMarker[] markers) {
 		for (int i = 0; i < markers.length; i++) {
 			IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(
 					markers[i]);
@@ -78,7 +128,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 		}
 	}
 
-	protected void applySpecificResolutionForAllMarkers(IMarker[] markers,
+	private void applySpecificResolutionForAllMarkers(IMarker[] markers,
 			Class<? extends IMarkerResolution> resolutionClass) {
 		for (int i = 0; i < markers.length; i++) {
 			IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(
@@ -93,57 +143,16 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 		Assert.fail("No resolution of class " + resolutionClass);
 	}
 
-	protected void assertAllMarkersHaveResolutions(IMarker[] markers) {
+	private void assertAllMarkersHaveResolutions(IMarker[] markers) {
 		for (int i = 0; i < markers.length; i++) {
 			assertTrue(getResolutionGenerator().hasResolutions(markers[i]));
 		}
 	}
 
-	protected void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit)
+	private void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit)
 			throws IOException, JavaModelException {
 		String expectedSource = readFileContents(expectedFile);
 		assertEquals(expectedSource, compilationUnit.getSource());
-	}
-
-	protected void assertPresentBugPatterns(String[] expectedPatterns, IMarker[] markers) {
-		for (int i = 0; i < expectedPatterns.length; i++) {
-			assertPresentBugPattern(expectedPatterns[i], markers);
-		}
-	}
-
-	protected void enableBugCategory(String category) {
-		getProjectPreferences().getFilterSettings().addCategory(category);
-	}
-
-	protected URL getExpectedOutputFile(String filename) {
-		URL url = FindbugsTestPlugin.getDefault().getBundle().getEntry(
-				"/quickfixOutput/" + filename);
-		return url;
-	}
-
-	protected ICompilationUnit getInputCompilationUnit(String classFileName)
-			throws JavaModelException {
-		ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
-				.findElement(new Path(classFileName));
-		return compilationUnit;
-	}
-
-	protected IMarker[] getInputFileMarkers(String classFileName)
-			throws JavaModelException {
-		return MarkerUtil.getAllMarkers(getInputResource(classFileName));
-	}
-
-	protected IResource getInputResource(String classFileName) throws JavaModelException {
-		return getInputCompilationUnit(classFileName).getResource();
-	}
-
-	protected IMarkerResolutionGenerator2 getResolutionGenerator() {
-		return resolutionGenerator;
-	}
-
-	@Override
-	protected String getTestFilesPath() {
-		return "/quickfixInput";
 	}
 
 	private void assertPresentBugPattern(String bugPatternType, IMarker[] markers) {
@@ -154,6 +163,37 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 			}
 		}
 		fail("Couldn't find pattern " + bugPatternType);
+	}
+
+	private void assertPresentBugPatterns(String[] expectedPatterns, IMarker[] markers) {
+		for (int i = 0; i < expectedPatterns.length; i++) {
+			assertPresentBugPattern(expectedPatterns[i], markers);
+		}
+	}
+
+	private URL getExpectedOutputFile(String filename) {
+		URL url = FindbugsTestPlugin.getDefault().getBundle().getEntry(
+				"/quickfixOutput/" + filename);
+		return url;
+	}
+
+	private ICompilationUnit getInputCompilationUnit(String classFileName)
+			throws JavaModelException {
+		ICompilationUnit compilationUnit = (ICompilationUnit) getJavaProject()
+				.findElement(new Path(classFileName));
+		return compilationUnit;
+	}
+
+	private IMarker[] getInputFileMarkers(String classFileName) throws JavaModelException {
+		return MarkerUtil.getAllMarkers(getInputResource(classFileName));
+	}
+
+	private IResource getInputResource(String classFileName) throws JavaModelException {
+		return getInputCompilationUnit(classFileName).getResource();
+	}
+
+	private IMarkerResolutionGenerator2 getResolutionGenerator() {
+		return resolutionGenerator;
 	}
 
 	private String readFileContents(URL url) throws IOException {
