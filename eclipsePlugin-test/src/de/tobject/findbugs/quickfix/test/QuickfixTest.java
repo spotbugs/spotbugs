@@ -21,7 +21,6 @@ package de.tobject.findbugs.quickfix.test;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
@@ -33,7 +32,6 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckRe
  * 
  * @author Tomás Pollak
  */
-@Ignore
 public class QuickfixTest extends AbstractQuickfixTest {
 	@Test
 	public void testChangePublicToProtectedResolution() throws CoreException, IOException {
@@ -88,6 +86,25 @@ public class QuickfixTest extends AbstractQuickfixTest {
 	public void testMakeInnerTypeStaticResolution() throws CoreException, IOException {
 		doTestQuickfixResolution("MakeInnerTypeStaticResolutionExample.java",
 				"SIC_INNER_SHOULD_BE_STATIC");
+	}
+
+	@Test
+	public void testRemoveUselessMethodResolution_FI_Empty() throws CoreException, IOException {
+		doTestQuickfixResolution("RemoveUselessMethodResolutionFIEmptyExample.java",
+				"FI_EMPTY");
+	}
+
+	@Test
+	public void testRemoveUselessMethodResolution_FI_Useless() throws CoreException,
+			IOException {
+		doTestQuickfixResolution("RemoveUselessMethodResolutionFIUselessExample.java",
+				"FI_USELESS");
+	}
+
+	@Test
+	public void testRemoveUselessStatementResolution() throws CoreException, IOException {
+		doTestQuickfixResolution("RemoveUselessStatementResolutionExample.java",
+				"ESync_EMPTY_SYNC");
 	}
 
 	@Test

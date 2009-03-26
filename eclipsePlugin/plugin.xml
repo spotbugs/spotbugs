@@ -531,8 +531,16 @@
    <extension
          point="org.eclipse.ui.ide.markerResolution">
       <markerResolutionGenerator
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"
             class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
+      <markerResolutionGenerator
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal">
+      </markerResolutionGenerator>
+      <markerResolutionGenerator
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow">
+      </markerResolutionGenerator>
    </extension>
 
    <extension
