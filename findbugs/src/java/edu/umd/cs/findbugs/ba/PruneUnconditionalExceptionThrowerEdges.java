@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -117,14 +118,16 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			final boolean matches = unconditionalThrowerPattern.matcher(methodName).matches();
 			if (DEBUG) 
 				System.out.println("Checking '" + methodName + "' is " + matches );
+
 			if (matches) {
 				if (DEBUG) System.out.println("\tmatched for " + instructionHandle + " : " + primaryXMethod);
 
 				foundThrower = true; 
+			} else if (inv instanceof INVOKEINTERFACE) {
+				continue;
+			} else if (inv instanceof INVOKESTATIC) {
+				foundThrower = isUnconditionalThrower(primaryXMethod);
 			} else {
-
-				if (inv instanceof INVOKEINTERFACE) continue;
-
 				String className = inv.getClassName(cpg);
 				if (DEBUG) System.out.println("\tlooking up method for " + instructionHandle+ " : " + primaryXMethod);
 
@@ -137,7 +140,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					if (className.startsWith("["))
 						continue;
 					String methodSig = inv.getSignature(cpg);
-					if (!methodSig.endsWith("V")) 
+					if (!methodSig.endsWith("V") && !methodSig.endsWith("Exception;") && !methodSig.endsWith("Error;"))
 						continue;
 
 					targetSet = Hierarchy2.resolveMethodCallTargets(inv, typeFrame, cpg);
@@ -153,7 +156,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 						} catch (CheckedAnalysisException e) {
 							AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
 						}
-						boolean isUnconditionalThrower = xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
+						boolean isUnconditionalThrower = isUnconditionalThrower(xMethod);
 						if (isUnconditionalThrower) {
 							foundThrower = true;
 							if (DEBUG) System.out.println("Found thrower");
@@ -197,6 +200,14 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		}
 		}
 	}
+
+	/**
+     * @param xMethod
+     * @return
+     */
+    private boolean isUnconditionalThrower(XMethod xMethod) {
+	    return xMethod.isUnconditionalThrower() && !xMethod.isUnsupported() && !xMethod.isSynthetic();
+    }
 
 	/**
      * @param xMethod
