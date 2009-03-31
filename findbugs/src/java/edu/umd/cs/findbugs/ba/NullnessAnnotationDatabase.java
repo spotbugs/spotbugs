@@ -69,6 +69,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			if (mp.getParameterNumber() == 0 && m.getName().equals("equals") 
 					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
 					return NullnessAnnotation.CHECK_FOR_NULL;
+			else if (mp.getParameterNumber() == 0 && m.getName().equals("main") 
+					&& m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
+				return NullnessAnnotation.NONNULL;
 			else if (mp.getParameterNumber() == 0 && m.getName().equals("compareTo") 
 					&& m.getSignature().endsWith(";)Z") && !m.isStatic())
 					return NullnessAnnotation.NONNULL;
