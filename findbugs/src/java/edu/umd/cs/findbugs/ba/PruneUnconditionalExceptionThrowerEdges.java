@@ -87,7 +87,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		this.analysisContext = analysisContext;
 	}
 
-	public void execute() throws CFGBuilderException, DataflowAnalysisException {
+	public void execute() throws  DataflowAnalysisException {
 		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
 		if (currentAnalysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
 			throw new IllegalStateException("This should not happen");

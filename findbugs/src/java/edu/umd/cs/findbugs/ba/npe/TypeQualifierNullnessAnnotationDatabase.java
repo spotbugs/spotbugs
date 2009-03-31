@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -112,8 +113,20 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		if (DEBUG) {
 			System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
 		}
-		
 		TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param, nonnullTypeQualifierValue);
+		
+		if (tqa == null && param == 0) {
+			String name = m.getName();
+			String signature = m.getSignature();
+			if (name.equals("main") 
+					&& signature.equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
+				return true;
+			else if (NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(m))
+				return true;
+			else if (name.equals("compareTo") 
+					&& signature.substring(signature.indexOf(";")+1).equals(")Z") && !m.isStatic())
+				return true;
+		}
 		boolean answer = (tqa != null) && tqa.when == When.ALWAYS; 
 		
 		if (DEBUG) {

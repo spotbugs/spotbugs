@@ -41,7 +41,21 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
      * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#parameterMustBeNonNull(edu.umd.cs.findbugs.ba.XMethod, int)
      */
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
-		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;
+		if (param == 0) {
+			if (m.getName().equals("equals") 
+					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+				return false;
+			else if (m.getName().equals("main") 
+					&& m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
+				return true;
+			else if (assertsFirstParameterIsNonnull(m))
+				return true;
+			else if (m.getName().equals("compareTo") 
+					&& m.getSignature().endsWith(";)Z") && !m.isStatic())
+				return true;
+		}
+		if (!anyAnnotations(NullnessAnnotation.NONNULL)) 
+			return false;
 		XMethodParameter xmp = new XMethodParameter(m,param);
 		NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
 		if (false) {
@@ -66,15 +80,20 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			XMethod m = mp.getMethod();
 			if (m.getName().startsWith("access$")) return null;
 			// TODO: Handle argument to equals specially: generate special bug code for it
-			if (mp.getParameterNumber() == 0 && m.getName().equals("equals") 
-					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+			int parameterNumber = mp.getParameterNumber();
+			if (parameterNumber == 0) {
+				if (m.getName().equals("equals") 
+						&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
 					return NullnessAnnotation.CHECK_FOR_NULL;
-			else if (mp.getParameterNumber() == 0 && m.getName().equals("main") 
-					&& m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
-				return NullnessAnnotation.NONNULL;
-			else if (mp.getParameterNumber() == 0 && m.getName().equals("compareTo") 
-					&& m.getSignature().endsWith(";)Z") && !m.isStatic())
+				else if (m.getName().equals("main") 
+						&& m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
 					return NullnessAnnotation.NONNULL;
+				else if (assertsFirstParameterIsNonnull(m))
+					return NullnessAnnotation.NONNULL;
+				else if (m.getName().equals("compareTo") 
+						&& m.getSignature().endsWith(";)Z") && !m.isStatic())
+					return NullnessAnnotation.NONNULL;
+			}
 		}
 		else if (o instanceof XMethod) {
 			XMethod m = (XMethod) o;
@@ -101,6 +120,14 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			profiler.end(this.getClass());
 		}
 	}
+	/**
+     * @param m
+     * @return
+     */
+    public static boolean assertsFirstParameterIsNonnull(XMethod m) {
+	    return (m.getName().equalsIgnoreCase("checkNonNull") || m.getName().equalsIgnoreCase("checkNotNull") || m.getName().equalsIgnoreCase("assertNotNull")  )
+	    		&& m.getSignature().startsWith("(Ljava/lang/Object;");
+    }
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnnotationDatabase#addDefaultMethodAnnotation(java.lang.String, edu.umd.cs.findbugs.ba.AnnotationEnumeration)

@@ -77,6 +77,7 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -1310,6 +1311,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 						XMethodParameter mp = nonNullParameter ;
 						invokedXMethod = mp.getMethod();
 						invokedMethod =  MethodAnnotation.fromXMethod(mp.getMethod());
+						if (mp.getParameterNumber() == 0 && NullnessAnnotationDatabase.assertsFirstParameterIsNonnull(invokedXMethod))
+							return;
 						parameterNumber = mp.getParameterNumber();
 						bugType = "NP_NULL_PARAM_DEREF";
 					}

@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -162,13 +162,27 @@ public class UnconditionalValueDerefAnalysis extends
 
 	private static final int NULLCHECK1[] = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW};
 	private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW};
-	
+		
 	
 	private static boolean check(InstructionHandle h, int[] opcodes) {
 		for(int opcode : opcodes) {
 			if (h == null) 
 				return false;
-			if (h.getInstruction().getOpcode() != opcode) 
+			short opcode2 = h.getInstruction().getOpcode();
+			if (opcode == Constants.LDC) {
+				switch (opcode2) {
+				case Constants.LDC:
+				case Constants.ALOAD:
+				case Constants.ALOAD_0:
+				case Constants.ALOAD_1:
+				case Constants.ALOAD_2:
+				case Constants.ALOAD_3:
+					break;
+				default:
+					return false;
+				}
+			}
+			else if (opcode2 != opcode) 
 				return false;
 			h = h.getNext();
 		}
