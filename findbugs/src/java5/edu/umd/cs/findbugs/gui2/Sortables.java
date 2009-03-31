@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
@@ -294,6 +295,28 @@ public enum Sortables implements Comparator<SortableValue>
 			return I18N.instance().getShortMessageWithoutCode(value);
 		}
 	},
+	
+	
+	BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank"))
+	{
+		@Override
+		public String getFrom(BugInstance bug)
+		{
+			if((bug.getBugPattern()) == null)
+				return "??";
+			
+			int rank = BugRanker.findRank(bug);
+			return String.format("%2d", rank);
+		}
+
+		@Override
+		public String formatValue(String value)
+		{
+			return value;
+		}
+	},
+	
+	
 	DIVIDER(" ")
 	{
 		@Override

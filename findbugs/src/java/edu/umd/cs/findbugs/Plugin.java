@@ -43,6 +43,7 @@ public class Plugin {
 	private ArrayList<BugPattern> bugPatternList;
 	private ArrayList<BugCode> bugCodeList;
 	private boolean enabled;
+	private BugRanker bugRanker;
 
 	// Ordering constraints
 	private ArrayList<DetectorOrderingConstraint> interPassConstraintList;
@@ -305,6 +306,20 @@ public class Plugin {
 		}
 		return null;
 	}
+
+	/**
+     * @param ranker
+     */
+    public void setBugRanker(BugRanker ranker) {
+	   this.bugRanker = ranker;
+    }
+    
+    public int rankBug(BugInstance bug) {
+    	if (bugRanker == null)
+    		return 29;
+    	return bugRanker.rankBug(bug);
+    	
+    }
 }
 
 // vim:ts=4

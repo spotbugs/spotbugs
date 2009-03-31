@@ -112,6 +112,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private String instanceHash;
 	private int instanceOccurrenceNum;
 	private int instanceOccurrenceMax;
+	private DetectorFactory detectorFactory;
 
 
 	/*
@@ -198,13 +199,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(Detector detector, String type, int priority) {
 		this(type, priority);
-
 		if (detector != null) {
 			// Adjust priority if required
-			DetectorFactory factory =
+			detectorFactory =
 				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
-			if (factory != null) {
-				this.priority += factory.getPriorityAdjustment();
+			if (detectorFactory != null) {
+				this.priority += detectorFactory.getPriorityAdjustment();
 				boundPriority();
 			}
 		}
@@ -221,13 +221,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(Detector2 detector, String type, int priority) {
 		this(type, priority);
-
+		
 		if (detector != null) {
 			// Adjust priority if required
-			DetectorFactory factory =
+			detectorFactory =
 				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
-			if (factory != null) {
-				this.priority += factory.getPriorityAdjustment();
+			if (detectorFactory != null) {
+				this.priority += detectorFactory.getPriorityAdjustment();
 				boundPriority();
 			}
 		}
@@ -2111,6 +2111,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public int getInstanceOccurrenceMax() {
 		return instanceOccurrenceMax;
+	}
+	
+	public DetectorFactory getDetectorFactory() {
+		return detectorFactory;
 	}
 }
 

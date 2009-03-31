@@ -128,7 +128,13 @@ public class DetectorFactoryCollection {
 		ensureLoaded();
 		return pluginByIdMap.values().iterator();
 	}
-
+	/**
+	 * Return an Iterable of all available Plugin objects.
+	 */
+	public Iterable<Plugin> plugins() {
+		ensureLoaded();
+		return pluginByIdMap.values();
+	}
 
 	/**
 	 * Get a Plugin by its unique id.

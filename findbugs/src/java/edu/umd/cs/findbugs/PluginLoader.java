@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -471,6 +473,18 @@ public class PluginLoader {
             }
 			
 		}
+		try {
+			URL descriptorURL = getResource("bugrank.txt");
+
+			if (descriptorURL == null) 
+				throw new PluginException("Couldn't parse \"bugrank.txt\"");
+			BugRanker ranker = new BugRanker(descriptorURL);
+			plugin.setBugRanker(ranker);
+		} catch (UnsupportedEncodingException e) {
+			throw new PluginException("Couldn't parse \"bugrank.txt\"", e);
+        } catch (IOException e) {
+        	throw new PluginException("Couldn't parse \"bugrank.txt\"", e);
+        }
 
 		// Success!
 		// Assign to the plugin field, so getPlugin() can return the
