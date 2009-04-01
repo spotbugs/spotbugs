@@ -114,6 +114,9 @@ public class DiscoverSourceDirectories {
 
 		public void doneRecursiveDirectorySearch() {
 		}
+
+        public void startArchive(String name) {
+        }
 		
 	}
 	
@@ -433,6 +436,10 @@ public class DiscoverSourceDirectories {
 				System.out.print(".");
 				System.out.flush();
 			}
+
+			public void startArchive(String name) {
+	            //noop
+            }
 		};
 		
 		DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();

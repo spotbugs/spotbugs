@@ -281,4 +281,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		this.classesPerPass = classesPerPass;
 
 	}
+	
+    public void startArchive(String name) {
+    	// noop
+    }
 }

@@ -65,6 +65,13 @@ public final class FindBugsConstants {
 
 	public final static String PROJECT_PROPS_DISABLED = "disableProjectProps";
 
+	public final static String ENABLE_CONSOLE_OUTPUT = "enableConsoleOutput";
+
+	public final static String PROFILE_OUTPUT_MODE = "profileOutputMode";
+	public final static String PROFILE_OUTPUT_BY_TIME = "profileOutputByTime";
+	public final static String PROFILE_OUTPUT_BY_CALL = "profileOutputByCall";
+	public final static String PROFILE_OUTPUT_BY_TIME_PER_CALL = "profileOutputByTimePerCall";
+
 	public static final String IDS_PATTERN = "\\s*,\\s*";
 
 	public static final String IDS_SEPARATOR = ", ";

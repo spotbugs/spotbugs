@@ -105,6 +105,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -323,7 +324,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	static class CheckCallSitesAndReturnInstructions {}
 
 	private void checkCallSitesAndReturnInstructions() {
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = Global.getAnalysisCache().getProfiler();
 		profiler.start(CheckCallSitesAndReturnInstructions.class);
 		try {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();

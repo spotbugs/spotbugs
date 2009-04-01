@@ -22,6 +22,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import edu.umd.cs.findbugs.log.Profiler;
+
 /**
  * The analysis cache performs analyses on classes and methods
  * and caches the results.
@@ -167,4 +169,10 @@ public interface IAnalysisCache {
 	 * Get map of analysis-local objects.
 	 */
 	public Map<?, ?> getAnalysisLocals();
+	
+	/**
+	 * Get the analysis profiler instance, never null
+	 * @return
+	 */
+	public Profiler getProfiler();
 }

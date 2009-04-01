@@ -20,6 +20,8 @@
 
 package de.tobject.findbugs.reporter;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,16 +34,20 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.ui.console.IOConsoleOutputStream;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.util.ConfigurableXmlOutputStream;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FindBugsProgress;
+import edu.umd.cs.findbugs.Footprint;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * The <code>Reporter</code> is a class that is called by the FindBugs engine
@@ -69,6 +75,8 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	private int bugCount;
 
+	private IOConsoleOutputStream stream;
+
 	/**
 	 * Constructor.
 	 *
@@ -80,7 +88,26 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		this.monitor = monitor;
 		this.project = project;
 		// TODO we do not need to sort bugs, so we can optimize performance and use just a list here
-		this.bugCollection = new SortedBugCollection();
+		this.bugCollection = new SortedBugCollection(getProjectStats());
+	}
+
+	public void setReportingStream(IOConsoleOutputStream stream){
+		this.stream = stream;
+	}
+
+	boolean isStreamReportingEnabled(){
+		return stream != null && !stream.isClosed();
+	}
+
+	void printToStream(String message){
+		if(isStreamReportingEnabled()){
+			try {
+				stream.write(message);
+				stream.write("\n");
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e, "Print to console failed");
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -99,11 +126,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			}
 		}
 		bugCount++;
-	}
-
-	@Override
-	public ProjectStats getProjectStats() {
-		return bugCollection.getProjectStats();
+//		printToStream("found new bug: " + bug);
 	}
 
 	/* (non-Javadoc)
@@ -142,12 +165,38 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugReporter#finish()
-	 */
 	public void finish() {
 		if (DEBUG) {
 			System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
+		}
+		if(!isStreamReportingEnabled()){
+			return;
+		}
+		printToStream("finished, found: " + bugCount + " bugs");
+		ConfigurableXmlOutputStream xmlStream = new ConfigurableXmlOutputStream(stream, true);
+		ProjectStats stats = bugCollection.getProjectStats();
+//				stats.writeXML(output);
+		printToStream(new Footprint(stats.getBaseFootprint()).toString());
+
+		Profiler profiler = stats.getProfiler();
+		PrintStream printStream = new PrintStream(stream);
+
+		printToStream("Total time:");
+		profiler.report(new Profiler.TotalTimeComparator(profiler),
+				new Profiler.FilterByTime(10000000), printStream);
+
+		printToStream("Total calls:");
+		profiler.report(new Profiler.TotalCallsComparator(profiler),
+				new Profiler.FilterByCalls(stats.getNumClasses()), printStream);
+
+		printToStream("Time per call:");
+		profiler.report(new Profiler.TimePerCallComparator(profiler),
+				new Profiler.FilterByTimePerCall(10000000 / stats.getNumClasses()),
+				printStream);
+		try {
+			xmlStream.finish();
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(e, "Print to console failed");
 		}
 	}
 
@@ -183,6 +232,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 					+ bugCount + ", checking " + className + ")");
 		}
 		monitor.worked(work);
+//		printToStream("observeClass: " + className);
 	}
 
 	@Override
@@ -200,7 +250,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	public void finishArchive() {
-		// noop
+		// printToStream("archive finished");
 	}
 
 	public void finishClass() {
@@ -208,15 +258,16 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	public void finishPerClassAnalysis() {
-		// noop
+//		printToStream("finish per class analysis");
 	}
 
 	public void reportNumberOfArchives(int numArchives) {
-		// noop
+		printToStream("archives to analyze: " + numArchives);
 	}
 
 	public void startAnalysis(int numClasses) {
 		pass++;
+		printToStream("start pass: " + pass + " on " + numClasses + " classes");
 	}
 
 	public void predictPassCount(int[] classesPerPass) {
@@ -228,5 +279,9 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		if (!(monitor instanceof SubProgressMonitor)) {
 			monitor.beginTask("Performing bug checking...", expectedWork);
 		}
+	}
+
+	public void startArchive(String name) {
+//		printToStream("start archive: " + name);
 	}
 }

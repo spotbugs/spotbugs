@@ -193,6 +193,9 @@
 				<include name="doc/*.*" />
 				<include name="plugin/*.*" />
 				<include name="icons/*.*" />
+				<!-- p2 installation instructions, added because of bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=265525#c18
+				and disabled because of bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=256361
+				<include name="META-INF/p2.inf" />  -->
 			</fileset>
 		</copy>
 		<copy todir="${dist.dir}/lib">

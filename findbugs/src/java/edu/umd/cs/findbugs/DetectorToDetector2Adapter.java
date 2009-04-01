@@ -56,13 +56,13 @@ public class DetectorToDetector2Adapter implements Detector2 {
 	 */
 	public void visitClass(ClassDescriptor classDescriptor)
 			throws CheckedAnalysisException {
-		Profiler profiler = Profiler.getInstance();
 		
 		// Just get the ClassContext from the analysis cache
 		// and apply the detector to it.
 
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 		ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+		Profiler profiler = analysisCache.getProfiler();		
 		profiler.start(detector.getClass());
 		try {
 		detector.visitClassContext(classContext);

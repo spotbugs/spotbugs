@@ -248,7 +248,8 @@ public class SortedBugCollection implements BugCollection {
 
 	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
 		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
-		Profiler.getInstance().start(handler.getClass());
+		Profiler profiler = getProjectStats().getProfiler();
+		profiler.start(handler.getClass());
 		try {
 			checkInputStream(in);
 
@@ -272,7 +273,7 @@ public class SortedBugCollection implements BugCollection {
 			throw new DocumentException("Sax error ", e);
 		} finally {
 			Util.closeSilently(in);
-			Profiler.getInstance().end(handler.getClass());
+			profiler.end(handler.getClass());
 		}
 		UserAnnotationPlugin plugin = getUserAnnotationPlugin();
 		if (plugin != null)

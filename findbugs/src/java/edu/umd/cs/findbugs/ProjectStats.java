@@ -70,6 +70,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private Date analysisTimestamp;
 	private Footprint baseFootprint;
 	private String java_vm_version = SystemProperties.getProperty("java.vm.version");
+	private final Profiler profiler;
 
 	@Override
 	public String toString() {
@@ -88,6 +89,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.totalClasses = 0;
 		this.analysisTimestamp = new Date();
 		this.baseFootprint = new Footprint();
+		this.profiler = new Profiler();
 	}
 
 	@Override
@@ -134,6 +136,13 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		return totalClasses;
 	}
 
+	/**
+     * @return Returns the baseFootprint.
+     */
+    public Footprint getBaseFootprint() {
+	    return baseFootprint;
+    }
+	
 	/**
      * Report that a class has been analyzed.
      *
@@ -305,7 +314,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 				stats.writeXML(xmlOutput);
 			}
 
-		Profiler.getInstance().writeXML(xmlOutput);
+		getProfiler().writeXML(xmlOutput);
 		xmlOutput.closeTag("FindBugsSummary");
 	}
 
@@ -386,13 +395,22 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			}
 		}
 	}
+	
 	/**
      * @param size
      */
     public void setReferencedClasses(int size) {
 	    this.referencedClasses = size;
     }
+    
     public int getReferencedClasses() {
 	    return this.referencedClasses;
+    }
+    
+    /**
+     * @return Returns the project profiler instance, never null
+     */
+    public Profiler getProfiler() {
+	    return profiler;
     }
 }

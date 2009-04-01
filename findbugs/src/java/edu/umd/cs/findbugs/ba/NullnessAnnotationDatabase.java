@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -72,7 +73,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	@CheckForNull @Override
 	public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
 
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = Global.getAnalysisCache().getProfiler();
 		profiler.start(this.getClass());
 		try {
 		if (o instanceof XMethodParameter) {
@@ -83,7 +84,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			int parameterNumber = mp.getParameterNumber();
 			if (parameterNumber == 0) {
 				if (m.getName().equals("equals") 
-						&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
 					return NullnessAnnotation.CHECK_FOR_NULL;
 				else if (m.getName().equals("main") 
 						&& m.getSignature().equals("([Ljava/lang/String;)V") && m.isStatic() && m.isPublic())
@@ -91,9 +92,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 				else if (assertsFirstParameterIsNonnull(m))
 					return NullnessAnnotation.NONNULL;
 				else if (m.getName().equals("compareTo") 
-						&& m.getSignature().endsWith(";)Z") && !m.isStatic())
+					&& m.getSignature().endsWith(";)Z") && !m.isStatic())
 					return NullnessAnnotation.NONNULL;
-			}
+		}
 		}
 		else if (o instanceof XMethod) {
 			XMethod m = (XMethod) o;

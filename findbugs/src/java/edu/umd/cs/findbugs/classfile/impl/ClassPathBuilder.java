@@ -522,6 +522,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		// and referenced codebases.
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
+			if (item.getHowDiscovered() == ICodeBase.SPECIFIED) {
+				progress.startArchive(item.toString());
+			}
 			if (DEBUG) {
 				System.out.println("Working: " + item.getCodeBaseLocator());
 			}

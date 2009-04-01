@@ -76,7 +76,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 	 * @see edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase#getResolvedAnnotation(java.lang.Object, boolean)
 	 */
 	public NullnessAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = Global.getAnalysisCache().getProfiler();
 		profiler.start(this.getClass());
 		try {
 		

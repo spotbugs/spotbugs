@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -69,7 +70,7 @@ public class AnalysisCache implements IAnalysisCache {
 
 	// Fields
 	private final IClassPath classPath;
-	private final IErrorLogger errorLogger;
+	private final BugReporter bugReporter;
 	private final Map<Class<?>, IClassAnalysisEngine<?>> classAnalysisEngineMap;
 	private final Map<Class<?>, IMethodAnalysisEngine<?>> methodAnalysisEngineMap;
 	private final Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
@@ -137,9 +138,9 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @param classPath    the IClassPath to load resources from
 	 * @param errorLogger  the IErrorLogger
 	 */
-	AnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
+	AnalysisCache(IClassPath classPath, BugReporter errorLogger) {
 		this.classPath = classPath;
-		this.errorLogger = errorLogger;
+		this.bugReporter = errorLogger;
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine<?>>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine<?>>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
@@ -206,7 +207,7 @@ public class AnalysisCache implements IAnalysisCache {
 				throw new IllegalArgumentException(
 						"No analysis engine registered to produce " + analysisClass.getName());
 			}
-			Profiler profiler = Profiler.getInstance();
+			Profiler profiler = getProfiler();
 			// Perform the analysis
 			try {
 				profiler.start(engine.getClass());
@@ -325,7 +326,7 @@ public class AnalysisCache implements IAnalysisCache {
     		throw new IllegalArgumentException(
 					"No analysis engine registered to produce " + analysisClass.getName());
     	}
-    	Profiler profiler = Profiler.getInstance();
+    	Profiler profiler = getProfiler();
     	profiler.start(engine.getClass());
     	try {
     	return engine.analyze(this, methodDescriptor);
@@ -471,6 +472,12 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getErrorLogger()
 	 */
 	public IErrorLogger getErrorLogger() {
-		return errorLogger;
+		return bugReporter;
 	}
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getProfiler()
+     */
+    public Profiler getProfiler() {
+	    return bugReporter.getProjectStats().getProfiler();
+    }
 }

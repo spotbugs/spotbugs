@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -63,7 +64,7 @@ public class TopologicalSort {
 		
 	}
 	public static <E> List<E> sortByCallGraph(Collection<E> elements, OutEdges<E> outEdges) {
-		Profiler profile = Profiler.getInstance();
+		Profiler profile = Global.getAnalysisCache().getProfiler();
 		profile.start(TopologicalSort.class);
 		try {
 		SortAlgorithm<E> instance = new Worker2<E>(elements, outEdges);

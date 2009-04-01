@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.BugReporter;
+
 
 /**
  * @author David Hovemeyer
@@ -34,7 +36,7 @@ public interface IClassFactory {
 
 	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path);
 
-	public IAnalysisCache createAnalysisCache(IClassPath classPath, IErrorLogger errorLogger);
+	public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger);
 
 //	public IScannableCodeBase createLocalCodeBase(String fileName)
 //			throws IOException;

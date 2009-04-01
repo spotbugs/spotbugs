@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.File;
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
@@ -106,7 +107,7 @@ public class ClassFactory implements IClassFactory {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd.cs.findbugs.classfile.IClassPath)
 	 */
-	public IAnalysisCache createAnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
+	public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
 		IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
 		return analysisCache;
 	}

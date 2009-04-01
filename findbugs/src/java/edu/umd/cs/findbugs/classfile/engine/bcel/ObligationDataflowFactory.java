@@ -68,7 +68,7 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
 		ObligationDataflow dataflow =
 			new ObligationDataflow(cfg, analysis);
 
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = analysisCache.getProfiler();
 		profiler.start(analysis.getClass());
 		try {
 			dataflow.execute();

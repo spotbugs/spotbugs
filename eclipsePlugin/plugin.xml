@@ -1174,6 +1174,24 @@
        </page>
     </extension>
 
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="de.tobject.findbugs.view.FindBugsConsole$FindBugsConsoleFactory"
+            icon="icons/buggy-tiny.png"
+            label="FindBugs Console"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consolePageParticipants">
+      <consolePageParticipant
+            class="de.tobject.findbugs.view.FindBugsConsole$FindBugsConsolePageParticipant"
+            id="FindBugs.consolePageParticipant">
+         <enablement>
+            <instanceof value="de.tobject.findbugs.view.FindBugsConsole"/>
+         </enablement>
+      </consolePageParticipant>
+   </extension>
+
 <!-- uncommented until we define our own context
     <extension
      point="org.eclipse.ui.bindings">

@@ -37,6 +37,12 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
 	public void reportNumberOfArchives(int numArchives);
 
 	/**
+	 * Report that FindBugs has started scanning an archive in order
+	 * to add its classes to the repository.
+	 */
+	public void startArchive(String name);
+	
+	/**
 	 * Report that FindBugs has finished scanning an archive in order
 	 * to add its classes to the repository.
 	 */

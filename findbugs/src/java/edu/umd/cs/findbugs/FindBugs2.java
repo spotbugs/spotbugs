@@ -153,7 +153,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 * @throws InterruptedException
 	 */
 	public void execute() throws IOException, InterruptedException {
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = bugReporter.getProjectStats().getProfiler();
 
 		try {
 			// Get the class factory for creating classpath/codebase/etc.
@@ -846,7 +846,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 */
 	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = bugReporter.getProjectStats().getProfiler();
 		profiler.start(this.getClass());
 		AnalysisContext.currentXFactory().canonicalizeAll();
 		try {

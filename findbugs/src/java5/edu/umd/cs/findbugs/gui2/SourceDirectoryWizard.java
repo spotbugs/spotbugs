@@ -302,6 +302,8 @@ private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) throws Ch
 				}
 				public void finishArchive() {
 				}
+				public void startArchive(String name) {
+                }
 			};
 			DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
 			discoverSourceDirectories.setProject(project);

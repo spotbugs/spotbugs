@@ -112,14 +112,13 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 			});
 		}
 
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.FindBugsProgress#predictPassCount(int[])
-		 */
 		public void predictPassCount(int[] classesPerPass) {
-			// TODO Auto-generated method stub
-
+			// noop
 		}
-
+		
+        public void startArchive(String name) {
+	        // noop
+        }
 	}
 
 	private final AnalysisRun analysisRun;

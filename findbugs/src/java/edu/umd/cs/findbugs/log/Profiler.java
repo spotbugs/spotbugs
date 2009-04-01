@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.log;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Stack;
@@ -29,6 +31,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.objectweb.asm.commons.SerialVersionUIDAdder;
+
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -41,25 +46,85 @@ public class Profiler implements XMLWriteable {
 
 	final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
 
-	private static Profiler instance = new Profiler();
-
-	private Profiler() {
+	public Profiler() {
+		startTimes = new Stack<Clock>();
+		profile = new ConcurrentHashMap<Class<?>, Profile>();
 		if (REPORT)
 			System.err.println("Profiling activated");
 	}
 
-	public static Profiler getInstance() {
-		return instance;
+	public static interface Filter {
+		public boolean accepts(Profile p);
 	}
-
-	static class Profile {
+	
+	public static class FilterByTime implements Filter {
+		private final long minNanoSeconds;
+		
+		public FilterByTime(long minNanoSeconds) {
+			this.minNanoSeconds = minNanoSeconds;
+		}
+		
+		public boolean accepts(Profile p) {
+			long time = p.totalTime.get();
+			if (time < minNanoSeconds) {
+				return false;
+			}
+			return true;
+        }		
+	}
+	
+	public static class FilterByTimePerCall implements Filter {
+		private final long minNanoSeconds;
+		
+		public FilterByTimePerCall(long minNanoSeconds) {
+			this.minNanoSeconds = minNanoSeconds;
+		}
+		
+		public boolean accepts(Profile p) {
+			int totalCalls = p.totalCalls.get();			
+			long time = p.totalTime.get();
+			if (time/totalCalls < minNanoSeconds) {
+				return false;
+			}
+			return true;
+		}		
+	}
+	
+	public static class FilterByCalls implements Filter {
+		private final int minCalls;
+		
+		public FilterByCalls(int minCalls) {
+			this.minCalls = minCalls;
+		}
+		
+		public boolean accepts(Profile p) {
+			int totalCalls = p.totalCalls.get();
+			if (totalCalls < minCalls) {
+				return false;
+			}
+			return true;
+		}		
+	}
+	
+	public static class Profile implements XMLWriteable {
+		/** time in nanoseconds */
 		final AtomicLong totalTime = new AtomicLong();
 
 		final AtomicInteger totalCalls = new AtomicInteger();
 
+		/** time in nanoseconds */
 		final AtomicLong maxTime = new AtomicLong();
 
 		final AtomicLong totalSquareMicroseconds = new AtomicLong();
+
+		private final String className;
+
+		/**
+         * @param className non null full qualified class name
+         */
+        public Profile(String className) {
+	        this.className = className;
+        }
 
 		public void handleCall(long nanoTime) {
 			totalCalls.incrementAndGet();
@@ -71,6 +136,34 @@ public class Profiler implements XMLWriteable {
 			totalSquareMicroseconds.addAndGet(microseconds * microseconds);
 		}
 
+		/**
+         * @param xmlOutput
+		 * @throws IOException 
+         */
+        public void writeXML(XMLOutput xmlOutput) throws IOException {
+			long time = totalTime.get();
+			int callCount = totalCalls.get();
+			long maxTimeMicros = TimeUnit.MICROSECONDS.convert(maxTime.get(), TimeUnit.NANOSECONDS);
+			long timeMillis = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
+			long timeMicros = TimeUnit.MICROSECONDS.convert(time, TimeUnit.NANOSECONDS);
+
+			long averageTimeMicros = timeMicros / callCount;
+			long totalSquareMicros = totalSquareMicroseconds.get();
+			long averageSquareMicros = totalSquareMicros / callCount;
+			long timeVariance = averageSquareMicros - averageTimeMicros * averageTimeMicros;
+			long timeStandardDeviation = (long) Math.sqrt(timeVariance);
+			if (timeMillis > 10) {
+				xmlOutput.startTag("ClassProfile");
+
+				xmlOutput.addAttribute("name", className);
+				xmlOutput.addAttribute("totalMilliseconds", String.valueOf(timeMillis));
+				xmlOutput.addAttribute("invocations", String.valueOf(callCount));
+				xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
+				xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
+				xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
+				xmlOutput.stopTag(true);
+			}
+        }
 	}
 
 	static class Clock {
@@ -95,19 +188,14 @@ public class Profiler implements XMLWriteable {
 
 	}
 
-	ThreadLocal<Stack<Clock>> startTimes = new ThreadLocal<Stack<Clock>>() {
-		@Override
-		public Stack<Clock> initialValue() {
-			return new Stack<Clock>();
-		}
-	};
+	final Stack<Clock> startTimes;
 
-	ConcurrentHashMap<Class<?>, Profile> profile = new ConcurrentHashMap<Class<?>, Profile>();
+	final ConcurrentHashMap<Class<?>, Profile> profile;
 
 	public void start(Class<?> c) {
 		long currentNanoTime = System.nanoTime();
 
-		Stack<Clock> stack = startTimes.get();
+		Stack<Clock> stack = startTimes;
 		if (!stack.isEmpty()) {
 			stack.peek().accumulateTime(currentNanoTime);
 		}
@@ -120,7 +208,7 @@ public class Profiler implements XMLWriteable {
 		// System.err.println("pop " + c.getSimpleName());
 		long currentNanoTime = System.nanoTime();
 
-		Stack<Clock> stack = startTimes.get();
+		Stack<Clock> stack = startTimes;
 		Clock ending = stack.pop();
 		if (ending.clazz != c) {
 			throw new AssertionError("Asked to end timing for " + c + " but top of stack is " + ending.clazz
@@ -137,7 +225,7 @@ public class Profiler implements XMLWriteable {
 		}
 		Profile counter = profile.get(c);
 		if (counter == null) {
-			counter = new Profile();
+			counter = new Profile(c.getName());
 			Profile counter2 = profile.putIfAbsent(c, counter);
 			if (counter2 != null) {
 				counter = counter2;
@@ -147,85 +235,145 @@ public class Profiler implements XMLWriteable {
 
 	}
 
-	static class Pair<V1, V2> {
-		final V1 first;
-
-		final V2 second;
-
-		Pair(V1 first, V2 second) {
-			this.first = first;
-			this.second = second;
-		}
+	public static class ClassNameComparator implements Comparator<Class<?>>, Serializable {		
+        final protected Profiler profiler;
+        
+		public ClassNameComparator(Profiler p) {
+			this.profiler = p;	        
+        }
+	
+        public int compare(Class<?> c1, Class<?> c2) {
+	        return c1.getSimpleName().compareTo(c2.getSimpleName());
+        }
+	}
+	
+	public static class TotalTimeComparator extends ClassNameComparator {
+		
+        public TotalTimeComparator(Profiler p) {
+	        super(p);
+        }
 
 		@Override
-		public String toString() {
-			return first + ":" + second;
-		}
-	}
-
-	class TotalTimeComparator implements Comparator<Class<?>> {
-		public int compare(Class<?> c1, Class<?> c2) {
-			long v1 = getProfile(c1).totalTime.get();
-			long v2 = getProfile(c2).totalTime.get();
+        public int compare(Class<?> c1, Class<?> c2) {
+			long v1 = profiler.getProfile(c1).totalTime.get();
+			long v2 = profiler.getProfile(c2).totalTime.get();
 			if (v1 < v2) {
 				return -1;
 			}
 			if (v1 > v2) {
 				return 1;
 			}
-			return c1.getName().compareTo(c2.getName());
+			return super.compare(c1, c2);
+		}
+	}
+	
+	public static class TimePerCallComparator extends ClassNameComparator {
+		public TimePerCallComparator(Profiler p) {
+			super(p);        
+        }
+				
+		@Override
+        public int compare(Class<?> c1, Class<?> c2) {
+			Profile profile1 = profiler.getProfile(c1);
+			Profile profile2 = profiler.getProfile(c2);
+			long time1 = profile1.totalTime.get() / profile1.totalCalls.get();
+			long time2 = profile2.totalTime.get() / profile2.totalCalls.get();			
+			if (time1 < time2) {
+				return -1;
+			}
+			if (time1 > time2) {
+				return 1;
+			}
+			return super.compare(c1, c2);
+		}
+	}
+	
+	public static class TotalCallsComparator extends ClassNameComparator {
+		public TotalCallsComparator(Profiler p) {
+			super(p);        
+		}
+		
+		@Override
+		public int compare(Class<?> c1, Class<?> c2) {
+			Profile profile1 = profiler.getProfile(c1);
+			Profile profile2 = profiler.getProfile(c2);
+			int calls1 = profile1.totalCalls.get();
+			int calls2 = profile2.totalCalls.get();			
+			if (calls1 < calls2) {
+				return -1;
+			}
+			if (calls1 > calls2) {
+				return 1;
+			}
+			return super.compare(c1, c2);
 		}
 	}
 
+	/**
+	 * Default implementation uses {@link TotalTimeComparator} and prints out
+	 * class statistics based on total time spent fot a class
+	 */
 	public void report() {
 		if (!REPORT) {
 			return;
 		}
-		System.err.println("PROFILE REPORT");
+		report(new TotalTimeComparator(this), new FilterByTime(10000000), System.err);
+	}
+
+	/**
+	 * @param reportComparator non null comparator instance which will be used to sort
+	 * the report statistics
+	 */
+	public void report(Comparator<Class<?>> reportComparator, Filter filter, PrintStream stream) {
+		stream.println("PROFILE REPORT");
 		try {
 
-			TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator());
+			TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(reportComparator);
 			treeSet.addAll(profile.keySet());
 
-			System.err.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call", "Class");
+			stream.printf("%8s  %8s %9s %s\n", "msecs", "#calls", "usecs/call", "Class");
 
 			for (Class<?> c : treeSet) {
 				Profile p = getProfile(c);
 				long time = p.totalTime.get();
 				int callCount = p.totalCalls.get();
-				if (time > 10000000) {
-					System.err.printf("%8d  %8d  %8d %s\n", TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS), callCount,
-					        TimeUnit.MICROSECONDS.convert(time / callCount, TimeUnit.NANOSECONDS), c.getSimpleName());
+				if (filter.accepts(p)) {
+					stream.printf("%8d  %8d  %8d %s\n", 
+						Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)), 
+						Integer.valueOf(callCount),
+						Long.valueOf(TimeUnit.MICROSECONDS.convert(time / callCount, TimeUnit.NANOSECONDS)), 
+				        c.getSimpleName());
 				}
 
 			}
-			System.err.flush();
+			stream.flush();
 		} catch (RuntimeException e) {
 			System.err.println(e);
-		} finally {
-			clear();
 		}
 	}
-
+	
 	/**
-	 * Clears the previously accumulated data. This method is public because it can be 
-	 * accessed from clients (like Eclipse)  
+	 * Clears the previously accumulated data. This method is public because it
+	 * can be accessed explicitely from clients (like Eclipse).
+	 * <p>
+	 * There is no need to clear profiler data after each run, because a new
+	 * profiler instance is used for each analysis run (see {@link FindBugs2#execute()}).
 	 */
 	public void clear() {
 	    profile.clear();
-	    startTimes.get().clear();
+	    startTimes.clear();
     }
 
 	Profile getProfile(Class<?> c) {
 		Profile result = profile.get(c);
 		if (result == null) {
 			AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
-			result = new Profile();
+			result = new Profile(c.getName());
 			profile.putIfAbsent(c, result);
 		}
 		return result;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -236,37 +384,14 @@ public class Profiler implements XMLWriteable {
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.startTag("FindBugsProfile");
 		xmlOutput.stopTag(false);
-		TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator());
+		TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator(this));
 		treeSet.addAll(profile.keySet());
 
 		for (Class<?> c : treeSet) {
 			Profile p = getProfile(c);
 			if (p == null)
 				continue;
-			long time = p.totalTime.get();
-			int callCount = p.totalCalls.get();
-			long maxTimeMicros = TimeUnit.MICROSECONDS.convert(p.maxTime.get(), TimeUnit.NANOSECONDS);
-			long timeMillis = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
-			long timeMicros = TimeUnit.MICROSECONDS.convert(time, TimeUnit.NANOSECONDS);
-
-			long averageTimeMicros = timeMicros / callCount;
-			long totalSquareMicros = p.totalSquareMicroseconds.get();
-			long averageSquareMicros = totalSquareMicros / callCount;
-			long timeVariance = averageSquareMicros - averageTimeMicros * averageTimeMicros;
-			long timeStandardDeviation = (long) Math.sqrt(timeVariance);
-			if (timeMillis > 10) {
-				xmlOutput.startTag("ClassProfile");
-
-				xmlOutput.addAttribute("name", c.getName());
-				xmlOutput.addAttribute("totalMilliseconds", String.valueOf(timeMillis));
-				xmlOutput.addAttribute("invocations", String.valueOf(callCount));
-				xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
-				xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
-				xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
-				xmlOutput.stopTag(true);
-
-			}
-
+			p.writeXML(xmlOutput);
 		}
 		xmlOutput.closeTag("FindBugsProfile");
 	}

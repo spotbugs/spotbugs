@@ -1,0 +1,5 @@
+instructions.configure = \
+    addJVMArg(jvmArg:-Xmx900m);
+
+instructions.unconfigure = \
+    removeJVMArg(jvmArg:-Xmx900m);

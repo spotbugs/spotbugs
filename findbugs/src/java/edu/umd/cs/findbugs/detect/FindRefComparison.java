@@ -91,6 +91,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -675,7 +676,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		TypeAnalysis typeAnalysis =
 			new SpecialTypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
-		Profiler profiler = Profiler.getInstance();
+		Profiler profiler = Global.getAnalysisCache().getProfiler();
 		profiler.start(SpecialTypeAnalysis.class);
 		try {
 		typeDataflow.execute();

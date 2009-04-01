@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ResourceTracker;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -155,7 +156,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
 					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
-			Profiler profiler = Profiler.getInstance();
+			Profiler profiler = Global.getAnalysisCache().getProfiler();
 			profiler.start(resourceTracker.getClass());
 			try {
 			dataflow.execute();

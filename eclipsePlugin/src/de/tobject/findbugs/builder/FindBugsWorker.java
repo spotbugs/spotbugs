@@ -56,6 +56,7 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.util.Util.StopTimer;
+import de.tobject.findbugs.view.FindBugsConsole;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -63,6 +64,7 @@ import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
@@ -138,6 +140,9 @@ public class FindBugsWorker {
 		final Project findBugsProject = new Project();
 		findBugsProject.setProjectName(javaProject.getElementName());
 		final Reporter bugReporter = new Reporter(javaProject, monitor);
+		if(FindBugsConsole.getConsole() != null){
+			bugReporter.setReportingStream(FindBugsConsole.getConsole().newOutputStream());
+		}
 		bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
 
 		FindBugs.setHome(FindbugsPlugin.getFindBugsEnginePluginLocation());
@@ -194,6 +199,10 @@ public class FindBugsWorker {
 		updateBugCollection(findBugsProject, bugReporter, incremental);
 		st.newPoint("done");
 		if(DEBUG){
+			System.out.println("\n------------\n");
+			Profiler profiler = bugReporter.getProjectStats().getProfiler();
+			profiler.report(new Profiler.TimePerCallComparator(profiler),
+					new Profiler.FilterByCalls(1), System.out);
 			System.out.println("\n------\n" + st.getResults() + "\n------\n");
 		}
 		st = null;
@@ -511,11 +520,11 @@ public class FindBugsWorker {
 			}
 		}
 
-		// try to resolve relative to workspace (if we use workspace properties for project)
+			// try to resolve relative to workspace (if we use workspace properties for project)
 		IPath newPath = wspLocation.append(path);
-		if(newPath.toFile().exists()){
-			return newPath;
-		}
+			if(newPath.toFile().exists()){
+				return newPath;
+			}
 		
 		// something which we have no idea what it can be (or missing/wrong file path)
 		return path;

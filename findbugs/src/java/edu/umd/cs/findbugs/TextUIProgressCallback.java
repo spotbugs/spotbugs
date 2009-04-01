@@ -94,4 +94,8 @@ public class TextUIProgressCallback implements FindBugsProgress {
 		out.print("\r" + msg);
 	}
 
+    public void startArchive(String name) {
+	    // noop
+    }
+
 }

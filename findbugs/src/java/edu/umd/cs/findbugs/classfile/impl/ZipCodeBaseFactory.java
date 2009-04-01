@@ -30,6 +30,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.log.Profiler;
 
@@ -39,11 +40,12 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class ZipCodeBaseFactory {
 
 	public static AbstractScannableCodeBase makeZipCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
-		Profiler.getInstance().start(ZipCodeBaseFactory.class);
+		Profiler profiler = Global.getAnalysisCache().getProfiler();
+		profiler.start(ZipCodeBaseFactory.class);
 		try {
 		return countUsingZipFile(codeBaseLocator, file);
 		} finally {
-			Profiler.getInstance().end(ZipCodeBaseFactory.class);
+			profiler.end(ZipCodeBaseFactory.class);
 		}
 	}
 
