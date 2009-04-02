@@ -94,6 +94,8 @@ public class IncompatibleTypes {
 
 	public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes("Unrelated interfaces",
 	        Priorities.NORMAL_PRIORITY);
+	public static final IncompatibleTypes UNRELATED_UTIL_INTERFACE = new IncompatibleTypes("Unrelated java.util interface",
+	        Priorities.HIGH_PRIORITY);
 	public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes("Unrelated types but one type matches type parameter of the other",
 	        Priorities.HIGH_PRIORITY);
 
@@ -268,12 +270,13 @@ public class IncompatibleTypes {
 	    	        lhsDescriptor, rhsDescriptor);
 
 	    	if (!containsAtLeastOneInstantiableClass(commonSubtypes)) {
+	    		if (lhs.isFinal() || rhs.isFinal())
+	    			return UNRELATED_FINAL_CLASS_AND_INTERFACE;
+	    		if (lhsDescriptor.getClassName().startsWith("java/util/") || rhsDescriptor.getClassName().startsWith("java/util/"))
+	    			return UNRELATED_UTIL_INTERFACE;
 	    		if (lhs.isInterface() && rhs.isInterface())
 	    			return UNRELATED_INTERFACES;
-	    		else if (lhs.isFinal() || rhs.isFinal())
-	    			return UNRELATED_FINAL_CLASS_AND_INTERFACE;
-	    		else
-	    			return UNRELATED_CLASS_AND_INTERFACE;
+	    		return UNRELATED_CLASS_AND_INTERFACE;
 	    	}
 
 	    }
