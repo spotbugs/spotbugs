@@ -59,6 +59,7 @@ public class SetBugDatabaseInfo {
 
 		boolean withMessages = false;
 		boolean purgeStats = false;
+		boolean resetSource = false;
 
 		long revisionTimestamp = 0L;
 
@@ -82,7 +83,7 @@ public class SetBugDatabaseInfo {
 			if (option.equals("-withMessages"))
 				withMessages = true;
 			else if (option.equals("-resetSource"))
-				sourcePaths.clear();
+				resetSource = true;
 			else if (option.equals("-purgeStats"))
 				purgeStats = true;
 			else
@@ -136,6 +137,8 @@ public class SetBugDatabaseInfo {
 		if (commandLine.exclusionFilterFile != null) {
 			project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
 		}
+		if (commandLine.resetSource)
+			project.getSourceDirList().clear();
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
 		if (commandLine.purgeStats)
