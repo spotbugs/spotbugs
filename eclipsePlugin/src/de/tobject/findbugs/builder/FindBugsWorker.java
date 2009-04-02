@@ -173,8 +173,8 @@ public class FindBugsWorker {
 
 		final FindBugs2 findBugs = new FindBugs2();
 		findBugs.setNoClassOk(true);
-		findBugs.setBugReporter(bugReporter);
 		findBugs.setProject(findBugsProject);
+		findBugs.setBugReporter(bugReporter);
 		findBugs.setProgressCallback(bugReporter);
 
 		findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
@@ -525,7 +525,7 @@ public class FindBugsWorker {
 			if(newPath.toFile().exists()){
 				return newPath;
 			}
-		
+
 		// something which we have no idea what it can be (or missing/wrong file path)
 		return path;
 	}

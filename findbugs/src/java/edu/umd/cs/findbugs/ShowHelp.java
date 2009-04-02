@@ -34,7 +34,8 @@ public class ShowHelp {
 		FindBugs.showSynopsis();
 		showGeneralOptions();
 		System.out.println("GUI Options:");
-		new GUI2CommandLine().printUsage(System.out);
+		FindBugsCommandLine guiCmd = new FindBugsCommandLine(true){};
+		guiCmd.printUsage(System.out);
 		FindBugs.showCommandLineOptions();
 		System.exit(0);
 	}

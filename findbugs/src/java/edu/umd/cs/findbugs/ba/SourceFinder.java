@@ -40,6 +40,7 @@ import java.util.zip.ZipFile;
 
 import javax.swing.ProgressMonitorInputStream;
 
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.io.IO;
@@ -120,7 +121,7 @@ public class SourceFinder {
 		}
 	}
 
-	static SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
+	SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
 		final File file = File.createTempFile("jar_cache", null);
 		file.deleteOnExit();
 		final BlockingSourceRepository r = new BlockingSourceRepository();
@@ -131,7 +132,11 @@ public class SourceFinder {
 				OutputStream out = null;
 				try {
 				URLConnection connection = new URL(url).openConnection();
-				in = IO.progessMonitoredInputStream(connection, "Loading source via url");
+				if(getProject().isGuiAvaliable()){
+					in =  getProject().getGuiCallback().progessMonitoredInputStream(connection, "Loading source via url");
+				} else {
+					in = connection.getInputStream();
+				}
 				out = new FileOutputStream(file);
 				IO.copy(in, out);
 				r.setBase(new ZipSourceRepository(new ZipFile(file)));
@@ -210,20 +215,33 @@ public class SourceFinder {
 
 	private List<SourceRepository> repositoryList;
 	private Cache cache;
+	private Project project;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
-
+	
 	/**
-	 * Constructor.
+	 * This constructor shouldn't be used directly, it exists only for {@link ReflectionDatabaseFactory}
 	 */
-	public SourceFinder() {
+	public SourceFinder(){
+		this(new Project());
+	}
+
+	public SourceFinder(Project project) {
+		setProject(project);
 		if (DEBUG) System.out.println("Debugging SourceFinder");
 		repositoryList = new LinkedList<SourceRepository>();
 		cache = new Cache();
 	}
 
+	/**
+     * @return Returns the project.
+     */
+    public Project getProject() {
+	    return project;
+    }
+	
 	/**
 	 * Set the list of source directories.
 	 */
@@ -322,6 +340,13 @@ public class SourceFinder {
 
 		throw new FileNotFoundException("Can't find source file " + fileName);
 	}
+
+	/**
+     * @param project
+     */
+    public void setProject(Project project) {
+	    this.project = project;
+    }
 }
 
 // vim:ts=4

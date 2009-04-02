@@ -110,6 +110,7 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -143,7 +144,7 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 /**
  * The MainFrame is just that, the main application window where just about everything happens.
  */
-public class MainFrame extends FBFrame implements LogSync
+public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 {
 	static JButton newButton(String key, String name) {
 		JButton b = new JButton();
@@ -461,7 +462,7 @@ public class MainFrame extends FBFrame implements LogSync
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
 		if (this.bugCollection != null && userAnnotationListener != null) {
-			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin();
+			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin(getProject());
 			if (plugin != null) 
 				plugin.removeListener(userAnnotationListener);
 			}
@@ -469,12 +470,12 @@ public class MainFrame extends FBFrame implements LogSync
 		if (bugCollection == null) {
 			showTreeCard();
 		} else {
-			curProject = project;
+			setProject(project);
 			this.bugCollection = bugCollection;
 			displayer.clearCache();
 
 			BugTreeModel model = (BugTreeModel) getTree().getModel();     
-			setSourceFinder(new SourceFinder());
+			setSourceFinder(new SourceFinder(project));
 			getSourceFinder().setSourceBaseList(project.getSourceDirList());
 			BugSet bs = new BugSet(bugCollection);
 			model.getOffListenerList();
@@ -496,7 +497,7 @@ public class MainFrame extends FBFrame implements LogSync
 		 * it is put here.*/
 		changeTitle();
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin(project);
 			if (plugin != null) {
 				userAnnotationListener = new UserAnnotationPlugin.Listener() {
 
@@ -540,7 +541,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 *
 	 */	
 	public void changeTitle(){
-		String name = curProject.getProjectName();
+		String name = getProject().getProjectName();
 		if(name == null && saveFile != null)
 			name = saveFile.getAbsolutePath();
 		if(name == null)
@@ -786,7 +787,7 @@ public class MainFrame extends FBFrame implements LogSync
 			JMenuItem temp = new JMenuItem("Temp");
 			temp.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("Current Project Name: " + curProject.getProjectName());
+					System.out.println("Current Project Name: " + getProject().getProjectName());
 				}			
 			});
 			fileMenu.add(temp);
@@ -939,12 +940,10 @@ public class MainFrame extends FBFrame implements LogSync
 	 * This method is for when the user wants to open a file.
 	 */
 	private void importFilter() {
-		boolean loading = true;
 		filterOpenFileChooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.importFilter_ttl",
 		        "Import and merge filter..."));
 
 		boolean retry = true;
-		boolean alreadyExists = true;
 		File f = null;
 		while (retry) {
 			retry = false;
@@ -970,11 +969,11 @@ public class MainFrame extends FBFrame implements LogSync
 				continue;
 			}
 			projectChanged = true;
-			if (curProject.getSuppressionFilter() == null) {
-				curProject.setSuppressionFilter(filter);
+			if (getProject().getSuppressionFilter() == null) {
+				getProject().setSuppressionFilter(filter);
 			} else {
 				for (Matcher m : filter.getChildren())
-					curProject.getSuppressionFilter().addChild(m);
+					getProject().getSuppressionFilter().addChild(m);
 			}
 			PreferencesFrame.getInstance().updateFilterPanel();
 		}
@@ -1101,7 +1100,7 @@ public class MainFrame extends FBFrame implements LogSync
     }
     
 	private boolean exportFilter() {
-		if (curProject==null || curProject.getSuppressionFilter() == null)
+		if (getProject().getSuppressionFilter() == null)
 		{
 			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_filter", "There is no filter"));
 			return false;
@@ -1137,7 +1136,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 			}
 
-			Filter suppressionFilter = curProject.getSuppressionFilter();
+			Filter suppressionFilter = getProject().getSuppressionFilter();
 			try {
 			suppressionFilter.writeEnabledMatchersAsXML(new FileOutputStream(f));
 			} catch (IOException e) {
@@ -1354,7 +1353,7 @@ public class MainFrame extends FBFrame implements LogSync
     private SaveReturn saveFBPFile(File saveFile2) {
     		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
     		try {
-	            curProject.writeXML(saveFile2);
+    			getProject().writeXML(saveFile2);
             } catch (IOException e) {
 	            AnalysisContext.logError("Couldn't save FBP file to " + saveFile2, e);
 	            return SaveReturn.SAVE_IO_EXCEPTION;
@@ -1449,7 +1448,7 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 		tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
 		setupTreeListeners();
-		curProject= new Project();
+		setProject(new Project());
 
 
 		treeScrollPane = new JScrollPane(tree);
@@ -1652,7 +1651,7 @@ public class MainFrame extends FBFrame implements LogSync
 	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
         }
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin(getProject());
 			if (plugin != null) {
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
@@ -1956,7 +1955,7 @@ public class MainFrame extends FBFrame implements LogSync
 				try {
 					URL url = new URL(loadFromURL);
 					URLConnection urlConnection = url.openConnection();
-					in = IO.progessMonitoredInputStream(urlConnection, "Loading issues via url");
+					in = Util.progessMonitoredInputStream(urlConnection, "Loading issues via url");
 					if (loadFromURL.endsWith(".gz"))
 						
 						in = new GZIPInputStream(in);
@@ -2302,10 +2301,17 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 	}	
 
-	public Project getProject() {
+	/**
+	 * @return never null
+	 */
+	public synchronized Project getProject() {
+		if(curProject == null){
+			curProject = new Project();
+		}
 		return curProject;
 	}
-	public void setProject(Project p) {
+	
+	public synchronized void setProject(Project p) {
 		curProject=p;
 	}
 
@@ -2374,13 +2380,6 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	private SaveReturn saveProject(File dir)
 	{
-		if (curProject == null) {
-			curProject = new Project(); 
-			JOptionPane.showMessageDialog(MainFrame.this, "Null project; this is unexpected. "
-					+" Creating a new Project so the bugs can be saved, but please report this error.");
-
-		}
-
 		if (!dir.mkdir()) {
 			return SaveReturn.SAVE_IO_EXCEPTION;
 		}
@@ -2388,7 +2387,7 @@ public class MainFrame extends FBFrame implements LogSync
 		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
 		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
 
-		BugSaver.saveBugs(f,bugCollection,curProject);
+		BugSaver.saveBugs(f,bugCollection, getProject());
 		try {
 			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
 		} catch (IOException e) {
@@ -2448,7 +2447,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * saving analysis. And to keep saving naming convention.
 	 */
 	private SaveReturn saveAnalysis(File f){
-		BugSaver.saveBugs(f, bugCollection, curProject);
+		BugSaver.saveBugs(f, bugCollection, getProject());
 
 		setProjectChanged(false);
 
@@ -2557,8 +2556,8 @@ public class MainFrame extends FBFrame implements LogSync
 			public void run()
 			{
 				updateDesignationDisplay();
-				BugCollection  bc=BugLoader.redoAnalysisKeepComments(curProject);
-				updateProjectAndBugCollection(curProject, bc, null);
+				BugCollection  bc=BugLoader.redoAnalysisKeepComments(getProject());
+				updateProjectAndBugCollection(getProject(), bc, null);
 			}
 		}.start();
 	}
@@ -2680,5 +2679,17 @@ public class MainFrame extends FBFrame implements LogSync
      */
     SaveType getSaveType() {
 	    return saveType;
+    }
+    
+    public void showMessageDialog(String message) {
+    	JOptionPane.showMessageDialog(this, message);       
+    }
+    
+    public int showConfirmDialog(String message, String title, int optionType) {
+        return JOptionPane.showConfirmDialog(this, message, title, optionType);
+    }
+
+    public InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
+        return Util.progessMonitoredInputStream(c, msg);
     }
 }

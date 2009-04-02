@@ -306,5 +306,13 @@ public interface BugCollection extends Iterable<BugInstance>
 
 	public void setApplySuppressions(boolean applySuppressions);
 	
-	public UserAnnotationPlugin getUserAnnotationPlugin();
+	/**
+	 * Get the instance of user annotation plugin
+	 * 
+	 * @param project
+	 *            must be non null
+	 * @return user annotation plugin OR null, if there is no annotation plugin
+	 *         installed
+	 */
+	public UserAnnotationPlugin getUserAnnotationPlugin(Project project);
 }

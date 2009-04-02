@@ -71,7 +71,7 @@ public class CopyBuggySource {
 		if (!src.isDirectory())
 			throw new IllegalArgumentException(args[1]
 					+ " is not a source directory");
-		SourceFinder sourceFinder = new SourceFinder();
+		SourceFinder sourceFinder = new SourceFinder(project);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		HashSet<String> copied = new HashSet<String>();
 		for (BugInstance bug : origCollection.getCollection()) {

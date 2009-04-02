@@ -97,7 +97,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
 	public void finish() {
-		UserAnnotationPlugin userAnnotationPlugin = bugCollection.getUserAnnotationPlugin();
+		UserAnnotationPlugin userAnnotationPlugin = bugCollection.getUserAnnotationPlugin(project);
 		if (userAnnotationPlugin != null)
 			userAnnotationPlugin.loadUserAnnotations(bugCollection);
 	}

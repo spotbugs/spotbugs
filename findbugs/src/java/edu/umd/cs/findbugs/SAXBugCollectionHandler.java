@@ -449,7 +449,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else if (qName.equals("UserAnnotation")) {
 	    	// ignore AnnotationText for now; will handle in endElement
 	    	String s = attributes.getValue("designation"); // optional
-	    	if (s != null) bugInstance.setUserDesignationKey(s, null);
+	    	if (s != null) bugInstance.setUserDesignationKey(s, null, null);
 	    	s = attributes.getValue("user"); // optional
 	    	if (s != null) bugInstance.setUser(s);
 	    	s = attributes.getValue("timestamp"); // optional
@@ -567,7 +567,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					project.addAuxClasspathEntry(getTextContents());
 			} else if (outerElement.equals("BugInstance")) {
 				if (qName.equals("UserAnnotation")) {
-					bugInstance.setAnnotationText(getTextContents(), null);
+					bugInstance.setAnnotationText(getTextContents(), null, null);
 				}
 			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME)) {

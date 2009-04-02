@@ -92,13 +92,13 @@ public class SortedBugCollection implements BugCollection {
 	boolean runningWithoutSwingUI;
 	boolean shouldNotUsePlugin;
 	
-	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin() {
+	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin(Project project) {
 		if(runningWithoutSwingUI || shouldNotUsePlugin){
 			return null;
 		}
 		if(userAnnotationPlugin == null){
 			try {
-		    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin();
+		    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin(project);
 		    	shouldNotUsePlugin = userAnnotationPlugin == null;
 	        } catch (NoClassDefFoundError e) {
 	        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
@@ -230,9 +230,6 @@ public class SortedBugCollection implements BugCollection {
 	public void readXML(@WillClose InputStream in, Project project, File base)
 			throws IOException, DocumentException {
 		//if (in == null) throw new IllegalArgumentException();
-		assert in != null;
-		assert project != null;
-
 		try {
 			//if (project == null) throw new IllegalArgumentException();
 			doReadXML(in, project, base);
@@ -242,8 +239,9 @@ public class SortedBugCollection implements BugCollection {
 	}
 	public void readXML(@WillClose InputStream in, Project project)
 			throws IOException, DocumentException {
-			doReadXML(in, project, null);
-
+		assert project != null;
+		assert in != null;
+		doReadXML(in, project, null);
 	}
 
 	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
@@ -275,7 +273,7 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			profiler.end(handler.getClass());
 		}
-		UserAnnotationPlugin plugin = getUserAnnotationPlugin();
+		UserAnnotationPlugin plugin = getUserAnnotationPlugin(project);
 		if (plugin != null)
 			plugin.loadUserAnnotations(this);
 		// Presumably, project is now up-to-date

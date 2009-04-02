@@ -756,7 +756,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static void generateRelativeSource(File relativeSourceBase, Project project) {
 		try {
 		SourceLineAnnotation.relativeSourceBase.set(relativeSourceBase.getCanonicalPath());
-		SourceFinder mySourceFinder  = new SourceFinder();
+		SourceFinder mySourceFinder  = new SourceFinder(project);
 		sourceFinder.set(mySourceFinder);
 		mySourceFinder.setSourceBaseList(project.getSourceDirList());
 		} catch (IOException e) {

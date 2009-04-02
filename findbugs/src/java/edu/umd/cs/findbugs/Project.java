@@ -126,6 +126,8 @@ public class Project implements XMLWriteable {
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
 	private long timestampForAnalyzedClasses = 0L;
+	
+	private IGuiCallback guiCallback;
 
 	@NonNull private Filter suppressionFilter = new Filter();
 
@@ -155,9 +157,14 @@ public class Project implements XMLWriteable {
 		dup.srcDirList.addAll(this.srcDirList);
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
 		dup.timestampForAnalyzedClasses = timestampForAnalyzedClasses;
-
+		dup.guiCallback = guiCallback;
 		return dup;
 	}
+	
+	public boolean isGuiAvaliable(){
+		return guiCallback != null;
+	}
+	
 	/**
 	 * add information from project2 to this project
 	 */
@@ -1140,6 +1147,14 @@ public class Project implements XMLWriteable {
 	        suppressionFilter = new Filter();
         }
 	    return suppressionFilter;
+    }
+
+	public void setGuiCallback(IGuiCallback guiCallback) {
+	    this.guiCallback = guiCallback;
+    }
+
+	public IGuiCallback getGuiCallback() {
+	    return guiCallback;
     }
 }
 

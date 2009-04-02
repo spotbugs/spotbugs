@@ -290,7 +290,7 @@ public class CommentsArea {
 		if (bug.getAnnotationText().equals(comments))
 			return;
 
-		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
+		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection, MainFrame.getInstance().getProject());
 		setProjectChanged(true);
 		changed = false;
 		addToPrevComments(comments);
@@ -515,7 +515,7 @@ public class CommentsArea {
 		String oldValue = bug.getUserDesignationKey();
 		if (selection.equals(oldValue))
 			return false;
-		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
+		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection, MainFrame.getInstance().getProject());
 		return true;
 	}
 

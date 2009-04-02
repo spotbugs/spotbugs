@@ -46,5 +46,6 @@
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jFormatString.jar"/>
+	<classpathentry kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>

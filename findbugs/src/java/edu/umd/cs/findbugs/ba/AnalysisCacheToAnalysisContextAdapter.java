@@ -226,7 +226,9 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public SourceFinder getSourceFinder() {
-		return getDatabase(SourceFinder.class);
+		SourceFinder database = getDatabase(SourceFinder.class);
+		database.setProject(project);
+		return database;
 	}
 
 	/* (non-Javadoc)

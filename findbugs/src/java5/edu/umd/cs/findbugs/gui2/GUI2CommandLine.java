@@ -37,13 +37,9 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 	private File saveFile;
 
 	public GUI2CommandLine() {
-		addOption("-f", "font size", "set font size");
-		addSwitch("-clear", "clear saved GUI settings and exit");
-		addOption("-priority", "thread priority", "set analysis thread priority");
-		addOption("-loadbugs", "saved analysis results", "load bugs from saved analysis results");
-		addSwitch("-d", "disable docking");
-		addSwitch("--nodock", "disable docking");
-		addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set UI look and feel");
+		// Additional constuctor just as hack for decoupling the core package from gui2 package
+		// please add all options in the super class 
+		super(true);
 	}
 
 	@Override

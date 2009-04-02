@@ -31,11 +31,12 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
  * @author pugh
  */
 public class SourceSearcher {
-	HashSet<String> sourceFound = new HashSet<String>();
-	HashSet<String> sourceNotFound = new HashSet<String>();
-	SourceFinder sourceFinder = new SourceFinder();
+	final HashSet<String> sourceFound = new HashSet<String>();
+	final HashSet<String> sourceNotFound = new HashSet<String>();
+	private final SourceFinder sourceFinder;
 
 	public SourceSearcher(Project project) {
+		sourceFinder = new SourceFinder(project);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
 

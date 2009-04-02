@@ -64,7 +64,22 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		addSwitchWithOptionalExtraPart("-effort", "min|less|default|more|max", "set analysis effort level");
 		addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
 		addSwitch("-workHard", "ensure analysis effort is at least 'default'");
-		addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
+		addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");	
+	}
+	
+	/**
+	 * Additional constuctor just as hack for decoupling the core package from gui2 package
+	 * @param modernGui ignored. In any case, gui2 options are added here.  
+	 */
+	public FindBugsCommandLine(boolean modernGui){
+		this();
+		addOption("-f", "font size", "set font size");
+		addSwitch("-clear", "clear saved GUI settings and exit");
+		addOption("-priority", "thread priority", "set analysis thread priority");
+		addOption("-loadbugs", "saved analysis results", "load bugs from saved analysis results");
+		addSwitch("-d", "disable docking");
+		addSwitch("--nodock", "disable docking");
+		addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set UI look and feel");
 	}
 
 	public AnalysisFeatureSetting[] getSettingList() {

@@ -71,6 +71,7 @@
 	<path id="tools.classpath">
 		<pathelement location="${classes.dir}"/>
 		<pathelement location="${jar.dir}/findbugs.jar"/>
+		<pathelement location="${jar.dir}/jdepend-2.9.jar"/>
 		<path refid="findbugs.classpath"/>
 	</path>
 
@@ -241,6 +242,7 @@
 			</fileset>
 			<fileset dir="${etc.dir}">
 				<include name="*.xsd"/>
+				<include name="bugrank.txt"/>
 				<include name="findbugs.xml"/>
 				<include name="messages*.xml"/>
 			</fileset>
@@ -279,6 +281,7 @@
 				<include name="${pkg.base}/gui2/**/*.html"/>
 			</fileset>
 			<fileset dir="${etc.dir}">
+				<include name="bugrank.txt"/>
 				<include name="findbugs.xml"/>
 				<include name="messages*.xml"/>
 			</fileset>

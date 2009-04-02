@@ -556,64 +556,52 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  @return the user designation key
 	 */
 	@NonNull public String getUserDesignationKey() {
-		BugDesignation userDesignation = this.userDesignation;
 		if (userDesignation == null) return BugDesignation.UNCLASSIFIED;
 		return userDesignation.getDesignationKey();
 	}
 	@NonNull public int getUserDesignationKeyIndex() {
 		return I18N.instance().getUserDesignationKeys().indexOf(getUserDesignationKey());
 	}
-	/**
-     * @deprecated Use {@link #setUserDesignationKey(String,BugCollection)} instead
-     */
-    public void setUserDesignationKey(String key) {
-        setUserDesignationKey(key, null);
-    }
 
-	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
+	/**
+	 * @param key
+	 * @param bugCollection TODO
+	 * @param project must be non null, if bugCollection is not null
+	 */
+	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection, Project project) {
 		BugDesignation userDesignation = getNonnullUserDesignation();
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
 		userDesignation.setDesignationKey(key);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin(project) : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}
+	
 	/**
-     * @deprecated Use {@link #setUserDesignationKeyIndex(int,BugCollection)} instead
-     */
-    public void setUserDesignationKeyIndex(int index) {
-        setUserDesignationKeyIndex(index, null);
-    }
-
-	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
+	 * @param index
+	 * @param bugCollection TODO
+	 * @param project must be non null, if bugCollection is not null
+	 */
+	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection, Project project) {
 		setUserDesignationKey(
-				I18N.instance().getUserDesignationKey(index), bugCollection);
+				I18N.instance().getUserDesignationKey(index), bugCollection, project);
 		}
-
-	/**
-     * Set the user annotation text.
-     *
-     * @param annotationText the user annotation text
-     * @deprecated Use {@link #setAnnotationText(String,BugCollection)} instead
-     */
-    public void setAnnotationText(String annotationText) {
-        setAnnotationText(annotationText, null);
-    }
 
 	/**
 	 * Set the user annotation text.
 	 *
 	 * @param annotationText the user annotation text
 	 * @param bugCollection TODO
+	 * @param project must be non null, if bugCollection is not null
 	 */
-	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
+	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection, Project project) {
 		final BugDesignation u = getNonnullUserDesignation();
 		String existingText = u.getAnnotationText();
 		if (existingText != null && existingText.equals(annotationText))
 			return;
 		u.setAnnotationText(annotationText);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin(project) : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}

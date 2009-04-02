@@ -47,10 +47,6 @@ import java.io.Writer;
 import java.net.URLConnection;
 
 import javax.annotation.WillNotClose;
-import javax.swing.ProgressMonitor;
-import javax.swing.ProgressMonitorInputStream;
-
-import edu.umd.cs.findbugs.gui2.MainFrame;
 
 public class IO {
 	static ThreadLocal<byte[]> myByteBuf  = new ThreadLocal<byte[]>() {
@@ -88,20 +84,6 @@ public class IO {
 		return copy(in, out, Long.MAX_VALUE);
 	}
 
-
-	
-	public static InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
-		InputStream in = c.getInputStream();
-		if (GraphicsEnvironment.isHeadless() || !MainFrame.isAvailable())
-			return in;
-		// in = new SlowInputStream(in, 10000000);
-		ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(MainFrame.getInstance(), msg, in);
-		ProgressMonitor pm = pmin.getProgressMonitor();
-		int length = c.getContentLength();
-		if (length > 0)
-			pm.setMaximum(length);
-		return pmin;
-	}
 	public static long copy(@WillNotClose InputStream in, 
 							@WillNotClose OutputStream out,
 							long maxBytes)

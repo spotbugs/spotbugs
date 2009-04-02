@@ -83,7 +83,7 @@ public class BugLoader {
 		List<String> possibleDirectories=p.getSourceDirList();
 		MainFrame instance = MainFrame.getInstance();
 
-		instance.setSourceFinder(new SourceFinder());
+		instance.setSourceFinder(new SourceFinder(p));
 		instance.getSourceFinder().setSourceBaseList(possibleDirectories);
 
 		return pcb.getBugCollection();

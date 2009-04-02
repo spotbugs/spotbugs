@@ -345,10 +345,7 @@ public class DetectorFactoryCollection {
 		try {
 			loadPlugin(corePluginLoader);
 		} catch (PluginException e) {
-			System.err.println("Warning: could not load FindBugs core plugin: " + e.toString());
-			if (FindBugs.DEBUG) {
-				e.printStackTrace();
-			}
+			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
 		}
 		
 		//

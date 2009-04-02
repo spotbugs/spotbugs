@@ -37,9 +37,9 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 
 /**
@@ -47,10 +47,20 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
  */
 public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
-	
-	public static JDBCUserAnnotationPlugin getPlugin() {
+	private final Project project;
 
-		JDBCUserAnnotationPlugin plugin = new JDBCUserAnnotationPlugin();
+	/**
+     * @param project never null
+     */
+    public JDBCUserAnnotationPlugin(Project project) {
+    	if(project == null){
+    		throw new IllegalArgumentException("Project must be non null");
+    	}
+		this.project = project;	    
+    }
+	public static JDBCUserAnnotationPlugin getPlugin(Project project) {
+
+		JDBCUserAnnotationPlugin plugin = new JDBCUserAnnotationPlugin(project);
 		if (!plugin.setProperties())
 			return null;
 		return plugin;
@@ -105,8 +115,8 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			boolean result = false;
 			if (rs.next()) {
 				int count = rs.getInt(1);
-				if (!GraphicsEnvironment.isHeadless() && MainFrame.isAvailable()) {
-					int choice = JOptionPane.showConfirmDialog(MainFrame.getInstance(), "Store comments in " + dbName
+				if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
+					int choice = project.getGuiCallback().showConfirmDialog("Store comments in " + dbName
 					        + " as user " + findbugsUser + "?", "Connect to database?", JOptionPane.YES_NO_OPTION);
 					result = choice == JOptionPane.YES_OPTION;
 
@@ -134,16 +144,16 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
      */
     private void displayMessage(String msg, Exception e) {
     	AnalysisContext.logError(msg, e);
-	    if (!GraphicsEnvironment.isHeadless() && MainFrame.isAvailable()) {
-	    	JOptionPane.showMessageDialog(MainFrame.getInstance(), msg + e.getMessage());
+	    if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
+	    	project.getGuiCallback().showMessageDialog(msg + e.getMessage());
 	    } else {
 	    	System.err.println(msg);
 	    	e.printStackTrace(System.err);
 	    }
     }
     private void displayMessage(String msg) {
-    	 if (!GraphicsEnvironment.isHeadless() && MainFrame.isAvailable()) {
-	    	JOptionPane.showMessageDialog(MainFrame.getInstance(), msg );
+    	 if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
+    		 project.getGuiCallback().showMessageDialog(msg);
 	    } else {
 	    	System.err.println(msg);
 	    }

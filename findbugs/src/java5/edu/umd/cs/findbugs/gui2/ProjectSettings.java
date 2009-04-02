@@ -137,7 +137,6 @@ public class ProjectSettings implements Serializable
 	Filter getSuppressionFilter()
 	{
 		Project project = MainFrame.getInstance().getProject();
-		if (project == null) throw new NullPointerException("project is null");
 		return project.getSuppressionFilter();
 	}
 

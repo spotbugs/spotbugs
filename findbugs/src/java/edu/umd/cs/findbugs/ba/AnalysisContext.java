@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisLocal;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -286,6 +287,7 @@ public abstract class AnalysisContext {
 	}
 
 	boolean missingClassWarningsSuppressed = false;
+	protected Project project;
 
 	public boolean setMissingClassWarningsSuppressed(boolean value) {
 		boolean oldValue = missingClassWarningsSuppressed;
@@ -300,8 +302,11 @@ public abstract class AnalysisContext {
 	/**
 	 * Set the source path.
 	 */
-	public final void setSourcePath(List<String> sourcePath) {
-		getSourceFinder().setSourceBaseList(sourcePath);
+	public final void setSourcePath(Project project) {
+		this.project = project;
+		SourceFinder sourceFinder = getSourceFinder();
+		sourceFinder.setProject(project);
+		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
 
 	/**

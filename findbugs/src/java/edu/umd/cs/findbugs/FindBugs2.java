@@ -781,7 +781,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
 			sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
 		}
-		analysisContext.setSourcePath(project.getSourceDirList());
+		analysisContext.setSourcePath(project);
 	}
 
 	/**
