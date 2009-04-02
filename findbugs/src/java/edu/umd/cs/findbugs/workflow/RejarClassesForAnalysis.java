@@ -300,7 +300,7 @@ public class RejarClassesForAnalysis {
 			System.out.println("  files to analyze: " + numFilesToAnalyze);
 		}
 
-		if (!commandLine.prefix.matchesEverything() || numFilesToAnalyze > commandLine.maxClasses)
+		if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses)
 			auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
 		copied.clear();
