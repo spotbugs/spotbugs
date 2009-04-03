@@ -92,6 +92,7 @@
 	
 	<patternset id="doc.src.pats">
 		<include name="**/*.html"/>
+		<include name="**/*.txt"/>
 		<include name="**/*.xml"/>
 		<include name="**/*.xsl"/>
 	</patternset>
@@ -283,6 +284,7 @@
 			<fileset dir="${etc.dir}">
 				<include name="bugrank.txt"/>
 				<include name="findbugs.xml"/>
+				<include name="bugrank.txt"/>
 				<include name="messages*.xml"/>
 			</fileset>
 
