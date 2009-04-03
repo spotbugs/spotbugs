@@ -67,7 +67,7 @@ public class RejarClassesForAnalysis {
 			}
 			public boolean matches(String arg) {
 				for(Pattern p : pattern) 
-					if (p.matcher(arg).matches())
+					if (p.matcher(arg).find())
 						return true;
 				
 				return false;
@@ -236,6 +236,7 @@ public class RejarClassesForAnalysis {
 	}
 
 	Set<String> copied = new HashSet<String>();
+	Set<String> excluded = new HashSet<String>();
 	TreeSet<String> filesToAnalyze = new TreeSet<String>();
 
 	int numFilesToAnalyze = 0;
@@ -255,9 +256,11 @@ public class RejarClassesForAnalysis {
 	final byte buffer[] = new byte[8192];
     private boolean exclude(String dottedName) {
     	if (commandLine.excludePatterns != null 
-    			&& commandLine.excludePatterns.matches(dottedName))
+    			&& commandLine.excludePatterns.matches(dottedName) || commandLine.exclude.matches(dottedName)) {
+    		excluded.add(dottedName);
     		return true;
-        return commandLine.exclude.matches(dottedName);
+    	}
+        return false;
     }
 	public void execute() throws IOException {
 
@@ -333,7 +336,8 @@ public class RejarClassesForAnalysis {
 			System.out.println("Unique class files: " + copied.size());
 			System.out.println("  files to analyze: " + numFilesToAnalyze);
 		}
-
+		if (!excluded.isEmpty()) 
+			System.out.println("  excluded  files: " + excluded.size());
 		if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses)
 			auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
 
