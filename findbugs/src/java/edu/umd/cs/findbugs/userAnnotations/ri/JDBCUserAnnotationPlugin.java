@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +47,76 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
  * @author pwilliam
  */
 public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
+
+	/**
+	 * @throws SQLException 
+     * 
+     */
+    private int timeBulkLoad() throws SQLException {
+    	Connection c = getConnection();
+    	PreparedStatement  ps = 
+        c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
+    	ResultSet rs = ps.executeQuery();
+    	int count = 0;
+    	while (rs.next()) {
+    		int col = 1;
+			int id = rs.getInt(col++);
+			String designationString = rs.getString(col++);
+			Date when = rs.getDate(col++);
+			Date lastSeen = rs.getDate(col++);
+			String who = rs.getString(col++);
+			String comment = rs.getString(col++);
+			String hash = rs.getString(col++);
+			count++;
+    	}
+    	rs.close();
+    	ps.close();
+    	c.close();
+    	return count;
+    }
+    
+    int bulkSynchronizations = 0;
+    private int bulkLoad(BugCollection b) {
+		HashMap<String, BugInstance> bugs = new HashMap<String, BugInstance>();
+		for (BugInstance bug : b) {
+			bugs.put(bug.getInstanceHash(), bug);
+			bulkSynchronizations++;
+		}
+		int count = 0;
+		int updated = 0;
+		try {
+			Connection c = getConnection();
+			PreparedStatement ps = c
+			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				int col = 1;
+				int id = rs.getInt(col++);
+				String designationString = rs.getString(col++);
+				Date when = rs.getDate(col++);
+				Date lastSeen = rs.getDate(col++);
+				String who = rs.getString(col++);
+				String comment = rs.getString(col++);
+				String hash = rs.getString(col++);
+				BugInstance bug = bugs.get(hash);
+				if (bug != null && designationString.length() != 0) {
+					BugDesignation bd = new BugDesignation(designationString, when.getTime(), comment, who);
+					bug.setUserDesignation(bd);
+					updatedIssue(bug);
+					updated++;
+				}
+				count++;
+			}
+			rs.close();
+			ps.close();
+			c.close();
+		} catch (Exception e) {
+			displayMessage("problem bulk loading database", e);
+		}
+		return count;
+	}
+
 
 	private final Project project;
 
@@ -192,8 +263,11 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	 * .cs.findbugs.BugCollection)
 	 */
 	public void loadUserAnnotations(BugCollection bugs) {
+		if (false) 
 		for (BugInstance bug : bugs)
 			queue.add(new Update(bug, Update.Kind.NEW_BUG, bugs.getTimestamp()));
+		else 
+			bulkLoad(bugs);
 		updatedStatus();
 	}
 
@@ -403,7 +477,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	   if (!runnerThread.isAlive())
 		   return "failed to synchronized with " + dbName + "(" + size + " issues unsynchronized)";
 	   if (size == 0)
-		   return "Synchronized " + runner.handled + " times with " + dbName;
+		   return "Synchronized " + (bulkSynchronizations + runner.handled) + " times with " + dbName;
 	   return "need to synchronize " + size + " issues with " + dbName;
 	   
     }
