@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -55,6 +56,23 @@ import edu.umd.cs.findbugs.config.CommandLine;
  */
 public class RejarClassesForAnalysis {
 	static class RejarClassesForAnalysisCommandLine extends CommandLine {
+		
+		static class PatternMatcher {
+			final Pattern [] pattern;
+			PatternMatcher(String arg) {
+				String [] p = arg.split(",");
+				this.pattern = new Pattern[p.length];
+				for(int i = 0; i < p.length; i++)
+					pattern[i] = Pattern.compile(p[i]);
+			}
+			public boolean matches(String arg) {
+				for(Pattern p : pattern) 
+					if (p.matcher(arg).matches())
+						return true;
+				
+				return false;
+			}
+		}
 		
 		static class PrefixMatcher {
 			final String [] prefixes;
@@ -78,8 +96,9 @@ public class RejarClassesForAnalysis {
 			}
 		}
 		
-		public PrefixMatcher prefix = new PrefixMatcher("");
-		public PrefixMatcher exclude = new PrefixMatcher();
+		 PrefixMatcher prefix = new PrefixMatcher("");
+		 PrefixMatcher exclude = new PrefixMatcher();
+		 PatternMatcher excludePatterns = null;
 
 		int maxClasses = 29999;
 
@@ -96,8 +115,10 @@ public class RejarClassesForAnalysis {
 
 			addOption("-maxClasses", "num", "maximum number of classes per analysis*.jar file");
 			addOption("-outputDir", "dir", "directory for the generated jar files");
-			addOption("-prefix", "class name prefix", "prefix of class names that should be analyzed (e.g., edu.umd.cs.)");
-			addOption("-exclude", "class name prefix", "prefix of class names that should be excluded from both analyze and auxilary jar files (e.g., java)");
+			addOption("-prefix", "class name prefix", "comma separated list of class name prefixes that should be analyzed (e.g., edu.umd.cs.)");
+			addOption("-exclude", "class name prefix", "comma separated list of class name prefixes that should be  excluded from both analyze and auxilary jar files (e.g., java.)");
+			addOption("-excludePattern", "class name pattern(s)", "comma separated list of regular expressions; all classes matching them are excluded");
+			
 		}
 
 		File outputDir = new File(".");
@@ -136,6 +157,8 @@ public class RejarClassesForAnalysis {
 				maxAge = System.currentTimeMillis() - (24 * 60 * 60 * 1000L) * Integer.parseInt(argument);
 			else if (option.equals("-outputDir"))
 				outputDir = new File(argument);
+			else if (option.equals("-excludePattern"))
+				excludePatterns = new PatternMatcher(argument);
 			else
 				throw new IllegalArgumentException("Unknown option : " + option);
 		}
@@ -230,7 +253,12 @@ public class RejarClassesForAnalysis {
 	ZipOutputStream auxilaryOut;
 
 	final byte buffer[] = new byte[8192];
-
+    private boolean exclude(String dottedName) {
+    	if (commandLine.excludePatterns != null 
+    			&& commandLine.excludePatterns.matches(dottedName))
+    		return true;
+        return commandLine.exclude.matches(dottedName);
+    }
 	public void execute() throws IOException {
 
 		
@@ -261,13 +289,19 @@ public class RejarClassesForAnalysis {
 					String name = ze.getName();
 					
 					String dottedName = name.replace('/', '.');
-					if (commandLine.exclude.matches(dottedName)) return;
+					if (exclude(dottedName)) return;
 					
 					if (copied.add(name) && commandLine.prefix.matches(dottedName) ) {
 						filesToAnalyze.add(name);
 						numFilesToAnalyze++;
 					}
 				}
+
+				/**
+                 * @param dottedName
+                 * @return
+                 */
+
 			}) && oldSize < copied.size())
 				inputZipFiles.add(f);
 		}
@@ -284,7 +318,7 @@ public class RejarClassesForAnalysis {
 					String name = ze.getName();
 					
 					String dottedName = name.replace('/', '.');
-					if (!commandLine.exclude.matches(dottedName)) 
+					if (!exclude(dottedName)) 
 						copied.add(ze.getName());
 				}
 			}) && oldSize < copied.size())
@@ -346,7 +380,7 @@ public class RejarClassesForAnalysis {
 				public void handle(ZipFile zipInputFile, ZipEntry ze) throws IOException {
 					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
-					if (commandLine.exclude.matches(dottedName)) 
+					if (exclude(dottedName)) 
 						return;
 					if (!copied.add(name)) {
 						return;
@@ -389,7 +423,7 @@ public class RejarClassesForAnalysis {
 					String name = ze.getName();
 					String dottedName = name.replace('/', '.');
 					
-					if (commandLine.exclude.matches(dottedName)) 
+					if (exclude(dottedName)) 
 						return;
 					if (!copied.add(name)) {
 						return;
