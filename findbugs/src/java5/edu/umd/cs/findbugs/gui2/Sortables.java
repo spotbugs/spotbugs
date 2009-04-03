@@ -209,7 +209,7 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
 		public String formatValue(String value)
 		{
-			return value;
+			return value + "...";
 		}
 	},
 	CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category"))
