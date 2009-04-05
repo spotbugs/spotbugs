@@ -15,10 +15,11 @@ Import the projects
 5) In the wizard, proceed as follows:
    a) Choose [Create a new repository location]. Click [Next]
    b) Enter http://findbugs.googlecode.com/svn as url. Click [Next]
-   c) Select 2 children of the <trunk> element (hold CTRL key):
+   c) Select 3 children of the <trunk> element (hold CTRL key):
         <trunk>
             |
             +- eclipsePlugin
+            +- eclipsePlugin-test
             +- findbugs
       Click [Next]
    d) Do not change defaults on the next page. Click [Next]
@@ -26,7 +27,7 @@ Import the projects
    f) Click [Finish].
    g) Source code will be checked out from SVN. This can take time, especially with the
       slow internet connection (~10 MB need to be downloaded first time).
-   h) Now you have two new java projects: [findbugs] and [findBugsEclipsePlugin]
+   h) Now you have three new java projects: [findbugs], [findBugsEclipsePlugin] and [findBugsEclipsePlugin-test]
 
 Change the code
 ================
@@ -34,30 +35,36 @@ Change the code
     [Project | Build Automatically] is enabled (this is default). In this case, after the
     first checkout both projects will be compiled. There must be NO compile errors.
 
-Test (debug) Eclipse from Eclipse
-==================================
+Debug Eclipse from Eclipse
+===========================
 7) Choose [Run | Debug Configurations... | Eclipse Application | right click | New],
     a new default Eclipse debug configuration will be created. Choose [Debug] button to
     start plugin debugging. You do not need to build anything, if
     [Project | Build Automatically] is enabled. You can change the code during debugging
     (hot code replace is supported).
 
+Test Eclipse from Eclipse
+==========================
+8) Choose [Run | Run Configurations... | All FindBugs Plugin Tests | Run],
+    and all available FindBugs Eclipse plugin tests will be executed. The
+    checked in version of tests should not fail with the checked in FindBugs plugin code.
+
 Build executable plug-in
 =========================
-8) Create local.properties file in the [findBugsEclipsePlugin] root directory.
+9) Create local.properties file in the [findBugsEclipsePlugin] root directory.
    The local.properties file must contain the location of
    - Eclipse platform (key is "eclipsePlugin.dir", value is the 3.3+ Eclipse plugins folder)
    - SVN ant task (key is "svnant.home", value is the svnant 1.2.1 root folder).
    You can download svnant task from http://subclipse.tigris.org/files/documents/906/43359/svnant-1.2.1.zip.
-9) Open [Package Explorer] view, expand the project [findBugsEclipsePlugin].
-10) Right-click the build.xml file and choose [Run As | Ant Build] from the context menu.
-11) You can now watch ANT working in the console view. After a few
+10) Open [Package Explorer] view, expand the project [findBugsEclipsePlugin].
+11) Right-click the build.xml file and choose [Run As | Ant Build] from the context menu.
+12) You can now watch ANT working in the console view. After a few
     seconds, the console view should print "BUILD SUCCESSFUL".
-12) Right click on [findBugsEclipsePlugin] to refresh the Eclipse workspace
+13) Right click on [findBugsEclipsePlugin] to refresh the Eclipse workspace
     a) In the [findBugsEclipsePlugin]/bin_build folder you will find the file
     edu.umd.cs.findbugs.plugin.eclipse_<version>.<date>.zip which contains zipped plugin.
     b) In the [findBugsEclipsePlugin]/dist folder you will find the contents of the
     FindBugs Eclipse plugin directory as it should be installed in Eclipse.
 
-13) For information on how to install the compiled plug-ins into Eclipse, please refer
+14) For information on how to install the compiled plug-ins into Eclipse, please refer
 to the document "installing_findbugsplugin.txt".
