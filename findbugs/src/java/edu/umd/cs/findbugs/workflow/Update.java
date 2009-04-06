@@ -516,7 +516,7 @@ public class Update {
 
 	}
 	static final boolean doMatchFixedBugs = SystemProperties.getBoolean("findbugs.matchFixedBugs");
-	static final int maxResurrection = SystemProperties.getInteger("findbugs.maxResurrection", 2);
+	static final int maxResurrection = SystemProperties.getInt("findbugs.maxResurrection", 2);
 
 	/**
 	 * @deprecated Use {@link #matchBugs(Comparator<BugInstance>,BugCollection,BugCollection,boolean,boolean)} instead

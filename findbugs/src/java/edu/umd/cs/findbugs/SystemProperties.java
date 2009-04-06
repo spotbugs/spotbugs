@@ -19,36 +19,51 @@
 
 package edu.umd.cs.findbugs;
 
-import java.net.URLDecoder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+
+import edu.umd.cs.findbugs.io.IO;
 
 /**
  * @author pugh
  */
 public class SystemProperties {
 
+	private static Properties properties = new Properties(System.getProperties());
 	public final static boolean ASSERTIONS_ENABLED;
 	static {
 		boolean tmp = false;
 		assert tmp = true; // set tmp to true if assertions are enabled
 		ASSERTIONS_ENABLED = tmp;
+		loadPropertiesFromConfigFile();
 	}
+	private static void loadPropertiesFromConfigFile()  {
+	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.txt");
+		if (systemProperties != null) {
+			InputStream in = null;
+            try {
+            	properties.load(in);
+            } catch (IOException e) {
+	           assert true;
+            }
+			IO.close(in);
+		}
+    }
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties
 	 * @return true if the property exists and is set to true
 	 */
-	public static boolean getBoolean(String arg0) {
-		try {
-		return Boolean.getBoolean(arg0);
-		} catch (Exception e) {
-			return false;
-		}
+	public static boolean getBoolean(String name) {
+		return getBoolean(name, false);
 	}
 
 	public static boolean getBoolean(String name, boolean defaultValue) {
 		boolean result = defaultValue;
 		try {
-			String value = System.getProperty(name);
+			String value = getProperty(name);
 			if (value == null) return defaultValue;
 			result = toBoolean(value);
 		} catch (IllegalArgumentException e) {
@@ -62,16 +77,28 @@ public class SystemProperties {
 
 
 	/**
+     * @param arg0 property name
+     * @param arg1 default value
+     * @return the int value (or arg1 if the property does not exist)
+     * @deprecated Use {@link #getInt(String,int)} instead
+     */
+    public static Integer getInteger(String arg0, int arg1) {
+        return getInt(arg0, arg1);
+    }
+	/**
 	 * @param arg0 property name
 	 * @param arg1 default value
 	 * @return the int value (or arg1 if the property does not exist)
 	 */
-	public static Integer getInteger(String arg0, int arg1) {
+	public static int getInt(String name, int defaultValue) {
 		try {
-				return Integer.getInteger(arg0, arg1);
+			String value = getProperty(name);
+			if (value != null) 
+				return Integer.decode(value);
 		} catch (Exception e) {
-			return arg1;
+			assert true;
 		}
+		return defaultValue;
 	}
 
 	/**
@@ -79,16 +106,12 @@ public class SystemProperties {
 	 * @return string value (or null if the property does not exist)
 	 */
 	public static String getProperty(String arg0) {
-		String value = null;
 		try {
-			value = System.getProperty(arg0);
-			String urlEncoded = "URLENCODED:";
-			if (value.startsWith(urlEncoded))
-				value = URLDecoder.decode(value.substring(urlEncoded.length()), "UTF-8");
+			return System.getProperty(arg0);
 		} catch (Exception e) {
 			assert true;
 		}
-		return value;
+		return null;
 	}
 
 	/**

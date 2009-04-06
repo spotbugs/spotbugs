@@ -114,7 +114,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
 	private static final boolean REPORT_ALL_REF_COMPARISONS = SystemProperties.getBoolean("findbugs.refcomp.reportAll");
-	private static final int BASE_ES_PRIORITY = SystemProperties.getInteger("es.basePriority", NORMAL_PRIORITY);
+	private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);
 
 	/**
 	 * Classes that are suspicious if compared by reference.

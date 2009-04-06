@@ -112,7 +112,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * intentional synchronization.
 	 */
 	private static final int MIN_SYNC_PERCENT =
-			SystemProperties.getInteger("findbugs.fis.minSyncPercent", 50).intValue();
+			SystemProperties.getInt("findbugs.fis.minSyncPercent", 50);
 
 	/**
 	 * Bias that writes are given with respect to reads.
