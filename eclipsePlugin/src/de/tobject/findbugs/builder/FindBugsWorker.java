@@ -152,6 +152,9 @@ public class FindBugsWorker {
 		// collect all related class file patterns for analysis
 		collectClassFilesPatterns(resources, outLocations, outputFiles);
 
+		// atach source directories (can be used by some detectors, see SwitchFallthrough)
+		configureSourceDirectories(findBugsProject, outLocations);
+
 		// find and add all the class files in the output directories
 		configureOutputFiles(findBugsProject, outputFiles);
 		if(findBugsProject.getFileCount() == 0){
@@ -209,6 +212,14 @@ public class FindBugsWorker {
 		monitor.done();
 	}
 
+
+	private void configureSourceDirectories(Project findBugsProject,
+			Map<IPath, IPath> outLocations) {
+		Set<IPath> srcDirs = outLocations.keySet();
+		for (IPath iPath : srcDirs) {
+			findBugsProject.addSourceDir(iPath.toOSString());
+		}
+	}
 
 	/**
 	 * Load existing FindBugs xml report for the given collection of files.
@@ -613,8 +624,9 @@ public class FindBugsWorker {
 	private void reportFromXml(final String xmlFileName, final Project findBugsProject,
 			final Reporter bugReporter) {
 		if (!"".equals(xmlFileName)) {
+			FileInputStream input = null;
 			try {
-				FileInputStream input = new FileInputStream(xmlFileName);
+				input = new FileInputStream(xmlFileName);
 				bugReporter.reportBugsFromXml(input, findBugsProject);
 			} catch (FileNotFoundException e) {
 				FindbugsPlugin.getDefault().logException(e,
@@ -625,6 +637,14 @@ public class FindBugsWorker {
 			} catch (IOException e) {
 				FindbugsPlugin.getDefault().logException(e,
 						"Error loading FindBugs results xml file: "  + xmlFileName);
+			} finally {
+				if(input != null){
+					try {
+						input.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
 			}
 		}
 	}
