@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.io.IO;
 
 /**
@@ -38,15 +41,40 @@ public class SystemProperties {
 		assert tmp = true; // set tmp to true if assertions are enabled
 		ASSERTIONS_ENABLED = tmp;
 		loadPropertiesFromConfigFile();
+		if (getBoolean("findbugs.dumpProperties"))
+			try {
+				FileOutputStream out = new FileOutputStream("/tmp/outProperties.txt");
+				System.getProperties().store(out, "System properties dump");
+				properties.store(out, "FindBugs properties dump");
+				out.close();
+			} catch (IOException e) {
+				assert true;
+			}
 	}
 	private static void loadPropertiesFromConfigFile()  {
+		
 	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.txt");
-		if (systemProperties != null) {
+		loadPropertiesFromURL(systemProperties);
+		String u = System.getProperty("findbugs.loadPropertiesFrom");
+		if (u != null)
+			try {
+			 URL configURL = new URL(u);
+			 loadPropertiesFromURL(systemProperties);
+			} catch (MalformedURLException e) {
+	            AnalysisContext.logError("Unable to load properties from " + u, e);
+	            
+            }
+		}
+	/**
+     * @param systemProperties
+     */
+    private static void loadPropertiesFromURL(URL systemProperties) {
+	    if (systemProperties != null) {
 			InputStream in = null;
             try {
             	properties.load(in);
             } catch (IOException e) {
-	           assert true;
+            	 AnalysisContext.logError("Unable to load properties from " + systemProperties, e);
             }
 			IO.close(in);
 		}
@@ -86,9 +114,9 @@ public class SystemProperties {
         return getInt(arg0, arg1);
     }
 	/**
-	 * @param arg0 property name
-	 * @param arg1 default value
-	 * @return the int value (or arg1 if the property does not exist)
+	 * @param name property name
+	 * @param defaultValue default value
+	 * @return the int value (or defaultValue if the property does not exist)
 	 */
 	public static int getInt(String name, int defaultValue) {
 		try {
@@ -102,12 +130,12 @@ public class SystemProperties {
 	}
 
 	/**
-	 * @param arg0 property name
+	 * @param name property name
 	 * @return string value (or null if the property does not exist)
 	 */
-	public static String getProperty(String arg0) {
+	public static String getProperty(String name) {
 		try {
-			return System.getProperty(arg0);
+			return properties.getProperty(name);
 		} catch (Exception e) {
 			assert true;
 		}
@@ -115,15 +143,15 @@ public class SystemProperties {
 	}
 
 	/**
-	 * @param arg0 property name
-	 * @param arg1 default value
-	 * @return string value (or arg1 if the property does not exist)
+	 * @param name property name
+	 * @param defaultValue default value
+	 * @return string value (or defaultValue if the property does not exist)
 	 */
-	public static String getProperty(String arg0, String arg1) {
+	public static String getProperty(String name, String defaultValue) {
 		try {
-		return System.getProperty(arg0, arg1);
+		return properties.getProperty(name, defaultValue);
 		} catch (Exception e) {
-			return arg1;
+			return defaultValue;
 		}
 	}
 
