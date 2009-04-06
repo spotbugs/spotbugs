@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 
 /**
  * Verifies the package dependencies.
- * 
+ *
  * @author Tomás Pollak
  * @author Andrei Loskutov
  */
@@ -33,7 +33,7 @@ public class PackageDependenciesTest extends TestCase {
 
 	public void testGui2Dependencies() {
 		String expectedNotEfferent = "edu.umd.cs.findbugs.gui2";
-		
+
 		assertPackageConstraint("edu.umd.cs.findbugs", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.asm", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.ba", expectedNotEfferent);
@@ -47,9 +47,11 @@ public class PackageDependenciesTest extends TestCase {
 		assertPackageConstraint("edu.umd.cs.findbugs.plan", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.util", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.visitclass", expectedNotEfferent);
-		assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);		
+		assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);
+		assertPackageConstraint("edu.umd.cs.findbugs.userAnnotations", expectedNotEfferent);
+		assertPackageConstraint("edu.umd.cs.findbugs.userAnnotations.ri", expectedNotEfferent);
 	}
-	
+
 	public void testAnnotDependencies() {
 		String expectedNotEfferent = "edu.umd.cs.findbugs.userAnnotations.ri";
 		// TODO refactor code to made core independent from annotation plugin implementation
@@ -66,7 +68,7 @@ public class PackageDependenciesTest extends TestCase {
 		assertPackageConstraint("edu.umd.cs.findbugs.plan", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.util", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.visitclass", expectedNotEfferent);
-		assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);	
+		assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);
 	}
 
 	@Override
@@ -93,6 +95,6 @@ public class PackageDependenciesTest extends TestCase {
 		JavaPackage afferentPackage = engine.getPackage(afferent);
 		JavaPackage efferentPackage = engine.getPackage(expectedNotEfferent);
 		assertFalse(afferentPackage.getName() + " shouldn't depend on " + efferentPackage.getName(), afferentPackage
-		        .getEfferents().contains(efferentPackage));
+				.getEfferents().contains(efferentPackage));
 	}
 }
