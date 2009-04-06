@@ -95,7 +95,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	}
 
 	// Maximum number of iterations before we assume there is a bug and give up.
-	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 97).intValue();
+	private static final int MAX_ITERS = SystemProperties.getInt("dataflow.maxiters", 97);
 
 	private String getFullyQualifiedMethodName() {
 		String methodName;
