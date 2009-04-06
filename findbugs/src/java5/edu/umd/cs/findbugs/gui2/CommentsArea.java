@@ -165,7 +165,7 @@ public class CommentsArea {
 		});
 
 		designationKeys.add("");
-		designationComboBox.addItem("");
+		designationComboBox.addItem(" -- select your evaluation of this issue -- ");
 		for (String s : I18N.instance().getUserDesignationKeys(true)) {
 			designationKeys.add(s);
 			designationComboBox.addItem(Sortables.DESIGNATION.formatValue(s));
