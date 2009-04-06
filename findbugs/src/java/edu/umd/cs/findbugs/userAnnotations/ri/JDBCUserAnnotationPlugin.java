@@ -26,6 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -49,17 +52,16 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 	/**
-	 * @throws SQLException 
-     * 
-     */
-    private int timeBulkLoad() throws SQLException {
-    	Connection c = getConnection();
-    	PreparedStatement  ps = 
-        c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
-    	ResultSet rs = ps.executeQuery();
-    	int count = 0;
-    	while (rs.next()) {
-    		int col = 1;
+	 * @throws SQLException
+	 * 
+	 */
+	private int timeBulkLoad() throws SQLException {
+		Connection c = getConnection();
+		PreparedStatement ps = c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
+		ResultSet rs = ps.executeQuery();
+		int count = 0;
+		while (rs.next()) {
+			int col = 1;
 			int id = rs.getInt(col++);
 			String designationString = rs.getString(col++);
 			Date when = rs.getDate(col++);
@@ -68,20 +70,33 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			String comment = rs.getString(col++);
 			String hash = rs.getString(col++);
 			count++;
-    	}
-    	rs.close();
-    	ps.close();
-    	c.close();
-    	return count;
-    }
-    
-    int bulkSynchronizations = 0;
-    private int bulkLoad(BugCollection b) {
-		HashMap<String, BugInstance> bugs = new HashMap<String, BugInstance>();
-		for (BugInstance bug : b) {
-			bugs.put(bug.getInstanceHash(), bug);
-			bulkSynchronizations++;
 		}
+		rs.close();
+		ps.close();
+		c.close();
+		return count;
+	}
+
+	int bulkSynchronizations = 0;
+
+	static private <T> Collection<T> addTo(Collection<T> c, T t) {
+		if (c == null)
+			return Collections.singleton(t);
+		if (c.size() == 1)
+			c = new ArrayList<T>(c);
+		c.add(t);
+		return c;
+
+	}
+
+	private int bulkLoad(BugCollection b) {
+		HashMap<String, Collection<BugInstance>> bugs = new HashMap<String, Collection<BugInstance>>();
+		for (BugInstance bug : b) {
+			final String hash = bug.getInstanceHash();
+			Collection<BugInstance> c = bugs.get(hash);
+			bugs.put(hash, addTo(c, bug));
+		}
+		bulkSynchronizations += bugs.size();
 		int count = 0;
 		int updated = 0;
 		try {
@@ -99,13 +114,14 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 				String who = rs.getString(col++);
 				String comment = rs.getString(col++);
 				String hash = rs.getString(col++);
-				BugInstance bug = bugs.get(hash);
-				if (bug != null && designationString.length() != 0) {
-					BugDesignation bd = new BugDesignation(designationString, when.getTime(), comment, who);
-					bug.setUserDesignation(bd);
-					updatedIssue(bug);
-					updated++;
-				}
+				Collection<BugInstance> collection = bugs.get(hash);
+				if (collection != null && designationString.length() != 0)
+					for (BugInstance bug : collection) {
+						BugDesignation bd = new BugDesignation(designationString, when.getTime(), comment, who);
+						bug.setUserDesignation(bd);
+						updatedIssue(bug);
+						updated++;
+					}
 				count++;
 			}
 			rs.close();
@@ -117,18 +133,19 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 		return count;
 	}
 
-
 	private final Project project;
 
 	/**
-     * @param project never null
-     */
-    public JDBCUserAnnotationPlugin(Project project) {
-    	if(project == null){
-    		throw new IllegalArgumentException("Project must be non null");
-    	}
-		this.project = project;	    
-    }
+	 * @param project
+	 *            never null
+	 */
+	public JDBCUserAnnotationPlugin(Project project) {
+		if (project == null) {
+			throw new IllegalArgumentException("Project must be non null");
+		}
+		this.project = project;
+	}
+
 	public static JDBCUserAnnotationPlugin getPlugin(Project project) {
 
 		JDBCUserAnnotationPlugin plugin = new JDBCUserAnnotationPlugin(project);
@@ -137,23 +154,26 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 		return plugin;
 	}
 
-	CopyOnWriteArraySet<Listener> listeners = new CopyOnWriteArraySet<Listener> ();
-	
-	
+	CopyOnWriteArraySet<Listener> listeners = new CopyOnWriteArraySet<Listener>();
+
 	public void addListener(Listener listener) {
 		listeners.add(listener);
 	}
+
 	public void removeListener(Listener listener) {
 		listeners.remove(listener);
 	}
+
 	private void updatedStatus() {
-		for(Listener listener : listeners) 
+		for (Listener listener : listeners)
 			listener.statusUpdated();
 	}
+
 	private void updatedIssue(BugInstance bug) {
-		for(Listener listener : listeners) 
+		for (Listener listener : listeners)
 			listener.issueUpdate(bug);
 	}
+
 	//dbDriver=com.mysql.jdbc.Driver,dbUrl=jdbc:mysql://localhost/findbugs,dbUser
 	// =root,dbPassword=
 
@@ -187,12 +207,13 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			if (rs.next()) {
 				int count = rs.getInt(1);
 				if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
-					int choice = project.getGuiCallback().showConfirmDialog("Store comments in " + dbName
-					        + " as user " + findbugsUser + "?", "Connect to database?", JOptionPane.YES_NO_OPTION);
+					int choice = project.getGuiCallback().showConfirmDialog(
+					        "Store comments in " + dbName + " as user " + findbugsUser + "?", "Connect to database?",
+					        JOptionPane.YES_NO_OPTION);
 					result = choice == JOptionPane.YES_OPTION;
 
-				}
-				else result = true;
+				} else
+					result = true;
 			}
 			rs.close();
 			stmt.close();
@@ -204,51 +225,54 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			return result;
 
 		} catch (Exception e) {
-			
+
 			displayMessage("Unable to connect to database", e);
 			return false;
 		}
 	}
 
 	/**
-     * @param e
-     */
-    private void displayMessage(String msg, Exception e) {
-    	AnalysisContext.logError(msg, e);
-	    if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
-	    	project.getGuiCallback().showMessageDialog(msg + e.getMessage());
-	    } else {
-	    	System.err.println(msg);
-	    	e.printStackTrace(System.err);
-	    }
-    }
-    private void displayMessage(String msg) {
-    	 if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
-    		 project.getGuiCallback().showMessageDialog(msg);
-	    } else {
-	    	System.err.println(msg);
-	    }
-    }
+	 * @param e
+	 */
+	private void displayMessage(String msg, Exception e) {
+		AnalysisContext.logError(msg, e);
+		if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
+			project.getGuiCallback().showMessageDialog(msg + e.getMessage());
+		} else {
+			System.err.println(msg);
+			e.printStackTrace(System.err);
+		}
+	}
+
+	private void displayMessage(String msg) {
+		if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
+			project.getGuiCallback().showMessageDialog(msg);
+		} else {
+			System.err.println(msg);
+		}
+	}
+
 	String url, dbUser, dbPassword, findbugsUser, dbName;
 
 	private Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, dbUser, dbPassword);
 	}
 
-	static class Update {
-		public Update(BugInstance bug, Kind kind, long timestamp) {
+	static interface Update  {
+		 void execute(DatabaseSyncTask t) throws SQLException;
+	}
+
+	static class StoreUserAnnotation implements Update {
+		public void execute(DatabaseSyncTask t) throws SQLException {
+			t.updatedUserAnnotation(bug, timestamp);
+		}
+
+		public StoreUserAnnotation(BugInstance bug, long timestamp) {
 			this.bug = bug;
-			this.kind = kind;
 			this.timestamp = timestamp;
 		}
 
-		static enum Kind {
-			NEW_BUG, USER_UPDATE,
-		}
-
 		final BugInstance bug;
-
-		final Kind kind;
 
 		final long timestamp;
 	}
@@ -263,11 +287,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	 * .cs.findbugs.BugCollection)
 	 */
 	public void loadUserAnnotations(BugCollection bugs) {
-		if (false) 
-		for (BugInstance bug : bugs)
-			queue.add(new Update(bug, Update.Kind.NEW_BUG, bugs.getTimestamp()));
-		else 
-			bulkLoad(bugs);
+		bulkLoad(bugs);
 		updatedStatus();
 	}
 
@@ -285,7 +305,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 	public void storeUserAnnotation(BugInstance bug) {
 		if (skipBug(bug))
 			return;
-		queue.add(new Update(bug, Update.Kind.USER_UPDATE, System.currentTimeMillis()));
+		queue.add(new StoreUserAnnotation(bug, System.currentTimeMillis()));
 		updatedStatus();
 	}
 
@@ -299,16 +319,18 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			if (skipBug(bug))
 				continue;
 			BugDesignation bd = bug.getUserDesignation();
-			if (bd != null && bd.isDirty()) 
-			  queue.add(new Update(bug, Update.Kind.USER_UPDATE, now));
+			if (bd != null && bd.isDirty())
+				queue.add(new StoreUserAnnotation(bug,  now));
 		}
 		updatedStatus();
 	}
 
+	private static HashMap<String, Integer> issueId = new HashMap<String, Integer>();
+
 	class DatabaseSyncTask implements Runnable {
 
 		int handled;
-		
+
 		PreparedStatement queryByHash;
 
 		PreparedStatement addNewIssue;
@@ -317,28 +339,41 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 		PreparedStatement updateUserAnnotation;
 
-		public void run() {
-			Connection c = null;
-			try {
-				c = getConnection();
-				queryByHash = c
-				        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
-				addNewIssue = c
-				        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
-				updateLastSeen = c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
-				updateUserAnnotation = c
-				        .prepareStatement("UPDATE findbugsIssues SET status=?, updated=?, who=?, comment=?, lastSeen=? WHERE id=?");
-				while (!shutdown) {
-					Update u = queue.take();
-					switch (u.kind) {
-					case NEW_BUG:
-						newBug(u.bug, u.timestamp);
-						break;
-					case USER_UPDATE:
-						updatedUserAnnotation(u.bug, u.timestamp);
-						break;
+		Connection c;
 
+		public void establishConnection() throws SQLException {
+			if (c != null)
+				return;
+			c = getConnection();
+			queryByHash = c
+			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment FROM findbugsIssues WHERE hash=?");
+			addNewIssue = c
+			        .prepareStatement("INSERT INTO findbugsIssues (firstSeen, lastSeen, updated, who, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?,?,?)");
+			updateLastSeen = c.prepareStatement("UPDATE findbugsIssues SET lastSeen = ? WHERE id = ?");
+			updateUserAnnotation = c
+			        .prepareStatement("UPDATE findbugsIssues SET status=?, updated=?, who=?, comment=?, lastSeen=? WHERE id=?");
+		}
+
+		public void closeConnection() throws SQLException {
+			if (c == null)
+				return;
+			queryByHash.close();
+			addNewIssue.close();
+			updateLastSeen.close();
+			c.close();
+			c = null;
+		}
+
+		public void run() {
+			try {
+				while (!shutdown) {
+					Update u = queue.poll(10, TimeUnit.SECONDS);
+					if (u == null) {
+						closeConnection();
+						continue;
 					}
+					establishConnection();
+					u.execute(this);
 					if ((handled++) % 100 == 0 || queue.isEmpty()) {
 						updatedStatus();
 					}
@@ -352,11 +387,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 				assert true;
 			}
 			try {
-				c.close();
-				queryByHash.close();
-				addNewIssue.close();
-				updateLastSeen.close();
-				updateUserAnnotation.close();
+				closeConnection();
 			} catch (SQLException e) {
 
 			}
@@ -371,6 +402,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 				if (rs.next()) {
 					int col = 1;
 					int id = rs.getInt(col++);
+					issueId.put(bug.getInstanceHash(), id);
 					String designationString = rs.getString(col++);
 					Date when = rs.getDate(col++);
 					Date lastSeen = rs.getDate(col++);
@@ -380,7 +412,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 					boolean updateDatabase = bd != null && when.getTime() < bd.getTimestamp()
 					        && !bd.getDesignationKey().equals("UNCLASSIFIED");
 					if (updateDatabase) {
-						col = 1;	
+						col = 1;
 						updateUserAnnotation.setString(col++, bd.getDesignationKey());
 						updateUserAnnotation.setDate(col++, new java.sql.Date(bd.getTimestamp()));
 						updateUserAnnotation.setString(col++, findbugsUser);
@@ -448,10 +480,10 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 				rs = queryByHash.executeQuery();
 
 			}
-			
+
 			int id = rs.getInt(1);
 			Date lastSeen = rs.getDate(4);
-			
+
 			int col = 1;
 			updateUserAnnotation.setString(col++, bd.getDesignationKey());
 			updateUserAnnotation.setDate(col++, new java.sql.Date(bd.getTimestamp()));
@@ -465,22 +497,22 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
 		}
 
-		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#getStatusMsg()
+	 */
+	public String getStatusMsg() {
+		int size = queue.size();
+		if (!runnerThread.isAlive())
+			return "failed to synchronized with " + dbName + "(" + size + " issues unsynchronized)";
+		if (size == 0)
+			return "Synchronized " + (bulkSynchronizations + runner.handled) + " times with " + dbName;
+		return "need to synchronize " + size + " issues with " + dbName;
 
 	}
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin#getStatusMsg()
-     */
-    public String getStatusMsg() {
-	   int size = queue.size();
-	   if (!runnerThread.isAlive())
-		   return "failed to synchronized with " + dbName + "(" + size + " issues unsynchronized)";
-	   if (size == 0)
-		   return "Synchronized " + (bulkSynchronizations + runner.handled) + " times with " + dbName;
-	   return "need to synchronize " + size + " issues with " + dbName;
-	   
-    }
-
-	
 }
