@@ -156,21 +156,54 @@ public class PluginLoader {
 			url = classLoader.getResource(name);
 		}
 		
-		if (url == null && corePlugin) {
-			String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
-			if (findBugsHome != null) {
-				File f =  new File(new File(new File(findBugsHome), "etc"), name);
-				if (f.canRead())
-	                try {
-	                    return f.toURL();
-                    } catch (MalformedURLException e) {
-	                    // ignore it
-                    }
-			}
+		if (url != null) 
+			return url;
+		 if (corePlugin) 
+			 return loadFromFindBugsEtcDir(name);
+		 return null;
+	}
+
+	public static @CheckForNull
+	URL getCoreResource(String name) {
+		URL u = PluginLoader.class.getResource(name);
+		if (u != null)
+			return u;
+		return loadFromFindBugsEtcDir(name);
+	}
+	
+	public static @CheckForNull
+	URL loadFromFindBugsEtcDir(String name) {
+
+		String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
+		if (findBugsHome != null) {
+			File f = new File(new File(new File(findBugsHome), "etc"), name);
+			if (f.canRead())
+				try {
+					return f.toURL();
+				} catch (MalformedURLException e) {
+					// ignore it
+				}
 		}
 
-		return url;
-	}
+		return null;
+    }
+
+	public static @CheckForNull
+	URL loadFromFindBugsPluginDir(String name) {
+
+		String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
+		if (findBugsHome != null) {
+			File f = new File(new File(new File(findBugsHome), "plugin"), name);
+			if (f.canRead())
+				try {
+					return f.toURL();
+				} catch (MalformedURLException e) {
+					// ignore it
+				}
+		}
+
+		return null;
+    }
 
 	@SuppressWarnings("unchecked")
     private void init() throws PluginException {
