@@ -177,6 +177,9 @@ public class Update {
 	public BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection, boolean copyDeadBugs, boolean incrementalAnalysis) {
 
+		for(BugInstance b : newCollection)
+			if (b.isDead()) 
+				throw new IllegalArgumentException("Can't merge bug collections if the newer collection contains dead bugs: " + b);
 
 		mapFromNewToOldBug.clear();
 
@@ -286,7 +289,6 @@ public class Update {
 				} else
 					addedInNewCode++;
 			}
-			assert !newBug.isDead();
 			if (newBug.isDead())
 				throw new IllegalStateException("Illegal Version range: "
 						+ newBug.getFirstVersion() + ".."
