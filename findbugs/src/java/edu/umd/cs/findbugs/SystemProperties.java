@@ -41,16 +41,20 @@ public class SystemProperties {
 		assert tmp = true; // set tmp to true if assertions are enabled
 		ASSERTIONS_ENABLED = tmp;
 		loadPropertiesFromConfigFile();
-		if (getBoolean("findbugs.dumpProperties"))
+		if (getBoolean("findbugs.dumpProperties")){
+			FileOutputStream out = null;
 			try {
-				FileOutputStream out = new FileOutputStream("/tmp/outProperties.txt");
+				out = new FileOutputStream("/tmp/outProperties.txt");
 				System.getProperties().store(out, "System properties dump");
 				properties.store(out, "FindBugs properties dump");
-				out.close();
 			} catch (IOException e) {
 				assert true;
+			} finally {
+				IO.close(out);
 			}
+		}
 	}
+	
 	private static void loadPropertiesFromConfigFile()  {
 		
 	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.txt");
@@ -59,26 +63,33 @@ public class SystemProperties {
 		if (u != null)
 			try {
 			 URL configURL = new URL(u);
-			 loadPropertiesFromURL(systemProperties);
+			 loadPropertiesFromURL(configURL);
 			} catch (MalformedURLException e) {
 	            AnalysisContext.logError("Unable to load properties from " + u, e);
 	            
             }
 		}
+	
 	/**
-     * @param systemProperties
+	 * This method is public to allow clients to set system properties via any {@link URL}
+	 * 
+     * @param url an url to load system properties from, may be null
      */
-    private static void loadPropertiesFromURL(URL systemProperties) {
-	    if (systemProperties != null) {
-			InputStream in = null;
-            try {
-            	properties.load(in);
-            } catch (IOException e) {
-            	 AnalysisContext.logError("Unable to load properties from " + systemProperties, e);
-            }
-			IO.close(in);
-		}
+    public static void loadPropertiesFromURL(URL url) {
+	    if (url == null) {
+	    	return;
+	    }	    
+		InputStream in = null;
+        try {
+        	in = url.openStream();
+        	properties.load(in);
+        } catch (IOException e) {
+        	 AnalysisContext.logError("Unable to load properties from " + url, e);
+        } finally {
+        	IO.close(in);
+        }		
     }
+    
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties
