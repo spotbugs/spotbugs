@@ -162,8 +162,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	public final void reportBugsFromXml(@WillClose InputStream in, Project theProject) throws IOException, DocumentException
 	{
-		SortedBugCollection theCollection = new SortedBugCollection();
-		theCollection.readXML(in, theProject);
+		SortedBugCollection theCollection = new SortedBugCollection(theProject);
+		theCollection.readXML(in);
 		for(BugInstance bug: theCollection.getCollection()) {
 			doReportBug(bug);
 		}

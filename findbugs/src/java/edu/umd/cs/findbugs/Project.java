@@ -620,16 +620,16 @@ public class Project implements XMLWriteable {
 	}
 
 	public static Project readXML(File f) throws IOException, DocumentException, SAXException {
-		Project project = new Project();
 		InputStream in = new BufferedInputStream(new FileInputStream(f));
+		Project project = new Project();
 		try {
 			String tag = Util.getXMLType(in);
 			SAXBugCollectionHandler handler;
 			if (tag.equals("Project")) {
 				handler = new SAXBugCollectionHandler(project, f);
 			} else if (tag.equals("BugCollection")) {
-				SortedBugCollection bugs = new SortedBugCollection();
-				handler = new SAXBugCollectionHandler(bugs, project, f);
+				SortedBugCollection bugs = new SortedBugCollection(project);
+				handler = new SAXBugCollectionHandler(bugs, f);
 			} else {
 				throw new IOException("Can't load a project from a " + tag + " file");
 			}
@@ -763,9 +763,8 @@ public class Project implements XMLWriteable {
 	    	SortedBugCollection bugCollection = new SortedBugCollection();
 
 	    	try {
-	    		Project project = new Project();
-	    		bugCollection.readXML(f.getPath(), project);
-	    		return project;
+	    		bugCollection.readXML(f.getPath());
+	    		return bugCollection.getProject();
 	    	} catch (DocumentException e) {
 	    		IOException ioe = new IOException("Couldn't read saved XML in project directory");
 	    		ioe.initCause(e);

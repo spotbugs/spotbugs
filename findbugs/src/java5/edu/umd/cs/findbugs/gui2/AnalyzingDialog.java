@@ -65,7 +65,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				if (changeSettings)
 					ProjectSettings.newInstance();
 				MainFrame instance = MainFrame.getInstance();
-				instance.setProjectAndBugCollection(project, results);
+				assert results.getProject() == project;
+				instance.setBugCollection(results);
 			}
 
 			public void analysisInterrupted() {
@@ -84,14 +85,16 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	 */
 	public AnalyzingDialog(@NonNull Project project, AnalysisCallback callback, boolean joinThread)
 	{
-		if (project == null) throw new NullPointerException("null project");
+		if (project == null) 
+			throw new NullPointerException("null project");
 		this.project = project;
 		this.callback = callback;
 		initComponents();
 		MainFrame.getInstance().showWaitCard();
 		analysisThread.start();
 		if (joinThread)
-			try {analysisThread.join();} catch (InterruptedException e) {}
+			try {analysisThread.join();} 
+			catch (InterruptedException e) {}
 	}
 
 	public void initComponents()

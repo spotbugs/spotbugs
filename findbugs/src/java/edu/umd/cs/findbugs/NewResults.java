@@ -23,23 +23,21 @@ import java.util.Iterator;
 
 import org.dom4j.DocumentException;
 
+@Deprecated
 public class NewResults {
 	private SortedBugCollection origCollection;
 	private SortedBugCollection newCollection;
-	private Project project;
 
 	public NewResults(String origFilename, String newFilename)
 			throws IOException, DocumentException {
-		this(new SortedBugCollection(), new SortedBugCollection(), new Project());
-		origCollection.readXML(origFilename, new Project());
-		newCollection.readXML(newFilename, project);
+		this(new SortedBugCollection(), new SortedBugCollection());
+		origCollection.readXML(origFilename);
+		newCollection.readXML(newFilename);
 	}
 
-	public NewResults(SortedBugCollection origCollection, SortedBugCollection newCollection,
-		Project project) {
+	public NewResults(SortedBugCollection origCollection, SortedBugCollection newCollection) {
 		this.origCollection = origCollection;
 		this.newCollection = newCollection;
-		this.project = project;
 	}
 
 	public SortedBugCollection execute() {
@@ -71,7 +69,7 @@ public class NewResults {
 
 		SortedBugCollection result = op.execute();
 
-		result.writeXML(outputFilename, op.project);
+		result.writeXML(outputFilename);
 	}
 }
 

@@ -26,13 +26,12 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 
 public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
-	private SortedBugCollection bugCollection;
-	private Project project;
+	private final SortedBugCollection bugCollection;
+	private final Project project;
 
 	public BugCollectionBugReporter(Project project) {
 		this.project = project;
-		this.bugCollection = new SortedBugCollection(getProjectStats());
-
+		this.bugCollection = new SortedBugCollection(getProjectStats(), project);
 		bugCollection.setTimestamp(System.currentTimeMillis());
 	}
 
@@ -97,7 +96,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
 	public void finish() {
-		UserAnnotationPlugin userAnnotationPlugin = bugCollection.getUserAnnotationPlugin(project);
+		UserAnnotationPlugin userAnnotationPlugin = bugCollection.getUserAnnotationPlugin();
 		if (userAnnotationPlugin != null)
 			userAnnotationPlugin.loadUserAnnotations(bugCollection);
 	}

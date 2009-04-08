@@ -38,8 +38,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * @author Garvin LeClaire
  */
 public class XDocsBugReporter extends TextUIBugReporter {
-	private SortedBugCollection bugCollection = new SortedBugCollection();
-	private Project project;
+	final private SortedBugCollection bugCollection;
+	final private Project project;
 	private Document document;
 	private Element root;
 
@@ -56,6 +56,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 	public XDocsBugReporter(Project project) {
 		this.project = project;
+		this.bugCollection = new SortedBugCollection(project);
 
 		this.document = DocumentHelper.createDocument();
 		this.root = document.addElement(ROOT_ELEMENT_NAME);

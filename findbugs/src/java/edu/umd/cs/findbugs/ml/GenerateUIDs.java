@@ -59,7 +59,6 @@ public class GenerateUIDs {
 
 	public GenerateUIDs(String inputFilename, String outputFilename) {
 		this.bugCollection = new SortedBugCollection();
-		this.project = new Project();
 		this.inputFilename = inputFilename;
 		this.outputFilename = outputFilename;
 	}
@@ -77,14 +76,14 @@ public class GenerateUIDs {
 		}
 
 
-		bugCollection.readXML(in, project);
+		bugCollection.readXML(in);
 		in = null;
 		} finally {
 			if (in != null) in.close();
 		}
 		Document document = DocumentFactory.getInstance().createDocument();
 		Dom4JXMLOutput xmlOutput = new Dom4JXMLOutput(document);
-		bugCollection.writeXML(xmlOutput, project);
+		bugCollection.writeXML(xmlOutput);
 
 		int count = 0;
 

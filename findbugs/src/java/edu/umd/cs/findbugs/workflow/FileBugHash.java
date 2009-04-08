@@ -128,13 +128,12 @@ public class FileBugHash {
 			System.err.println("Usage: " + FileBugHash.class.getName() + " [<infile>]");
 			System.exit(1);
 		}
-		Project project = new Project();
 		BugCollection origCollection = new SortedBugCollection();
 		int argCount = 0;
 		if (argCount == args.length)
-			origCollection.readXML(System.in, project);
+			origCollection.readXML(System.in);
 		else
-			origCollection.readXML(args[argCount], project);
+			origCollection.readXML(args[argCount]);
 		FileBugHash result = compute(origCollection);
 		for (String sourceFile : result.getSourceFiles()) {
 			System.out.println(result.getHash(sourceFile) + "\t" + sourceFile);

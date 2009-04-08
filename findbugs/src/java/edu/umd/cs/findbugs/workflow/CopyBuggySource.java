@@ -62,15 +62,15 @@ public class CopyBuggySource {
 			return;
 		}
 
-		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection();
-		origCollection.readXML(args[0], project);
+		origCollection.readXML(args[0]);
 		File src = new File(args[1]);
 		byte buf[] = new byte[4096];
 		if (!src.isDirectory())
 			throw new IllegalArgumentException(args[1]
 					+ " is not a source directory");
+		Project project = origCollection.getProject();
 		SourceFinder sourceFinder = new SourceFinder(project);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		HashSet<String> copied = new HashSet<String>();

@@ -404,7 +404,6 @@ public class Update {
 			argCount = Math.max(argCount, args.length - mostRecent);
 		}
 		String origFilename = args[argCount++];
-		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection();
 		if (verbose)
@@ -420,7 +419,7 @@ public class Update {
 						System.out.println("Empty input file: " + f);
 					origFilename = args[argCount++];
 				}
-				origCollection.readXML(origFilename, project);
+				origCollection.readXML(origFilename);
 				break;
 			} catch (IOException e) {
 				if (verbose) {
@@ -461,7 +460,6 @@ public class Update {
 				String newFilename = args[argCount++];
 				if (verbose)
 					System.out.println("Merging " + newFilename);
-				project = new Project();
 				try {
 					File f = new File(newFilename);
 					if (f.length() == 0) {
@@ -469,7 +467,7 @@ public class Update {
 							System.out.println("Empty input file: " + f);
 						continue;
 					}
-					newCollection.readXML(newFilename, project);
+					newCollection.readXML(newFilename);
 
 					if (commandLine.overrideRevisionNames
 							|| newCollection.getReleaseName() == null
@@ -496,9 +494,9 @@ public class Update {
 
 			origCollection.setWithMessages(commandLine.withMessages);
 			if (commandLine.outputFilename != null)
-				origCollection.writeXML(commandLine.outputFilename, project);
+				origCollection.writeXML(commandLine.outputFilename);
 			else
-				origCollection.writeXML(System.out, project);
+				origCollection.writeXML(System.out);
 
 	}
 

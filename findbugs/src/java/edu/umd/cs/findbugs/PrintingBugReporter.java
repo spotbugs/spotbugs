@@ -117,12 +117,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			return;
 		}
 
-		Project proj = new Project();
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
-			bugCollection.readXML(args[argCount++], proj);
+			bugCollection.readXML(args[argCount++]);
 		else
-			bugCollection.readXML(System.in, proj);
+			bugCollection.readXML(System.in);
 
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
@@ -156,7 +155,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		}
 		else {
 		for (BugInstance warning :  bugCollection.getCollection())
-		    if (!reporter.isApplySuppressions() || !proj.getSuppressionFilter().match(warning) ){
+		    if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning) ){
 			try {
 			reporter.printBug(warning);
 			} catch (RuntimeException e) {
@@ -178,9 +177,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		bugCollection.setApplySuppressions(applySuppression);
 		if (argCount < args.length) {
 			proj.setProjectFileName(args[argCount]);
-			bugCollection.readXML(args[argCount++], proj);
+			bugCollection.readXML(args[argCount++]);
 		} else
-			bugCollection.readXML(System.in, proj);
+			bugCollection.readXML(System.in);
 
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));

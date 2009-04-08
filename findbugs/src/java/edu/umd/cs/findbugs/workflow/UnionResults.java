@@ -98,13 +98,13 @@ public class UnionResults {
 		for(int i = argCount; i < argv.length; i++) {
 			try {
 				SortedBugCollection more = new SortedBugCollection();
-				Project newProject = new Project();
-				more.readXML(argv[i], newProject);
+				
+				more.readXML(argv[i]);
 				if (project != null) {
-					project.add(newProject);
+					project.add(more.getProject());
 					results = union(results, more);
 				} else {
-					project = newProject;
+					project = more.getProject();
 					results = more;
 				}
 			} catch (IOException e) {
@@ -120,9 +120,9 @@ public class UnionResults {
 		}
 		results.setWithMessages(commandLine.withMessages);
 		if (commandLine.outputFile == null)
-			results.writeXML(System.out, project);
+			results.writeXML(System.out);
 		else
-			results.writeXML(commandLine.outputFile, project);
+			results.writeXML(commandLine.outputFile);
 	}
 
 

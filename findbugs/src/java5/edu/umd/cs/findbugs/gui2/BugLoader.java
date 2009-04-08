@@ -146,8 +146,8 @@ public class BugLoader {
 	{
 			try 
 			{
-				SortedBugCollection col=new SortedBugCollection();
-				col.readXML(in, project);
+				SortedBugCollection col=new SortedBugCollection(project);
+				col.readXML(in);
 				Filter suppressionMatcher = project.getSuppressionFilter();
 				if (suppressionMatcher != null) {
 					suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
@@ -192,10 +192,9 @@ public class BugLoader {
 	 * 
 	 * Merges bug collection histories from xmls selected by the user.  Right now all xmls must be in the same folder and he must select all of them at once
 	 * Makes use of FindBugs's mergeCollection method in the Update class of the workflow package
-	 * @param project TODO
 	 * @return the merged collecction of bugs
 	 */
-	public static BugCollection combineBugHistories(Project project)
+	public static BugCollection combineBugHistories()
 	{
 		try
 		{
@@ -208,14 +207,13 @@ public class BugLoader {
 				return null;
 
 			SortedBugCollection conglomeration=new SortedBugCollection();
-			conglomeration.readXML(chooser.getSelectedFiles()[0],project);
+			conglomeration.readXML(chooser.getSelectedFiles()[0]);
 			Update update = new Update();
 			for (int x=1; x<chooser.getSelectedFiles().length;x++)
 			{
 				File f=chooser.getSelectedFiles()[x];
-				Project p=new Project();
 				SortedBugCollection col=new SortedBugCollection();
-				col.readXML(f,p);
+				col.readXML(f);
 				conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);//False means dont show dead bugs
 			}
 

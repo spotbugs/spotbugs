@@ -31,19 +31,17 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public class AddAnnotation {
 	private BugCollection bugCollection;
-	private Project project;
 	private String annotation;
 
-	public AddAnnotation(BugCollection bugCollection, Project project, String annotation) {
+	public AddAnnotation(BugCollection bugCollection, String annotation) {
 		this.bugCollection = bugCollection;
-		this.project = project;
 		this.annotation = annotation;
 	}
 
 	public AddAnnotation(String resultsFile, String annotation)
 			throws IOException, DocumentException {
-		this(new SortedBugCollection(), new Project(), annotation);
-		bugCollection.readXML(resultsFile, project);
+		this(new SortedBugCollection(), annotation);
+		bugCollection.readXML(resultsFile);
 	}
 
 	public BugCollection getBugCollection() {
@@ -51,7 +49,7 @@ public class AddAnnotation {
 	}
 
 	public Project getProject() {
-		return project;
+		return bugCollection.getProject();
 	}
 
 	public void execute() {
@@ -86,7 +84,7 @@ public class AddAnnotation {
 		AddAnnotation addAnnotation = new AddAnnotation(filename, annotation);
 		addAnnotation.execute();
 
-		addAnnotation.getBugCollection().writeXML(filename, addAnnotation.getProject());
+		addAnnotation.getBugCollection().writeXML(filename);
 	}
 }
 

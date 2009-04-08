@@ -29,7 +29,6 @@ import java.util.TreeSet;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
@@ -118,9 +117,9 @@ public class RebornIssues {
 
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
-			bugCollection.readXML(args[argCount++], new Project());
+			bugCollection.readXML(args[argCount++]);
 		else
-			bugCollection.readXML(System.in, new Project());
+			bugCollection.readXML(System.in);
 		reborn.setBugCollection(bugCollection);
 		reborn.execute();
 		

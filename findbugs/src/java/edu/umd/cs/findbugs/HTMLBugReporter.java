@@ -48,7 +48,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			BugCollection bugCollection = getBugCollection();
 			bugCollection.setWithMessages(true);
 			// Decorate the XML with messages to display
-			Document document = bugCollection.toDocument(getProject());
+			Document document = bugCollection.toDocument();
 			// new AddMessages(bugCollection, document).execute();
 
 			// Get the stylesheet as a StreamSource.

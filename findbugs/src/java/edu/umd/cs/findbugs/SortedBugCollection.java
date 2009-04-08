@@ -49,7 +49,6 @@ import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.xml.transform.TransformerException;
 
@@ -92,7 +91,13 @@ public class SortedBugCollection implements BugCollection {
 	boolean runningWithoutSwingUI;
 	boolean shouldNotUsePlugin;
 	
-	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin(Project project) {
+	final Project project;
+	
+	public Project getProject() {
+		return project;
+	}
+	
+	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin() {
 		if(runningWithoutSwingUI || shouldNotUsePlugin){
 			return null;
 		}
@@ -189,11 +194,10 @@ public class SortedBugCollection implements BugCollection {
 	 * populating given Project as a side effect.
 	 *
 	 * @param fileName name of the file to read
-	 * @param project  the Project
 	 */
-	public void readXML(String fileName, Project project)
+	public void readXML(String fileName)
 			throws IOException, DocumentException {
-		readXML(new File(fileName), project);
+		readXML(new File(fileName));
 	}
 
 	/**
@@ -201,9 +205,8 @@ public class SortedBugCollection implements BugCollection {
 	 * populating given Project as a side effect.
 	 *
 	 * @param file    the file
-	 * @param project the Project
 	 */
-	public void readXML(File file, Project project)
+	public void readXML(File file)
 			throws IOException, DocumentException {
 		project.setCurrentWorkingDirectory(file.getParentFile());
 		InputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -215,7 +218,7 @@ public class SortedBugCollection implements BugCollection {
 				throw e;
 			}
 		}
-		readXML(in, project, file);
+		readXML(in, file);
 	}
 
 	/**
@@ -225,27 +228,26 @@ public class SortedBugCollection implements BugCollection {
 	 * (even if an exception is thrown).
 	 *
 	 * @param in      the InputStream
-	 * @param project the Project
 	 */
-	public void readXML(@WillClose InputStream in, Project project, File base)
+	public void readXML(@WillClose InputStream in, File base)
 			throws IOException, DocumentException {
 		//if (in == null) throw new IllegalArgumentException();
 		try {
 			//if (project == null) throw new IllegalArgumentException();
-			doReadXML(in, project, base);
+			doReadXML(in, base);
 		} finally {
 			in.close();
 		}
 	}
-	public void readXML(@WillClose InputStream in, Project project)
+	public void readXML(@WillClose InputStream in)
 			throws IOException, DocumentException {
 		assert project != null;
 		assert in != null;
-		doReadXML(in, project, null);
+		doReadXML(in, null);
 	}
 
-	private void doReadXML(@WillClose InputStream in, Project project, File base) throws IOException, DocumentException {
-		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
+	private void doReadXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
+		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
 		Profiler profiler = getProjectStats().getProfiler();
 		profiler.start(handler.getClass());
 		try {
@@ -273,7 +275,7 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			profiler.end(handler.getClass());
 		}
-		UserAnnotationPlugin plugin = getUserAnnotationPlugin(project);
+		UserAnnotationPlugin plugin = getUserAnnotationPlugin();
 		if (plugin != null)
 			plugin.loadUserAnnotations(this);
 		// Presumably, project is now up-to-date
@@ -284,31 +286,28 @@ public class SortedBugCollection implements BugCollection {
 	 * Write this BugCollection to a file as XML.
 	 *
 	 * @param fileName the file to write to
-	 * @param project  the Project from which the BugCollection was generated
 	 */
-	public void writeXML(String fileName, Project project) throws IOException {
+	public void writeXML(String fileName) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-		writeXML(out, project);
+		writeXML(out);
 	}
 
 	/**
 	 * Write this BugCollection to a file as XML.
 	 *
 	 * @param file    the file to write to
-	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(File file, Project project) throws IOException {
+	public void writeXML(File file) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		writeXML(out, project);
+		writeXML(out);
 	}
 
 	/**
 	 * Convert the BugCollection into a dom4j Document object.
 	 *
-	 * @param project the Project from which the BugCollection was generated
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
-	public Document toDocument(@Nonnull Project project) {
+	public Document toDocument() {
 		//if (project == null) throw new NullPointerException("No project");
 		assert project != null;
 		
@@ -317,7 +316,7 @@ public class SortedBugCollection implements BugCollection {
 		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
 
 		try {
-			writeXML(treeBuilder, project);
+			writeXML(treeBuilder);
 		} catch (IOException e) {
 			// Can't happen
 		}
@@ -330,9 +329,8 @@ public class SortedBugCollection implements BugCollection {
 	 * The output stream will be closed, even if an exception is thrown.
 	 *
 	 * @param out     the OutputStream to write to
-	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose OutputStream out, @Nonnull Project project) throws IOException {
+	public void writeXML(@WillClose OutputStream out) throws IOException {
 		assert project != null;
 		
 		XMLOutput xmlOutput;
@@ -344,10 +342,10 @@ public class SortedBugCollection implements BugCollection {
 			xmlOutput= new OutputStreamXMLOutput(out);
 		}
 
-		writeXML(xmlOutput, project);
+		writeXML(xmlOutput);
 	}
 
-	public void writePrologue(XMLOutput xmlOutput, Project project) throws IOException {
+	public void writePrologue(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.beginDocument();
 		xmlOutput.openTag(ROOT_ELEMENT_NAME,
 			new XMLAttributeList()
@@ -429,12 +427,11 @@ public class SortedBugCollection implements BugCollection {
 	 * </p>
 	 *
 	 * @param xmlOutput the XMLOutput object
-	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose XMLOutput xmlOutput, @Nonnull Project project) throws IOException {
+	public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException {
 		assert project != null;
 		try {
-			writePrologue(xmlOutput, project);
+			writePrologue(xmlOutput);
 			if (withMessages) {
 				computeBugHashes();
 				getProjectStats().computeFileStats(this);
@@ -786,6 +783,16 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	private long timestamp;
 
+	public SortedBugCollection(Project project) {
+		this(new ProjectStats(), MultiversionBugInstanceComparator.instance, project);
+	}
+	
+	public SortedBugCollection(File f) throws IOException, DocumentException {
+		this();
+		this.readXML(f);
+	}
+
+	
 	/**
 	 * Constructor.
 	 * Creates an empty object.
@@ -811,6 +818,11 @@ public class SortedBugCollection implements BugCollection {
 	public SortedBugCollection(ProjectStats projectStats) {
 		this(projectStats, MultiversionBugInstanceComparator.instance);
 	}
+	
+	public SortedBugCollection(ProjectStats projectStats, Project project) {
+		this(projectStats, MultiversionBugInstanceComparator.instance, project);
+	}
+
 	/**
 	 * Constructor.
 	 * Creates an empty object given an existing ProjectStats.
@@ -819,8 +831,12 @@ public class SortedBugCollection implements BugCollection {
 	 * @param comparator to use for sorting bug instances
 	 */
 	public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator) {
+		this(projectStats, comparator, new Project());
+	}
+	public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator, Project project) {
 		this.projectStats = projectStats;
 		this.comparator = comparator;
+		this.project = project;
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedHashSet<AnalysisError>() { 
 			@Override public boolean add(AnalysisError a) {
@@ -1034,7 +1050,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 
 	public SortedBugCollection createEmptyCollectionWithMetadata() {
-		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator);	
+		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());	
 		dup.errorList.addAll(this.errorList);
 		dup.missingClassSet.addAll(this.missingClassSet);
 		dup.summaryHTML = this.summaryHTML;

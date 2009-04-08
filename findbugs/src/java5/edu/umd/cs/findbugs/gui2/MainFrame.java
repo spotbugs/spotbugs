@@ -455,14 +455,25 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	BugCollection bugCollection;
 	
 	UserAnnotationPlugin.Listener userAnnotationListener = null;
+	
 	@SwingThread
-	void setProjectAndBugCollection(Project project, @CheckForNull BugCollection bugCollection) {
+	void setProjectWithNoBugCollection(Project project) {
+		setProjectAndBugCollection(project, null);
+	}
+
+	@SwingThread
+	void setBugCollection(BugCollection bugCollection) {
+		setProjectAndBugCollection(bugCollection.getProject(), bugCollection);
+	}
+
+	@SwingThread
+	private void setProjectAndBugCollection(Project project, @CheckForNull BugCollection bugCollection) {
 		Filter suppressionMatcher = project.getSuppressionFilter();
 		if (suppressionMatcher != null) {
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
 		if (this.bugCollection != null && userAnnotationListener != null) {
-			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin(getProject());
+			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin();
 			if (plugin != null) 
 				plugin.removeListener(userAnnotationListener);
 			}
@@ -497,7 +508,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		 * it is put here.*/
 		changeTitle();
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin(project);
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
 			if (plugin != null) {
 				userAnnotationListener = new UserAnnotationPlugin.Listener() {
 
@@ -529,7 +540,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			BugSet bs = new BugSet(bugCollection);
 			//Dont clear data, the data's correct, just get the tree off the listener lists.
 			((BugTreeModel) tree.getModel()).getOffListenerList();
-			((BugTreeModel)tree.getModel()).changeSet(bs);
+			((BugTreeModel) tree.getModel()).changeSet(bs);
 			//curProject=BugLoader.getLoadedProject();
 			setProjectChanged(true);
 		}
@@ -1651,7 +1662,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
         }
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin(getProject());
+			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
 			if (plugin != null) {
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
@@ -2505,12 +2516,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				final Project project = new Project();
 				if (source instanceof File) project.setCurrentWorkingDirectory(((File)source).getParentFile());
 				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						if (bc == null)
-							setProjectAndBugCollection(new Project(), new SortedBugCollection());
-						else setProjectAndBugCollection(project, bc);
-					}});
+				setProjectAndBugCollectionInSwingThread(project, bc);
 			}
 		};
 		if (EventQueue.isDispatchThread())
@@ -2530,12 +2536,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				final Project  project = BugLoader.loadProject(MainFrame.this, f);
 				final BugCollection  bc = project == null ? null : BugLoader.doAnalysis(project);
 				updateProjectAndBugCollection(project, bc, null);
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						if (project == null)
-							setProjectAndBugCollection(new Project(), new SortedBugCollection());
-						else setProjectAndBugCollection(project,bc);
-					}});
+				setProjectAndBugCollectionInSwingThread(project, bc);
 			}
 		};
 		if (EventQueue.isDispatchThread())
@@ -2568,9 +2569,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		showWaitCard();
-		Project p  = new Project();
-		BugCollection bc=BugLoader.combineBugHistories(p);
-		setProjectAndBugCollection(p, bc);
+		BugCollection bc=BugLoader.combineBugHistories();
+		setBugCollection(bc);
 
 	}
 
@@ -2691,5 +2691,20 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
     public InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
         return Util.progessMonitoredInputStream(c, msg);
+    }
+	/**
+     * @param project
+     * @param bc
+     */
+    private void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
+	    SwingUtilities.invokeLater(new Runnable() {
+	    	public void run() {
+	    		if (bc == null)
+	    			setProjectWithNoBugCollection(project);
+	    		else {
+	    			assert project == bc.getProject();
+	    			setBugCollection(bc);
+	    		}
+	    	}});
     }
 }

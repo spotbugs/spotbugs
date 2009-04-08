@@ -56,6 +56,29 @@ import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 public class Util {
 	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
 
+	/**
+	 * return sign of x - y
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static int compare(int x, int y) {
+		if (x > y) return 1;
+		if (x < y) return -1;
+		return 0;
+	}
+	
+	/**
+	 * return sign of x - y
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static int compare(long x, long y) {
+		if (x > y) return 1;
+		if (x < y) return -1;
+		return 0;
+	}
 	
 	public static Iterable<Integer> setBitIteratable(final BitSet b) {
 		return new Iterable<Integer>(){

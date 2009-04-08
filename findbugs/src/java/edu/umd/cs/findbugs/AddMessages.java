@@ -180,10 +180,10 @@ public class AddMessages {
 		String outputFile = args[1];
 		Project project = new Project();
 
-		SortedBugCollection inputCollection = new SortedBugCollection();
-		inputCollection.readXML(inputFile, project);
+		SortedBugCollection inputCollection = new SortedBugCollection(project);
+		inputCollection.readXML(inputFile);
 
-		Document document = inputCollection.toDocument(project);
+		Document document = inputCollection.toDocument();
 
 		AddMessages addMessages = new AddMessages(inputCollection, document);
 		addMessages.execute();

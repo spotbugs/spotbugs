@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 /**
  * class to hold the user annotation and user designation for a BugInstance
  */
-public class BugDesignation implements XMLWriteable, Serializable {
+public class BugDesignation implements XMLWriteable, Serializable, Comparable<BugDesignation> {
 
 	/** The default key for the user designation.
 	 *  Bad things could happen if this key isn't in getUserDesignations() */
@@ -179,5 +180,18 @@ public class BugDesignation implements XMLWriteable, Serializable {
 			timestamp = other.timestamp;
 		}
 	}
+	/* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(BugDesignation o) {
+	    int result = Util.compare(this.timestamp, o.timestamp);
+	    if (result != 0) 
+	    	return result;
+	   
+
+	    if (this.user != null && o.user != null)
+	    	return this.user.compareTo(o.user);
+	    return Util.compare(System.identityHashCode(this) , System.identityHashCode(o));
+    }
 
 }

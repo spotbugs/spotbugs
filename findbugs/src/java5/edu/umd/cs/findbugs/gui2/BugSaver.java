@@ -43,7 +43,7 @@ public class BugSaver {
 
 
 		try {
-			data.writeXML(out,p);
+			data.writeXML(out);
 		} catch (IOException e) {
 			Debug.println(e);
 		}

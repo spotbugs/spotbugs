@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.util.Bag;
 
@@ -78,8 +77,8 @@ public class TreemapVisualization {
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		int argCount = 0;
 		if (argCount < args.length)  
-			bugCollection.readXML(args[argCount++], new Project());
-		else bugCollection.readXML(System.in, new Project());
+			bugCollection.readXML(args[argCount++]);
+		else bugCollection.readXML(System.in);
 		
 		for(PackageStats p : bugCollection.getProjectStats().getPackageStats()) 
 			if (p.getTotalBugs() > 0) {

@@ -53,13 +53,12 @@ public class DefectDensity {
 			System.exit(1);
 		}
 
-		Project project = new Project();
 		BugCollection origCollection = new SortedBugCollection();
 		int argCount = 0;
 		if (argCount == args.length)
-			origCollection.readXML(System.in, project);
+			origCollection.readXML(System.in);
 		else
-			origCollection.readXML(args[argCount], project);
+			origCollection.readXML(args[argCount]);
 		ProjectStats stats = origCollection.getProjectStats();
 		printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
 		double projectDensity = density(stats.getTotalBugs(),  stats.getCodeSize());

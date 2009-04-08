@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
@@ -388,8 +387,8 @@ public class MineBugHistory {
 
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)  
-			bugCollection.readXML(args[argCount++], new Project());
-		else bugCollection.readXML(System.in, new Project());
+			bugCollection.readXML(args[argCount++]);
+		else bugCollection.readXML(System.in);
 		mineBugHistory.setBugCollection(bugCollection);
 
 		mineBugHistory.execute();

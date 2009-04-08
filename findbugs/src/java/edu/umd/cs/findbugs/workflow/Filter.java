@@ -441,16 +441,15 @@ public class Filter {
 
 		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
 				+ " [options] [<orig results> [<new results]] ");
-		Project project = new Project();
 		SortedBugCollection origCollection = new SortedBugCollection();
 
 		if (argCount == args.length)
-			origCollection.readXML(System.in, project);
+			origCollection.readXML(System.in);
 		else
-			origCollection.readXML(args[argCount++], project);
+			origCollection.readXML(args[argCount++]);
 		boolean verbose = argCount < args.length;
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
-
+		Project project = resultCollection.getProject();
 		int passed = 0;
 		int dropped = 0;
 		resultCollection.setWithMessages(commandLine.withMessages);
@@ -491,10 +490,10 @@ public class Filter {
 		}
 		if (argCount == args.length) {
 			assert !verbose;
-			resultCollection.writeXML(System.out, project);
+			resultCollection.writeXML(System.out);
 		}
 		else {
-			resultCollection.writeXML(args[argCount++], project);
+			resultCollection.writeXML(args[argCount++]);
 
 		}
 

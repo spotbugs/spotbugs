@@ -49,7 +49,6 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		reportStackTrace = true;
 	}
 
-
 	/**
 	 * Set the PrintStream to write bug output to.
 	 * 

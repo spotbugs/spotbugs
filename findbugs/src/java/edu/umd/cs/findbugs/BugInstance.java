@@ -559,6 +559,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (userDesignation == null) return BugDesignation.UNCLASSIFIED;
 		return userDesignation.getDesignationKey();
 	}
+	
+	public @CheckForNull String getUserName() {
+		if (userDesignation == null) return null;
+		return userDesignation.getUser();
+	}
+	public  long getUserTimestamp() {
+		if (userDesignation == null) return Long.MAX_VALUE;
+		return userDesignation.getTimestamp();
+	}
+	
 	@NonNull public int getUserDesignationKeyIndex() {
 		return I18N.instance().getUserDesignationKeys().indexOf(getUserDesignationKey());
 	}
@@ -573,7 +583,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
 		userDesignation.setDesignationKey(key);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin(project) : null;
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}
@@ -601,7 +611,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (existingText != null && existingText.equals(annotationText))
 			return;
 		u.setAnnotationText(annotationText);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin(project) : null;
+		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}

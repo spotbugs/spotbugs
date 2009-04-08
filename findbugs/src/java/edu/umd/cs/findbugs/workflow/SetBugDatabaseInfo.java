@@ -118,15 +118,14 @@ public class SetBugDatabaseInfo {
 		SetInfoCommandLine commandLine = new SetInfoCommandLine();
 		int argCount = commandLine.parse(args, 0, 2, USAGE);
 
-		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection();
 
 		if (argCount < args.length) 
-			origCollection.readXML(args[argCount++], project);
+			origCollection.readXML(args[argCount++]);
 		else
-			origCollection.readXML(System.in, project);
-
+			origCollection.readXML(System.in);
+		Project project = origCollection.getProject();
 
 		if (commandLine.revisionName != null)
 			origCollection.setReleaseName(commandLine.revisionName);
@@ -199,9 +198,9 @@ public class SetBugDatabaseInfo {
 
 
 		if (argCount < args.length) 
-			origCollection.writeXML(args[argCount++], project);
+			origCollection.writeXML(args[argCount++]);
 		else
-			origCollection.writeXML(System.out, project);
+			origCollection.writeXML(System.out);
 
 	}
 

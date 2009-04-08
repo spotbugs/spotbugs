@@ -149,7 +149,7 @@ public class AnalysisRun {
 	 * Load bugs from a file.
 	 */
 	public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
-		reporter.getBugCollection().readXML(file, project);
+		reporter.getBugCollection().readXML(file);
 
 		// Update summary stats
 		summary = reporter.getBugCollection().getSummaryHTML();
@@ -163,7 +163,7 @@ public class AnalysisRun {
 	 * @throws DocumentException
 	 */
 	public void loadBugsFromInputStream(InputStream in) throws IOException, DocumentException {
-		reporter.getBugCollection().readXML(in, project);
+		reporter.getBugCollection().readXML(in);
 
 		// Update summary stats
 		summary = reporter.getBugCollection().getSummaryHTML();
@@ -173,7 +173,7 @@ public class AnalysisRun {
 	 * Save bugs to a file.
 	 */
 	public void saveBugsToFile(File file) throws IOException {
-		reporter.getBugCollection().writeXML(file, project);
+		reporter.getBugCollection().writeXML(file);
 	}
 
 	/**

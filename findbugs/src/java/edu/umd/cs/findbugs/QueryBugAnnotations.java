@@ -52,7 +52,7 @@ public abstract class QueryBugAnnotations {
 	 */
 	public void scan(String filename) throws Exception {
 		BugCollection bugCollection = new SortedBugCollection();
-		bugCollection.readXML(filename, new Project());
+		bugCollection.readXML(filename);
 		scan(bugCollection, filename);
 	}
 

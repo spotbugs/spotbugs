@@ -92,12 +92,11 @@ public class RegenerateClassFeatures {
 		}
 
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		Project project = new Project();
-
-		bugCollection.readXML(args[0], project);
+		
+		bugCollection.readXML(args[0]);
 
 		new RegenerateClassFeatures(bugCollection, args[1]).execute();
 
-		bugCollection.writeXML(System.out, project);
+		bugCollection.writeXML(System.out);
 	}
 }

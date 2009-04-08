@@ -66,11 +66,9 @@ public class BugHistory {
 
 	private static class BugCollectionAndProject {
 		SortedBugCollection bugCollection;
-		Project project;
-
-		public BugCollectionAndProject(SortedBugCollection bugCollection, Project project) {
+		
+		public BugCollectionAndProject(SortedBugCollection bugCollection) {
 			this.bugCollection = bugCollection;
-			this.project = project;
 		}
 
 		/**
@@ -84,7 +82,7 @@ public class BugHistory {
 		 * @return Returns the project.
 		 */
 		public Project getProject() {
-			return project;
+			return bugCollection.getProject();
 		}
 	}
 
@@ -119,9 +117,8 @@ public class BugHistory {
 		public BugCollectionAndProject fetch(String fileName) throws IOException, DocumentException {
 			BugCollectionAndProject result = get(fileName);
 			if (result == null) {
-				Project project = new Project();
-				SortedBugCollection bugCollection = readCollection(fileName, project);
-				result = new BugCollectionAndProject(bugCollection, project);
+				SortedBugCollection bugCollection = readCollection(fileName);
+				result = new BugCollectionAndProject(bugCollection);
 				put(fileName, result);
 			}
 			return result;
@@ -301,7 +298,7 @@ public class BugHistory {
 
 	public void writeResultCollection(Project origProject, Project newProject, OutputStream outputStream) throws IOException {
 		getResultCollection().writeXML(
-				outputStream, getOriginator() == getOrigCollection() ? origProject : newProject);
+				outputStream);
 	}
 
 	/**
@@ -495,8 +492,8 @@ public class BugHistory {
 
 		public BugHistory createAndExecute(
 				String origFile, String newFile, Project origProject, Project newProject) throws IOException, DocumentException {
-			SortedBugCollection origCollection = readCollection(origFile, origProject);
-			SortedBugCollection newCollection = readCollection(newFile, newProject);
+			SortedBugCollection origCollection = readCollection(origFile);
+			SortedBugCollection newCollection = readCollection(newFile);
 
 			return createAndExecute(origCollection, newCollection, origProject, newProject);
 		}
@@ -534,10 +531,10 @@ public class BugHistory {
 		}
 	}
 
-	private static SortedBugCollection readCollection(String fileName, Project project)
+	private static SortedBugCollection readCollection(String fileName)
 			throws IOException, DocumentException {
 		SortedBugCollection result = new SortedBugCollection();
-		result.readXML(fileName, project);
+		result.readXML(fileName);
 		return result;
 	}
 

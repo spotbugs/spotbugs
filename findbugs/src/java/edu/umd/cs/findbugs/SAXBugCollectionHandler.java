@@ -75,7 +75,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private final File base;
 	private final String topLevelName;
 
-	public SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project, File base) {
+	private SAXBugCollectionHandler(String topLevelName, BugCollection bugCollection, Project project, File base) {
 		this.topLevelName = topLevelName;
 		this.bugCollection = bugCollection;
 		this.project = project;
@@ -86,8 +86,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		this.base = base;
 	
 	}
-	public SAXBugCollectionHandler(BugCollection bugCollection, Project project, File base) {
-		this(BUG_COLLECTION, bugCollection, project, base);
+	public SAXBugCollectionHandler(BugCollection bugCollection, File base) {
+		this(BUG_COLLECTION, bugCollection, bugCollection.getProject(), base);
 	}
 	public SAXBugCollectionHandler(Project project, File base) {
 		this(PROJECT, null, project, base);

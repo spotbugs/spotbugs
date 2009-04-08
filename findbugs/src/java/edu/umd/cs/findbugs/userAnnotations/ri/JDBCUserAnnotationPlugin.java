@@ -51,32 +51,6 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
  */
 public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 
-	/**
-	 * @throws SQLException
-	 * 
-	 */
-	private int timeBulkLoad() throws SQLException {
-		Connection c = getConnection();
-		PreparedStatement ps = c.prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
-		ResultSet rs = ps.executeQuery();
-		int count = 0;
-		while (rs.next()) {
-			int col = 1;
-			int id = rs.getInt(col++);
-			String designationString = rs.getString(col++);
-			Date when = rs.getDate(col++);
-			Date lastSeen = rs.getDate(col++);
-			String who = rs.getString(col++);
-			String comment = rs.getString(col++);
-			String hash = rs.getString(col++);
-			count++;
-		}
-		rs.close();
-		ps.close();
-		c.close();
-		return count;
-	}
-
 	int bulkSynchronizations = 0;
 
 	static private <T> Collection<T> addTo(Collection<T> c, T t) {
@@ -102,7 +76,8 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 		try {
 			Connection c = getConnection();
 			PreparedStatement ps = c
-			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues");
+			        .prepareStatement("SELECT id, status, updated, lastSeen, who, comment, hash FROM findbugsIssues WHERE who = ?");
+			ps.setString(1, findbugsUser);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {

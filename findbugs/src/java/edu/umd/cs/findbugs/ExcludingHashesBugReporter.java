@@ -48,8 +48,8 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
     public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException, DocumentException {
 	    Project project = new Project();
 		BugCollection origCollection;
-		origCollection = new SortedBugCollection();
-		origCollection.readXML(baseline, project);
+		origCollection = new SortedBugCollection(project);
+		origCollection.readXML(baseline);
 		for(BugInstance b : origCollection.getCollection())
 			instanceHashesToExclude.add(b.getInstanceHash());
     }

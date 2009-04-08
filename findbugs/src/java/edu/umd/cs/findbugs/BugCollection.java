@@ -49,6 +49,9 @@ public interface BugCollection extends Iterable<BugInstance>
 	static final String CLASS_HASHES_ELEMENT_NAME = "ClassHashes"; // 0.9.2 and later
 	static final String HISTORY_ELEMENT_NAME = "History"; // 0.9.2 and later
 
+	
+	public Project getProject();
+	
 	/**
 	 * Set the current release name.
 	 * 
@@ -202,7 +205,7 @@ public interface BugCollection extends Iterable<BugInstance>
 
 	public void setClassFeatureSet(ClassFeatureSet classFeatureSet);
 
-	public void writePrologue(XMLOutput xmlOutput, Project project) throws IOException;
+	public void writePrologue(XMLOutput xmlOutput) throws IOException;
 
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException;
 
@@ -213,9 +216,8 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * populating given Project as a side effect.
 	 *
 	 * @param fileName name of the file to read
-	 * @param project  the Project
 	 */
-	public void readXML(String fileName, Project project)
+	public void readXML(String fileName)
 		throws IOException, DocumentException;
 
 	/**
@@ -225,18 +227,16 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * (even if an exception is thrown).
 	 *
 	 * @param in      the InputStream
-	 * @param project the Project
 	 */
-	public void readXML(@WillClose InputStream in, Project project)
+	public void readXML(@WillClose InputStream in)
 			throws IOException, DocumentException;
 
 	/**
 	 * Write this BugCollection to a file as XML.
 	 *
 	 * @param fileName the file to write to
-	 * @param project  the Project from which the BugCollection was generated
 	 */
-	public void writeXML(String fileName, Project project) 
+	public void writeXML(String fileName) 
 		throws IOException;
 
 	/**
@@ -244,9 +244,8 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * The output stream will be closed, even if an exception is thrown.
 	 *
 	 * @param out     the OutputStream to write to
-	 * @param project the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose OutputStream out, Project project) throws IOException;
+	public void writeXML(@WillClose OutputStream out) throws IOException;
 
 	/**
 	 * Write the BugCollection to an XMLOutput object.
@@ -259,9 +258,8 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * </p>
 	 *
 	 * @param xmlOutput the XMLOutput object
-	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(@WillClose XMLOutput xmlOutput, Project project) throws IOException;
+	public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException;
 
 	/**
 	 * Return an Iterator over all the BugInstance objects in
@@ -277,10 +275,9 @@ public interface BugCollection extends Iterable<BugInstance>
 	/**
 	 * Convert the BugCollection into a dom4j Document object.
 	 *
-	 * @param project the Project from which the BugCollection was generated
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
-	public Document toDocument(Project project);
+	public Document toDocument();
 
 	/**
 	 * Create a new empty BugCollection with the same metadata as this one.
@@ -309,10 +306,8 @@ public interface BugCollection extends Iterable<BugInstance>
 	/**
 	 * Get the instance of user annotation plugin
 	 * 
-	 * @param project
-	 *            must be non null
 	 * @return user annotation plugin OR null, if there is no annotation plugin
 	 *         installed
 	 */
-	public UserAnnotationPlugin getUserAnnotationPlugin(Project project);
+	public UserAnnotationPlugin getUserAnnotationPlugin();
 }

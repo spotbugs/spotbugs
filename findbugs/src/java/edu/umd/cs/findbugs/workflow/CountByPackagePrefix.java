@@ -57,12 +57,11 @@ public class CountByPackagePrefix {
 		}
 
 		int prefixLength = Integer.parseInt(args[0]);
-		Project project = new Project();
 		BugCollection origCollection = new SortedBugCollection();
 		if (args.length == 1)
-		  origCollection.readXML(System.in, project);
+		  origCollection.readXML(System.in);
 		else
-			origCollection.readXML(args[1], project);
+			origCollection.readXML(args[1]);
 		Map<String, Integer> map = new TreeMap<String,Integer>();
 		Map<String, Integer> ncss = new TreeMap<String,Integer>();
 		
