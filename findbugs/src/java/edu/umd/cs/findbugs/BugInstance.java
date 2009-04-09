@@ -520,6 +520,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	/** set the user designation object. This will clobber any
 	 *  existing annotationText (or any other BugDesignation field). */
+	@Deprecated
 	public void setUserDesignation(BugDesignation bd) {
 		userDesignation = bd;
 	}
@@ -529,6 +530,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  or setUserDesignation() will ensure it will be non-null
 	 *  [barring an intervening setUserDesignation(null)].
 	 *  @see #getNonnullUserDesignation() */
+	@Deprecated
 	@Nullable public BugDesignation getUserDesignation() {
 		return userDesignation;
 	}
@@ -537,6 +539,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>
 	 *  will always work without the possibility of a NullPointerException.
 	 *  @see #getUserDesignation() */
+	@Deprecated
 	@NonNull public BugDesignation getNonnullUserDesignation() {
 		if (userDesignation == null)
 			userDesignation = new BugDesignation();

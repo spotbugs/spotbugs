@@ -21,9 +21,12 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.SortedSet;
 
+import javax.annotation.CheckForNull;
+
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.Listener;
 
 /**
  * An interface for describing how a bug collection
@@ -33,7 +36,37 @@ import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.Listener;
  */
 public interface Cloud {
 	
-	enum Mode { COMMUNAL, VOTING, SECRET };
+	enum Mode { COMMUNAL {
+	    @Override
+	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
+		    if (designations.isEmpty()) 
+		    	return null;
+		    return designations.first();
+	    }
+    }, VOTING {
+	    @Override
+	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
+		   for(BugDesignation bd : designations) {
+			   if (bd.getUser().equals(user)) {
+				   // has voted
+				   return designations.first();
+			   }
+		   }
+		   return null;
+	    }
+    }, SECRET {
+	    @Override
+	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
+	    	 for(BugDesignation bd : designations) {
+				   if (bd.getUser().equals(user)) {
+					  return bd;
+				   }
+			   }
+			   return null;
+	    }
+    };
+	abstract @CheckForNull BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations);
+	};
 	
 
     String getStatusMsg();

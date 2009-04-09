@@ -21,20 +21,22 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.awt.GraphicsEnvironment;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.sql.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -47,22 +49,64 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 /**
  * @author pwilliam
  */
-public abstract class DBCloud extends AbstractCloud {
+public  class DBCloud extends AbstractCloud {
 
+	
+	Mode mode;
+	
+	public Mode getMode() {
+		return mode;
+	}
+	public void setMode(Mode mode) {
+		this.mode = mode;
+	}
 	class BugData {
 		final String instanceHash;
 
 		public BugData(String instanceHash) {
 			this.instanceHash = instanceHash;
 		}
-
 		int id;
+		long firstSeen;
+		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
+		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
+		
+		@CheckForNull BugDesignation getPrimaryDesignation() {
+			return mode.getPrimaryDesignation(findbugsUser, designations);
+		}
 
-		Date firstSeen;
-
-		Collection<BugDesignation> designations = new TreeSet<BugDesignation>();
-
-		Collection<BugInstance> bugs = new ArrayList<BugInstance>();
+		@CheckForNull BugDesignation getUserDesignation() {
+			for(BugDesignation d : designations) 
+				if (d.getUser().equals(findbugsUser))
+					return d;
+			return null;
+		}
+		@CheckForNull BugDesignation getNonnullUserDesignation() {
+			BugDesignation d = getUserDesignation();
+			if (d != null) 
+				return d;
+			d = new BugDesignation(UserDesignation.UNCLASSIFIED.name(), System.currentTimeMillis(), "", findbugsUser);
+			designations.add(d);
+			return d;
+		}
+		/**
+         * @return
+         */
+        public boolean canSeeCommentsByOthers() {
+	       switch(mode) {
+	       case SECRET: return false;
+	       case COMMUNAL : return true;
+	       case VOTING : return hasVoted();
+	       }
+	       throw new IllegalStateException();
+        }
+        
+        public boolean hasVoted() {
+        	for(BugDesignation bd : designations)
+        		if (bd.getUser().equals(findbugsUser)) 
+        			return true;
+        	return false;
+        }
 	}
 
 	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
@@ -78,8 +122,14 @@ public abstract class DBCloud extends AbstractCloud {
 		return bd;
 
 	}
+	BugData getBugData(BugInstance bug) {
+		BugData bugData = getBugData(bug.getInstanceHash());
+		bugData.bugs.add(bug);
+		return bugData;
 
-	void loadDatabaseInfo(String hash, int id, Date firstSeen) {
+	}
+
+	void loadDatabaseInfo(String hash, int id, long firstSeen) {
 		BugData bd = instanceMap.get(hash);
 		if (bd == null)
 			return;
@@ -103,7 +153,7 @@ public abstract class DBCloud extends AbstractCloud {
 	public boolean establishConnection() {
 
 		for (BugInstance b : bugs.getCollection())
-			if (skipBug(b))
+			if (!skipBug(b))
 				getBugData(b.getInstanceHash()).bugs.add(b);
 
 		int count = 0;
@@ -118,12 +168,10 @@ public abstract class DBCloud extends AbstractCloud {
 				int id = rs.getInt(col++);
 				String hash = rs.getString(col++);
 				Date firstSeen = rs.getDate(col++);
-				loadDatabaseInfo(hash, id, firstSeen);
+				loadDatabaseInfo(hash, id, firstSeen.getTime());
 			}
 			rs.close();
 			ps.close();
-			
-			
 			
 			ps = c.prepareStatement("SELECT issueId, who, designation, comment, when FROM findbugsVotes");
 			rs = ps.executeQuery();
@@ -219,10 +267,9 @@ public abstract class DBCloud extends AbstractCloud {
 		runnerThread.interrupt();
 	}
 
-	public void storeUserAnnotation(BugInstance bug) {
-		if (skipBug(bug))
-			return;
-		queue.add(new StoreUserAnnotation(bug, System.currentTimeMillis()));
+		public void storeUserAnnotation(BugData data, BugDesignation bd) {
+
+		queue.add(new StoreUserAnnotation(data, bd));
 		updatedStatus();
 	}
 
@@ -230,18 +277,7 @@ public abstract class DBCloud extends AbstractCloud {
 		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead();
 	}
 
-	public void storeUserAnnotations(BugCollection bugs) {
-		long now = System.currentTimeMillis();
-		for (BugInstance bug : bugs.getCollection()) {
-			if (skipBug(bug))
-				continue;
-			BugDesignation bd = bug.getUserDesignation();
-			if (bd != null && bd.isDirty())
-				queue.add(new StoreUserAnnotation(bug, now));
-		}
-		updatedStatus();
-	}
-
+	
 	private static HashMap<String, Integer> issueId = new HashMap<String, Integer>();
 
 	class DatabaseSyncTask implements Runnable {
@@ -355,33 +391,13 @@ public abstract class DBCloud extends AbstractCloud {
 			addNewIssue.execute();
 		}
 
-		private void updatedUserAnnotation(BugInstance bug, long timestamp) throws SQLException {
-			BugDesignation bd = bug.getUserDesignation();
+		private void updatedUserAnnotation(BugData data, BugDesignation bd) throws SQLException {
 			if (bd == null)
 				return;
+			if (!bd.isDirty()) 
+				return;
 			bd.cleanDirty();
-			queryByHash.setString(1, bug.getInstanceHash());
-			ResultSet rs = queryByHash.executeQuery();
-			if (!rs.next()) {
-				rs.close();
-				addEntry(new java.sql.Date(System.currentTimeMillis()), bug);
-				rs = queryByHash.executeQuery();
-
-			}
-
-			int id = rs.getInt(1);
-			Date lastSeen = rs.getDate(4);
-
-			int col = 1;
-			updateUserAnnotation.setString(col++, bd.getDesignationKey());
-			updateUserAnnotation.setDate(col++, new java.sql.Date(bd.getTimestamp()));
-			updateUserAnnotation.setString(col++, findbugsUser);
-			String annotationText = bd.getNonnullAnnotationText();
-			updateUserAnnotation.setString(col++, annotationText);
-			updateUserAnnotation.setDate(col++, new java.sql.Date(Math.max(lastSeen.getTime(), timestamp)));
-			updateUserAnnotation.setInt(col++, id);
-			boolean result = updateUserAnnotation.execute();
-			return;
+			
 		}
 	}
 
@@ -399,18 +415,20 @@ public abstract class DBCloud extends AbstractCloud {
 		
 	
 	static class StoreUserAnnotation implements Update {
+		public StoreUserAnnotation(BugData data, BugDesignation designation) {
+	        super();
+	        this.data = data;
+	        this.designation = designation;
+        }
+
 		public void execute(DatabaseSyncTask t) throws SQLException {
-			t.updatedUserAnnotation(bug, timestamp);
+			// t.updatedUserAnnotation(bug, timestamp);
 		}
 
-		public StoreUserAnnotation(BugInstance bug, long timestamp) {
-			this.bug = bug;
-			this.timestamp = timestamp;
-		}
 
-		final BugInstance bug;
+		final BugData data;
 
-		final long timestamp;
+		final BugDesignation designation;
 	}
 
 	private void displayMessage(String msg, Exception e) {
@@ -429,5 +447,97 @@ public abstract class DBCloud extends AbstractCloud {
 		} else {
 			System.err.println(msg);
 		}
+	}
+	
+    public String getUser() {
+	   return findbugsUser;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getFirstSeen(edu.umd.cs.findbugs.BugInstance)
+     */
+    public long getFirstSeen(BugInstance b) {
+	   return getBugData(b).firstSeen;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUser()
+     */
+
+    public UserDesignation getUserDesignation(BugInstance b) {
+    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
+    	if (bd == null) return UserDesignation.UNCLASSIFIED;
+    	return UserDesignation.valueOf(bd.getDesignationKey());
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserEvaluation(edu.umd.cs.findbugs.BugInstance)
+     */
+    public String getUserEvaluation(BugInstance b) {
+    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
+    	if (bd == null) return "";
+    	return bd.getAnnotationText();
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getUserTimestamp(edu.umd.cs.findbugs.BugInstance)
+     */
+    public long getUserTimestamp(BugInstance b) {
+    	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
+    	if (bd == null) return Long.MAX_VALUE;
+    	return bd.getTimestamp();
+    	
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserDesignation(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.cloud.UserDesignation, long)
+     */
+    public void setUserDesignation(BugInstance b, UserDesignation u, long timestamp) {
+    		
+    	BugData data = getBugData(b);
+    	
+	    BugDesignation bd = data.getUserDesignation();
+	    if (bd == null) {
+	    	if (u == UserDesignation.UNCLASSIFIED) 
+	    		return;
+	    	bd = data.getNonnullUserDesignation();
+	    }
+	    bd.setDesignationKey(u.name());
+	    if (bd.isDirty()) {
+	    	bd.setTimestamp(timestamp);
+	    	storeUserAnnotation(data, bd);
+	    }
+	    	
+	    
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserEvaluation(edu.umd.cs.findbugs.BugInstance, java.lang.String, long)
+     */
+    public void setUserEvaluation(BugInstance b, String e, long timestamp) {
+	    // TODO Auto-generated method stub
+	    
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#setUserTimestamp(edu.umd.cs.findbugs.BugInstance, long)
+     */
+    public void setUserTimestamp(BugInstance b, long timestamp) {
+	    // TODO Auto-generated method stub
+	    
+    }
+    
+	public String getCloudReport(BugInstance b) {
+		StringBuilder builder = new StringBuilder();
+		BugData bd = getBugData(b);
+		long firstSeen = bd.firstSeen;
+		if (firstSeen < Long.MAX_VALUE) {
+			builder.append(String.format("First seen %s\n", new Date(firstSeen)));
+		}
+		BugDesignation primaryDesignation = bd.getPrimaryDesignation();
+		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
+		for(BugDesignation d : bd.designations) 
+			if (d != primaryDesignation 
+					&& (canSeeCommentsByOthers || d.getUser().equals(findbugsUser))) {
+				builder.append(String.format("%s: %s\n", d.getUser(), d.getDesignationKey()));
+				if (d.getAnnotationText().length() > 0) {
+					builder.append(d.getAnnotationText());
+					builder.append("\n\n");
+				}
+			}
+		return builder.toString();
 	}
 }
