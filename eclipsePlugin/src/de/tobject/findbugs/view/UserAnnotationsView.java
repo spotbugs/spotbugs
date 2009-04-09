@@ -124,8 +124,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		userAnnotationTextField.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				if (theBug != null) {
-					theBug.getUserDesignation().setAnnotationText(
-							userAnnotationTextField.getText());
+					theBug.setAnnotationText(
+							userAnnotationTextField.getText(), null, null);
 				}
 			}
 		});
