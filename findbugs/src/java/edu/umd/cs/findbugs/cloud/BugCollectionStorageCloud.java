@@ -23,17 +23,14 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Project;
 
 /**
  * @author pwilliam
  */
 public class BugCollectionStorageCloud extends AbstractCloud {
 
-	final BugCollection bc;
-	
 	BugCollectionStorageCloud(BugCollection bc) {
-		this.bc = bc;
+			super(bc);
 	}
 	
 	public Mode getMode() {
@@ -89,8 +86,32 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 
 	public long getFirstSeen(BugInstance b) {
 	    long firstVersion = b.getFirstVersion();
-	    AppVersion v = bc.getAppVersionFromSequenceNumber(firstVersion);
+	    AppVersion v = bugCollection.getAppVersionFromSequenceNumber(firstVersion);
 	    return v.getTimestamp();
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#bugsPopulated()
+     */
+    public void bugsPopulated() {
+	    assert true;
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#initialize()
+     */
+    public boolean initialize() {
+	    return true;
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#storeUserAnnotation(edu.umd.cs.findbugs.BugInstance)
+     */
+    public void storeUserAnnotation(BugInstance bugInstance) {
+	    // TODO Auto-generated method stub
+	    
     }
 
 	

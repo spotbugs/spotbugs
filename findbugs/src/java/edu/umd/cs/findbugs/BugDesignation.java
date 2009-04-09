@@ -47,6 +47,14 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 
 	
 	
+	public String toString() {
+		String result =  designation;
+		if (user != null)
+			result += " by " + user;
+		if (annotationText != null && annotationText.length() > 0)
+			result += " : " + annotationText;
+		return result;
+	}
 	private boolean dirty;
 	
 	public boolean isDirty() {
@@ -74,6 +82,9 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 	    this.user = user;
     }
 
+    public BugDesignation(BugDesignation that) {
+	    this(that.designation, that.timestamp, that.annotationText, that.user);
+    }
 	private long timestamp = System.currentTimeMillis();
 
 	/** free text from the user */
@@ -101,6 +112,10 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 	 *  I18N.instance().getUserDesignations().
 	 *  @see I18N#getUserDesignationKeys() */
 	public void setDesignationKey(String designationKey) {
+		if (designation.equals(designationKey)) 
+			return;
+		dirty = true;
+		timestamp = System.currentTimeMillis();
 		designation = (designationKey!=null ? designationKey : UNCLASSIFIED);
 	}
 
@@ -131,9 +146,11 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 		return annotationText;
 }
 	public void setAnnotationText(String s) {
-			if (!s.toLowerCase().equals(annotationText))
-				dirty = true;
-			annotationText = s;
+		if (s.equals(annotationText))
+			return;
+		dirty = true;
+		annotationText = s;
+		timestamp = System.currentTimeMillis();
 	}
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
@@ -184,13 +201,16 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(BugDesignation o) {
-	    int result = Util.compare(this.timestamp, o.timestamp);
+	    int result = - Util.compare(this.timestamp, o.timestamp);
 	    if (result != 0) 
 	    	return result;
 	   
 
-	    if (this.user != null && o.user != null)
-	    	return this.user.compareTo(o.user);
+	    if (this.user != null && o.user != null) {
+	    	result = this.user.compareTo(o.user);
+	    	if (result != 0) 
+	    		return result;
+	    }
 	    return Util.compare(System.identityHashCode(this) , System.identityHashCode(o));
     }
 

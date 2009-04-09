@@ -63,10 +63,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
-import edu.umd.cs.findbugs.userAnnotations.ri.JDBCUserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -87,7 +88,7 @@ public class SortedBugCollection implements BugCollection {
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
 	private boolean applySuppressions = false;
-	private UserAnnotationPlugin userAnnotationPlugin;
+	private Cloud userAnnotationPlugin;
 	boolean runningWithoutSwingUI;
 	boolean shouldNotUsePlugin;
 	
@@ -97,13 +98,13 @@ public class SortedBugCollection implements BugCollection {
 		return project;
 	}
 	
-	public @CheckForNull UserAnnotationPlugin getUserAnnotationPlugin() {
+	public @CheckForNull Cloud getCloud() {
 		if(runningWithoutSwingUI || shouldNotUsePlugin){
 			return null;
 		}
 		if(userAnnotationPlugin == null){
 			try {
-		    	userAnnotationPlugin =  JDBCUserAnnotationPlugin.getPlugin(project);
+		    	userAnnotationPlugin = CloudFactory.getCloud(this);
 		    	shouldNotUsePlugin = userAnnotationPlugin == null;
 	        } catch (NoClassDefFoundError e) {
 	        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
@@ -275,9 +276,9 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			profiler.end(handler.getClass());
 		}
-		UserAnnotationPlugin plugin = getUserAnnotationPlugin();
+		Cloud plugin = getCloud();
 		if (plugin != null)
-			plugin.loadUserAnnotations(this);
+			plugin.bugsPopulated();
 		// Presumably, project is now up-to-date
 		project.setModified(false);
 	}

@@ -243,7 +243,7 @@ public class CommentsArea {
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug
 								.getUserDesignationKey()));
-				BugDesignation bd = bug.getUserDesignation();
+				BugDesignation bd = bug.getNonnullUserDesignation();
 				String user = bd.getUser();
 				long time = bd.getTimestamp();
 				String msg;
@@ -289,7 +289,7 @@ public class CommentsArea {
 		if (bug.getAnnotationText().equals(comments))
 			return;
 
-		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection, MainFrame.getInstance().getProject());
+		bug.setAnnotationText(comments, MainFrame.getInstance().bugCollection);
 		setProjectChanged(true);
 		changed = false;
 		addToPrevComments(comments);
@@ -514,7 +514,7 @@ public class CommentsArea {
 		String oldValue = bug.getUserDesignationKey();
 		if (selection.equals(oldValue))
 			return false;
-		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection, MainFrame.getInstance().getProject());
+		bug.setUserDesignationKey(selection, MainFrame.getInstance().bugCollection);
 		return true;
 	}
 
@@ -618,7 +618,7 @@ public class CommentsArea {
 			// designation not sorted on at all
 
 			theNode.getBug().setUserDesignationKey(
-					selection, null, null);
+					selection,  MainFrame.getInstance().bugCollection);
 
 		} else if (getSorter().getOrderBeforeDivider().contains(
 				Sortables.DESIGNATION)) {
@@ -627,7 +627,7 @@ public class CommentsArea {
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path == null) {
 				theNode.getBug().setUserDesignationKey(
-						selection, null, null);
+						selection,  MainFrame.getInstance().bugCollection);
 				return;
 			}
 			Object[] objPath = path.getParentPath().getPath();
@@ -647,7 +647,7 @@ public class CommentsArea {
 			}
 
 			theNode.getBug().setUserDesignationKey(
-					selection, null, null);
+					selection,  MainFrame.getInstance().bugCollection);
 			model.bugTreeFilterListener.suppressBug(path);
 			TreePath unsuppressPath = model.getPathToBug(theNode.getBug());
 			if (unsuppressPath != null)// If choosing their designation has not
@@ -664,7 +664,7 @@ public class CommentsArea {
 				Sortables.DESIGNATION)) {
 
 			theNode.getBug().setUserDesignationKey(
-					selection, null, null);
+					selection,  MainFrame.getInstance().bugCollection);
 			BugTreeModel model = getModel();
 			TreePath path = model.getPathToBug(theNode.getBug());
 			if (path != null)

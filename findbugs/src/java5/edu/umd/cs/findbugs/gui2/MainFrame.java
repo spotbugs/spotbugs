@@ -83,7 +83,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -121,6 +120,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudListener;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -128,7 +129,6 @@ import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
-import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -454,7 +454,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	BugCollection bugCollection;
 	
-	UserAnnotationPlugin.Listener userAnnotationListener = null;
+	CloudListener userAnnotationListener = null;
 	
 	@SwingThread
 	void setProjectWithNoBugCollection(Project project) {
@@ -473,7 +473,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
 		if (this.bugCollection != null && userAnnotationListener != null) {
-			UserAnnotationPlugin plugin = this.bugCollection.getUserAnnotationPlugin();
+			Cloud plugin = this.bugCollection.getCloud();
 			if (plugin != null) 
 				plugin.removeListener(userAnnotationListener);
 			}
@@ -508,9 +508,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		 * it is put here.*/
 		changeTitle();
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
-				userAnnotationListener = new UserAnnotationPlugin.Listener() {
+				userAnnotationListener = new CloudListener() {
 
 					public void issueUpdate(BugInstance bug) {
 						// TODO Auto-generated method stub
@@ -1662,7 +1662,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	        msg = "  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden by filters");
         }
 		if (bugCollection != null) {
-			UserAnnotationPlugin plugin = bugCollection.getUserAnnotationPlugin();
+			Cloud plugin = bugCollection.getCloud();
 			if (plugin != null) {
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)

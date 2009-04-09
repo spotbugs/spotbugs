@@ -8,7 +8,7 @@
 -- Table structure for table `findbugsIssues`
 --
 
-CREATE TABLE `findbugsIssues` (
+CREATE TABLE `findbugs_issues` (
   `id` int(11) NOT NULL auto_increment,
   `firstSeen` date NOT NULL,
   `lastSeen` date NOT NULL,
@@ -22,7 +22,8 @@ CREATE TABLE `findbugsIssues` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1514 ;
 
 
-CREATE TABLE `findbugsVotes` (
+CREATE TABLE `findbugs_evaluations` (
+  `id` int(11) NOT NULL auto_increment,
   `issueId` int(11) NOT NULL,
   `who` varchar(16) NOT NULL,
   `designation` varchar(16) NOT NULL,

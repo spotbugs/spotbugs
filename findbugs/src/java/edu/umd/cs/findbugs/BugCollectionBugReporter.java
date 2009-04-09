@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
+import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
 	private final SortedBugCollection bugCollection;
@@ -96,9 +96,9 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
 	public void finish() {
-		UserAnnotationPlugin userAnnotationPlugin = bugCollection.getUserAnnotationPlugin();
+		Cloud userAnnotationPlugin = bugCollection.getCloud();
 		if (userAnnotationPlugin != null)
-			userAnnotationPlugin.loadUserAnnotations(bugCollection);
+			userAnnotationPlugin.bugsPopulated();
 	}
 }
 

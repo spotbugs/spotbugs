@@ -27,8 +27,8 @@ import java.util.Iterator;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import javax.annotation.WillClose;
 
@@ -309,5 +309,5 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * @return user annotation plugin OR null, if there is no annotation plugin
 	 *         installed
 	 */
-	public UserAnnotationPlugin getUserAnnotationPlugin();
+	public Cloud getCloud();
 }

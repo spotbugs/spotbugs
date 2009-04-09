@@ -23,14 +23,24 @@ import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin.Listener;
 
 /**
  * @author pwilliam
  */
 public abstract class AbstractCloud implements Cloud {
 
+	final BugCollection bugCollection;
+	
+	AbstractCloud(BugCollection bugs) {
+		this.bugCollection = bugs;
+	}
+	
+	public BugCollection getBugCollection() {
+		return bugCollection;
+	}
+	
 	public boolean supportsBugLinks() {
 		return false;
 	}

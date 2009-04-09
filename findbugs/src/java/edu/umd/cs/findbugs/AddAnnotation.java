@@ -67,7 +67,7 @@ public class AddAnnotation {
 				buf.append('\n');
 			}
 			buf.append(this.annotation);
-			bugInstance.setAnnotationText(buf.toString(),  bugCollection, getProject());
+			bugInstance.setAnnotationText(buf.toString(),  bugCollection);
 		}
 	}
 

@@ -65,7 +65,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -579,26 +579,24 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/**
 	 * @param key
 	 * @param bugCollection TODO
-	 * @param project must be non null, if bugCollection is not null
 	 */
-	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection, Project project) {
+	public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
 		BugDesignation userDesignation = getNonnullUserDesignation();
 		if (userDesignation.getDesignationKey().equals(key))
 			return;
 		userDesignation.setDesignationKey(key);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
+		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}
 	
-	/**
+	/**s
 	 * @param index
 	 * @param bugCollection TODO
-	 * @param project must be non null, if bugCollection is not null
 	 */
-	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection, Project project) {
+	public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
 		setUserDesignationKey(
-				I18N.instance().getUserDesignationKey(index), bugCollection, project);
+				I18N.instance().getUserDesignationKey(index), bugCollection);
 		}
 
 	/**
@@ -606,15 +604,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *
 	 * @param annotationText the user annotation text
 	 * @param bugCollection TODO
-	 * @param project must be non null, if bugCollection is not null
 	 */
-	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection, Project project) {
+	public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
 		final BugDesignation u = getNonnullUserDesignation();
 		String existingText = u.getAnnotationText();
 		if (existingText != null && existingText.equals(annotationText))
 			return;
 		u.setAnnotationText(annotationText);
-		UserAnnotationPlugin plugin = bugCollection != null? bugCollection.getUserAnnotationPlugin() : null;
+		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
 		if (plugin != null)
 			plugin.storeUserAnnotation(this);
 	}

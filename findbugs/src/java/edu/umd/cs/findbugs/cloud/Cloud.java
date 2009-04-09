@@ -25,6 +25,7 @@ import java.util.SortedSet;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 
@@ -69,11 +70,15 @@ public interface Cloud {
 	};
 	
 
+	BugCollection getBugCollection();
     String getStatusMsg();
     
     public void addListener(CloudListener listener);
     public void removeListener(CloudListener listener);
     
+    public boolean initialize();
+    
+    public void bugsPopulated();
     public void shutdown();
     
 	Mode getMode();
@@ -106,5 +111,9 @@ public interface Cloud {
 	String getUserEvaluation(BugInstance b);
 	void setUserEvaluation(BugInstance b, String e, long timestamp);
 	
-	long getFirstSeen(BugInstance b);	
+	long getFirstSeen(BugInstance b);
+	/**
+     * @param bugInstance
+     */
+    void storeUserAnnotation(BugInstance bugInstance);	
 }

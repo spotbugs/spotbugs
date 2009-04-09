@@ -26,7 +26,10 @@ import edu.umd.cs.findbugs.BugCollection;
  */
 public class CloudFactory {
 	
-	static Cloud getCloud(BugCollection bc) {
+	public static Cloud getCloud(BugCollection bc) {
+		Cloud c = new DBCloud(bc);
+		if (c.initialize())
+			return c;
 		return new BugCollectionStorageCloud(bc);
 	}
 	
