@@ -139,6 +139,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 
+	@Deprecated
 	public static final QualifiedName SESSION_PROPERTY_FB_PROJECT =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
 
@@ -449,7 +450,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 	private static void cacheBugCollectionAndProject(IProject project, SortedBugCollection bugCollection, Project fbProject) throws CoreException {
 		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, fbProject);
 		markBugCollectionDirty(project, false);
 	}
 
@@ -517,10 +517,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 
 		bugCollection = new SortedBugCollection();
-		findbugsProject = new Project();
+		findbugsProject = bugCollection.getProject();
 
 		InputStream contents = new BufferedInputStream(new FileInputStream(bugCollectionFile));
-		bugCollection.readXML(contents, findbugsProject);
+		bugCollection.readXML(contents);
 
 		cacheBugCollectionAndProject(project, bugCollection, findbugsProject);
 	}
@@ -536,19 +536,37 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param monitor         progress monitor
 	 * @throws IOException
 	 * @throws CoreException
+	 * @deprecated Use {@link #storeBugCollection(IProject,SortedBugCollection,IProgressMonitor)} instead
 	 */
 	public static void storeBugCollection(
 			IProject project,
 			final SortedBugCollection bugCollection,
 			final Project findbugsProject,
 			IProgressMonitor monitor) throws IOException, CoreException {
+				storeBugCollection(project, bugCollection, monitor);
+			}
+
+	/**
+	 * Store a new bug collection for a project.
+	 * The collection is stored in the session, and also in
+	 * a file in the project.
+	 *
+	 * @param project         the project
+	 * @param bugCollection   the bug collection
+	 * @param monitor         progress monitor
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public static void storeBugCollection(
+			IProject project,
+			final SortedBugCollection bugCollection,
+			IProgressMonitor monitor) throws IOException, CoreException {
 
 		// Store the bug collection and findbugs project in the session
 		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, findbugsProject);
-
-		if (bugCollection != null && findbugsProject != null) {
-			writeBugCollection(project, bugCollection, findbugsProject, monitor);
+		
+		if (bugCollection != null) {
+			writeBugCollection(project, bugCollection, monitor);
 		}
 	}
 
@@ -565,16 +583,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (isBugCollectionDirty(project)) {
 			SortedBugCollection bugCollection =
 			(SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-			Project fbProject = (Project) project.getSessionProperty(SESSION_PROPERTY_FB_PROJECT);
-
-			if (bugCollection != null && fbProject != null) {
-				writeBugCollection(project, bugCollection, fbProject, monitor);
+			
+			if (bugCollection != null) {
+				writeBugCollection(project, bugCollection, monitor);
 			}
 		}
 	}
 
+
 	private static void writeBugCollection(
-			IProject project, final SortedBugCollection bugCollection, final Project findbugsProject, IProgressMonitor monitor)
+			IProject project, final SortedBugCollection bugCollection, IProgressMonitor monitor)
 			throws CoreException {
 		// Save to file
 		IPath bugCollectionPath = getBugCollectionFile(project);
@@ -583,7 +601,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		File bugCollectionFile = bugCollectionPath.toFile();
 		FileOutput fileOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
-				bugCollection.writeXML(os, findbugsProject);
+				bugCollection.writeXML(os);
 			}
 
 			public String getTaskDescription() {

@@ -95,9 +95,8 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		designationComboBox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				if (theBug != null) {
-					theBug.getNonnullUserDesignation().setDesignationKey(
-							I18N.instance().getUserDesignationKeys(true).get(
-									designationComboBox.getSelectionIndex()));
+					theBug.setUserDesignationKeyIndex(
+						designationComboBox.getSelectionIndex(), null, null);
 				}
 			}
 
@@ -160,8 +159,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		if (theBug == null) {
 			return;
 		}
-		int comboIndex = I18N.instance().getUserDesignationKeys(true).indexOf(
-				theBug.getNonnullUserDesignation().getDesignationKey());
+		int comboIndex = theBug.getUserDesignationKeyIndex();
 		if (comboIndex == -1) {
 			FindbugsPlugin.getDefault()
 					.logError("Cannot find user designation");
@@ -208,7 +206,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 		if (bug == null) {
 			annotation = "Error - BugInstance not found.";
 		} else {
-			annotation = bug.getNonnullUserDesignation().getAnnotationText();
+			annotation = bug.getAnnotationText();
 		}
 
 		setContent(annotation, bug, firstVersion);

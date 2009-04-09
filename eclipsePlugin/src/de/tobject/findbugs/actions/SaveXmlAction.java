@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.Project;
 
 public class SaveXmlAction extends FindBugsAction {
 
@@ -130,10 +129,8 @@ public class SaveXmlAction extends FindBugsAction {
 			protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
 				BugCollection bugCollection = FindbugsPlugin.getBugCollection(
 						project, monitor);
-				Project fbProject = (Project) project
-						.getSessionProperty(FindbugsPlugin.SESSION_PROPERTY_FB_PROJECT);
 				try {
-					bugCollection.writeXML(fileName, fbProject);
+					bugCollection.writeXML(fileName);
 				} catch (IOException e) {
 					CoreException ex = new CoreException(FindbugsPlugin
 							.createErrorStatus(

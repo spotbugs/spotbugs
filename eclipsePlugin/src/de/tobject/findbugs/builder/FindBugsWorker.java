@@ -454,8 +454,7 @@ public class FindBugsWorker {
 
 			// will store bugs in the default FB file + Eclipse project session props
 			st.newPoint("storeBugCollection");
-			FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject,
-					monitor);
+			FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
 		} catch (CoreException e) {
