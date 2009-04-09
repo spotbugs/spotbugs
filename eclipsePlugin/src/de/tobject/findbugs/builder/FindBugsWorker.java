@@ -51,6 +51,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
@@ -152,7 +153,7 @@ public class FindBugsWorker {
 		// collect all related class file patterns for analysis
 		collectClassFilesPatterns(resources, outLocations, outputFiles);
 
-		// atach source directories (can be used by some detectors, see SwitchFallthrough)
+		// attach source directories (can be used by some detectors, see SwitchFallthrough)
 		configureSourceDirectories(findBugsProject, outLocations);
 
 		// find and add all the class files in the output directories
@@ -637,13 +638,7 @@ public class FindBugsWorker {
 				FindbugsPlugin.getDefault().logException(e,
 						"Error loading FindBugs results xml file: "  + xmlFileName);
 			} finally {
-				if(input != null){
-					try {
-						input.close();
-					} catch (IOException e) {
-						// ignore
-					}
-				}
+				IO.closeQuietly(input);
 			}
 		}
 	}

@@ -21,6 +21,7 @@ package de.tobject.findbugs.io;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,16 +35,19 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * Input/output helper methods.
- *
+ * 
  * @author David Hovemeyer
  */
 public abstract class IO {
 	/**
 	 * Write the contents of a file in the Eclipse workspace.
-	 *
-	 * @param file    the file to write to
-	 * @param output  the FileOutput object responsible for generating the data
-	 * @param monitor a progress monitor (or null if none)
+	 * 
+	 * @param file
+	 *            the file to write to
+	 * @param output
+	 *            the FileOutput object responsible for generating the data
+	 * @param monitor
+	 *            a progress monitor (or null if none)
 	 * @throws CoreException
 	 */
 	public static void writeFile(IFile file, final FileOutput output,
@@ -67,9 +71,11 @@ public abstract class IO {
 
 	/**
 	 * Write the contents of a java.io.File
-	 *
-	 * @param file    the file to write to
-	 * @param output  the FileOutput object responsible for generating the data
+	 * 
+	 * @param file
+	 *            the file to write to
+	 * @param output
+	 *            the FileOutput object responsible for generating the data
 	 */
 	public static void writeFile(final File file, final FileOutput output,
 			final IProgressMonitor monitor) throws CoreException {
@@ -87,14 +93,17 @@ public abstract class IO {
 					+ output.getTaskDescription(), e);
 			throw new CoreException(status);
 		} finally {
+			closeQuietly(fout);
+		}
+	}
+
+	public static void closeQuietly(Closeable closeable) {
+		if (closeable != null) {
 			try {
-				if (fout != null) {
-					fout.close();
-				}
+				closeable.close();
 			} catch (IOException e) {
 				// ignore
 			}
 		}
 	}
-
 }
