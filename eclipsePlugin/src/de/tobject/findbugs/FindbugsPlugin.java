@@ -20,7 +20,6 @@
 
 package de.tobject.findbugs;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -519,8 +518,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		bugCollection = new SortedBugCollection();
 		findbugsProject = bugCollection.getProject();
 
-		InputStream contents = new BufferedInputStream(new FileInputStream(bugCollectionFile));
-		bugCollection.readXML(contents);
+		bugCollection.readXML(bugCollectionFile);
 
 		cacheBugCollectionAndProject(project, bugCollection, findbugsProject);
 	}
@@ -538,6 +536,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws CoreException
 	 * @deprecated Use {@link #storeBugCollection(IProject,SortedBugCollection,IProgressMonitor)} instead
 	 */
+	@Deprecated
 	public static void storeBugCollection(
 			IProject project,
 			final SortedBugCollection bugCollection,
