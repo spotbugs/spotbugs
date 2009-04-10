@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.io.IO;
 
@@ -57,8 +59,8 @@ public class SystemProperties {
 	
 	private static void loadPropertiesFromConfigFile()  {
 		
-	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.txt");
-		loadPropertiesFromURL(systemProperties);
+	    URL systemProperties = PluginLoader.getCoreResource("systemProperties.properties");
+	   loadPropertiesFromURL(systemProperties);
 		String u = System.getProperty("findbugs.loadPropertiesFrom");
 		if (u != null)
 			try {

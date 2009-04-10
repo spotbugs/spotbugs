@@ -165,7 +165,10 @@ public class PluginLoader {
 
 	public static @CheckForNull
 	URL getCoreResource(String name) {
-		URL u = PluginLoader.class.getResource(name);
+		URL u = PluginLoader.class.getResource("/"+name);
+		if (u != null)
+			return u;
+		u = PluginLoader.class.getResource(name);
 		if (u != null)
 			return u;
 		return loadFromFindBugsEtcDir(name);
