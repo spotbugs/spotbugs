@@ -2514,6 +2514,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			{
 
 				final Project project = new Project();
+				project.setGuiCallback(MainFrame.this);
 				if (source instanceof File) project.setCurrentWorkingDirectory(((File)source).getParentFile());
 				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 				setProjectAndBugCollectionInSwingThread(project, bc);
@@ -2699,6 +2700,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     private void setProjectAndBugCollectionInSwingThread(final Project project, final BugCollection bc) {
 	    SwingUtilities.invokeLater(new Runnable() {
 	    	public void run() {
+	    		project.setGuiCallback(MainFrame.this);
 	    		if (bc == null)
 	    			setProjectWithNoBugCollection(project);
 	    		else {

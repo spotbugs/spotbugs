@@ -171,6 +171,7 @@ public class BugLoader {
 			if (suppressionMatcher != null) {
 				suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 			}
+			project.setGuiCallback(mainFrame);
 			return project;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(mainFrame,"Could not read " + f + "; " + e.getMessage());
