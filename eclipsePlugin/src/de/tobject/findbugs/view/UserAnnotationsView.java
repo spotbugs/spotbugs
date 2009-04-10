@@ -96,7 +96,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			public void widgetSelected(SelectionEvent e) {
 				if (theBug != null) {
 					theBug.setUserDesignationKeyIndex(
-						designationComboBox.getSelectionIndex(), null, null);
+						designationComboBox.getSelectionIndex(), null);
 				}
 			}
 
@@ -125,7 +125,7 @@ public class UserAnnotationsView extends AbstractFindbugsView {
 			public void modifyText(ModifyEvent e) {
 				if (theBug != null) {
 					theBug.setAnnotationText(
-							userAnnotationTextField.getText(), null, null);
+							userAnnotationTextField.getText(), null);
 				}
 			}
 		});
