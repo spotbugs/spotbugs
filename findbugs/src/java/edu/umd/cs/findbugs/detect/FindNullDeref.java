@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
@@ -78,6 +79,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -1017,6 +1019,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		int priority;
 		boolean valueIsNull = true;
 		String warning;
+		int pc = location.getHandle().getPosition();
+		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method,pc);
+		OpcodeStack.Item item1 = stack.getStackItem(0);
+		OpcodeStack.Item item2 = null;
 		if (redundantBranch.secondValue == null) {
 			if (redundantBranch.firstValue.isDefinitelyNull()) {
 				warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
@@ -1028,6 +1034,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			}
 
 		} else {
+			item2 = stack.getStackItem(1);
 			boolean bothNull = redundantBranch.firstValue.isDefinitelyNull()
 					&& redundantBranch.secondValue.isDefinitelyNull();
 			if (redundantBranch.secondValue.isChecked())
@@ -1112,6 +1119,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			bugInstance.add(variableAnnotation);
 		else
 			bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
+		bugInstance.addFieldOrMethodValueSource(item1);
+		if (item2 != null)
+			bugInstance.addFieldOrMethodValueSource(item2);
+		
 		if (wouldHaveBeenAKaboom)
 			bugInstance.addSourceLine(classContext, method,
 					locationOfKaBoom);

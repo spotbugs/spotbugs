@@ -1896,20 +1896,27 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	
 	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
 		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
-		if (lv != null && lv.isNamed()) {
+		if (lv != null && lv.isNamed()) 
 			add(lv);
-		} else {
-			XField xField = item.getXField();
-			if (xField != null)
-				addField(xField).describe(FieldAnnotation.LOADED_FROM_ROLE);
-			else {
-				XMethod xMethod = item.getReturnValueOf();
-				if (xMethod != null)
-					addMethod(xMethod).describe(MethodAnnotation.METHOD_RETURN_VALUE_OF);
-			}
-		}
+		
+		addFieldOrMethodValueSource(item);
+		
 		return this;
 	}
+
+	/**
+     * @param item
+     */
+    public void addFieldOrMethodValueSource(OpcodeStack.Item item) {
+	    XField xField = item.getXField();
+	    if (xField != null)
+	    	addField(xField).describe(FieldAnnotation.LOADED_FROM_ROLE);
+	    else {
+	    	XMethod xMethod = item.getReturnValueOf();
+	    	if (xMethod != null)
+	    		addMethod(xMethod).describe(MethodAnnotation.METHOD_RETURN_VALUE_OF);
+	    }
+    }
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
 		if (sourceLineAnnotation != null) {
