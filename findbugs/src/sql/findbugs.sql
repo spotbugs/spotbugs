@@ -8,10 +8,10 @@
 -- Table structure for table `findbugsIssues`
 --
 
-CREATE TABLE `findbugs_issues` (
+CREATE TABLE `findbugs_issue` (
   `id` int(11) NOT NULL auto_increment,
-  `firstSeen` date NOT NULL,
-  `lastSeen` date NOT NULL,
+  `firstSeen` datetime NOT NULL,
+  `lastSeen` datetime NOT NULL,
   `hash` varchar(32) NOT NULL,
   `bugPattern` varchar(80) NOT NULL,
   `priority` int(11) NOT NULL,
@@ -19,16 +19,17 @@ CREATE TABLE `findbugs_issues` (
   `bugDatabaseKey` varchar(64) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `hash` (`hash`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1514 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `findbugs_evaluations` (
+CREATE TABLE `findbugs_evaluation` (
   `id` int(11) NOT NULL auto_increment,
   `issueId` int(11) NOT NULL,
   `who` varchar(16) NOT NULL,
   `designation` varchar(16) NOT NULL,
   `comment` text NOT NULL,
-  `when` date NOT NULL,
+  `time` datetime NOT NULL,
+  PRIMARY KEY  (`id`),
   KEY `issueId` (`issueId`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
