@@ -1,13 +1,3 @@
---
--- Database: `findbugs`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `findbugsIssues`
---
-
 CREATE TABLE `findbugs_issue` (
   `id` int(11) NOT NULL auto_increment,
   `firstSeen` datetime NOT NULL,
@@ -32,4 +22,8 @@ CREATE TABLE `findbugs_evaluation` (
   PRIMARY KEY  (`id`),
   KEY `issueId` (`issueId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `findbugs_evaluation`
+  ADD CONSTRAINT `findbugs_evaluation_ibfk_1` FOREIGN KEY (`issueId`) REFERENCES `findbugs_issue` (`id`) ON DELETE CASCADE;
 
