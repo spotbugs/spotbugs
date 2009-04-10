@@ -793,17 +793,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		fileMenu.add(redoAnalysis);
 		// fileMenu.add(mergeMenuItem);
 
-		//TODO: This serves no purpose but to test something
-		if(false){
-			JMenuItem temp = new JMenuItem("Temp");
-			temp.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("Current Project Name: " + getProject().getProjectName());
-				}			
-			});
-			fileMenu.add(temp);
-		}
-
 		if (exitMenuItem != null) {
 			fileMenu.addSeparator();
 			fileMenu.add(exitMenuItem);
@@ -933,6 +922,55 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 
 		item.setAccelerator(KeyStroke.getKeyStroke(keystroke, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | additionalMask));
+	}
+	
+	@SwingThread
+	void expandTree() {
+		expandTree(Integer.MAX_VALUE);
+	}
+	@SwingThread
+	void expandTree(int max) {
+		Debug.printf("expandTree(%d)\n", max);
+		JTree jTree = getTree();
+		int i = 0;
+		while (true) {
+			int rows = jTree.getRowCount();
+			if (i >=  rows || rows >= max)
+				break;
+			jTree.expandRow(i++);
+		}
+	}
+	
+	
+	@SwingThread
+	boolean leavesShown() {
+		JTree jTree = getTree();
+
+		int rows = jTree.getRowCount();
+		for(int i = 0; i < rows; i++) {
+			TreePath treePath = jTree.getPathForRow(i);
+			Object lastPathComponent = treePath.getLastPathComponent();
+			if (lastPathComponent instanceof BugLeafNode) 
+				return true;
+		}
+		return false;
+	}
+	@SwingThread
+	void expandToFirstLeaf(int max) {
+		Debug.println("expand to first leaf");
+		if (leavesShown())
+			return;
+		JTree jTree = getTree();
+		int i = 0;
+		while (true) {
+			int rows = jTree.getRowCount();
+			if (i >=  rows || rows >= max)
+				break;
+			TreePath treePath = jTree.getPathForRow(i);
+			Object lastPathComponent = treePath.getLastPathComponent();
+			if (lastPathComponent instanceof BugLeafNode) return;
+			jTree.expandRow(i++);
+		}
 	}
 	void newProject(){
 		clearSourcePane();
@@ -1500,11 +1538,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				container.add(treeScrollPane, BorderLayout.CENTER);
 				setFontSizeHelper(container.getComponents(), Driver.getFontSize());
 				tree.setRowHeight((int)(Driver.getFontSize() + 7));
-				MainFrame.getInstance().getContentPane().validate();
-				MainFrame.getInstance().getContentPane().repaint();
+				MainFrame.this.getContentPane().validate();
+				MainFrame.this.getContentPane().repaint();
 
 				setupTreeListeners();
 				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
+				MainFrame.this.expandTree(10);
+				MainFrame.this.expandToFirstLeaf(14);
 				MainFrame.this.getSorter().addColumnModelListener(newModel);
 				FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
 				MainFrame.this.setSorting(true);

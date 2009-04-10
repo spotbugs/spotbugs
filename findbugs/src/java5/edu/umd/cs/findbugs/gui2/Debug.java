@@ -32,6 +32,12 @@ public class Debug {
 			System.out.println(s);
 	}
 
+	public static void printf(String format, Object... args)
+	{
+		if (MainFrame.DEBUG)
+			System.out.printf(format, args);
+	}
+
 	public static void println(Exception e){
 		if(MainFrame.DEBUG)
 			e.printStackTrace();

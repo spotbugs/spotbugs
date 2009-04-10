@@ -368,7 +368,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		 */
 		private void rebuild()
 		{
-			if (TRACE) System.out.println("rebuilding bug tree model");
+			if (TRACE) 
+				System.out.println("rebuilding bug tree model");
 			PreferencesFrame.getInstance().freeze();
 			st.freezeOrder();
 			MainFrame.getInstance().setRebuilding(true);
@@ -439,37 +440,23 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		void openPreviouslySelected(List<BugLeafNode> selected)
 		{
-			BugInstance bug=null;
-			TreePath path=null;
-			Debug.println("Starting Open Previously Selected");
+			
+			Debug.printf("Starting Open Previously Selected for %d nodes\n", selected.size());
 				for (BugLeafNode b: selected)
 				{
 					try
 					{
-						bug=b.getBug();
-						path=getPathToBug(bug);
+						BugInstance bug =b.getBug();
+						TreePath path=getPathToBug(bug);
+						if (path == null)
+							continue;
+						Debug.printf("Opening %s\n", path);
 						MainFrame.getInstance().tree.expandPath(path.getParentPath());
 						MainFrame.getInstance().tree.addSelectionPath(path);
 					}
-					catch(NullPointerException e)
+					catch(RuntimeException e)
 					{
-						//Try to recover!
-						if (MainFrame.DEBUG) System.err.println("Failure opening a selected node, node will not be opened in new tree");
-//						System.err.println(b);  This will be accurate
-//						System.err.println(bug);  This will be accurate
-						//System.err.println(path);  
-//						e.printStackTrace();					
-						continue;
-					}
-					catch(ArrayIndexOutOfBoundsException e)
-					{
-						//System.err.println("Failure opening a selected node");
-						//System.err.println(b);
-						//System.err.println(bug);
-						//System.err.println(path);
-						if (MainFrame.DEBUG) System.err.println("Failure opening a selected node, node will not be opened in new tree");
-//						e.printStackTrace();
-						continue;
+						Debug.println("Failure opening a selected node, node will not be opened in new tree");
 					}
 				}
 
