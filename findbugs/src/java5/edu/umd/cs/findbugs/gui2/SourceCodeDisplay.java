@@ -52,7 +52,7 @@ public final class SourceCodeDisplay implements Runnable {
 	private static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
 	private static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
 
-	static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
+	static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();
 
 	public JavaSourceDocument myDocument;
 	private int currentChar = -1; //for find
