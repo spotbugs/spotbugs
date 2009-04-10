@@ -213,7 +213,8 @@ public class ValueNumberFrameModelingVisitor
 		int flags = 0;
 		if (ins instanceof InvokeInstruction) 
 			flags = ValueNumber.RETURN_VALUE;
-		else if (ins instanceof ArrayInstruction) flags = ValueNumber.ARRAY_VALUE;
+		else if (ins instanceof ArrayInstruction) 
+			flags = ValueNumber.ARRAY_VALUE;
 
 
 		// Get the input operands to this instruction.
