@@ -53,6 +53,8 @@ import edu.umd.cs.findbugs.model.MovedClassMap;
  */
 
 public class Update {
+	static final boolean doMatchFixedBugs = SystemProperties.getBoolean("findbugs.matchFixedBugs");
+	static final int maxResurrection = SystemProperties.getInt("findbugs.maxResurrection", 2);
 
 	/**
 	 * 
@@ -515,8 +517,6 @@ public class Update {
 				.isIntroducedByChangeOfExistingClass());
 
 	}
-	static final boolean doMatchFixedBugs = SystemProperties.getBoolean("findbugs.matchFixedBugs");
-	static final int maxResurrection = SystemProperties.getInt("findbugs.maxResurrection", 2);
 
 	/**
 	 * @deprecated Use {@link #matchBugs(Comparator<BugInstance>,BugCollection,BugCollection,boolean,boolean)} instead
