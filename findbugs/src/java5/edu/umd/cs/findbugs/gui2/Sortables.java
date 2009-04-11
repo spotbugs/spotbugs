@@ -230,6 +230,24 @@ public enum Sortables implements Comparator<SortableValue>
 		{			
 			return I18N.instance().getBugCategoryDescription(value);
 		}
+		
+		@Override
+		public int compare(SortableValue one, SortableValue two)
+		{
+			String catOne = one.value;
+			String catTwo = two.value;
+			int compare = catOne.compareTo(catTwo);
+			if (compare == 0)
+				return 0;
+			if (catOne.equals("CORRECTNESS"))
+				return -1;
+			if (catTwo.equals("CORRECTNESS"))
+				return 1;
+			return compare;
+			
+		}
+
+		
 	},
 	DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation"))
 	{
@@ -299,6 +317,11 @@ public enum Sortables implements Comparator<SortableValue>
 	
 	BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank"))
 	{
+		String [] values;
+		{ values = new String[40];
+		  for(int i = 0; i < values.length; i++)
+			  values[i] = String.format("%2d", i);
+		}
 		@Override
 		public String getFrom(BugInstance bug)
 		{
@@ -306,7 +329,7 @@ public enum Sortables implements Comparator<SortableValue>
 				return "??";
 			
 			int rank = BugRanker.findRank(bug);
-			return String.format("%2d", rank);
+			return values[rank];
 		}
 
 		@Override
@@ -395,6 +418,11 @@ public enum Sortables implements Comparator<SortableValue>
 		return values;
 	}
 
+	private SortableStringComparator comparator = new SortableStringComparator(this);
+	
+	public SortableStringComparator getComparator() {
+		return comparator;
+	}
 	public Comparator<BugLeafNode> getBugLeafNodeComparator()
 	{
 		final Sortables key = this;

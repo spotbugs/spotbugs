@@ -176,7 +176,7 @@ public class SplashFrame extends JWindow
 						Viewer.this.repaint();
 					}
 				}
-			});
+			}, "FindBugs Splash screen thread");
 		}
 
 		public void animate()

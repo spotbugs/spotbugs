@@ -34,6 +34,7 @@ import java.util.TreeSet;
  * and HashMap's fast contains and indexOf() operations.  The
  * tradeoff is an O(n) remove. 
  */
+@Deprecated
 public class HashList<E> extends ArrayList<E>
 {
 	private static final long serialVersionUID = 6710532766397389391L;
@@ -41,14 +42,15 @@ public class HashList<E> extends ArrayList<E>
 	// Map from hashcodes to sets of indices in the ArrayList
 	private HashMap<Integer, TreeSet<Integer>> map = new HashMap<Integer, TreeSet<Integer>>(); 
 
-	public HashList()
-	{
-	}
+    public HashList() {
+    }
 
 	public HashList(Collection<? extends E> c)
 	{
 		addAll(c);
 	}
+
+
 
 	@Override
 	public boolean add(E o)

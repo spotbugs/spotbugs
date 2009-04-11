@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -88,7 +87,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		private BugSet data;
 		private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 		private JTree tree;
-		static Vector<BugLeafNode> selectedBugLeafNodes = new Vector<BugLeafNode>();
+		static ArrayList<BugLeafNode> selectedBugLeafNodes = new ArrayList<BugLeafNode>();
 
 		private static final boolean DEBUG = false;
 
@@ -190,11 +189,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public int getChildCount(Object o)
 		{
-//			long start = bean.getCurrentThreadCpuTime();
-//			try
-//			{
-//			System.out.println("# getChildCount [o = " + o + "]");
-		//			System.out.println("getChildCount: " + Thread.currentThread().toString());
+
 			if(!(o instanceof BugAspects))
 				return 0;
 
@@ -204,48 +199,19 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						return data.size();
 
 					if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
-//			{
-//			System.out.println("#  before enumsThatExist: " + (bean.getCurrentThreadCpuTime() - start));
 						return enumsThatExist(a).size();
-//			}
 					else
-//			{
-//			System.out.println("#  before query: " + (bean.getCurrentThreadCpuTime() - start));
 						return data.query(a).size();
-//			}
-//			}
-//			finally
-//			{
-//			System.out.println("#  finished: " + (bean.getCurrentThreadCpuTime() - start));
-//			}
 		}
 
 
 		/*This contract has been changed to return a HashList of Stringpair, our own data structure in which finding the index of an object in the list is very fast*/
 
-		private HashList<SortableValue> enumsThatExist(BugAspects a)
+		private ArrayList<SortableValue> enumsThatExist(BugAspects a)
 		{
-		//			long start = bean.getCurrentThreadCpuTime();
-//			System.out.println(" ## enumsThatExist [a = " + a + "]");
-//			try
-//			{					
-					//StringPair[] toCheck = null;
 					if (st.getOrderBeforeDivider().size()==0)
 						return null;					
 
-//					if (a.size() == 0) // root
-//						toCheck = getValues(st.getOrder().get(0));
-//					else if (st.getOrder().indexOf(a.get(a.size() - 1).key) == st.getOrder().size() - 1) // last branch
-//						return null;
-//					else // somewhere in between
-//						toCheck = getValues(st.getOrder().get(st.getOrder().indexOf(a.get(a.size() - 1).key) + 1));
-//					BugSet set = data.query(a);
-//			System.out.println(" ## after query: " + (bean.getCurrentThreadCpuTime() - start));
-//					for (StringPair sp : toCheck)
-//						if (set.contains(sp))
-//							result.add(sp);
-//			System.out.println(" ## after loop (" + toCheck.length + " elements): " + (bean.getCurrentThreadCpuTime() - start));
-//					return result;
 
 					Sortables key = (a.size() == 0 ?
 							st.getOrderBeforeDivider().get(0) :
@@ -255,15 +221,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 					ArrayList<SortableValue> result = new ArrayList<SortableValue>();
 					for (String i : all)
 						result.add(new SortableValue(key, i));
-//			System.out.println(" ## before sort: " + (bean.getCurrentThreadCpuTime() - start));
-//					Collections.sort(result, key);
-//			System.out.println(" ## after sort: " + (bean.getCurrentThreadCpuTime() - start));
-					return new HashList<SortableValue>(result);
-//			}
-//			finally
-//			{
-//			System.out.println(" ## finished: " + (bean.getCurrentThreadCpuTime() - start));
-//			}
+					return result;
+
 		}
 
 		public boolean isLeaf(Object o)
@@ -284,7 +243,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			}
 			else
 			{
-				HashList<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
+				ArrayList<SortableValue> stringPairs = enumsThatExist((BugAspects) parent);
 				if (stringPairs==null)
 				{
 					//XXX-Threading difficulties-stringpairs is null somehow
@@ -294,13 +253,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				}
 
 				return stringPairs.indexOf(((BugAspects)child).last());
-//				for (int i = 0; i < stringPairs.size(); i++)
-//					if (stringPairs.get(i).equals(((BugAspects)child).get(((BugAspects)child).size() -1)))
-//						return i;
-//					
-//					if (stringPairArray[i] == ((BugAspects)child).get(((BugAspects)child).size() - 1))
-//						return i;
-//				return -1;
+
 			}
 		}
 
@@ -384,7 +337,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 			Debug.println("Please Wait called right before starting rebuild thread");
 			pleaseWait();
-			rebuildingThread = new Thread()
+			rebuildingThread = new Thread("Rebuilding thread")
 			{
 				 BugTreeModel newModel;
 				@Override
@@ -734,7 +687,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						selectedBugLeafNodes.add((BugLeafNode) path.getLastPathComponent());
 		}
 
-		Vector<BugLeafNode> getOldSelectedBugs()
+		ArrayList<BugLeafNode> getOldSelectedBugs()
 		{
 			return selectedBugLeafNodes;
 		}
@@ -748,18 +701,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				sortsAddedOrRemoved=false;
 				rebuild();
 			}
-//			This old version isn't wrong... it just worries me, as it looks like we could rebuild twice, although
-//			we never do.  Above version should be safer.
-//			if (sortOrderChanged==true)
-//			{
-//				sortOrderChanged=false;
-//				rebuild();
-//			}
-//			if (sortsAddedOrRemoved==true)
-//			{
-//				sortsAddedOrRemoved=false;
-//				rebuild();
-//			}
 		}		
 
 		static void pleaseWait()

@@ -28,10 +28,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class SortableStringComparator implements Comparator<String> {
 
-	Sortables mySortable;
+	final Sortables mySortable;
 
-	SortableStringComparator(Sortables theSortable)
-	{
+	SortableStringComparator(Sortables theSortable) {
 		mySortable = theSortable;
 	}
 	public int compare(String one, String two) {

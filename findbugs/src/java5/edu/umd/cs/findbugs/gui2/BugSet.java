@@ -20,16 +20,17 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
@@ -46,15 +47,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class BugSet implements Iterable<BugLeafNode>{
 
-	private HashList<BugLeafNode> mainList;
+	private ArrayList<BugLeafNode> mainList;
 	private HashMap<SortableValue,BugSet> doneMap;
 	private HashMap<SortableValue,Boolean>   doneContainsMap;
-	private HashMap<Sortables,HashList<String>> sortablesToStrings;
+	private HashMap<Sortables,String[]> sortablesToStrings;
 
 
 	private static BugSet mainBugSet=null;
 
-//	private ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 	/** mainBugSet should probably always be the same as the data field in the current BugTreeModel
 	 * we haven't run into any issues where it isn't, but if the two aren't equal using ==, problems might occur.
 	 * If these problems do occur, See BugTreeModel.resetData() and perhaps adding a setAsRootAndCache() to it would fix the issue.
@@ -72,9 +72,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 */
 	public String[] getAll(Sortables s)
 	{
-		HashList<String> list=sortablesToStrings.get(s);
-		Collections.sort(list, new SortableStringComparator(s));
-		return list.toArray(new String[list.size()]);
+		return getDistinctValues(s);
 	}
 
 	/**
@@ -84,7 +82,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 */
 	BugSet(Collection<? extends BugLeafNode> filteredSet)
 	{
-		this.mainList=new HashList<BugLeafNode>(filteredSet);
+		this.mainList=new ArrayList<BugLeafNode>(filteredSet);
 		doneMap=new HashMap<SortableValue,BugSet>();
 		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		cacheSortables();
@@ -107,65 +105,59 @@ public class BugSet implements Iterable<BugLeafNode>{
 		bs.cacheSortables();
 	}
 
+	static boolean suppress(BugLeafNode p) {
+		Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
+		return suppressionFilter.match(p.getBug());
+	}
 	/**
 	 * we cache all values of each sortable that appear in the BugSet as we create it using cacheSortables, this makes it
 	 * possible to only show branches that actually have bugs in them, and makes it faster by caching the results.
 	 */
 	void cacheSortables()
 	{
-		sortablesToStrings=new HashMap<Sortables,HashList<String>>();
-		for (Sortables key: Sortables.values())
-			if (key != Sortables.DIVIDER)
-			{
-				HashList<String> list=new HashList<String>();
-				sortablesToStrings.put(key,list);
-			}
-
-		ArrayList<BugLeafNode> bugNodes=new ArrayList<BugLeafNode>();
-		Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
+		 sortablesToStrings
+		    = new HashMap<Sortables,String[]>();
 		
-		for(BugLeafNode p:mainList)
-		{
-			if (!suppressionFilter.match(p.getBug()))
-				bugNodes.add(p);
-		}
-
-		for (BugLeafNode b:bugNodes)
-		{
-			BugInstance bug=b.getBug();
-			BugPattern bugP=bug.getBugPattern();
-
-			if (bugP==null)
-			{
-				assert false;
-				if (MainFrame.DEBUG) System.err.println("A bug pattern was not found for "+bug.getMessage());
-				continue;
-			}
-
-			for (Sortables key: Sortables.values())
-				if (key != Sortables.DIVIDER)
-				{
-					HashList<String> list=sortablesToStrings.get(key);
-
-					String value=key.getFrom(bug);
-					if (!list.contains(value))
-						list.add(value);
-					sortablesToStrings.put(key,list);
-				}
-		}	
-
-		for (Sortables key: Sortables.values())
-			if (key != Sortables.DIVIDER)
-				Collections.sort(sortablesToStrings.get(key));
 	}
 
+	String[]  getDistinctValues(Sortables key) {
+		String[] list = sortablesToStrings.get(key);
+		if (list == null) {
+			list = computeDistinctValues(key);
+			sortablesToStrings.put(key,list);
+		}
+		return list;
+	}
+
+	private static final String [] EMPTY_STRING_ARRAY = new String[0];
+	
+	String[] computeDistinctValues(Sortables key) {
+
+		if (key == Sortables.DIVIDER)
+			return EMPTY_STRING_ARRAY;
+
+		Collection<String> list = new HashSet<String>();
+
+		for (BugLeafNode p : mainList) {
+			if (suppress(p))
+				continue;
+			BugInstance bug = p.getBug();
+
+			String value = key.getFrom(bug);
+			list.add(value);
+
+		}
+		String result[]  = list.toArray(new String[list.size()]);
+		Collections.sort(Arrays.asList(result), new SortableStringComparator(key));
+		return result;
+
+	}
 	/** used to update the status bar in mainframe with the number of bugs that are filtered out */ 
 	static int countFilteredBugs()
 	{
-		Filter cm=ProjectSettings.getInstance().getSuppressionFilter();
 		int result = 0;
-		for (BugLeafNode bug : mainBugSet.mainList)
-			if (cm.match(bug.getBug()))
+		for (BugLeafNode bug : getMainBugSet().mainList)
+			if (!suppress(bug))
 				result++;
 
 		return result;
@@ -217,11 +209,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 	/* Sort the contents of the list by the Sortables in the order after the divider, if any. */
 	void sortList()
 	{
-		// Go backward through the sort order, sorting the entire list: that achieves the correct order
-			// But it takes waaaay too long.
+
 		final List<Sortables> order = MainFrame.getInstance().getSorter().getOrderAfterDivider();
-//		for (int i = order.size() - 1; i >= 0; i--)
-//			Collections.sort(mainList, order.get(i).getBugLeafNodeComparator());
 
 		Collections.sort(mainList, new Comparator<BugLeafNode>(){
 			public int compare(BugLeafNode one, BugLeafNode two)
@@ -250,7 +239,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		if (doneContainsMap.containsKey(keyValuePair))
 			return doneContainsMap.get(keyValuePair);
 
-		for(BugLeafNode p:filterNoCache().mainList)
+		for(BugLeafNode p: filterNoCache().mainList)
 		{
 			if (p.matches(keyValuePair))
 			{
@@ -281,11 +270,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		return mainList.size();
 	}
-/*	
-	public Iterator<BugLeafNode> iterator() {
-		return mainList.iterator();
-	}
-*/	
+
 	public int indexOfUnfiltered(BugLeafNode p)
 	{
 		return mainList.indexOf(p);
@@ -305,7 +290,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 
 	BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables)
 	{
-		this.mainList=new HashList<BugLeafNode>(filteredSet);
+		this.mainList=new ArrayList<BugLeafNode>(filteredSet);
 		doneMap=new HashMap<SortableValue,BugSet>();
 		doneContainsMap=new HashMap<SortableValue,Boolean>();
 		if (cacheSortables)
@@ -315,11 +300,9 @@ public class BugSet implements Iterable<BugLeafNode>{
 	public BugSet filterNoCache()
 	{
 
-		Matcher m=ProjectSettings.getInstance().getSuppressionFilter();
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
-		for(BugLeafNode p:mainList)
-		{
-			if (!m.match(p.getBug()))
+		for(BugLeafNode p:mainList) {
+			if (!suppress(p))
 				people.add(p);
 		}
 		return new BugSet(people,false);
@@ -328,8 +311,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	public BugSet getBugsMatchingFilter(Matcher m)
 	{
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
-		for(BugLeafNode p:mainList)
-		{
+		for(BugLeafNode p:mainList) {
 			if(!(m.match(p.getBug())))
 				people.add(p);
 		}

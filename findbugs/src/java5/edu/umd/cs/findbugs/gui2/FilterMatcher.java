@@ -94,14 +94,19 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		if (!active)
 			return true;
 
-		SortableStringComparator ssc = new SortableStringComparator(filterBy);
-		switch(mode)
-		{
-		case FILTER_EXACTLY: return (ssc.compare(filterBy.getFrom(bugInstance), value) != 0);
-		case FILTER_AT_OR_AFTER: return (ssc.compare(filterBy.getFrom(bugInstance), value) < 0);
-		case FILTER_AT_OR_BEFORE: return (ssc.compare(filterBy.getFrom(bugInstance), value) > 0);
-		case FILTER_ALL_BUT: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 0);
-		default: return true;
+		SortableStringComparator ssc = filterBy.getComparator();
+		int compare = ssc.compare(filterBy.getFrom(bugInstance), value);
+		switch(mode) {
+		case FILTER_EXACTLY: 
+			return (compare != 0);
+		case FILTER_AT_OR_AFTER: 
+			return (compare < 0);
+		case FILTER_AT_OR_BEFORE: 
+			return (compare > 0);
+		case FILTER_ALL_BUT: 
+			return (compare == 0);
+		default: 
+			return true;
 		}
 	}
 

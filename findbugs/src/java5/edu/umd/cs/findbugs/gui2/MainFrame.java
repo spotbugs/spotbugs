@@ -2561,7 +2561,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			}
 		};
 		if (EventQueue.isDispatchThread())
-			new Thread(runnable).start();
+			new Thread(runnable, "Analysis loading thread").start();
 		else runnable.run();
 		return;
 	}
