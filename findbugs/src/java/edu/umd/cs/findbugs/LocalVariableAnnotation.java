@@ -193,7 +193,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = description.intern();
 	}
 
 	public String getDescription() {

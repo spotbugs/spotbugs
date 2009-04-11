@@ -119,7 +119,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 	}
 
 	public void setDescription(String roleDescription) {
-		this.roleDescription = roleDescription;
+		this.roleDescription = roleDescription.intern();
 	}
 
 	public String getDescription() {

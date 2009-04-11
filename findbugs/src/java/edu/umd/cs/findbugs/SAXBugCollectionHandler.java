@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.filter.MethodMatcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
 
 /**
@@ -58,11 +59,20 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private static final String PROJECT = "Project";
 	private static final String BUG_COLLECTION = "BugCollection";
 
+	/**
+     * @param attributes
+     * @param qName
+     * @return
+     */
+    public  String getOptionalAttribute(Attributes attributes, String qName) {
+	    return memoized(attributes.getValue(qName));
+    }
+
 	private BugCollection bugCollection;
 	private Project project;
 	private Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
 	private Filter filter;
-
+	private MapCache<String, String> cache = new MapCache<String, String>(2000);
 	private ArrayList<String> elementStack;
 	private StringBuilder textBuffer;
 	private BugInstance bugInstance;
@@ -106,9 +116,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	}
 
 	public String getTextContents() {
-		return Strings.unescapeXml(textBuffer.toString());
+		return memoized(Strings.unescapeXml(textBuffer.toString()));
 	}
 	
+	private String memoized(String s) {
+		if (s == null) 
+			return s;
+		String result = cache.get(s);
+		if (result != null) 
+			return result;
+		cache.put(s,s);
+		return s;
+	}
 	private static boolean DEBUG = false;
 	@Override
 	public void startElement(String uri, String name, String qName, Attributes attributes)
@@ -128,31 +147,31 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 			if (qName.equals(BUG_COLLECTION)) {
 				// Read and set the sequence number.
-				String version = attributes.getValue("version");
+				String version = getOptionalAttribute(attributes, "version");
 				if (bugCollection instanceof SortedBugCollection)
 					((SortedBugCollection)bugCollection).setAnalysisVersion(version);
 
 				// Read and set the sequence number.
-				String sequence = attributes.getValue("sequence");
+				String sequence = getOptionalAttribute(attributes, "sequence");
 				long seqval = parseLong(sequence, 0L);
 				bugCollection.setSequenceNumber(seqval);
 
 				// Read and set timestamp.
-				String timestamp = attributes.getValue("timestamp");
+				String timestamp = getOptionalAttribute(attributes, "timestamp");
 				long tsval = parseLong(timestamp, -1L);
 				bugCollection.setTimestamp(tsval);
 				// Read and set timestamp.
-				String analysisTimestamp = attributes.getValue("analysisTimestamp");
+				String analysisTimestamp = getOptionalAttribute(attributes, "analysisTimestamp");
 				if (analysisTimestamp != null) { 
 					bugCollection.setAnalysisTimestamp(parseLong(analysisTimestamp, -1L));
 				}
-				String analysisVersion = attributes.getValue("version");
+				String analysisVersion = getOptionalAttribute(attributes, "version");
 				if (analysisVersion != null) { 
 					bugCollection.setAnalysisVersion(analysisVersion);
 				}
 
 				// Set release name, if present.
-				String releaseName = attributes.getValue("release");
+				String releaseName = getOptionalAttribute(attributes, "release");
 				bugCollection.setReleaseName((releaseName != null) ? releaseName : "");
 			} else if (isTopLevelFilter(qName))  {
 				if (project != null) {
@@ -163,10 +182,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				pushCompoundMatcher(filter);
 			} else if (qName.equals(PROJECT)) {
 				// Project element
-				String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
+				String filename = getOptionalAttribute(attributes, Project.FILENAME_ATTRIBUTE_NAME);
 				if (filename != null)
 					project.setProjectFileName(filename);
-				String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
+				String projectName = getOptionalAttribute(attributes, Project.PROJECTNAME_ATTRIBUTE_NAME);
 				if (projectName != null)
 					project.setProjectName(projectName);
 			} else {
@@ -186,16 +205,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 									priority + "\"", e);
 						}
 
-						String uniqueId = attributes.getValue("uid");
-						if (uniqueId != null) {
-							bugInstance.setUniqueId(uniqueId);
-						}
-
-						String firstVersion = attributes.getValue("first");
+						String firstVersion = getOptionalAttribute(attributes, "first");
 						if (firstVersion != null) {
 							bugInstance.setFirstVersion(Long.parseLong(firstVersion));
 						}
-						String lastVersion = attributes.getValue("last");
+						String lastVersion = getOptionalAttribute(attributes, "last");
 						if (lastVersion != null) {
 							bugInstance.setLastVersion(Long.parseLong(lastVersion));
 						}
@@ -204,15 +218,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 								bugInstance.getFirstVersion() > bugInstance.getLastVersion())
 							throw new IllegalStateException("huh");
 
-						String introducedByChange = attributes.getValue("introducedByChange");
+						String introducedByChange = getOptionalAttribute(attributes, "introducedByChange");
 						if (introducedByChange != null) {
 							bugInstance.setIntroducedByChangeOfExistingClass(Boolean.parseBoolean(introducedByChange));
 						}
-						String removedByChange = attributes.getValue("removedByChange");
+						String removedByChange = getOptionalAttribute(attributes, "removedByChange");
 						if (removedByChange != null) {
 							bugInstance.setRemovedByChangeOfPersistingClass(Boolean.parseBoolean(removedByChange));
 						}
-						String oldInstanceHash = attributes.getValue("instanceHash");
+						String oldInstanceHash = getOptionalAttribute(attributes, "instanceHash");
 						if (oldInstanceHash != null) {
 							bugInstance.setOldInstanceHash(oldInstanceHash);
 						}
@@ -220,8 +234,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 					} else if (qName.equals("FindBugsSummary")) {
 						String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
-						String vmVersion = attributes.getValue("vm_version");
-						String referencedClasses = attributes.getValue("referenced_classes");
+						String vmVersion = getOptionalAttribute(attributes, "vm_version");
+						String referencedClasses = getOptionalAttribute(attributes, "referenced_classes");
 						if (referencedClasses != null && referencedClasses.length() > 0)
 							bugCollection.getProjectStats().setReferencedClasses(Integer.parseInt(referencedClasses));
 						bugCollection.getProjectStats().setVMVersion(vmVersion);
@@ -252,7 +266,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 								getRequiredAttribute(attributes, "interface", qName));
 						int size = Integer.valueOf(
 								getRequiredAttribute(attributes, "size", qName));
-						String sourceFile =  attributes.getValue("sourceFile");
+						String sourceFile =  getOptionalAttribute(attributes, "sourceFile");
 						bugCollection.getProjectStats().addClass(className, sourceFile, isInterface, size);
 					}
 
@@ -273,10 +287,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (qName.equals(AppVersion.ELEMENT_NAME)) {
 						try {
 							String sequence = getRequiredAttribute(attributes, "sequence", qName);
-							String timestamp = attributes.getValue("timestamp");
-							String releaseName = attributes.getValue("release");
-							String codeSize = attributes.getValue("codeSize");
-							String numClasses = attributes.getValue("numClasses");
+							String timestamp = getOptionalAttribute(attributes, "timestamp");
+							String releaseName = getOptionalAttribute(attributes, "release");
+							String codeSize = getOptionalAttribute(attributes, "codeSize");
+							String numClasses = getOptionalAttribute(attributes, "numClasses");
 							AppVersion appVersion = new AppVersion(Long.valueOf(sequence));
 							if (timestamp != null)
 								appVersion.setTimestamp(Long.valueOf(timestamp));
@@ -330,14 +344,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	boolean nextMatchedIsDisabled;
 	private void parseMatcher(String qName, Attributes attributes) throws SAXException {
 		if (DEBUG) System.out.println(elementStack + " " + qName + " " + matcherStack);
-		String disabled = attributes.getValue("disabled");
+		String disabled = getOptionalAttribute(attributes, "disabled");
 		nextMatchedIsDisabled = "true".equals(disabled);
 	    if (qName.equals("Bug")) {
-	    	addMatcher(new BugMatcher(attributes.getValue("code"),
-	    			attributes.getValue("pattern"),
-	    			attributes.getValue("category")));
+	    	addMatcher(new BugMatcher(getOptionalAttribute(attributes, "code"),
+	    			getOptionalAttribute(attributes, "pattern"),
+	    			getOptionalAttribute(attributes, "category")));
 	    } else if (qName.equals("Class")) {
-	    	addMatcher(new ClassMatcher(attributes.getValue("name")));
+	    	addMatcher(new ClassMatcher(getOptionalAttribute(attributes, "name")));
 	    } else if (qName.equals("FirstVersion")) {
 	    	addMatcher(new FirstVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes, "relOp", qName)));
 	    } else if (qName.equals("LastVersion")) {
@@ -345,25 +359,25 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else if (qName.equals("Designation")) {
 	    	addMatcher(new DesignationMatcher(getRequiredAttribute(attributes, "designation", qName)));
 	    } else if (qName.equals("BugCode")) {
-	    	addMatcher(new BugMatcher(attributes.getValue("name"),"",""));
+	    	addMatcher(new BugMatcher(getOptionalAttribute(attributes, "name"),"",""));
 	    } else if (qName.equals("Local")) {
-	    	addMatcher(new LocalMatcher(attributes.getValue("name")));
+	    	addMatcher(new LocalMatcher(getOptionalAttribute(attributes, "name")));
 	    } else if (qName.equals("BugPattern")) {
-	    	addMatcher(new BugMatcher("",attributes.getValue("name"),""));
+	    	addMatcher(new BugMatcher("",getOptionalAttribute(attributes, "name"),""));
 	    } else if (qName.equals("Priority")) {
-	    	addMatcher(new PriorityMatcher(attributes.getValue("value")));
+	    	addMatcher(new PriorityMatcher(getOptionalAttribute(attributes, "value")));
 	    } else if (qName.equals("Package")) {
-	    	String pName = attributes.getValue("name");
+	    	String pName = getOptionalAttribute(attributes, "name");
 	    	pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			
 			addMatcher( new ClassMatcher(pName + "\\.[^.]+"));
 	    } else if (qName.equals("Method")) {
-	    	String name = attributes.getValue("name");
-	    	String params = attributes.getValue("params");
-	    	String returns = attributes.getValue("returns");
+	    	String name = getOptionalAttribute(attributes, "name");
+	    	String params = getOptionalAttribute(attributes, "params");
+	    	String returns = getOptionalAttribute(attributes, "returns");
 	    	addMatcher(new MethodMatcher(name, params, returns));
 	    } else if (qName.equals("Field")) {
-	    	String name = attributes.getValue("name");
-			String type = attributes.getValue("type");
+	    	String name = getOptionalAttribute(attributes, "name");
+			String type = getOptionalAttribute(attributes, "type");
 			addMatcher(new FieldMatcher(name, type));
 	    } else if (qName.equals("Or")) {
 	    	CompoundMatcher matcher = new OrMatcher();
@@ -372,8 +386,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             AndMatcher matcher = new AndMatcher();
             pushCompoundMatcherAsChild(matcher);
             if (qName.equals("Match")) {
-                String classregex = attributes.getValue("classregex");
-                String classMatch = attributes.getValue("class");
+                String classregex = getOptionalAttribute(attributes, "classregex");
+                String classMatch = getOptionalAttribute(attributes, "class");
 
                 if (classregex != null)
                     addMatcher(new ClassMatcher("~" + classregex));
@@ -395,7 +409,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
 	    	TypeAnnotation typeAnnotation;
 	    	bugAnnotation = bugAnnotationWithSourceLines = typeAnnotation = new TypeAnnotation(typeDescriptor);
-	    	String typeParameters = attributes.getValue("typeParameters");
+	    	String typeParameters = getOptionalAttribute(attributes, "typeParameters");
 	    	if (typeParameters != null)
 	    		typeAnnotation.setTypeParameters(Strings.unescapeXml(typeParameters));
 
@@ -404,7 +418,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
 	    	String signature = getRequiredAttribute(attributes, "signature", qName);
 	    	if (qName.equals("Method")) {
-	    		String isStatic = attributes.getValue("isStatic");
+	    		String isStatic = getOptionalAttribute(attributes, "isStatic");
 	    		if (isStatic == null) {
 	    			isStatic = "false"; // Hack for old data
 	    		}
@@ -448,11 +462,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	bugInstance.setProperty(propName, propValue);
 	    } else if (qName.equals("UserAnnotation")) {
 	    	// ignore AnnotationText for now; will handle in endElement
-	    	String s = attributes.getValue("designation"); // optional
+	    	String s = getOptionalAttribute(attributes, "designation"); // optional
 	    	if (s != null) bugInstance.setUserDesignationKey(s, null);
-	    	s = attributes.getValue("user"); // optional
+	    	s = getOptionalAttribute(attributes, "user"); // optional
 	    	if (s != null) bugInstance.setUser(s);
-	    	s = attributes.getValue("timestamp"); // optional
+	    	s = getOptionalAttribute(attributes, "timestamp"); // optional
 	    	if (s != null) try {
 	    		long timestamp = Long.valueOf(s);
 	    		bugInstance.setUserAnnotationTimestamp(timestamp);
@@ -464,7 +478,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    } else throw new SAXException("Unknown bug annotation named " + qName);
 
 	    if (bugAnnotation != null) {
-	    	String role = attributes.getValue("role");
+	    	String role = getOptionalAttribute(attributes, "role");
 	    	if (role != null)
 	    		bugAnnotation.setDescription(role);
 	    	setAnnotationRole(attributes, bugAnnotation);
@@ -503,7 +517,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	}
 
 	private void setAnnotationRole(Attributes attributes, BugAnnotation bugAnnotation) {
-		String role = attributes.getValue("role");
+		String role = getOptionalAttribute(attributes, "role");
 		if (role != null)
 			bugAnnotation.setDescription(role);
 	}
@@ -511,13 +525,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private SourceLineAnnotation createSourceLineAnnotation(String qName, Attributes attributes)
 			throws SAXException {
 		String classname = getRequiredAttribute(attributes, "classname", qName);
-		String sourceFile = attributes.getValue("sourcefile");
+		String sourceFile = getOptionalAttribute(attributes, "sourcefile");
 		if (sourceFile == null)
 			sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-		String startLine = attributes.getValue("start"); // "start"/"end" are now optional
-		String endLine = attributes.getValue("end");     // (were too many "-1"s in the xml)
-		String startBytecode = attributes.getValue("startBytecode");
-		String endBytecode = attributes.getValue("endBytecode");
+		String startLine = getOptionalAttribute(attributes, "start"); // "start"/"end" are now optional
+		String endLine = getOptionalAttribute(attributes, "end");     // (were too many "-1"s in the xml)
+		String startBytecode = getOptionalAttribute(attributes, "startBytecode");
+		String endBytecode = getOptionalAttribute(attributes, "endBytecode");
 
 		try {
 			int sl = startLine != null ? Integer.parseInt(startLine) : -1;
@@ -606,12 +620,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		textBuffer.append(ch, start, length);
 	}
 
-	private static String getRequiredAttribute(Attributes attributes, String attrName, String elementName)
+	private  String getRequiredAttribute(Attributes attributes, String attrName, String elementName)
 		throws SAXException {
 		String value = attributes.getValue(attrName);
 		if (value == null)
 			throw new SAXException(elementName + " element missing " + attrName + " attribute");
-		return Strings.unescapeXml(value);
+		return memoized(Strings.unescapeXml(value));
 	}
 
 

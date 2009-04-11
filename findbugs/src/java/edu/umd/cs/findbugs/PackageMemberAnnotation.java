@@ -52,6 +52,8 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 		AnalysisContext context = AnalysisContext.currentAnalysisContext();
 		if (context != null) this.sourceFileName = context.lookupSourceFile(className);
 		else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		if (description != null)
+			description = description.intern();
 		this.description = description;
 	}
 
@@ -96,7 +98,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = description.intern();
 	}
 
 	public String getDescription() {

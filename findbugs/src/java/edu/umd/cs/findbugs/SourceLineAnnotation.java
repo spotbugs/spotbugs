@@ -682,7 +682,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = description.intern();
 	}
 
 	@Override

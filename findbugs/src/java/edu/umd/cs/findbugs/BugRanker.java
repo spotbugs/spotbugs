@@ -61,12 +61,7 @@ public class BugRanker {
 
 	public int rankBug(BugInstance bug) {
 		BugPattern bugPattern = bug.getBugPattern();
-		Integer value = bugPatterns.get(bugPattern.getType());
-		if (value == null) {
-			value = bugKinds.get(bugPattern.getAbbrev());
-			if (value == null)
-				value = bugCategories.get(bugPattern.getCategory());
-		}
+		Integer value = rankBugPattern(bugPattern);
 		if (value == null)
 			return 25;
 		int v = value.intValue();
@@ -85,6 +80,18 @@ public class BugRanker {
 		return Math.min(20, Math.max(1, v));
 
 	}
+
+	private Integer rankBugPattern(BugPattern bugPattern) {
+	    String type = bugPattern.getType();
+		Integer value = bugPatterns.get(type);
+		if (value == null) {
+			value = bugKinds.get(bugPattern.getAbbrev());
+			if (value == null)
+				value = bugCategories.get(bugPattern.getCategory());
+			bugPatterns.put(type, value);
+		}
+	    return value;
+    }
 	
 	public static int findRank(BugInstance bug) {
 		for(Plugin p : DetectorFactoryCollection.instance().plugins()) {

@@ -77,7 +77,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		StringBuilder buf = new StringBuilder();
 		buf.append(totalClasses).append(" classes: ");
 		for(PackageStats pStats : getPackageStats())
-			for(ClassStats cStats : pStats.getClassStats()) 
+			for(ClassStats cStats : pStats.getSortedClassStats()) 
 				buf.append(cStats.getName()).append(" ");
 		return buf.toString();
 	}

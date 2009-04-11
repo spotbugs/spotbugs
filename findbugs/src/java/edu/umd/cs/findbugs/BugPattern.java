@@ -74,8 +74,8 @@ public class BugPattern implements Comparable<BugPattern> {
 					  String shortDescription, String longDescription, String detailText, int cweid) {
 
 		this.type = type;
-		this.abbrev = abbrev;
-		this.category = category;
+		this.abbrev = abbrev.intern();
+		this.category = category.intern();
 		this.experimental = experimental;
 		this.shortDescription = shortDescription;
 		this.longDescription = longDescription;

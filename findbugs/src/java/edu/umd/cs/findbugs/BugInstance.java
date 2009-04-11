@@ -102,13 +102,12 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMessages, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
-	private String type;
+	private final String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
 	private @CheckForNull  BugDesignation userDesignation;
 	private BugProperty propertyListHead, propertyListTail;
-	private String uniqueId;
 	private String oldInstanceHash;
 	private String instanceHash;
 	private int instanceOccurrenceNum;
@@ -146,7 +145,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param priority the bug priority
 	 */
 	public BugInstance(String type, int priority) {
-		this.type = type;
+		this.type = type.intern();
 		this.priority = priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
@@ -662,29 +661,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return result;
 	}
 
-	/**
-	 * Get the BugInstance's unique id.
-	 * 
-	 * @return the unique id, or null if no unique id has been assigned
-	 * 
-	 * Deprecated, since it isn't persistent
-	 */
-	@Deprecated
-	public String getUniqueId() {
-		return uniqueId;
-	}
 
-	/**
-	 * Set the unique id of the BugInstance.
-	 * 
-	 * @param uniqueId the unique id
-	 * 
-	 *   * Deprecated, since it isn't persistent
-	 */
-	@Deprecated
-	 void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
 
 
 
@@ -1796,9 +1773,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 		if (addMessages) {
 			//		Add a uid attribute, if we have a unique id.
-			if (getUniqueId() != null) {
-				attributeList.addAttribute("uid", getUniqueId());
-			}
+
 			attributeList.addAttribute("instanceHash", getInstanceHash());
 			attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
 			attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));

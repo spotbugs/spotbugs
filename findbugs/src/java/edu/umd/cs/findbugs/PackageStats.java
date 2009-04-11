@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
@@ -123,8 +124,8 @@ public class PackageStats implements XMLWriteable {
 	//private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
 
 	// all classes and interfaces in this package
-	private SortedMap<String, ClassStats> packageMembers = 
-		new TreeMap<String, ClassStats>();
+	private Map<String, ClassStats> packageMembers = 
+		new HashMap<String, ClassStats>();
 
 	public PackageStats(String packageName) {
 		this.packageName = packageName;
@@ -205,11 +206,17 @@ public class PackageStats implements XMLWriteable {
 
 		xmlOutput.stopTag(false);
 
-		for (ClassStats classStats : packageMembers.values()) {
+		for (ClassStats classStats : getSortedClassStats()) {
 			classStats.writeXML(xmlOutput);
 		}
 
 		xmlOutput.closeTag(ELEMENT_NAME);
+	}
+	
+	public Collection<ClassStats> getSortedClassStats() {
+		SortedMap<String, ClassStats> sorted = new TreeMap<String, ClassStats>(packageMembers);
+		return sorted.values();
+		
 	}
 
 	/**
