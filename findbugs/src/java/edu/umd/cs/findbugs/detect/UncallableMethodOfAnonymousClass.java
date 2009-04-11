@@ -31,11 +31,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.EditDistance;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
@@ -45,13 +48,17 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	boolean isAnonymousInnerClass = false;
+	
 
+	XMethod potentialSuperCall;
 	@Override
-	public void visit(JavaClass obj) {
+	public void visitJavaClass(JavaClass obj) {
 		String superclassName2 = getSuperclassName();
-		isAnonymousInnerClass = ClassName.isAnonymous(getClassName()) && 
-		!(superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0);
+		boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
+		boolean hasAnonymousName = ClassName.isAnonymous(obj.getClassName());
+		boolean isAnonymousInnerClass = hasAnonymousName && !weird;
+		if (isAnonymousInnerClass)
+			super.visitJavaClass(obj);
 	}
 
 	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
@@ -68,6 +75,17 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
 	}
 
+	@Override
+    public void sawOpcode(int seen) {
+		if (seen == INVOKESPECIAL) {
+			XMethod m = getXMethodOperand();
+			XClass c = getXClass();
+			int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
+			if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor())
+					== null && !m.isFinal())
+				potentialSuperCall = m;
+		}
+	}
 	boolean definedInSuperClassOrInterface(JavaClass clazz, String method)
 			throws ClassNotFoundException {
 		if (clazz == null)
@@ -95,7 +113,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			return true;
 		if (obj.isPrivate())
 			return true;
-		if (obj.isAbstract()) return true;
+		if (obj.isAbstract()) 
+			return true;
 
 		String methodName = obj.getName();
 		String sig = obj.getSignature();
@@ -117,11 +136,37 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 				return true;
 		return false;
 	}
+	 
+	 
+	 BugInstance pendingBug;
+		@Override
+		public void doVisitMethod(Method obj) {
+			super.doVisitMethod(obj);
+			if (pendingBug != null) {
+				if (potentialSuperCall == null) 
+					pendingBug.addClass(getSuperclassName()).describe(ClassAnnotation.SUPERCLASS_ROLE);
+				else  {
+					pendingBug.setPriority(pendingBug.getPriority()-1);
+					pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+				}
+				bugReporter.reportBug(pendingBug);
+				pendingBug = null;
+				potentialSuperCall = null;
+			}
+
+			
+			
+		}
+		@Override
+		public void visit(Code obj) {
+			if (pendingBug != null)
+				super.visit(obj);
+		}
+
 	@Override
 	public void visit(Method obj) {
 		try {
-			if (!isAnonymousInnerClass)
-				return;
+
 			if (skip(obj)) return;
 
 			JavaClass clazz = getThisClass();
@@ -155,9 +200,10 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 					}
 				if (code != null && code.getLength() == 1) 
 					priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
-				bugReporter.reportBug(new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
-						priority).addClassAndMethod(this).addClass(superClass).describe(ClassAnnotation.SUPERCLASS_ROLE));
-
+				
+				pendingBug = new BugInstance(this, "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
+						priority).addClassAndMethod(this);
+				potentialSuperCall = null;
 			}
 
 		} catch (ClassNotFoundException e) {

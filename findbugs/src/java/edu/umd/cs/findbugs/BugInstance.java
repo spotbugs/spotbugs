@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -963,7 +964,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param className the name of the class
 	 * @return this object
 	 */
-	public BugInstance addClass(String className) {
+	public BugInstance addClass(@SlashedClassName String className) {
 		className = ClassName.toDottedClassName(className);
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
 		add(classAnnotation);

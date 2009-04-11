@@ -39,7 +39,7 @@ public class EditDistance {
 		int n1 = str1.length();
 		int n2 = str2.length();
 		int diff = Math.abs(n1-n2);
-		if (diff > 3)
+		if (diff > 4)
 			return 2*diff;
 		int[][] distance = new int[n1+1][];
 
