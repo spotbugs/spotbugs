@@ -299,8 +299,8 @@ public class Update {
 			resultCollection.add(newBug, false);
 			int newSize = resultCollection.getCollection().size();
 			if (newSize != oldSize + 1) {
-				System.out.println("Failed to add bug #" + newBug.getUniqueId()
-						+ " : " + newBug.getMessage());
+				System.out.println("Failed to add bug" + 
+					 newBug.getMessage());
 			}
 		}
 		if (false && verbose) {

@@ -62,7 +62,7 @@ public class FileBugHash {
 	           AnalysisContext.logError("Unable to get MD5 digester", e);
             }
             for (PackageStats pStat : bugs.getProjectStats().getPackageStats())
-            	for(ClassStats cStat : pStat.getClassStats()) {
+            	for(ClassStats cStat : pStat.getSortedClassStats()) {
             		String path = cStat.getName();
             		if (path.indexOf('.') == -1)
             			path = cStat.getSourceFile();
