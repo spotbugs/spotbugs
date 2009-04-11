@@ -2513,7 +2513,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 */
 	public boolean openAnalysis(File f, SaveType saveType){
 		if (!f.exists() || !f.canRead()) {
-			throw new IllegalArgumentException("Can't read " + f);
+			throw new IllegalArgumentException("Can't read " + f.getPath());
 		}
 
 		prepareForFileLoad(f, saveType);
