@@ -106,7 +106,7 @@ public class BugContentProvider implements ICommonContentProvider {
 
 	public Object[] getChildren(Object parent) {
 		if (grouping == null) {
-			// on initialisation
+			// on initialization
 			return EMPTY;
 		}
 		Object[] children = EMPTY;
@@ -441,8 +441,8 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
 	/**
-	 * @return list of the *visible* parents with changed chldern to refresh the viewer.
-	 * Retunrs empty list if the full refresh is needed
+	 * @return list of the *visible* parents with changed children to refresh the viewer.
+	 * Returns empty list if the full refresh is needed
 	 */
 	public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
 		int oldRootSize = rootElement.getChildren().length;
