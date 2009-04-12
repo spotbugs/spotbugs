@@ -104,8 +104,7 @@ public class FindBugsNature implements IProjectNature {
 	/**
 	 * Find the specific FindBugs command amongst the build spec of a given description
 	 */
-	private ICommand getFindBugsCommand(IProjectDescription description)
-		throws CoreException {
+	private ICommand getFindBugsCommand(IProjectDescription description) {
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
 			if (commands[i].getBuilderName().equals(FindbugsPlugin.BUILDER_ID)) {
