@@ -56,11 +56,6 @@ public class Grouping implements IPersistable {
 		return new LinkedList<GroupType>(groupOrder);
 	}
 
-	void setGroupOrder(List<GroupType> groupOrder) {
-		this.groupOrder.clear();
-		this.groupOrder.addAll(groupOrder);
-	}
-
 	public GroupType getFirstType(){
 		return groupOrder.size() > 0? groupOrder.getFirst() : GroupType.Undefined;
 	}
