@@ -77,7 +77,7 @@ public class ViewFilter {
 	
 	String [] packagePrefixes;
 	void setPackagesToDisplay(String value) {
-		packagePrefixes = value.split("[ ,:]+");
+		packagePrefixes = value.replace('/','.').split("[ ,:]+");
 		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 	}
 	

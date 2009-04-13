@@ -948,7 +948,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				showMenu.addSeparator();
 				for (String[] p : lst) {
 					String project = p[0];
-					final String paths = p[1];
+					final String paths = p[1].replace('/','.');
 					JMenuItem item = new JMenuItem(project);
 					item.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
