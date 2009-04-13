@@ -67,7 +67,7 @@ public class ViewFilter {
 	public boolean show(MainFrame mf, BugInstance b) {
 	    long firstSeen = mf.bugCollection.getCloud().getFirstSeen(b);
 	    long time = System.currentTimeMillis() - firstSeen;
-	    long days = TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS);
+	    long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
 	    return days < this.maxDays;   
     } }
 	
