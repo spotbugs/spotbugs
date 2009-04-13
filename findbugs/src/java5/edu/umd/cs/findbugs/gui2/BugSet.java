@@ -31,6 +31,7 @@ import java.util.List;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
@@ -106,8 +107,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	}
 
 	static boolean suppress(BugLeafNode p) {
-		Filter suppressionFilter = ProjectSettings.getInstance().getSuppressionFilter();
-		return suppressionFilter.match(p.getBug());
+		return !MainFrame.getInstance().shouldDisplayIssue(p.getBug());
 	}
 	/**
 	 * we cache all values of each sortable that appear in the BugSet as we create it using cacheSortables, this makes it
@@ -117,7 +117,6 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		 sortablesToStrings
 		    = new HashMap<Sortables,String[]>();
-		
 	}
 
 	String[]  getDistinctValues(Sortables key) {

@@ -54,6 +54,9 @@ public class BugAspects implements Iterable<BugAspects.SortableValue>
 	public int size() {
 		return lst.size();
 	}
+	public SortableValue get(int i) {
+		return lst.get(i);
+	}
 	@Override
 	public String toString()
 	{

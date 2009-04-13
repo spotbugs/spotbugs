@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -43,18 +42,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -64,6 +68,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -76,6 +81,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -86,6 +92,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -111,6 +119,8 @@ import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -130,7 +140,6 @@ import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 @SuppressWarnings("serial")
@@ -228,10 +237,12 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private JMenuItem preferencesMenuItem;
 	private Project curProject = new Project();
 	private JScrollPane treeScrollPane;
+	private JPanel treePanel;
 	SourceFinder sourceFinder;
 	private Object lock = new Object();
 	private boolean newProject = false;
-
+	
+	
 	private Class<?> osxAdapter;
 	private Method osxPrefsEnableMethod;
 
@@ -243,6 +254,38 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	FBFileChooser filterOpenFileChooser;
 	
 	@CheckForNull private File saveFile = null;
+	/**
+     * @author pugh
+     */
+    private final class PopupListener extends MouseAdapter {
+	    /**
+	     * 
+	     */
+	    private final JPopupMenu result;
+
+	    /**
+	     * @param result
+	     */
+	    private PopupListener(JPopupMenu result) {
+		    this.result = result;
+	    }
+
+	    @Override
+	    public void mousePressed(MouseEvent e) {
+	    	maybeShowPopup(e);
+	    }
+
+	    @Override
+	    public void mouseReleased(MouseEvent e) {
+	    	maybeShowPopup(e);
+	    }
+
+	    private void maybeShowPopup(MouseEvent e) {
+	    	if (e.isPopupTrigger()) {
+	    		result.show(e.getComponent(), e.getX(), e.getY());
+	    	}
+	    }
+    }
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
@@ -534,13 +577,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         }};
 	void updateProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
 		setRebuilding(false);
-		if (bugCollection != null)
-		{
+		if (bugCollection != null) {
 			displayer.clearCache();
 			BugSet bs = new BugSet(bugCollection);
 			//Dont clear data, the data's correct, just get the tree off the listener lists.
-			((BugTreeModel) tree.getModel()).getOffListenerList();
-			((BugTreeModel) tree.getModel()).changeSet(bs);
+			BugTreeModel model = (BugTreeModel) tree.getModel();
+			model.getOffListenerList();
+			model.changeSet(bs);
 			//curProject=BugLoader.getLoadedProject();
 			setProjectChanged(true);
 		}
@@ -596,6 +639,14 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return popupMenu;
 	}
 
+
+	boolean shouldDisplayIssue(BugInstance b) {
+		Project project = getProject();
+		Filter suppressionFilter = project.getSuppressionFilter();
+		if (suppressionFilter.match(b))
+			return false;
+		return viewFilter.show(b);
+		}
 	/**
 	 * Creates the branch pop up menu that ask if the user wants 
 	 * to hide all the bugs in that branch.
@@ -867,6 +918,81 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		menuBar.add(navMenu);
 
+		JMenu showMenu = newJMenu("menu.show", "Show");
+		
+		URL u = PluginLoader.getCoreResource("projectPaths.properties");
+		if (u != null) {
+
+			ArrayList<String[]> lst = new ArrayList<String[]>();
+
+			try {
+				BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
+				while (true) {
+					String s = in.readLine();
+					if (s == null)
+						break;
+					String[] parts = s.split("=");
+					if (parts.length == 2)
+						lst.add(parts);
+				}
+				in.close();
+			} catch (IOException e1) {
+
+				AnalysisContext.logError("Error loading projects paths", e1);
+			}
+
+			if (lst.size() > 0) {
+
+				JMenu setPaths = new JMenu("Set package paths");
+				showMenu.add(setPaths);
+				showMenu.addSeparator();
+				for (String[] p : lst) {
+					String project = p[0];
+					final String paths = p[1];
+					JMenuItem item = new JMenuItem(project);
+					item.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							textFieldForPackagesToDisplay.setText(paths);
+							viewFilter.setPackagesToDisplay(paths);
+						}
+					});
+					setPaths.add(item);
+				}
+			}
+
+		}
+		
+		ButtonGroup rankButtonGroup = new ButtonGroup();
+		for(final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
+			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+			rankButtonGroup.add(rbMenuItem);
+			if (r == ViewFilter.RankFilter.ALL) 
+				rbMenuItem.setSelected(true);
+			rbMenuItem.addActionListener(new ActionListener(){
+
+				public void actionPerformed(ActionEvent e) {
+					viewFilter.setRank(r);
+                }});   
+			showMenu.add(rbMenuItem);
+		}
+		showMenu.addSeparator();
+		ButtonGroup ageButtonGroup = new ButtonGroup();
+		for(final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
+			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+			ageButtonGroup.add(rbMenuItem);
+			if (r == ViewFilter.FirstSeenFilter.ALL) 
+				rbMenuItem.setSelected(true);
+			rbMenuItem.addActionListener(new ActionListener(){
+
+				public void actionPerformed(ActionEvent e) {
+					viewFilter.setFirstSeen(r);
+                }});   
+			showMenu.add(rbMenuItem);
+		}
+
+		       
+		menuBar.add(showMenu);
+		
 		JMenu designationMenu = newJMenu("menu.designation", "Designation");
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
@@ -891,6 +1017,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 		return menuBar;
 	}
+	
+	ViewFilter viewFilter = new ViewFilter(this);
 	/**
 	 * @param map
 	 * @param navMenu
@@ -1441,21 +1569,35 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	}
 
 	JPanel waitPanel, cardPanel;
+	
+	JPanel makeNavigationPanel(JComponent packageSelector, 
+			JComponent treeHeader, JComponent tree) {
+		JPanel topPanel = new JPanel();
+		topPanel.setMinimumSize(new Dimension(200,200));
+		
+		topPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		
+		topPanel.add(packageSelector, c);
+		c.gridy++;
+
+		topPanel.add(treeHeader, c);
+		c.fill = GridBagConstraints.BOTH;
+		c.gridy++;
+		c.weighty = 1;
+		topPanel.add(tree, c);
+		return topPanel;
+	}
 	/**
 	 * 
 	 * @return
 	 */
 	JPanel bugListPanel()
 	{
-		cardPanel = new JPanel(new CardLayout());
-
-		JPanel topPanel = new JPanel();
-		waitPanel = new JPanel();
-		waitPanel.add(new JLabel("Please wait..."));
-		cardPanel.add(topPanel, TREECARD);
-		cardPanel.add(waitPanel, WAITCARD);
-
-		topPanel.setMinimumSize(new Dimension(200,200));
 		tableheader = new JTableHeader();
 		//Listener put here for when user double clicks on sorting
 		//column header SorterDialog appears.
@@ -1501,8 +1643,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 
 		treeScrollPane = new JScrollPane(tree);
-		topPanel.setLayout(new BorderLayout());
-
+		
+		treePanel = new JPanel(new BorderLayout());
+		treePanel.add(treeScrollPane, BorderLayout.CENTER);
 		//New code to fix problem in Windows
 		JTable t = new JTable(new DefaultTableModel(0, Sortables.values().length));
 		t.setTableHeader(tableheader);
@@ -1512,14 +1655,23 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		sp.setPreferredSize(new Dimension(0, 10+num));
 		//End of new code.
 		//Changed code.
-		topPanel.add(sp, BorderLayout.NORTH);
-		//topPanel.add(tableheader, BorderLayout.NORTH);
-		//End of changed code.
-		topPanel.add(treeScrollPane, BorderLayout.CENTER);
+		textFieldForPackagesToDisplay = new JTextField();
+		textFieldForPackagesToDisplay.addActionListener(new ActionListener(){
 
+			public void actionPerformed(ActionEvent e) {
+	         viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+            }});
+
+		textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of package prefixes to restrict the view to those packages");
+		JPanel topPanel = makeNavigationPanel(textFieldForPackagesToDisplay, sp, treePanel);
+		cardPanel = new JPanel(new CardLayout());
+		waitPanel = new JPanel();
+		waitPanel.add(new JLabel("Please wait..."));
+		cardPanel.add(topPanel, TREECARD);
+		cardPanel.add(waitPanel, WAITCARD);
 		return cardPanel;
 	}
-
+	JTextField textFieldForPackagesToDisplay;
 	public void newTree(final JTree newTree, final BugTreeModel newModel)
 	{
 		SwingUtilities.invokeLater(new Runnable()
@@ -1531,12 +1683,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				tree.setLargeModel(true);
 				tree.setCellRenderer(new BugRenderer());
 				showTreeCard();
-				Container container = treeScrollPane.getParent();
-
-				container.remove(treeScrollPane);
+				treePanel.remove(treeScrollPane);
 				treeScrollPane = new JScrollPane(newTree);
-				container.add(treeScrollPane, BorderLayout.CENTER);
-				setFontSizeHelper(container.getComponents(), Driver.getFontSize());
+				treePanel.add(treeScrollPane);
+				setFontSizeHelper(Driver.getFontSize(), treeScrollPane);
 				tree.setRowHeight((int)(Driver.getFontSize() + 7));
 				MainFrame.this.getContentPane().validate();
 				MainFrame.this.getContentPane().repaint();
@@ -1553,8 +1703,32 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		});
 	}
 
-	private void setupTreeListeners()
-	{
+	private void setupTreeListeners() {
+		tree.addTreeExpansionListener(new TreeExpansionListener(){
+
+			public void treeExpanded(TreeExpansionEvent event) {
+	            TreePath path = event.getPath();
+	            Object lastPathComponent = path.getLastPathComponent();
+	            int children  = tree.getModel().getChildCount(lastPathComponent);
+	            if (children == 1) {
+	            	Object o = tree.getModel().getChild(lastPathComponent, 0);
+	            	if (o instanceof BugAspects) {
+	            		final TreePath p = path.pathByAddingChild(o);
+	            		SwingUtilities.invokeLater(new Runnable() {
+
+							public void run() {
+								tree.expandPath(p);
+	                            
+                            }});
+	            	}
+	            	
+	            }
+            }
+
+			public void treeCollapsed(TreeExpansionEvent event) {
+	           // do nothing
+	            
+            }});
 		tree.addTreeSelectionListener(new TreeSelectionListener(){
 			public void valueChanged(TreeSelectionEvent selectionEvent) {
 
@@ -2288,10 +2462,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 
 		bugPopupMenu.setFont(bugPopupMenu.getFont().deriveFont(size));
-		setFontSizeHelper(bugPopupMenu.getComponents(), size);
+		setFontSizeHelper(size, bugPopupMenu.getComponents());
 
 		branchPopupMenu.setFont(branchPopupMenu.getFont().deriveFont(size));
-		setFontSizeHelper(branchPopupMenu.getComponents(), size);
+		setFontSizeHelper(size, branchPopupMenu.getComponents());
 
 	}
 

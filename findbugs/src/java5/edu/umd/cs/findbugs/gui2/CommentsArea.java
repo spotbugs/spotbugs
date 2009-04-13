@@ -21,16 +21,17 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -48,6 +49,8 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
  * @author pugh
@@ -63,6 +66,7 @@ public class CommentsArea {
 	private ArrayList<String> designationKeys;
 
 	private JLabel whoWhen = new JLabel("          ");
+	private JButton answerSurvey = new JButton("Answer survey about this issue");
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
@@ -117,6 +121,22 @@ public class CommentsArea {
 		userCommentsText.setBackground(userCommentsTextUnenabledColor);
 		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
 
+		answerSurvey.setEnabled(false);
+		answerSurvey.setToolTipText("Click to open survey for this issue");
+		answerSurvey.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent e) {
+				if (frame.currentSelectedBugLeaf != null) {
+					BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+					Cloud cloud = MainFrame.getInstance().bugCollection.getCloud();
+					URL u = cloud.getBugLink(bug);
+					if (u != null)
+						LaunchBrowser.showDocument(u);
+				}
+	            
+            }});
+		
+		
 		prevCommentsComboBox.setEnabled(false);
 		prevCommentsComboBox
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reuse_comments", "Use this to reuse a previous textual comment for this bug"));
@@ -171,14 +191,14 @@ public class CommentsArea {
 		}
 		setUnknownDesignation();
 
-		JPanel comments = new JPanel();
-		comments.setLayout(new FlowLayout(FlowLayout.LEFT));
-		comments.add(designationComboBox);
-		comments.add(whoWhen);
-		centerPanel.add(comments, BorderLayout.NORTH);
+		//JPanel comments = new JPanel();
+		// comments.setLayout(new FlowLayout(FlowLayout.LEFT));
+		// comments.add(designationComboBox);
+		// comments.add(whoWhen);
+		centerPanel.add(designationComboBox, BorderLayout.NORTH);
 		centerPanel.add(commentsScrollP, BorderLayout.CENTER);
-		centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
-
+		// centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
+		centerPanel.add(answerSurvey, BorderLayout.SOUTH);
 		return centerPanel;
 	}
 
@@ -223,6 +243,7 @@ public class CommentsArea {
 		userCommentsText.setEnabled(isEnabled);
 		prevCommentsComboBox.setEnabled(isEnabled);
 		designationComboBox.setEnabled(isEnabled);
+		answerSurvey.setEnabled(isEnabled);
 	}
 
 	SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");

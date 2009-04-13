@@ -36,6 +36,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 /*
@@ -153,24 +154,26 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		{
 			return root;
 		}
-
-		public Object getChild(Object o, int index) {
-			Object result = getChild0(o,index);
-			assert o != null : "child " + index + " of " + this + " is null";
-			return result;
-		}
 		
-		public  Object getChild0(Object o, int index)
+		public  Object getChild(Object o, int index)
 		{
 			BugAspects a = (BugAspects) o;
-			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
+			int treeLevels = st.getOrderBeforeDivider().size();
+			int queryDepth = a.size();
+			assert queryDepth <= treeLevels;
+			
+			if (treeLevels==0 && a.size()==0)//Root without any sortables
 				return data.get(index);
+			if (SystemProperties.ASSERTIONS_ENABLED) 
+				for(int i = 0; i < queryDepth; i++) {
+					Sortables treeSortable = st.getOrderBeforeDivider().get(i);
+					Sortables querySortable = a.get(i).key;
+					assert treeSortable.equals(querySortable);
+				}
 
-			try
-			{
-				if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
-				{
-					BugAspects child=a.addToNew(enumsThatExist(a).get(index));
+			try {
+				if (queryDepth < treeLevels) {
+					BugAspects child = a.addToNew(enumsThatExist(a).get(index));
 					child.setCount(data.query(child).size());
 					return child;
 				}	
@@ -179,9 +182,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			}
 			catch (IndexOutOfBoundsException e)
 			{
-				Debug.println("IndexOutOfBounds caught: I am treemodel #" + this + "I am no longer the current treemodel," +
-						" my data is cached and I return bad values for getChild.  Something is wrong with rebuild," +
-						" since the tree is asking both of us for children");
+				assert false;
 				return null;
 			}
 
