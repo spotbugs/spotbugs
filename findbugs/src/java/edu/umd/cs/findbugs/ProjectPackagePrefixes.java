@@ -64,25 +64,45 @@ public class ProjectPackagePrefixes {
 
 	}
 
+	public int size() {
+		return map.size();
+	}
 	Map<String, PrefixFilter> map = new HashMap<String, PrefixFilter>();
 
 	Map<Set<String>, Integer> count = new HashMap<Set<String>, Integer>();
 
 	Map<String, Integer> missingProjectCount = new TreeMap<String, Integer>();
 
-	public void check(BugInstance b) {
-		TreeSet<String> results = new TreeSet<String>();
+	public void countBug(BugInstance b) {
 		String packageName = b.getPrimaryClass().getPackageName();
 
+		countPackageMember(packageName);
+	}
+
+	/**
+     * @param packageName
+     */
+    public void countPackageMember(String packageName) {
+	    TreeSet<String> results = getProjects(packageName);
+		incrementCount(count, results);
+
+		if (results.size() == 0) {
+			incrementCount(missingProjectCount, packageName);
+		}
+    }
+
+	/**
+     * @param packageName
+     * @return
+     */
+    public TreeSet<String> getProjects(String packageName) {
+	    TreeSet<String> results = new TreeSet<String>();
 		for (Map.Entry<String, PrefixFilter> e : map.entrySet()) {
 			if (e.getValue().matches(packageName))
 				results.add(e.getKey());
 		}
-		incrementCount(count, results);
-
-		if (results.size() == 0)
-			incrementCount(missingProjectCount, packageName);
-	}
+	    return results;
+    }
 
 	static <T> void incrementCount(Map<T, Integer> counter, T t) {
 		incrementCount(counter, t, 1);
@@ -97,11 +117,14 @@ public class ProjectPackagePrefixes {
 	}
 
 	public void report() {
+		System.out.println("# of projects: " + size());
+		System.out.println("Count of missing files in projects");
+		
 		for (Map.Entry<Set<String>, Integer> e : count.entrySet()) {
 			Set<String> projects = e.getKey();
-			System.out.printf("%2d %5d %s\n", projects.size(), e.getValue(), projects);
+			if (e.getValue() > 5)
+			System.out.printf("%5d %s\n", e.getValue(), projects);
 		}
-
 		Set<String> packages = missingProjectCount.keySet();
 		for (int count = 0; count < 3; count++) {
 			HashSet<String> extraSuperPackages = new HashSet<String>();
@@ -111,7 +134,9 @@ public class ProjectPackagePrefixes {
 				if (num < 3) {
 					int x = p1.lastIndexOf(".");
 					String p2 = p1.substring(0, x);
-					System.out.printf("only %d issues in %s\n", num, p1);
+					if (p2.equals("com.google") || p2.equals("com.google.ads"))
+						continue;
+					// System.out.printf("only %d issues in %s\n", num, p1);
 					
 					
 					extraSuperPackages.add(p2);
@@ -127,7 +152,7 @@ public class ProjectPackagePrefixes {
 				for (String p2 : packages)
 					if (p2.length() < p1.length() && p1.startsWith(p2)) {
 						// p1 is a subpackage of p2
-						System.out.printf("%s is a subpackage of %s\n", p1, p2);
+						// System.out.printf("%s is a subpackage of %s\n", p1, p2);
 						i.remove();
 						incrementCount(missingProjectCount, p2, num);
 						break;
@@ -135,8 +160,11 @@ public class ProjectPackagePrefixes {
 
 			}
 		}
+		
+		System.out.println("Count of missing files in packages not associated with a project");
 		for (Map.Entry<String, Integer> e : missingProjectCount.entrySet()) {
-			System.out.printf("%5d %s\n", e.getValue(), e.getKey());
+			if (e.getValue() > 5)
+				System.out.printf("%5d %s\n", e.getValue(), e.getKey());
 		}
 	}
 

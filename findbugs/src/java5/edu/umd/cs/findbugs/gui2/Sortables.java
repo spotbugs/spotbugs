@@ -21,10 +21,9 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-
-import org.junit.runner.manipulation.Sortable;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
@@ -33,6 +32,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -342,6 +342,26 @@ public enum Sortables implements Comparator<SortableValue>
 	},
 	
 	
+	PROJECT(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_project", "Project")) {
+
+		@Override
+        public String getFrom(BugInstance bug) {
+	        ProjectPackagePrefixes p = MainFrame.getInstance().projectPackagePrefixes;
+	        Collection<String> projects = p.getProjects(bug.getPrimaryClass().getPackageName());
+	        if (projects.size() == 0)
+	        	return "unclassified";
+	        String result = projects.toString();
+	        
+	        return result.substring(1, result.length() -1);
+        }
+		
+		@Override 
+		public boolean isAvailable(MainFrame mf) {
+			return mf.projectPackagePrefixes.size() > 0;
+		}
+		
+	},
+	
 	DIVIDER(" ")
 	{
 		@Override
@@ -369,9 +389,7 @@ public enum Sortables implements Comparator<SortableValue>
 		}
 	};
 
-	public static Sortables[] availableValues() {
-		return values();
-	}
+
 	String prettyName;
 
 	Sortables(String prettyName)
@@ -439,10 +457,14 @@ public enum Sortables implements Comparator<SortableValue>
 			}
 		};
 	}
+	
+	public boolean isAvailable(MainFrame frame) {
+		return true;
+	}
 
 	public static Sortables getSortableByPrettyName(String name)
 	{
-		for (Sortables s: Sortables.availableValues())
+		for (Sortables s: values())
 		{
 			if (s.prettyName.equals(name))
 				return s;

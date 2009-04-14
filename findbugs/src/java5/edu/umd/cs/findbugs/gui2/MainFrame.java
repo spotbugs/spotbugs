@@ -56,9 +56,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -119,9 +116,9 @@ import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -241,6 +238,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	SourceFinder sourceFinder;
 	private Object lock = new Object();
 	private boolean newProject = false;
+	final ProjectPackagePrefixes projectPackagePrefixes = new ProjectPackagePrefixes();
 	
 	
 	private Class<?> osxAdapter;
@@ -918,7 +916,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		menuBar.add(navMenu);
 
-		JMenu showMenu = newJMenu("menu.show", "Show");
+		JMenu viewMenu = newJMenu("menu.view", "View");
 		
 		URL u = PluginLoader.getCoreResource("projectPaths.properties");
 		if (u != null) {
@@ -944,8 +942,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			if (lst.size() > 0) {
 
 				JMenu setPaths = new JMenu("Set package paths");
-				showMenu.add(setPaths);
-				showMenu.addSeparator();
+				viewMenu.add(setPaths);
+				viewMenu.addSeparator();
 				for (String[] p : lst) {
 					String project = p[0];
 					final String paths = p[1].replace('/','.');
@@ -973,9 +971,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setRank(r);
                 }});   
-			showMenu.add(rbMenuItem);
+			viewMenu.add(rbMenuItem);
 		}
-		showMenu.addSeparator();
+		viewMenu.addSeparator();
 		ButtonGroup ageButtonGroup = new ButtonGroup();
 		for(final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
@@ -987,11 +985,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setFirstSeen(r);
                 }});   
-			showMenu.add(rbMenuItem);
+			viewMenu.add(rbMenuItem);
 		}
 
 		       
-		menuBar.add(showMenu);
+		menuBar.add(viewMenu);
 		
 		JMenu designationMenu = newJMenu("menu.designation", "Designation");
 		int i = 0;
@@ -1593,84 +1591,84 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return topPanel;
 	}
 	/**
-	 * 
-	 * @return
-	 */
-	JPanel bugListPanel()
-	{
-		tableheader = new JTableHeader();
-		//Listener put here for when user double clicks on sorting
-		//column header SorterDialog appears.
-		tableheader.addMouseListener(new MouseAdapter(){
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
-				if (!tableheader.getReorderingAllowed())
-					return;
-				if (e.getClickCount()==2)
-					SorterDialog.getInstance().setVisible(true);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				if (!tableheader.getReorderingAllowed())
-					return;
-				BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
-				bt.checkSorter();
-			}
-		});
-		sorter = GUISaveState.getInstance().getStarterTable();
-		tableheader.setColumnModel(sorter);
-		tableheader.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
-
-		tree = new JTree();
-		treeUI = (BasicTreeUI) tree.getUI();
-		tree.setLargeModel(true);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setCellRenderer(new BugRenderer());
-		tree.setRowHeight((int)(Driver.getFontSize() + 7));
-		if (false) {
-
-		System.out.println("Left indent had been " + treeUI.getLeftChildIndent());
-		System.out.println("Right indent had been " + treeUI.getRightChildIndent());
-		treeUI.setLeftChildIndent(30 );
-		treeUI.setRightChildIndent(30 );
-		}
-		tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
-		setupTreeListeners();
-		setProject(new Project());
-
-
-		treeScrollPane = new JScrollPane(tree);
-		
-		treePanel = new JPanel(new BorderLayout());
-		treePanel.add(treeScrollPane, BorderLayout.CENTER);
-		//New code to fix problem in Windows
-		JTable t = new JTable(new DefaultTableModel(0, Sortables.availableValues().length));
-		t.setTableHeader(tableheader);
-		JScrollPane sp = new JScrollPane(t);
-		//This sets the height of the scrollpane so it is dependent on the fontsize.
-		int num = (int) (Driver.getFontSize()*1.2);
-		sp.setPreferredSize(new Dimension(0, 10+num));
-		//End of new code.
-		//Changed code.
-		textFieldForPackagesToDisplay = new JTextField();
-		textFieldForPackagesToDisplay.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-	         viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+     * 
+     * @return
+     */
+    JPanel bugListPanel()
+    {
+    	tableheader = new JTableHeader();
+    	//Listener put here for when user double clicks on sorting
+    	//column header SorterDialog appears.
+    	tableheader.addMouseListener(new MouseAdapter(){
+    
+    		@Override
+    		public void mouseClicked(MouseEvent e) {
+    			Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
+    			if (!tableheader.getReorderingAllowed())
+    				return;
+    			if (e.getClickCount()==2)
+    				SorterDialog.getInstance().setVisible(true);
+    		}
+    
+    		@Override
+    		public void mouseReleased(MouseEvent arg0) {
+    			if (!tableheader.getReorderingAllowed())
+    				return;
+    			BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
+    			bt.checkSorter();
+    		}
+    	});
+    	sorter = GUISaveState.getInstance().getStarterTable();
+    	tableheader.setColumnModel(sorter);
+    	tableheader.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
+    
+    	tree = new JTree();
+    	treeUI = (BasicTreeUI) tree.getUI();
+    	tree.setLargeModel(true);
+    	tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    	tree.setCellRenderer(new BugRenderer());
+    	tree.setRowHeight((int)(Driver.getFontSize() + 7));
+    	if (false) {
+    
+    	System.out.println("Left indent had been " + treeUI.getLeftChildIndent());
+    	System.out.println("Right indent had been " + treeUI.getRightChildIndent());
+    	treeUI.setLeftChildIndent(30 );
+    	treeUI.setRightChildIndent(30 );
+    	}
+    	tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
+    	setupTreeListeners();
+    	setProject(new Project());
+    
+    
+    	treeScrollPane = new JScrollPane(tree);
+    	
+    	treePanel = new JPanel(new BorderLayout());
+    	treePanel.add(treeScrollPane, BorderLayout.CENTER);
+    	//New code to fix problem in Windows
+    	JTable t = new JTable(new DefaultTableModel(0, sortables().length));
+    	t.setTableHeader(tableheader);
+    	JScrollPane sp = new JScrollPane(t);
+    	//This sets the height of the scrollpane so it is dependent on the fontsize.
+    	int num = (int) (Driver.getFontSize()*1.2);
+    	sp.setPreferredSize(new Dimension(0, 10+num));
+    	//End of new code.
+    	//Changed code.
+    	textFieldForPackagesToDisplay = new JTextField();
+    	textFieldForPackagesToDisplay.addActionListener(new ActionListener(){
+    
+    		public void actionPerformed(ActionEvent e) {
+             viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
             }});
-
-		textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of package prefixes to restrict the view to those packages");
-		JPanel topPanel = makeNavigationPanel(textFieldForPackagesToDisplay, sp, treePanel);
-		cardPanel = new JPanel(new CardLayout());
-		waitPanel = new JPanel();
-		waitPanel.add(new JLabel("Please wait..."));
-		cardPanel.add(topPanel, TREECARD);
-		cardPanel.add(waitPanel, WAITCARD);
-		return cardPanel;
-	}
+    
+    	textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of package prefixes to restrict the view to those packages");
+    	JPanel topPanel = makeNavigationPanel(textFieldForPackagesToDisplay, sp, treePanel);
+    	cardPanel = new JPanel(new CardLayout());
+    	waitPanel = new JPanel();
+    	waitPanel.add(new JLabel("Please wait..."));
+    	cardPanel.add(topPanel, TREECARD);
+    	cardPanel.add(waitPanel, WAITCARD);
+    	return cardPanel;
+    }
 	JTextField textFieldForPackagesToDisplay;
 	public void newTree(final JTree newTree, final BugTreeModel newModel)
 	{
@@ -1707,6 +1705,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		tree.addTreeExpansionListener(new TreeExpansionListener(){
 
 			public void treeExpanded(TreeExpansionEvent event) {
+				if (true)
+					return;
 	            TreePath path = event.getPath();
 	            Object lastPathComponent = path.getLastPathComponent();
 	            int children  = tree.getModel().getChildCount(lastPathComponent);
@@ -2923,4 +2923,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    		}
 	    	}});
     }
+    
+    Sortables[] sortables;
+    {
+    	ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
+    	for(Sortables s : Sortables.values()) 
+    		if (s.isAvailable(this))
+    			a.add(s);
+    	sortables = new Sortables[a.size()];
+    	a.toArray(sortables);
+    }
+	public  Sortables[] sortables() {
+    	return Sortables.values();
+    }
+
 }

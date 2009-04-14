@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -35,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -65,7 +67,7 @@ import edu.umd.cs.findbugs.gui2.MainFrame;
 public  class DBCloud extends AbstractCloud {
 
 	
-	Mode mode = Mode.SECRET;
+	Mode mode = Mode.VOTING;
 	
 	public Mode getMode() {
 		return mode;
@@ -277,10 +279,11 @@ public  class DBCloud extends AbstractCloud {
 					findbugsUser = JOptionPane.showInputDialog("Identification for survey", findbugsUser);
 					result = true;
 					} else {
-					int choice = bugCollection.getProject().getGuiCallback().showConfirmDialog(
-					        "Store comments in " + dbName + " as user " + findbugsUser + "?", "Connect to database?",
-					        JOptionPane.YES_NO_OPTION);
-					result = choice == JOptionPane.YES_OPTION;
+						findbugsUser = (String) JOptionPane.showInputDialog(MainFrame.getInstance(), "Connect to database with the specified username?", "Connect to database", 
+								JOptionPane.QUESTION_MESSAGE, null, null, findbugsUser);
+						
+					
+					result = findbugsUser != null;
 					}
 
 				} else
@@ -436,7 +439,7 @@ public  class DBCloud extends AbstractCloud {
 				insertBugData.setString(col++, b.getBugPattern().getType());
 				insertBugData.setInt(col++, b.getPriority());
 				insertBugData.setString(col++, b.getPrimaryClass().getClassName());
-				insertBugData.setString(col++, "");
+				insertBugData.setString(col++, "none");
 				insertBugData.executeUpdate();
 				ResultSet rs = insertBugData.getGeneratedKeys();
 				if (rs.next()) {
@@ -606,8 +609,7 @@ public  class DBCloud extends AbstractCloud {
     	int firstLine = Integer.MAX_VALUE;
     	int lastLine = Integer.MIN_VALUE;
     	for(BugAnnotation a : b.getAnnotations()) {
-    		String msg = a.format("", primaryClass);
-    		out.println(msg);
+    		out.println(a);
     		if (a instanceof SourceLineAnnotation) {
     			SourceLineAnnotation s = (SourceLineAnnotation) a;
     			if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
@@ -625,11 +627,15 @@ public  class DBCloud extends AbstractCloud {
     		BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
     		int lineNumber = 1;
     		out.println("\nRelevant source code:");
-    		while (lineNumber <= lastLine) {
+    		while (lineNumber <= lastLine+5) {
     			String txt = in.readLine();
     			if (txt == null) break;
-    			if (lineNumber >= firstLine)
+    			if (lineNumber >= firstLine-5) {
+    				if (lineNumber > lastLine && txt.trim().length() == 0) 
+    					break;
     				out.printf("%4d: %s\n", lineNumber, txt);
+    			}
+    			lineNumber++;
     		}
     		in.close();
     		out.println();
@@ -643,31 +649,47 @@ public  class DBCloud extends AbstractCloud {
     	out.close();
     	return stringWriter.toString();
     }
+    
+    static String urlEncode(String s) {
+    	try {
+	        return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	       assert false;
+	       return "No utf-8 encoding";
+        }
+    }
     @Override
+    @CheckForNull 
     public URL getBugLink(BugInstance b) {
+    	String bugLinkPattern = SystemProperties.getProperty("findbugs.buglink");
+    	if (bugLinkPattern == null)
+    		return null;
 		try {
-			BugData bd = getBugData(b);
-			int id = bd.id;
-			String u = String.format("http://www.surveymonkey.com/s.aspx?sm=Ke63eROtfAw4DPpQdqkUCA_3d_3d&c=bug-%d_user-%s", id,
-			       URLEncoder.encode(findbugsUser, "UTF-8"));
+			String report = getBugReport(b);
+			String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+			String u = String.format(bugLinkPattern,
+					urlEncode(report), urlEncode(summary));
 			return new URL(u);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
     }
+    
 	public String getCloudReport(BugInstance b) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		StringBuilder builder = new StringBuilder();
 		BugData bd = getBugData(b);
 		long firstSeen = bd.firstSeen;
 		if (firstSeen < Long.MAX_VALUE) {
-			builder.append(String.format("First seen %s\n", new Timestamp(firstSeen)));
+			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
 		}
 		BugDesignation primaryDesignation = bd.getPrimaryDesignation();
 		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
 		for(BugDesignation d : bd.designations) 
 			if (d != primaryDesignation 
 					&& (canSeeCommentsByOthers || d.getUser().equals(findbugsUser))) {
-				builder.append(String.format("%s: %s\n", d.getUser(), d.getDesignationKey()));
+				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), d.getDesignationKey()));
 				if (d.getAnnotationText().length() > 0) {
 					builder.append(d.getAnnotationText());
 					builder.append("\n\n");

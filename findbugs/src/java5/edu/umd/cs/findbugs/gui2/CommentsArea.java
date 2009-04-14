@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -58,6 +59,7 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
 public class CommentsArea {
 
 	private JTextArea userCommentsText = new JTextArea();
+	private JTextArea reportText = new JTextArea();
 
 	private Color userCommentsTextUnenabledColor;
 
@@ -66,7 +68,7 @@ public class CommentsArea {
 	private ArrayList<String> designationKeys;
 
 	private JLabel whoWhen = new JLabel("          ");
-	private JButton answerSurvey = new JButton("Answer survey about this issue");
+	private JButton answerSurvey = new JButton("File bug");
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
@@ -88,9 +90,9 @@ public class CommentsArea {
 	 */
 	JPanel createCommentsInputPanel() {
 		JPanel centerPanel = new JPanel();
-		BorderLayout centerLayout = new BorderLayout();
-		centerLayout.setVgap(10);
-		centerPanel.setLayout(centerLayout);
+		GridBagLayout layout = new GridBagLayout();
+
+		centerPanel.setLayout(layout);
 
 		userCommentsText.getDocument().addDocumentListener(
 				new DocumentListener() {
@@ -120,9 +122,17 @@ public class CommentsArea {
 		userCommentsText.setEnabled(false);
 		userCommentsText.setBackground(userCommentsTextUnenabledColor);
 		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
+		
+		reportText.setLineWrap(true);
+		userCommentsText
+				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.report", "Information about the bug here"));
+		reportText.setWrapStyleWord(true);
+		reportText.setEditable(false);
+		
+		JScrollPane reportScrollP = new JScrollPane(reportText);
 
 		answerSurvey.setEnabled(false);
-		answerSurvey.setToolTipText("Click to open survey for this issue");
+		answerSurvey.setToolTipText("Click to file bug for this issue");
 		answerSurvey.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
@@ -184,7 +194,7 @@ public class CommentsArea {
 		});
 
 		designationKeys.add("");
-		designationComboBox.addItem(" -- select your evaluation of this issue -- ");
+		designationComboBox.addItem("");
 		for (String s : I18N.instance().getUserDesignationKeys(true)) {
 			designationKeys.add(s);
 			designationComboBox.addItem(Sortables.DESIGNATION.formatValue(s));
@@ -195,14 +205,40 @@ public class CommentsArea {
 		// comments.setLayout(new FlowLayout(FlowLayout.LEFT));
 		// comments.add(designationComboBox);
 		// comments.add(whoWhen);
-		centerPanel.add(designationComboBox, BorderLayout.NORTH);
-		centerPanel.add(commentsScrollP, BorderLayout.CENTER);
-		// centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
-		centerPanel.add(answerSurvey, BorderLayout.SOUTH);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		centerPanel.add(designationComboBox, c);
+		
+		c.gridx = 1;
+		c.weightx = 0;
+		centerPanel.add(answerSurvey, c);
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx = 1;
+		c.weighty = 2;
+		c.gridwidth = 2;
+		c.fill=GridBagConstraints.BOTH;
+		
+		centerPanel.add(commentsScrollP, c);
+		c.gridx = 0;
+		c.gridy = 2;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridwidth = 2;
+		c.fill=GridBagConstraints.BOTH;
+		
+		centerPanel.add(reportScrollP, c);
+		
 		return centerPanel;
 	}
 
 	void setUnknownDesignation() {
+		assert designationComboBox.getItemCount() == designationKeys.size();
 		designationComboBox.setSelectedIndex(0); // WARNING: this is hard
 													// coded in here.
 	}
@@ -260,7 +296,10 @@ public class CommentsArea {
 				//This so if already saved doesn't make it seem project changed
 				boolean b = frame.getProjectChanged();
 				BugInstance bug = node.getBug();
+				Cloud plugin = MainFrame.getInstance().bugCollection.getCloud();
 				setCurrentUserCommentsText(bug.getAnnotationText());
+				String report = plugin.getCloudReport(bug);
+				reportText.setText(report);
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug
 								.getUserDesignationKey()));
@@ -621,6 +660,8 @@ public class CommentsArea {
 	}
 	*/
 	protected void setDesignationComboBox(String designationKey) {
+		assert designationComboBox.getItemCount() == designationKeys.size();
+		
 		int numItems = designationComboBox.getItemCount();
 		for (int i = 0; i < numItems; i++) {
 			String value = designationKeys.get(i);
@@ -693,6 +734,7 @@ public class CommentsArea {
 
 		}
 	}
+	
 
 	protected @CheckForNull
 	String convertDesignationNameToDesignationKey(String name) {
@@ -702,6 +744,7 @@ public class CommentsArea {
 		 * ("MOSTLY_HARMLESS", "CRITICAL") etc. This uses the
 		 * DesignationComboBox (this should probably be changed)
 		 */
+		assert designationComboBox.getItemCount() == designationKeys.size();
 		int itemCount = designationComboBox.getItemCount();
 		for (int i = 1; i < itemCount; i++)
 			if (name.equals(designationComboBox.getItemAt(i)))
