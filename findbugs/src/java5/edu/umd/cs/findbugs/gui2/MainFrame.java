@@ -1647,7 +1647,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		treePanel = new JPanel(new BorderLayout());
 		treePanel.add(treeScrollPane, BorderLayout.CENTER);
 		//New code to fix problem in Windows
-		JTable t = new JTable(new DefaultTableModel(0, Sortables.values().length));
+		JTable t = new JTable(new DefaultTableModel(0, Sortables.availableValues().length));
 		t.setTableHeader(tableheader);
 		JScrollPane sp = new JScrollPane(t);
 		//This sets the height of the scrollpane so it is dependent on the fontsize.

@@ -91,11 +91,11 @@ public class SorterDialog extends FBDialog {
 		insidePanel.setLayout(new BorderLayout());
 		sorter.setLayout(new BorderLayout());
 		preview=new JTableHeader();
-		preview.setColumnModel(new SorterTableColumnModel(Sortables.values()));
+		preview.setColumnModel(new SorterTableColumnModel(Sortables.availableValues()));
 
-		Sortables[] sortList = Sortables.values();
+		Sortables[] sortList = Sortables.availableValues();
 
-		for(Sortables s : Sortables.values()){
+		for(Sortables s : Sortables.availableValues()){
 			if (s == Sortables.DIVIDER)
 				checkBoxSortList.add(new JCheckBox(edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]")));
 			else
@@ -120,7 +120,7 @@ public class SorterDialog extends FBDialog {
 		bottomPanel.setLayout(new BorderLayout());
 		//bottomPanel.add(previewLabel,BorderLayout.NORTH);
 		//New code to fix problem in Windows
-		JTable t = new JTable(new DefaultTableModel(0, Sortables.values().length));
+		JTable t = new JTable(new DefaultTableModel(0, Sortables.availableValues().length));
 		t.setTableHeader(preview);
 		JScrollPane sp = new JScrollPane(t);
 		//This sets the height of the scrollpane so it is dependent on the fontsize.

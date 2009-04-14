@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.junit.runner.manipulation.Sortable;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -367,6 +369,9 @@ public enum Sortables implements Comparator<SortableValue>
 		}
 	};
 
+	public static Sortables[] availableValues() {
+		return values();
+	}
 	String prettyName;
 
 	Sortables(String prettyName)
@@ -437,7 +442,7 @@ public enum Sortables implements Comparator<SortableValue>
 
 	public static Sortables getSortableByPrettyName(String name)
 	{
-		for (Sortables s: Sortables.values())
+		for (Sortables s: Sortables.availableValues())
 		{
 			if (s.prettyName.equals(name))
 				return s;

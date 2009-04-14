@@ -50,7 +50,7 @@ import javax.swing.tree.TreeModel;
 public class SorterTableColumnModel implements TableColumnModel{
 
 	private ArrayList<Sortables> order=new ArrayList<Sortables>();
-	private boolean[] showOrder=new boolean[Sortables.values().length];
+	private boolean[] showOrder=new boolean[Sortables.availableValues().length];
 	private ArrayList<TableColumn> columnList=new ArrayList<TableColumn>();
 	private DefaultListSelectionModel dlsm;
 	private ArrayList<TableColumnModelListener> watchers=new ArrayList<TableColumnModelListener>();
@@ -62,9 +62,9 @@ public class SorterTableColumnModel implements TableColumnModel{
 		{
 			Sortables c=columnHeaders[x];
 			//System.out.println(c);
-			for (int y=0; y<Sortables.values().length;y++)
+			for (int y=0; y<Sortables.availableValues().length;y++)
 			{
-				if (c.equals(Sortables.values()[y])) 
+				if (c.equals(Sortables.availableValues()[y])) 
 					showOrder[y]=true;
 			}
 
@@ -100,9 +100,9 @@ public class SorterTableColumnModel implements TableColumnModel{
 		for(int x = 0; x < other.order.size(); x++)
 		{
 			Sortables c=other.order.get(x);
-			for (int y=0; y<Sortables.values().length;y++)
+			for (int y=0; y<Sortables.availableValues().length;y++)
 			{
-				if (c.equals(Sortables.values()[y])) 
+				if (c.equals(Sortables.availableValues()[y])) 
 					showOrder[y]=true;//Then refill it, this allows sorterDialog to keep track of whats open
 			}
 
@@ -172,7 +172,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 	void setIndexChanged(int index)
 	{
 		showOrder[index]=!showOrder[index];
-		Sortables s=Sortables.values()[index];
+		Sortables s=Sortables.availableValues()[index];
 
 		boolean on=showOrder[index];
 

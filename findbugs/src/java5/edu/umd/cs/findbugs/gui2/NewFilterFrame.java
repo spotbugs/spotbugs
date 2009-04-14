@@ -92,14 +92,14 @@ public class NewFilterFrame extends FBDialog
 		north.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.filter_bugs_lbl", "Filter out all bugs whose") + " "));
 
 		//Argh divider
-		Sortables[] valuesWithoutDivider=new Sortables[Sortables.values().length-1];
+		Sortables[] valuesWithoutDivider=new Sortables[Sortables.availableValues().length-1];
 		int index=0;
 
-		for (int x=0; x<Sortables.values().length;x++)
+		for (int x=0; x<Sortables.availableValues().length;x++)
 		{
-			if (Sortables.values()[x]!=Sortables.DIVIDER)
+			if (Sortables.availableValues()[x]!=Sortables.DIVIDER)
 			{
-				valuesWithoutDivider[index]=Sortables.values()[x];
+				valuesWithoutDivider[index]=Sortables.availableValues()[x];
 				index++;
 			}
 		}
