@@ -134,8 +134,7 @@ public class ProjectPackagePrefixes {
 				if (num < 3) {
 					int x = p1.lastIndexOf(".");
 					String p2 = p1.substring(0, x);
-					if (p2.equals("com.google") || p2.equals("com.google.ads"))
-						continue;
+					
 					// System.out.printf("only %d issues in %s\n", num, p1);
 					
 					
