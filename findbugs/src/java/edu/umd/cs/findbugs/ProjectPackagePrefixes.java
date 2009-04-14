@@ -113,8 +113,7 @@ public class ProjectPackagePrefixes {
 					String p2 = p1.substring(0, x);
 					System.out.printf("only %d issues in %s\n", num, p1);
 					
-					if (p2.equals("com.google") || p2.equals("com.google.ads"))
-						continue;
+					
 					extraSuperPackages.add(p2);
 				}
 			}
