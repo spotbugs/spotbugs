@@ -20,6 +20,14 @@
 package edu.umd.cs.findbugs.cloud;
 
 import java.awt.GraphicsEnvironment;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -40,12 +48,16 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.gui2.MainFrame;
 
 /**
  * @author pwilliam
@@ -245,8 +257,13 @@ public  class DBCloud extends AbstractCloud {
 		findbugsUser = getProperty("findbugsUser");
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null)
 			return false;
-		if (findbugsUser == null)
+		if (findbugsUser == null) {
 			findbugsUser = System.getProperty("user.name", "");
+			if (false) try {
+				findbugsUser += "@" 
+					  + InetAddress.getLocalHost().getHostName();
+			} catch (Exception e) {}
+		}
 		try {
 			Class.forName(sqlDriver);
 			Connection c = getConnection();
@@ -256,10 +273,15 @@ public  class DBCloud extends AbstractCloud {
 			if (rs.next()) {
 				int count = rs.getInt(1);
 				if (!GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
+					if (false) {
+					findbugsUser = JOptionPane.showInputDialog("Identification for survey", findbugsUser);
+					result = true;
+					} else {
 					int choice = bugCollection.getProject().getGuiCallback().showConfirmDialog(
 					        "Store comments in " + dbName + " as user " + findbugsUser + "?", "Connect to database?",
 					        JOptionPane.YES_NO_OPTION);
 					result = choice == JOptionPane.YES_OPTION;
+					}
 
 				} else
 					result = true;
@@ -572,6 +594,67 @@ public  class DBCloud extends AbstractCloud {
 	    
     }
     
+    
+    String getBugReport(BugInstance b) {
+    	StringWriter stringWriter = new StringWriter();
+    	PrintWriter out = new PrintWriter(stringWriter);
+    	out.println("Bug report generated from FindBugs");
+    	out.println(b.getMessageWithoutPrefix());
+    	out.println();
+    	ClassAnnotation primaryClass = b.getPrimaryClass();
+    	
+    	int firstLine = Integer.MAX_VALUE;
+    	int lastLine = Integer.MIN_VALUE;
+    	for(BugAnnotation a : b.getAnnotations()) {
+    		String msg = a.format("", primaryClass);
+    		out.println(msg);
+    		if (a instanceof SourceLineAnnotation) {
+    			SourceLineAnnotation s = (SourceLineAnnotation) a;
+    			if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
+    				firstLine = Math.min(firstLine, s.getStartLine());
+    				lastLine = Math.max(lastLine, s.getEndLine());
+    				
+    			}
+    		}
+    	}
+    	out.println();
+    	SourceLineAnnotation primarySource = primaryClass.getSourceLines();
+    	if (primarySource.isSourceFileKnown() && firstLine <= lastLine && MainFrame.isAvailable()) {
+    		try {
+    		SourceFile sourceFile = MainFrame.getInstance().getSourceFinder().findSourceFile(primarySource);
+    		BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
+    		int lineNumber = 1;
+    		out.println("\nRelevant source code:");
+    		while (lineNumber <= lastLine) {
+    			String txt = in.readLine();
+    			if (txt == null) break;
+    			if (lineNumber >= firstLine)
+    				out.printf("%4d: %s\n", lineNumber, txt);
+    		}
+    		in.close();
+    		out.println();
+    		} catch (IOException e) {
+    			assert true;
+    		}
+    	}
+    	
+
+    	out.println("FindBugs issue identifier: " + b.getInstanceHash());
+    	out.close();
+    	return stringWriter.toString();
+    }
+    @Override
+    public URL getBugLink(BugInstance b) {
+		try {
+			BugData bd = getBugData(b);
+			int id = bd.id;
+			String u = String.format("http://www.surveymonkey.com/s.aspx?sm=Ke63eROtfAw4DPpQdqkUCA_3d_3d&c=bug-%d_user-%s", id,
+			       URLEncoder.encode(findbugsUser, "UTF-8"));
+			return new URL(u);
+		} catch (Exception e) {
+			return null;
+		}
+    }
 	public String getCloudReport(BugInstance b) {
 		StringBuilder builder = new StringBuilder();
 		BugData bd = getBugData(b);
