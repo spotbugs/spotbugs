@@ -45,7 +45,7 @@ public class TestingGround {
 		ProjectPackagePrefixes foo = new ProjectPackagePrefixes();
 		
 		for(BugInstance b : bugCollection.getCollection())
-			foo.check(b);
+			foo.countBug(b);
 		foo.report();
 		
 		return this;
