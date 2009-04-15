@@ -336,6 +336,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	public @CheckForNull AnnotatedObject getContainingScope() {
 		if (!containingScopeCached) {
 			containingScope = getContainingScope0();
+			containingScopeCached = true;
 		}
 		return containingScope;
 	}
