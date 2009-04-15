@@ -77,11 +77,14 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return buf.toString();
 	}
 	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
-		if (!REDUNDANT_LOAD_ELIMINATION) return null;
+		if (!REDUNDANT_LOAD_ELIMINATION) 
+			return null;
 		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
-			if (e.getValue() != null)
-				for(ValueNumber v2 : e.getValue())
-					if (v.equals(v2)) return e.getKey();
+			ValueNumber[] values = e.getValue();
+			if (values != null)
+				for(ValueNumber v2 : values)
+					if (v.equals(v2)) 
+						return e.getKey();
 		}
 		return null;
 	}

@@ -37,6 +37,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 	private final String signature;
 	private final boolean isStatic;
 	private int cachedHashCode;
+	private final int nameSigHashCode;
 	
 	public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
 		assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
@@ -45,10 +46,20 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 		this.name = DescriptorFactory.canonicalizeString(name);
 		this.signature = DescriptorFactory.canonicalizeString(signature);
 		this.isStatic = isStatic;
+		this.nameSigHashCode = getNameSigHashCode(this.name, this.signature);
 	}
 
 	
+	public static int getNameSigHashCode(String name, String signature) {
+		return name.hashCode() * 3119  + signature.hashCode() * 131;
+	}
+	
+	public int getNameSigHashCode() {
+		return nameSigHashCode;
+	}
 	/**
+	 * 
+	 * 
 	 * @return Returns the class name
 	 */
 	public @SlashedClassName String getSlashedClassName() {
@@ -124,8 +135,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comp
 	public final int hashCode() {
 		if (cachedHashCode == 0) {
 			cachedHashCode = slashedClassName.hashCode() * 7919
-				+ name.hashCode() * 3119  
-				+ signature.hashCode() * 131
+				+ nameSigHashCode
 				+ (isStatic ? 1 : 0);
 		}
 		return cachedHashCode;

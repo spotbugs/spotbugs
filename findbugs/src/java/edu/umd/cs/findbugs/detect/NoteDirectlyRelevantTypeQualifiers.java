@@ -100,9 +100,9 @@ public class NoteDirectlyRelevantTypeQualifiers
 			// we'll use at a later point to find relevant qualifiers
 			// stemming from called methods.
 
-				XMethod m = XFactory.createReferencedXMethod(this);
-				updateApplicableAnnotations(m);
-
+				XMethod m = getXMethodOperand();
+				if (m != null)
+					updateApplicableAnnotations(m);
 
 			break;
 
@@ -111,10 +111,12 @@ public class NoteDirectlyRelevantTypeQualifiers
 		case GETFIELD:
 		case PUTFIELD:
 			{
-				XField f = XFactory.createReferencedXField(this);
-
-				Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
-				Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+				XField f = getXFieldOperand();
+				if (f != null) {
+					Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
+					Analysis.addKnownTypeQualifiers(applicableApplications, annotations);
+				}
+				
 
 				break;
 			}

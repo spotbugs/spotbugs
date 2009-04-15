@@ -191,7 +191,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	public @CheckForNull
 	XField getXFieldOperand() {
-		if (referencedXClass != null && referencedXField == null) referencedXField = referencedXClass.findField(nameConstantOperand, sigConstantOperand, opcode == GETSTATIC || opcode == PUTSTATIC);
+		if (referencedXClass != null && referencedXField == null) 
+			referencedXField = referencedXClass.findField(nameConstantOperand, sigConstantOperand, opcode == GETSTATIC || opcode == PUTSTATIC);
 		
 		return referencedXField;
 	}

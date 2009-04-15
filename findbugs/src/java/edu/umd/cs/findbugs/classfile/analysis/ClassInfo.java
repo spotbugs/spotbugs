@@ -199,8 +199,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 * @see edu.umd.cs.findbugs.ba.XClass#findMethod(java.lang.String, java.lang.String, boolean)
 	 */
 	public XMethod findMethod(String methodName, String methodSig, boolean isStatic) {
+		int hash = MethodInfo.getNameSigHashCode(methodName, methodSig);
 		for (MethodInfo mInfo : xMethods) 
-				if (mInfo.getName().equals(methodName)
+				if (mInfo.getNameSigHashCode() == hash && mInfo.getName().equals(methodName)
 						&& mInfo.getSignature().equals(methodSig)
 						&& mInfo.isStatic() == isStatic) 
 					return mInfo;
@@ -233,8 +234,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 * @see edu.umd.cs.findbugs.ba.XClass#findField(java.lang.String, java.lang.String, boolean)
 	 */
 	public XField findField(String name, String signature, boolean isStatic) {
+		int hash = FieldInfo.getNameSigHashCode(name, signature);
 		for (FieldInfo fInfo : xFields) 
-				if (fInfo.getName().equals(name)
+				if (fInfo.getNameSigHashCode() == hash && fInfo.getName().equals(name)
 						&& fInfo.getSignature().equals(signature)
 						&& fInfo.isStatic() == isStatic) 
 					return fInfo;
