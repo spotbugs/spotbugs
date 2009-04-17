@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
+	final static boolean countOtherCalls = false;
 	final BugReporter bugReporter;
 	final BugAccumulator accumulator;
 	final ClassDescriptor concurrentMapDescriptor = DescriptorFactory.createClassDescriptor(ConcurrentMap.class);
@@ -142,24 +143,40 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     				String className = invoke.getClassName(cpg);
 					if (invoke.getMethodName(cpg).equals("putIfAbsent") && extendsConcurrentMap(className)) {
     					InstructionHandle next = handle.getNext();
-    					if (next != null && next.getInstruction() instanceof POP) {
+    					boolean isIgnored = next != null && next.getInstruction() instanceof POP;
+						if (countOtherCalls || isIgnored) {
     						BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
     						ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
     						ValueNumber vn = vna.getTopValue();
     						int locals = vna.getNumLocals();
+    						boolean isRetained = false;
     						for(int pos = 0; pos < locals; pos++) 
     							if (vna.getValue(pos).equals(vn) && live.get(pos)) {
     								BugAnnotation ba = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, vn, 
     										vnaDataflow.getFactAtLocation(location), "VALUE_OF");
     								
-    								BugInstance bugInstance = new BugInstance(this,  "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED", 
+    								String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
+    								if (!isIgnored)
+    									pattern = "UNKNOWN";
+    								
+									BugInstance bugInstance = new BugInstance(this,  pattern, 
     										Priorities.NORMAL_PRIORITY)
     											.addClassAndMethod(methodGen,sourceFileName)
     											.addCalledMethod(methodGen, invoke).addOptionalAnnotation(ba);
     								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
     										classContext, method, location);
     								accumulator.accumulateBug(bugInstance, where);
+    								isRetained = true;
     								break;
+    						}
+    						if (countOtherCalls && !isRetained) {
+    							BugInstance bugInstance = new BugInstance(this,  "UNKNOWN", 
+										isIgnored ? Priorities.LOW_PRIORITY : Priorities.HIGH_PRIORITY)
+											.addClassAndMethod(methodGen,sourceFileName)
+											.addCalledMethod(methodGen, invoke);
+								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
+										classContext, method, location);
+								accumulator.accumulateBug(bugInstance, where);
     						}
     						
     					}
