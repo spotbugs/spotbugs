@@ -56,7 +56,7 @@ public class ViewFilter {
 	
  }
 	
-	enum FirstSeenFilter  implements ViewFilterEnum { LAST_DAY(1), LAST_WEEK(7), LAST_MONTH(30), ALL(400000);
+	enum FirstSeenFilter  implements ViewFilterEnum { LAST_DAY(1), LAST_WEEK(7), LAST_MONTH(30), LAST_THREE_MONTHS(91), ALL(400000);
 
 	final int maxDays;
 	

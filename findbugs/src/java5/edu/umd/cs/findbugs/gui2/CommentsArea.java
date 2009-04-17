@@ -46,6 +46,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
@@ -223,16 +224,19 @@ public class CommentsArea {
 		c.weighty = 2;
 		c.gridwidth = 2;
 		c.fill=GridBagConstraints.BOTH;
-		
 		centerPanel.add(commentsScrollP, c);
-		c.gridx = 0;
-		c.gridy = 2;
-		c.weightx = 1;
-		c.weighty = 1;
-		c.gridwidth = 2;
-		c.fill=GridBagConstraints.BOTH;
 		
-		centerPanel.add(reportScrollP, c);
+		if (true) {
+		
+			c.gridx = 0;
+			c.gridy = 2;
+			c.weightx = 1;
+			c.weighty = 1;
+			c.gridwidth = 2;
+			c.fill=GridBagConstraints.BOTH;
+		
+			centerPanel.add(reportScrollP, c);
+		}
 		
 		return centerPanel;
 	}
@@ -296,10 +300,12 @@ public class CommentsArea {
 				//This so if already saved doesn't make it seem project changed
 				boolean b = frame.getProjectChanged();
 				BugInstance bug = node.getBug();
-				Cloud plugin = MainFrame.getInstance().bugCollection.getCloud();
+				Cloud plugin = getCloud();
 				setCurrentUserCommentsText(bug.getAnnotationText());
-				String report = plugin.getCloudReport(bug);
-				reportText.setText(report);
+				if (plugin.supportsCloudReports()) {
+					String report = plugin.getCloudReport(bug);
+					reportText.setText(report);
+				}
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug
 								.getUserDesignationKey()));
@@ -777,4 +783,13 @@ public class CommentsArea {
 	public boolean hasFocus() {
 		return userCommentsText.hasFocus();
 	}
+
+	/**
+     * @return
+     */
+    private Cloud getCloud() {
+	    MainFrame instance = MainFrame.getInstance();
+		BugCollection bugCollection = instance.bugCollection;
+		return bugCollection.getCloud();
+    }
 }
