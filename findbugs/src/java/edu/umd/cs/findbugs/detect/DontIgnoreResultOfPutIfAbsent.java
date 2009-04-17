@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
@@ -29,17 +30,20 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.POP;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -47,17 +51,23 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
-	BugReporter bugReporter;
-
+	final BugReporter bugReporter;
+	final BugAccumulator accumulator;
+	final ClassDescriptor concurrentMapDescriptor = DescriptorFactory.createClassDescriptor(ConcurrentMap.class);
 	public DontIgnoreResultOfPutIfAbsent(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.accumulator = new BugAccumulator(bugReporter);
 	}
 
 	/* (non-Javadoc)
@@ -127,9 +137,10 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     			InstructionHandle handle = location.getHandle();
 				Instruction ins = handle.getInstruction();
     			
-    			if (ins instanceof INVOKEVIRTUAL) {
-    				INVOKEVIRTUAL invoke = (INVOKEVIRTUAL)ins;
-    				if (invoke.getMethodName(cpg).equals("putIfAbsent") && invoke.getClassName(cpg).equals("java.util.concurrent.ConcurrentHashMap")) {
+    			if (ins instanceof InvokeInstruction) {
+    				InvokeInstruction invoke = (InvokeInstruction)ins;
+    				String className = invoke.getClassName(cpg);
+					if (invoke.getMethodName(cpg).equals("putIfAbsent") && extendsConcurrentMap(className)) {
     					InstructionHandle next = handle.getNext();
     					if (next != null && next.getInstruction() instanceof POP) {
     						BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
@@ -144,9 +155,10 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     								BugInstance bugInstance = new BugInstance(this,  "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED", 
     										Priorities.NORMAL_PRIORITY)
     											.addClassAndMethod(methodGen,sourceFileName)
-    											.addCalledMethod(methodGen, invoke).addOptionalAnnotation(ba)
-    											.addSourceLine(classContext, methodGen, sourceFileName, handle);
-    								bugReporter.reportBug(bugInstance);
+    											.addCalledMethod(methodGen, invoke).addOptionalAnnotation(ba);
+    								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
+    										classContext, method, location);
+    								accumulator.accumulateBug(bugInstance, where);
     								break;
     						}
     						
@@ -155,10 +167,27 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     				
     			}
     		}
-
-	    
+    		accumulator.reportAccumulatedBugs();
     }
 
+    
+    private  boolean extendsConcurrentMap(@DottedClassName String className) {
+    	if (className.equals("java.util.concurrent.ConcurrentHashMap") 
+    			|| className.equals(concurrentMapDescriptor.getDottedClassName()))
+    		return true;
+    	ClassDescriptor c = DescriptorFactory.createClassDescriptorFromDottedClassName(className);
+    	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+
+    	try {
+    		if (subtypes2.isSubtype(c, concurrentMapDescriptor))  
+    			return true;
+    	} catch (ClassNotFoundException e) {
+    		AnalysisContext.reportMissingClass(e);
+    	}
+
+    	return false;
+
+    }
 
 
 }
