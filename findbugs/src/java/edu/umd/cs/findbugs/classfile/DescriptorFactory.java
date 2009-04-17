@@ -123,6 +123,7 @@ public class DescriptorFactory {
 	 * @return ClassDescriptor for that class
 	 */
 	public ClassDescriptor getClassDescriptorForDottedClassName(@DottedClassName String dottedClassName) {
+		assert dottedClassName != null;
 		ClassDescriptor classDescriptor = dottedClassDescriptorMap.get(dottedClassName);
 		if (classDescriptor == null) {
 			classDescriptor = getClassDescriptor(dottedClassName.replace('.', '/'));
