@@ -19,13 +19,14 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
@@ -36,14 +37,18 @@ public class LaunchBrowser {
 	private static final @CheckForNull Method jnlpShowMethod;
 	private static final Object jnlpShowObject; // will not be null if jnlpShowMethod!=null
 	
+	private static final boolean launchFirefox = SystemProperties.getBoolean("findbugs.launchFirefox");
 	private static Object desktopObject;
 	private static Method desktopBrowseMethod;
+	private static boolean launchViaExecFailed = false;
+	
 	static {
 		try {
 			Class <?> desktopClass = Class.forName("java.awt.Desktop");
 			desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
 			desktopBrowseMethod = desktopClass.getMethod("browse", URI.class);
 		}  catch (Exception e) {
+			e.printStackTrace();
 			assert true;
 		} 
 		// attempt to set the JNLP BasicService object and its showDocument(URL) method
@@ -81,6 +86,7 @@ public class LaunchBrowser {
 			 desktopBrowseMethod.invoke(desktopObject, url.toURI());
 			 return true;
 		} catch (InvocationTargetException ite) {
+			
 			assert true;
 		} catch (IllegalAccessException iae) {
 			assert true;
@@ -97,6 +103,27 @@ public class LaunchBrowser {
 		} catch (IllegalAccessException iae) {
 			assert true;
 		}
+	if (launchFirefox && !launchViaExecFailed) {
+			Runtime r = Runtime.getRuntime();
+			String a[] = new String[] { "firefox", url.toString() };
+			try {
+				Process p = r.exec(a);
+				Thread.sleep(20);
+				int exitValue = p.exitValue();
+				if (exitValue != 0) {
+					launchViaExecFailed = true;
+					System.out.println("exit value : " + exitValue);
+					return false;
+				} 
+				return true;
+			} catch (IllegalThreadStateException e) {
+				assert true;
+			} catch (Exception e) {
+				launchViaExecFailed = true;
+				e.printStackTrace();
+			}
+		}
+
 		return false;
 	}
 
