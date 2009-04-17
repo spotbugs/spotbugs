@@ -225,6 +225,18 @@ public  class DBCloud extends AbstractCloud {
 					if (!bd.inDatabase) {
 						storeNewBug(b);
 					} else {
+						long firstVersion = b.getFirstVersion();
+						long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
+						if (firstSeen < bd.firstSeen) {
+							bd.firstSeen = firstSeen;
+							storeFirstSeen(bd);
+						}
+						long lastVersion = b.getLastVersion();
+						if (lastVersion != -1) {
+							long lastSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
+						}
+						
+						
 						BugDesignation designation = bd.getPrimaryDesignation();
 						if (designation != null)
 							b.setUserDesignation(new BugDesignation(designation));
@@ -251,6 +263,8 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	public boolean initialize() {
+		if (!bugCollection.getProject().isGuiAvaliable())
+			return false;
 		String sqlDriver = getProperty("dbDriver");
 		url = getProperty("dbUrl");
 		dbName = getProperty("dbName");
@@ -325,6 +339,16 @@ public  class DBCloud extends AbstractCloud {
 		updatedStatus();
 	}
 
+	public void storeFirstSeen(final BugData bd) {
+
+		queue.add(new Update(){
+
+			public void execute(DatabaseSyncTask t) throws SQLException {
+	           t.storeFirstSeen(bd);
+	            
+            }});
+		updatedStatus();
+	}
 	public void storeUserAnnotation(BugData data, BugDesignation bd) {
 
 		queue.add(new StoreUserAnnotation(data, bd));
@@ -447,6 +471,26 @@ public  class DBCloud extends AbstractCloud {
 					bug.inDatabase = true;
 				}
 				rs.close();
+				insertBugData.close();
+
+			} catch (Exception e) {
+				displayMessage("Problems looking up user annotations", e);
+			}
+
+		}
+		public void storeFirstSeen(BugData bug) {
+			try {
+			
+				if (!bug.inDatabase)
+					return;
+				
+				PreparedStatement insertBugData =  
+				        c.prepareStatement("UPDATE  findbugs_issue SET firstSeen = ? WHERE id = ?");
+				Timestamp date = new Timestamp(bug.firstSeen);
+				int col = 1;
+				insertBugData.setTimestamp(col++, date);
+				insertBugData.setInt(col++, bug.id);
+				insertBugData.close();
 
 			} catch (Exception e) {
 				displayMessage("Problems looking up user annotations", e);
@@ -676,7 +720,13 @@ public  class DBCloud extends AbstractCloud {
 		}
     }
     
-	public String getCloudReport(BugInstance b) {
+    @Override
+    public boolean supportsCloudReports() {
+		return true;
+	}
+
+	@Override
+    public String getCloudReport(BugInstance b) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 		StringBuilder builder = new StringBuilder();
 		BugData bd = getBugData(b);
