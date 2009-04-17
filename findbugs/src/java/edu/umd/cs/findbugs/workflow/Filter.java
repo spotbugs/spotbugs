@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
 import edu.umd.cs.findbugs.I18N;
@@ -72,6 +73,7 @@ public class Filter {
 		String afterAsString;  
 		long before;
 		String beforeAsString; 
+		int maxRank = Integer.MAX_VALUE;
 
 		long last;
 		String lastAsString; 
@@ -157,6 +159,8 @@ public class Filter {
 			addSwitchWithOptionalExtraPart("-removedCode", "truth",
 			"allow only warnings removed by removal of a class");
 			addOption("-priority", "level", "allow only warnings with this priority or higher");
+			addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
+			
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
@@ -244,6 +248,7 @@ public class Filter {
 		}
 		boolean evaluate(BugInstance bug) {
 
+
 			for(Matcher m : includeFilter)
 				if (!m.match(bug)) return false;
 			for(Matcher m : excludeFilter)
@@ -271,6 +276,8 @@ public class Filter {
 			if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
 					return false;
 
+			if (maxRank < Integer.MAX_VALUE &&  BugRanker.findRank(bug) > maxRank)
+				return false;
 
 			if (activeSpecified && active == bug.isDead())
 				return false;
@@ -375,6 +382,9 @@ public class Filter {
 			}
 
 
+			else if (option.equals("-maxRank")) 
+				maxRank = Integer.parseInt(argument);
+			
 			else if (option.equals("-first")) 
 				firstAsString = argument;
 			else if (option.equals("-last")) 
