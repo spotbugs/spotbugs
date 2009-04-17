@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -30,5 +31,5 @@ import java.net.URLConnection;
 public interface IGuiCallback {
 	void showMessageDialog(String message);
 	int showConfirmDialog(String message, String title, int optionType);
-	InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException;
+    InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
 }

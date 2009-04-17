@@ -133,7 +133,9 @@ public class SourceFinder {
 				try {
 				URLConnection connection = new URL(url).openConnection();
 				if(getProject().isGuiAvaliable()){
-					in =  getProject().getGuiCallback().progessMonitoredInputStream(connection, "Loading source via url");
+					int size = connection.getContentLength();
+					in =  getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), 
+							size, "Loading source via url");
 				} else {
 					in = connection.getInputStream();
 				}

@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -53,16 +55,6 @@ public class Util {
 		}
 	}
 	
-	public static InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
-		InputStream in = c.getInputStream();
-		if (GraphicsEnvironment.isHeadless() || !MainFrame.isAvailable())
-			return in;
-		// in = new SlowInputStream(in, 10000000);
-		ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(MainFrame.getInstance(), msg, in);
-		ProgressMonitor pm = pmin.getProgressMonitor();
-		int length = c.getContentLength();
-		if (length > 0)
-			pm.setMaximum(length);
-		return pmin;
-	}
+	
+	
 }

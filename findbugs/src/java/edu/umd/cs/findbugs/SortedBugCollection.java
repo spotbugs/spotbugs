@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -32,6 +33,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Comparator;
@@ -67,7 +70,6 @@ import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.userAnnotations.UserAnnotationPlugin;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -210,18 +212,14 @@ public class SortedBugCollection implements BugCollection {
 	public void readXML(File file)
 			throws IOException, DocumentException {
 		project.setCurrentWorkingDirectory(file.getParentFile());
-		InputStream in = new BufferedInputStream(new FileInputStream(file));
-		if (file.getName().endsWith(".gz")) {
-			try {
-				in = new GZIPInputStream(in);
-			} catch (IOException e) {
-				in.close();
-				throw e;
-			}
-		}
+		InputStream in = progessMonitoredInputStream(file, "Loading analysis");
 		readXML(in, file);
 	}
-
+	public void readXML(URL u)
+	throws IOException, DocumentException {
+		InputStream in = progessMonitoredInputStream(u.openConnection(), "Loading analysis");
+		readXML(in);
+	}
 	/**
 	 * Read XML data from given input stream into this
 	 * object, populating the Project as a side effect.
@@ -232,9 +230,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void readXML(@WillClose InputStream in, File base)
 			throws IOException, DocumentException {
-		//if (in == null) throw new IllegalArgumentException();
 		try {
-			//if (project == null) throw new IllegalArgumentException();
 			doReadXML(in, base);
 		} finally {
 			in.close();
@@ -1162,6 +1158,50 @@ public class SortedBugCollection implements BugCollection {
 		return this.analysisVersion;
 	}
 
+	
+	public  InputStream progessMonitoredInputStream(File  f, String msg) throws IOException {
+		InputStream in = new FileInputStream(f);
+		long length = f.length();
+		if (length > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("File " + f + " is too big at " + length + " bytes");
+		return wrapGzip( progressMonitoredInputStream(in, (int)length, msg), f);
+	}
+	
+	public  InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
+		InputStream in = c.getInputStream();
+		int length = c.getContentLength();
+		return wrapGzip(progressMonitoredInputStream(in, length, msg), c.getURL());
+	}
+
+
+	public  InputStream progressMonitoredInputStream(InputStream in, int length, String msg) {
+	    if (GraphicsEnvironment.isHeadless())
+			return in;
+	    IGuiCallback guiCallback = project.getGuiCallback();
+	    if (guiCallback == null) 
+	    	return in;
+	    return guiCallback.getProgressMonitorInputStream(in, length, msg);
+    }
+	
+	public  InputStream wrapGzip(InputStream in, Object source) {
+		try {
+		if (source instanceof File) {
+			File f = (File) source;
+			if (f.getName().endsWith(".gz")) {
+				return new GZIPInputStream(in);
+			}
+		} else if (source instanceof URL) {
+			URL u = (URL) source;
+			if (u.getPath().endsWith(".gz")) {
+				return new GZIPInputStream(in);
+			}
+			
+		}
+		} catch (IOException e) {
+			assert true;
+		}
+		return  in;
+	}
 }
 
 // vim:ts=4

@@ -86,6 +86,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.ProgressMonitor;
+import javax.swing.ProgressMonitorInputStream;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -2176,24 +2178,12 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
 
 			if (loadFromURL != null) {
-				InputStream in;
 				try {
 					URL url = new URL(loadFromURL);
-					URLConnection urlConnection = url.openConnection();
-					in = Util.progessMonitoredInputStream(urlConnection, "Loading issues via url");
-					if (loadFromURL.endsWith(".gz"))
-						
-						in = new GZIPInputStream(in);
 					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
-					loadAnalysisFromInputStream(in, url);
+					loadAnalysis(url);
 				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
+					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  + loadFromURL);
 				}
 			}
 
@@ -2691,14 +2681,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 
 		prepareForFileLoad(f, saveType);
-		try {
-			FileInputStream in = new FileInputStream(f);
-			loadAnalysisFromInputStream(in, f);
+	
+		loadAnalysis(f);
+		return true;
 
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
+
 	}
 	
 	private void prepareForFileLoad(File f, SaveType saveType) {
@@ -2717,28 +2704,49 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		addFileToRecent(f, saveType);
     }
 
-	/**
-	 * @param file
-	 * @return
-	 */
-	private void loadAnalysisFromInputStream(final @WillClose InputStream in, final Object source) {
 
-		Runnable runnable = new Runnable(){
-			public void run()
-			{
+	private void loadAnalysis(final File file) {
 
-				final Project project = new Project();
+		Runnable runnable = new Runnable() {
+			public void run() {
+
+				Project project = new Project();
 				project.setGuiCallback(MainFrame.this);
-				if (source instanceof File) project.setCurrentWorkingDirectory(((File)source).getParentFile());
-				final SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
+				SortedBugCollection bc;
+
+				project.setCurrentWorkingDirectory(file.getParentFile());
+				bc = BugLoader.loadBugs(MainFrame.this, project, file);
+
 				setProjectAndBugCollectionInSwingThread(project, bc);
 			}
 		};
 		if (EventQueue.isDispatchThread())
 			new Thread(runnable, "Analysis loading thread").start();
-		else runnable.run();
+		else
+			runnable.run();
 		return;
 	}
+
+	private void loadAnalysis(final URL url) {
+
+		Runnable runnable = new Runnable() {
+			public void run() {
+
+				Project project = new Project();
+				project.setGuiCallback(MainFrame.this);
+				SortedBugCollection bc;
+
+				bc = BugLoader.loadBugs(MainFrame.this, project, url);
+				setProjectAndBugCollectionInSwingThread(project, bc);
+			}
+		};
+		if (EventQueue.isDispatchThread())
+			new Thread(runnable, "Analysis loading thread").start();
+		else
+			runnable.run();
+		return;
+	}
+	
 	/**
 	 * @param file
 	 * @return
@@ -2904,9 +2912,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
         return JOptionPane.showConfirmDialog(this, message, title, optionType);
     }
 
-    public InputStream progessMonitoredInputStream(URLConnection c, String msg) throws IOException {
-        return Util.progessMonitoredInputStream(c, msg);
-    }
 	/**
      * @param project
      * @param bc
@@ -2936,5 +2941,19 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	public  Sortables[] sortables() {
     	return Sortables.values();
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#progessMonitoredInputStream(java.io.File, java.lang.String)
+     */
+  
+    
+    public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
+		ProgressMonitorInputStream pmin = new ProgressMonitorInputStream(this, msg, in);
+		ProgressMonitor pm = pmin.getProgressMonitor();
+
+		if (length > 0)
+			pm.setMaximum(length);
+		return pmin;
+	}
+	
 
 }

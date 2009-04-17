@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -126,40 +128,41 @@ public class BugLoader {
 
 	}
 
-	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url){
-		try {
-			return loadBugs(mainFrame, project, url.openConnection().getInputStream());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,"This file contains no bug data");
-		}	
-		return null;
-	}
-	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File file){
-		try {
-			return loadBugs(mainFrame, project, new FileInputStream(file));
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,"This file contains no bug data");
-		}	
-		return null;
-	}
-	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, @WillClose InputStream in)
-	{
-			try 
-			{
-				SortedBugCollection col=new SortedBugCollection(project);
-				col.readXML(in);
-				Filter suppressionMatcher = project.getSuppressionFilter();
-				if (suppressionMatcher != null) {
-					suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
-				}
-				return col;
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(mainFrame,"Could not read file; " + e.getMessage());
-			} catch (DocumentException e) {
-				JOptionPane.showMessageDialog(mainFrame,"Could not parse file; " + e.getMessage());
-			}
+
+
+	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
+		if (!source.isFile() || !source.canRead()) {
+			JOptionPane.showMessageDialog(mainFrame,"Unable to read " + source);
 			return null;
+		}
+		SortedBugCollection col=new SortedBugCollection(project);
+		try {
+	        col.readXML(source);
+        } catch (Exception e) {
+        	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
+        }
+		addDeadBugMatcher(project);
+		return col;
 	}
+	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
+		
+		SortedBugCollection col=new SortedBugCollection(project);
+		try {
+	        col.readXML(url);
+        } catch (Exception e) {
+        	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "; " + e.getMessage());
+        }
+		addDeadBugMatcher(project);
+		return col;
+	}
+		
+	private static void addDeadBugMatcher(Project p) {
+		Filter suppressionMatcher = p.getSuppressionFilter();
+		if (suppressionMatcher != null) {
+			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
+		}
+	}
+	
 
 	public static @CheckForNull Project loadProject(MainFrame mainFrame,  File f)
 	{
