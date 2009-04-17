@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
@@ -66,7 +67,7 @@ import edu.umd.cs.findbugs.gui2.MainFrame;
  */
 public  class DBCloud extends AbstractCloud {
 
-	
+	final static long minimumTimestamp = 1000000000000L;
 	Mode mode = Mode.VOTING;
 	
 	public Mode getMode() {
@@ -227,7 +228,10 @@ public  class DBCloud extends AbstractCloud {
 					} else {
 						long firstVersion = b.getFirstVersion();
 						long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-						if (firstSeen < bd.firstSeen) {
+						if (firstSeen < minimumTimestamp) {
+							displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
+						}
+						else if (firstSeen < bd.firstSeen) {
 							bd.firstSeen = firstSeen;
 							storeFirstSeen(bd);
 						}
