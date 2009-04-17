@@ -1580,6 +1580,15 @@ factory pattern to create these objects.</p>
 	  </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent">
+	  <Details>
+		  <![CDATA[
+		  <p>Checks that if the result of putIfAbsent is ignored,
+			the value passed as the second argument is not reused. </p>
+		  ]]>
+	  </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -7673,6 +7682,21 @@ public @NonNegative Integer example(@Negative Integer value) {
 		  <![CDATA[
 		  <p>FindBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
 			is expected or desired</p>
+		  ]]>
+	  </Details>
+  </BugPattern>
+  
+  <BugPattern type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED">
+	  <ShortDescription>Return value of putIfAbsent ignored, value passed to putIfAbsent reused</ShortDescription>
+	  <LongDescription>Return value of putIfAbsent is ignored, but {3} is reused in {1}</LongDescription>
+	  <Details>
+		  <![CDATA[
+		The <code>putIfAbsent</code> method is typically used to ensure that a 
+		single value is associated with a given key (the first value for which put 
+		if absent succeeds).  
+		If you ignore the return value and retain a reference to the value passed in, 
+		you run the risk of retaining a value that is not the one that is associated with the key in the map.  
+		If you use this value, your program may behave incorrectly.
 		  ]]>
 	  </Details>
   </BugPattern>

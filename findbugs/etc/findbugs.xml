@@ -788,6 +788,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.CrossSiteScripting"
       reports="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER,HRS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER,XSS_REQUEST_PARAMETER_TO_SEND_ERROR"/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"
+      reports="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" />
+
   <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="true"/>
 
 <!-- Bug Codes -->
@@ -1234,4 +1237,5 @@
     experimental="true"/>
   <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="EXPERIMENTAL" />
   <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="EXPERIMENTAL" />
+  <BugPattern abbrev="RV" type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" category="MT_CORRECTNESS"  />
 </FindbugsPlugin>
