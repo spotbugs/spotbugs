@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -255,14 +254,10 @@ public class FindBugsWorker {
 			project.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 			return;
 		}
-		Iterator<IResource> iter = files.iterator();
-		while (iter.hasNext()) {
-			// get the resource
-			IResource res = iter.next();
-			if (res == null) {
-				continue;
+		for (IResource res : files) {
+			if (res != null) {
+				res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 			}
-			res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 		}
 	}
 
