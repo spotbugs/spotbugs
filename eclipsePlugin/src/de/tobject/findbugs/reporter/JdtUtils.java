@@ -68,7 +68,7 @@ public class JdtUtils {
 	    }
 
 	    /**
-	     * Very simple comparision based on init/not init block decision and then on the
+	     * Very simple comparison based on init/not init block decision and then on the
 	     * source code position
 	     */
 	    private int compare50(IType m1, IType m2){
@@ -182,7 +182,7 @@ public class JdtUtils {
 	static class SourceOffsetComparator implements Comparator<IType> {
 
 	    /**
-	     * First source occurence win.
+	     * First source occurrence wins.
 	     * @param o1 should be IType
 	     * @param o2 should be IType
 	     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
@@ -260,7 +260,7 @@ public class JdtUtils {
 
     	List<IType> list = new ArrayList<IType>();
         /*
-         * For JDK >= 1.5 in Eclipse 3.1+ the naming shema for nested anonymous
+         * For JDK >= 1.5 in Eclipse 3.1+ the naming schema for nested anonymous
          * classes was changed from A$1, A$2, A$3, A$4, ..., A$n
          * to A$1, A$1$1, A$1$2, A$1$2$1, ..., A$2, A$2$1, A$2$2, ..., A$x$y
          */
@@ -385,7 +385,7 @@ public class JdtUtils {
 	        if (!isStatic((IMember) firstNonAnon)) {
 	            return 7; // children of member types first
 	        }
-	        return 6; // childern of static types
+	        return 6; // children of static types
 	    }
 
 	    // anon. types from "regular" code
@@ -485,7 +485,7 @@ public class JdtUtils {
 	    if (ancestor != null) {
 	        return 1 + getTopAncestorDistance(ancestor, topAncestor);
 	    }
-	    // this is not possible, if ancestor exist - which return value we should use?
+	    // this is not possible, if ancestor exists - which return value should we use?
 	    return -1;
 	}
 
