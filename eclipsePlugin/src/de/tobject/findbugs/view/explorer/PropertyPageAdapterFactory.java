@@ -281,18 +281,6 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 			}
 			return new MarkerPropertySource(marker);
 		}
-		if (adapterType == BugInstance.class) {
-			if (adaptableObject instanceof BugInstance) {
-				BugInstance bug = (BugInstance) adaptableObject;
-				return new PropertySource(bug);
-			}
-		}
-		if (adapterType == BugPattern.class) {
-			if (adaptableObject instanceof BugPattern) {
-				BugPattern bug = (BugPattern) adaptableObject;
-				return new PropertySource(bug);
-			}
-		}
 		return null;
 	}
 
