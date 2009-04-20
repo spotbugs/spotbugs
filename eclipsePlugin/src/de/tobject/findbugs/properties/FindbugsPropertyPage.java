@@ -393,9 +393,17 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 			// By default, don't run FindBugs automatically
 			chkEnableFindBugs.setSelection(false);
 			chkRunAtFullBuild.setEnabled(false);
+		} else {
+			FindBugsPreferenceInitializer.restoreDefaults(workspaceStore);
 		}
 		currentUserPreferences = FindBugsPreferenceInitializer.createDefaultUserPreferences();
 		refreshUI(currentUserPreferences);
+	}
+
+	@Override
+	protected void performDefaults() {
+		// no-op because our defaults button is custom-made
+		super.performDefaults();
 	}
 
 	/**
@@ -463,7 +471,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 		}
 		return true;
 	}
-	
+
 	protected void remindAboutFullBuild() {
 		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
 				getShell(), "Full FindBugs build required",
@@ -665,7 +673,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 	protected ComboViewer getEffortViewer() {
 		return effortViewer;
 	}
-	
+
 	protected DetectorConfigurationTab createDetectorConfigurationTab(TabFolder parentTabFolder) {
 		return new DetectorConfigurationTab(parentTabFolder, this, SWT.NONE);
 	}

@@ -31,7 +31,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
 
 	/** perspective id, see plugin.xml */
-	static final String ID = "de.tobject.findbugs.FindBugsPerspective";
+	public static final String ID = "de.tobject.findbugs.FindBugsPerspective";
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)

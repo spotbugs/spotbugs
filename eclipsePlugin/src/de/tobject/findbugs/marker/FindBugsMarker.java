@@ -20,6 +20,8 @@
 
 package de.tobject.findbugs.marker;
 
+import org.eclipse.jdt.core.IJavaElement;
+
 import edu.umd.cs.findbugs.Priorities;
 
 /**
@@ -53,6 +55,12 @@ public interface FindBugsMarker {
 	 * in its BugCollection.
 	 */
 	public static final String UNIQUE_ID = "FINDBUGS_UNIQUE_ID";
+
+	/**
+	 * Marker attribute recording the unique Java handle identifier, see
+	 * {@link IJavaElement#getHandleIdentifier()}
+	 */
+	public static final String UNIQUE_JAVA_ID = "UNIQUE_JAVA_ID";
 
 	/**
 	 * Marker attribute recording the primary (first) line of the BugInstance

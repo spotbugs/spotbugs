@@ -62,10 +62,14 @@ public enum GroupType {
 		}
 	}),
 
+
 	Package(true, new MarkerMapper<IPackageFragment>() {
 		@Override
 		IPackageFragment getIdentifier(IMarker marker) {
-			IJavaElement javaElement = JavaCore.create(marker.getResource());
+			IJavaElement javaElement = MarkerUtil.findJavaElementForMarker(marker);
+			if(javaElement == null){
+				javaElement = JavaCore.create(marker.getResource());
+			}
 			if (javaElement != null) {
 				return (IPackageFragment) javaElement
 						.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
@@ -86,6 +90,10 @@ public enum GroupType {
 	Class(true, new MarkerMapper<IJavaElement>() {
 		@Override
 		IJavaElement getIdentifier(IMarker marker) {
+			IJavaElement javaElement = MarkerUtil.findJavaElementForMarker(marker);
+			if(javaElement != null){
+				return javaElement;
+			}
 			return JavaCore.create(marker.getResource());
 		}
 

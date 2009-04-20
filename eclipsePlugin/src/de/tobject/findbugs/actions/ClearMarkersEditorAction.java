@@ -22,7 +22,6 @@ package de.tobject.findbugs.actions;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -30,6 +29,8 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
+
+import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Remove all bug markers for the currently selected editor.
@@ -57,7 +58,7 @@ public class ClearMarkersEditorAction implements IEditorActionDelegate {
 	public final void run(final IAction action) {
 		if(currentEditor != null) {
 			IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
-			Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new IResource[]{file}));
+			Job job = new ClearMarkersJob(file.getProject(), Arrays.asList(new WorkItem[]{new WorkItem(file)}));
 			job.setUser(true);
 			job.setPriority(Job.INTERACTIVE);
 			IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor

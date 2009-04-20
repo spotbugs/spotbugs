@@ -35,7 +35,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -43,13 +45,14 @@ import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
-import org.eclipse.jdt.internal.core.SourceType;
+import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -57,6 +60,7 @@ import org.eclipse.ui.IEditorPart;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.explorer.BugGroup;
 import edu.umd.cs.findbugs.BugCode;
@@ -70,7 +74,9 @@ import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
+import edu.umd.cs.findbugs.util.Archive;
 
 /**
 	* Utility methods for converting FindBugs BugInstance objects
@@ -83,6 +89,7 @@ public final class MarkerUtil {
 
 	final static Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 	private static final IMarker[] EMPTY = new IMarker[0];
+	private static final int START_LINE_OF_ENCLOSING_TYPE = 1;
 
 	/**
 	 * don't instantiate an utility class
@@ -146,12 +153,16 @@ public final class MarkerUtil {
 	}
 
 	private static MarkerParameter createMarkerParameter(IJavaProject project, BugInstance bug) {
-		IResource resource = null;
+		IJavaElement type = null;
+		WorkItem resource = null;
 		try {
-			resource = getUnderlyingResource(bug, project);
+			type = getJavaElement(bug, project);
+			if(type != null) {
+				resource = new WorkItem(type);
+			}
 		} catch (JavaModelException e1) {
 			FindbugsPlugin.getDefault().logException(
-					e1, "Could not find class resource for FindBugs warning");
+					e1, "Could not find Java type for FindBugs warning");
 		}
 		if (resource == null) {
 			if (Reporter.DEBUG) {
@@ -187,7 +198,7 @@ public final class MarkerUtil {
 		}
 		if (Reporter.DEBUG) {
 			System.out.println("Creating marker for "
-			+ resource.getLocation() + ": line "
+			+ resource.getPath() + ": line "
 			+ parameter.primaryLine
 			+ bug.getMessage());
 		}
@@ -226,7 +237,7 @@ public final class MarkerUtil {
 	 * @return the IResource representing the Java class
 	 */
 	private static @CheckForNull
-	IResource getUnderlyingResource(BugInstance bug, IJavaProject project) throws JavaModelException {
+	IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
 
 		SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
 		PackageMemberAnnotation packageAnnotation = null;
@@ -264,7 +275,7 @@ public final class MarkerUtil {
 			 * code below only points to the first line of inner class
 			 * even if this is not a class bug but field bug
 			 */
-			if(!hasLineInfo(primarySourceLineAnnotation)) {
+			if(type != null && !hasLineInfo(primarySourceLineAnnotation)) {
 				completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
 			}
 		} else {
@@ -300,10 +311,7 @@ public final class MarkerUtil {
 			}
 		}
 
-		if (type != null) {
-			return type.getUnderlyingResource();
-		}
-		return null;
+		return type;
 	}
 
 	private static boolean hasLineInfo(SourceLineAnnotation annotation) {
@@ -318,99 +326,106 @@ public final class MarkerUtil {
 		}
 
 		IField ifield = type.getField(field.getFieldName());
-		if (type instanceof SourceType) {
-			ISourceRange sourceRange = ifield.getNameRange();
-			if(sourceRange == null) {
-				sourceRange = ifield.getSourceRange();
-			}
-			IScanner scanner = initScanner(type, sourceRange);
-			int offset = sourceRange.getOffset();
-			int lineNbr = scanner.getLineNumber(offset);
-			lineNbr = lineNbr <= 0 ? 1 : lineNbr;
-			String sourceFileStr = ""; //$NON-NLS-1$
-			IResource res = type.getUnderlyingResource();
-			if (res != null) {
-				sourceFileStr = res.getName();// res.getRawLocation().toOSString();
-			}
-			field.setSourceLines(
-					new SourceLineAnnotation(
-						qualifiedClassName,
-						sourceFileStr,
-						lineNbr,
-						lineNbr,
-						0,
-						0));
+		ISourceRange sourceRange = ifield.getNameRange();
+		if (sourceRange == null) {
+			sourceRange = ifield.getSourceRange();
 		}
+		IScanner scanner = initScanner(type, sourceRange);
+		if(scanner == null || sourceRange == null){
+			return;
+		}
+		int offset = sourceRange.getOffset();
+		int lineNbr = scanner.getLineNumber(offset);
+		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
+		String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
+		field.setSourceLines(new SourceLineAnnotation(qualifiedClassName, sourceFileStr,
+				lineNbr, lineNbr, 0, 0));
+	}
+
+	private static String getSourceFileHint(IType type, String qualifiedClassName) {
+		String sourceFileStr = "";
+		IJavaElement primaryElement = type.getPrimaryElement();
+		if(primaryElement != null){
+			return primaryElement.getElementName() + ".java";
+		}
+		return sourceFileStr;
 	}
 
 	private static void completeInnerClassInfo(String qualifiedClassName,
-			String innerName, IType type, BugInstance bug) throws JavaModelException {
+			String innerName, @NonNull IType type, BugInstance bug) throws JavaModelException {
 		int lineNbr = findChildSourceLine(type, innerName, bug);
 		// should be always first line, if not found
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
-		String sourceFileStr = ""; //$NON-NLS-1$
-		IResource res = type==null ? null : type.getUnderlyingResource();
-		if (res != null) {
-			sourceFileStr = res.getRawLocation().toOSString();
+		String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
+		if (sourceFileStr != null && sourceFileStr.length() > 0) {
+			bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr,
+					lineNbr, lineNbr, 0, 0));
 		}
-		bug.addSourceLine(
-			new SourceLineAnnotation(
-				qualifiedClassName,
-				sourceFileStr,
-				lineNbr,
-				lineNbr,
-				0,
-				0));
 	}
 
 	/**
 	 * @return start line of given type, or 1 if line could not be found
 	 */
-	private static int getLineStart(SourceType source) throws JavaModelException {
-		IOpenable op = source.getOpenable();
-		if (op instanceof CompilationUnit) {
-			ISourceRange range = source.getNameRange();
-			if(range == null){
-				range = source.getSourceRange();
-			}
-			IScanner scanner = initScanner(source, range);
+	private static int getLineStart(IType source) throws JavaModelException {
+		ISourceRange range = source.getNameRange();
+		if(range == null){
+			range = source.getSourceRange();
+		}
+		IScanner scanner = initScanner(source, range);
+		if(scanner != null && range != null) {
 			return scanner.getLineNumber(range.getOffset());
 		}
-		// start line of enclosing type
-		return 1;
+		return START_LINE_OF_ENCLOSING_TYPE;
 	}
 
 	/**
 	 * @param source must be not null
-	 * @param sourceRange
+	 * @param range  can be null
 	 * @return may return null, otherwise an initialized scanner which may answer which
 	 * source offset index belongs to which source line
+	 * @throws JavaModelException
 	 */
-	private static IScanner initScanner(IJavaElement source, ISourceRange range) throws JavaModelException {
-		IOpenable op = source.getOpenable();
-		if (op instanceof CompilationUnit) {
-			CompilationUnit cu = (CompilationUnit) op;
-			IScanner scanner =
-				ToolFactory.createScanner(false, false, false, true);
-			scanner.setSource(cu.getContents());
-			int offset = range.getOffset();
-			try {
-				while (scanner.getNextToken() != ITerminalSymbols.TokenNameEOF) {
-					// do nothing, just wait for the end of stream
-					if(offset <= scanner.getCurrentTokenEndPosition()){
-						break;
-					}
-				}
-			} catch (InvalidInputException e) {
-				FindbugsPlugin.getDefault().logException(e,
-						"Could not init scanner for type: " + source);
-			}
-			return scanner;
+	private static IScanner initScanner(IType source, ISourceRange range) throws JavaModelException {
+		if(range == null){
+			return null;
 		}
-		return null;
+		char[] charContent = getContent(source);
+		if(charContent == null){
+			return null;
+		}
+		IScanner scanner = ToolFactory.createScanner(false, false, false, true);
+		scanner.setSource(charContent);
+		int offset = range.getOffset();
+		try {
+			while (scanner.getNextToken() != ITerminalSymbols.TokenNameEOF) {
+				// do nothing, just wait for the end of stream
+				if(offset <= scanner.getCurrentTokenEndPosition()){
+					break;
+				}
+			}
+		} catch (InvalidInputException e) {
+			FindbugsPlugin.getDefault().logException(e,
+					"Could not init scanner for type: " + source);
+		}
+		return scanner;
 	}
 
-	private static int findChildSourceLine(IJavaElement parentType, String name, BugInstance bug)
+	@SuppressWarnings("restriction")
+	private static char[] getContent(IType source) throws JavaModelException {
+		char [] charContent = null;
+		String content = source.getSource();
+		if(content != null){
+			charContent = content.toCharArray();
+		} else {
+			IOpenable op = source.getOpenable();
+			if (op instanceof CompilationUnit) {
+				charContent = ((CompilationUnit)(op)).getContents();
+			}
+		}
+		return charContent;
+	}
+
+	private static int findChildSourceLine(IType parentType, String name, BugInstance bug)
 			throws JavaModelException {
 		if (parentType == null) {
 			return -1;
@@ -431,32 +446,18 @@ public final class MarkerUtil {
 	private static int findInnerAnonymousClassSourceLine(IJavaElement parentType,
 			String innerName) throws JavaModelException {
 		IType anon = JdtUtils.findAnonymous((IType) parentType, innerName);
-		int line = -1;
-		if (anon instanceof SourceType){
-			line = getLineStart((SourceType) anon);
+		if(anon != null) {
+			return getLineStart(anon);
 		}
-		return line;
-	}
-
-	/**
-	 * Fix for bug 2032970: reads all tokens until given one or EOF is reached. This is
-	 * required if sourcecode of anonymous class contains generics definitions
-	 */
-	private static int skipUntil(IScanner scanner, int endToken) throws InvalidInputException{
-		int tokenID = scanner.getNextToken();
-		while (tokenID != endToken && tokenID != ITerminalSymbols.TokenNameEOF){
-			tokenID = scanner.getNextToken();
-		}
-		return tokenID;
+		return START_LINE_OF_ENCLOSING_TYPE;
 	}
 
 	private static int findInnerClassSourceLine(IJavaElement parentType,
 			String name) throws JavaModelException {
 		String elemName = parentType.getElementName();
 		if (name.equals(elemName)) {
-			if (parentType instanceof SourceType) {
-				SourceType source = (SourceType) parentType;
-				return getLineStart(source);
+			if (parentType instanceof IType) {
+				return getLineStart((IType) parentType);
 			}
 		}
 		if (parentType instanceof IParent) {
@@ -469,7 +470,7 @@ public final class MarkerUtil {
 				}
 			}
 		}
-		return -1;
+		return START_LINE_OF_ENCLOSING_TYPE;
 	}
 
 	/**
@@ -548,6 +549,66 @@ public final class MarkerUtil {
 			return null;
 		}
 		return null;
+	}
+
+	public static @CheckForNull IJavaElement findJavaElementForMarker(IMarker marker) {
+		try {
+			Object elementId = marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
+			if(elementId instanceof String){
+				return JavaCore.create((String) elementId);
+			}
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+			return null;
+		}
+		return null;
+	}
+
+	public static Set<IMarker> findMarkerForJavaElement(IJavaElement elt, IMarker[] possibleCandidates, boolean recursive) {
+		String id = elt.getHandleIdentifier();
+		Set<IMarker> markers = new HashSet<IMarker>();
+		for (IMarker marker : possibleCandidates) {
+			try {
+				Object elementId = marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
+				// UNIQUE_JAVA_ID exists first since 1.3.9 as FB attribute
+				if(!(elementId instanceof String)){
+					continue;
+				}
+				String stringId = (String) elementId;
+				if(!recursive){
+					if(stringId.equals(id)){
+						// exact match
+						markers.add(marker);
+					} else if(isDirectChild(id, stringId)){
+						// direct child: class in the package, but not in the sub-package
+						markers.add(marker);
+					}
+				} else if(stringId.startsWith(id)){
+					markers.add(marker);
+				}
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
+				continue;
+			}
+		}
+		return markers;
+	}
+
+	/**
+	 *
+	 * @param parentId
+	 *            java element id of a parent element
+	 * @param childId
+	 *            java element id of possible child
+	 * @return true if the second string represents a java element which is a direct child
+	 *         of the parent element.
+	 */
+	@SuppressWarnings("restriction")
+	private static boolean isDirectChild(String parentId, String childId) {
+		return childId.startsWith(parentId)
+				&& (childId.length() > (parentId.length() + 1))
+				// if there is NOT a class file separator, then it's not a direct child
+				&& childId.charAt(parentId.length()) == JavaElement.JEM_CLASSFILE;
 	}
 
 	/**
@@ -650,6 +711,8 @@ public final class MarkerUtil {
 			for (IMarker marker : markers2) {
 				markers.add(marker);
 			}
+		} else if (obj instanceof IJavaElement) {
+			markers.addAll(new WorkItem((IJavaElement) obj).getMarkers(true));
 		} else if (obj instanceof IAdaptable){
 			IAdaptable adapter = (IAdaptable) obj;
 			IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
@@ -667,14 +730,34 @@ public final class MarkerUtil {
 		return markers;
 	}
 
+	/**
+	 * Tries to retrieve right bug marker for given selection. If there are many markers
+	 * for given editor, and text selection doesn't match any of them, return null. If
+	 * there is only one marker for given editor, returns this marker in any case.
+	 *
+	 * @param selection
+	 * @param editor
+	 * @return may return null
+	 */
 	public static IMarker getMarkerFromEditor(ITextSelection selection, IEditorPart editor) {
 		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
-		if(resource == null){
-			return null;
+		IMarker[] allMarkers;
+		if(resource != null){
+			allMarkers = getMarkers(resource, IResource.DEPTH_ZERO);
+		} else {
+			IClassFile classFile = (IClassFile) editor.getEditorInput().getAdapter(IClassFile.class);
+			if(classFile == null){
+				return null;
+			}
+			Set<IMarker> markers = getMarkers(classFile.getType());
+			allMarkers = markers.toArray(new IMarker[markers.size()]);
+		}
+		// if editor contains only one FB marker, do some cheating and always return it.
+		if(allMarkers.length == 1) {
+			return allMarkers[0];
 		}
 		// +1 because it counts real lines, but editor shows lines + 1
 		int startLine = selection.getStartLine() + 1;
-		IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
 		for (IMarker marker : allMarkers) {
 			int line = getEditorLine(marker);
 			if(startLine == line){

@@ -43,6 +43,8 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(DISABLED_CATEGORIES, "EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY");
         store.setDefault(RUN_ANALYSIS_AUTOMATICALLY, false);
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
+        store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);
+        store.setDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS, true);
         // disabled to be able to distinguish between default and current value
         // store.setDefault(PROJECT_PROPS_DISABLED, true);
 	}
@@ -65,6 +67,16 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
 //			prefs.enableDetector(factory, factory.isDefaultEnabled());
 //		}
 		return prefs;
+	}
+
+	public static void restoreDefaults(IPreferenceStore store){
+		store.setToDefault(EXPORT_SORT_ORDER);
+		store.setToDefault(DONT_REMIND_ABOUT_FULL_BUILD);
+		store.setToDefault(DISABLED_CATEGORIES);
+		store.setToDefault(RUN_ANALYSIS_AUTOMATICALLY);
+		store.setToDefault(RUN_ANALYSIS_ON_FULL_BUILD);
+		store.setToDefault(ASK_ABOUT_PERSPECTIVE_SWITCH);
+		store.setToDefault(SWITCH_PERSPECTIVE_AFTER_ANALYSIS);
 	}
 
 }

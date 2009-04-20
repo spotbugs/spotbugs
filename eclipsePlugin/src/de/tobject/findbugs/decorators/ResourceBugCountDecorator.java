@@ -18,14 +18,12 @@
  */
 package de.tobject.findbugs.decorators;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 import de.tobject.findbugs.builder.ResourceUtils;
-import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * A simple decorator which adds (in currently hardcoded way) bug counts to the resources.
@@ -41,30 +39,12 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
 	}
 
 	public String decorateText(String text, Object element) {
-		IResource resource = ResourceUtils.getResource(element);
-		if(resource == null || !resource.isAccessible()) {
+		WorkItem item = ResourceUtils.getWorkItem(element);
+		int markerCount = item.getMarkerCount(false);
+		if(markerCount == 0){
 			return text;
 		}
-		IMarker[] markerArr;
-		// TODO we can use preference here to count markers cumulative or not.
-		if(resource.getType() == IResource.PROJECT){
-			markerArr = MarkerUtil.getAllMarkers(resource);
-		} else {
-			markerArr = MarkerUtil.getMarkers(resource, IResource.DEPTH_ONE);
-		}
-		if (markerArr.length == 0) {
-			return text;
-		}
-		// followed is only needed if we decorate IProject/IFile/IFolder,
-		// which is currently not the case
-//		if (text != null) {
-//			// XXX the decorator is added to our own bug explorer view too...
-//			// this would add the bug count second time...
-//			if(text.matches(".+\\(\\d+\\)$")){
-//				return text;
-//			}
-//		}
-		return text + " (" + markerArr.length + ")";
+		return text + " (" + markerCount + ")";
 	}
 
 	public void addListener(ILabelProviderListener listener) {

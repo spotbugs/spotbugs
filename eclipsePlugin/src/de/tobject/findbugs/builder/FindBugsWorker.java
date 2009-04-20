@@ -20,7 +20,6 @@
 
 package de.tobject.findbugs.builder;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,12 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import org.dom4j.DocumentException;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -43,18 +38,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
-import de.tobject.findbugs.util.Util;
 import de.tobject.findbugs.util.Util.StopTimer;
 import de.tobject.findbugs.view.FindBugsConsole;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -64,7 +55,6 @@ import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.workflow.Update;
 
 /**
@@ -118,7 +108,7 @@ public class FindBugsWorker {
 	 *            then it must have only one element.
 	 * @throws CoreException
 	 */
-	public void work(List<IResource> resources) throws CoreException {
+	public void work(List<WorkItem> resources) throws CoreException {
 		if (resources == null || resources.isEmpty()) {
 			if (DEBUG) {
 				FindbugsPlugin.getDefault().logInfo("No resources to analyse for project " + project);
@@ -148,15 +138,13 @@ public class FindBugsWorker {
 		FindBugs.setHome(FindbugsPlugin.getFindBugsEnginePluginLocation());
 
 		Map<IPath, IPath> outLocations = createOutputLocations();
-		Map<File, String> outputFiles = new HashMap<File, String>();
-		// collect all related class file patterns for analysis
-		collectClassFilesPatterns(resources, outLocations, outputFiles);
+
+		// collect all related class/jar/war etc files for analysis
+		collectClassFiles(resources, outLocations, findBugsProject);
 
 		// attach source directories (can be used by some detectors, see SwitchFallthrough)
 		configureSourceDirectories(findBugsProject, outLocations);
 
-		// find and add all the class files in the output directories
-		configureOutputFiles(findBugsProject, outputFiles);
 		if(findBugsProject.getFileCount() == 0){
 			if (DEBUG) {
 				FindbugsPlugin.getDefault().logInfo("No resources to analyse for project " + project);
@@ -201,17 +189,9 @@ public class FindBugsWorker {
 		boolean incremental = !(resources.get(0) instanceof IProject);
 		updateBugCollection(findBugsProject, bugReporter, incremental);
 		st.newPoint("done");
-		if(DEBUG){
-			System.out.println("\n------------\n");
-			Profiler profiler = bugReporter.getProjectStats().getProfiler();
-			profiler.report(new Profiler.TimePerCallComparator(profiler),
-					new Profiler.FilterByCalls(1), System.out);
-			System.out.println("\n------\n" + st.getResults() + "\n------\n");
-		}
 		st = null;
 		monitor.done();
 	}
-
 
 	private void configureSourceDirectories(Project findBugsProject,
 			Map<IPath, IPath> outLocations) {
@@ -249,14 +229,14 @@ public class FindBugsWorker {
 	 * Clear assotiated markers
 	 * @param files
 	 */
-	private void clearMarkers(List<IResource> files) throws CoreException {
+	private void clearMarkers(List<WorkItem> files) throws CoreException {
 		if(files == null) {
 			project.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 			return;
 		}
-		for (IResource res : files) {
-			if (res != null) {
-				res.deleteMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
+		for (WorkItem item : files) {
+			if (item != null) {
+				item.clearMarkers();
 			}
 		}
 	}
@@ -266,126 +246,14 @@ public class FindBugsWorker {
 	 * names
 	 * @param resources java sources
 	 * @param outLocations key is src root, value is output location
-	 * @param outputFiles key is output directory path, value are class name patterns for
 	 * this directory
+	 * @param fbProject
 	 */
-	private void collectClassFilesPatterns(List<IResource> resources,
-			Map<IPath, IPath> outLocations,	Map<File, String> outputFiles) {
-
-		for (IResource resource : resources) {
-			if (Util.isJavaFile(resource)) {
-				// this is a .java file, so get the corresponding .class file(s)
-				addClassPatternsFromFile((IFile) resource, outLocations, outputFiles);
-			} else if(resource instanceof IFolder) {
-				addClassPatternsFromFolder((IFolder)resource, outLocations, outputFiles);
-			} else if(resource instanceof IProject) {
-				addClassPatternsFromProject(outLocations, outputFiles);
-			}
+	private void collectClassFiles(List<WorkItem> resources,
+			Map<IPath, IPath> outLocations,	Project fbProject) {
+		for (WorkItem resource : resources) {
+			resource.addFilesToProject(fbProject, outLocations);
 		}
-	}
-
-	private void addClassPatternsFromFolder(IFolder folder, Map<IPath, IPath> outLocations,
-			Map<File, String> outputFiles) {
-		IPath path = folder.getLocation();
-		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
-		if(srcRoot == null) {
-			return;
-		}
-		IPath outputRoot = outLocations.get(srcRoot);
-		int firstSegments = path.matchingFirstSegments(srcRoot);
-		// add relative path to the output path
-		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
-		outputFiles.put(out.toFile(), ".*\\.class");
-	}
-
-	private void addClassPatternsFromProject(Map<IPath, IPath> outLocations,
-			Map<File, String> outputFiles) {
-		// just add anything in all project output folders
-		Set<Entry<IPath,IPath>> entrySet = outLocations.entrySet();
-		for (Entry<IPath, IPath> entry : entrySet) {
-			outputFiles.put(entry.getValue().toFile(), ".*\\.class");
-		}
-	}
-
-	private void addClassPatternsFromFile(IFile file,
-			Map<IPath, IPath> outLocations, Map<File, String> outputFiles) {
-		IPath path = file.getLocation();
-		IPath srcRoot = getMatchingSourceRoot(path, outLocations);
-		if(srcRoot == null){
-			return;
-		}
-		IPath outputRoot = outLocations.get(srcRoot);
-		int firstSegments = path.matchingFirstSegments(srcRoot);
-		// add relative path to the output path
-		IPath out = outputRoot.append(path.removeFirstSegments(firstSegments));
-		String fileName = path.removeFileExtension().lastSegment();
-		String namePattern = fileName + "\\.class|" + fileName + "\\$.*\\.class";
-		namePattern = addSecondaryTypesToPattern(file, fileName, namePattern);
-		File directory = out.removeLastSegments(1).toFile();
-		String filesPattern = outputFiles.get(directory);
-		if(filesPattern != null) {
-			// add new to existing class patterns
-			namePattern += "|" + filesPattern;
-		}
-		// add parent folder and regexp for file names
-		outputFiles.put(directory, namePattern);
-	}
-
-	/**
-	 * Add secondary types patterns (not nested in the type itself but contained in the
-	 * java file)
-	 *
-	 * @param fileName java file name (not path!) without .java suffix
-	 * @param classNamePattern non null pattern for all matching .class file names
-	 * @return modified classNamePattern, if there are more then one type defined in the
-	 * java file
-	 */
-	private String addSecondaryTypesToPattern(IFile file, String fileName,
-			String classNamePattern) {
-		ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
-		if (cu == null) {
-			FindbugsPlugin.getDefault().logError(
-					"NULL compilation unit for " + file
-							+ ", FB analysis might  be incomplete for included types");
-			return classNamePattern;
-		}
-		try {
-			IType[] types = cu.getTypes();
-			if (types.length > 1) {
-				for (IType type : types) {
-					if (fileName.equals(type.getElementName())) {
-						// "usual" type with the same name: we have it already
-						continue;
-					}
-					classNamePattern = classNamePattern + "|" + type.getElementName()
-							+ "\\.class|" + type.getElementName() + "\\$.*\\.class";
-				}
-			}
-		} catch (JavaModelException e) {
-			FindbugsPlugin.getDefault().logException(e,
-					"Cannot get types from compilation unit: " + cu);
-		}
-		return classNamePattern;
-	}
-
-	/**
-	 * @param srcPath
-	 * @param outLocations key is the source root, value is output folder
-	 * @return source root folder matching (parent of) given path
-	 */
-	private IPath getMatchingSourceRoot(IPath srcPath, Map<IPath, IPath> outLocations) {
-		Set<Entry<IPath, IPath>> outEntries = outLocations.entrySet();
-		IPath result = null;
-		int maxSegments = 0;
-		for (Entry<IPath, IPath> entry : outEntries) {
-			IPath srcRoot = entry.getKey();
-			int firstSegments = srcPath.matchingFirstSegments(srcRoot);
-			if(firstSegments > maxSegments && firstSegments == srcRoot.segmentCount()) {
-				maxSegments = firstSegments;
-				result = srcRoot;
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -408,24 +276,6 @@ public class FindBugsWorker {
 		} finally {
 			findBugs.dispose();
 		}
-	}
-
-	/**
-	 * Add the output .class files to the FindBugs project in the directories
-	 * that match the corresponding patterns in the <code>Map</code> outputFiles.
-	 *
-	 * @param findBugsProject   findbugs <code>Project</code>
-	 * @param outputFiles   Map containing output directories and patterns for .class files.
-	 * The map content will be deleted after this call
-	 */
-	private void configureOutputFiles(Project findBugsProject, Map<File, String> outputFiles) {
-		for (Map.Entry<File, String> entry: outputFiles.entrySet()) {
-			File source = entry.getKey();
-			Pattern classNamesPattern = Pattern.compile(entry.getValue());
-			ResourceUtils.addFiles(findBugsProject, source, classNamesPattern);
-		}
-		// clear the map for GC
-		outputFiles.clear();
 	}
 
 	/**

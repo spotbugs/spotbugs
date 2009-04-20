@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IJavaElement;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
@@ -74,7 +75,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	}
 
 	private void addmarker(String markerType, MarkerParameter mp) throws CoreException {
-		IMarker marker = mp.resource.createMarker(markerType);
+		IMarker marker = mp.resource.getMarkerTarget().createMarker(markerType);
 
 		Map<String, Object> attributes = createMarkerAttributes(marker, mp);
 		setAttributes(marker, attributes);
@@ -161,13 +162,21 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			break;
 		}
 
-//		attributes.put(FindBugsMarker.PATTERN_DESCR_SHORT, bug.getBugPattern().getShortDescription());
-
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.
 		String uniqueId = mp.bug.getInstanceHash();
 		if (uniqueId != null) {
 			attributes.put(FindBugsMarker.UNIQUE_ID, uniqueId);
+		}
+
+		IJavaElement javaElt = mp.resource.getCorespondingJavaElement();
+		if(javaElt != null){
+			attributes.put(FindBugsMarker.UNIQUE_JAVA_ID, javaElt.getHandleIdentifier());
+			// Eclipse markers model doesn't allow to have markers
+			// attached to the (non-resource) part of the resource (like jar entry inside the jar)
+			// TODO we should add annotations to opened class file editors to show (missing)
+			// markers for single class file inside the jar. Otherwise we will show markers
+			// in the bug explorer view but NOT inside the class file editor
 		}
 		return attributes;
 	}

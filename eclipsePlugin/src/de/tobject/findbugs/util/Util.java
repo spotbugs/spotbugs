@@ -24,9 +24,14 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
+
+import edu.umd.cs.findbugs.util.Archive;
 
 
 /**
@@ -34,8 +39,10 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author Phil Crosby
  * @author Peter Friese
+ * @author Andrei Loskutov
  */
-public class Util{
+public class Util {
+
 	/**
 	 * Checks whether the given resource is a Java source file.
 	 *
@@ -50,6 +57,22 @@ public class Util{
 		}
 		String ex = resource.getFileExtension();
 		return "java".equalsIgnoreCase(ex); //$NON-NLS-1$
+	}
+
+	/**
+	 * Checks whether the given resource is a Java source file.
+	 *
+	 * @param resource The resource to check.
+	 * @return
+	 *      <code>true</code> if the given resource is a Java source file,
+	 *      <code>false</code> otherwise.
+	 */
+	public static boolean isJavaArchive(IResource resource) {
+		if (resource == null || (resource.getType() != IResource.FILE)) {
+			return false;
+		}
+		String name = resource.getName();
+		return Archive.isArchiveFileName(name);
 	}
 
 	/**
@@ -68,6 +91,23 @@ public class Util{
 		return "class".equalsIgnoreCase(ex); //$NON-NLS-1$
 
 	}
+
+	/**
+	 * Checks whether the given java element is a Java class file.
+	 *
+	 * @param elt The resource to check.
+	 * @return
+	 * 	<code>true</code> if the given resource is a class file,
+	 * 	<code>false</code> otherwise.
+	 */
+	public static boolean isClassFile(IJavaElement elt) {
+		if (elt == null) {
+			return false;
+		}
+		return elt instanceof IClassFile || elt instanceof ICompilationUnit;
+
+	}
+
 	/**
 	 * Checks whether the given resource is a Java artifact (i.e. either a
 	 * Java source file or a Java class file).
@@ -82,8 +122,11 @@ public class Util{
 			return false;
 		}
 		String ex = resource.getFileExtension();
-		return ("java".equalsIgnoreCase(ex)
-				|| "class".equalsIgnoreCase(ex));
+		if ("java".equalsIgnoreCase(ex)	|| "class".equalsIgnoreCase(ex)){
+			return true;
+		}
+		String name = resource.getName();
+		return Archive.isArchiveFileName(name);
 	}
 
 	/**
@@ -143,4 +186,5 @@ public class Util{
 			}
 		}
 	}
+
 }

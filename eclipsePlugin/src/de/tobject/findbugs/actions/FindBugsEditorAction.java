@@ -23,13 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 
-
+import de.tobject.findbugs.builder.WorkItem;
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
@@ -45,24 +44,17 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
 	/** The current selection. */
 	private IEditorPart currentEditor;
 
-	/*
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.ui.IWorkbenchPart)
-	 */
 	public final void setActiveEditor(final IAction action,
 			final IEditorPart targetPart) {
 		currentEditor = targetPart;
 	}
 
-	/*
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
 	@Override
 	public final void run(final IAction action) {
 		if(currentEditor != null) {
 			IFile file = ((FileEditorInput)(currentEditor.getEditorInput())).getFile();
-			List<IResource> list = new ArrayList<IResource>();
-			list.add(file);
+			List<WorkItem> list = new ArrayList<WorkItem>();
+			list.add(new WorkItem(file));
 			work(file.getProject(), list);
 		}
 	}

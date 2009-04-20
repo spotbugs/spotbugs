@@ -759,9 +759,17 @@
             label="Bug count decorator (File)"
             state="false">
          <enablement>
-            <objectClass
-                  name="org.eclipse.jdt.core.ICompilationUnit">
-            </objectClass>
+            <or>
+                <objectClass
+                      name="org.eclipse.jdt.core.ICompilationUnit">
+                </objectClass>
+                <objectClass
+                      name="org.eclipse.jdt.core.IClassFile">
+                </objectClass>
+                <objectClass
+                      name="org.eclipse.jdt.internal.core.JarPackageFragmentRoot">
+                </objectClass>
+            </or>
          </enablement>
          <description>
             Decorates java files with bug counts
@@ -985,7 +993,11 @@
              adaptableType="org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor"
              class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
-          <!-- <adapter type="org.eclipse.ui.views.properties.IPropertySource" /> -->
+       </factory>
+       <factory
+             adaptableType="org.eclipse.jdt.internal.ui.javaeditor.ClassFileEditor"
+             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+          <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
              adaptableType="org.eclipse.core.resources.IMarker"

@@ -1,4 +1,6 @@
 Release 1.3.9
+- feature 2734173 (work in progress): allow to analyse classes inside archives, external classes/libraries (Andrei Loskutov)
+- feature: offer user to switch to the FB perspective after analysis (Andrei Loskutov)
 - feature (work in progress): added FindBugs console for debugging/profiling/monitoring FindBugs in production (Andrei Loskutov)
 - bugfix: enabled quick fix resolutions again (Tomas Pollak)
 

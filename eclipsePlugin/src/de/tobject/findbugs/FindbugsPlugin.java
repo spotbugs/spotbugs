@@ -138,10 +138,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection");
 
-	@Deprecated
-	public static final QualifiedName SESSION_PROPERTY_FB_PROJECT =
-		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "fbproject");
-
 	public static final QualifiedName SESSION_PROPERTY_BUG_COLLECTION_DIRTY =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
 
@@ -530,28 +526,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 *
 	 * @param project         the project
 	 * @param bugCollection   the bug collection
-	 * @param findbugsProject the FindBugs Project object
-	 * @param monitor         progress monitor
-	 * @throws IOException
-	 * @throws CoreException
-	 * @deprecated Use {@link #storeBugCollection(IProject,SortedBugCollection,IProgressMonitor)} instead
-	 */
-	@Deprecated
-	public static void storeBugCollection(
-			IProject project,
-			final SortedBugCollection bugCollection,
-			final Project findbugsProject,
-			IProgressMonitor monitor) throws IOException, CoreException {
-				storeBugCollection(project, bugCollection, monitor);
-			}
-
-	/**
-	 * Store a new bug collection for a project.
-	 * The collection is stored in the session, and also in
-	 * a file in the project.
-	 *
-	 * @param project         the project
-	 * @param bugCollection   the bug collection
 	 * @param monitor         progress monitor
 	 * @throws IOException
 	 * @throws CoreException
@@ -563,7 +537,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 		// Store the bug collection and findbugs project in the session
 		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
-		
+
 		if (bugCollection != null) {
 			writeBugCollection(project, bugCollection, monitor);
 		}
@@ -582,7 +556,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (isBugCollectionDirty(project)) {
 			SortedBugCollection bugCollection =
 			(SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
-			
+
 			if (bugCollection != null) {
 				writeBugCollection(project, bugCollection, monitor);
 			}

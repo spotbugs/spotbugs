@@ -22,10 +22,10 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -51,13 +51,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.EditorUtil;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -70,13 +70,13 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  */
 public class BugInstanceSection extends AbstractPropertySection {
 
-	private static final int DEFAULT_LINE_IN_EDITOR = 1;
 	private Composite rootComposite;
 	private List annotationList;
 	private BugInstance bug;
 	private IMarker marker;
 	private IFile file;
 	private String title;
+	private IJavaElement javaElt;
 
 	public BugInstanceSection() {
 		super();
@@ -150,11 +150,13 @@ public class BugInstanceSection extends AbstractPropertySection {
 			bug = null;
 			file = null;
 			title = null;
+			javaElt = null;
 		} else {
 			bug = MarkerUtil.findBugInstanceForMarker(marker);
 			file = (IFile) (marker.getResource() instanceof IFile ? marker
 					.getResource() : null);
-			if (file == null) {
+			javaElt = MarkerUtil.findJavaElementForMarker(marker);
+			if (file == null && javaElt == null) {
 				FindbugsPlugin.getDefault().logError(
 						"Could not find file for " + bug.getMessage());
 			}
@@ -183,7 +185,7 @@ public class BugInstanceSection extends AbstractPropertySection {
 	}
 
 	private void selectInEditor(boolean openEditor) {
-		if (bug == null || file == null) {
+		if (bug == null || (file == null && javaElt == null)) {
 			return;
 		}
 		IWorkbenchPage page = getPart().getSite().getPage();
@@ -192,22 +194,46 @@ public class BugInstanceSection extends AbstractPropertySection {
 
 		if (openEditor && !matchInput(input)) {
 			try {
-				activeEditor = IDE.openEditor(page, file);
-				input = activeEditor.getEditorInput();
+				if(file != null) {
+					activeEditor = IDE.openEditor(page, file);
+				} else if(javaElt != null){
+					activeEditor = JavaUI.openInEditor(javaElt, true, true);
+				}
+				if(activeEditor != null) {
+					input = activeEditor.getEditorInput();
+				}
 			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not open editor for " + bug.getMessage());
+			} catch (CoreException e) {
 				FindbugsPlugin.getDefault().logException(e,
 						"Could not open editor for " + bug.getMessage());
 			}
 		}
 		if(matchInput(input)) {
 			int startLine = getLineToSelect();
-			goToLine(activeEditor, startLine);
+			EditorUtil.goToLine(activeEditor, startLine);
 		}
 	}
 
 	private boolean matchInput(IEditorInput input) {
-		return (input instanceof IFileEditorInput)
-				&& file.equals(((IFileEditorInput) input).getFile());
+		if(file != null && (input instanceof IFileEditorInput)){
+			return file.equals(((IFileEditorInput) input).getFile());
+		}
+		if(javaElt != null && input != null){
+			IJavaElement javaElement = JavaUI.getEditorInputJavaElement(input);
+			if(javaElt.equals(javaElement)){
+				return true;
+			}
+			IJavaElement parent = javaElt.getParent();
+			while(parent != null && !parent.equals(javaElement)){
+				parent = parent.getParent();
+			}
+			if(parent != null && parent.equals(javaElement)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void refreshTitle() {
@@ -254,11 +280,11 @@ public class BugInstanceSection extends AbstractPropertySection {
 		}
 		if (!(theAnnotation instanceof SourceLineAnnotation)) {
 			// return the line from our initial marker
-			return marker.getAttribute(IMarker.LINE_NUMBER, DEFAULT_LINE_IN_EDITOR);
+			return marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
 		}
 		SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
 		int startLine = sla.getStartLine();
-		return startLine <= 0? DEFAULT_LINE_IN_EDITOR : startLine;
+		return startLine <= 0? EditorUtil.DEFAULT_LINE_IN_EDITOR : startLine;
 	}
 
 	private void copyInfoToClipboard() {
@@ -278,27 +304,4 @@ public class BugInstanceSection extends AbstractPropertySection {
 		Util.copyToClipboard(sb.toString());
 	}
 
-	private static void goToLine(IEditorPart editorPart, int lineNumber) {
-		if (!(editorPart instanceof ITextEditor) || lineNumber < DEFAULT_LINE_IN_EDITOR) {
-			return;
-		}
-		ITextEditor editor = (ITextEditor) editorPart;
-		IDocument document = editor.getDocumentProvider().getDocument(
-				editor.getEditorInput());
-		if (document != null) {
-			IRegion lineInfo = null;
-			try {
-				// line count internaly starts with 0, and not with 1 like in
-				// GUI
-				lineInfo = document.getLineInformation(lineNumber - 1);
-			} catch (BadLocationException e) {
-				// ignored because line number may not really exist in document,
-				// we guess this...
-			}
-			if (lineInfo != null) {
-				editor.selectAndReveal(lineInfo.getOffset(), lineInfo
-						.getLength());
-			}
-		}
-	}
 }

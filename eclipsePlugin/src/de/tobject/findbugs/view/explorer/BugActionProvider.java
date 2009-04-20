@@ -23,6 +23,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -36,6 +39,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PartInitException;
@@ -45,8 +49,11 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.util.EditorUtil;
 
 public class BugActionProvider extends CommonActionProvider {
 
@@ -64,14 +71,23 @@ public class BugActionProvider extends CommonActionProvider {
 	static class MyAction extends Action implements ISelectionChangedListener {
 		private IMarker marker;
 		private IFile file;
+		private IJavaElement javaElement;
 
 		@Override
 		public void run() {
-			if(marker == null && file == null){
+			if(marker == null && file == null && javaElement == null){
 				return;
 			}
 			try {
-				if(marker != null) {
+				if(javaElement != null){
+					IEditorPart editor = JavaUI.openInEditor(javaElement, true, true);
+
+					// if we have both java element AND line info, go to the line
+					if(editor instanceof ITextEditor && marker != null){
+						EditorUtil.goToLine(editor, marker.getAttribute(
+								IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR));
+					}
+				} else if(marker != null) {
 					IDE.openEditor(FindbugsPlugin.getActiveWorkbenchWindow().getActivePage(),
 							marker, true);
 				} else {
@@ -81,11 +97,15 @@ public class BugActionProvider extends CommonActionProvider {
 			} catch (PartInitException e) {
 				FindbugsPlugin.getDefault().logException(e,
 						"Cannot open editor for marker: " + marker);
+			} catch (JavaModelException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Cannot open editor for java element: " + javaElement);
 			}
 		}
 
 		void setSelection(IMarker sel) {
 			marker = sel;
+			javaElement = MarkerUtil.findJavaElementForMarker(marker);
 		}
 
 		public void selectionChanged(SelectionChangedEvent event) {
@@ -101,6 +121,9 @@ public class BugActionProvider extends CommonActionProvider {
 					} else if (firstElement instanceof BugGroup){
 						BugGroup group = (BugGroup) firstElement;
 						Object data = group.getData();
+						if(data instanceof IJavaElement){
+							javaElement = (IJavaElement) data;
+						}
 						if(data instanceof IAdaptable){
 							IAdaptable adaptable = (IAdaptable) data;
 							Object adapter = adaptable.getAdapter(IResource.class);
@@ -116,6 +139,7 @@ public class BugActionProvider extends CommonActionProvider {
 		private void resetSelection() {
 			marker = null;
 			file = null;
+			javaElement = null;
 		}
 
 	}

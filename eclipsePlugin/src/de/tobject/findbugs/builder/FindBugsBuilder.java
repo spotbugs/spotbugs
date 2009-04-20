@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -103,15 +102,15 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		boolean incremental = (kind != IncrementalProjectBuilder.FULL_BUILD);
 		IProject project = getProject();
 		FindBugsWorker worker = new FindBugsWorker(project, monitor);
-		List<IResource> files;
+		List<WorkItem> files;
 		if(incremental) {
 			IResourceDelta resourceDelta = getDelta(project);
 			boolean configChanged = !isConfigUnchanged(resourceDelta);
 			boolean fullBuildEnabled = FindbugsPlugin.getUserPreferences(getProject(),
 					configChanged).isRunAtFullBuild();
 			if (configChanged && fullBuildEnabled) {
-				files = new ArrayList<IResource>();
-				files.add(project);
+				files = new ArrayList<WorkItem>();
+				files.add(new WorkItem(project));
 			} else {
 				files = ResourceUtils.collectIncremental(resourceDelta);
 				/*
@@ -137,8 +136,8 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 				}
 			}
 		} else {
-			files = new ArrayList<IResource>();
-			files.add(project);
+			files = new ArrayList<WorkItem>();
+			files.add(new WorkItem(project));
 		}
 		worker.work(files);
 	}

@@ -51,6 +51,12 @@ public final class FindBugsConstants {
 	//////////////////////////////////////////////////////////
 	// FB workspace level settings
 
+	/** ask if FB should automatically switch to the FB perspective after analysis is done */
+	public final static String ASK_ABOUT_PERSPECTIVE_SWITCH = "askAboutPerspectiveSwitch";
+
+	/** true to switch to FindBugs perspective after analysis is done */
+	public final static String SWITCH_PERSPECTIVE_AFTER_ANALYSIS = "switchPerspectiveAfterAnalysis";
+
 	public final static String DISABLED_CATEGORIES = "disabledCategories";
 
 	public final static String DISABLED_DETECTORS = "disabledDetectors";
