@@ -498,8 +498,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor) throws IOException, DocumentException, CoreException {
 		SortedBugCollection bugCollection;
-		Project findbugsProject;
-
+		
 		IPath bugCollectionPath = getBugCollectionFile(project);
 		// Don't turn the path to an IFile because it isn't local to the project.
 		// see the javadoc for org.eclipse.core.runtime.Plugin
@@ -510,13 +509,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			createDefaultEmptyBugCollection(project); // since we no longer throw, have to do this here
 			return;
 		}
-
+		
 		bugCollection = new SortedBugCollection();
-		findbugsProject = bugCollection.getProject();
-
+		
 		bugCollection.readXML(bugCollectionFile);
 
-		cacheBugCollectionAndProject(project, bugCollection, findbugsProject);
+		cacheBugCollectionAndProject(project, bugCollection, bugCollection.getProject());
 	}
 
 	/**
