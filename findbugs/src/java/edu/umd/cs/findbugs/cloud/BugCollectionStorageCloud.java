@@ -114,6 +114,21 @@ public class BugCollectionStorageCloud extends AbstractCloud {
 	    
     }
 
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#enableBugLink(java.lang.String)
+     */
+    public boolean bugLinkEnabled(String label) {
+	    throw new UnsupportedOperationException();
+    }
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
+     */
+    public void bugFiled(BugInstance b, Object bugLink) {
+    	 throw new UnsupportedOperationException();
+	    
+    }
+
 	
 
 }

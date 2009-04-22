@@ -139,10 +139,16 @@ public class CommentsArea {
 			public void actionPerformed(ActionEvent e) {
 				if (frame.currentSelectedBugLeaf != null) {
 					BugInstance bug = frame.currentSelectedBugLeaf.getBug();
-					Cloud cloud = MainFrame.getInstance().bugCollection.getCloud();
+					Cloud cloud = getMainFrame().bugCollection.getCloud();
 					URL u = cloud.getBugLink(bug);
-					if (u != null)
-						LaunchBrowser.showDocument(u);
+					if (u != null) {
+						System.out.println("Launching " + u);
+						if (LaunchBrowser.showDocument(u)) {
+							System.out.println("Launched " + u);
+							cloud.bugFiled(bug, null);
+							getMainFrame().syncBugInformation();
+						}
+					}
 				}
 	            
             }});
@@ -301,6 +307,13 @@ public class CommentsArea {
 				boolean b = frame.getProjectChanged();
 				BugInstance bug = node.getBug();
 				Cloud plugin = getCloud();
+				if (plugin.supportsBugLinks()) {
+					String label = plugin.getBugLinkLabel(bug);
+					answerSurvey.setText(label);
+					answerSurvey.setEnabled(plugin.bugLinkEnabled(label));
+				} else {
+					answerSurvey.setEnabled(false);
+				}
 				setCurrentUserCommentsText(bug.getAnnotationText());
 				if (plugin.supportsCloudReports()) {
 					String report = plugin.getCloudReport(bug);
@@ -791,5 +804,9 @@ public class CommentsArea {
 	    MainFrame instance = MainFrame.getInstance();
 		BugCollection bugCollection = instance.bugCollection;
 		return bugCollection.getCloud();
+    }
+
+	private MainFrame getMainFrame() {
+	    return MainFrame.getInstance();
     }
 }

@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -47,6 +48,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
@@ -56,6 +58,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -85,6 +88,8 @@ public  class DBCloud extends AbstractCloud {
 		int id;
 		boolean inDatabase;
 		long firstSeen;
+		String bugLink, filedBy;
+		long bugFiled;
 		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
 		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
 		
@@ -143,6 +148,7 @@ public  class DBCloud extends AbstractCloud {
 		return bd;
 
 	}
+	
 	BugData getBugData(BugInstance bug) {
 		BugData bugData = getBugData(bug.getInstanceHash());
 		bugData.bugs.add(bug);
@@ -150,7 +156,7 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
-	void loadDatabaseInfo(String hash, int id, long firstSeen) {
+	void loadDatabaseInfo(String hash, int id, long firstSeen, String bugDatabaseKey, @CheckForNull Timestamp bugFiled, @CheckForNull String filedBy) {
 		BugData bd = instanceMap.get(hash);
 		if (bd == null)
 			return;
@@ -162,6 +168,12 @@ public  class DBCloud extends AbstractCloud {
 			bd.id = id;
 			bd.firstSeen = firstSeen;
 			bd.inDatabase = true;
+			bd.bugLink = bugDatabaseKey;
+			if (bugFiled != null)
+				bd.bugFiled = bugFiled.getTime();
+			else
+				bd.bugFiled = Long.MAX_VALUE;
+			bd.filedBy = filedBy;
 			idMap.put(id, bd);
 		}
 	}
@@ -180,7 +192,7 @@ public  class DBCloud extends AbstractCloud {
 
 		try {
 			Connection c = getConnection();
-			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
+			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen, bugDatabaseKey, bugFiled, filedBy FROM findbugs_issue");
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -188,7 +200,10 @@ public  class DBCloud extends AbstractCloud {
 				int id = rs.getInt(col++);
 				String hash = rs.getString(col++);
 				Timestamp firstSeen = rs.getTimestamp(col++);
-				loadDatabaseInfo(hash, id, firstSeen.getTime());
+				String bugDatabaseKey = rs.getString(col++);
+				Timestamp bugFiled = rs.getTimestamp(col++);
+				String filedBy = rs.getString(col++);
+				loadDatabaseInfo(hash, id, firstSeen.getTime(), bugDatabaseKey, bugFiled, filedBy);
 			}
 			rs.close();
 			ps.close();
@@ -261,6 +276,12 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	String url, dbUser, dbPassword, findbugsUser, dbName;
+	@CheckForNull Pattern sourceFileLinkPattern;
+	String sourceFileLinkFormat;
+	String sourceFileLinkFormatWithLine;
+	
+	String sourceFileLinkToolTip;
+	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
 
 	private Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, dbUser, dbPassword);
@@ -269,6 +290,22 @@ public  class DBCloud extends AbstractCloud {
 	public boolean initialize() {
 		if (!bugCollection.getProject().isGuiAvaliable())
 			return false;
+		
+		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
+		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
+		String sfwl = SystemProperties.getProperty("findbugs.sourcelink.formatWithLine");
+		
+		String stt  = SystemProperties.getProperty("findbugs.sourcelink.tooltip");
+		if (sp != null && sf != null) {
+			try {
+			this.sourceFileLinkPattern = Pattern.compile(sp);
+			this.sourceFileLinkFormat = sf;
+			this.sourceFileLinkToolTip = stt;
+			this.sourceFileLinkFormatWithLine = sfwl;
+			} catch (RuntimeException e) {
+				AnalysisContext.logError("Could not compile pattern " + sp, e);
+			}
+		}
 		String sqlDriver = getProperty("dbDriver");
 		url = getProperty("dbUrl");
 		dbName = getProperty("dbName");
@@ -297,7 +334,7 @@ public  class DBCloud extends AbstractCloud {
 					findbugsUser = JOptionPane.showInputDialog("Identification for survey", findbugsUser);
 					result = true;
 					} else {
-						findbugsUser = (String) JOptionPane.showInputDialog(MainFrame.getInstance(), "Connect to database with the specified username?", "Connect to database", 
+						findbugsUser = (String) JOptionPane.showInputDialog(MainFrame.getInstance(), "Connect to database as", "Connect to database as", 
 								JOptionPane.QUESTION_MESSAGE, null, null, findbugsUser);
 						
 					
@@ -365,6 +402,8 @@ public  class DBCloud extends AbstractCloud {
 
 	
 	private static HashMap<String, Integer> issueId = new HashMap<String, Integer>();
+	private static final String PENDING = "-- pending --";
+	private static final String NONE = "none";
 
 	class DatabaseSyncTask implements Runnable {
 
@@ -467,7 +506,7 @@ public  class DBCloud extends AbstractCloud {
 				insertBugData.setString(col++, b.getBugPattern().getType());
 				insertBugData.setInt(col++, b.getPriority());
 				insertBugData.setString(col++, b.getPrimaryClass().getClassName());
-				insertBugData.setString(col++, "none");
+				insertBugData.setString(col++, NONE);
 				insertBugData.executeUpdate();
 				ResultSet rs = insertBugData.getGeneratedKeys();
 				if (rs.next()) {
@@ -484,9 +523,6 @@ public  class DBCloud extends AbstractCloud {
 		}
 		public void storeFirstSeen(BugData bug) {
 			try {
-			
-				if (!bug.inDatabase)
-					return;
 				
 				PreparedStatement insertBugData =  
 				        c.prepareStatement("UPDATE  findbugs_issue SET firstSeen = ? WHERE id = ?");
@@ -502,17 +538,61 @@ public  class DBCloud extends AbstractCloud {
 
 		}
 
+		/**
+         * @param bd
+         */
+        public void fileBug(BugData bug) {
+        	try {
+				System.out.println("Filing bug");
+				PreparedStatement fileBug =  
+				        c.prepareStatement("UPDATE  findbugs_issue SET bugDatabaseKey = ?, firstSeen = ?, filedBy = ? WHERE id = ?");
+				Timestamp date = new Timestamp(bug.bugFiled);
+				int col = 1;
+				fileBug.setString(col++, bug.bugLink);
+				fileBug.setTimestamp(col++, date);
+				fileBug.setString(col++, bug.filedBy);
+				fileBug.setInt(col++, bug.id);
+				boolean result = fileBug.execute();
+				fileBug.close();
+				System.out.println("bug filing result = " + result);
+				
+
+			} catch (Exception e) {
+				displayMessage("Problem filing bug", e);
+			}
+	        
+        }
+
 
 	}
 
 	static interface Update {
 		void execute(DatabaseSyncTask t) throws SQLException;
 	}
+	
+	class FileBug implements Update {
+
+        public FileBug(BugInstance bug) {
+        	this.bd = getBugData(bug.getInstanceHash());
+        	if (bd == null || !bd.inDatabase)
+        		throw new IllegalArgumentException();
+        	bd.bugFiled = System.currentTimeMillis();
+        	bd.bugLink = PENDING;
+        	bd.filedBy = findbugsUser;
+        }
+		final BugData bd;
+        public void execute(DatabaseSyncTask t) throws SQLException {
+        	  t.fileBug(bd);
+ 	        
+	        
+        }
+		
+	}
 	 class StoreNewBug implements Update {
         public StoreNewBug(BugInstance bug) {
 	        this.bug = bug;
         }
-		BugInstance bug;
+		final BugInstance bug;
 		public void execute(DatabaseSyncTask t) throws SQLException {
 	        BugData data = getBugData(bug.getInstanceHash());
 	        if (data.inDatabase) 
@@ -668,6 +748,14 @@ public  class DBCloud extends AbstractCloud {
     		}
     	}
     	out.println();
+    	
+    	Collection<String> projects = projectMapping.getProjects(primaryClass.getPackageName());
+    	if (projects != null && !projects.isEmpty()) {
+    		String projectList = projects.toString();
+    		projectList = projectList.substring(1, projectList.length()-1);
+    		out.println("Possibly part of: " + projectList);
+    		out.println();
+    	}
     	SourceLineAnnotation primarySource = primaryClass.getSourceLines();
     	if (primarySource.isSourceFileKnown() && firstLine <= lastLine && MainFrame.isAvailable()) {
     		try {
@@ -690,10 +778,18 @@ public  class DBCloud extends AbstractCloud {
     		} catch (IOException e) {
     			assert true;
     		}
+    		URL link = getSourceLink(b);
+    		if (link != null) {
+    		
+    			out.println(sourceFileLinkToolTip + ": " + link);
+    			out.println();
+    		}
     	}
     	
 
-    	out.println("FindBugs issue identifier: " + b.getInstanceHash());
+    	
+    	out.println();
+    	out.println("FindBugs issue identifier (do not modify): " + b.getInstanceHash());
     	out.close();
     	return stringWriter.toString();
     }
@@ -709,23 +805,40 @@ public  class DBCloud extends AbstractCloud {
     @Override
     @CheckForNull 
     public URL getBugLink(BugInstance b) {
-    	String bugLinkPattern = SystemProperties.getProperty("findbugs.buglink");
-    	if (bugLinkPattern == null)
-    		return null;
 		try {
+			BugData bd = getBugData(b);
+			String bugNumber = bd.bugLink;
+			if (PENDING.equals(bugNumber))
+				return null;
+			if (bugNumber != null && bugNumber.length() > 0  && !bugNumber.equals(NONE)) {
+				String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbuglink");
+				if (viewLinkPattern == null)
+					return null;
+				String u = String.format(viewLinkPattern, bugNumber);
+				return new URL(u);
+			}
+
+			String bugLinkPattern = SystemProperties.getProperty("findbugs.buglink");
+			if (bugLinkPattern == null)
+				return null;
 			String report = getBugReport(b);
 			String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-			String u = String.format(bugLinkPattern,
-					urlEncode(report), urlEncode(summary));
+			String u = String.format(bugLinkPattern, urlEncode(report), urlEncode(summary));
 			return new URL(u);
 		} catch (Exception e) {
-			e.printStackTrace();
+
 			return null;
 		}
-    }
+	}
     
     @Override
     public boolean supportsCloudReports() {
+		return true;
+	}
+
+    
+    @Override
+    public boolean supportsBugLinks() {
 		return true;
 	}
 
@@ -758,4 +871,81 @@ public  class DBCloud extends AbstractCloud {
 	    storeUserAnnotation(getBugData(bugInstance), bugInstance.getNonnullUserDesignation());
 	    
     }
+    
+    @Override
+    public boolean supportsSourceLinks() {
+    	return sourceFileLinkPattern != null;
+    	
+    }
+    
+	@Override
+    public @CheckForNull
+	URL getSourceLink(BugInstance b) {
+		if (sourceFileLinkPattern == null)
+			return null;
+
+		SourceLineAnnotation src = b.getPrimarySourceLineAnnotation();
+		String fileName = src.getSourcePath();
+		int startLine = src.getStartLine();
+
+		java.util.regex.Matcher m = sourceFileLinkPattern.matcher(fileName);
+		boolean isMatch = m.matches();
+		if (isMatch)
+			try {
+				URL link;
+				if (startLine > 0)
+					link = new URL(String.format(sourceFileLinkFormatWithLine, m.group(1), startLine, startLine - 10));
+				else
+					link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
+				return link;
+			} catch (MalformedURLException e) {
+				AnalysisContext.logError("Error generating source link for " + src, e);
+			}
+
+		return null;
+
+	}
+
+    @Override
+    public String getSourceLinkToolTip(BugInstance b) {
+	    return sourceFileLinkToolTip;
+    }
+  
+    
+    public boolean bugLinkEnabled(String label) {
+    	return !label.equals("bug pending") && !label.equals("???");
+    }
+    @Override
+    public String getBugLinkLabel(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	String link = bd.bugLink;
+    	if (link == null || link.length() == 0 || link.equals(NONE))
+    		return "File bug";
+    	if (link.equals(PENDING)) {
+    		if (System.currentTimeMillis() - bd.bugFiled > 2*60*60*1000L)
+    			return "File bug";
+    		else if (findbugsUser.equals(bd.filedBy))
+    			return "File again";
+    		else return "bug pending";
+    	}
+    	try {
+    		Integer.parseInt(link);
+    		return "View bug";
+    		
+    	} catch (RuntimeException e) {
+    		assert true;
+    	}
+    	
+    	return "???";
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
+     */
+    public void bugFiled(BugInstance b, Object bugLink) {
+    	System.out.println("requesting bug filed for " + b.getMessage());
+    	queue.add(new FileBug(b));
+    	updatedStatus();
+    	}
+	    
+    
 }

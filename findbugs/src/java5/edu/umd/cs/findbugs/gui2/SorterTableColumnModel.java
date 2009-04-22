@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -147,9 +148,16 @@ public class SorterTableColumnModel implements TableColumnModel{
 				cell.setHorizontalAlignment(SwingConstants.CENTER);
 				if (value == Sortables.DIVIDER)
 				{
-					cell.setText("");
-					cell.setIcon(new ImageIcon(MainFrame.class.getResource("arrows.png")));
-					new ImageIcon("a");
+					URL arrows = MainFrame.class.getResource("arrows.png");
+					
+					if (arrows != null) {
+						cell.setText("");
+						cell.setIcon(new ImageIcon(arrows));
+					} else {
+						cell.setText("<->");
+					}
+				
+					
 				}
 			}
 			return comp;

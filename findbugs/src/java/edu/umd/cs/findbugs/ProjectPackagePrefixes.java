@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -72,7 +73,9 @@ public class ProjectPackagePrefixes {
 	Map<Set<String>, Integer> count = new HashMap<Set<String>, Integer>();
 
 	Map<String, Integer> missingProjectCount = new TreeMap<String, Integer>();
+	Map<String, Integer> rawPackageCount = new TreeMap<String, Integer>();
 
+	int totalCount = 0;
 	public void countBug(BugInstance b) {
 		String packageName = b.getPrimaryClass().getPackageName();
 
@@ -83,9 +86,10 @@ public class ProjectPackagePrefixes {
      * @param packageName
      */
     public void countPackageMember(String packageName) {
+    	totalCount++;
 	    TreeSet<String> results = getProjects(packageName);
 		incrementCount(count, results);
-
+		incrementCount(rawPackageCount, packageName);
 		if (results.size() == 0) {
 			incrementCount(missingProjectCount, packageName);
 		}
@@ -116,15 +120,26 @@ public class ProjectPackagePrefixes {
 			counter.put(t, v + valueToAdd);
 	}
 
+	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
 	public void report() {
+		System.out.println("# of items counted: " + totalCount);
 		System.out.println("# of projects: " + size());
-		System.out.println("Count of missing files in projects");
+		System.out.println("By package: ");
+
+		for (Map.Entry<String, Integer> e : rawPackageCount.entrySet()) {
+			String packageName = e.getKey();
+			if (e.getValue() > 5)
+			System.out.printf("%5d %s\n", e.getValue(), packageName);
+		}
+		System.out.println("Count by project");
 		
 		for (Map.Entry<Set<String>, Integer> e : count.entrySet()) {
 			Set<String> projects = e.getKey();
 			if (e.getValue() > 5)
 			System.out.printf("%5d %s\n", e.getValue(), projects);
 		}
+		System.out.println("Count by package for items not associated with a project");
+		
 		Set<String> packages = missingProjectCount.keySet();
 		for (int count = 0; count < 3; count++) {
 			HashSet<String> extraSuperPackages = new HashSet<String>();
@@ -134,9 +149,8 @@ public class ProjectPackagePrefixes {
 				if (num < 3) {
 					int x = p1.lastIndexOf(".");
 					String p2 = p1.substring(0, x);
-					
-					// System.out.printf("only %d issues in %s\n", num, p1);
-					
+					if (FORBIDDEN_PACKAGE_PREFIXES.matcher(p2).matches())
+						continue;
 					
 					extraSuperPackages.add(p2);
 				}

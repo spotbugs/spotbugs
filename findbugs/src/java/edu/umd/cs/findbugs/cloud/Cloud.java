@@ -88,11 +88,14 @@ public interface Cloud {
 	
 	String getUser();
 	
+	String getSourceLinkToolTip(@CheckForNull BugInstance b);
 	URL getSourceLink(BugInstance b);
 	
 	boolean supportsBugLinks();
-	boolean hasExistingBugLink(BugInstance b);
+	boolean bugLinkEnabled(String label);
+	String getBugLinkLabel(BugInstance b);
 	URL getBugLink(BugInstance b);
+	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
 	
 	boolean supportsCloudReports();
 	String getCloudReport(BugInstance b);

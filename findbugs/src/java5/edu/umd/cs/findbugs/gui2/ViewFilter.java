@@ -40,28 +40,39 @@ public class ViewFilter {
 	interface ViewFilterEnum {
 		boolean show(MainFrame mf, BugInstance b);
 	}
-	enum RankFilter  implements  ViewFilterEnum { SCARIEST(4), SCARY(9), TROUBLING(14), ALL(Integer.MAX_VALUE);
+	enum RankFilter  implements  ViewFilterEnum { SCARIEST(4, "Scariest"), SCARY(9, "Scary"), TROUBLING(14, "Troubling"), 
+		   ALL(Integer.MAX_VALUE, "All bug ranks");
 		final int maxRank;
+		final String displayName;
 		
 
-	private RankFilter(int maxRank) {
+	private RankFilter(int maxRank, String displayName) {
 	        this.maxRank = maxRank;
+	        this.displayName = displayName;
         }
 
     public boolean show(MainFrame mf, BugInstance b) {
     	int rank = BugRanker.findRank(b);
 	    return rank <= maxRank;
     }
+    @Override
+    public String toString() {
+    	if (maxRank < Integer.MAX_VALUE)
+    		return displayName + " (Ranks 1 - " + maxRank + ")";
+    	return displayName;
+    }
 
 	
  }
 	
-	enum FirstSeenFilter  implements ViewFilterEnum { LAST_DAY(1), LAST_WEEK(7), LAST_MONTH(30), LAST_THREE_MONTHS(91), ALL(400000);
+	enum FirstSeenFilter  implements ViewFilterEnum { LAST_DAY(1, "Last day"), LAST_WEEK(7, "Last week"), LAST_MONTH(30, "Last month"), LAST_THREE_MONTHS(91, "Last 90 days"), ALL(400000, "No matter when first seen");
 
 	final int maxDays;
+	final String displayName;
 	
-    private FirstSeenFilter(int days) {
+    private FirstSeenFilter(int days, String displayName) {
 	    this.maxDays = days;
+	    this.displayName = displayName;
     }
 
 	public boolean show(MainFrame mf, BugInstance b) {
@@ -69,7 +80,12 @@ public class ViewFilter {
 	    long time = System.currentTimeMillis() - firstSeen;
 	    long days = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) / 3600 / 24;
 	    return days < this.maxDays;   
-    } }
+    } 
+	@Override
+    public String toString() {
+		return displayName;
+	}
+	}
 	
 	final MainFrame mf;
 	RankFilter rank = RankFilter.ALL;

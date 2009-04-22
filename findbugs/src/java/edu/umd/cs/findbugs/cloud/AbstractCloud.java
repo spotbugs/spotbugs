@@ -68,7 +68,9 @@ public abstract class AbstractCloud implements Cloud {
 	public URL getBugLink(BugInstance b) {
 		throw new UnsupportedOperationException();
 	}
-
+	public String getBugLinkLabel(BugInstance b) {
+		throw new UnsupportedOperationException();
+	}
 	public String getCloudReport(BugInstance b) {
 		throw new UnsupportedOperationException();
 	}
@@ -77,6 +79,9 @@ public abstract class AbstractCloud implements Cloud {
 		throw new UnsupportedOperationException();
 	}
 
+    public String getSourceLinkToolTip(BugInstance b) {
+    	throw new UnsupportedOperationException();
+    }
 	public Date getUserDate(BugInstance b) {
 		return new Date(getUserTimestamp(b));
 	}

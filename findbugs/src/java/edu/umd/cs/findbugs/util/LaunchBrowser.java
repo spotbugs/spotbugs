@@ -48,7 +48,6 @@ public class LaunchBrowser {
 			desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
 			desktopBrowseMethod = desktopClass.getMethod("browse", URI.class);
 		}  catch (Exception e) {
-			e.printStackTrace();
 			assert true;
 		} 
 		// attempt to set the JNLP BasicService object and its showDocument(URL) method
@@ -112,18 +111,15 @@ public class LaunchBrowser {
 				int exitValue = p.exitValue();
 				if (exitValue != 0) {
 					launchViaExecFailed = true;
-					System.out.println("exit value : " + exitValue);
 					return false;
 				} 
 				return true;
 			} catch (IllegalThreadStateException e) {
-				assert true;
+				return true;
 			} catch (Exception e) {
 				launchViaExecFailed = true;
-				e.printStackTrace();
 			}
 		}
-
 		return false;
 	}
 

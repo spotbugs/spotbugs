@@ -127,7 +127,6 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.CloudListener;
@@ -314,20 +313,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		this.guiLayout = factory.getInstance(this);
 		this.comments = new CommentsArea(this);
 		FindBugsDisplayFeatures.setAbridgedMessages(true);
-		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
-		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
-		if (sf != null)
-			sf = sf.replace("ESCAPEDPERCENT", "%");
-		String stt  = SystemProperties.getProperty("findbugs.sourcelink.tooltip");
-		if (sp != null && sf != null) {
-			try {
-			this.sourceFileLinkPattern = Pattern.compile(sp);
-			this.sourceFileLinkFormat = sf;
-			this.sourceFileLinkToolTip = stt;
-			} catch (RuntimeException e) {
-				AnalysisContext.logError("Could not compile pattern " + sp, e);
-			}
-		}
+		
 	}
 
 	/**
@@ -1806,7 +1792,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		if (currentSelectedBugLeaf != null)  {
 			BugInstance bug  = currentSelectedBugLeaf.getBug();
 			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
-			comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
 			updateDesignationDisplay();
 			comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
 			updateSummaryTab(currentSelectedBugLeaf);
@@ -2087,9 +2072,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return label;
 	}
 
-	@CheckForNull Pattern sourceFileLinkPattern;
-	String sourceFileLinkFormat;
-	String sourceFileLinkToolTip;
+
 	/**
 	 * @author pugh
 	 */
@@ -2366,30 +2349,22 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * Sets the title of the source tabs for either docking or non-docking
 	 * versions.
 	 * @param title
-	 * @param source TODO
+	 * @param bug TODO
 	 */
-	 void setSourceTab(String title, SourceFile source){
+	 void setSourceTab(String title, @CheckForNull BugInstance bug){
 		JComponent label = guiLayout.getSourceTitleComponent();
 		if (label != null) {
-			if (source != null && sourceFileLinkPattern != null) {
-				String name = source.getFullFileName();
-				java.util.regex.Matcher m = sourceFileLinkPattern.matcher(name);
-				boolean isMatch = m.matches();
-				if (isMatch) {
-				
-                    try {
-                    	URL link = new URL(String.format(sourceFileLinkFormat, m.group(1)));
-	                    addLink(label, link);
-                    } catch (MalformedURLException e) {
-                    	removeLink(label);
-                    }
-					
-					
-				} else {
-					removeLink(label);
-				}
-			} else
+			URL u = null;
+			if (bug != null) {
+				Cloud plugin = this.bugCollection.getCloud();
+				if (plugin.supportsSourceLinks())
+					u = plugin.getSourceLink(bug);
+			}
+			if (u != null)
+				 addLink(label, u);
+			else
 				removeLink(label);
+			
 		}
 		guiLayout.setSourceTitle(title);
 	}
@@ -2415,8 +2390,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			 });
 		 }
 		 component.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		 if (sourceFileLinkToolTip != null)
-			 component.setToolTipText(sourceFileLinkToolTip);
+		 Cloud plugin = this.bugCollection.getCloud();
+			if (plugin != null) 
+				 component.setToolTipText(plugin.getSourceLinkToolTip(null));
+			
+		
 	 }
 	 void removeLink(JComponent component) {
 		 this.sourceLink = null;
