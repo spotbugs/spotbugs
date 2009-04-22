@@ -197,9 +197,8 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 			timestamp = other.timestamp;
 		}
 	}
-	/* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
+
+	
     public int compareTo(BugDesignation o) {
 	    int result = - Util.compare(this.timestamp, o.timestamp);
 	    if (result != 0) 

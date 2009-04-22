@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -857,7 +857,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * ---------------------------------------------------------------------- */
 
 	public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
-		addClass(methodDescriptor.getSlashedClassName());
+		addClass(ClassName.toDottedClassName(methodDescriptor.getSlashedClassName()));
 		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
 		return this;
 	}
@@ -941,7 +941,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param className the name of the class
 	 * @return this object
 	 */
-	public BugInstance addClass(@SlashedClassName String className) {
+	public BugInstance addClass(@DottedClassName String className) {
 		className = ClassName.toDottedClassName(className);
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
 		add(classAnnotation);
@@ -1004,7 +1004,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addSuperclass(PreorderVisitor visitor) {
-		String className = visitor.getSuperclassName();
+		String className = ClassName.toDottedClassName(visitor.getSuperclassName());
 		addClass(className);
 		return this;
 	}
