@@ -104,11 +104,12 @@ public class CopyBuggySource {
 						continue;
 					}
 					File parent = file.getParentFile();
-					if (parent.isDirectory() || parent.mkdirs()) {
+					if (parent.isDirectory() && parent.canWrite() && parent.canRead()) {
 					InputStream in = null;
 					OutputStream out = null;
 					try {
 						in = sourceFinder.openSource(packageName, sourceFile);
+						parent.mkdirs();
 						out = new FileOutputStream(file);
 						while (true) {
 							int sz = in.read(buf);
