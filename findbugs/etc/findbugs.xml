@@ -789,7 +789,8 @@
       reports="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER,HRS_REQUEST_PARAMETER_TO_COOKIE,XSS_REQUEST_PARAMETER_TO_JSP_WRITER,XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER,XSS_REQUEST_PARAMETER_TO_SEND_ERROR"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"
-      reports="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" />
+      reports="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" 
+	/>
 
   <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="true"/>
 
@@ -857,6 +858,8 @@
   <BugPattern abbrev="NOISE" type="NOISE_FIELD_REFERENCE" category="NOISE" />
   <BugPattern abbrev="NOISE" type="NOISE_OPERATION" category="NOISE" />
   <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL" />
+  <BugPattern abbrev="TEST" type="TESTING" category="EXPERIMENTAL" />
+  <BugPattern abbrev="TEST" type="TESTING2" category="EXPERIMENTAL" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />

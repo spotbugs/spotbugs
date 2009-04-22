@@ -1970,6 +1970,29 @@ or perhaps if an analysis was generated using a plugin, but that plugin is not c
     </Details>
   </BugPattern>
 
+  <BugPattern type="TESTING">
+    <ShortDescription>Prototype bug report</ShortDescription>
+    <LongDescription>Instance of prototype/incomplete bug pattern in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This bug pattern is used by prototype/incomplete/experimental bug detectors.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="TESTING2">
+    <ShortDescription>2nd kind of prototype bug report</ShortDescription>
+    <LongDescription>Instance of 2nd kind of prototype/incomplete bug pattern in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This bug pattern is  the second pattern reported by used by prototype/incomplete/experimental bug detectors.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
 
   <BugPattern type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY">
     <ShortDescription>Creates an empty zip file entry</ShortDescription>
@@ -6988,12 +7011,12 @@ a signed and unsigned right shift (depending upon the size of the shift).
     </Details>
   </BugPattern>
   <BugPattern type="ICAST_BAD_SHIFT_AMOUNT">
-    <ShortDescription>Integer shift by an amount not in the range 0..31</ShortDescription>
-    <LongDescription>Integer shift by {2} in {1}</LongDescription>
+    <ShortDescription>32 bit int shifted by an amount not in the range 0..31</ShortDescription>
+    <LongDescription>32 bit int shifted by {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-The code performs an integer shift by a constant amount outside
+The code performs shift of a 32 bit int by a constant amount outside
 the range 0..31.
 The effect of this is to use the lower 5 bits of the integer
 value to decide how much to shift by. This probably isn't want was expected,

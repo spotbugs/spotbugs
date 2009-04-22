@@ -30,11 +30,15 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.POP;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -52,6 +56,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -141,9 +146,16 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     			if (ins instanceof InvokeInstruction) {
     				InvokeInstruction invoke = (InvokeInstruction)ins;
     				String className = invoke.getClassName(cpg);
-					if (invoke.getMethodName(cpg).equals("putIfAbsent") && extendsConcurrentMap(className)) {
+    				
+					if (invoke.getMethodName(cpg).equals("putIfAbsent")) {
+	                    String signature = invoke.getSignature(cpg);
+	                    if (signature.equals("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") 
+								&& !(invoke instanceof INVOKESTATIC)
+								&& extendsConcurrentMap(className)) {
     					InstructionHandle next = handle.getNext();
     					boolean isIgnored = next != null && next.getInstruction() instanceof POP;
+    					boolean isImmediateNullTest = next != null && (next.getInstruction() instanceof IFNULL 
+    											|| next.getInstruction() instanceof IFNONNULL );
 						if (countOtherCalls || isIgnored) {
     						BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
     						ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
@@ -170,8 +182,16 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     								break;
     						}
     						if (countOtherCalls && !isRetained) {
-    							BugInstance bugInstance = new BugInstance(this,  "UNKNOWN", 
-										isIgnored ? Priorities.LOW_PRIORITY : Priorities.HIGH_PRIORITY)
+    							int priority = LOW_PRIORITY;
+    							if (!isImmediateNullTest && !isIgnored) {
+    								TypeDataflow typeAnalysis =  classContext.getTypeDataflow(method);
+    								Type type = typeAnalysis.getFactAtLocation(location).getTopValue();
+    								String valueSignature = type.getSignature();
+    								if (!valueSignature.startsWith("Ljava/util/concurrent/atomic/Atomic"))
+    									priority = Priorities.HIGH_PRIORITY;
+    							}
+    							BugInstance bugInstance = new BugInstance(this,  "TESTING", 
+										priority)
 											.addClassAndMethod(methodGen,sourceFileName)
 											.addCalledMethod(methodGen, invoke);
 								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
@@ -180,7 +200,17 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     						}
     						
     					}
+    				} else {
+    					BugInstance bugInstance = new BugInstance(this,  "TESTING2", 
+								Priorities.NORMAL_PRIORITY)
+									.addClassAndMethod(methodGen,sourceFileName)
+									.addCalledMethod(methodGen, invoke);
+						SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
+								classContext, method, location);
+						accumulator.accumulateBug(bugInstance, where);
+
     				}
+                    }
     				
     			}
     		}
