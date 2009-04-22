@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pwilliam
@@ -51,6 +52,7 @@ public class BugRanker {
 			else
 				AnalysisContext.logError("Can't parse bug rank " + s);
 		}
+		Util.closeSilently(in);
 	}
 
 	HashMap<String, Integer> bugPatterns = new HashMap<String, Integer>();

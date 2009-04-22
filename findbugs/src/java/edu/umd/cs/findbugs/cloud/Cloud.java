@@ -48,7 +48,7 @@ public interface Cloud {
 	    @Override
 	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
 		   for(BugDesignation bd : designations) {
-			   if (bd.getUser().equals(user)) {
+			   if (user.equals(bd.getUser())) {
 				   // has voted
 				   return designations.first();
 			   }
@@ -59,7 +59,7 @@ public interface Cloud {
 	    @Override
 	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
 	    	 for(BugDesignation bd : designations) {
-				   if (bd.getUser().equals(user)) {
+	    		 if (user.equals(bd.getUser())) {
 					  return bd;
 				   }
 			   }

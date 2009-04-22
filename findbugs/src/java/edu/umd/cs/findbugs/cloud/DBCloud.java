@@ -101,7 +101,7 @@ public  class DBCloud extends AbstractCloud {
 
 		@CheckForNull BugDesignation getUserDesignation() {
 			for(BugDesignation d : designations) 
-				if (d.getUser().equals(findbugsUser))
+				if (findbugsUser.equals(d.getUser()))
 					return new BugDesignation(d);
 			return null;
 		}
@@ -126,7 +126,7 @@ public  class DBCloud extends AbstractCloud {
         
         public boolean hasVoted() {
         	for(BugDesignation bd : designations)
-        		if (bd.getUser().equals(findbugsUser)) 
+        		if (findbugsUser.equals(bd.getUser())) 
         			return true;
         	return false;
         }
@@ -604,7 +604,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 		
 	
-	 class StoreUserAnnotation implements Update {
+	 static class StoreUserAnnotation implements Update {
 		public StoreUserAnnotation(BugData data, BugDesignation designation) {
 	        super();
 	        this.data = data;
@@ -855,7 +855,7 @@ public  class DBCloud extends AbstractCloud {
 		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
 		for(BugDesignation d : bd.designations) 
 			if (d != primaryDesignation 
-					&& (canSeeCommentsByOthers || d.getUser().equals(findbugsUser))) {
+					&& (canSeeCommentsByOthers || findbugsUser.equals(d.getUser()))) {
 				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), d.getDesignationKey()));
 				if (d.getAnnotationText().length() > 0) {
 					builder.append(d.getAnnotationText());
