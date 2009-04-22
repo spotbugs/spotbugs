@@ -95,7 +95,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		calledMethods = new HashSet<MethodAnnotation>();
 		calledMethodNames = new HashSet<String>();
 		className = classContext.getJavaClass().getClassName();
-
+		String[] parts = className.split("[$+.]");
+		String simpleClassName = parts[parts.length - 1];
 		super.visitClassContext(classContext);
 
 		definedPrivateMethods.removeAll(calledMethods);
@@ -104,6 +105,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 			// System.out.println("Checking " + m);
 			int priority = LOW_PRIORITY;
 			String methodName = m.getMethodName();
+			if (methodName.equals(simpleClassName) && m.getMethodSignature().equals("()V"))
+				continue;
 			if (methodName.length() > 1
 					&& calledMethodNames.contains(methodName.toLowerCase()))
 				priority = NORMAL_PRIORITY;

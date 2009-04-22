@@ -434,7 +434,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	private static @CheckForNull
 	Method findVoidConstructor(JavaClass clazz) {
 		for (Method m : clazz.getMethods())
-			if (m.getName().equals("<init>") && m.getSignature().equals("()V"))
+			if (isVoidConstructor(m))
 				return m;
 		return null;
 
@@ -447,9 +447,6 @@ public class Naming extends PreorderVisitor implements Detector {
 			return;
 		if (mName.equals("isRequestedSessionIdFromURL") || mName.equals("isRequestedSessionIdFromUrl"))
 			return;
-		if (badMethodName(mName))
-			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
-			        && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this));
 		String sig = getMethodSig();
 		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
@@ -462,12 +459,12 @@ public class Naming extends PreorderVisitor implements Detector {
 					priority--;
 				boolean instanceMembers = false;
 				for(Method m : this.getThisClass().getMethods())
-					if (!m.isStatic() && m != obj)
+					if (!m.isStatic() && m != obj && !isVoidConstructor(m) )
 						instanceMembers = true;
 				for(Field f : this.getThisClass().getFields())
 					if (!f.isStatic())
 						instanceMembers = true;
-				if (!instanceMembers)
+				if (!instanceMembers && getSuperclassName().equals("java/lang/Object"))
 					priority+=2;
 				if (realVoidConstructor == null)
 					priority++;
@@ -476,7 +473,10 @@ public class Naming extends PreorderVisitor implements Detector {
 				        .lowerPriorityIfDeprecated());
 				return;
 			}
-		}
+		} else if (badMethodName(mName))
+			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
+			        && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this));
+		
 
 		if (obj.isAbstract())
 			return;
@@ -516,6 +516,10 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 	}
+
+	private static boolean isVoidConstructor(Method m) {
+	    return m.getName().equals("<init>")  && m.getSignature().equals("()V");
+    }
 
 	/**
      * @param mName
