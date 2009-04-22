@@ -1879,13 +1879,21 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addSomeSourceForTopTwoStackValues(ClassContext classContext, Method method, Location location) {
 		int pc = location.getHandle().getPosition();
 		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
-		addSomeSource(classContext, method, location, stack, 1);
-		addSomeSource(classContext, method, location, stack, 0);
+		BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
+		BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
+		if (a1 == null) 
+			addOptionalAnnotation(a0);
+		else {
+			addOptionalAnnotation(a1);
+			if (!a1.equals(a0))
+				addOptionalAnnotation(a0);
+		}
+			
 		return this;
 
 	}
 
-	public BugInstance addSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+	public @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
 		int pc = location.getHandle().getPosition();
 
 		try {
@@ -1893,12 +1901,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			if (vnaFrame.isValid()) {
 				ValueNumber valueNumber = vnaFrame.getStackValue(stackPos);
 				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
-					return this;
+					return null;
 				BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
 				        valueNumber, vnaFrame, "VALUE_OF");
 				if (variableAnnotation != null) {
-					addOptionalAnnotation(variableAnnotation);
-					return this;
+					return variableAnnotation;
 				}
 
 			}
@@ -1908,33 +1915,48 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			AnalysisContext.logError("Couldn't find value source", e);
 		}
 
-		addValueSource(stack.getStackItem(0), method, pc);
-		return this;
+		return getValueSource(stack.getStackItem(stackPos), method, pc);
+
+	}
+
+	public static BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
+		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
+		if (lv != null && lv.isNamed()) 
+			return lv;
+		
+		return getFieldOrMethodValueSource(item);
+		
+
 	}
 
 	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
-		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
-		if (lv != null && lv.isNamed()) 
-			add(lv);
-		
-		addFieldOrMethodValueSource(item);
-		
+		addOptionalAnnotation(getValueSource(item, method, pc));
 		return this;
 	}
-
 	/**
      * @param item
      */
-    public void addFieldOrMethodValueSource(OpcodeStack.Item item) {
-	    XField xField = item.getXField();
-	    if (xField != null)
-	    	addField(xField).describe(FieldAnnotation.LOADED_FROM_ROLE);
-	    else {
-	    	XMethod xMethod = item.getReturnValueOf();
-	    	if (xMethod != null)
-	    		addMethod(xMethod).describe(MethodAnnotation.METHOD_RETURN_VALUE_OF);
-	    }
+    public BugInstance addFieldOrMethodValueSource(OpcodeStack.Item item) {
+    	addOptionalAnnotation(getFieldOrMethodValueSource(item));
+    	return this;
     }
+
+    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(OpcodeStack.Item item) {
+		XField xField = item.getXField();
+		if (xField != null) {
+			FieldAnnotation a = FieldAnnotation.fromXField(xField);
+			a.setDescription(FieldAnnotation.LOADED_FROM_ROLE);
+			return a;
+		}
+
+		XMethod xMethod = item.getReturnValueOf();
+		if (xMethod != null) {
+			MethodAnnotation a = MethodAnnotation.fromXMethod(xMethod);
+			a.setDescription(MethodAnnotation.METHOD_RETURN_VALUE_OF);
+		}
+		return null;
+
+	}
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {
 		if (sourceLineAnnotation != null) {

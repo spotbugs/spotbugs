@@ -58,7 +58,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -76,7 +75,6 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
@@ -92,9 +90,6 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -119,7 +114,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
-	private static final boolean REPORT_ALL_REF_COMPARISONS = SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+	private static final boolean REPORT_ALL_REF_COMPARISONS = true || SystemProperties.getBoolean("findbugs.refcomp.reportAll");
 	private static final int BASE_ES_PRIORITY = SystemProperties.getInt("es.basePriority", NORMAL_PRIORITY);
 
 	/**
@@ -631,13 +626,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * A BugInstance and its WarningPropertySet.
 	 */
 	private static class WarningWithProperties {
-		BugInstance instance;
-		WarningPropertySet<WarningProperty> propertySet;
-		Location location;
+		final BugInstance instance;
+		final SourceLineAnnotation sourceLine;
+		final WarningPropertySet<WarningProperty> propertySet;
+		final Location location;
 
-		WarningWithProperties(BugInstance warning, WarningPropertySet<WarningProperty> propertySet, Location location) {
+		WarningWithProperties(BugInstance warning, WarningPropertySet<WarningProperty> propertySet, SourceLineAnnotation sourceLine, Location location) {
 			this.instance = warning;
 			this.propertySet = propertySet;
+			this.sourceLine = sourceLine;
 			this.location = location;
 		}
 	}
@@ -646,6 +643,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		public void decorate(WarningWithProperties warn);
 	}
 
+
 	private void analyzeMethod(ClassContext classContext, final Method method)
 	throws CFGBuilderException, DataflowAnalysisException {
 
@@ -653,7 +651,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (methodGen == null) {
 	        return;
         }
-		boolean sawCallToEquals = false;
+		
 		JavaClass jclass = classContext.getJavaClass();
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
@@ -667,6 +665,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		LinkedList<WarningWithProperties> stringComparisonList =
 			new LinkedList<WarningWithProperties>();
 
+		comparedForEqualityInThisMethod = new HashSet<String>();
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 		ExceptionSetFactory exceptionSetFactory =
@@ -694,8 +693,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
-			sawCallToEquals = inspectLocation(
-					sawCallToEquals,
+			 inspectLocation(
 					jclass,
 					cpg,
 					method,
@@ -703,18 +701,19 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					refComparisonList,
 					stringComparisonList,
 					visitor,
-					typeDataflow, location);
+					typeDataflow,
+					location);
 		}
 
 		if (stringComparisonList.isEmpty() && refComparisonList.isEmpty()) {
 	        return;
         }
 		// Add method-wide properties to BugInstances
-		final boolean sawEquals = sawCallToEquals;
 		final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
+		
 		decorateWarnings(stringComparisonList, new WarningDecorator(){
 			public void decorate(WarningWithProperties warn) {
-				if (sawEquals) {
+				if (mightBeCheckedUsingEquals(warn.instance)) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
 				}
 
@@ -733,7 +732,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	                warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
                 }
 
-				if (sawEquals) {
+				if (mightBeCheckedUsingEquals(warn.instance)) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
 				}
 			}
@@ -745,8 +744,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		reportBest(classContext, method, refComparisonList, relaxed);
 	}
 
-	private boolean inspectLocation(
-			boolean sawCallToEquals,
+	boolean mightBeCheckedUsingEquals(BugInstance bug) {
+		for(BugAnnotation a : bug.getAnnotations()) 
+			if (a instanceof TypeAnnotation) {
+				String signature = ((TypeAnnotation) a).getTypeDescriptor();
+				if (comparedForEqualityInThisMethod.contains(signature)) 
+					return true;
+			}
+		return false;
+	}
+	private void inspectLocation(
 			JavaClass jclass,
 			ConstantPoolGen cpg,
 			Method method,
@@ -754,7 +761,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			LinkedList<WarningWithProperties> refComparisonList,
 			LinkedList<WarningWithProperties> stringComparisonList,
 			RefComparisonTypeFrameModelingVisitor visitor,
-			TypeDataflow typeDataflow, Location location) throws DataflowAnalysisException {
+			TypeDataflow typeDataflow,
+			Location location) throws DataflowAnalysisException {
 		Instruction ins = location.getHandle().getInstruction();
 		short opcode = ins.getOpcode();
 		if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
@@ -771,11 +779,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String methodName = inv.getMethodName(cpg);
 			String methodSig = inv.getSignature(cpg);
 			if (isEqualsMethod(methodName, methodSig)) {
-				sawCallToEquals = true;
+				
 				checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
 			}
 		}
-		return sawCallToEquals;
+		
 	}
 
 	private void decorateWarnings(
@@ -795,10 +803,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
 
 		WarningWithProperties best = null;
+		int bestPriority = Integer.MAX_VALUE;
 		for (WarningWithProperties warn : warningList) {
-			if (best == null || warn.instance.getPriority() < best.instance.getPriority()) {
-				best = warn;
-			}
+			int priority = warn.instance.getPriority();
+			if (bestPriority > priority)
+				bestPriority = priority;
+			
 
 			if (reportAll) {
 				if (relaxed) {
@@ -812,11 +822,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					// Convert warning properties to bug properties
 					warn.propertySet.decorateBugInstance(warn.instance);
 				}
-				bugReporter.reportBug(warn.instance);
+				bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
 			}
+				
 		}
-		if (best != null && !reportAll) {
-			bugReporter.reportBug(best.instance);
+		if (!reportAll) for (WarningWithProperties warn : warningList) {
+			BugInstance bug = warn.instance;
+			int priority = warn.instance.getPriority();
+			if (priority <= bestPriority) 
+				bugAccumulator.accumulateBug(warn.instance, warn.sourceLine);
 		}
 	}
 
@@ -872,7 +886,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (lhs.equals("java.lang.String")) {
 				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
 			} else if (suspiciousSet.contains(lhs)) {
-				handleSuspiciousRefComparison(jclass, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
+				handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
 			}
 		}
 	}
@@ -927,19 +941,23 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		BugInstance instance =
 			new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
 		.addClassAndMethod(methodGen, sourceFile)
-		.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
-		.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
-
-		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
-		stringComparisonList.add(warn);
+		.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE);
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
+		if (sourceLineAnnotation != null) {
+			WarningWithProperties warn = new WarningWithProperties(instance, propertySet, sourceLineAnnotation,
+					location);
+			stringComparisonList.add(warn);
+		}
+		
 	}
 
 	private void handleSuspiciousRefComparison(
 			JavaClass jclass,
+			Method method,
 			MethodGen methodGen,
 			List<WarningWithProperties> refComparisonList,
-			Location location,
-			String lhs, ReferenceType lhsType, ReferenceType rhsType) {
+			Location location, String lhs, ReferenceType lhsType, ReferenceType rhsType) {
 		XField xf = null;
 		if (lhsType instanceof FinalConstant)
 			xf = ((FinalConstant)lhsType).getXField();
@@ -961,12 +979,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE);
 		if (xf != null)
 			instance.addField(xf).describe(FieldAnnotation.LOADED_FROM_ROLE);
-
-		instance.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
-
-		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), location));
+		else 
+			instance.addSomeSourceForTopTwoStackValues(classContext, method, location);
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
+		if (sourceLineAnnotation != null)
+		  refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), sourceLineAnnotation, location));
 	}
 
+	private Set<String> comparedForEqualityInThisMethod;
 	private void checkEqualsComparison(
 			Location location,
 			JavaClass jclass,
@@ -1028,7 +1049,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 		
-		if (result.getPriority() >= Priorities.LOW_PRIORITY && lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
+		if (result.getPriority() >= Priorities.LOW_PRIORITY) {
+			comparedForEqualityInThisMethod.add(lhsType_.getSignature());
+			comparedForEqualityInThisMethod.add(rhsType_.getSignature());
+		}
+		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsType_, lhsType_),
