@@ -51,14 +51,20 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -1870,6 +1876,42 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 	
+	public BugInstance addSomeSourceForTopTwoStackValues(ClassContext classContext, Method method, Location location) {
+		int pc = location.getHandle().getPosition();
+		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+		addSomeSource(classContext, method, location, stack, 1);
+		addSomeSource(classContext, method, location, stack, 0);
+		return this;
+
+	}
+
+	public BugInstance addSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+		int pc = location.getHandle().getPosition();
+
+		try {
+			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+			if (vnaFrame.isValid()) {
+				ValueNumber valueNumber = vnaFrame.getStackValue(stackPos);
+				if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+					return this;
+				BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
+				        valueNumber, vnaFrame, "VALUE_OF");
+				if (variableAnnotation != null) {
+					addOptionalAnnotation(variableAnnotation);
+					return this;
+				}
+
+			}
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("Couldn't find value source", e);
+		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("Couldn't find value source", e);
+		}
+
+		addValueSource(stack.getStackItem(0), method, pc);
+		return this;
+	}
+
 	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
 		LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
 		if (lv != null && lv.isNamed()) 

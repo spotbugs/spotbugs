@@ -52,11 +52,13 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -74,6 +76,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.TestCaseDetector;
@@ -89,6 +92,9 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -755,11 +761,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			checkRefComparison(
 					location,
 					jclass,
+					method,
 					methodGen,
 					visitor,
 					typeDataflow,
-					stringComparisonList,
-					refComparisonList);
+					stringComparisonList, refComparisonList);
 		} else if (invokeInstanceSet.get(opcode)) {
 			InvokeInstruction inv = (InvokeInstruction) ins;
 			String methodName = inv.getMethodName(cpg);
@@ -820,14 +826,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			|| (methodName.equals("compareTo") && methodSig.equals("(Ljava/lang/String;)I"))) ;
 	}
 
-	private void checkRefComparison(
+	
+		private void checkRefComparison(
 			Location location,
 			JavaClass jclass,
+			Method method,
 			MethodGen methodGen,
 			RefComparisonTypeFrameModelingVisitor visitor,
 			TypeDataflow typeDataflow,
-			List<WarningWithProperties> stringComparisonList,
-			List<WarningWithProperties> refComparisonList) throws DataflowAnalysisException {
+			List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 
@@ -850,7 +857,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
 				.addClassAndMethod(methodGen, sourceFile)
-				.addFoundAndExpectedType(rhsType, lhsType),
+				.addFoundAndExpectedType(rhsType, lhsType)
+				.addSomeSourceForTopTwoStackValues(classContext, method, location),
 				SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
 				);
 			}
@@ -953,6 +961,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE);
 		if (xf != null)
 			instance.addField(xf).describe(FieldAnnotation.LOADED_FROM_ROLE);
+
 		instance.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(), location));
@@ -1060,6 +1069,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsType_, lhsType_)
+				.addSomeSourceForTopTwoStackValues(classContext, method, location)
 				.addEqualsMethodUsed(targets),
 				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle())
 				);
@@ -1089,43 +1099,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	}
 
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.err.println("Usage: " + FindRefComparison.class.getName() + " <class file>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<TypeFrame, TypeAnalysis> driver =
-//			new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-//			@Override
-//			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
-//			throws CFGBuilderException, DataflowAnalysisException {
-//
-//				RepositoryLookupFailureCallback lookupFailureCallback =
-//					classContext.getLookupFailureCallback();
-//				MethodGen methodGen = classContext.getMethodGen(method);
-//				if (methodGen == null)
-//					throw new DataflowAnalysisException("Could not get methodGen for " + method.toString());
-//				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-//				CFG cfg = classContext.getCFG(method);
-//				ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
-//
-//				TypeMerger typeMerger =
-//					new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
-//				TypeFrameModelingVisitor visitor =
-//					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-//				TypeAnalysis analysis = new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger,
-//						visitor, lookupFailureCallback, exceptionSetFactory);
-//				Dataflow<TypeFrame, TypeAnalysis> dataflow =
-//					new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
-//				dataflow.execute();
-//
-//				return dataflow;
-//			}
-//		};
-//
-//		driver.execute(argv[0]);
-//	}
 
 
 
