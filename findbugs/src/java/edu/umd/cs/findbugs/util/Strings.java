@@ -87,7 +87,7 @@ public class Strings {
 		return false;
 	}
 
-    private static boolean xmlLowValueEscapeStringsInitialized = false; 
+    private static volatile boolean xmlLowValueEscapeStringsInitialized = false; 
     private static final String[] xmlLowValueEscapeStrings =
     	new String[xmlAllowedLowCharacterBound];
     private static final Object escapeInitLockObject = new Object();
