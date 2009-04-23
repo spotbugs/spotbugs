@@ -111,6 +111,24 @@
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
 
+	<target name="mondo" depends="jars">
+	<jar destfile="build/mondo.jar"
+		manifest="etc/MANIFEST-findbugs-mondo.MF">
+		<zipfileset src="${jar.dir}/bcel.jar"/>
+		<zipfileset src="${jar.dir}/dom4j-1.6.1.jar"/>
+		<zipfileset src="${jar.dir}/AppleJavaExtensions.jar"/>
+		<zipfileset src="${jar.dir}/junit.jar"/>
+		<zipfileset src="${jar.dir}/asm-3.1.jar"/>
+		<zipfileset src="${jar.dir}/asm-commons-3.1.jar"/>
+		<zipfileset src="${jar.dir}/asm-tree-3.1.jar"/>
+		<zipfileset src="${jar.dir}/jaxen-1.1.1.jar"/>		
+		<zipfileset src="${jar.dir}/jsr305.jar"/>
+		<zipfileset src="${jar.dir}/jFormatString.jar"/>
+		<zipfileset src="${jar.dir}/commons-lang-2.4.jar"/>
+		<zipfileset src="${jar.dir}/findbugs.jar"/>
+	</jar>
+	</target>
+
 	<!-- Compile Java source files, and copy other files (properties,
 		images, html, XSL stylesheets) that need to be part of the codebase. -->
 	<target name="classes">
@@ -212,10 +230,10 @@
 		<jar destfile="${allClassFiles.jar}">
 					<fileset dir="${classes.dir}">
 						<include name="**/*.class"/>
-										<include name="**/*.properties"/>
-										<include name="**/*.db"/>
-										<include name="**/*.xsl"/>
-						</fileset>
+						<include name="**/*.properties"/>
+						<include name="**/*.db"/>
+						<include name="**/*.xsl"/>
+					</fileset>
 					</jar>
 		</target>
 
