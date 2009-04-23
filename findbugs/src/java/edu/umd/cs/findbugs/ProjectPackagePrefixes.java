@@ -45,14 +45,14 @@ public class ProjectPackagePrefixes {
 		final String[] parts;
 
 		PrefixFilter(String prefixes) {
-			parts = prefixes.replace('/', '.').split("[ ,:]+");
+			parts = prefixes.replace('/', '.').trim().split("[ ,:]+");
 		}
 
 		boolean matches(@DottedClassName String className) {
 			if (parts.length == 0)
 				return true;
 			for (String p : parts)
-				if (className.startsWith(p))
+				if (p.length() > 0 && className.startsWith(p))
 					return true;
 			return false;
 		}
@@ -96,13 +96,13 @@ public class ProjectPackagePrefixes {
     }
 
 	/**
-     * @param packageName
+     * @param className
      * @return
      */
-    public TreeSet<String> getProjects(String packageName) {
+    public TreeSet<String> getProjects(@DottedClassName String className) {
 	    TreeSet<String> results = new TreeSet<String>();
 		for (Map.Entry<String, PrefixFilter> e : map.entrySet()) {
-			if (e.getValue().matches(packageName))
+			if (e.getValue().matches(className))
 				results.add(e.getKey());
 		}
 	    return results;

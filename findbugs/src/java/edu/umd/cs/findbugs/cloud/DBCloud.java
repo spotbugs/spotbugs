@@ -749,7 +749,7 @@ public  class DBCloud extends AbstractCloud {
     	}
     	out.println();
     	
-    	Collection<String> projects = projectMapping.getProjects(primaryClass.getPackageName());
+    	Collection<String> projects = projectMapping.getProjects(primaryClass.getClassName());
     	if (projects != null && !projects.isEmpty()) {
     		String projectList = projects.toString();
     		projectList = projectList.substring(1, projectList.length()-1);
