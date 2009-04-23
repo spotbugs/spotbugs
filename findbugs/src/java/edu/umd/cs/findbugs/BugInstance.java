@@ -1953,6 +1953,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (xMethod != null) {
 			MethodAnnotation a = MethodAnnotation.fromXMethod(xMethod);
 			a.setDescription(MethodAnnotation.METHOD_RETURN_VALUE_OF);
+			return a;
 		}
 		return null;
 
