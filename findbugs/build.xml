@@ -475,7 +475,7 @@
 <!--
 <findbugs home="${findbugs.home}"
               output="xml"
-              jvmargs="-Xmx640m"
+              jvmargs="-ea -Xmx640m"
               outputFile="${sampleoutput.dir}/bcel-3.xml" 
               projectFile="${sampleoutput.dir}/bcel.fbp" 
 		applySuppression="true"
@@ -483,7 +483,7 @@
 
 <convertXmlToText
 	 home="${findbugs.home}"
-              jvmargs="-Xmx640m"
+              jvmargs="-ea -Xmx640m"
               input="${sampleoutput.dir}/bcel-3.xml" 
               output="${sampleoutput.dir}/bcel-3.txt" 
               applySuppression="true"
