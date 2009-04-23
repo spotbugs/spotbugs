@@ -356,20 +356,25 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Get the primary class annotation, which indicates where the bug occurs.
 	 */
 	public ClassAnnotation getPrimaryClass() {
-		return  findAnnotationOfType(ClassAnnotation.class);
+		ClassAnnotation result =   findPrimaryAnnotationOfType(ClassAnnotation.class);
+		if (result == null) {
+			System.out.println("huh");
+			result =   findPrimaryAnnotationOfType(ClassAnnotation.class);
+		}
+		return result;
 	}
 
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public MethodAnnotation getPrimaryMethod() {
-		return  findAnnotationOfType(MethodAnnotation.class);
+		return  findPrimaryAnnotationOfType(MethodAnnotation.class);
 	}
 	/**
 	 * Get the primary method annotation, which indicates where the bug occurs.
 	 */
 	public FieldAnnotation getPrimaryField() {
-		return findAnnotationOfType(FieldAnnotation.class);
+		return findPrimaryAnnotationOfType(FieldAnnotation.class);
 	}
 
 
@@ -390,10 +395,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the first matching BugAnnotation of the given type,
 	 *         or null if there is no such BugAnnotation
 	 */
-	private <T extends BugAnnotation> T findAnnotationOfType(Class<T>  cls) {
+	private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T>  cls) {
 		for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
 			BugAnnotation annotation = i.next();
-			if (cls.isAssignableFrom(annotation.getClass()))
+			if (annotation.getDescription().endsWith("DEFAULT") && cls.isAssignableFrom(annotation.getClass()))
 				return cls.cast(annotation);
 		}
 		return null;
@@ -1881,13 +1886,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
 		BugAnnotation a1 = getSomeSource(classContext, method, location, stack, 1);
 		BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
-		if (a1 == null) 
-			addOptionalAnnotation(a0);
-		else {
-			addOptionalAnnotation(a1);
-			if (!a1.equals(a0))
-				addOptionalAnnotation(a0);
-		}
+		addOptionalUniqueAnnotations(a0, a1);
+		
 			
 		return this;
 
@@ -1941,7 +1941,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
     	return this;
     }
 
-    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(OpcodeStack.Item item) {
+    public BugInstance addOptionalUniqueAnnotations(BugAnnotation... annotations) {
+    	HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+    	for(BugAnnotation a : annotations) if (a != null && added.add(a)) 
+    		add(a);
+    	return this;
+    }
+    public BugInstance addOptionalUniqueAnnotationsWithFallback(BugAnnotation fallback, BugAnnotation... annotations) {
+    	HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+    	for(BugAnnotation a : annotations) if (a != null && added.add(a)) 
+    		add(a);
+    	if (added.isEmpty())
+    		add(fallback);
+    	return this;
+    }
+    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
+    	if (item == null) 
+    		return null;
 		XField xField = item.getXField();
 		if (xField != null) {
 			FieldAnnotation a = FieldAnnotation.fromXField(xField);

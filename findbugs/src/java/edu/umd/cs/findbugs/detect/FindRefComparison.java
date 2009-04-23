@@ -969,9 +969,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (lhs.equals("java.lang.Boolean")) {
 			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN";
 			priority = Priorities.NORMAL_PRIORITY;
-		} else if (xf != null) {
+		} else if (xf != null && xf.isStatic() && xf.isFinal()) {
 			bugPattern = "RC_REF_COMPARISON_BAD_PRACTICE";
-			if (xf.isStatic() && (xf.isPublic() || !methodGen.isPublic()))
+			if (xf.isPublic() || !methodGen.isPublic())
 				priority = Priorities.NORMAL_PRIORITY;
 		}
 		BugInstance instance = new BugInstance(this, bugPattern, priority)

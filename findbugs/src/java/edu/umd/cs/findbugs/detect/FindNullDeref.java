@@ -1115,13 +1115,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 		BugInstance bugInstance = new BugInstance(this, warning, priority)
 				.addClassAndMethod(classContext.getJavaClass(), method);
-		if (variableAnnotation != null)
-			bugInstance.add(variableAnnotation);
-		else
-			bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
-		bugInstance.addFieldOrMethodValueSource(item1);
-		if (item2 != null)
-			bugInstance.addFieldOrMethodValueSource(item2);
+		LocalVariableAnnotation fallback = new LocalVariableAnnotation("?", -1, -1);
+		bugInstance.addOptionalUniqueAnnotationsWithFallback(fallback, variableAnnotation, 
+				BugInstance.getFieldOrMethodValueSource(item1), BugInstance.getFieldOrMethodValueSource(item2));
 		
 		if (wouldHaveBeenAKaboom)
 			bugInstance.addSourceLine(classContext, method,

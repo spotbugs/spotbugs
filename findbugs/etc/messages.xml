@@ -5179,11 +5179,11 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
     </Details>
   </BugPattern>
   <BugPattern type="RC_REF_COMPARISON_BAD_PRACTICE">
-    <ShortDescription>Suspicious reference comparison</ShortDescription>
-    <LongDescription>Suspicious comparison of {2} references in {1}</LongDescription>
+    <ShortDescription>Suspicious reference comparison to constant</ShortDescription>
+    <LongDescription>Suspicious comparison of a {2} reference to constant in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares two reference values using the == or != operator,
+<p> This method compares a reference value to a constant using the == or != operator,
 where the correct way to compare instances of this type is generally
 with the equals() method.  
 It is possible to create distinct instances that are equal (but do not compare as == since
@@ -7793,8 +7793,8 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="UCF">Useless control flow</BugCode>
   <BugCode abbrev="RCN">Redundant comparison to null</BugCode>
   <BugCode abbrev="UL">Lock not released on all paths</BugCode>
-  <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
-  <BugCode abbrev="EC">Suspicious equals() comparison</BugCode>
+  <BugCode abbrev="RC">Questionable use of reference equality rather than calling equals</BugCode>
+  <BugCode abbrev="EC">Comparing incompatable types for equality</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-operation</BugCode>
   <BugCode abbrev="INT">Suspicious integer expression</BugCode>
