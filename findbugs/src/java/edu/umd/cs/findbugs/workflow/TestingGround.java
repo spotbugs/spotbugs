@@ -51,7 +51,7 @@ public class TestingGround {
 		return this;
 	}
 
-	class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
+	static class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
 
 		@Override
 		public void handleOption(String option, String optionalExtraPart) {
@@ -68,7 +68,7 @@ public class TestingGround {
 		DetectorFactoryCollection.instance(); // load plugins
 
 		TestingGround reborn = new TestingGround();
-		CommandLine commandLine = reborn.new CommandLine();
+		CommandLine commandLine = new CommandLine();
 		int argCount = commandLine
 		        .parse(args, 0, 1, "Usage: " + TestingGround.class.getName() + " [options] [<xml results>] ");
 

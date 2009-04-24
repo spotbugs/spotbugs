@@ -104,12 +104,16 @@ public class CopyBuggySource {
 						continue;
 					}
 					File parent = file.getParentFile();
-					if (parent.isDirectory() && parent.canWrite() && parent.canRead()) {
+					if (parent.isDirectory()) {
 					InputStream in = null;
 					OutputStream out = null;
 					try {
 						in = sourceFinder.openSource(packageName, sourceFile);
-						parent.mkdirs();
+						if (!parent.mkdirs()) {
+							System.out.println("Unable to create directory for " + parent);
+							in.close();
+							continue;
+						}
 						out = new FileOutputStream(file);
 						while (true) {
 							int sz = in.read(buf);

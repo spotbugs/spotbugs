@@ -369,7 +369,9 @@ public class Profiler implements XMLWriteable {
 		if (result == null) {
 			AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
 			result = new Profile(c.getName());
-			profile.putIfAbsent(c, result);
+			Profile tmp = profile.putIfAbsent(c, result);
+			if (tmp != null)
+				return tmp;
 		}
 		return result;
 	}

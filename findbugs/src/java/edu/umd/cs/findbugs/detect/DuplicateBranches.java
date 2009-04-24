@@ -154,8 +154,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		if (elseLastIns != null) elseFinishPos = elseLastIns.getPosition();
 
 		pendingBugs.add(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
-				.addClass(classContext.getJavaClass())
-				.addMethod(classContext.getJavaClass(), method)
+				.addClassAndMethod(classContext.getJavaClass(), method)
 				.addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
 				.addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
 	}
@@ -237,8 +236,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		for(Collection<Integer> clauses : map.values()) {
 			if (clauses.size() > 1) {
 				BugInstance bug = new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY)
-						.addClass(classContext.getJavaClass())
-						.addMethod(classContext.getJavaClass(), method);
+						.addClassAndMethod(classContext.getJavaClass(), method);
 				for(int i : clauses) 
 					bug.addSourceLineRange(this.classContext, this, 
 							switchPos[i],

@@ -141,8 +141,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
 				// A wait with multiple locks held?
 				String sourceFile = javaClass.getSourceFileName();
 				possibleWaitBugs.add(new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY )
-						.addClass(javaClass)
-						.addMethod(methodGen, sourceFile)
+						.addClassAndMethod(methodGen, sourceFile)
 						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
 			}
 		}

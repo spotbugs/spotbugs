@@ -253,38 +253,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	FBFileChooser filterOpenFileChooser;
 	
 	@CheckForNull private File saveFile = null;
-	/**
-     * @author pugh
-     */
-    private final class PopupListener extends MouseAdapter {
-	    /**
-	     * 
-	     */
-	    private final JPopupMenu result;
-
-	    /**
-	     * @param result
-	     */
-	    private PopupListener(JPopupMenu result) {
-		    this.result = result;
-	    }
-
-	    @Override
-	    public void mousePressed(MouseEvent e) {
-	    	maybeShowPopup(e);
-	    }
-
-	    @Override
-	    public void mouseReleased(MouseEvent e) {
-	    	maybeShowPopup(e);
-	    }
-
-	    private void maybeShowPopup(MouseEvent e) {
-	    	if (e.isPopupTrigger()) {
-	    		result.show(e.getComponent(), e.getX(), e.getY());
-	    	}
-	    }
-    }
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 

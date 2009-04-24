@@ -367,37 +367,14 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public Subtypes2 getSubtypes2() {
-//		if (subtypes2 == null) {
-//			try {
-//				subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
-//			} catch (CheckedAnalysisException e) {
-//				IllegalStateException ise = new IllegalStateException("Should not happen");
-//				ise.initCause(e);
-//				throw ise;
-//			}
-//		}
-//		return subtypes2;
 		return Global.getAnalysisCache().getDatabase(Subtypes2.class);
 	}
-	
-//	private DirectlyRelevantTypeQualifiersDatabase directlyRelevantTypeQualifiersDatabase;
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDirectlyRelevantTypeQualifiersDatabase()
 	 */
 	@Override
 	public DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase() {
-//		if (directlyRelevantTypeQualifiersDatabase == null) {
-//			try {
-//				directlyRelevantTypeQualifiersDatabase =
-//					Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
-//			} catch (CheckedAnalysisException e) {
-//				IllegalStateException ise = new IllegalStateException("Should not happen");
-//				ise.initCause(e);
-//				throw ise;
-//			}
-//		}
-//		return directlyRelevantTypeQualifiersDatabase;
 		return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
 	}
 	

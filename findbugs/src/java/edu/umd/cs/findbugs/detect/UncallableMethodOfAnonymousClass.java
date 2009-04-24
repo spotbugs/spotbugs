@@ -79,6 +79,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 		if (seen == INVOKESPECIAL) {
 			XMethod m = getXMethodOperand();
+			if (m == null) 
+				return;
 			XClass c = getXClass();
 			int nameDistance = EditDistance.editDistance(m.getName(), getMethodName());
 			if (nameDistance < 4 && c.findMatchingMethod(m.getMethodDescriptor())
@@ -143,9 +145,24 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		public void doVisitMethod(Method obj) {
 			super.doVisitMethod(obj);
 			if (pendingBug != null) {
-				if (potentialSuperCall == null) 
-					pendingBug.addClass(getSuperclassName()).describe(ClassAnnotation.SUPERCLASS_ROLE);
-				else  {
+				if (potentialSuperCall == null) {
+					String role = ClassAnnotation.SUPERCLASS_ROLE;
+
+					String superclassName = ClassName.toDottedClassName(getSuperclassName());
+					if (superclassName.equals("java.lang.Object")) {
+						
+                        try {
+                        	JavaClass interfaces[] = getThisClass().getInterfaces();
+	                        if (interfaces.length == 1) {
+								superclassName = interfaces[0].getClassName();
+								role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;
+							}
+                        } catch (ClassNotFoundException e) {
+	                        AnalysisContext.reportMissingClass(e);
+                        }
+					}
+					pendingBug.addClass(superclassName).describe(role);
+                } else  {
 					pendingBug.setPriority(pendingBug.getPriority()-1);
 					pendingBug.addMethod(potentialSuperCall).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
 				}
@@ -176,17 +193,11 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 					&& (obj.isStatic() || 
 							!definedInSuperClassOrInterface(clazz, obj.getName() + ":" + obj.getSignature()))) {
 				int priority = NORMAL_PRIORITY;
-				String role = ClassAnnotation.SUPERCLASS_ROLE;
 				JavaClass superClass = clazz.getSuperClass();
 				String superClassName = superClass.getClassName();
 				if (superClassName.equals("java.lang.Object")) {
 						priority = NORMAL_PRIORITY;
-						JavaClass interfaces[] = clazz.getInterfaces();
-						if (interfaces.length == 1) {
-							superClassName = interfaces[0].getClassName();
-							role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;
-							// If anonymous inner class extends Object but has a single interface, list interface
-						}
+						
 				}
 				else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
 						priority = NORMAL_PRIORITY;

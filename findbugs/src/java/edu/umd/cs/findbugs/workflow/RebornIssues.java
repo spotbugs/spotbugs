@@ -94,7 +94,7 @@ public class RebornIssues {
 		return this;
 	}
 
-	class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
+	static class CommandLine extends  edu.umd.cs.findbugs.config.CommandLine {
 
 		@Override
 		public void handleOption(String option, String optionalExtraPart) {
@@ -111,7 +111,7 @@ public class RebornIssues {
 		DetectorFactoryCollection.instance(); // load plugins
 
 		RebornIssues reborn = new RebornIssues();
-		CommandLine commandLine = reborn.new CommandLine();
+		CommandLine commandLine = new CommandLine();
 		int argCount = commandLine
 		        .parse(args, 0, 2, "Usage: " + RebornIssues.class.getName() + " [options] [<xml results> [<history]] ");
 

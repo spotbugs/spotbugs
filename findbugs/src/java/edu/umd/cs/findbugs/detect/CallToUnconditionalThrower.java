@@ -136,8 +136,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 			boolean newResult = foundThrower && !foundNonThrower;
 			if (newResult)
 				bugReporter.reportBug(new BugInstance(this, "UNKNOWN", Priorities.NORMAL_PRIORITY)
-				    .addClass(classContext.getJavaClass())
-				    .addMethod(classContext.getJavaClass(), method)
+				    .addClassAndMethod(classContext.getJavaClass(), method)
 					.addMethod(primaryXMethod).describe(MethodAnnotation.METHOD_CALLED)
 					.addSourceLine(classContext, method, loc));
 

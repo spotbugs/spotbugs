@@ -92,7 +92,7 @@ public abstract class ClassName {
 	 * @param className a class name
 	 * @return the same class name in dotted format
 	 */
-	public static String toDottedClassName(String className) {
+	public static @DottedClassName String toDottedClassName(@SlashedClassName String className) {
 		if (className.indexOf('/') >= 0) {
 			className = DescriptorFactory.canonicalizeString(className.replace('/', '.'));
 		}
