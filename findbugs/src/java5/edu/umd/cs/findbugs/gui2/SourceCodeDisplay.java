@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -184,8 +185,9 @@ public final class SourceCodeDisplay implements Runnable {
 						}
 					}
 					//show(frame.sourceCodeTextPane, document, thisSource);
+					
 					if (startLine >= 0 && endLine >= 0)
-					frame.sourceCodeTextPane.scrollLinesToVisible(startLine, endLine, otherLines);
+						frame.sourceCodeTextPane.scrollLinesToVisible(startLine, endLine, otherLines);
 				}
 			});
 		} catch (Exception e) {

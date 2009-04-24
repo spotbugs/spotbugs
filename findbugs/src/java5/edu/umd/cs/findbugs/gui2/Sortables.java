@@ -347,7 +347,7 @@ public enum Sortables implements Comparator<SortableValue>
 		@Override
         public String getFrom(BugInstance bug) {
 	        ProjectPackagePrefixes p = MainFrame.getInstance().projectPackagePrefixes;
-	        Collection<String> projects = p.getProjects(bug.getPrimaryClass().getPackageName());
+	        Collection<String> projects = p.getProjects(bug.getPrimaryClass().getClassName());
 	        if (projects.size() == 0)
 	        	return "unclassified";
 	        String result = projects.toString();

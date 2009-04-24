@@ -45,7 +45,11 @@ public class ProjectPackagePrefixes {
 		final String[] parts;
 
 		PrefixFilter(String prefixes) {
-			parts = prefixes.replace('/', '.').trim().split("[ ,:]+");
+			prefixes = prefixes.replace('/', '.').trim();
+			if (prefixes.length() == 0)
+				parts = new String[0];
+			else
+				parts = prefixes.split("[ ,:]+");
 		}
 
 		boolean matches(@DottedClassName String className) {

@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 
@@ -93,7 +90,10 @@ public class ViewFilter {
 	
 	String [] packagePrefixes;
 	void setPackagesToDisplay(String value) {
-		packagePrefixes = value.replace('/','.').split("[ ,:]+");
+		value =value.replace('/','.').trim();
+		if (value.length() == 0)
+			packagePrefixes = new String[0];
+		else packagePrefixes = value.split("[ ,:]+");
 		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 	}
 	
@@ -122,22 +122,26 @@ public class ViewFilter {
     }
 
 	public boolean show(BugInstance b) {
-		if (packagePrefixes != null && packagePrefixes.length > 0) {
-			String packageName = b.getPrimaryClass().getPackageName();
+		String[] pp = packagePrefixes;
+		if (pp != null && pp.length > 0) {
+			String packageName = b.getPrimaryClass().getClassName();
 			boolean match = false;
-			for(String p : packagePrefixes) 
-				if (packageName.startsWith(p)) {
+			for(String p : pp) 
+				if (p.length() > 0 && packageName.startsWith(p)) {
 					match = true;
 					break;
 				}
-			if (!match) 
+			if (!match) {
 				return false;
+			}
 		}
 		
-		if (!firstSeen.show(mf,b)) 
+		if (!firstSeen.show(mf,b)) {
 			return false;
-		if (!rank.show(mf, b))
+		}
+		if (!rank.show(mf, b)) {
 			return false;
+		}
 		
 		return true;
 

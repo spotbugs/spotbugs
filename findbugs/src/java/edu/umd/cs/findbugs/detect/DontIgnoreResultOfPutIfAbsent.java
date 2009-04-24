@@ -200,7 +200,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     						}
     						
     					}
-    				} else {
+    				} else if (countOtherCalls) {
     					BugInstance bugInstance = new BugInstance(this,  "TESTING2", 
 								Priorities.NORMAL_PRIORITY)
 									.addClassAndMethod(methodGen,sourceFileName)

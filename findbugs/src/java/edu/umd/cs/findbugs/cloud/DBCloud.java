@@ -58,12 +58,15 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * @author pwilliam
@@ -79,6 +82,7 @@ public  class DBCloud extends AbstractCloud {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
+	
 	class BugData {
 		final String instanceHash;
 
@@ -182,9 +186,34 @@ public  class DBCloud extends AbstractCloud {
 	DBCloud(BugCollection bugs) {
 		super(bugs);
 	}
-
+	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
+	
 	public void bugsPopulated() {
 
+		if (false) {
+		String unknownComponent = getBugComponent(" huh ");
+		
+		for (BugInstance b : bugCollection.getCollection()) {
+			String className = b.getPrimaryClass().getClassName();
+			String component = getBugComponent(className.replace('.', '/'));
+			if (component != null && !component.equals(unknownComponent)) {
+				System.out.println("Happy");
+				continue;
+			}
+			
+			Collection<String> projects = projectMapping.getProjects(className);
+			System.out.println(projects);
+
+			int minLength = 16;
+			
+			int x = className.indexOf('.', minLength+1);
+			x = className.indexOf('.', x+1);
+			if (x == -1)
+				System.out.println(className);
+			else System.out.println(className.substring(0,x));
+		}
+			
+		}
 		
 		for (BugInstance b : bugCollection.getCollection())
 			if (!skipBug(b))
@@ -282,6 +311,7 @@ public  class DBCloud extends AbstractCloud {
 	
 	String sourceFileLinkToolTip;
 	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
+	Map<String,String> prefixBugComponentMapping = new HashMap<String,String>();
 
 	private Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, dbUser, dbPassword);
@@ -321,6 +351,9 @@ public  class DBCloud extends AbstractCloud {
 					  + InetAddress.getLocalHost().getHostName();
 			} catch (Exception e) {}
 		}
+		
+		loadBugComponents();
+		
 		try {
 			Class.forName(sqlDriver);
 			Connection c = getConnection();
@@ -359,6 +392,43 @@ public  class DBCloud extends AbstractCloud {
 			return false;
 		}
 	}
+	
+	private String getBugComponent(@SlashedClassName String className) {
+		
+		int longestMatch = -1;
+		String result = null;
+		for(Map.Entry<String,String> e : prefixBugComponentMapping.entrySet()) {
+			String key = e.getKey();
+			if (className.startsWith(key) && longestMatch < key.length()) {
+				longestMatch = key.length();
+				result = e.getValue();
+			}
+		}
+		return result;
+	}
+	private void loadBugComponents(){
+		try {
+	    URL u = PluginLoader.getCoreResource("bugComponents.properties");
+		if (u != null) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
+			while(true) {
+				String s = in.readLine();
+				if (s == null) break;
+				if (s.trim().length() == 0)
+					continue;
+				int x = s.indexOf(' ');
+				if (x == -1)
+					prefixBugComponentMapping.put("", s);
+				else
+					prefixBugComponentMapping.put(s.substring(x+1), s.substring(0,x));
+				
+			}
+			in.close();
+		}
+		} catch (IOException e) {
+			AnalysisContext.logError("Unable to load bug component properties", e);
+		}
+    }
 
 	final LinkedBlockingQueue<Update> queue = new LinkedBlockingQueue<Update>();
 
@@ -570,6 +640,13 @@ public  class DBCloud extends AbstractCloud {
 		void execute(DatabaseSyncTask t) throws SQLException;
 	}
 	
+	boolean bugAlreadyFiled(BugInstance b) {
+		BugData bd = getBugData(b.getInstanceHash());
+		if (bd == null || !bd.inDatabase)
+			throw new IllegalArgumentException();
+		return bd.bugLink != null && !bd.bugLink.equals(NONE) && !bd.bugLink.equals(PENDING);
+
+	}
 	class FileBug implements Update {
 
         public FileBug(BugInstance bug) {
@@ -823,7 +900,8 @@ public  class DBCloud extends AbstractCloud {
 				return null;
 			String report = getBugReport(b);
 			String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-			String u = String.format(bugLinkPattern, urlEncode(report), urlEncode(summary));
+			String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
+			String u = String.format(bugLinkPattern, component, urlEncode(summary),  urlEncode(report));
 			return new URL(u);
 		} catch (Exception e) {
 
@@ -844,7 +922,7 @@ public  class DBCloud extends AbstractCloud {
 
 	@Override
     public String getCloudReport(BugInstance b) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd");
 		StringBuilder builder = new StringBuilder();
 		BugData bd = getBugData(b);
 		long firstSeen = bd.firstSeen;
@@ -852,11 +930,13 @@ public  class DBCloud extends AbstractCloud {
 			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
 		}
 		BugDesignation primaryDesignation = bd.getPrimaryDesignation();
+		I18N i18n = I18N.instance();
 		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
 		for(BugDesignation d : bd.designations) 
 			if (d != primaryDesignation 
 					&& (canSeeCommentsByOthers || findbugsUser.equals(d.getUser()))) {
-				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), d.getDesignationKey()));
+				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
+						i18n.getUserDesignation(d.getDesignationKey())));
 				if (d.getAnnotationText().length() > 0) {
 					builder.append(d.getAnnotationText());
 					builder.append("\n\n");
@@ -942,6 +1022,8 @@ public  class DBCloud extends AbstractCloud {
      * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
      */
     public void bugFiled(BugInstance b, Object bugLink) {
+    	if (bugAlreadyFiled(b))
+    		return;
     	System.out.println("requesting bug filed for " + b.getMessage());
     	queue.add(new FileBug(b));
     	updatedStatus();

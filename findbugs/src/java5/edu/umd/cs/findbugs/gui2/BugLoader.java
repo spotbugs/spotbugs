@@ -139,6 +139,7 @@ public class BugLoader {
 		try {
 	        col.readXML(source);
         } catch (Exception e) {
+        	e.printStackTrace();
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  source+ "; " + e.getMessage());
         }
 		addDeadBugMatcher(project);
