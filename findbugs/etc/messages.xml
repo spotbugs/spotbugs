@@ -7749,8 +7749,8 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
   <BugCode abbrev="MSF" >Mutable servlet field</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
-  <BugCode abbrev="Eq" >Problems with equals()</BugCode>
-  <BugCode abbrev="Co" >Problems with compareTo()</BugCode>
+  <BugCode abbrev="Eq" >Problems with implementation of equals()</BugCode>
+  <BugCode abbrev="Co" >Problems with implementation of compareTo()</BugCode>
   <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
   <BugCode abbrev="AM" >API misuse</BugCode>
   <BugCode abbrev="Dm" >Dubious method used</BugCode>
@@ -7831,8 +7831,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="BSHIFT">Bad shift</BugCode>
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
   <BugCode abbrev="RE">Regular expressions</BugCode>
-  <BugCode abbrev="SQL">SQL Problem</BugCode>
-  <BugCode abbrev="DL">Potential deadlock or unexpected blocking</BugCode>
+  <BugCode abbrev="SQL">Potential SQL Problem</BugCode>
   <BugCode abbrev="WL">Possible locking on wrong object</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
