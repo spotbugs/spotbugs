@@ -856,6 +856,8 @@ public  class DBCloud extends AbstractCloud {
     			assert true;
     		}
     		URL link = getSourceLink(b);
+    		
+    		
     		if (link != null) {
     		
     			out.println(sourceFileLinkToolTip + ": " + link);
@@ -863,8 +865,15 @@ public  class DBCloud extends AbstractCloud {
     		}
     	}
     	
+    	
 
     	
+
+    	
+    	out.println("Explanation:");
+    	out.println(b.getBugPattern().getDetailPlainText());
+    	
+    	out.println();
     	out.println();
     	out.println("FindBugs issue identifier (do not modify): " + b.getInstanceHash());
     	out.close();

@@ -19,6 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+
+import javax.swing.text.BadLocationException;
+
+import edu.umd.cs.findbugs.util.HTML;
+
 /**
  * A BugPattern object collects all of the metadata for a particular
  * species of BugInstance.  Specifically, it stores the human-readable
@@ -156,6 +162,17 @@ public class BugPattern implements Comparable<BugPattern> {
 		return detailText;
 	}
 
+	/**
+	 * Get the Plain text describing the bug.
+	 */
+	public String getDetailPlainText() {
+		try {
+	        return HTML.convertHtmlSnippetToText(detailText);
+        } catch (Exception e) {
+        	return detailText;
+	      
+        }
+	}
 	/**
 	 * Get the detail text as a complete HTML document.
 	 */
