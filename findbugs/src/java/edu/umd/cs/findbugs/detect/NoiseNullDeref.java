@@ -173,6 +173,9 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 
 		JavaClass jclass = classContext.getJavaClass();
 		String className = jclass.getClassName();
+		String superClassName = jclass.getSuperclassName();
+		if (superClassName.endsWith("ProtocolMessage"))
+			return;
 		if (CLASS != null && !className.equals(CLASS))
 			return;
 		Method[] methodList = jclass.getMethods();
@@ -276,31 +279,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 				.getUnconditionalDerefParamDatabase();
 	}
 
-	/**
-	 * See if the currently-visited method declares a
-	 * 
-	 * @NonNull annotation, or overrides a method which declares a
-	 * @NonNull annotation.
-	 */
-	private NullnessAnnotation getMethodNullnessAnnotation() {
-
-		if (method.getSignature().indexOf(")L") >= 0
-				|| method.getSignature().indexOf(")[") >= 0) {
-			if (DEBUG_NULLRETURN) {
-				System.out.println("Checking return annotation for "
-						+ SignatureConverter.convertMethodSignature(
-								classContext.getJavaClass(), method));
-			}
-
-			XMethod m = XFactory.createXMethod(classContext.getJavaClass(),
-					method);
-			return AnalysisContext.currentAnalysisContext()
-					.getNullnessAnnotationDatabase().getResolvedAnnotation(m,
-							false);
-		}
-		return NullnessAnnotation.UNKNOWN_NULLNESS;
-	}
-
 	static class CheckCallSitesAndReturnInstructions {}
 
 	public void report() {
@@ -349,18 +327,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		} else {
 			cause = new StringAnnotation(ins.getName());
 		}
-		boolean duplicated = propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED);
-		try {
-			CFG cfg = classContext.getCFG(method);
-			if (cfg.getLocationsContainingInstructionWithOffset(pc)
-					.size() > 1) {
-				propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
-				duplicated = true;
-			}
-		} catch (CFGBuilderException e) {
-			AnalysisContext.logError("huh", e);
-		}
-
+	
 		boolean caught = inCatchNullBlock(location);
 		if (caught && skipIfInsideCatchNull())
 			return;
