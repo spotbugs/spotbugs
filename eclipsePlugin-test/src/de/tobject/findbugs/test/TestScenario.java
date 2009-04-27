@@ -29,9 +29,9 @@ import java.util.Set;
  * @author Tomás Pollak
  */
 public enum TestScenario {
-	DEFAULT("/testFiles", false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
-			"/quickfixInput", false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
-			"/quickfixInput", true, new String[] {}, 0);
+	DEFAULT("/defaultScenario", false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
+			"/quickfixScenario", false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
+			"/quickfixScenario", true, new String[] {}, 0);
 
 	private String testFilesPath;
 	private boolean usesJUnit;
