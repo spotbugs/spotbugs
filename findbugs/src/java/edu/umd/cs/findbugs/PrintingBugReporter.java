@@ -139,7 +139,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				String key = warning.getUserDesignationKey();
 				if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY"))
 					System.out.print("#-1#"+key);
-				else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX"))
+				else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX")  || key.equals("I_WILL_FIX"))
 					System.out.print("#7#"+key);
 				else System.out.print("#0#"+key);
 				SourceLineAnnotation sourceLine = warning.getPrimarySourceLineAnnotation();

@@ -30,6 +30,7 @@ public enum UserDesignation {
 	MOSTLY_HARMLESS,
 	SHOULD_FIX,
 	MUST_FIX,
+	I_WILL_FIX,
 	OBSOLETE_CODE,
 
 }

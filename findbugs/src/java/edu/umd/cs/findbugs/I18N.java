@@ -343,6 +343,9 @@ public class I18N {
 			switch (key.charAt(0)) {
 				case 'U': if ("UNCLASSIFIED".equals(key)) return 20;
 						  break;
+				case 'I': if ("I_WILL_FIX".equals(key)) return 12;
+				  			break;
+		
 				case 'B': if ("BAD_ANALYSIS".equals(key)) return 15;
 						  break;
 				case 'N': if ("NEEDS_STUDY".equals(key)) return -22;
