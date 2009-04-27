@@ -126,11 +126,12 @@ public class TestDesktopIntegration extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 
-					writer.println("Launch via desktop");
+					writer.println("Launch via desktop of " + url);
 					LaunchBrowser.viaDesktop(url.toURI());
 				} catch (Exception e1) {
 					e1.printStackTrace(writer);
 				}
+				writer.println("Launch via desktop completed");
 			}
 		});
 		top.add(desktop);
@@ -140,11 +141,12 @@ public class TestDesktopIntegration extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 
-					writer.println("Launch via jnlp");
+					writer.println("Launch via jnlp of " + url);
 					LaunchBrowser.viaWebStart(url);
 				} catch (Exception e1) {
 					e1.printStackTrace(writer);
 				}
+				writer.println("Launch via jnlp completed");
 			}
 		});
 		top.add(jnlp);
@@ -153,7 +155,7 @@ public class TestDesktopIntegration extends JPanel {
 		exec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					writer.println("Launch via exec firefox");
+					writer.println("Launch via exec firefox "+url);
 					Process p = LaunchBrowser.launchFirefox(url);
 					Thread.sleep(3000);
 					int exitValue = p.exitValue();
@@ -161,6 +163,7 @@ public class TestDesktopIntegration extends JPanel {
 				} catch (Exception e1) {
 					e1.printStackTrace(writer);
 				}
+				writer.println("Launch via exec firefox completed");
 			}
 		});
 		top.add(exec);
