@@ -154,8 +154,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	}
 
 	private String getFilteredIds() {
-		return FindbugsPlugin.getDefault().getPreferenceStore().getString(
-				FindBugsConstants.LAST_USED_EXPORT_FILTER);
+		return getPreferenceStore().getString(FindBugsConstants.LAST_USED_EXPORT_FILTER);
 	}
 
 	private Shell getParentShell() {
@@ -163,16 +162,16 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 		return shell;
 	}
 
-	private FilterBugsDialogTestSubclass openFilterBugsDialog(Set<BugPattern> filteredPatterns,
-			Set<BugCode> filteredTypes) {
-		FilterBugsDialogTestSubclass dialog = new FilterBugsDialogTestSubclass(getParentShell(),
-				filteredPatterns, filteredTypes);
+	private FilterBugsDialogTestSubclass openFilterBugsDialog(
+			Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
+		FilterBugsDialogTestSubclass dialog = new FilterBugsDialogTestSubclass(
+				getParentShell(), filteredPatterns, filteredTypes);
 		dialog.open();
 		return dialog;
 	}
 
 	private void storeFilteredIds(String selectedIds) {
-		FindbugsPlugin.getDefault().getPreferenceStore().setValue(
-				FindBugsConstants.LAST_USED_EXPORT_FILTER, selectedIds);
+		getPreferenceStore().setValue(FindBugsConstants.LAST_USED_EXPORT_FILTER,
+				selectedIds);
 	}
 }

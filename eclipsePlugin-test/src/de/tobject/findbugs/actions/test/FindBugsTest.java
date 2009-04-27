@@ -25,47 +25,61 @@ import org.junit.Test;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.actions.ClearMarkersAction;
 import de.tobject.findbugs.actions.FindBugsAction;
+import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 
 /**
  * This class tests the FindBugsAction.
- *
+ * 
  * @author Tomás Pollak
  */
 public class FindBugsTest extends AbstractFindBugsTest {
-    @Test
-    public void testRunFindBugs() throws CoreException {
-        assertNoBugs();
 
-        StructuredSelection selection = new StructuredSelection(getProject());
-        FindBugsAction action = new FindBugsAction();
-        action.selectionChanged(null, selection);
-        action.run(null);
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		getPreferenceStore().setValue(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH, false);
+	}
 
-        joinJobFamily(FindbugsPlugin.class);
+	@Override
+	public void tearDown() throws CoreException {
+		getPreferenceStore().setToDefault(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+		super.tearDown();
+	}
 
-        assertExpectedBugs();
-    }
+	@Test
+	public void testClearFindBugs() throws CoreException {
+		assertNoBugs();
 
-    @Test
-    public void testClearFindBugs() throws CoreException {
-        assertNoBugs();
+		StructuredSelection selection = new StructuredSelection(getProject());
+		FindBugsAction action = new FindBugsAction();
+		action.selectionChanged(null, selection);
+		action.run(null);
 
-        StructuredSelection selection = new StructuredSelection(getProject());
-        FindBugsAction action = new FindBugsAction();
-        action.selectionChanged(null, selection);
-        action.run(null);
+		joinJobFamily(FindbugsPlugin.class);
 
-        joinJobFamily(FindbugsPlugin.class);
+		assertExpectedBugs();
 
-        assertExpectedBugs();
+		ClearMarkersAction clearAction = new ClearMarkersAction();
+		clearAction.selectionChanged(null, selection);
+		clearAction.run(null);
 
-        ClearMarkersAction clearAction = new ClearMarkersAction();
-        clearAction.selectionChanged(null, selection);
-        clearAction.run(null);
+		joinJobFamily(FindbugsPlugin.class);
 
-        joinJobFamily(FindbugsPlugin.class);
+		assertBugsCount(0, getProject());
+	}
 
-        assertBugsCount(0, getProject());
-    }
+	@Test
+	public void testRunFindBugs() throws CoreException {
+		assertNoBugs();
+
+		StructuredSelection selection = new StructuredSelection(getProject());
+		FindBugsAction action = new FindBugsAction();
+		action.selectionChanged(null, selection);
+		action.run(null);
+
+		joinJobFamily(FindbugsPlugin.class);
+
+		assertExpectedBugs();
+	}
 }

@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
 import org.eclipse.jdt.testplugin.JavaProjectHelper;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -262,6 +263,10 @@ public abstract class AbstractPluginTest {
 	 */
 	protected IJavaProject getJavaProject() {
 		return project;
+	}
+
+	protected IPreferenceStore getPreferenceStore() {
+		return FindbugsPlugin.getDefault().getPreferenceStore();
 	}
 
 	/**
