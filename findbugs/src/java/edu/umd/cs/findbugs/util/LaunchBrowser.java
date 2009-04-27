@@ -72,17 +72,10 @@ public class LaunchBrowser {
 	}
 
 
-
-	/** 
-	 * attempt to show the given URL.
-	 * will first attempt via the JNLP api, then will try showViaExec().
-	 * @param url the URL
-	 * @return true on success
-	 */
-	public static boolean showDocument(URL url) {
+	public static boolean showDocumentViaDesktop(URL u) {
 		
 		if (desktopObject != null && desktopBrowseMethod != null) try { 
-			 desktopBrowseMethod.invoke(desktopObject, url.toURI());
+			 viaDesktop(u.toURI());
 			 return true;
 		} catch (InvocationTargetException ite) {
 			
@@ -94,19 +87,32 @@ public class LaunchBrowser {
         } catch (URISyntaxException e) {
         	assert true;
         }
+        return false;
+	}
+
+	public static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
+	    desktopBrowseMethod.invoke(desktopObject, u);
+    }
+
+	public static Boolean viaWebStart(URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		return (Boolean) jnlpShowMethod.invoke(jnlpShowObject,  url );
+	}
+	public static boolean showViaWebStart(URL url) {
 		if (jnlpShowMethod != null) try {
-			Object result = jnlpShowMethod.invoke(jnlpShowObject,  url );
-			return (Boolean.TRUE.equals(result));
+			Boolean b = viaWebStart(url);
+			return b != null && b.booleanValue();
 		} catch (InvocationTargetException ite) {
 			assert true;
 		} catch (IllegalAccessException iae) {
 			assert true;
 		}
-	if (launchFirefox && !launchViaExecFailed) {
-			Runtime r = Runtime.getRuntime();
-			String a[] = new String[] { "firefox", url.toString() };
+		return false;
+	}
+	
+	public static boolean showDocumentViaExec(URL url) {
+		if (launchFirefox && !launchViaExecFailed) {
 			try {
-				Process p = r.exec(a);
+				Process p = launchFirefox(url);
 				Thread.sleep(20);
 				int exitValue = p.exitValue();
 				if (exitValue != 0) {
@@ -121,10 +127,32 @@ public class LaunchBrowser {
 			}
 		}
 		return false;
+	
 	}
 
-
+	public static Process launchFirefox(URL url) throws IOException {
+	    ProcessBuilder builder = new ProcessBuilder("firefox", url.toString() );
+	    Process p = builder.start();
+	    return p;
+    }
+	/** 
+	 * attempt to show the given URL.
+	 * will first attempt via the JNLP api, then will try showViaExec().
+	 * @param url the URL
+	 * @return true on success
+	 */
+	public static boolean showDocument(URL url) {
+		
+		if (showDocumentViaDesktop(url))
+			return true;
+		if (showViaWebStart(url))
+			return true;
+		if (showDocumentViaExec(url))
+			return true;
+		return false;
 	
+
+	}
 
 	
 }
