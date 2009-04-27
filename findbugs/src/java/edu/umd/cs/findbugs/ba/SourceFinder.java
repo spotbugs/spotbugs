@@ -19,30 +19,35 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
-import javax.swing.ProgressMonitorInputStream;
+import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.classfile.ReflectionDatabaseFactory;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -120,7 +125,99 @@ public class SourceFinder {
 			return baseDir + File.separator + fileName;
 		}
 	}
+	
+	private static class InMemorySourceRepository implements SourceRepository {
+		
+		Map<String, byte[]> contents = new HashMap<String,byte[]>();
+		InMemorySourceRepository(@WillClose ZipInputStream in) throws IOException {
+			try {
+				while (true) {
 
+					ZipEntry e = in.getNextEntry();
+					if (e == null)
+						break;
+					if (!e.isDirectory()) {
+						String name = e.getName();
+						long size = e.getSize();
+
+						if (size > Integer.MAX_VALUE)
+							throw new IOException(name + " is too big at " + size + " bytes");
+						ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
+						GZIPOutputStream gOut = new GZIPOutputStream(out);
+						IO.copy(in, gOut);
+						gOut.close();
+						byte data[] = out.toByteArray();
+						contents.put(name, data);
+					}
+					in.closeEntry();
+				}
+			} finally {
+				Util.closeSilently(in);
+			}
+			
+		}
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#contains(java.lang.String)
+         */
+        public boolean contains(String fileName) {
+	       return contents.containsKey(fileName);
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#getDataSource(java.lang.String)
+         */
+        public SourceFileDataSource getDataSource(final String fileName) {
+	        return new SourceFileDataSource(){
+
+				public String getFullFileName() {
+	               return fileName;
+                }
+
+				public InputStream open() throws IOException {
+	                return new GZIPInputStream(
+	                		new ByteArrayInputStream(contents.get(fileName)));
+                }};
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.SourceFinder.SourceRepository#isPlatformDependent()
+         */
+        public boolean isPlatformDependent() {
+	        return false;
+        }
+	}
+
+	SourceRepository makeInMemorySourceRepository(final String url) {
+		final BlockingSourceRepository r = new BlockingSourceRepository();
+		Thread t = new Thread(new Runnable(){
+
+			public void run() {
+				InputStream in = null;
+				try {
+				URLConnection connection = new URL(url).openConnection();
+				if(getProject().isGuiAvaliable()){
+					int size = connection.getContentLength();
+					in =  getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), 
+							size, "Loading source via url");
+				} else {
+					in = connection.getInputStream();
+				}
+				if (url.endsWith(".z0p.gz"))
+					in = new GZIPInputStream(in);
+				
+				r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
+				} catch (IOException e) {
+					AnalysisContext.logError("Unable to load " + url, e);
+					Util.closeSilently(in);
+				}
+            }}, "Source loading thread");
+		t.setDaemon(true);
+		t.start();
+		return r;
+	}
+
+	
 	SourceRepository makeJarURLConnectionSourceRepository(final String url) throws MalformedURLException, IOException {
 		final File file = File.createTempFile("jar_cache", null);
 		file.deleteOnExit();
@@ -249,11 +346,11 @@ public class SourceFinder {
 	 */
 	public void setSourceBaseList(List<String> sourceBaseList) {
 		for (String repos : sourceBaseList) {
-			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
+			if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
 				// Zip or jar archive
 				try {
 					if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) 
-						repositoryList.add(makeJarURLConnectionSourceRepository(repos));
+						repositoryList.add(makeInMemorySourceRepository(repos));
 					else 
 						repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));
 				} catch (IOException e) {
@@ -261,8 +358,9 @@ public class SourceFinder {
 					e.printStackTrace();
 				}
 			} else {
-				// Directory
-				repositoryList.add(new DirectorySourceRepository(repos));
+				File dir = new File(repos);
+				if (dir.canRead() && dir.isDirectory())
+					repositoryList.add(new DirectorySourceRepository(repos));
 			}
 		}
 	}
