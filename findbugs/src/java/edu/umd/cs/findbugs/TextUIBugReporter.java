@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
 import java.util.Iterator;
+
 import javax.annotation.WillClose;
 
 /**
@@ -37,6 +38,7 @@ import javax.annotation.WillClose;
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean reportStackTrace;
 	private boolean useLongBugCodes = false;
+	private boolean showRank = false;
 	private boolean reportHistory = false;
 	private boolean reportUserDesignations = false;
 	private boolean applySuppressions = false;
@@ -73,6 +75,10 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	 * @param bugInstance the bug to print
 	 */
 	protected void printBug(BugInstance bugInstance) {
+		if (showRank) {
+			int rank = BugRanker.findRank(bugInstance);
+			outputStream.printf("%2d ", rank);
+		}
 		switch (bugInstance.getPriority()) {
 		case Detector.EXP_PRIORITY:
 			outputStream.print("E ");
@@ -186,6 +192,9 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
+	}
+	public void setShowRank(boolean showRank) {
+		this.showRank = showRank;
 	}
 	
 	public void setApplySuppressions(boolean applySuppressions) {

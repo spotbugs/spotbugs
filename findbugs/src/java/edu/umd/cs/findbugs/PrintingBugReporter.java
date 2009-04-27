@@ -59,6 +59,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
+			addSwitch("-rank", "list rank when generating text");
 			addSwitch("-designations", "report user designations for each bug");
 			addSwitch("-history", "report first and last versions for each bug");
 			addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
