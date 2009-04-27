@@ -25,14 +25,15 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.junit.Test;
 
 import de.tobject.findbugs.reporter.JdtUtils;
-import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.AbstractPluginTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the JdtUtil class.
  * 
  * @author Tomás Pollak
  */
-public class JdtUtilTest extends AbstractFindBugsTest {
+public class JdtUtilTest extends AbstractPluginTest {
 	@Test
 	public void testFindAnonymous() throws JavaModelException {
 		IType typeC = getTypeC();
@@ -65,16 +66,9 @@ public class JdtUtilTest extends AbstractFindBugsTest {
 		doNullTest(typeC, "bla");
 	}
 
-	private void doNullTest(IType parentType, String anonymousClassNumber) {
-		IType typeZero = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
-		assertNull(typeZero);
-	}
-
-	private void doPositiveTest(IType parentType, String anonymousClassNumber) {
-		IType childType = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
-		assertNotNull(childType);
-		assertTrue(childType.exists());
-		assertEquals("", childType.getElementName());
+	@Override
+	protected TestScenario getTestScenario() {
+		return TestScenario.JDT;
 	}
 
 	protected IType getTypeC() throws JavaModelException {
@@ -85,6 +79,18 @@ public class JdtUtilTest extends AbstractFindBugsTest {
 	protected IType getTypeE() throws JavaModelException {
 		IType type = getJavaProject().findType("C.E");
 		return type;
+	}
+
+	private void doNullTest(IType parentType, String anonymousClassNumber) {
+		IType typeZero = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
+		assertNull(typeZero);
+	}
+
+	private void doPositiveTest(IType parentType, String anonymousClassNumber) {
+		IType childType = JdtUtils.findAnonymous(parentType, anonymousClassNumber);
+		assertNotNull(childType);
+		assertTrue(childType.exists());
+		assertEquals("", childType.getElementName());
 	}
 
 }
