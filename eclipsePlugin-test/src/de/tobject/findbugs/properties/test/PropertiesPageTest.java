@@ -20,7 +20,6 @@ package de.tobject.findbugs.properties.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -50,7 +49,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 	private UserPreferences originalWorkspacePreferences;
 
 	@Override
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		super.setUp();
 
 		// Save the preferences and restore them after the test

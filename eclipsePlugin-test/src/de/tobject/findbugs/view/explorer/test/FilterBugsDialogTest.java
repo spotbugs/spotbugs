@@ -20,7 +20,6 @@ package de.tobject.findbugs.view.explorer.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -46,7 +45,7 @@ public class FilterBugsDialogTest extends AbstractFindBugsTest {
 	private String originalFilteredIds;
 
 	@Override
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		super.setUp();
 
 		// Hold the original filter value and restore it after the test

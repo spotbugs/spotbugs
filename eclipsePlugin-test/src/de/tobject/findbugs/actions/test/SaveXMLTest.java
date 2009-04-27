@@ -21,7 +21,6 @@ package de.tobject.findbugs.actions.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -44,7 +43,7 @@ public class SaveXMLTest extends AbstractFindBugsTest {
 
 	@Override
 	@Before
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		super.setUp();
 		tempFile = File.createTempFile("bugs", ".xml");
 		assertTrue(tempFile.delete());

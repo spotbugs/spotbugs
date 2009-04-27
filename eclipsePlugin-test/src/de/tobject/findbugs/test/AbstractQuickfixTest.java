@@ -53,7 +53,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
 	@Override
 	@Before
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		super.setUp();
 
 		resolutionGenerator = new BugResolutionGenerator();

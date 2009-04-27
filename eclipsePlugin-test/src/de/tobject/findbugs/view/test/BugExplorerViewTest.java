@@ -20,7 +20,6 @@ package de.tobject.findbugs.view.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,7 +56,7 @@ public class BugExplorerViewTest extends AbstractFindBugsTest {
 
     @Override
     @Before
-    public void setUp() throws CoreException, IOException {
+    public void setUp() throws Exception {
         resetBugContentProviderInput();
         super.setUp();
     }

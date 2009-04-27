@@ -80,7 +80,7 @@ public abstract class AbstractPluginTest {
 	 * @throws IOException
 	 */
 	@Before
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		// Create the test project
 		project = createJavaProject(TEST_PROJECT, "bin");
 		addRTJar(getJavaProject());

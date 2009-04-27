@@ -20,7 +20,6 @@ package de.tobject.findbugs.actions.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
 	private GroupByAction action;
 
 	@Override
-	public void setUp() throws CoreException, IOException {
+	public void setUp() throws Exception {
 		super.setUp();
 
 		action = new GroupByAction();
