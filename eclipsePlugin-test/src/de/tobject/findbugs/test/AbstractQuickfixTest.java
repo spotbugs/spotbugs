@@ -29,11 +29,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
-import org.eclipse.jdt.testplugin.JavaProjectHelper;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
 import org.junit.Assert;
@@ -73,11 +70,6 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 		super.tearDown();
 	}
 
-	protected void addJUnitToProjectClasspath() throws JavaModelException {
-		IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
-		JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
-	}
-
 	protected void doTestQuickfixResolution(String classFileName,
 			Class<? extends IMarkerResolution> resolutionClass,
 			String... expectedPatterns) throws CoreException, IOException {
@@ -115,8 +107,8 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 	}
 
 	@Override
-	protected String getTestFilesPath() {
-		return "/quickfixInput";
+	protected TestScenario getTestScenario() {
+		return TestScenario.QUICKFIX;
 	}
 
 	private void applySingleResolutionForAllMarkers(IMarker[] markers) {

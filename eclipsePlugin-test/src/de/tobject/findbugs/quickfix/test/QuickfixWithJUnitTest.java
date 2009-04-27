@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the quickfix resolutions for examples that use JUnit.
@@ -38,8 +39,7 @@ public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
 	}
 
 	@Override
-	protected void addExtraClassPathEntries() throws CoreException {
-		super.addExtraClassPathEntries();
-		addJUnitToProjectClasspath();
+	protected TestScenario getTestScenario() {
+		return TestScenario.QUICKFIX_WITH_JUNIT;
 	}
 }
