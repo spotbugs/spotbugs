@@ -25,63 +25,111 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLWriter;
 import javax.swing.text.html.MinimalHTMLWriter;
+
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.I18N;
 
 public class HTML {
 
-	private static final class HTMLtoPlainTextWriter extends MinimalHTMLWriter {
-		boolean textWritten = false;
+	private static final class HTMLtoPlainTextWriter2 extends HTMLWriter {
+
+		boolean inPre = false;
+		boolean startingParagraph = false;
 
 		/**
 		 * @param w
 		 * @param doc
 		 */
-		private HTMLtoPlainTextWriter(Writer w, StyledDocument doc) {
+		public HTMLtoPlainTextWriter2(Writer w, HTMLDocument doc) {
 			super(w, doc);
-			setCurrentLineLength(80);
+			setLineLength(80);
+			setCanWrapLines(true);
 		}
 
 		@Override
-		protected void writeHeader() {
-		}
-
-		@Override
-		protected void writeStartTag(String tag) {
-		}
-
-		@Override
-		protected void writeEndTag(String tag) {
-		}
-
-		@Override
-		protected void write(char[] chars, int startIndex, int length) throws IOException {
-			textWritten = true;
-			super.write(chars, startIndex, length);
-		}
-
-		@Override
-		protected void writeHTMLTags(AttributeSet attr) {
-		}
-
-		@Override
-		protected void writeStartParagraph(Element elem) throws IOException {
+		protected void startTag(Element elem) throws IOException {
 			String name = elem.getName();
-			if (textWritten && name.equals("p"))
-				writeLineSeparator();
+			startingParagraph = true;
+			if (name.equals("ul")) {
+				super.incrIndent();
+				write("  ");
+			} else if (name.equals("pre")) {
+				inPre = true;
+			} else if (name.equals("li")) {
+				super.incrIndent();
+				write("* ");
+			} else if (name.equals("p")) {
+				
+			}
+		};
+
+		@Override
+		protected void writeEmbeddedTags(AttributeSet attr) throws IOException {
+
 		}
 
 		@Override
-		protected void writeEndParagraph() throws IOException {
-			if (textWritten)
+		protected void endTag(Element elem) throws IOException {
+			String name = elem.getName();
+			if (name.equals("p")) {
 				writeLineSeparator();
+				indent();
+			} else if (name.equals("pre")) {
+				inPre = false;
+			} else if (name.equals("ul")) {
+				super.decrIndent();
+				writeLineSeparator();
+				indent();
+			} else if (name.equals("li")) {
+				super.decrIndent();
+				writeLineSeparator();
+				indent();
+			}
+		}
 
+		@Override
+		protected void incrIndent() {
+		};
+
+		@Override
+		protected void decrIndent() {
+		};
+
+		@Override
+		protected void emptyTag(Element elem) throws IOException, BadLocationException {
+			if (elem.getName().equals("content"))
+				super.emptyTag(elem);
+		};
+
+		@Override
+		protected void text(Element elem) throws IOException, BadLocationException {
+			String contentStr = getText(elem);
+			if (!inPre) {
+				contentStr = contentStr.replaceAll("\\s+", " ");
+
+				if (startingParagraph) {
+					while (contentStr.length() > 0 && contentStr.charAt(0) == ' ')
+						contentStr = contentStr.substring(1);
+				}
+
+				startingParagraph = false;
+			}
+			if (contentStr.length() > 0) {
+				
+				setCanWrapLines(!inPre);
+				write(contentStr);
+			}
 		}
 	}
 
@@ -94,7 +142,7 @@ public class HTML {
 		HTMLDocument doc = new HTMLDocument();
 		kit.read(reader, doc, 0);
 
-		MinimalHTMLWriter x = new HTMLtoPlainTextWriter(writer, doc);
+		HTMLtoPlainTextWriter2 x = new HTMLtoPlainTextWriter2(writer, doc);
 		x.write();
 		writer.close();
 
@@ -105,6 +153,15 @@ public class HTML {
 		StringReader reader = new StringReader("<HTML><BODY>" + htmlSnippet + "</BODY></HTML>");
 		convertHtmlToText(reader, writer);
 		return writer.toString();
+	}
+	
+	public static void main(String args[]) throws Exception {
+		
+		BugPattern p = I18N.instance().lookupBugPattern("IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION");
+		System.out.println(p.getDetailText());
+		
+		System.out.println("---");
+		System.out.println(p.getDetailPlainText());
 	}
 
 }
