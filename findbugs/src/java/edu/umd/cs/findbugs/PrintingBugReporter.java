@@ -74,6 +74,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-longBugCodes"))
 				setUseLongBugCodes(true);
+			else if (option.equals("-rank"))
+				setShowRank(true);
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
 			else if (option.equals("-applySuppression"))
