@@ -27,12 +27,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -48,6 +49,35 @@ import edu.umd.cs.findbugs.util.LaunchBrowser;
  * @author pugh
  */
 public class TestDesktopIntegration extends JPanel {
+	
+	private static String [] propertyNames = { "java.version",
+		"java.vendor",
+		"java.vendor.url",
+		"java.home",
+		"java.vm.specification.version",
+		"java.vm.specification.vendor",
+		"java.vm.specification.name",
+		"java.vm.version",
+		"java.vm.vendor",
+		"java.vm.name",
+		"java.specification.version",
+		"java.specification.vendor",
+		"java.specification.name",
+		"java.class.version",
+		"java.class.path",
+		"java.library.path",
+		"java.io.tmpdir",
+		"java.compiler",
+		"java.ext.dirs",
+		"os.name",
+		"os.arch",
+		"os.version",
+		"file.separator",
+		"path.separator",
+		"line.separator",
+		"user.name",
+		"user.home",
+		"user.dir" };
 
 	public static void main(String args[]) throws Exception {
 		url = new URL("http://www.sv.com");
@@ -128,10 +158,14 @@ public class TestDesktopIntegration extends JPanel {
 
 					writer.println("Launch via desktop of " + url);
 					LaunchBrowser.viaDesktop(url.toURI());
-				} catch (Exception e1) {
+					writer.println("Launch via desktop completed");
+					
+				} catch (Throwable e1) {
+					writer.println("Launch via desktop failed");
+					
 					e1.printStackTrace(writer);
 				}
-				writer.println("Launch via desktop completed");
+				writer.flush();
 			}
 		});
 		top.add(desktop);
@@ -143,10 +177,14 @@ public class TestDesktopIntegration extends JPanel {
 
 					writer.println("Launch via jnlp of " + url);
 					LaunchBrowser.viaWebStart(url);
-				} catch (Exception e1) {
+					writer.println("Launch via jnlp completed");
+					
+				} catch (Throwable e1) {
+					writer.println("Launch via jnlp failed");
+					
 					e1.printStackTrace(writer);
 				}
-				writer.println("Launch via jnlp completed");
+				writer.flush();
 			}
 		});
 		top.add(jnlp);
@@ -160,10 +198,13 @@ public class TestDesktopIntegration extends JPanel {
 					Thread.sleep(3000);
 					int exitValue = p.exitValue();
 					writer.println("Exit code: " + exitValue);
-				} catch (Exception e1) {
+					writer.println("Launch via exec firefox completed");
+					
+				} catch (Throwable e1) {
+					writer.println("Launch via exec firefox threw exception");
 					e1.printStackTrace(writer);
 				}
-				writer.println("Launch via exec firefox completed");
+				writer.flush();
 			}
 		});
 		top.add(exec);
@@ -188,13 +229,25 @@ public class TestDesktopIntegration extends JPanel {
 					} catch (Exception e1) {
 						e1.printStackTrace(writer);
 					}
+					writer.flush();
 				}
 			}
 		});
 
 		writer.println("System properties:");
-		for (Map.Entry e : System.getProperties().entrySet()) {
-			writer.println((e.getKey() + "=" + e.getValue()));
+		TreeSet<String> props = new TreeSet<String>();
+		for(Object o : System.getProperties().keySet()) {
+			if (o instanceof String) 
+				props.add((String) o);
+		}
+		props.addAll(Arrays.asList(propertyNames));
+		
+		for (String p  : props) {
+			try {
+			writer.println("  " + p+ "=" + System.getProperty(p));
+			} catch (Throwable e) {
+				writer.println("Unable to get property " + p);
+			}
 		}
 
 		try {
@@ -205,7 +258,7 @@ public class TestDesktopIntegration extends JPanel {
 			writer.println("JNLP service providers:");
 			for (String s : serviceNames) {
 				Object o = lookupMethod.invoke(null, new Object[] { s });
-				writer.println(s + " = " + o.getClass().getName());
+				writer.println("  " + s + " = " + o.getClass().getName());
 			}
 		} catch (Exception e) {
 			writer.println("unable to get JNLP service provider:");

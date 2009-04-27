@@ -28,6 +28,7 @@ import java.net.URL;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 
 /**
  * 
@@ -91,11 +92,15 @@ public class LaunchBrowser {
 	}
 
 	public static void viaDesktop(URI u) throws IllegalAccessException, InvocationTargetException, URISyntaxException {
+	    if (desktopBrowseMethod == null)
+	    	throw new UnsupportedOperationException("Launch via desktop not available");
 	    desktopBrowseMethod.invoke(desktopObject, u);
     }
 
 	public static Boolean viaWebStart(URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		return (Boolean) jnlpShowMethod.invoke(jnlpShowObject,  url );
+		if (jnlpShowMethod == null)
+	    	throw new UnsupportedOperationException("Launch via web start not available");
+	    return (Boolean) jnlpShowMethod.invoke(jnlpShowObject,  url );
 	}
 	public static boolean showViaWebStart(URL url) {
 		if (jnlpShowMethod != null) try {
