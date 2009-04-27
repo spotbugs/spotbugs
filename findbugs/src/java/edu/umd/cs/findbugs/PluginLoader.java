@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -225,20 +227,23 @@ public class PluginLoader {
 
 		// Read the plugin descriptor
 		String name = "findbugs.xml";
-		try {
-			URL descriptorURL = getResource(name);
-			if (descriptorURL == null)
-				throw new PluginException("Couldn't find \"" + name + "\" in plugin");
-			
-			if(DEBUG) {
-				System.out.println("PluginLoader found " + name + " at: " + descriptorURL);
-			}
-
-			SAXReader reader = new SAXReader();
-			pluginDescriptor = reader.read(descriptorURL);
-		} catch (DocumentException e) {
-			throw new PluginException("Couldn't parse \"" + name + "\"", e);
+		URL findbugsXML_URL = getResource(name);
+		if (findbugsXML_URL == null)
+			throw new PluginException("Couldn't find \"" + name + "\" in plugin");
+		if(DEBUG) {
+			System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
 		}
+		SAXReader reader = new SAXReader();
+		
+		try {
+			Reader r = new InputStreamReader(findbugsXML_URL.openStream());
+			pluginDescriptor = reader.read(r);
+		} catch (DocumentException e) {
+			throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
+		} catch (IOException e) {
+			throw new PluginException("Couldn't open \"" + findbugsXML_URL + "\"", e);
+			
+        }
 
 		// Get the unique plugin id (or generate one, if none is present)
 		pluginId = pluginDescriptor.valueOf("/FindbugsPlugin/@pluginid");
@@ -513,11 +518,11 @@ public class PluginLoader {
 			
 		}
 		try {
-			URL descriptorURL = getResource("bugrank.txt");
+			URL bugRankURL = getResource("bugrank.txt");
 
-			if (descriptorURL == null) 
+			if (bugRankURL == null) 
 				throw new PluginException("Couldn't parse \"bugrank.txt\"");
-			BugRanker ranker = new BugRanker(descriptorURL);
+			BugRanker ranker = new BugRanker(bugRankURL);
 			plugin.setBugRanker(ranker);
 		} catch (UnsupportedEncodingException e) {
 			throw new PluginException("Couldn't parse \"bugrank.txt\"", e);
