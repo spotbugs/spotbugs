@@ -74,6 +74,7 @@ public class CopyBuggySource {
 		SourceFinder sourceFinder = new SourceFinder(project);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		HashSet<String> copied = new HashSet<String>();
+		HashSet<String> couldNotCreate = new HashSet<String>();
 		for (BugInstance bug : origCollection.getCollection()) {
 			for (Iterator<BugAnnotation> i = bug.annotationIterator(); i
 					.hasNext();) {
@@ -104,13 +105,15 @@ public class CopyBuggySource {
 						continue;
 					}
 					File parent = file.getParentFile();
-					if (parent.isDirectory()) {
 					InputStream in = null;
 					OutputStream out = null;
 					try {
 						in = sourceFinder.openSource(packageName, sourceFile);
-						if (!parent.mkdirs()) {
-							System.out.println("Unable to create directory for " + parent);
+						if (!parent.mkdirs() && !parent.isDirectory()) {
+							String path = parent.getPath();
+							if (couldNotCreate.add(path))
+							System.out.println("Can't to create directory for " 
+									+ path);
 							in.close();
 							continue;
 						}
@@ -131,7 +134,7 @@ public class CopyBuggySource {
 						close(in);
 						close(out);
 					}
-					} else System.out.println("Unable to create directory for " + parent);
+					
 				}
 			}
 		}
