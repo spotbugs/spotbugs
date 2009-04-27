@@ -234,6 +234,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Accept the dialog
 		dialog.okPressed();
+		joinJobFamily(FindbugsPlugin.class);
 
 		// Check the project doesn't have the nature
 		assertFalse(ProjectUtilities.hasFindBugsNature(getProject()));
@@ -288,6 +289,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Accept the dialog
 		dialog.okPressed();
+		joinJobFamily(FindbugsPlugin.class);
 
 		// Check the project has the nature
 		assertTrue(ProjectUtilities.hasFindBugsNature(getProject()));
