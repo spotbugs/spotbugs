@@ -979,6 +979,7 @@
          experimental="true" />  <!-- has never been generated -->
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
+  <BugPattern abbrev="UR" type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="STYLE" />
   <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION" category="BAD_PRACTICE" />

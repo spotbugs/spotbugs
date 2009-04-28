@@ -3404,6 +3404,39 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR">
+    <ShortDescription>Uninitialized read of field method called from constructor of superclass</ShortDescription>
+    <LongDescription>{2.name} isn't initialized in {1} when invoked from constructor for superclass</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method is invoked in the constructor of of the superclass. At this point,
+	the fields of the class have not yet initialized.</p>
+<p>To make this more concrete, consider the following classes:</p>
+<pre>abstract class A {
+  int hashCode;
+  abstract Object getValue();
+  A() {
+    hashCode = getValue().hashCode();
+    }
+  }
+class B extends A {
+  Object value;
+  B(Object v) {
+    this.value = v;
+    }
+  Object getValue() {
+    return value;
+  }
+  }</pre>
+<p>When a <code>B</code> is constructed,
+the constructor for the <code>A</code> class is invoked
+<em>before</em> the constructor for <code>B</code> sets <code>value</code>.
+Thus, when the constructor for <code>A</code> invokes <code>getValue</code>,
+an uninitialized value is read for <code>value</code>
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="UG_SYNC_SET_UNSYNC_GET">
     <ShortDescription>Unsynchronized get method, synchronized set method</ShortDescription>
     <LongDescription>{1} is unsynchronized, {2} is synchronized</LongDescription>
