@@ -307,7 +307,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" 
             speed="fast"
             reports="NOISE_NULL_DEREFERENCE"
-            disabled="true"
+            disabled="false"
             hidden="true"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.Noise" 
@@ -790,6 +790,9 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.DontIgnoreResultOfPutIfAbsent"
       reports="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" 
+	/>
+  <Detector class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
+      reports="TESTING" 
 	/>
 
   <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="true"/>

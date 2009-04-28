@@ -1588,6 +1588,13 @@ factory pattern to create these objects.</p>
 		  ]]>
 	  </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass">
+	  <Details>
+		  <![CDATA[
+		  <p>Checks for methods invoked from constructors for superclasses.  </p>
+		  ]]>
+	  </Details>
+  </Detector>
 
   <!--
   **********************************************************************
@@ -2390,7 +2397,10 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 <![CDATA[
   <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
       result in improper conversions when used with international characters. Use the </p>
-      <table><tr><td>String.toUpperCase( Locale l )</td></tr><tr><td>String.toLowerCase( Locale l )</td></tr></table>
+      <ul>
+	<li>String.toUpperCase( Locale l )</li>
+	<li>String.toLowerCase( Locale l )</li>
+	</ul>
       <p>versions instead.</p>
 ]]>
     </Details>
@@ -3164,12 +3174,12 @@ Thus, having a mutable instance field generally creates race conditions.
   to synchronization.&nbsp; This bug report indicates that the bug pattern detector
   judged that
   </p>
-  <ol>
+  <ul>
   <li> The class contains a mix of locked and unlocked accesses,</li>
   <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
        one third of all accesses, with writes being weighed twice as high as reads</li>
-  </ol>
+  </ul>
 
   <p> A typical bug matching this bug pattern is forgetting to synchronize
   one of the methods in a class that is intended to be thread-safe.</p>
@@ -3581,12 +3591,12 @@ than less contrived solutions.
   to synchronization.&nbsp; This bug report indicates that the bug pattern detector
   judged that
   </p>
-  <ol>
+  <ul>
   <li> The class contains a mix of locked and unlocked accesses,</li>
   <li> At least one locked access was performed by one of the class's own methods, and</li>
   <li> The number of unsynchronized field accesses (reads and writes) was no more than
        one third of all accesses, with writes being weighed twice as high as reads</li>
-  </ol>
+  </ul>
 
   <p> A typical bug matching this bug pattern is forgetting to synchronize
   one of the methods in a class that is intended to be thread-safe.</p>
@@ -5171,8 +5181,8 @@ for using a JSR-166 lock is:
 <p> This method compares two reference values using the == or != operator,
 where the correct way to compare instances of this type is generally
 with the equals() method. 
-It is possible to create distinct instances that are equal (but do not compare as == since
-they are different objects).
+It is possible to create distinct instances that are equal but do not compare as == since
+they are different objects.
 Examples of classes which should generally
 not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 ]]>
@@ -5186,8 +5196,8 @@ not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 <p> This method compares a reference value to a constant using the == or != operator,
 where the correct way to compare instances of this type is generally
 with the equals() method.  
-It is possible to create distinct instances that are equal (but do not compare as == since
-they are different objects).
+It is possible to create distinct instances that are equal but do not compare as == since
+they are different objects.
 Examples of classes which should generally
 not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
 ]]>
@@ -7012,14 +7022,15 @@ a signed and unsigned right shift (depending upon the size of the shift).
   </BugPattern>
   <BugPattern type="ICAST_BAD_SHIFT_AMOUNT">
     <ShortDescription>32 bit int shifted by an amount not in the range 0..31</ShortDescription>
-    <LongDescription>32 bit int shifted by {2} in {1}</LongDescription>
+    <LongDescription>32 bit int shifted by {2} bits in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 The code performs shift of a 32 bit int by a constant amount outside
 the range 0..31.
 The effect of this is to use the lower 5 bits of the integer
-value to decide how much to shift by. This probably isn't want was expected,
+value to decide how much to shift by (e.g., shifting by 40 bits is the same as shifting by 8 bits,
+and shifting by 32 bits is the same as shifting by zero bits). This probably isn't want was expected,
 and it at least confusing.
 </p>
 ]]>
@@ -7858,6 +7869,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   <BugCode abbrev="TQ">Inconsistent use of type qualifier annotations</BugCode>
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">FindBugs did not produce the expected warnings on a method</BugCode>
+  <BugCode abbrev="DL">Potential deadlock due to unintended locking on shared objects</BugCode>
   </MessageCollection>
 
 
