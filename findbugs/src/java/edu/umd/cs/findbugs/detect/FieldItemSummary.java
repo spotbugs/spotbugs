@@ -51,14 +51,14 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 	public void sawOpcode(int seen) {
 		if (getMethodName().equals("<init>") && seen == INVOKEVIRTUAL) {
 			XMethod m = getXMethodOperand();
-			if (m != null && m.isAbstract()) {
+			if (m != null && !m.isPrivate() && !m.isFinal()) {
 			int args = PreorderVisitor.getNumberArguments(m.getSignature());
 			OpcodeStack.Item item = stack.getStackItem(args);
 			if (item.getRegisterNumber() == 0) {
 				try {
                 	Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
 	                for(XMethod called : targets) {
-	                	if (!called.isAbstract())
+	                	if (!called.isAbstract() && !called.equals(m))
 	                		fieldSummary.setCalledFromSuperConstructor(getXMethod(), called);
 	                }
                 } catch (ClassNotFoundException e) {

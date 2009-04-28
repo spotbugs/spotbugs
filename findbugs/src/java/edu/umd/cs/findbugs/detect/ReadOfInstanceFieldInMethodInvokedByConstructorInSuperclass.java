@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
@@ -84,13 +85,18 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		        .createClassDescriptor(getSuperclassName()), getXMethod());
 		if (calledFrom.isEmpty())
 			return;
+		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+		
+		int priority = NORMAL_PRIORITY;
+		if (f.isFinal() || !unreadFields.getWrittenOutsideOfConstructorFields().contains(f))
+			priority = HIGH_PRIORITY;
+		BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
+		
+		for (XMethod m : calledFrom) 
+			bug.addMethod(m).describe(MethodAnnotation.METHOD_CALLED_FROM);
 
-		for (XMethod m : calledFrom) {
-
-			BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addMethod(m).addField(f);
-
-			accumulator.accumulateBug(bug, this);
-		}
+		accumulator.accumulateBug(bug, this);
+		
 
 	}
 

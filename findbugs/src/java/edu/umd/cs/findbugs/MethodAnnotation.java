@@ -65,6 +65,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	
 	public static final String METHOD_EQUALS_USED = "METHOD_EQUALS_USED";
 	public static final String METHOD_CALLED = "METHOD_CALLED";
+	public static final String METHOD_CALLED_FROM = "METHOD_CALLED_FROM";
 	public static final String METHOD_OVERRIDDEN = "METHOD_OVERRIDDEN";
 	public static final String METHOD_DID_YOU_MEAN_TO_OVERRIDE = "METHOD_DID_YOU_MEAN_TO_OVERRIDE";
 
