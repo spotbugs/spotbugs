@@ -222,8 +222,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 		if (isSerializable) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
 		}
-		if (sawSelfCallInConstructor) 
+		if (sawSelfCallInConstructor) {
+			myFields.removeAll(writtenInConstructorFields);
 			writtenInInitializationFields.addAll(myFields);
+		}
 		myFields.clear();
 		allMyFields.clear();
 		calledFromConstructors.clear();
