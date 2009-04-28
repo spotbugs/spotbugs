@@ -308,8 +308,7 @@ public class DetectorFactoryCollection {
 		if (loaded) 
 			throw new IllegalStateException();
 		
-		loaded = true;
-
+		
 		//
 		// Load the core plugin.
 		//
@@ -370,6 +369,8 @@ public class DetectorFactoryCollection {
 					e.printStackTrace();
 			}
 		}
+		loaded = true;
+
 		
 	}
 
