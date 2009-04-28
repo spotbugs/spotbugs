@@ -209,14 +209,14 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 					score1++;
 				if (unreadFields.getWrittenFields().contains(rb.maskedField))
 					score1++;
-				if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskedField))
+				if (unreadFields.isWrittenOutsideOfInitialization(rb.maskedField))
 					score1++;
 			} else score1 += 2;
 			if (unreadFields.getReadFields().contains(rb.maskingField))
 				score2++;
 				if (unreadFields.getWrittenFields().contains(rb.maskingField))
 				score2++;
-			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskingField))
+			if (unreadFields.isWrittenOutsideOfInitialization(rb.maskingField))
 				score2++;
 			int score = score1+score2;
 			if (score1 == 0 || score2 == 0)

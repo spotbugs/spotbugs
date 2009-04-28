@@ -73,7 +73,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		if (item.getRegisterNumber() != 0)
 			return;
 		XField f = getXFieldOperand();
-		if (!f.getClassDescriptor().equals(getClassDescriptor()))
+		
+		if (f == null || !f.getClassDescriptor().equals(getClassDescriptor()))
 			return;
 		if (f.isSynthetic() || f.getName().startsWith("this$"))
 			return;
@@ -87,9 +88,16 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 			return;
 		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
 		
-		int priority = NORMAL_PRIORITY;
-		if (f.isFinal() || !unreadFields.getWrittenOutsideOfConstructorFields().contains(f))
+		int priority;
+		if (!unreadFields.isWrittenInConstructor(f))
+			return;
+		
+		if (f.isFinal() || !unreadFields.isWrittenOutsideOfConstructor(f))
 			priority = HIGH_PRIORITY;
+		else {
+			boolean b = unreadFields.isWrittenInConstructor(f);
+			priority = NORMAL_PRIORITY;
+		}
 		BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
 		
 		for (XMethod m : calledFrom) 
