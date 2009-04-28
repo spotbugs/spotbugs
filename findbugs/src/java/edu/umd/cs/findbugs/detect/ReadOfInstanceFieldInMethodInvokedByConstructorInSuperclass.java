@@ -63,6 +63,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		XField f = getXFieldOperand();
 		if (!f.getClassDescriptor().equals(getClassDescriptor()))
 			return;
+		if (f.isSynthetic() || f.getName().startsWith("this$"))
+			return;
 		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
 		Set<XMethod> calledFrom = fieldSummary.getCalledFromSuperConstructor(DescriptorFactory
