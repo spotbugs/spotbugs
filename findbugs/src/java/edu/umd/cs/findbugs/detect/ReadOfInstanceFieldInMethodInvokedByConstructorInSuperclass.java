@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -29,7 +30,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
-import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -45,16 +45,27 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		this.bugReporter = bugReporter;
 		this.accumulator = new BugAccumulator(bugReporter);
 	}
+	
+	Set<XField> initializedFields;
 
 	public void visit(Code obj) {
 		if (getMethod().isStatic())
 			return;
+		initializedFields = new HashSet<XField>();
 		super.visit(obj);
 		accumulator.reportAccumulatedBugs();
 	}
 
 	@Override
 	public void sawOpcode(int opcode) {
+		if (opcode == PUTFIELD) {
+			XField f = getXFieldOperand();
+			OpcodeStack.Item item = stack.getStackItem(1);
+			if (item.getRegisterNumber() != 0)
+				return;
+			initializedFields.add(f);
+			return;
+		}
 		if (opcode != GETFIELD)
 			return;
 		OpcodeStack.Item item = stack.getStackItem(0);
