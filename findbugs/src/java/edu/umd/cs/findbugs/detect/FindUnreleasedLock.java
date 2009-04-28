@@ -243,11 +243,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
 				ResourceValueFrame frame) throws DataflowAnalysisException {
 
-			ResourceValue topValue = frame.getTopValue();
-			if (!topValue.isInstance())
+			if (! mightCloseResource(basicBlock, handle, cpg))
 				return false;
-
-			return mightCloseResource(basicBlock, handle, cpg);
+			ResourceValue topValue = frame.getTopValue();
+			return topValue.isInstance();
 			
 		}
 
