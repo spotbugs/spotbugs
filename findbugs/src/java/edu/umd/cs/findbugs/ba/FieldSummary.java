@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -40,7 +41,9 @@ public class FieldSummary {
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
 	private Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
 	private Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
-	
+	private Map<XMethod, Set<XMethod>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<XMethod>>();
+	private Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
+
 	private boolean complete = false;
 	public OpcodeStack.Item getSummary(XField field) {
 		if (field == null) return new OpcodeStack.Item();
@@ -52,6 +55,36 @@ public class FieldSummary {
 		return result;
 	}
 
+	public void setCalledFromSuperConstructor(XMethod constructor, XMethod calledFromConstructor) {
+		 Set<XMethod> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
+		 if (set == null) {
+			 set = new HashSet<XMethod>();
+			 selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
+		 }
+		 set.add(constructor);
+		 callsOverriddenMethodsFromConstructor.add(constructor.getClassDescriptor());
+		 
+	}
+	public Set<XMethod> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
+		
+		if (!callsOverriddenMethodsFromConstructor.contains(superClass))
+			return Collections.emptySet();
+		for(Map.Entry<XMethod, Set<XMethod>> e : selfMethodsCalledFromConstructor.entrySet()) {
+			XMethod m = e.getKey();
+			if (m.getName().equals(calledFromConstructor.getName() )
+					&& m.getClassDescriptor().equals(calledFromConstructor.getClassDescriptor())) {
+				String sig1 = m.getSignature();
+				String sig2 = calledFromConstructor.getSignature();
+				sig1 = sig1.substring(0, sig1.indexOf('('));
+				sig2 = sig2.substring(0, sig2.indexOf('('));
+				if (sig1.equals(sig2))
+					return e.getValue();
+			}
+		}
+
+		return Collections.emptySet();
+
+	}
 	public void setFieldsWritten(XMethod method, Collection<XField> fields) {
 		if (fields.isEmpty()) return;
 		if (fields.size() == 1) {

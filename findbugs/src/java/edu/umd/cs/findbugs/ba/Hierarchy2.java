@@ -344,6 +344,11 @@ public class Hierarchy2 {
 		 return resolveVirtualMethodCallTargets(receiverDesc, methodName, methodSig, receiverTypeIsExact, invokeSpecial);
 	 }
 	 
+	 public static Set<XMethod> resolveVirtualMethodCallTargets(XMethod target, boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
+		 return resolveVirtualMethodCallTargets(target.getClassDescriptor(), target.getName(), target.getSignature(), receiverTypeIsExact,  invokeSpecial);
+	 }
+	 
+			    
     public static Set<XMethod> resolveVirtualMethodCallTargets(ClassDescriptor  receiverDesc, String methodName, String methodSig,
             boolean receiverTypeIsExact, boolean invokeSpecial) throws ClassNotFoundException {
 	    // Figure out the upper bound for the method.

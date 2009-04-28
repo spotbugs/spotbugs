@@ -29,9 +29,12 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class FieldItemSummary extends OpcodeStackDetector implements NonReportingDetector {
 	
@@ -46,6 +49,28 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 	boolean sawInitializeSuper;
 	@Override
 	public void sawOpcode(int seen) {
+		if (getMethodName().equals("<init>") && seen == INVOKEVIRTUAL) {
+			XMethod m = getXMethodOperand();
+			if (m != null && m.isAbstract()) {
+			int args = PreorderVisitor.getNumberArguments(m.getSignature());
+			OpcodeStack.Item item = stack.getStackItem(args);
+			if (item.getRegisterNumber() == 0) {
+				try {
+                	Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
+	                for(XMethod called : targets) {
+	                	if (!called.isAbstract())
+	                		fieldSummary.setCalledFromSuperConstructor(getXMethod(), called);
+	                }
+                } catch (ClassNotFoundException e) {
+	               AnalysisContext.reportMissingClass(e);
+                }
+				
+			}
+			
+			}
+		
+		}
+		
 		if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>") && !getClassConstantOperand().equals(getClassName()))
 			sawInitializeSuper = true;
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
