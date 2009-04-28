@@ -38,7 +38,8 @@ public class LaunchBrowser {
 	private static final @CheckForNull Method jnlpShowMethod;
 	private static final Object jnlpShowObject; // will not be null if jnlpShowMethod!=null
 	
-	private static final boolean launchFirefox = SystemProperties.getBoolean("findbugs.launchFirefox");
+	public static final boolean launchFirefox = SystemProperties.getBoolean("findbugs.launchFirefox")
+				&& "Linux".equals(SystemProperties.getProperty("os.name"));
 	private static Object desktopObject;
 	private static Method desktopBrowseMethod;
 	private static boolean launchViaExecFailed = false;

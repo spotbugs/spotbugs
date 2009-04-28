@@ -189,6 +189,7 @@ public class TestDesktopIntegration extends JPanel {
 		});
 		top.add(jnlp);
 
+		if (LaunchBrowser.launchFirefox) {
 		JButton exec = new JButton("Launch via exec");
 		exec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -208,6 +209,7 @@ public class TestDesktopIntegration extends JPanel {
 			}
 		});
 		top.add(exec);
+		}
 
 		JButton chooseFile = new JButton("Choose file");
 		top.add(chooseFile);
