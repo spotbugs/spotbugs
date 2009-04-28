@@ -60,6 +60,20 @@ public interface ResourceTracker <Resource> {
 								   ResourceValueFrame frame) throws DataflowAnalysisException;
 
 	/**
+	 * Determine if the given instruction is the site where a resource
+	 * is closed.
+	 *
+	 * @param basicBlock basic block containing the instruction
+	 * @param handle     the instruction
+	 * @param cpg        the ConstantPoolGen for the method
+	 * @param resource   the resource, as returned by isResourceCreation()
+	 * @param frame      the ResourceValueFrame representing the stack prior to executing
+	 *                   the instruction
+	 * @return true if the resource is closed here, false otherwise
+	 */
+	public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) throws DataflowAnalysisException;
+
+	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect
 	 * of instructions on the state of the resource.
 	 *

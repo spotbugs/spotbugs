@@ -189,9 +189,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 				&& matchMethod(inv, cpg, this.getResourceClass(), "<init>");
 	}
 
-	public boolean isStreamClose(BasicBlock basicBlock, InstructionHandle handle,
-								 ConstantPoolGen cpg, ResourceValueFrame frame,
-								 RepositoryLookupFailureCallback lookupFailureCallback) {
+	public static boolean mightCloseStream(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {
 
 		Instruction ins = handle.getInstruction();
 
@@ -199,17 +197,39 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 			// Does this instruction close the stream?
 			InvokeInstruction inv = (InvokeInstruction) ins;
 
+			// It's a close if the invoked class is any subtype of the stream
+			// base class.
+			// (Basically, we may not see the exact original stream class,
+			// even though it's the same instance.)
+
+			return inv.getName(cpg).equals("close") && inv.getSignature(cpg).equals("()V");
+
+		}
+
+		return false;
+	}
+
+	public boolean isStreamClose(BasicBlock basicBlock, InstructionHandle handle,
+								 ConstantPoolGen cpg, ResourceValueFrame frame,
+								 RepositoryLookupFailureCallback lookupFailureCallback) {
+		if (!mightCloseStream(basicBlock, handle, cpg))
+			return false;
+		
+		Instruction ins = handle.getInstruction();
+
+		if ((ins instanceof INVOKEVIRTUAL) || (ins instanceof INVOKEINTERFACE)) {
+			// Does this instruction close the stream?
+			InvokeInstruction inv = (InvokeInstruction) ins;
+			
 			if (!frame.isValid() ||
 					!getInstanceValue(frame, inv, cpg).isInstance())
 				return false;
-
+			
 			// It's a close if the invoked class is any subtype of the stream base class.
 			// (Basically, we may not see the exact original stream class,
 			// even though it's the same instance.)
 			try {
-				return inv.getName(cpg).equals("close")
-						&& inv.getSignature(cpg).equals("()V")
-						&& Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
+				return Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return false;

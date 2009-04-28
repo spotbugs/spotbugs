@@ -216,9 +216,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return null;
 		}
 
-		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
-				ResourceValueFrame frame) throws DataflowAnalysisException {
-
+		public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) throws DataflowAnalysisException {
 			InvokeInstruction inv = toInvokeInstruction(handle.getInstruction());
 			if (inv == null)
 				return false;
@@ -227,10 +225,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			String methodName = inv.getName(cpg);
 			String methodSig = inv.getSignature(cpg);
 
-			ResourceValue topValue = frame.getTopValue();
-			if (!topValue.isInstance())
-				return false;
-
+	
 			try {
 				if (methodName.equals("unlock") &&
 						methodSig.equals("()V") &&
@@ -243,6 +238,17 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			}
 
 			return false;
+		}
+
+		public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Lock resource,
+				ResourceValueFrame frame) throws DataflowAnalysisException {
+
+			ResourceValue topValue = frame.getTopValue();
+			if (!topValue.isInstance())
+				return false;
+
+			return mightCloseResource(basicBlock, handle, cpg);
+			
 		}
 
 		public ResourceValueFrameModelingVisitor createVisitor(Lock resource, ConstantPoolGen cpg) {
@@ -344,7 +350,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				if (nameAsString.startsWith("java/util/concurrent/locks")) sawUtilConcurrentLocks = true;
 
 			}
-		if (sawUtilConcurrentLocks) super.visitClassContext(classContext);
+		if (sawUtilConcurrentLocks) 
+			super.visitClassContext(classContext);
 	}
 
 

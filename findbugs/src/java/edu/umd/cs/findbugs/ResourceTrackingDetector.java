@@ -104,6 +104,9 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 						buildResourceCollection(classContext, method, resourceTracker);
 				if (resourceCollection.isEmpty())
 					continue;
+				
+				if (!mightCloseResource(classContext, method, resourceTracker))
+					continue;
 
 				analyzeMethod(classContext, method, resourceTracker, resourceCollection);
 			} catch (CFGBuilderException e) {
@@ -136,6 +139,23 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 		return resourceCollection;
 	}
 
+	private boolean mightCloseResource(ClassContext classContext, Method method,
+	        ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
+
+		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
+
+		CFG cfg = classContext.getCFG(method);
+		ConstantPoolGen cpg = classContext.getConstantPoolGen();
+
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			if (resourceTracker.mightCloseResource(location.getBasicBlock(), location.getHandle(), cpg))
+				return true;
+			
+		}
+
+		return false;
+	}
 	public void analyzeMethod(ClassContext classContext, Method method,
 							  ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
 			throws CFGBuilderException, DataflowAnalysisException {
@@ -159,7 +179,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			Profiler profiler = Global.getAnalysisCache().getProfiler();
 			profiler.start(resourceTracker.getClass());
 			try {
-			dataflow.execute();
+				dataflow.execute();
 			} finally {
 				profiler.end(resourceTracker.getClass());
 			}

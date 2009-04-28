@@ -35,6 +35,7 @@ import org.apache.bcel.generic.TypedInstruction;
 
 import edu.umd.cs.findbugs.ResourceCollection;
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
@@ -266,6 +267,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 		return resource.isStreamClose(basicBlock, handle, cpg, frame, lookupFailureCallback);
 	}
 
+	 public boolean mightCloseResource(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
+            throws DataflowAnalysisException {
+	    return Stream.mightCloseStream(basicBlock, handle, cpg);
+    }
 	public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 		return new StreamFrameModelingVisitor(cpg, this, resource);
 	}
@@ -281,6 +286,8 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	public boolean isParamInstance(Stream resource, int slot) {
 		return resource.getInstanceParam() == slot;
 	}
+
+
 }
 
 // vim:ts=3
