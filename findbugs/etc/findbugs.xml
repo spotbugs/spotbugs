@@ -307,7 +307,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.NoiseNullDeref" 
             speed="fast"
             reports="NOISE_NULL_DEREFERENCE"
-            disabled="false"
+            disabled="true"
             hidden="true"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.Noise" 
