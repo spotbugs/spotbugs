@@ -320,8 +320,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		}
 	}
 
+	
 	@Override
-		 public boolean prescreen(ClassContext classContext, Method method) {
+		public boolean prescreen(ClassContext classContext, Method method, boolean mightClose) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		return bytecodeSet.get(Constants.NEW)

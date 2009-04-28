@@ -65,7 +65,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
 
-	public abstract boolean prescreen(ClassContext classContext, Method method);
+	public abstract boolean prescreen(ClassContext classContext, Method method, boolean mightClose);
 
 	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
 			throws DataflowAnalysisException, CFGBuilderException;
@@ -88,9 +88,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			if (DEBUG_METHOD_NAME != null && !DEBUG_METHOD_NAME.equals(method.getName()))
 				continue;
 
-			if (!prescreen(classContext, method))
-				continue;
-
+			
 			if (DEBUG) {
 				System.out.println("----------------------------------------------------------------------");
 				System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(methodGen));
@@ -99,13 +97,14 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 			try {
 				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
+				boolean mightClose = mightCloseResource(classContext, method, resourceTracker);
+
+				if (!prescreen(classContext, method, mightClose))
+					continue;
 
 				ResourceCollection<Resource> resourceCollection =
 						buildResourceCollection(classContext, method, resourceTracker);
 				if (resourceCollection.isEmpty())
-					continue;
-				
-				if (!mightCloseResource(classContext, method, resourceTracker))
 					continue;
 
 				analyzeMethod(classContext, method, resourceTracker, resourceCollection);

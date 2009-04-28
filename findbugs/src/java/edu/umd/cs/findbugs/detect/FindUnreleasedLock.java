@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.RETURN;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -56,7 +57,6 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ResourceTracker;
 import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
-//import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
@@ -355,10 +355,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 
 	@Override
-	public boolean prescreen(ClassContext classContext, Method method) {
+	public boolean prescreen(ClassContext classContext, Method method, boolean mightClose) {
+		if (!mightClose) 
+			return false;
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
+
 		MethodGen methodGen = classContext.getMethodGen(method);
+
 		return methodGen != null && methodGen.getName().toLowerCase().indexOf("lock") == -1
 			&& (bytecodeSet.get(Constants.INVOKEVIRTUAL) 
 				|| bytecodeSet.get(Constants.INVOKEINTERFACE));
@@ -380,6 +384,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 		JavaClass javaClass = classContext.getJavaClass();
 
+		
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 		if (DEBUG) {
 			System.out.println("Resource value at exit: " + exitFrame);
@@ -398,9 +403,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			}
 
 			String sourceFile = javaClass.getSourceFileName();
+			Location location = resource.getLocation();
+			InstructionHandle handle = location.getHandle();
+			InstructionHandle nextInstruction = handle.getNext();
+			if (nextInstruction.getInstruction() instanceof RETURN)
+				return; // don't report as error; intentional
 			bugAccumulator.accumulateBug(new BugInstance(this, bugType, priority)
 					.addClassAndMethod(methodGen, sourceFile),
-					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, resource.getLocation().getHandle()));
+					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
 		}
 	}
 
