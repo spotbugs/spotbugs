@@ -95,9 +95,11 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		if (f.isFinal() || !unreadFields.isWrittenOutsideOfConstructor(f))
 			priority = HIGH_PRIORITY;
 		else {
-			boolean b = unreadFields.isWrittenInConstructor(f);
 			priority = NORMAL_PRIORITY;
 		}
+		int nextOpcode = getNextOpcode();
+		if (nextOpcode == IFNULL || nextOpcode == IFNONNULL)
+			priority++;
 		BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
 		
 		for (XMethod m : calledFrom) 

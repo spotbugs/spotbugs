@@ -923,7 +923,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	public int getNextPC() {
 		return nextPC;
 	}
-
+	public int getNextOpcode() {
+		return codeBytes[nextPC] & 0xff;
+	}
 	public boolean isReturn(int opcode) {
 		switch(opcode) {
 		case IRETURN:
