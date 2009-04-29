@@ -387,7 +387,7 @@ public  class DBCloud extends AbstractCloud {
 			boolean result = false;
 			if (rs.next()) {
 				int count = rs.getInt(1);
-				if (!GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
+				if (false && !GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
 					if (false) {
 					findbugsUser = JOptionPane.showInputDialog("Identification for survey", findbugsUser);
 					result = true;
@@ -400,7 +400,7 @@ public  class DBCloud extends AbstractCloud {
 					}
 
 				} else
-					result = true;
+					result = findbugsUser != null;;
 			}
 			rs.close();
 			stmt.close();
