@@ -39,11 +39,14 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -108,6 +111,25 @@ public  class DBCloud extends AbstractCloud {
 				if (findbugsUser.equals(d.getUser()))
 					return new BugDesignation(d);
 			return null;
+		}
+		
+		Set<String> getReviewers() {
+			HashSet<String> reviewers = new HashSet<String>();
+			for(BugDesignation bd : designations)
+				reviewers.add(bd.getUser());
+			reviewers.remove("");
+			reviewers.remove(null);
+			return reviewers;
+		}
+		boolean isClaimed() {
+			Set<String> users = new HashSet<String>();
+			for(BugDesignation bd : designations) {
+				if (users.add(bd.getUser()) 
+						&& bd.getDesignationKey().equals(UserDesignation.I_WILL_FIX.name()))
+					return true;
+				
+			}
+			return false;
 		}
 		BugDesignation getNonnullUserDesignation() {
 			BugDesignation d = getUserDesignation();
@@ -887,6 +909,20 @@ public  class DBCloud extends AbstractCloud {
 	       assert false;
 	       return "No utf-8 encoding";
         }
+    }
+    
+    
+    public Set<String> getReviewers(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return Collections.emptySet();
+    	return bd.getReviewers();
+    }
+    public boolean isClaimed(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return false;
+    	return bd.isClaimed();
     }
     @Override
     @CheckForNull 

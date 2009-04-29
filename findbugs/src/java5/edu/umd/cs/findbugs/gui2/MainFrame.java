@@ -930,6 +930,21 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			viewMenu.add(rbMenuItem);
 		}
 		viewMenu.addSeparator();
+
+		ButtonGroup evalButtonGroup = new ButtonGroup();
+		for(final ViewFilter.EvaluationFilter r : ViewFilter.EvaluationFilter.values()) {
+			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+			evalButtonGroup.add(rbMenuItem);
+			if (r == ViewFilter.EvaluationFilter.ALL) 
+				rbMenuItem.setSelected(true);
+			rbMenuItem.addActionListener(new ActionListener(){
+
+				public void actionPerformed(ActionEvent e) {
+					viewFilter.setEvaluation(r);
+                }});   
+			viewMenu.add(rbMenuItem);
+		}
+		viewMenu.addSeparator();
 		ButtonGroup ageButtonGroup = new ButtonGroup();
 		for(final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
