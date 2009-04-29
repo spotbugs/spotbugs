@@ -303,18 +303,18 @@ public class Filter {
 			if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey()))
 				return false;
 
-			if (withSourceSpecified) {
-				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
-					return false;
-			}
+			
 			if (hashChangedSpecified) {
 				if (bug.isInstanceHashConsistent()  == hashChanged) 
 					return false;
 			}
-
 			if (applySuppressionSpecified && applySuppression 
 					&& suppressionFilter.match(bug))
 				return false;
+			if (withSourceSpecified) {
+				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
+					return false;
+			}
 			return true;
 		}
 
