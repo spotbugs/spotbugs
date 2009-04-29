@@ -1558,11 +1558,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		c.gridwidth=2;
 		c.gridy++;
 		c.fill = GridBagConstraints.HORIZONTAL;
+		c.ipadx = c.ipady = 2;
+		c.insets = new Insets(6,6,6,6);
 		topPanel.add(treeHeader, c);
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.gridy++;
 		c.weighty = 1;
+		c.ipadx = c.ipady = 0;
+		c.insets = new Insets(0,0,0,0);
 		topPanel.add(tree, c);
 		return topPanel;
 	}
@@ -1623,7 +1627,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	//New code to fix problem in Windows
     	JTable t = new JTable(new DefaultTableModel(0, sortables().length));
     	t.setTableHeader(tableheader);
-    	tableheader.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     	
     	if (false) {
     		JScrollPane tableHeaderScrollPane = new JScrollPane(t);
