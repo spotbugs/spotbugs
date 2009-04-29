@@ -47,12 +47,13 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		this.accumulator = new BugAccumulator(bugReporter);
 	}
 	
-	Set<XField> initializedFields;
+	Set<XField> initializedFields, nullCheckedFields;
 
 	public void visit(Code obj) {
 		if (getMethod().isStatic())
 			return;
 		initializedFields = new HashSet<XField>();
+		nullCheckedFields = new HashSet<XField>();
 		super.visit(obj);
 		accumulator.reportAccumulatedBugs();
 	}
@@ -92,14 +93,18 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		if (!unreadFields.isWrittenInConstructor(f))
 			return;
 		
-		if (f.isFinal() || !unreadFields.isWrittenOutsideOfConstructor(f))
+		if (f.isFinal())
 			priority = HIGH_PRIORITY;
-		else {
+		else if (unreadFields.isWrittenDuringInitialization(f) || unreadFields.isWrittenOutsideOfInitialization(f) )
 			priority = NORMAL_PRIORITY;
-		}
+		else
+			priority = HIGH_PRIORITY;
+		
 		int nextOpcode = getNextOpcode();
-		if (nextOpcode == IFNULL || nextOpcode == IFNONNULL)
+		if (nullCheckedFields.contains(f) || nextOpcode == IFNULL || nextOpcode == IFNONNULL) {
 			priority++;
+			nullCheckedFields.add(f);
+		}
 		BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
 		
 		for (XMethod m : calledFrom) 
