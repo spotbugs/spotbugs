@@ -347,8 +347,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		guiLayout.saveState();
 		GUISaveState.getInstance().setFrameBounds( getBounds() );
 		GUISaveState.getInstance().save();
-		Cloud cloud = this.bugCollection.getCloud();
-		cloud.shutdown();
+		if (this.bugCollection != null) {
+			Cloud cloud = this.bugCollection.getCloud();
+			if (cloud != null)
+				cloud.shutdown();
+		}
 		System.exit(0);
 	}
 	/**
