@@ -20,7 +20,10 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -40,6 +43,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 	JSplitPane summarySPane;
 	JSplitPane mainSPane;
 
+	JButton viewSource = new JButton("View in browser");
 	/**
 	 * @param frame
 	 */
@@ -59,17 +63,28 @@ public class SplitLayout implements FindBugsLayoutManager {
 	 */
 	public void initialize() {
 
+		Font buttonFont = viewSource.getFont();
+		viewSource.setFont(buttonFont.deriveFont(buttonFont.getSize()/2));
+		viewSource.setPreferredSize(new Dimension(150,10));
+		viewSource.setEnabled(false);
+		
 		topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
 				frame.bugListPanel(), frame.createCommentsInputPanel());
 		topLeftSPane.setOneTouchExpandable(true);
 		topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
 
+		JPanel sourceTitlePanel = new JPanel();
+		sourceTitlePanel.setLayout(new BorderLayout());
+		
 		JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new BorderLayout());
 		sourceTitle = new JLabel();
 		sourceTitle.setText(edu.umd.cs.findbugs.L10N.getLocalString("txt.source_listing", "<source listing>"));
 		
-		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
+		sourceTitlePanel.add(viewSource, BorderLayout.EAST);
+		sourceTitlePanel.add(sourceTitle, BorderLayout.CENTER);
+		
+		sourcePanel.add(sourceTitlePanel, BorderLayout.NORTH);
 		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
 		sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
 		topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
@@ -124,8 +139,8 @@ public class SplitLayout implements FindBugsLayoutManager {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
      */
-    public JComponent getSourceTitleComponent() {
-	    return sourceTitle;
+    public JComponent getSourceViewComponent() {
+	    return viewSource;
     }
 
 }

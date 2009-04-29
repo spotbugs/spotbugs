@@ -1535,22 +1535,31 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	JPanel waitPanel, cardPanel;
 	
-	JPanel makeNavigationPanel(JComponent packageSelector, 
-			JComponent treeHeader, JComponent tree) {
+	JPanel makeNavigationPanel(String packageSelectorLabel, 
+			JComponent packageSelector, JComponent treeHeader, JComponent tree) {
 		JPanel topPanel = new JPanel();
 		topPanel.setMinimumSize(new Dimension(200,200));
 		
 		topPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		
 		c.gridx = 0;
 		c.gridy = 0;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;
+		c.fill=GridBagConstraints.NONE;
+		JLabel label = new JLabel(packageSelectorLabel);
+		topPanel.add(label, c);
 		
+		c.gridx = 1;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;		
 		topPanel.add(packageSelector, c);
+		
+		c.gridx = 0;
+		c.gridwidth=2;
 		c.gridy++;
-
+		c.fill = GridBagConstraints.HORIZONTAL;
 		topPanel.add(treeHeader, c);
+		
 		c.fill = GridBagConstraints.BOTH;
 		c.gridy++;
 		c.weighty = 1;
@@ -1614,10 +1623,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	//New code to fix problem in Windows
     	JTable t = new JTable(new DefaultTableModel(0, sortables().length));
     	t.setTableHeader(tableheader);
-    	JScrollPane sp = new JScrollPane(t);
-    	//This sets the height of the scrollpane so it is dependent on the fontsize.
-    	int num = (int) (Driver.getFontSize()*1.2);
-    	sp.setPreferredSize(new Dimension(0, 10+num));
+    	tableheader.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+    	
+    	if (false) {
+    		JScrollPane tableHeaderScrollPane = new JScrollPane(t);
+        	//This sets the height of the scrollpane so it is dependent on the fontsize.
+        	
+        	
+    		int num = (int) (Driver.getFontSize());
+    		tableHeaderScrollPane.setPreferredSize(new Dimension(0, 0));
+    		tableHeaderScrollPane.setMaximumSize(new Dimension(200, 5));
+    	}
+    
     	//End of new code.
     	//Changed code.
     	textFieldForPackagesToDisplay = new JTextField();
@@ -1628,7 +1645,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
             }});
     
     	textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of package prefixes to restrict the view to those packages");
-    	JPanel topPanel = makeNavigationPanel(textFieldForPackagesToDisplay, sp, treePanel);
+    	JPanel topPanel = makeNavigationPanel("Package prefixes:", textFieldForPackagesToDisplay, tableheader, treePanel);
     	cardPanel = new JPanel(new CardLayout());
     	waitPanel = new JPanel();
     	waitPanel.add(new JLabel("Please wait..."));
@@ -2350,7 +2367,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * @param bug TODO
 	 */
 	 void setSourceTab(String title, @CheckForNull BugInstance bug){
-		JComponent label = guiLayout.getSourceTitleComponent();
+		JComponent label = guiLayout.getSourceViewComponent();
 		if (label != null) {
 			URL u = null;
 			if (bug != null) {
@@ -2374,6 +2391,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 boolean listenerAdded = false;
 	 void addLink(JComponent component, URL source) {
 		 this.sourceLink = source;
+		 component.setEnabled(true);
 		 if (!listenerAdded) {
 			 listenerAdded = true;
 			 component.addMouseListener(new MouseAdapter(){
@@ -2396,6 +2414,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 }
 	 void removeLink(JComponent component) {
 		 this.sourceLink = null;
+		 component.setEnabled(false);
 		 component.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		 component.setToolTipText("");
 	 }

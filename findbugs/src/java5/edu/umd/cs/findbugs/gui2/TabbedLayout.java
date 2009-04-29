@@ -130,7 +130,7 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#getSourceTitleComponent()
      */
-    public JComponent getSourceTitleComponent() {
+    public JComponent getSourceViewComponent() {
 	    return null;
     }
 }

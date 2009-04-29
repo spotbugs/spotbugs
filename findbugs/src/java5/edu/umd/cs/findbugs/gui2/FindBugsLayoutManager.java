@@ -41,6 +41,6 @@ public interface FindBugsLayoutManager {
 
 	public void setSourceTitle(String title);
 	
-	public JComponent getSourceTitleComponent();
+	public JComponent getSourceViewComponent();
 
 }
