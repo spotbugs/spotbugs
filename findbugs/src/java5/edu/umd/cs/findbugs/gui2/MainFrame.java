@@ -2311,6 +2311,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		GridBagConstraints c = new GridBagConstraints();
 		JPanel thePanel = new JPanel();
 		thePanel.setLayout(gridbag);
+		findButton.setToolTipText("Enter text and click here to find first occurrence");
+		findNextButton.setToolTipText("click here to find next occurrence");
+		findPreviousButton.setToolTipText("click here to find previous occurrence");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weightx = 1.0;
