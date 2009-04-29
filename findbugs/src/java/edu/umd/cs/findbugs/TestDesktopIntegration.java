@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -268,6 +269,19 @@ public class TestDesktopIntegration extends JPanel {
 
 		}
 
+		String sampleURL = System.getProperty("findbugs.sampleURL");
+		if (sampleURL != null) {
+			try {
+			URL u = new URL(sampleURL);
+			writer.println("Checking access to " + u);
+			URLConnection c = u.openConnection();
+			writer.println("Content type: " + c.getContentType());
+			writer.println("Content length: " + c.getContentLength());
+			} catch (Throwable e) {
+				e.printStackTrace(writer);
+			}
+			
+		}
 	}
 
 }

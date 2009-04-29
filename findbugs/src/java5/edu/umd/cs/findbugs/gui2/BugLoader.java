@@ -20,16 +20,12 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.WillClose;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -44,10 +40,10 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.IFindBugsEngine;
-import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -151,7 +147,10 @@ public class BugLoader {
 		try {
 	        col.readXML(url);
         } catch (Exception e) {
-        	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "; " + e.getMessage());
+        	String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
+        	if (msg == null)
+        		msg = e.getMessage();
+        	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "\n" +  msg);
         }
 		addDeadBugMatcher(project);
 		return col;

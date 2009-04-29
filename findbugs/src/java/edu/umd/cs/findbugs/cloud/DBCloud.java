@@ -862,10 +862,10 @@ public  class DBCloud extends AbstractCloud {
     		BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
     		int lineNumber = 1;
     		out.println("\nRelevant source code:");
-    		while (lineNumber <= lastLine+5) {
+    		while (lineNumber <= lastLine+4) {
     			String txt = in.readLine();
     			if (txt == null) break;
-    			if (lineNumber >= firstLine-5) {
+    			if (lineNumber >= firstLine-4) {
     				if (lineNumber > lastLine && txt.trim().length() == 0) 
     					break;
     				out.printf("%4d: %s\n", lineNumber, txt);
@@ -887,19 +887,17 @@ public  class DBCloud extends AbstractCloud {
     		}
     	}
     	
-    	
-
-    	
-
-    	
     	out.println("Explanation:");
     	out.println(b.getBugPattern().getDetailPlainText());
-    	
     	out.println();
+    	
+    	
     	out.println();
     	out.println("FindBugs issue identifier (do not modify): " + b.getInstanceHash());
     	out.close();
-    	return stringWriter.toString();
+    	String result = stringWriter.toString();
+    	return result;
+    	
     }
     
     static String urlEncode(String s) {
@@ -947,6 +945,8 @@ public  class DBCloud extends AbstractCloud {
 			String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
 			String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
 			String u = String.format(bugLinkPattern, component, urlEncode(summary),  urlEncode(report));
+			// bugCollection.getProject().getGuiCallback().addErrorMessage("Bug link length is " + u.length());
+			System.out.println("bug link length is " + u.length());
 			return new URL(u);
 		} catch (Exception e) {
 

@@ -38,10 +38,18 @@ public class SystemProperties {
 
 	private static Properties properties = new Properties(System.getProperties());
 	public final static boolean ASSERTIONS_ENABLED;
+	private final static String OS_NAME;
 	static {
 		boolean tmp = false;
 		assert tmp = true; // set tmp to true if assertions are enabled
 		ASSERTIONS_ENABLED = tmp;
+		String osName;
+		try {
+			osName = "." + System.getProperty("os.name","Unknown").replace(' ','_');
+		} catch (Throwable e) {
+			osName = ".Unknown";
+		}
+		OS_NAME = osName;
 		loadPropertiesFromConfigFile();
 		if (getBoolean("findbugs.dumpProperties")){
 			FileOutputStream out = null;
@@ -140,6 +148,23 @@ public class SystemProperties {
 			assert true;
 		}
 		return defaultValue;
+	}
+
+	/**
+	 * @param name property name
+	 * @return string value (or null if the property does not exist)
+	 */
+	public static String getOSDependentProperty(String name) {
+		try {
+		String osDependentName = name + OS_NAME;
+		String value =  properties.getProperty(osDependentName);
+		if (value != null)
+			return value;
+		return properties.getProperty(name);
+		} catch (Exception e) {
+			assert true;
+		}
+		return null;
 	}
 
 	/**

@@ -53,14 +53,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -1853,9 +1849,27 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 					msg = msg + ";  " + pluginMsg;
 			}
 		}
+		if (errorMsg != null && errorMsg.length() > 0)
+			msg += ";" + msg;
 		statusBarLabel.setText(msg);
 	}
 
+	volatile String errorMsg = "";
+	public void addErrorMessage(String errorMsg) {
+		if (errorMsg.length() == 0)
+			this.errorMsg = errorMsg;
+		else
+			this.errorMsg += ";" + errorMsg;
+		SwingUtilities.invokeLater(new Runnable(){
+
+			public void run() {
+	            updateStatusBar();
+            }});
+	}
+	public void clearErrorMessages() {
+		this.errorMsg = "";
+	}
+	
 	private void updateSummaryTab(BugLeafNode node)
 	{
 		final BugInstance bug = node.getBug();
@@ -2141,7 +2155,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 					}
 				}
 			}
-			String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
+			String loadFromURL = SystemProperties.getOSDependentProperty("findbugs.loadBugsFromURL");
+			
 
 			if (loadFromURL != null) {
 				try {
@@ -2865,8 +2880,14 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    return saveType;
     }
     
-    public void showMessageDialog(String message) {
-    	JOptionPane.showMessageDialog(this, message);       
+    public void showMessageDialog(final String message) {
+    	if (SwingUtilities.isEventDispatchThread()) 
+    		JOptionPane.showMessageDialog(this, message);   
+    	else
+    		SwingUtilities.invokeLater(new Runnable(){
+				public void run() {
+					JOptionPane.showMessageDialog(MainFrame.this, message);             
+                }});
     }
     
     public int showConfirmDialog(String message, String title, int optionType) {
@@ -2915,6 +2936,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			pm.setMaximum(length);
 		return pmin;
 	}
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IGuiCallback#showStatus(java.lang.String)
+     */
+    public void showStatus(String msg) {
+	   guiLayout.setSourceTitle(msg);
+	    
+    }
 	
 
 }
