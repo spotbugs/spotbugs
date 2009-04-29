@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.DBCloud;
+import edu.umd.cs.findbugs.cloud.UserDesignation;
 
 /**
  * @author pugh
@@ -84,6 +85,11 @@ public class ViewFilter {
 	        @Override
 	        boolean show(DBCloud cloud, BugInstance b) {
 	        	return !cloud.isClaimed(b);
+	        }
+        }, I_WILL_FIX("I will fix") {
+	        @Override
+	        boolean show(DBCloud cloud, BugInstance b) {
+	        	return cloud.getUserDesignation(b) == UserDesignation.I_WILL_FIX;
 	        }
         }, ALL("All issues") {
 	        @Override
