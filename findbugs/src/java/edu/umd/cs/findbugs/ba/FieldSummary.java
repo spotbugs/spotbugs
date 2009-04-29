@@ -75,8 +75,8 @@ public class FieldSummary {
 					&& m.getClassDescriptor().equals(calledFromConstructor.getClassDescriptor())) {
 				String sig1 = m.getSignature();
 				String sig2 = calledFromConstructor.getSignature();
-				sig1 = sig1.substring(0, sig1.indexOf('('));
-				sig2 = sig2.substring(0, sig2.indexOf('('));
+				sig1 = sig1.substring(0, sig1.indexOf(')'));
+				sig2 = sig2.substring(0, sig2.indexOf(')'));
 				if (sig1.equals(sig2))
 					return e.getValue();
 			}
