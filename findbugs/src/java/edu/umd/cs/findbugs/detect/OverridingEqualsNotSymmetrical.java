@@ -431,7 +431,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 					
 			if (parentKind != null && childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS)
 				bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
-				        .add(childClass).add(equalsMethod.get(childClass)).add(equalsMethod.get(parentClass)));
+				        .add(childClass)
+				        .add(equalsMethod.get(childClass))
+				        .add(equalsMethod.get(parentClass)).describe(MethodAnnotation.METHOD_OVERRIDDEN));
 
 		}
 				

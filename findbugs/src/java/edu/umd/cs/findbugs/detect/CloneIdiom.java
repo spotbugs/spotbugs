@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
@@ -26,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
@@ -140,14 +143,19 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 				priority = NORMAL_PRIORITY;
 			try {
 				Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-				if (!subtypes2.getDirectSubtypes(getClassDescriptor()).isEmpty())
+				Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
+				if (!directSubtypes.isEmpty())
 	            	priority--;
+				BugInstance bug = new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", priority)
+				.addClass(this)
+				.addMethod(cloneMethodAnnotation);
+				for(ClassDescriptor d : directSubtypes) 
+					bug.addClass(d).describe(ClassAnnotation.SUBCLASS_ROLE);
+				bugReporter.reportBug(bug);
             } catch (ClassNotFoundException e) {
 	           bugReporter.reportMissingClass(e);
             }
-			bugReporter.reportBug(new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", priority)
-					.addClass(this)
-					.addMethod(cloneMethodAnnotation));
+		
 		} else if (hasCloneMethod && !isCloneable && !cloneOnlyThrowsException && !cloneIsDeprecated && !obj.isAbstract()) {
 			int priority = Priorities.NORMAL_PRIORITY;
 			if (referencesCloneMethod) priority--;
