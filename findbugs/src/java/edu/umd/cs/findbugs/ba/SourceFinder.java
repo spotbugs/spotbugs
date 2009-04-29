@@ -196,13 +196,12 @@ public class SourceFinder {
 				InputStream in = null;
 				try {
 				URLConnection connection = new URL(url).openConnection();
+				in = connection.getInputStream();
 				if(getProject().isGuiAvaliable()){
 					int size = connection.getContentLength();
-					in =  getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), 
+					in =  getProject().getGuiCallback().getProgressMonitorInputStream(in, 
 							size, "Loading source via url");
-				} else {
-					in = connection.getInputStream();
-				}
+				} 
 				if (url.endsWith(".z0p.gz"))
 					in = new GZIPInputStream(in);
 				
