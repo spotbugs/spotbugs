@@ -853,7 +853,10 @@ public  class DBCloud extends AbstractCloud {
     	int firstLine = Integer.MAX_VALUE;
     	int lastLine = Integer.MIN_VALUE;
     	for(BugAnnotation a : b.getAnnotations()) {
-    		out.println(a);
+    		if (a == primaryClass)
+    			out.println(a);
+    		else 
+    			out.println("  " + a.toString(primaryClass));
     		if (a instanceof SourceLineAnnotation) {
     			SourceLineAnnotation s = (SourceLineAnnotation) a;
     			if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
@@ -911,10 +914,12 @@ public  class DBCloud extends AbstractCloud {
     	String detailPlainText = b.getBugPattern().getDetailPlainText();
     	out.flush();
     	
-    	if (stringWriter.getBuffer().length() + detailPlainText.length() < 1500) {
-    		out.println("Explanation:");
+    	if (stringWriter.getBuffer().length() + detailPlainText.length() < 1200) {
+    		out.println("Bug pattern explanation:");
     		out.println(detailPlainText);
     		out.println();
+    	} else {
+    		out.println("Bug pattern explanation: http://findbugs.sourceforge.net/bugDescriptions.html#" + b.getBugPattern().getType());
     	}
     	
     
