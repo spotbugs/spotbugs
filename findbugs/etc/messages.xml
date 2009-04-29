@@ -5440,7 +5440,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 
   <BugPattern type="SA_FIELD_SELF_COMPUTATION">
     <ShortDescription>Nonsensical self computation involving a field (e.g., x &amp; x)</ShortDescription>
-    <LongDescription>Nonsensical self computation of {2.givenClass} with itself {1}</LongDescription>
+    <LongDescription>Nonsensical self computation of {2.givenClass} with itself in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method performs a nonsensical computation of a field with another
@@ -5454,7 +5454,7 @@ a logic error.  Double check the computation.
   </BugPattern>
   <BugPattern type="SA_LOCAL_SELF_COMPUTATION">
     <ShortDescription>Nonsensical self computation involving a variable (e.g., x &amp; x)</ShortDescription>
-    <LongDescription>Nonsensical self computation of {2} with itself {1}</LongDescription>
+    <LongDescription>Nonsensical self computation of {2} with itself in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method performs a nonsensical computation of a local variable with another
@@ -5470,7 +5470,7 @@ a logic error.  Double check the computation.
 
   <BugPattern type="SA_FIELD_SELF_COMPARISON">
     <ShortDescription>Self comparison of field with itself</ShortDescription>
-    <LongDescription>Self comparison of {2.givenClass} with itself {1}</LongDescription>
+    <LongDescription>Self comparison of {2.givenClass} with itself in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method compares a field with itself, and may indicate a typo or
