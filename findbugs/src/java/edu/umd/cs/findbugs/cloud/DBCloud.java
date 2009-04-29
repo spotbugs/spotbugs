@@ -1067,8 +1067,14 @@ public  class DBCloud extends AbstractCloud {
      * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
      */
     public void bugFiled(BugInstance b, Object bugLink) {
-    	if (bugAlreadyFiled(b))
+    	if (bugAlreadyFiled(b)) {
+    		
+    		BugData bd = getBugData(b.getInstanceHash());
+    		
+    		System.out.println("bug " + bd.bugLink + " already filed for " + b.getMessage());
+        	
     		return;
+    	}
     	System.out.println("requesting bug filed for " + b.getMessage());
     	queue.add(new FileBug(b));
     	updatedStatus();
