@@ -190,8 +190,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
 	private JButton findButton = newButton("button.find", "Find");
-	private JButton findNextButton = newButton("button.findNext", "Find Next");
-	private JButton findPreviousButton = newButton("button.findPrev", "Find Previous");
+	private JButton findNextButton = newButton("button.findNext", "Next");
+	private JButton findPreviousButton = newButton("button.findPrev", "Previous");
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 
@@ -317,13 +317,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 	}
 
+
 	/**
 	 * This method is called when the application is closing. This is either by
 	 * the exit menuItem or by clicking on the window's system menu.
 	 */
 	void callOnClose(){
 		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-		if(projectChanged){
+		
+		if(projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")){
 			int value = JOptionPane.showConfirmDialog(MainFrame.this, getActionWithoutSavingMsg("closing"), 
 					edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"), JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
@@ -345,7 +347,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		guiLayout.saveState();
 		GUISaveState.getInstance().setFrameBounds( getBounds() );
 		GUISaveState.getInstance().save();
-
+		Cloud cloud = this.bugCollection.getCloud();
+		cloud.shutdown();
 		System.exit(0);
 	}
 	/**
@@ -1869,26 +1872,23 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 					msg = msg + ";  " + pluginMsg;
 			}
 		}
+		System.out.println("Error msg is " + errorMsg);
 		if (errorMsg != null && errorMsg.length() > 0)
-			msg += ";" + msg;
+			msg += "; " + errorMsg;
+		System.out.println("status msg is " + msg);
 		statusBarLabel.setText(msg);
 	}
 
 	volatile String errorMsg = "";
-	public void addErrorMessage(String errorMsg) {
-		if (errorMsg.length() == 0)
-			this.errorMsg = errorMsg;
-		else
-			this.errorMsg += ";" + errorMsg;
+	public void setErrorMessage(String errorMsg) {
+		this.errorMsg = errorMsg;
 		SwingUtilities.invokeLater(new Runnable(){
 
 			public void run() {
 	            updateStatusBar();
             }});
 	}
-	public void clearErrorMessages() {
-		this.errorMsg = "";
-	}
+	
 	
 	private void updateSummaryTab(BugLeafNode node)
 	{
@@ -2180,6 +2180,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 			if (loadFromURL != null) {
 				try {
+					loadFromURL = SystemProperties.rewriteURLAccordingToProperties(loadFromURL);
 					URL url = new URL(loadFromURL);
 					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
 					loadAnalysis(url);

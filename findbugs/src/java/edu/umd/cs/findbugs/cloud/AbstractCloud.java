@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 
 /**
  * @author pwilliam
@@ -68,7 +69,7 @@ public abstract class AbstractCloud implements Cloud {
 	public URL getBugLink(BugInstance b) {
 		throw new UnsupportedOperationException();
 	}
-	public String getBugLinkLabel(BugInstance b) {
+	public BugFilingStatus getBugLinkStatus(BugInstance b) {
 		throw new UnsupportedOperationException();
 	}
 	public String getCloudReport(BugInstance b) {

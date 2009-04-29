@@ -156,7 +156,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		int result = 0;
 		for (BugLeafNode bug : getMainBugSet().mainList)
-			if (!suppress(bug))
+			if (suppress(bug))
 				result++;
 
 		return result;

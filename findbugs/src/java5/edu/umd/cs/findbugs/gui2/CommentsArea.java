@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**
@@ -308,9 +309,9 @@ public class CommentsArea {
 				BugInstance bug = node.getBug();
 				Cloud plugin = getCloud();
 				if (plugin.supportsBugLinks()) {
-					String label = plugin.getBugLinkLabel(bug);
-					answerSurvey.setText(label);
-					answerSurvey.setEnabled(plugin.bugLinkEnabled(label));
+					BugFilingStatus status = plugin.getBugLinkStatus(bug);
+					answerSurvey.setText(status.toString());
+					answerSurvey.setEnabled(status.enabled());
 				} else {
 					answerSurvey.setEnabled(false);
 				}

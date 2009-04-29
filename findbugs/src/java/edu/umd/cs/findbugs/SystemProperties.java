@@ -25,8 +25,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
-
-import javax.swing.JOptionPane;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.io.IO;
@@ -83,7 +83,7 @@ public class SystemProperties {
 	/**
 	 * This method is public to allow clients to set system properties via any {@link URL}
 	 * 
-     * @param url an url to load system properties from, may be null
+     * @param url an url to load system properties from, may be nullerrorMsg
      */
     public static void loadPropertiesFromURL(URL url) {
 	    if (url == null) {
@@ -191,6 +191,35 @@ public class SystemProperties {
 		} catch (Exception e) {
 			return defaultValue;
 		}
+	}
+	
+	private static final String URL_REWRITE_PATTERN_STRING = getOSDependentProperty("findbugs.urlRewritePattern");
+	private static final String URL_REWRITE_FORMAT = getOSDependentProperty("findbugs.urlRewriteFormat");
+	
+	private static final Pattern URL_REWRITE_PATTERN;
+	static {
+		Pattern p = null;
+		if (URL_REWRITE_PATTERN_STRING != null)
+			try {
+				if (URL_REWRITE_FORMAT == null) 
+					AnalysisContext.logError("found findbugs.urlRewritePattern but not findbugs.urlRewriteFormat");
+				else 
+					p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
+			} catch (Exception e) {
+				AnalysisContext.logError("Could not compile url rewrite pattern " + URL_REWRITE_PATTERN_STRING, e);
+			}
+		URL_REWRITE_PATTERN = p;
+	}
+
+	public static String rewriteURLAccordingToProperties(String u) {
+		if (URL_REWRITE_PATTERN == null || URL_REWRITE_FORMAT == null) 
+			return u;
+		Matcher m = URL_REWRITE_PATTERN.matcher(u);
+		if (!m.matches())
+			return u;
+		String result = String.format(URL_REWRITE_FORMAT, m.group(1));
+		System.out.println("Rewriting " + u + " as " +result);
+		return result;
 	}
 
 }

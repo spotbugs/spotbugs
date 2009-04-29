@@ -142,7 +142,11 @@ public class SourceFinder {
 
 						if (size > Integer.MAX_VALUE)
 							throw new IOException(name + " is too big at " + size + " bytes");
-						ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
+						ByteArrayOutputStream out;
+						if (size <= 0) 
+							out = new ByteArrayOutputStream();
+						else 
+							out = new ByteArrayOutputStream((int) size);
 						GZIPOutputStream gOut = new GZIPOutputStream(out);
 						IO.copy(in, gOut);
 						gOut.close();
@@ -195,22 +199,28 @@ public class SourceFinder {
 			public void run() {
 				InputStream in = null;
 				try {
-				URLConnection connection = new URL(url).openConnection();
-				in = connection.getInputStream();
-				if(getProject().isGuiAvaliable()){
-					int size = connection.getContentLength();
-					in =  getProject().getGuiCallback().getProgressMonitorInputStream(in, 
-							size, "Loading source via url");
-				} 
-				if (url.endsWith(".z0p.gz"))
-					in = new GZIPInputStream(in);
-				
-				r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
+												
+					URLConnection connection = new URL(url).openConnection();
+					in = connection.getInputStream();
+					if (getProject().isGuiAvaliable())
+						in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
+						        "Loading remote source archive into memory");
+
+					if (url.endsWith(".z0p.gz"))
+						in = new GZIPInputStream(in);
+
+					r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
+
+
 				} catch (IOException e) {
+					if (getProject().isGuiAvaliable()) {
+						getProject().getGuiCallback().setErrorMessage("Unable to load " + url + "; " + e.getMessage());
+					}
 					AnalysisContext.logError("Unable to load " + url, e);
 					Util.closeSilently(in);
 				}
-            }}, "Source loading thread");
+			}
+		}, "Source loading thread");
 		t.setDaemon(true);
 		t.start();
 		return r;
@@ -348,18 +358,23 @@ public class SourceFinder {
 			if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
 				// Zip or jar archive
 				try {
-					if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) 
-						repositoryList.add(makeInMemorySourceRepository(repos));
-					else 
+					if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) {
+	                    String url = SystemProperties.rewriteURLAccordingToProperties(repos);
+	                    repositoryList.add(makeInMemorySourceRepository(url));
+                    } else 
 						repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));
 				} catch (IOException e) {
 					// Ignored - we won't use this archive
-					e.printStackTrace();
+					AnalysisContext.logError("Unable to load " + repos, e);
 				}
 			} else {
 				File dir = new File(repos);
 				if (dir.canRead() && dir.isDirectory())
 					repositoryList.add(new DirectorySourceRepository(repos));
+				else {
+					AnalysisContext.logError("Unable to load " + repos);
+					
+				}
 			}
 		}
 	}

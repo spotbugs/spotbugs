@@ -69,6 +69,35 @@ public interface Cloud {
 	abstract @CheckForNull BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations);
 	};
 	
+    static enum BugFilingStatus {
+		FILE_BUG("File bug"), FILE_AGAIN("File again"), BUG_PENDING("Bug pending") {
+			@Override
+			public boolean enabled() {
+				return false;
+			}
+		},
+		VIEW_BUG("View bug"), NA("") {
+			@Override
+			public boolean enabled() {
+				return false;
+			}
+		};
+
+		final String displayName;
+
+		public boolean enabled() {
+			return true;
+		}
+
+		BugFilingStatus(String name) {
+			this.displayName = name;
+		}
+		
+		public String toString() {
+			return displayName;
+		}
+
+	}
 
 	BugCollection getBugCollection();
     String getStatusMsg();
@@ -92,8 +121,7 @@ public interface Cloud {
 	URL getSourceLink(BugInstance b);
 	
 	boolean supportsBugLinks();
-	boolean bugLinkEnabled(String label);
-	String getBugLinkLabel(BugInstance b);
+	BugFilingStatus getBugLinkStatus(BugInstance b);
 	URL getBugLink(BugInstance b);
 	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
 	
