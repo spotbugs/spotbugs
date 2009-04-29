@@ -130,8 +130,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 	public boolean isWrittenOutsideOfInitialization(XField f) {
 		return writtenOutsideOfInitializationFields.contains(f);
 	}
-	public boolean isWrittenOutsideOfConstructor(XField f) {
-		return writtenOutsideOfInitializationFields.contains(f) || writtenInInitializationFields.contains(f);
+
+	public boolean isWrittenDuringInitialization(XField f) {
+		return writtenInInitializationFields.contains(f);
 	}
 	public boolean isWrittenInConstructor(XField f) {
 		return writtenInConstructorFields.contains(f);
