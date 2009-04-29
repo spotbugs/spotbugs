@@ -1695,7 +1695,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		tree.addTreeExpansionListener(new TreeExpansionListener(){
 
 			public void treeExpanded(TreeExpansionEvent event) {
-				if (true)
+				if (false)
 					return;
 	            TreePath path = event.getPath();
 	            Object lastPathComponent = path.getLastPathComponent();
@@ -1706,8 +1706,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	            		final TreePath p = path.pathByAddingChild(o);
 	            		SwingUtilities.invokeLater(new Runnable() {
 
-							public void run() {
+							public void run() {try {
 								tree.expandPath(p);
+							} catch (Exception e) {
+								assert true;
+							}
 	                            
                             }});
 	            	}
@@ -1853,12 +1856,16 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return statusBar;
 	}
 
+	private String join(String s1, String s2) {
+		if (s1 == null || s1.length() == 0) return s2;
+		if (s2 == null || s2.length() == 0) return s1;
+		return s1 + "; " + s2;
+	}
 	@SwingThread
-	void updateStatusBar()
-	{
+	void updateStatusBar() {
 
 		int countFilteredBugs = BugSet.countFilteredBugs();
-		String msg = "  http://findbugs.sourceforge.net/";
+		String msg = "";
 		if (countFilteredBugs == 1) {
 	         msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden by filters");
 	    } else 	if (countFilteredBugs > 1) {
@@ -1869,13 +1876,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			if (plugin != null) {
 				String pluginMsg = plugin.getStatusMsg();
 				if (pluginMsg != null && pluginMsg.length() > 1)
-					msg = msg + ";  " + pluginMsg;
+					msg = join(msg, pluginMsg);
 			}
 		}
-		System.out.println("Error msg is " + errorMsg);
 		if (errorMsg != null && errorMsg.length() > 0)
-			msg += "; " + errorMsg;
-		System.out.println("status msg is " + msg);
+			msg = join(msg, errorMsg);
+		if (msg.length() == 0)
+			msg = "http://findbugs.sourceforge.net";
 		statusBarLabel.setText(msg);
 	}
 
