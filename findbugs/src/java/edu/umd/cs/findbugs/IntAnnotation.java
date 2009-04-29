@@ -144,6 +144,12 @@ public class IntAnnotation implements BugAnnotation {
 	public boolean isSignificant() {
 		return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
 	}
+
+
+	
+    public String toString(ClassAnnotation primaryClass) {
+	    return toString();
+    }
 }
 
 // vim:ts=4

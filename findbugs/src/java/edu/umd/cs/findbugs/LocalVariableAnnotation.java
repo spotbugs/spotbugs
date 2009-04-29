@@ -365,6 +365,9 @@ public class LocalVariableAnnotation implements BugAnnotation {
 			return match;
 		return null;
 	}
+    public String toString(ClassAnnotation primaryClass) {
+	    return toString();
+    }
 }
 
 // vim:ts=4

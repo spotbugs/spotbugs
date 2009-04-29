@@ -82,7 +82,7 @@ public class StringAnnotation implements BugAnnotation {
 
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitStringAnnotation(this);
-	}
+	}   
 
 	public String format(String key, ClassAnnotation primaryClass) {
 		return value;
@@ -146,6 +146,9 @@ public class StringAnnotation implements BugAnnotation {
 	public boolean isSignificant() {
 		return true;
 	}
+    public String toString(ClassAnnotation primaryClass) {
+	    return toString();
+    }
 }
 
 // vim:ts=4

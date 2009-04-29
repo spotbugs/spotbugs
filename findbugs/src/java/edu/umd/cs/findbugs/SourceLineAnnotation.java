@@ -925,5 +925,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 					firstLine, lastLine, -1, -1);
 		return   SourceLineAnnotation.createUnknown(className, sourceFileName);
 	}
+	
+    public String toString(ClassAnnotation primaryClass) {
+	    return toString();
+    }
 }
 // vim:ts=4

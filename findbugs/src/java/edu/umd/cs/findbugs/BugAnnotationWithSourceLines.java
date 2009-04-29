@@ -68,5 +68,8 @@ public abstract class BugAnnotationWithSourceLines implements BugAnnotation {
     public SourceLineAnnotation getSourceLines() {
     	return sourceLines;
     }
+    public String toString(ClassAnnotation primaryClass) {
+	    return toString();
+    }
 
 }

@@ -70,6 +70,8 @@ public interface BugAnnotation
 	 * @return true if significant
 	 */
 	public boolean isSignificant();
+	
+	public String toString(ClassAnnotation primaryClass);
 }
 
 // vim:ts=4
