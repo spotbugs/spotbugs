@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.DetectorFactorySelector;
@@ -260,20 +261,20 @@ public class PluginLoader {
 		boolean pluginEnabled = defaultEnabled.equals("") || Boolean.valueOf(defaultEnabled).booleanValue();
 
 		// Load the message collections
-		try {
 			//Locale locale = Locale.getDefault();
 			Locale locale = I18N.defaultLocale;
 			String language = locale.getLanguage();
 			String country = locale.getCountry();
 
+			try {
 			if (country != null)
 				addCollection(messageCollectionList, "messages_" + language + "_" + country + ".xml");
 			addCollection(messageCollectionList, "messages_" + language + ".xml");
+			} catch (PluginException e) {
+				AnalysisContext.logError("Error loading localized message file", e);
+			}
 			addCollection(messageCollectionList, "messages.xml");
-		} catch (DocumentException e) {
-			e.printStackTrace();
-			throw new PluginException("Couldn't parse \"messages.xml\"", e);
-		}
+
 
 		// Create the Plugin object (but don't assign to the plugin field yet,
 		// since we're still not sure if everything will load correctly)
@@ -598,12 +599,18 @@ public class PluginLoader {
 	}
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
-			throws DocumentException {
+			throws  PluginException {
 		URL messageURL = getResource(filename);
 		if (messageURL != null) {
 			SAXReader reader = new SAXReader();
-			Document messageCollection = reader.read(messageURL);
-			messageCollectionList.add(messageCollection);
+            try {
+            	InputStreamReader stream = new InputStreamReader(messageURL.openStream());
+				Document messageCollection = reader.read(stream);
+            	messageCollectionList.add(messageCollection);
+            } catch (Exception e) {
+            	throw new PluginException("Couldn't parse \"" + messageURL +"\"", e);
+            }
+			
 		}
 	}
 
