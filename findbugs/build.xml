@@ -866,6 +866,11 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/commons-lang-2.4.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/AppleJavaExtensions.jar"/>
 		<copy todir="${jnlp.dir}" file="${docsrc.dir}/buggy-sm.png"/>		
+		<jar destfile="${jnlp.dir}/findbugs.jar" update="yes">
+					<fileset dir="${plugin.dir}">
+						<include name="*.properties"/>
+					</fileset>
+			</jar>
 		<input message="Enter keystore password:"  addproperty="password"/>
 		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
 			<fileset dir="${jnlp.dir}">
