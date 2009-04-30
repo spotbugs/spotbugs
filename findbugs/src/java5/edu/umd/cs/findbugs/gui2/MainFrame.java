@@ -1695,11 +1695,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	}
 
 	private void setupTreeListeners() {
-		tree.addTreeExpansionListener(new TreeExpansionListener(){
+		if (false) 
+			tree.addTreeExpansionListener(new TreeExpansionListener(){
 
 			public void treeExpanded(TreeExpansionEvent event) {
-				if (false)
-					return;
+				System.out.println("Tree expanded");
 	            TreePath path = event.getPath();
 	            Object lastPathComponent = path.getLastPathComponent();
 	            int children  = tree.getModel().getChildCount(lastPathComponent);
@@ -1710,9 +1710,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	            		SwingUtilities.invokeLater(new Runnable() {
 
 							public void run() {try {
+								System.out.println("auto expanding " + p);
 								tree.expandPath(p);
 							} catch (Exception e) {
-								assert true;
+								e.printStackTrace();
 							}
 	                            
                             }});
@@ -2030,70 +2031,72 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * @param bug TODO
 	 * @return
 	 */
-	private Component bugSummaryComponent(Object obj, BugInstance bug){
+	
+	private Component bugSummaryComponent(String str, BugInstance bug){
 		JLabel label = new JLabel();
 		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
 		label.setFont(label.getFont().deriveFont(Font.PLAIN));
 		label.setForeground(Color.BLACK);
 
-		if(obj instanceof String){
-			String str = (String) obj;
-			label.setText(str);
-		}
-		else{
+		label.setText(str);
+		return label;
+	}
+	
+	private Component bugSummaryComponent(BugAnnotation value, BugInstance bug){
+		JLabel label = new JLabel();
+		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
+		label.setFont(label.getFont().deriveFont(Font.PLAIN));
+		label.setForeground(Color.BLACK);
+		ClassAnnotation primaryClass = bug.getPrimaryClass();
 
-			BugAnnotation value = (BugAnnotation) obj;
-
-			if(value == null)
-				return new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("summary.null", "null"));
-
-			if(value instanceof SourceLineAnnotation){
-				final SourceLineAnnotation note = (SourceLineAnnotation) value;
-				if(sourceCodeExist(note)){
-					String srcStr = "";
-					int start = note.getStartLine();
-					int end = note.getEndLine();
-					if(start < 0 && end < 0)
-						srcStr = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
-					else if(start == end)
-						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line") + " " + start + "]";
-					else if(start < end)
-						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines") + " " + start + " - " + end + "]";
-
-					label.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to") + " " + srcStr);
-
-					label.addMouseListener(new BugSummaryMouseListener(bug, label, note));
-				}
-
-				label.setText(note.toString());
-			}
-			else if(value instanceof BugAnnotationWithSourceLines){
-				BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
-				final SourceLineAnnotation noteSrc = note.getSourceLines();
+		String sourceCodeLabel = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
+		String summaryLine = edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line");
+		String summaryLines = edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines");
+		String clickToGoToText = edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to");
+		if (value instanceof SourceLineAnnotation) {
+			final SourceLineAnnotation note = (SourceLineAnnotation) value;
+			if (sourceCodeExist(note)) {
 				String srcStr = "";
-				if(noteSrc != null && sourceCodeExist(noteSrc)){
-					int start = noteSrc.getStartLine();
-					int end = noteSrc.getEndLine();
-					if(start < 0 && end < 0)
-						srcStr = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
-					else if(start == end)
-						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line") + " " + start + "]";
-					else if(start < end)
-						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines") + " " + start + " - " + end + "]";
+				int start = note.getStartLine();
+				int end = note.getEndLine();
+				if (start < 0 && end < 0)
+					srcStr = sourceCodeLabel;
+				else if (start == end)
+					srcStr = " [" + summaryLine + " " + start + "]";
+				else if (start < end)
+					srcStr = " [" + summaryLines + " " + start + " - " + end  + "]";
 
-					if(!srcStr.equals("")){
-						label.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to") + " " + srcStr);
-						label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
-					}
+				label.setToolTipText(clickToGoToText + " " + srcStr);
+
+				label.addMouseListener(new BugSummaryMouseListener(bug, label, note));
+			}
+
+			label.setText(note.toString());
+		} else if (value instanceof BugAnnotationWithSourceLines) {
+			BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
+			final SourceLineAnnotation noteSrc = note.getSourceLines();
+			String srcStr = "";
+			if (noteSrc != null && sourceCodeExist(noteSrc)) {
+				int start = noteSrc.getStartLine();
+				int end = noteSrc.getEndLine();
+				if (start < 0 && end < 0)
+					srcStr = sourceCodeLabel;
+				else if (start == end)
+					srcStr = " [" + summaryLine + " " + start + "]";
+				else if (start < end)
+					srcStr = " [" + summaryLines + " " + start + " - " + end + "]";
+
+				if (!srcStr.equals("")) {
+					label.setToolTipText(clickToGoToText + " " + srcStr);
+					label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
 				}
-				if(!srcStr.equals(edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.")))
-					label.setText(note.toString() + srcStr);
-				else
-					label.setText(note.toString());
 			}
-			else{
-				label.setText(value.toString());
-			}
+			if (!srcStr.equals(sourceCodeLabel))
+				label.setText(note.toString(primaryClass) + srcStr);
+			else
+				label.setText(note.toString(primaryClass));
+		} else {
+			label.setText(value.toString(primaryClass));
 		}
 
 		return label;
