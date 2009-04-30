@@ -398,8 +398,7 @@ public class FindBadCast2 implements Detector {
 								.addClassAndMethod(methodGen, sourceFile)
 
 								.addFoundAndExpectedType(refType, castType)
-								.addOptionalAnnotation(variable)
-								.addOptionalAnnotation(source)
+								.addOptionalUniqueAnnotations(variable, source)
 								.addSourceLine(sourceLineAnnotation));
 					}
 					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
