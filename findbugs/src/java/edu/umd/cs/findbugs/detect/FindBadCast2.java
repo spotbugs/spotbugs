@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -373,16 +374,34 @@ public class FindBadCast2 implements Detector {
 								+ valueNumber);
 						System.out.println("  score: " + rank);
 					}
-					if (!downcast && completeInformation || operandTypeIsExact)
+					if (!downcast && completeInformation || operandTypeIsExact) {
+						BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
+						String bugPattern;
+						if (isCast) {
+							if (downcast && operandTypeIsExact)  {
+							  if (refSig.equals("[Ljava/lang/Object;") 
+									&& source instanceof MethodAnnotation
+									&& ((MethodAnnotation)source).getMethodName().equals("toArray")
+									&& ((MethodAnnotation)source).getMethodSignature().equals("()[Ljava/lang/Object;"))
+								bugPattern = "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY";
+							  else
+									bugPattern = "BC_IMPOSSIBLE_DOWNCAST";
+							} else
+								bugPattern = "BC_IMPOSSIBLE_CAST";
+						} else 
+							bugPattern = "BC_IMPOSSIBLE_INSTANCEOF";
+
+					
 						bugReporter.reportBug(new BugInstance(this,
-								isCast ? "BC_IMPOSSIBLE_CAST"
-										: "BC_IMPOSSIBLE_INSTANCEOF",
+								bugPattern,
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 
 								.addFoundAndExpectedType(refType, castType)
 								.addOptionalAnnotation(variable)
+								.addOptionalAnnotation(source)
 								.addSourceLine(sourceLineAnnotation));
+					}
 					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
 							&& !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)
 							&& !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {

@@ -6889,6 +6889,49 @@ This cast will always throw a ClassCastException.
     </Details>
   </BugPattern>
 
+  <BugPattern type="BC_IMPOSSIBLE_DOWNCAST">
+    <ShortDescription>Impossible downcast</ShortDescription>
+    <LongDescription>Impossible downcast from {2} to {3} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This cast will always throw a ClassCastException. 
+The analysis believes it knows
+the precise type of the value being cast, and the attempt to
+downcast it to a subtype will always fail by throwing a ClassCastException.  
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY">
+    <ShortDescription>Impossible downcast</ShortDescription>
+    <LongDescription>Impossible downcast of toArray() result to {3} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code is casting the result of calling <code>toArray()</code> on a collection
+to a type more specific than <code>Object[]</code>, as in:
+<pre>
+String[] getAsArray(Collection&ltString&gt; c) {
+  return (String[]) c.toArray();
+</pre>
+<p>This will usually fail by throwing a ClassCastException. The <code>toArray()</code>
+of almost all collections return an <code>Object[]</code>. They can't really do anything else,
+since the Collection object has no reference to the declared generic type of the collection.
+<p>The correct way to do this is to use either
+  <code>c.toArray(new String[]);</code>
+  or <code>c.toArray(new String[c.size()]);</code> (the latter is slightly more efficient).
+<p>There is one common/known exception exception to this. The <code>toArray()</code>
+method of lists returned by <code>Arrays.asList(...)</code> will return a covariantly
+typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
+will return a <code>String []</code>. FindBugs attempts to detect and suppress
+such cases, but may miss some.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="NP_NULL_INSTANCEOF">
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>

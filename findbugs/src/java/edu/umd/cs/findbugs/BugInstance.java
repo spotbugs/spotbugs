@@ -1892,8 +1892,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 
 	}
-
-	public @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+	public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+		int pc = location.getHandle().getPosition();
+		OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
+		BugAnnotation a0 = getSomeSource(classContext, method, location, stack, 0);
+		return a0;
+	}
+	public static @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
 		int pc = location.getHandle().getPosition();
 
 		try {
