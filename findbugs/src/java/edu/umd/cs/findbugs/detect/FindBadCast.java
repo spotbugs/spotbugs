@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
+/** Use FindBadCast2 instead */
 public @java.lang.Deprecated class FindBadCast extends OpcodeStackDetector implements  StatelessDetector {
 
 
