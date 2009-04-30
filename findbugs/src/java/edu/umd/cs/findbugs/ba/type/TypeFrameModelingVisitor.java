@@ -499,14 +499,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	@Override
 	public void handleStoreInstruction(StoreInstruction obj) {
-		if (isTopOfStackExact() && obj.consumeStack(cpg) == 1) {
+		int numConsumed = obj.consumeStack(cpg);
+		if ( numConsumed == 1) {
 			try {
-			int numConsumed = obj.consumeStack(cpg);
+			boolean isExact = isTopOfStackExact();
 			TypeFrame frame = getFrame();
 			int index = obj.getIndex();
 			Type value = frame.popValue();
 			frame.setValue(index, value);
-			frame.setExact(index, true);
+			frame.setExact(index, isExact);
 			} catch (DataflowAnalysisException e) {
 				throw new InvalidBytecodeException(e.toString());
 			}
