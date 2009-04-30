@@ -497,6 +497,46 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 	}
 
+	@Override
+	public void handleStoreInstruction(StoreInstruction obj) {
+		if (isTopOfStackExact() && obj.consumeStack(cpg) == 1) {
+			try {
+			int numConsumed = obj.consumeStack(cpg);
+			TypeFrame frame = getFrame();
+			int index = obj.getIndex();
+			Type value = frame.popValue();
+			frame.setValue(index, value);
+			frame.setExact(index, true);
+			} catch (DataflowAnalysisException e) {
+				throw new InvalidBytecodeException(e.toString());
+			}
+		} else
+			super.handleStoreInstruction(obj);
+		
+	}
+	/**
+	 * Handler for all instructions which load values from a local variable
+	 * and push them on the stack.  Note that two locals are loaded for
+	 * long and double loads.
+	 */
+	public void handleLoadInstruction(LoadInstruction obj) {
+		int numProduced = obj.produceStack(cpg);
+		if (numProduced == Constants.UNPREDICTABLE)
+			throw new InvalidBytecodeException("Unpredictable stack production");
+
+		if (numProduced != 1) {
+			super.handleLoadInstruction(obj);
+			return;
+		}
+		int index = obj.getIndex();
+		TypeFrame frame = getFrame();
+		Type value = frame.getValue(index);
+		boolean isExact = frame.isExact(index);
+		frame.pushValue(value);
+		if (isExact)
+			setTopOfStackIsExact();
+	}
+	
     private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
     	if (Subtypes2.ENABLE_SUBTYPES2) {
     		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -809,6 +849,23 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	@Override
+	public void visitDUP(DUP obj) {
+		try {
+			TypeFrame frame = getFrame();
+			boolean isExact = isTopOfStackExact();
+			Type value = frame.popValue();
+			frame.pushValue(value);
+			if (isExact)
+				setTopOfStackIsExact();
+			frame.pushValue(value);
+			if (isExact)
+				setTopOfStackIsExact();
+		} catch (DataflowAnalysisException e) {
+			throw new InvalidBytecodeException(e.toString());
+		}
+	}
+	
+	@Override
 	public void visitFSUB(FSUB obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
@@ -1032,6 +1089,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private void setTopOfStackIsExact() {
 		TypeFrame frame = getFrame();
 		frame.setExact(frame.getNumSlots() - 1, true);
+	}
+
+	private boolean isTopOfStackExact() {
+		TypeFrame frame = getFrame();
+		return frame.isExact(frame.getNumSlots() - 1);
 	}
 
 	@Override

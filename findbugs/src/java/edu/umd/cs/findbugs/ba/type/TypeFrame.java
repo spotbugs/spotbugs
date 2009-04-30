@@ -157,6 +157,13 @@ public class TypeFrame extends Frame<Type> {
 		exactTypeSet.clear(getStackLocation(0));
 		return super.popValue();
 	}
+	
+	@Override 
+	public String toString() {
+		if (exactTypeSet.cardinality() == 0)
+			return super.toString();
+		return super.toString() + "; exact " + exactTypeSet;
+	}
 
 
 
