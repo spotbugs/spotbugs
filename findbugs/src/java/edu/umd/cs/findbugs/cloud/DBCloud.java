@@ -842,95 +842,121 @@ public  class DBCloud extends AbstractCloud {
     
     static final String BUG_NOTE = SystemProperties.getProperty("findbugs.bugnote");
 	
-    String getBugReport(BugInstance b) {
-    	StringWriter stringWriter = new StringWriter();
-    	PrintWriter out = new PrintWriter(stringWriter);
-    	out.println("Bug report generated from FindBugs");
-    	out.println(b.getMessageWithoutPrefix());
-    	out.println();
-    	ClassAnnotation primaryClass = b.getPrimaryClass();
-    	
-    	int firstLine = Integer.MAX_VALUE;
-    	int lastLine = Integer.MIN_VALUE;
-    	for(BugAnnotation a : b.getAnnotations()) {
-    		if (a == primaryClass)
-    			out.println(a);
-    		else 
-    			out.println("  " + a.toString(primaryClass));
-    		if (a instanceof SourceLineAnnotation) {
-    			SourceLineAnnotation s = (SourceLineAnnotation) a;
-    			if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
-    				firstLine = Math.min(firstLine, s.getStartLine());
-    				lastLine = Math.max(lastLine, s.getEndLine());
-    				
-    			}
-    		}
-    	}
-    	out.println();
-    	
-    	Collection<String> projects = projectMapping.getProjects(primaryClass.getClassName());
-    	if (projects != null && !projects.isEmpty()) {
-    		String projectList = projects.toString();
-    		projectList = projectList.substring(1, projectList.length()-1);
-    		out.println("Possibly part of: " + projectList);
-    		out.println();
-    	}
-    	SourceLineAnnotation primarySource = primaryClass.getSourceLines();
-    	if (primarySource.isSourceFileKnown() && firstLine <= lastLine && MainFrame.isAvailable()) {
-    		try {
-    		SourceFile sourceFile = MainFrame.getInstance().getSourceFinder().findSourceFile(primarySource);
-    		BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
-    		int lineNumber = 1;
-    		out.println("\nRelevant source code:");
-    		while (lineNumber <= lastLine+4) {
-    			String txt = in.readLine();
-    			if (txt == null) break;
-    			if (lineNumber >= firstLine-4) {
-    				if (lineNumber > lastLine && txt.trim().length() == 0) 
-    					break;
-    				out.printf("%4d: %s\n", lineNumber, txt);
-    			}
-    			lineNumber++;
-    		}
-    		in.close();
-    		out.println();
-    		} catch (IOException e) {
-    			assert true;
-    		}
-    		URL link = getSourceLink(b);
-    		
-    		
-    		if (link != null) {
-    			out.println(sourceFileLinkToolTip + ": " + link);
-    			out.println();
-    		}
-    	}
-    	
-    	if (BUG_NOTE != null) {
-    		out.println(BUG_NOTE);
-    		out.println();
-    	}
-    	
-    	String detailPlainText = b.getBugPattern().getDetailPlainText();
-    	out.flush();
-    	
-    	if (stringWriter.getBuffer().length() + detailPlainText.length() < 1200) {
-    		out.println("Bug pattern explanation:");
-    		out.println(detailPlainText);
-    		out.println();
-    	} else {
-    		out.println("Bug pattern explanation: http://findbugs.sourceforge.net/bugDescriptions.html#" + b.getBugPattern().getType());
-    	}
-    	
+    String getBugReportHead(BugInstance b) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter out = new PrintWriter(stringWriter);
+		out.println("Bug report generated from FindBugs");
+		out.println(b.getMessageWithoutPrefix());
+		out.println();
+		ClassAnnotation primaryClass = b.getPrimaryClass();
+
+		for (BugAnnotation a : b.getAnnotations()) {
+			if (a == primaryClass)
+				out.println(a);
+			else
+				out.println("  " + a.toString(primaryClass));
+		}
+		URL link = getSourceLink(b);
+
+		if (link != null) {
+			out.println();
+			out.println(sourceFileLinkToolTip + ": " + link);
+			out.println();
+		}
+
+		if (BUG_NOTE != null) {
+			out.println(BUG_NOTE);
+			out.println();
+		}
+
+		Collection<String> projects = projectMapping.getProjects(primaryClass.getClassName());
+		if (projects != null && !projects.isEmpty()) {
+			String projectList = projects.toString();
+			projectList = projectList.substring(1, projectList.length() - 1);
+			out.println("Possibly part of: " + projectList);
+			out.println();
+		}
+		out.close();
+		return stringWriter.toString();
+	}
+
+	String getBugPatternExplanation(BugInstance b) {
+		String detailPlainText = b.getBugPattern().getDetailPlainText();
+		return "Bug pattern explanation:\n" + detailPlainText + "\n\n";
+	}
+
+	String getBugPatternExplanationLink(BugInstance b) {
+		return "Bug pattern explanation: http://findbugs.sourceforge.net/bugDescriptions.html#" + b.getBugPattern().getType()
+		        + "\n";
+	}
+
+	String getBugReport(BugInstance b) {
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getBugPatternExplanation(b) + getBugReportTail(b);
+	}
+	String getBugReportShorter(BugInstance b) {
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
+	}
+	String getBugReportAbridged(BugInstance b) {
+		return getBugReportHead(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
+	}
+
+	String getBugReportSourceCode(BugInstance b) {
+		if (!MainFrame.isAvailable())
+			return "";
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter out = new PrintWriter(stringWriter);
+		ClassAnnotation primaryClass = b.getPrimaryClass();
+
+		int firstLine = Integer.MAX_VALUE;
+		int lastLine = Integer.MIN_VALUE;
+		for (BugAnnotation a : b.getAnnotations())
+			if (a instanceof SourceLineAnnotation) {
+				SourceLineAnnotation s = (SourceLineAnnotation) a;
+				if (s.getClassName().equals(primaryClass.getClassName()) && s.getStartLine() > 0) {
+					firstLine = Math.min(firstLine, s.getStartLine());
+					lastLine = Math.max(lastLine, s.getEndLine());
+
+				}
+
+			}
+
+		SourceLineAnnotation primarySource = primaryClass.getSourceLines();
+		if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
+			try {
+				SourceFile sourceFile = MainFrame.getInstance().getSourceFinder().findSourceFile(primarySource);
+				BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
+				int lineNumber = 1;
+				out.println("\nRelevant source code:");
+				while (lineNumber <= lastLine + 4) {
+					String txt = in.readLine();
+					if (txt == null)
+						break;
+					if (lineNumber >= firstLine - 4) {
+						if (lineNumber > lastLine && txt.trim().length() == 0)
+							break;
+						out.printf("%4d: %s\n", lineNumber, txt);
+					}
+					lineNumber++;
+				}
+				in.close();
+				out.println();
+			} catch (IOException e) {
+				assert true;
+			}
+			out.close();
+			String result = stringWriter.toString();
+			return result;
+
+		}
+		return "";
+
+	}
+
+	String getBugReportTail(BugInstance b) {
+		return "\bFindBugs issue identifier (do not modify): " + b.getInstanceHash();
+	}
+
     
-    	
-    	out.println();
-    	out.println("FindBugs issue identifier (do not modify): " + b.getInstanceHash());
-    	out.close();
-    	String result = stringWriter.toString();
-    	return result;
-    	
-    }
     
     static String urlEncode(String s) {
     	try {
@@ -954,6 +980,8 @@ public  class DBCloud extends AbstractCloud {
     		return false;
     	return bd.isClaimed();
     }
+    
+    static final int MAX_URL_LENGTH = 1999;
     @Override
     @CheckForNull 
     public URL getBugLink(BugInstance b) {
@@ -980,12 +1008,28 @@ public  class DBCloud extends AbstractCloud {
 				if (bugLinkPattern == null)
 					return null;
 				String report = getBugReport(b);
-				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
 				String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
+				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+				
 				String u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
-				// bugCollection.getProject().getGuiCallback().addErrorMessage("Bug link length is "
-				// + u.length());
-				System.out.println("bug link length is " + u.length());
+				if (u.length() > MAX_URL_LENGTH) {
+					report = getBugReportShorter(b);
+					u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
+					if (u.length() > MAX_URL_LENGTH) {
+						report = getBugReportAbridged(b);
+						u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
+						String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
+							                   +" please cut and paste into the bug report as appropriate]\n\n"
+							                   + getBugReportSourceCode(b) 
+											+ getBugPatternExplanation(b);
+						bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
+								"Additional information for " + b.getMessageWithoutPrefix(),
+								supplemental);
+						
+					}
+				}
+				if (u.length() > 1500)
+					setErrorMsg("Bug link length is "+ u.length());
 				return new URL(u);
 			}
 			}

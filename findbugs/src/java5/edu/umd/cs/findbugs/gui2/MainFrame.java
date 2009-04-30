@@ -2983,5 +2983,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    
     }
 	
+   public void displayNonmodelMessage(String title, String message) {
+	   System.out.println("Displaying nonmodel message " + title);
+	   System.out.println(message);
+	   DisplayNonmodelMessage.displayNonmodelMessage(title, message, this);
+   }
 
 }

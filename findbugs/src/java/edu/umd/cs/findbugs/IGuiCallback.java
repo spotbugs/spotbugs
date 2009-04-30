@@ -33,4 +33,5 @@ public interface IGuiCallback {
 	int showConfirmDialog(String message, String title, int optionType);
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
     void setErrorMessage(String errorMsg);
+    void displayNonmodelMessage(String title, String message);
 }
