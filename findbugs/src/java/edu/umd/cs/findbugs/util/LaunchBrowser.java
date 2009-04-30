@@ -149,11 +149,11 @@ public class LaunchBrowser {
 	 */
 	public static boolean showDocument(URL url) {
 		
+		if (showDocumentViaExec(url))
+			return true;
 		if (showDocumentViaDesktop(url))
 			return true;
 		if (showViaWebStart(url))
-			return true;
-		if (showDocumentViaExec(url))
 			return true;
 		return false;
 	
