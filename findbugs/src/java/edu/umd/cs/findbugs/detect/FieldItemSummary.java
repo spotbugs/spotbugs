@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -46,6 +47,11 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
 	Set<XField> touched = new HashSet<XField>();
 
+	
+	@Override
+	public boolean shouldVisit(JavaClass obj) {
+		return !getXClass().hasStubs();
+	}
 	boolean sawInitializeSuper;
 	@Override
 	public void sawOpcode(int seen) {
