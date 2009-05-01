@@ -1548,7 +1548,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		
 		topPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		
+		c.ipadx = c.ipady = 3;
+		c.insets = new Insets(6,6,6,6);
 		c.gridx = 0;
 		c.gridy = 0;
 		c.fill=GridBagConstraints.NONE;
@@ -1563,9 +1564,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		c.gridx = 0;
 		c.gridwidth=2;
 		c.gridy++;
-		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipadx = c.ipady = 2;
-		c.insets = new Insets(6,6,6,6);
+		c.fill = GridBagConstraints.HORIZONTAL;
 		topPanel.add(treeHeader, c);
 		
 		c.fill = GridBagConstraints.BOTH;
