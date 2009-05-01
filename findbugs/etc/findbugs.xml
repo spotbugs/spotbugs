@@ -296,6 +296,7 @@
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" 
             speed="fast"
+            disabled="true"
             reports="DMI_UNSUPPORTED_METHOD"
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" 
