@@ -15,5 +15,15 @@ public class  Ideas_2009_04_16<T> {
 		}
 		return value;
 	}
+	void increment(T t) {
+		AtomicInteger value = map.get(t);
+		if (value == null) {
+			value = new AtomicInteger(1);
+			value = map.putIfAbsent(t, value);
+		}
+		if (value != null)
+			value.getAndIncrement();
+		
+	}
 
 }
