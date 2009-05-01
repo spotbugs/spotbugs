@@ -348,7 +348,7 @@ public abstract class AbstractPluginTest {
 	 */
 	protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
 		worker.work(Collections.singletonList(new WorkItem(element)));
-		joinJobFamily(FindbugsPlugin.class);
+		joinJobFamily(FindbugsPlugin.class); // wait for RefreshJob
 	}
 
 	/**
