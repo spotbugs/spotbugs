@@ -81,6 +81,8 @@ import edu.umd.cs.findbugs.ba.TestCaseDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 import edu.umd.cs.findbugs.ba.type.NullType;
@@ -1029,9 +1031,18 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (rhsType_.getType() == T_NULL) {
 			// A literal null value was passed directly to equals().
 			if (!looksLikeTestCase) {
-                bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
-				.addClassAndMethod(methodGen, sourceFile),
-				SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+				
+                try {
+                	IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
+	                IsNullValueFrame isNullFrame = isNullDataflow.getFactAtLocation(location);
+					if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) 
+	                  bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
+					  .addClassAndMethod(methodGen, sourceFile),
+					  SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+                } catch (CFGBuilderException e) {
+	              AnalysisContext.logError("Error getting null value analysis", e);
+                }
+				
 			}
 			return;
 		} else if (lhsType_.getType() == T_NULL) {
