@@ -77,6 +77,9 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		addSwitch("-clear", "clear saved GUI settings and exit");
 		addOption("-priority", "thread priority", "set analysis thread priority");
 		addOption("-loadbugs", "saved analysis results", "load bugs from saved analysis results");
+		makeOptionUnlisted("-loadbugs");
+		addOption("-loadBugs", "saved analysis results", "load bugs from saved analysis results");
+		
 		addSwitch("-d", "disable docking");
 		addSwitch("--nodock", "disable docking");
 		addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set UI look and feel");

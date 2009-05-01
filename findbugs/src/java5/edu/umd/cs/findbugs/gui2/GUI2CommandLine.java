@@ -95,7 +95,7 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 			} catch (NumberFormatException e) {
 				// ignore
 			}
-		} else if (option.equals("-loadBugs")) {
+		} else if (option.equals("-loadBugs") || option.equals("-loadbugs")) {
 			saveFile = new File(argument);
 			if (!saveFile.exists()) {
 				System.err.println("Bugs file \"" + argument + "\" could not be found");
