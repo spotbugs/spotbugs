@@ -85,7 +85,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
-	private File currentWorkingDirectory;
+	private List<File> currentWorkingDirectoryList;
 	/**
 	 * Project filename.
 	 */
@@ -142,6 +142,7 @@ public class Project implements XMLWriteable {
 		srcDirList = new LinkedList<String>();
 		auxClasspathEntryList = new LinkedList<String>();
 		isModified = false;
+                currentWorkingDirectoryList = new ArrayList<File>();
 	}
 
 	/**
@@ -150,7 +151,7 @@ public class Project implements XMLWriteable {
 	public Project duplicate() {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
-		dup.currentWorkingDirectory = this.currentWorkingDirectory;
+                dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
 		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
 		dup.analysisTargets.addAll(this.analysisTargets);
@@ -183,7 +184,7 @@ public class Project implements XMLWriteable {
 
 	}
 	public void setCurrentWorkingDirectory(File f) {
-		this.currentWorkingDirectory = f;
+          this.currentWorkingDirectoryList.add(f);
 	}
 	/**
 	 * Return whether or not this Project has unsaved modifications.
@@ -237,6 +238,17 @@ public class Project implements XMLWriteable {
 	public boolean addSourceDir(String dirName) {
 		return addToListInternal(srcDirList, makeAbsoluteCWD(dirName));
 	}
+
+	/**
+	 * Add a working directory to the project.
+	 * @param dirName the directory to add
+	 * @return true if the working directory was added, or false if the
+	 *   working directory was already present
+	 */
+	public boolean addWorkingDir(String dirName) {
+          return addToListInternal(currentWorkingDirectoryList, new File(makeAbsoluteCWD(dirName)));
+	}
+
 
 	/**
 	 * Retrieve the Options value.
@@ -900,12 +912,12 @@ public class Project implements XMLWriteable {
 		if (destination == null) {
 	        return files;
         }
-		if (currentWorkingDirectory == null) {
+		if (currentWorkingDirectoryList.isEmpty()) {
 	        return files;
         }
 		if (destination instanceof File) {
 			File where = (File)destination;
-			if (where.getParentFile().equals(currentWorkingDirectory)) {
+			if (where.getParentFile().equals(currentWorkingDirectoryList.get(0))) {
 				List<String> result = new ArrayList<String>(files.size());
 				String root = where.getParent();
 				for(String s : files) {
@@ -1057,10 +1069,18 @@ public class Project implements XMLWriteable {
 		if (new File(fileName).isAbsolute()) {
 	        return fileName;
         }
-		File relativeToCurrent = new File(currentWorkingDirectory, fileName);
-		if (relativeToCurrent.exists()) {
-	        return relativeToCurrent.toString();
-        }
+                if (currentWorkingDirectoryList.isEmpty()) {
+                  String userDir = System.getProperty("user.dir");
+                  if (null != userDir && !"".equals(userDir)) {
+                    currentWorkingDirectoryList.add(new File(userDir));
+                  }
+                }
+                for (File currentWorkingDirectory : currentWorkingDirectoryList) {
+                  File relativeToCurrent = new File(currentWorkingDirectory, fileName);
+                  if (relativeToCurrent.exists()) {
+                    return relativeToCurrent.toString();
+                  }
+                }
 		return fileName;
 	}
 
@@ -1073,7 +1093,7 @@ public class Project implements XMLWriteable {
 	 * @return true if the value was not already present in the list,
 	 *         false otherwise
 	 */
-	private boolean addToListInternal(Collection<String> list, String value) {
+	private <T> boolean addToListInternal(Collection<T> list, T value) {
 		if (!list.contains(value)) {
 			list.add(value);
 			isModified = true;
