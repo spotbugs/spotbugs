@@ -29,20 +29,23 @@ import java.util.Set;
  * @author Tomás Pollak
  */
 public enum TestScenario {
-	DEFAULT("/defaultScenario", false, new String[] { "URF_UNREAD_FIELD",
-			"DM_STRING_CTOR" }, 2), QUICKFIX("/quickfixScenario", false, new String[] {},
-			0), QUICKFIX_WITH_JUNIT("/quickfixScenario", true, new String[] {}, 0), JDT(
-			"/jdtScenario", false, new String[] {}, 0);
+	DEFAULT(new String[] { "/defaultScenario" }, false, new String[] {
+			"URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2), QUICKFIX(
+			new String[] { "/quickfixScenario" }, false, new String[] {}, 0), QUICKFIX_WITH_JUNIT(
+			new String[] { "/quickfixScenario" }, true, new String[] {}, 0), JDT(
+			new String[] { "/jdtScenario" }, false, new String[] {}, 0), TWO_SRC_FOLDERS(
+			new String[] { "/defaultScenario", "secondSrcScenario" }, false,
+			new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
 
-	private String testFilesPath;
+	private String[] testFilesPaths;
 	private boolean usesJUnit;
 	private final Map<String, Integer> visibleBugsHistogram = new HashMap<String, Integer>();
 	private int visibleBugsCount;
 	private int filteredBugsCount;
 
-	private TestScenario(String testFilesPath, boolean usesJUnit,
+	private TestScenario(String[] testFilesPaths, boolean usesJUnit,
 			String[] visibleBugsArray, int filteredBugsCount) {
-		this.testFilesPath = testFilesPath;
+		this.testFilesPaths = testFilesPaths;
 		this.usesJUnit = usesJUnit;
 		initializeBugsHistogram(visibleBugsArray);
 		visibleBugsCount = visibleBugsArray.length;
@@ -53,8 +56,8 @@ public enum TestScenario {
 		return filteredBugsCount;
 	}
 
-	public String getTestFilesPath() {
-		return testFilesPath;
+	public String[] getTestFilesPaths() {
+		return testFilesPaths;
 	}
 
 	public int getVisibleBugFrequency(String bugPattern) {

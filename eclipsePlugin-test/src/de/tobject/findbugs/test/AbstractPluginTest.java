@@ -85,12 +85,19 @@ public abstract class AbstractPluginTest {
 		// Create the test project
 		project = createJavaProject(TEST_PROJECT, "bin");
 		addRTJar(getJavaProject());
-		addSourceContainer(getJavaProject(), SRC);
+		addSourceContainer(getJavaProject(), SRC); // Create default 'src'
+		for (int i = 1; i < getTestFilesPaths().length; i++) { // Create extra 'srcx'
+			addSourceContainer(getJavaProject(), SRC + (i + 1));
+		}
 		addExtraClassPathEntries();
 
 		// Copy test workspace
 		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
-				.getBundle(), getTestFilesPath());
+				.getBundle(), getTestFilesPaths()[0]); // Import default 'src'
+		for (int i = 1; i < getTestFilesPaths().length; i++) { // Import extra 'srcx'
+			importResources(getProject().getFolder(SRC + (i + 1)), FindbugsTestPlugin
+					.getDefault().getBundle(), getTestFilesPaths()[i]);
+		}
 
 		// Compile project
 		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
@@ -283,11 +290,10 @@ public abstract class AbstractPluginTest {
 	}
 
 	/**
-	 * Subclasses must implement this method and return a path inside of the bundle where
-	 * the test files are located.
+	 * Returns the paths inside of the bundle where the test files are located.
 	 */
-	protected final String getTestFilesPath() {
-		return getTestScenario().getTestFilesPath();
+	protected final String[] getTestFilesPaths() {
+		return getTestScenario().getTestFilesPaths();
 	}
 
 	/**
@@ -342,6 +348,7 @@ public abstract class AbstractPluginTest {
 	 */
 	protected void work(FindBugsWorker worker, IJavaElement element) throws CoreException {
 		worker.work(Collections.singletonList(new WorkItem(element)));
+		joinJobFamily(FindbugsPlugin.class);
 	}
 
 	/**

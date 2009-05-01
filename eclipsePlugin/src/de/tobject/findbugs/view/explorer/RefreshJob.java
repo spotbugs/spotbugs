@@ -33,6 +33,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.navigator.CommonViewer;
 
+import de.tobject.findbugs.FindbugsPlugin;
+
 /**
  * @author Andrei
  */
@@ -52,6 +54,11 @@ class RefreshJob extends Job implements IViewerRefreshJob {
 		deltaComparator = new RemovedFirstComparator();
 		deltaToRefresh = new ArrayList<DeltaInfo>();
 		resourceListener = new ResourceChangeListener(this);
+	}
+
+	@Override
+	public boolean belongsTo(Object family) {
+		return FindbugsPlugin.class == family;
 	}
 
 	private void startListening(){
