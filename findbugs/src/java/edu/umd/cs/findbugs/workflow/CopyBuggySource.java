@@ -89,6 +89,8 @@ public class CopyBuggySource {
 					continue;
 				if (sourceAnnotation == null)
 					continue;
+				if (sourceAnnotation.isUnknown())
+					continue;
 				String fullName;
 
 				String packageName = sourceAnnotation.getPackageName();
