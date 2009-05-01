@@ -156,7 +156,7 @@ public class BugLoader {
 		return col;
 	}
 		
-	private static void addDeadBugMatcher(Project p) {
+	static void addDeadBugMatcher(Project p) {
 		Filter suppressionMatcher = p.getSuppressionFilter();
 		if (suppressionMatcher != null) {
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);

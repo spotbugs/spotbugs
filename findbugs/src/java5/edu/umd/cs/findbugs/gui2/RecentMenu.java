@@ -99,7 +99,8 @@ public class RecentMenu{
 	 */
 	public void addRecentFile(final File f)
 	{
-		recentFiles.add(f);
+		if (f != null)
+		  recentFiles.add(f);
 
 		makeRecentMenu();
 	}

@@ -36,7 +36,7 @@ public class Driver {
 	
 	private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
 
-	private static GUI2CommandLine commandLine;
+	private static GUI2CommandLine commandLine = new GUI2CommandLine();
 	private static SplashFrame splash;
 
 	public static void main(String[] args) throws Exception {
@@ -49,8 +49,7 @@ public class Driver {
 
 		splash = new SplashFrame();
 		splash.setVisible(true);
-		
-		commandLine = new GUI2CommandLine();
+		 
 		int numParsed = commandLine.parse(args, 0, 1, USAGE);
 
 		//
@@ -113,6 +112,8 @@ public class Driver {
 	}
 
 	public static void removeSplashScreen() {
+		if (splash == null)
+			return;
 		splash.setVisible(false);
 		splash.dispose();
 

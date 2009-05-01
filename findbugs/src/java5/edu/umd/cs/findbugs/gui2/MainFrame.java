@@ -55,6 +55,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -237,6 +238,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private boolean newProject = false;
 	final ProjectPackagePrefixes projectPackagePrefixes = new ProjectPackagePrefixes();
 	
+	final CountDownLatch mainFrameInitialized = new CountDownLatch(1);
+	
 	
 	private Class<?> osxAdapter;
 	private Method osxPrefsEnableMethod;
@@ -252,8 +255,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
-	static void makeInstance(FindBugsLayoutManagerFactory factory) {
-		if (instance != null) throw new IllegalStateException();
+	public static void makeInstance(FindBugsLayoutManagerFactory factory) {
+		if (instance != null) 
+			throw new IllegalStateException();
 		instance=new MainFrame(factory);
 		instance.initializeGUI();
 	}
@@ -2219,9 +2223,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			});
 
 			Driver.removeSplashScreen();
+			mainFrameInitialized.countDown();
 		}
 	}
 
+	public void waitUntilReady() throws InterruptedException {
+		mainFrameInitialized.await();
+	}
 	/**
 	 * Listens for when cursor is over the label and when it is clicked.
 	 * When the cursor is over the label will make the label text blue 
@@ -2569,7 +2577,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			showTreeCard();
 		}
 		recentMenu.setEnabled(!b);
-
 	}
 
 	public void setSorting(boolean b) {
@@ -2699,7 +2706,16 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	
 		loadAnalysis(f);
 		return true;
-
+	}
+	
+	public void openBugCollection(SortedBugCollection bugs){
+		
+		prepareForFileLoad(null, null);
+	
+		Project project = bugs.getProject();
+		project.setGuiCallback(MainFrame.this);
+		BugLoader.addDeadBugMatcher(project);
+		setProjectAndBugCollectionInSwingThread(project, bugs);
 
 	}
 	
@@ -2707,7 +2723,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    setRebuilding(true);
 		//This creates a new filters and suppressions so don't use the previoues one.
 		ProjectSettings.newInstance();
-
+		
 		clearSourcePane();
 		clearSummaryTab();
 		comments.setUserCommentInputEnable(false);
