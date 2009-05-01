@@ -79,7 +79,7 @@ public class ViewFilter {
 	       NOT_REVIEWED_BY_ME("Not reviewed by me") {
 		        @Override
 		        boolean show(DBCloud cloud, BugInstance b) {
-		        	return cloud.getReviewers(b).contains(cloud.getUser());
+		        	return !cloud.getReviewers(b).contains(cloud.getUser());
 		        }
         }, HAS_REVIEWS("Someone has reviewed") {
 	        @Override
