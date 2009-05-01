@@ -603,7 +603,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	boolean shouldDisplayIssue(BugInstance b) {
 		Project project = getProject();
 		Filter suppressionFilter = project.getSuppressionFilter();
-		if (suppressionFilter.match(b))
+		if (null == bugCollection || suppressionFilter.match(b))
 			return false;
 		return viewFilter.show(b);
 		}
