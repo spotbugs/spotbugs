@@ -953,7 +953,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	String getBugReportTail(BugInstance b) {
-		return "\bFindBugs issue identifier (do not modify): " + b.getInstanceHash();
+		return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
 	}
 
     
