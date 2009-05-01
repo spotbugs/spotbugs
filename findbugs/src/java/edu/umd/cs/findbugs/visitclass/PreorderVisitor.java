@@ -252,10 +252,15 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public void visitAfter(JavaClass obj) {
 	}
 
+	
+	public boolean shouldVisit(JavaClass obj) {
+		return true;
+	}
 	// General classes
 	@Override
 		 public void visitJavaClass(JavaClass obj) {
 		setupVisitorForClass(obj);
+		if (shouldVisit(obj)) {
 		constantPool.accept(this);
 		Field[] fields = obj.getFields();
 		Method[] methods = obj.getMethods();
@@ -267,6 +272,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		for (Attribute attribute : attributes)
 			attribute.accept(this);
 		visitAfter(obj);
+		}
 	}
 
 	public void setupVisitorForClass(JavaClass obj) {
