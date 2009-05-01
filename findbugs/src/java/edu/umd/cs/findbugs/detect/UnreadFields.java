@@ -38,6 +38,9 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -49,13 +52,19 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -79,6 +88,9 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 	Map<XField,HashSet<ProgramPoint> >
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
+	Map<XField,ProgramPoint >
+		threadLocalAssignedInConstructor = new HashMap<XField,ProgramPoint>();
+
 	Set<XField> nullTested = new HashSet<XField>();
 	Set<XField> containerFields = new TreeSet<XField>();
 	MultiMap<XField,String> unknownAnnotation = new MultiMap<XField,String>(LinkedList.class);
@@ -639,9 +651,11 @@ public class UnreadFields extends OpcodeStackDetector  {
 			                || getMethodName().equals("init") || getMethodName().equals("init")
 			                || getMethodName().equals("initialize") || getMethod().isPrivate())) {
 
-				if (isConstructor)
+				if (isConstructor) {
 					writtenInConstructorFields.add(f);
-				else
+					if (f.getSignature().equals("Ljava/lang/ThreadLocal;") && item.isNewlyAllocated())
+						threadLocalAssignedInConstructor.put(f, new ProgramPoint(this));
+				} else
 					writtenInInitializationFields.add(f);
 				if (writtingNonNull)
 					assumedNonNull.remove(f);
@@ -892,22 +906,61 @@ public class UnreadFields extends OpcodeStackDetector  {
 				);
 			}
 			if (!f.isResolved()) continue;
-			if (dontComplainAbout.matcher(fieldName).find()) continue;
-			if (lastDollar >= 0 && (fieldName.startsWith("this$")
-					|| fieldName.startsWith("this+"))) {
+			if (dontComplainAbout.matcher(fieldName).find()) 
+				continue;
+			if (lastDollar >= 0 && (fieldName.startsWith("this$") || fieldName.startsWith("this+"))) {
 				String outerClassName = className.substring(0, lastDollar);
 
 				try {
 					JavaClass outerClass = Repository.lookupClass(outerClassName);
-					if (classHasParameter(outerClass)) continue;
+					if (classHasParameter(outerClass))
+						continue;
+
+					ClassDescriptor cDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(outerClassName);
+
+					XClass outerXClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, cDesc);
+					XClass thisClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, f.getClassDescriptor());
+					AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+				 	  
+					Subtypes2 subtypes2 = analysisContext.getSubtypes2();
+					
+					for (XField of : outerXClass.getXFields())
+						if (!of.isStatic()) {
+							String sourceSignature = of.getSourceSignature();
+							if (sourceSignature != null && of.getSignature().equals("Ljava/lang/ThreadLocal;")) {
+								Type ofType = GenericUtilities.getType(sourceSignature);
+								if (ofType instanceof GenericObjectType) {
+									GenericObjectType gType = (GenericObjectType) ofType;
+
+									for (ReferenceType r : gType.getParameters()) {
+										if (r instanceof ObjectType) {
+											ClassDescriptor c = DescriptorFactory.getClassDescriptor((ObjectType) r);
+											if (subtypes2.isSubtype(f.getClassDescriptor(), c)) {
+												ProgramPoint p = threadLocalAssignedInConstructor.get(of);
+												int priority = p == null ? NORMAL_PRIORITY : HIGH_PRIORITY;
+												BugInstance bug = new BugInstance(this, "SIC_THREADLOCAL_DEADLY_EMBRACE", priority)
+												   .addClass(className).addField(of);
+												if (p != null)
+													bug.add(p.method).add(p.sourceLine);
+												bugReporter.reportBug(bug);
+											}
+										}
+									}
+								}
+							}
+
+						}
+
 					boolean outerClassIsInnerClass = false;
-					for(Field field : outerClass.getFields()) 
+					for (Field field : outerClass.getFields())
 						if (field.getName().equals("this$0"))
 							outerClassIsInnerClass = true;
 					if (outerClassIsInnerClass)
 						continue;
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
+				} catch (CheckedAnalysisException e) {
+					bugReporter.logError("Error getting outer XClass for " + outerClassName, e);
 				}
 				if (!innerClassCannotBeStatic.contains(className)) {
 					boolean easyChange = !needsOuterObjectInConstructor.contains(className);
@@ -928,8 +981,10 @@ public class UnreadFields extends OpcodeStackDetector  {
 						else if (!easyChange)
 							bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
 
+						
 						bugReporter.reportBug(new BugInstance(this, bug, priority)
 								.addClass(className));
+						
 					}
 				}
 			} else if (f.isResolved() ){

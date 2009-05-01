@@ -4496,6 +4496,22 @@ Dereferencing this value will generate a null pointer exception.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SIC_THREADLOCAL_DEADLY_EMBRACE">
+    <ShortDescription>Deadly embrace of non-static inner class and thread local</ShortDescription>
+    <LongDescription>{0} needs to be a _static_ to avoid a deadly embrace with {1}?</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class is an inner class, but should probably be a static inner class.
+  As it is, there is a serious danger of a deadly embrace between the inner class
+  and the thread local in the outer class. Because the inner class isn't static,
+	it retains a reference to the outer class. 
+	If the thread local contains a reference to an instance of the inner
+	class, the inner and outer instance will both be reachable
+	and not eligible for garbage collection.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SIC_INNER_SHOULD_BE_STATIC">
     <ShortDescription>Should be a static inner class</ShortDescription>
     <LongDescription>Should {0} be a _static_ inner class?</LongDescription>
@@ -6601,12 +6617,13 @@ floating point arithmetic.
   </BugPattern>
 
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
-    <ShortDescription>int value cast to double and then passed to Math.ceil</ShortDescription>
-    <LongDescription>int value cast to double and then passed to Math.ceil in {1}</LongDescription>
+    <ShortDescription>integral value cast to double and then passed to Math.ceil</ShortDescription>
+    <LongDescription>integral value cast to double and then passed to Math.ceil in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-This code converts an int value to a double precision
+This code converts an integral value (e.g., int or long) 
+to a double precision
 floating point number and then
 passing the result to the Math.ceil() function, which rounds a double to
 the next higher integer value. This operation should always be a no-op,
@@ -6621,12 +6638,13 @@ floating point arithmetic.
   </BugPattern>
 
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
-    <ShortDescription>int division result cast to double or float</ShortDescription>
-    <LongDescription>int division result cast to double or float in {1}</LongDescription>
+    <ShortDescription>integral division result cast to double or float</ShortDescription>
+    <LongDescription>integral division result cast to double or float in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-This code casts the result of an integer division operation to double or 
+This code casts the result of an integral division (e.g., int or long division)
+operation to double or 
 float.
 Doing division on integers truncates the result
 to the integer value closest to zero.  The fact that the result
@@ -6920,13 +6938,14 @@ downcast it to a subtype will always fail by throwing a ClassCastException.
 This code is casting the result of calling <code>toArray()</code> on a collection
 to a type more specific than <code>Object[]</code>, as in:
 <pre>
-String[] getAsArray(Collection&ltString&gt; c) {
+String[] getAsArray(Collection&lt;String&gt; c) {
   return (String[]) c.toArray();
+  }
 </pre>
 <p>This will usually fail by throwing a ClassCastException. The <code>toArray()</code>
 of almost all collections return an <code>Object[]</code>. They can't really do anything else,
 since the Collection object has no reference to the declared generic type of the collection.
-<p>The correct way to do this is to use either
+<p>The correct way to do get an array of a specific type from a collection is to use
   <code>c.toArray(new String[]);</code>
   or <code>c.toArray(new String[c.size()]);</code> (the latter is slightly more efficient).
 <p>There is one common/known exception exception to this. The <code>toArray()</code>
