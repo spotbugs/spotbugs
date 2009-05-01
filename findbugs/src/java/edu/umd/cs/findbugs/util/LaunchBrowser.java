@@ -71,9 +71,18 @@ public class LaunchBrowser {
 		}
 		jnlpShowMethod = showMethod;
 		jnlpShowObject = showObject;
+		System.out.println(SystemProperties.getBoolean("findbugs.launchFirefox"));
+		System.out.println(SystemProperties.getProperty("os.name"));
 	}
 
 
+	public static boolean desktopFeasible() {
+		return desktopObject != null && desktopBrowseMethod != null;
+	}
+	
+	public static boolean webstartFeasible() {
+		return jnlpShowMethod != null && jnlpShowObject != null;
+	}
 	public static boolean showDocumentViaDesktop(URL u) {
 		
 		if (desktopObject != null && desktopBrowseMethod != null) try { 
