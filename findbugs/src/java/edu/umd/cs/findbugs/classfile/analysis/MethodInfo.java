@@ -60,6 +60,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		boolean isUnconditionalThrower;
 		boolean isUnsupported;
 		boolean usesConcurrency;
+		boolean isStub;
 
 		final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
 
@@ -79,12 +80,18 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 			this.usesConcurrency = true;
 		}
 
+		public void setIsStub() {
+			this.isStub = true;
+		}
 		public void setThrownExceptions(String [] exceptions) {
 			this.exceptions = exceptions;
 		}
 
 		public void setAccessFlags(int accessFlags) {
 			this.accessFlags = accessFlags;
+		}
+		public void addAccessFlags(int accessFlags) {
+			this.accessFlags |= accessFlags;
 		}
 		public void addAnnotation(String name, AnnotationValue value) {
 			ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
@@ -103,7 +110,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		public MethodInfo build() {
 			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
-				 exceptions, methodAnnotations, methodParameterAnnotations);
+				 isStub, exceptions, methodAnnotations, methodParameterAnnotations);
 		}
 
         public void setIsUnconditionalThrower() {
@@ -119,6 +126,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	final int accessFlags;
 	
 	final boolean usesConcurrency;
+	final boolean isStub;
 
 	final String methodSourceSignature;
 	
@@ -138,12 +146,13 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param methodSourceSignature
 	 * @param isUnsupported 
 	 * @param usesConcurrency TODO
+	 * @param isStub TODO
 	 * @param isStatic
 	 */
 	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        boolean isUnsupported, boolean usesConcurrency, @CheckForNull String[] exceptions, 
-	        Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, 
+	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
 		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
@@ -156,6 +165,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		if (isUnconditionalThrower) unconditionalThrowers.put(this, null);
 		if (isUnsupported) unsupportedMethods.put(this, null);
 		this.usesConcurrency = usesConcurrency;
+		this.isStub = isStub;
 	}
 
 	 public @CheckForNull String [] getThrownExceptions() {
@@ -386,5 +396,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
     public boolean usesConcurrency() {
 	   return usesConcurrency;
     }
+    public boolean isStub() {
+ 	   return isStub;
+     }
 
 }

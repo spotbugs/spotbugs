@@ -63,6 +63,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
 	private String fieldName;
 	private String fieldSig;
+	private String fieldSourceSig;
 	private boolean isStatic;
 
 	/**
@@ -81,6 +82,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
+	}
+	
+	public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, String fieldSourceSig, boolean isStatic) {
+		this(className, fieldName, fieldSig, isStatic);
+		this.fieldSourceSig = fieldSourceSig;
 	}
 	/**
 	 * Constructor.
@@ -161,6 +167,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 				fieldDescriptor.getClassName(),
 				fieldDescriptor.getName(),
 				fieldDescriptor.getSignature(),
+				fieldDescriptor.getSourceSignature(),
 				fieldDescriptor.isStatic());
 	}
 	/**
@@ -329,8 +336,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("classname", getClassName())
 			.addAttribute("name", getFieldName())
-			.addAttribute("signature", getFieldSignature())
-			.addAttribute("isStatic", String.valueOf(isStatic()));
+			.addAttribute("signature", getFieldSignature());
+		if (fieldSourceSig != null)
+			attributeList.addAttribute("sourceSignature", fieldSourceSig);
+		attributeList.addAttribute("isStatic", String.valueOf(isStatic()));
 		if (isPrimary) attributeList.addAttribute("primary", "true");
 
 

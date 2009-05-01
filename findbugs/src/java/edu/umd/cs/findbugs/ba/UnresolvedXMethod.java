@@ -159,4 +159,11 @@ class UnresolvedXMethod extends AbstractMethod  {
     public @CheckForNull String getSourceSignature() {
 	    return null;
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#isStub()
+     */
+    public boolean isStub() {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 }

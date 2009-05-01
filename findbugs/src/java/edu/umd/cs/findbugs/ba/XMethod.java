@@ -67,6 +67,11 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      * @return does the method directly make use of concurrency/threads/synchronization?
      */
     public boolean usesConcurrency();
+    
+    /**
+     * @return is the method a synthetic stub method?
+     */
+    public boolean isStub();
     /**
      * @return does this method unconditionally throw an UnsupportedOperationException? 
      */

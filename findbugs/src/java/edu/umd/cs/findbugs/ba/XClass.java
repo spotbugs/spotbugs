@@ -121,4 +121,5 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
 	public String getSourceSignature();
 	
 	public boolean usesConcurrency();
+	public boolean hasStubs();
 }

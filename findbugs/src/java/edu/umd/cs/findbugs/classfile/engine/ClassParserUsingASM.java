@@ -295,8 +295,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								if (!sawReturn && !sawNormalThrow) {
 									if (sawUnsupportedThrow)
 										mBuilder.setUnsupported();
-									if (sawStubThrow) 
-										mBuilder.setAccessFlags(access | Constants.ACC_SYNTHETIC );
+									if (sawStubThrow) {
+										mBuilder.addAccessFlags(Constants.ACC_SYNTHETIC );
+										mBuilder.setIsStub();
+										
+									}
 								}
 									
 								// else System.out.println(slashedClassName+"."+methodName+methodDesc + " is thrower");
@@ -306,6 +309,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 									methodInfo);
 							if (methodInfo.usesConcurrency())
 								((ClassInfo.Builder)cBuilder).setUsesConcurrency();
+							if (methodInfo.isStub())
+								((ClassInfo.Builder)cBuilder).setHasStubs();
 						}
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,

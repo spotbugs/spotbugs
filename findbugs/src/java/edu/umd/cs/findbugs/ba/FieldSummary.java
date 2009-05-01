@@ -46,7 +46,8 @@ public class FieldSummary {
 
 	private boolean complete = false;
 	public OpcodeStack.Item getSummary(XField field) {
-		if (field == null) return new OpcodeStack.Item();
+		if (field == null) 
+			return new OpcodeStack.Item();
 		OpcodeStack.Item result = summary.get(field);
 		if (result == null) {
 	        String signature = field.getSignature();
