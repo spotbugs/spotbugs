@@ -11,7 +11,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
-import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -157,4 +156,7 @@ class UnresolvedXMethod extends AbstractMethod  {
 	    return false;
     }
 
+    public @CheckForNull String getSourceSignature() {
+	    return null;
+    }
 }

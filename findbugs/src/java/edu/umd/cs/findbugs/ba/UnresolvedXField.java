@@ -23,6 +23,8 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -105,4 +107,9 @@ public class UnresolvedXField extends AbstractField  {
 	    return false;
     }
 
+    public @CheckForNull String getSourceSignature() {
+	    return null;
+    }
+
+    
 }
