@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.DBCloud;
 import edu.umd.cs.findbugs.cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 
 /**
  * @author pugh
@@ -91,7 +92,18 @@ public class ViewFilter {
 	        boolean show(DBCloud cloud, BugInstance b) {
 	        	return !cloud.isClaimed(b);
 	        }
-        }, I_WILL_FIX("I will fix") {
+        }, HAS_FILED_BUGS("Has bugs filed against them") {
+	        @Override
+	        boolean show(DBCloud cloud, BugInstance b) {
+	        	return cloud.getBugLinkStatus(b).bugIsFiled();
+	        	
+	        }
+        }, NO_FILED_BUGS("Don't have bugs filed against them") {
+	        @Override
+	        boolean show(DBCloud cloud, BugInstance b) {
+	        	return !cloud.getBugLinkStatus(b).bugIsFiled();
+	        }
+        },  I_WILL_FIX("I will fix") {
 	        @Override
 	        boolean show(DBCloud cloud, BugInstance b) {
 	        	return cloud.getUserDesignation(b) == UserDesignation.I_WILL_FIX;

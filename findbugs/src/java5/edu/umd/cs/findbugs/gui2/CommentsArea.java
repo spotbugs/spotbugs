@@ -311,7 +311,7 @@ public class CommentsArea {
 				if (plugin.supportsBugLinks()) {
 					BugFilingStatus status = plugin.getBugLinkStatus(bug);
 					answerSurvey.setText(status.toString());
-					answerSurvey.setEnabled(status.enabled());
+					answerSurvey.setEnabled(status.linkEnabled());
 				} else {
 					answerSurvey.setEnabled(false);
 				}

@@ -69,31 +69,45 @@ public interface Cloud {
 	abstract @CheckForNull BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations);
 	};
 	
-    static enum BugFilingStatus {
-		FILE_BUG("File bug"), FILE_AGAIN("File again"), BUG_PENDING("Bug pending") {
+    public static enum BugFilingStatus {
+		FILE_BUG("File bug") {
 			@Override
-			public boolean enabled() {
+			public boolean bugIsFiled() {
+				return false;
+			}
+		}, FILE_AGAIN("File again"), 
+		BUG_PENDING("Bug pending") {
+			@Override
+			public boolean linkEnabled() {
 				return false;
 			}
 		},
 		VIEW_BUG("View bug"), NA("") {
 			@Override
-			public boolean enabled() {
+			public boolean linkEnabled() {
+				return false;
+			}
+			@Override
+			public boolean bugIsFiled() {
 				return false;
 			}
 		};
 
 		final String displayName;
 
-		public boolean enabled() {
+		public boolean bugIsFiled() {
 			return true;
 		}
 
+		public boolean linkEnabled() {
+			return true;
+		}
 		BugFilingStatus(String name) {
 			this.displayName = name;
 		}
 		
-		public String toString() {
+		@Override
+        public String toString() {
 			return displayName;
 		}
 
