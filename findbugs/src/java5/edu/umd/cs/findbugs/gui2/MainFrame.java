@@ -2094,10 +2094,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 					label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
 				}
 			}
+			String noteText;
+			if (note == bug.getPrimaryMethod() || note == bug.getPrimaryField())
+				noteText = note.toString();
+			else 
+				noteText = note.toString(primaryClass);
 			if (!srcStr.equals(sourceCodeLabel))
-				label.setText(note.toString(primaryClass) + srcStr);
+				label.setText(noteText + srcStr);
 			else
-				label.setText(note.toString(primaryClass));
+				label.setText(noteText);
 		} else {
 			label.setText(value.toString(primaryClass));
 		}
