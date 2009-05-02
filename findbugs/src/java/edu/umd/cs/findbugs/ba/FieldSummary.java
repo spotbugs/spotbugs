@@ -194,6 +194,8 @@ public class FieldSummary {
      * @param methodOperand
      */
     public void sawSuperCall(XMethod from, XMethod constructorInSuperClass) {
+    	if (constructorInSuperClass == null || from == null) 
+    		return;
 	    if (constructorInSuperClass.getSignature().equals("()V"))
 	    	return;
 	    nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);
