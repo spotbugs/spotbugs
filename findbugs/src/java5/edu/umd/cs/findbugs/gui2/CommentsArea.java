@@ -568,6 +568,13 @@ public class CommentsArea {
 		if (designationKey == null)
 			return;
 		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
+			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
+			if (plugin != null) {
+				BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+				String report = plugin.getCloudReport(bug);
+				reportText.setText(report);
+			}
 			changed = true;
 			setProjectChanged(true);
 		}
@@ -690,7 +697,8 @@ public class CommentsArea {
 				return;
 				}
 		}
-		if (MainFrame.DEBUG) System.out.println("Couldn't find combo box for " + designationKey);
+		if (MainFrame.DEBUG) 
+			System.out.println("Couldn't find combo box for " + designationKey);
 	}
 
 	public void moveNodeAccordingToDesignation(BugLeafNode theNode,
