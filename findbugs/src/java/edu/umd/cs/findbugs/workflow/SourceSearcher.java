@@ -37,7 +37,6 @@ public class SourceSearcher {
 
 	public SourceSearcher(Project project) {
 		sourceFinder = new SourceFinder(project);
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
 
 	public boolean findSource(SourceLineAnnotation srcLine) {

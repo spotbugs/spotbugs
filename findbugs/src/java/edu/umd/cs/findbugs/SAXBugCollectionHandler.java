@@ -577,8 +577,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					project.addFile(getTextContents());
 				else if (qName.equals("SrcDir"))
 					project.addSourceDir(getTextContents());
-				else if (qName.equals("WrkDir"))
-					project.addWorkingDir(getTextContents());
 				else if (qName.equals("AuxClasspathEntry"))
 					project.addAuxClasspathEntry(getTextContents());
 			} else if (outerElement.equals("BugInstance")) {

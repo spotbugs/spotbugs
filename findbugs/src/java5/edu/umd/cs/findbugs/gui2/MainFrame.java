@@ -490,7 +490,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 			BugTreeModel model = (BugTreeModel) getTree().getModel();     
 			setSourceFinder(new SourceFinder(project));
-			getSourceFinder().setSourceBaseList(project.getSourceDirList());
 			BugSet bs = new BugSet(bugCollection);
 			model.getOffListenerList();
 			model.changeSet(bs);

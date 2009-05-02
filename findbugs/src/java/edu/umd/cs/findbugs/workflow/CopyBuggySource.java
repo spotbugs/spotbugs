@@ -72,7 +72,6 @@ public class CopyBuggySource {
 					+ " is not a source directory");
 		Project project = origCollection.getProject();
 		SourceFinder sourceFinder = new SourceFinder(project);
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		HashSet<String> copied = new HashSet<String>();
 		HashSet<String> couldNotCreate = new HashSet<String>();
 		for (BugInstance bug : origCollection.getCollection()) {

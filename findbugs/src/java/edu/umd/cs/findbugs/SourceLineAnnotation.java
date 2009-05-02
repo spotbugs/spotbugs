@@ -758,7 +758,6 @@ public class SourceLineAnnotation implements BugAnnotation {
 		SourceLineAnnotation.relativeSourceBase.set(relativeSourceBase.getCanonicalPath());
 		SourceFinder mySourceFinder  = new SourceFinder(project);
 		sourceFinder.set(mySourceFinder);
-		mySourceFinder.setSourceBaseList(project.getSourceDirList());
 		} catch (IOException e) {
 			AnalysisContext.logError("Error resolving relative source base " + relativeSourceBase, e);
 		}

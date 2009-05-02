@@ -302,11 +302,10 @@ public abstract class AnalysisContext {
 	/**
 	 * Set the source path.
 	 */
-	public final void setSourcePath(Project project) {
+	public final void setProject(Project project) {
 		this.project = project;
 		SourceFinder sourceFinder = getSourceFinder();
 		sourceFinder.setProject(project);
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
 
 	/**

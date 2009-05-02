@@ -53,7 +53,7 @@ public class GUISaveState{
 	private static final int MAXNUMRECENTPROJECTS= 5;
 	private static final int MAXNUMRECENTANALYSES= MAXNUMRECENTPROJECTS;
 	private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] {
-		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.PRIORITY };
+		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK };
 
 	private static final String[] RECENTPROJECTKEYS=new String[MAXNUMRECENTPROJECTS];//{"Project1","Project2","Project3","Project4","Project5"};//Make MAXNUMRECENTPROJECTS of these
 	private static final String[] RECENTANALYSISKEYS=new String[MAXNUMRECENTPROJECTS];
@@ -187,7 +187,8 @@ public class GUISaveState{
 	 * @param f
 	 */
 	public void addRecentFile(File f){
-		recentFiles.add(f);
+		if (null != f)
+			recentFiles.add(f);
 	}
 	
 	/**
@@ -253,7 +254,7 @@ public class GUISaveState{
 		int size=Math.min(MAXNUMRECENTPROJECTS,p.getInt(GUISaveState.NUMPROJECTS,0));
 		for (int x=0;x<size;x++)
 		{
-			newInstance.recentFiles.add(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
+			newInstance.addRecentFile(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
 		}
 
 		int sorterSize=p.getInt(GUISaveState.SORTERTABLELENGTH,-1);

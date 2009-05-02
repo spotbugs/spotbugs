@@ -58,7 +58,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
@@ -184,7 +183,8 @@ public class Project implements XMLWriteable {
 
 	}
 	public void setCurrentWorkingDirectory(File f) {
-          this.currentWorkingDirectoryList.add(f);
+		 this.currentWorkingDirectoryList.clear();
+         this.currentWorkingDirectoryList.add(f);
 	}
 	/**
 	 * Return whether or not this Project has unsaved modifications.
@@ -246,7 +246,7 @@ public class Project implements XMLWriteable {
 	 *   working directory was already present
 	 */
 	public boolean addWorkingDir(String dirName) {
-          return addToListInternal(currentWorkingDirectoryList, new File(makeAbsoluteCWD(dirName)));
+          return addToListInternal(currentWorkingDirectoryList, new File(dirName));
 	}
 
 
@@ -880,6 +880,7 @@ public class Project implements XMLWriteable {
 	static final String JAR_ELEMENT_NAME = "Jar";
 	static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
 	static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
+	static final String WRK_DIR_ELEMENT_NAME = "WrkDir";
 	static final String FILENAME_ATTRIBUTE_NAME = "filename";
 	static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
 
@@ -899,7 +900,7 @@ public class Project implements XMLWriteable {
 		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
-
+		XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
 		if (suppressionFilter != null && !suppressionFilter.isEmpty()) {
 			xmlOutput.openTag("SuppressionFilter");
 			suppressionFilter.writeBodyAsXML(xmlOutput);
@@ -1070,10 +1071,7 @@ public class Project implements XMLWriteable {
 	        return fileName;
         }
                 if (currentWorkingDirectoryList.isEmpty()) {
-                  String userDir = System.getProperty("user.dir");
-                  if (null != userDir && !"".equals(userDir)) {
-                    currentWorkingDirectoryList.add(new File(userDir));
-                  }
+                  
                 }
                 for (File currentWorkingDirectory : currentWorkingDirectoryList) {
                   File relativeToCurrent = new File(currentWorkingDirectory, fileName);
@@ -1174,6 +1172,35 @@ public class Project implements XMLWriteable {
 
 	public IGuiCallback getGuiCallback() {
 	    return guiCallback;
+    }
+
+	/**
+     * @return
+     */
+    public Iterable<String> getResolvedSourcePaths() {
+	   List<String> result = new ArrayList<String>();
+	   for(String s : srcDirList) {
+		   boolean hasProtocol = (URLClassPath.getURLProtocol(s) != null);
+		   if (hasProtocol) {
+			   result.add(s);
+			   continue;
+		   }
+		   File f = new File(s);
+		   if (f.isAbsolute()) {
+			   if (f.canRead())
+				   result.add(s);
+			   continue;
+		   }
+		   for(File d : currentWorkingDirectoryList) 
+			   if (d.canRead() && d.isDirectory()) {
+				   File a = new File(d, s);
+				   if (a.canRead())
+					   result.add(a.getAbsolutePath());
+		   			
+			   }
+		   
+	   }
+	   return result;
     }
 }
 

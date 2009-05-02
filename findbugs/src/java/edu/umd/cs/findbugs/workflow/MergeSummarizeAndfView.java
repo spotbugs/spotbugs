@@ -20,7 +20,10 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.dom4j.DocumentException;
 
@@ -44,11 +47,13 @@ import edu.umd.cs.findbugs.gui2.SplitLayout;
 public class MergeSummarizeAndfView {
 	
 	static class MyCommandLine extends CommandLine {
-		public String outputFile;
-		boolean withMessages;
+          public List<String> workingDirList = new ArrayList<String>();
+          public List<String> srcDirList = new ArrayList<String>();
+          
 		
 		MyCommandLine() {
-			
+                  addOption("-workingDir", "filename", "Comma separated list of current working directory paths, used to resolve relative paths (Jar, AuxClasspathEntry, SrcDir)");
+                  addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
 		}
 
 		/* (non-Javadoc)
@@ -63,7 +68,9 @@ public class MergeSummarizeAndfView {
          */
         @Override
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
-        	
+          if (option.equals("-workingDir")) workingDirList = Arrays.asList(argument.split(","));
+          else if (option.equals("-srcDir")) srcDirList = Arrays.asList(argument.split(","));
+          else throw new IllegalArgumentException("Unknown option : " + option);
         }
 		
 	}
@@ -91,16 +98,22 @@ public class MergeSummarizeAndfView {
 
 		final MyCommandLine commandLine = new MyCommandLine();
 
-		int argCount = commandLine.parse(argv, 2, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndfView.class.getName()
+		int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndfView.class.getName()
 				+ " [options] [<results1> <results2> ... <resultsn>] ");
-		
+
+                if (commandLine.workingDirList.isEmpty()) {
+                  String userDir = System.getProperty("user.dir");
+                  if (null != userDir && !"".equals(userDir)) {
+                    commandLine.workingDirList.add(userDir);
+                  }
+                }
 
 		SortedBugCollection results = null;
 		Project project = null;
 		for(int i = argCount; i < argv.length; i++) {
 			try {
-				SortedBugCollection more = new SortedBugCollection();
-				
+                                SortedBugCollection more = createPreconfiguredBugCollection(commandLine.workingDirList, commandLine.srcDirList);
+
 				more.readXML(argv[i]);
 				if (project != null) {
 					project.add(more.getProject());
@@ -148,6 +161,19 @@ public class MergeSummarizeAndfView {
 
 
 	}
+
+  static SortedBugCollection createPreconfiguredBugCollection(List<String> workingDirList, List<String> srcDirList) {
+    Project project = new Project();
+    for (String cwd : workingDirList) {
+      project.addWorkingDir(cwd);
+    }
+    for (String srcDir : srcDirList) {
+      project.addSourceDir(srcDir);
+    }
+    return new SortedBugCollection(project);
+  }
+
+
 	
 	static class MyBugReporter extends PrintingBugReporter {
 		

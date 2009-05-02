@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public abstract class XMLOutputUtil {
 	 * @param listValues Collection of String values to write
 	 */
 	public static void writeElementList(XMLOutput xmlOutput, String tagName,
-			Collection<String> listValues) throws IOException {
+			Iterable<String> listValues) throws IOException {
 		writeElementList(xmlOutput, tagName, listValues.iterator());
 	}
 
@@ -59,7 +60,35 @@ public abstract class XMLOutputUtil {
 			xmlOutput.closeTag(tagName);
 		}
 	}
+	/**
+	 * Write a list of Strings to document as elements
+	 * with given tag name.
+	 *
+	 * @param xmlOutput  the XMLOutput object to write to
+	 * @param tagName    the tag name
+	 * @param listValues Collection of String values to write
+	 */
+	public static void writeFileList(XMLOutput xmlOutput, String tagName,
+			Iterable<File> listValues) throws IOException {
+		writeFileList(xmlOutput, tagName, listValues.iterator());
+	}
 
+	/**
+	 * Write a list of Strings to document as elements
+	 * with given tag name.
+	 *
+	 * @param xmlOutput         the XMLOutput object to write to
+	 * @param tagName           the tag name
+	 * @param listValueIterator Iterator over String values to write
+	 */
+	public static void writeFileList(XMLOutput xmlOutput, String tagName,
+			Iterator<File> listValueIterator) throws IOException {
+		while (listValueIterator.hasNext()) {
+			xmlOutput.openTag(tagName);
+			xmlOutput.writeText(listValueIterator.next().getPath());
+			xmlOutput.closeTag(tagName);
+		}
+	}
 	/**
 	 * Write a Collection of XMLWriteable objects.
 	 *

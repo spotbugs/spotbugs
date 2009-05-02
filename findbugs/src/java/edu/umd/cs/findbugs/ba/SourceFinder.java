@@ -338,9 +338,6 @@ public class SourceFinder {
 
 	public SourceFinder(Project project) {
 		setProject(project);
-		if (DEBUG) System.out.println("Debugging SourceFinder");
-		repositoryList = new LinkedList<SourceRepository>();
-		cache = new Cache();
 	}
 
 	/**
@@ -353,7 +350,7 @@ public class SourceFinder {
 	/**
 	 * Set the list of source directories.
 	 */
-	public void setSourceBaseList(List<String> sourceBaseList) {
+	void setSourceBaseList(Iterable<String> sourceBaseList) {
 		for (String repos : sourceBaseList) {
 			if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
 				// Zip or jar archive
@@ -460,6 +457,9 @@ public class SourceFinder {
      */
     public void setProject(Project project) {
 	    this.project = project;
+	    repositoryList = new LinkedList<SourceRepository>();
+		cache = new Cache();
+		setSourceBaseList(project.getResolvedSourcePaths());
     }
 }
 

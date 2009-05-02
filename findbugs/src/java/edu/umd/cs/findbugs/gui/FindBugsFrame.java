@@ -3318,7 +3318,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		}
 		
 		// Look up the source file for this class.
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		String sourceFile;
 		InputStream in;
 		try {
