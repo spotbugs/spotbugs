@@ -17,6 +17,8 @@
 								maxOccurs="unbounded"/>
 							<xs:element name="SrcDir" type="xs:string" minOccurs="0"
 								maxOccurs="unbounded"/>
+							<xs:element name="WrkDir" type="xs:string" minOccurs="0"
+								maxOccurs="unbounded"/>
 						</xs:sequence>
 						<xs:attribute name="filename" type="xs:string" use="optional"/>
 						<xs:attribute name="projectName" type="xs:string" use="optional"/>
