@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -129,10 +130,16 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 			}
 			if (upcallMethod == null)
 				continue;
-			Set<Integer> putfieldsAt = PutfieldScanner.getPutfieldsFor(getThisClass(), upcallMethod, f);
+			Map<Integer, OpcodeStack.Item> putfieldsAt = PutfieldScanner.getPutfieldsFor(getThisClass(), upcallMethod, f);
 			if (putfieldsAt.isEmpty())
 				continue;
-			SourceLineAnnotation fieldSetAt = SourceLineAnnotation.fromVisitedInstruction(getThisClass(), upcallMethod, putfieldsAt.iterator().next());
+			Map.Entry<Integer, OpcodeStack.Item> e = putfieldsAt.entrySet().iterator().next();
+			int pc = e.getKey();
+			OpcodeStack.Item value = e.getValue();
+			if (value.isNull() || value.hasConstantValue(0)) 
+				priority++;
+			
+			SourceLineAnnotation fieldSetAt = SourceLineAnnotation.fromVisitedInstruction(getThisClass(), upcallMethod, pc);
 			
 			BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
 			bug.addMethod(p.method).describe(MethodAnnotation.METHOD_SUPERCLASS_CONSTRUCTOR)

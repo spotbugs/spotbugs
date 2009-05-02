@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -35,7 +35,7 @@ public class PutfieldScanner {
 
 
 
-	public static Set<Integer> getPutfieldsFor(JavaClass theClass, Method method, XField field) {
+	public static Map<Integer, OpcodeStack.Item> getPutfieldsFor(JavaClass theClass, Method method, XField field) {
 		Scanner scanner = new Scanner(theClass, method, field);
 		
 		scanner.execute();
@@ -45,7 +45,7 @@ public class PutfieldScanner {
 
 	static class Scanner extends OpcodeStackDetector {
 
-		Set<Integer> putfields = new TreeSet<Integer>();
+		 Map<Integer, OpcodeStack.Item>  putfields =  new TreeMap<Integer, OpcodeStack.Item> ();
 		public Scanner(JavaClass theClass, Method targetMethod, XField target) {
 			this.theClass = theClass;
 			this.targetMethod = targetMethod;
@@ -62,7 +62,7 @@ public class PutfieldScanner {
 		public void sawOpcode(int seen) {
 			if (seen == PUTFIELD && getXFieldOperand().equals(targetField) 
 					&& stack.getStackItem(1).getRegisterNumber() == 0)
-				putfields.add(getPC());
+				putfields.put(getPC(), new OpcodeStack.Item(stack.getStackItem(0)));
 				
 			
 		}
