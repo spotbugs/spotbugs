@@ -26,10 +26,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaModelException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for FindBugsWorker.
@@ -37,6 +40,16 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
  * @author Tomás Pollak
  */
 public class FindBugsWorkerTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
+
 	private static final String CLASS_A_PROJECT_RELATIVE = SRC + "/A.java";
 	private static final String CLASS_A_WORKSPACE_RELATIVE = TEST_PROJECT + "/"
 			+ CLASS_A_PROJECT_RELATIVE;

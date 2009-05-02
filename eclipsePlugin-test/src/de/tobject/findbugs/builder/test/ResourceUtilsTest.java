@@ -26,14 +26,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.builder.ResourceUtils;
 import de.tobject.findbugs.builder.WorkItem;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for ResourceUtils.
@@ -41,6 +45,15 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
  * @author Tomás Pollak
  */
 public class ResourceUtilsTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	@Test
 	public void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
@@ -63,13 +76,13 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
 		// Select the project
 		Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils
 				.getResourcesPerProject(new StructuredSelection(getProject()));
-		
+
 		// We should have project -> [project]
 		assertNotNull(resourcesPerProject);
 		assertEquals(1, resourcesPerProject.size());
 		assertTrue(resourcesPerProject.containsKey(getProject()));
-		assertEquals(Collections.singletonList(new WorkItem(getProject())), resourcesPerProject
-				.get(getProject()));
+		assertEquals(Collections.singletonList(new WorkItem(getProject())),
+				resourcesPerProject.get(getProject()));
 	}
 
 	@Test
@@ -84,8 +97,8 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
 		assertNotNull(resourcesPerProject);
 		assertEquals(1, resourcesPerProject.size());
 		assertTrue(resourcesPerProject.containsKey(getProject()));
-		assertEquals(Collections.singletonList(new WorkItem(getProject())), resourcesPerProject
-				.get(getProject()));
+		assertEquals(Collections.singletonList(new WorkItem(getProject())),
+				resourcesPerProject.get(getProject()));
 	}
 
 }

@@ -22,6 +22,8 @@ import static org.junit.Assert.*;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,6 +37,15 @@ import de.tobject.findbugs.view.explorer.GroupType;
  * @author Tomás Pollak
  */
 public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.TWO_SRC_FOLDERS);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	@Test
 	@Ignore

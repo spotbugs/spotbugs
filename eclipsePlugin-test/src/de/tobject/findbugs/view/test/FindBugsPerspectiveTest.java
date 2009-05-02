@@ -20,14 +20,18 @@ package de.tobject.findbugs.view.test;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsPerspectiveFactory.
@@ -35,6 +39,15 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
  * @author Tomás Pollak
  */
 public class FindBugsPerspectiveTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	private static final String FINDBUGS_PERSPECTIVE_ID = "de.tobject.findbugs.FindBugsPerspective";
 

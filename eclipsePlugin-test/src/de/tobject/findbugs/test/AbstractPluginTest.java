@@ -29,12 +29,15 @@ import java.util.Set;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
 import org.eclipse.jdt.testplugin.JavaProjectHelper;
@@ -59,6 +62,14 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * Base class for FindBugs tests.
+ * <p>
+ * Subclasses must:
+ * <li>implement getTestScenario() to return the required TestScenario.</li>
+ * <li>call setUpTestProject(TestScenario) and tearDownTestProject() during setUp and
+ * tearDown respectively. The argument for the setup must be the same test scenario as
+ * returned by getTestScenario(). The fixture may be shared by all tests in the same
+ * class, if the tests don't modify the project or are independent from the modifications.
+ * </li>
  * 
  * @author Tomás Pollak
  */
@@ -67,44 +78,72 @@ public abstract class AbstractPluginTest {
 	protected static final String BUG_EXPLORER_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 	protected static final String SRC = "src";
 	protected static final String TEST_PROJECT = "TestProject";
-	private IJavaProject project;
 
-	public AbstractPluginTest() {
-		super();
+	/**
+	 * Hook for subclasses to add extra classpath entries to the test project during the
+	 * setup of the test.
+	 */
+	protected static void addExtraClassPathEntries(TestScenario scenario)
+			throws CoreException, IOException {
+		// Add JUnit if the test scenario requires it
+		if (scenario.usesJUnit()) {
+			addJUnitToProjectClasspath();
+		}
+	}
+
+	protected static void addJUnitToProjectClasspath() throws JavaModelException {
+		IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
+		JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
+	}
+
+	/**
+	 * Returns the Java project for this test.
+	 * 
+	 * @return An IJavaProject.
+	 */
+	protected static IJavaProject getJavaProject() {
+		return JavaCore.create(getWorkspaceRoot()).getJavaProject(TEST_PROJECT);
+	}
+
+	/**
+	 * Returns the project for this test.
+	 * 
+	 * @return An IProject.
+	 */
+	protected static IProject getProject() {
+		return getJavaProject().getProject();
+	}
+
+	protected static IWorkspaceRoot getWorkspaceRoot() {
+		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
 	/**
 	 * Create a new Java project with a source folder and copy the test files of the
 	 * plugin to the source folder. Compile the project.
-	 * 
-	 * @throws CoreException
-	 * @throws IOException
 	 */
-	@Before
-	public void setUp() throws Exception {
+	protected static void setUpTestProject(TestScenario scenario) throws Exception {
 		// Create the test project
-		project = createJavaProject(TEST_PROJECT, "bin");
+		createJavaProject(TEST_PROJECT, "bin");
 		addRTJar(getJavaProject());
 		addSourceContainer(getJavaProject(), SRC); // Create default 'src'
-		for (int i = 1; i < getTestFilesPaths().length; i++) { // Create extra 'srcx'
+		String[] testFilesPaths = scenario.getTestFilesPaths();
+		for (int i = 1; i < testFilesPaths.length; i++) { // Create extra 'srcx'
 			addSourceContainer(getJavaProject(), SRC + (i + 1));
 		}
-		addExtraClassPathEntries();
+		addExtraClassPathEntries(scenario);
 
 		// Copy test workspace
 		importResources(getProject().getFolder(SRC), FindbugsTestPlugin.getDefault()
-				.getBundle(), getTestFilesPaths()[0]); // Import default 'src'
-		for (int i = 1; i < getTestFilesPaths().length; i++) { // Import extra 'srcx'
+				.getBundle(), testFilesPaths[0]); // Import default 'src'
+		for (int i = 1; i < testFilesPaths.length; i++) { // Import extra 'srcx'
 			importResources(getProject().getFolder(SRC + (i + 1)), FindbugsTestPlugin
-					.getDefault().getBundle(), getTestFilesPaths()[i]);
+					.getDefault().getBundle(), testFilesPaths[i]);
 		}
 
 		// Compile project
 		getProject().getProject().build(IncrementalProjectBuilder.FULL_BUILD, null);
 		performDummySearch();
-
-		// Start with a clean FindBugs state
-		clearBugsState();
 	}
 
 	/**
@@ -112,29 +151,25 @@ public abstract class AbstractPluginTest {
 	 * 
 	 * @throws CoreException
 	 */
+	protected static void tearDownTestProject() throws CoreException {
+		// Delete the test project
+		delete(getJavaProject());
+	}
+
+	public AbstractPluginTest() {
+		super();
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		// Start with a clean FindBugs state
+		clearBugsState();
+	}
+
 	@After
 	public void tearDown() throws CoreException {
 		// Clean the FindBugs state
 		clearBugsState();
-
-		// Delete the test project
-		delete(project);
-	}
-
-	/**
-	 * Hook for subclasses to add extra classpath entries to the test project during the
-	 * setup of the test.
-	 */
-	protected void addExtraClassPathEntries() throws CoreException, IOException {
-		// Add JUnit if the test scenario requires it
-		if (getTestScenario().usesJUnit()) {
-			addJUnitToProjectClasspath();
-		}
-	}
-
-	protected final void addJUnitToProjectClasspath() throws JavaModelException {
-		IClasspathEntry cpe = BuildPathSupport.getJUnit3ClasspathEntry();
-		JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
 	}
 
 	/**
@@ -263,37 +298,12 @@ public abstract class AbstractPluginTest {
 		return getTestScenario().getFilteredBugsCount();
 	}
 
-	/**
-	 * Returns the Java project for this test.
-	 * 
-	 * @return An IJavaProject.
-	 */
-	protected IJavaProject getJavaProject() {
-		return project;
-	}
-
 	protected IPreferenceStore getPreferenceStore() {
 		return FindbugsPlugin.getDefault().getPreferenceStore();
 	}
 
-	/**
-	 * Returns the project for this test.
-	 * 
-	 * @return An IProject.
-	 */
-	protected IProject getProject() {
-		return getJavaProject().getProject();
-	}
-
 	protected UserPreferences getProjectPreferences() {
 		return FindbugsPlugin.getProjectPreferences(getProject(), false);
-	}
-
-	/**
-	 * Returns the paths inside of the bundle where the test files are located.
-	 */
-	protected final String[] getTestFilesPaths() {
-		return getTestScenario().getTestFilesPaths();
 	}
 
 	/**

@@ -27,10 +27,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.PartInitException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.actions.GroupByAction;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
@@ -39,6 +42,15 @@ import de.tobject.findbugs.view.explorer.GroupType;
  * @author Tomás Pollak
  */
 public class GroupByActionTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.Package.Class.PatternType.Pattern.Marker";
 	private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Priority.Category.Project.PatternType.Pattern.Marker";
@@ -60,7 +72,7 @@ public class GroupByActionTest extends AbstractFindBugsTest {
 	@Override
 	public void tearDown() throws CoreException {
 		action = null;
-		
+
 		super.tearDown();
 	}
 

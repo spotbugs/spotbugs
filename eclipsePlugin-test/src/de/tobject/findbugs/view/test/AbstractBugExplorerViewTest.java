@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.PartInitException;
@@ -98,10 +96,6 @@ public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
 	    assertNotNull(elements);
 	    assertEquals(1, elements.length);
 	    return elements[0];
-	}
-
-	protected IWorkspaceRoot getWorkspaceRoot() {
-	    return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
 	protected void resetBugContentProviderInput() throws PartInitException {

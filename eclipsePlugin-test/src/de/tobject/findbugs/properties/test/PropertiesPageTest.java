@@ -27,11 +27,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.properties.FindbugsPropertyPage.Effort;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 import de.tobject.findbugs.util.ProjectUtilities;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -44,6 +47,15 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author Tomás Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	private UserPreferences originalProjectPreferences;
 	private UserPreferences originalWorkspacePreferences;
@@ -84,7 +96,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
 
 		// Assert that there is an error message
 		assertNotNull(page.getErrorMessage());
-		
+
 		// Close the dialog
 		dialog.cancelPressed();
 	}

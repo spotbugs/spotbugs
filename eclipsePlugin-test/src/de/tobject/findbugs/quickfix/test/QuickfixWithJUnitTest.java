@@ -21,6 +21,8 @@ package de.tobject.findbugs.quickfix.test;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
@@ -32,6 +34,16 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.QUICKFIX_WITH_JUNIT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
+
 	@Test
 	public void testCreateSuperCallResolution() throws CoreException, IOException {
 		doTestQuickfixResolution("CreateSuperCallResolutionExample.java",

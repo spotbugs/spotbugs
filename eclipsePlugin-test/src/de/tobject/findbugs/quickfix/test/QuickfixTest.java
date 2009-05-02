@@ -21,9 +21,12 @@ package de.tobject.findbugs.quickfix.test;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution;
 
@@ -33,6 +36,16 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckRe
  * @author Tomás Pollak
  */
 public class QuickfixTest extends AbstractQuickfixTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.QUICKFIX);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
+
 	@Test
 	public void testChangePublicToProtectedResolution() throws CoreException, IOException {
 		enableBugCategory("MALICIOUS_CODE");
@@ -89,7 +102,8 @@ public class QuickfixTest extends AbstractQuickfixTest {
 	}
 
 	@Test
-	public void testRemoveUselessMethodResolution_FI_Empty() throws CoreException, IOException {
+	public void testRemoveUselessMethodResolution_FI_Empty() throws CoreException,
+			IOException {
 		doTestQuickfixResolution("RemoveUselessMethodResolutionFIEmptyExample.java",
 				"FI_EMPTY");
 	}

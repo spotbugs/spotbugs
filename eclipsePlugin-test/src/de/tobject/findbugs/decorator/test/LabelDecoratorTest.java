@@ -22,10 +22,13 @@ import static org.junit.Assert.*;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.decorators.ResourceBugCountDecorator;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
+import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the ResourceBugCountDecorator.
@@ -33,6 +36,15 @@ import de.tobject.findbugs.test.AbstractFindBugsTest;
  * @author Tomás Pollak
  */
 public class LabelDecoratorTest extends AbstractFindBugsTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.DEFAULT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
 
 	private static final String SOME_LABEL = "label";
 
@@ -45,10 +57,10 @@ public class LabelDecoratorTest extends AbstractFindBugsTest {
 
 		// Class 'B' has visible bugs
 		doTestDecoratorWithBugs(getClassB(), getClassBExpectedBugCount());
-		
+
 		// Default Java package
 		doTestDecoratorWithBugs(getDefaultPackageInSrc(), getVisibleBugsCount());
-		
+
 		// Project
 		doTestDecoratorWithBugs(getProject(), getClassBExpectedBugCount());
 	}

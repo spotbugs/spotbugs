@@ -20,8 +20,11 @@ package de.tobject.findbugs.reporter.test;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tobject.findbugs.reporter.JdtUtils;
@@ -34,6 +37,16 @@ import de.tobject.findbugs.test.TestScenario;
  * @author Tomás Pollak
  */
 public class JdtUtilTest extends AbstractPluginTest {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		setUpTestProject(TestScenario.JDT);
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws CoreException {
+		tearDownTestProject();
+	}
+
 	@Test
 	public void testFindAnonymous() throws JavaModelException {
 		IType typeC = getTypeC();
