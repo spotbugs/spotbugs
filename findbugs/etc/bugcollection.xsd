@@ -119,6 +119,8 @@
 										<xs:attribute name="name" type="xs:string" use="required"/>
 										<xs:attribute name="signature" type="xs:string"
 											use="required"/>
+										<xs:attribute name="sourceSignature" type="xs:string"
+											use="optional"/>
 										<xs:attribute name="isStatic" type="xs:boolean"
 											use="required"/>
 										<xs:attribute name="role" type="xs:string" use="optional"/>
