@@ -78,8 +78,7 @@ public class SplashFrame extends JWindow
 		Dimension panelSize = p.getPreferredSize();
 		bottom.setPreferredSize(new Dimension(panelSize.width, image.getHeight(null)+2));
 
-		setLocation(screenSize.width/2 - (panelSize.width/2),
-				screenSize.height/2 - (panelSize.height/2));
+		setLocationByPlatform(true);
 
 //		g.drawImage(new ImageIcon("bugSplash3.png"),0 ,0 ,null);
 
