@@ -70,7 +70,8 @@ public abstract class XMLOutputUtil {
 	 */
 	public static void writeFileList(XMLOutput xmlOutput, String tagName,
 			Iterable<File> listValues) throws IOException {
-		writeFileList(xmlOutput, tagName, listValues.iterator());
+		if (listValues != null)
+		  writeFileList(xmlOutput, tagName, listValues.iterator());
 	}
 
 	/**
