@@ -2560,6 +2560,19 @@ public void initialize() {
 		pushBySignature(Type.getReturnType(signature).getSignature(), dbc);
 	}
 
+	public Item getItemMethodInvokedOn(DismantleBytecode dbc) {
+		int opcode = dbc.getOpcode();
+		switch (opcode) {
+		case INVOKEVIRTUAL:
+		case INVOKEINTERFACE:
+		case INVOKESPECIAL:
+			String signature = dbc.getSigConstantOperand();
+			int stackOffset = PreorderVisitor.getNumberArguments(signature);
+			
+			return getStackItem(stackOffset);
+		}
+		throw new IllegalArgumentException("Not visiting an instance method call");
+	}
 	private String getStringFromIndex(DismantleBytecode dbc, int i) {
 		ConstantUtf8 name = (ConstantUtf8) dbc.getConstantPool().getConstant(i);
 		return name.getBytes();

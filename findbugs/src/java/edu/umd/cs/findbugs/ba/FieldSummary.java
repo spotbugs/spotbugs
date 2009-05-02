@@ -27,21 +27,30 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.util.Util;
 
+/**
+ * Interprocedural analysis summary
+ * @author pugh
+ */
 public class FieldSummary {
 	private Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
 	private Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
 	private Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
-	private Map<XMethod, Set<XMethod>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<XMethod>>();
+	private Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
+	
+	private Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<ProgramPoint>>();
 	private Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
 
 	private boolean complete = false;
@@ -56,21 +65,21 @@ public class FieldSummary {
 		return result;
 	}
 
-	public void setCalledFromSuperConstructor(XMethod constructor, XMethod calledFromConstructor) {
-		 Set<XMethod> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
+	public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
+		 Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
 		 if (set == null) {
-			 set = new HashSet<XMethod>();
+			 set = new HashSet<ProgramPoint>();
 			 selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
 		 }
-		 set.add(constructor);
-		 callsOverriddenMethodsFromConstructor.add(constructor.getClassDescriptor());
+		 set.add(from);
+		 callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
 		 
 	}
-	public Set<XMethod> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
+	public Set<ProgramPoint> getCalledFromSuperConstructor(ClassDescriptor superClass, XMethod calledFromConstructor) {
 		
 		if (!callsOverriddenMethodsFromConstructor.contains(superClass))
 			return Collections.emptySet();
-		for(Map.Entry<XMethod, Set<XMethod>> e : selfMethodsCalledFromConstructor.entrySet()) {
+		for(Map.Entry<XMethod, Set<ProgramPoint>> e : selfMethodsCalledFromConstructor.entrySet()) {
 			XMethod m = e.getKey();
 			if (m.getName().equals(calledFromConstructor.getName() )
 					&& m.getClassDescriptor().equals(calledFromConstructor.getClassDescriptor())) {
@@ -180,5 +189,20 @@ public class FieldSummary {
 	    return complete;
     }
 
+	/**
+     * @param method
+     * @param methodOperand
+     */
+    public void sawSuperCall(XMethod from, XMethod constructorInSuperClass) {
+	    if (constructorInSuperClass.getSignature().equals("()V"))
+	    	return;
+	    nonVoidSuperConstructorsCalled.put(from, constructorInSuperClass);
+	    
+    }
+    
+    public @CheckForNull XMethod getSuperCall(XMethod from) {    
+	    return nonVoidSuperConstructorsCalled.get(from);
+	    
+    }
 
 }

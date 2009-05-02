@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
@@ -65,7 +66,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                 	Set<XMethod> targets = Hierarchy2.resolveVirtualMethodCallTargets(m, false, false);
 	                for(XMethod called : targets) {
 	                	if (!called.isAbstract() && !called.equals(m))
-	                		fieldSummary.setCalledFromSuperConstructor(getXMethod(), called);
+	                		fieldSummary.setCalledFromSuperConstructor(new ProgramPoint(this), called);
 	                }
                 } catch (ClassNotFoundException e) {
 	               AnalysisContext.reportMissingClass(e);
@@ -77,8 +78,17 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 		
 		}
 		
-		if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>") && !getClassConstantOperand().equals(getClassName()))
-			sawInitializeSuper = true;
+		if (seen == INVOKESPECIAL && getMethodName().equals("<init>") && getNameConstantOperand().equals("<init>")) {
+			
+			String classOperand = getClassConstantOperand();
+			OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
+			if (invokedOn.getRegisterNumber() == 0 && !classOperand.equals(getClassName())) {
+				sawInitializeSuper = true;
+				fieldSummary.sawSuperCall(getXMethod(), getXMethodOperand());
+			}
+
+		}
+
 		if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField fieldOperand = getXFieldOperand();
 			if (fieldOperand == null) return;

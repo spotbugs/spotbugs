@@ -872,7 +872,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
 		return this;
 	}
-
+	public BugInstance addClassAndMethod(XMethod xMethod) {
+		return addClassAndMethod(xMethod.getMethodDescriptor());
+	}
 	/**
 	 * Add a class annotation and a method annotation for the class and method
 	 * which the given visitor is currently visiting.

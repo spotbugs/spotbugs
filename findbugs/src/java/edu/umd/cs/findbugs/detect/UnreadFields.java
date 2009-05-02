@@ -45,10 +45,9 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
-import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -72,16 +71,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector  {
 	private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
-
-	static class ProgramPoint {
-		ProgramPoint(BytecodeScanningDetector v) {
-			method = MethodAnnotation.fromVisitedMethod(v);
-			sourceLine = SourceLineAnnotation
-				.fromVisitedInstruction(v,v.getPC());
-			}
-		MethodAnnotation method;
-		SourceLineAnnotation sourceLine;
-		}
 
 	public boolean isContainerField(XField f) {
 		return containerFields.contains(f);
@@ -874,7 +863,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 							npPriority)
 							.addClassAndMethod(p.method)
 							.addField(f), 
-						p.sourceLine);
+						p.getSourceLineAnnotation());
 							
 			} else {
 				if (f.isStatic()) priority++;
@@ -941,7 +930,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 												BugInstance bug = new BugInstance(this, "SIC_THREADLOCAL_DEADLY_EMBRACE", priority)
 												   .addClass(className).addField(of);
 												if (p != null)
-													bug.add(p.method).add(p.sourceLine);
+													bug.addMethod(p.method).add(p.getSourceLineAnnotation());
 												bugReporter.reportBug(bug);
 											}
 										}

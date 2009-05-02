@@ -22,18 +22,25 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ProgramPoint;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.PutfieldScanner;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends OpcodeStackDetector {
@@ -49,7 +56,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 	
 	Set<XField> initializedFields, nullCheckedFields;
 
-	public void visit(Code obj) {
+	@Override
+    public void visit(Code obj) {
 		if (getMethod().isStatic())
 			return;
 		initializedFields = new HashSet<XField>();
@@ -83,8 +91,9 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 			return;
 		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
-		Set<XMethod> calledFrom = fieldSummary.getCalledFromSuperConstructor(DescriptorFactory
-		        .createClassDescriptor(getSuperclassName()), getXMethod());
+		ClassDescriptor superClassDescriptor = DescriptorFactory
+		        .createClassDescriptor(getSuperclassName());
+		Set<ProgramPoint> calledFrom = fieldSummary.getCalledFromSuperConstructor(superClassDescriptor, getXMethod());
 		if (calledFrom.isEmpty())
 			return;
 		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
@@ -105,14 +114,48 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 			priority++;
 			nullCheckedFields.add(f);
 		}
-		BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
 		
-		for (XMethod m : calledFrom) 
-			bug.addMethod(m).describe(MethodAnnotation.METHOD_CALLED_FROM);
+		for (ProgramPoint p : calledFrom) {
+			XMethod upcall = getConstructorThatCallsSuperConstructor(p.method);
+			if (calledFrom == null) 
+				continue;
+			Method upcallMethod = null;
+			for(Method m : getThisClass().getMethods()) {
+				if (m.getName().equals(upcall.getName()) 
+						&& m.getSignature().equals(upcall.getSignature())) {
+						upcallMethod = m;
+						break;
+				}
+			}
+			if (upcallMethod == null)
+				continue;
+			Set<Integer> putfieldsAt = PutfieldScanner.getPutfieldsFor(getThisClass(), upcallMethod, f);
+			if (putfieldsAt.isEmpty())
+				continue;
+			SourceLineAnnotation fieldSetAt = SourceLineAnnotation.fromVisitedInstruction(getThisClass(), upcallMethod, putfieldsAt.iterator().next());
+			
+			BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(this).addField(f);
+			bug.addMethod(p.method).describe(MethodAnnotation.METHOD_SUPERCLASS_CONSTRUCTOR)
+			   .addSourceLine(p.getSourceLineAnnotation()).describe(SourceLineAnnotation.ROLE_CALLED_FROM_SUPERCLASS_AT)
+			   .addMethod(upcall).describe(MethodAnnotation.METHOD_CONSTRUCTOR)
+			   .add(fieldSetAt).describe(SourceLineAnnotation.ROLE_FIELD_SET_TOO_LATE_AT);
+			   
+			accumulator.accumulateBug(bug, this);
+		}
+			
 
-		accumulator.accumulateBug(bug, this);
 		
+	}
+	
+	private @CheckForNull XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
+		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
+		XMethod lookfor = superConstructor.getSignature().equals("()V") ? null : superConstructor;
+		for(XMethod m : getXClass().getXMethods()) if (m.getName().equals("<init>")) {
+			if (fieldSummary.getSuperCall(m) == lookfor) 
+				return m;
+		}
+		return null;
 	}
 
 }

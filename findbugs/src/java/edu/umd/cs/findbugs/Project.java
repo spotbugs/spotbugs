@@ -184,7 +184,8 @@ public class Project implements XMLWriteable {
 	}
 	public void setCurrentWorkingDirectory(File f) {
 		 this.currentWorkingDirectoryList.clear();
-         this.currentWorkingDirectoryList.add(f);
+         if (f != null)
+        	 this.currentWorkingDirectoryList.add(f);
 	}
 	/**
 	 * Return whether or not this Project has unsaved modifications.
@@ -246,6 +247,8 @@ public class Project implements XMLWriteable {
 	 *   working directory was already present
 	 */
 	public boolean addWorkingDir(String dirName) {
+		  if (dirName == null)
+			  throw new NullPointerException();
           return addToListInternal(currentWorkingDirectoryList, new File(dirName));
 	}
 

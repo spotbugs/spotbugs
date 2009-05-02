@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -63,6 +64,12 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
 	 */
 	public final @DottedClassName String getClassName() {
 		return className;
+	}
+	/**
+	 * Get the class name.
+	 */
+	public final ClassDescriptor getClassDescriptor() {
+		return DescriptorFactory.instance().getClassDescriptorForDottedClassName(className);
 	}
 
 	/**
