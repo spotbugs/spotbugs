@@ -4498,16 +4498,16 @@ Dereferencing this value will generate a null pointer exception.
 
   <BugPattern type="SIC_THREADLOCAL_DEADLY_EMBRACE">
     <ShortDescription>Deadly embrace of non-static inner class and thread local</ShortDescription>
-    <LongDescription>{0} needs to be a _static_ to avoid a deadly embrace with {1}?</LongDescription>
+    <LongDescription>{0} needs to be _static_ to avoid a deadly embrace with {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This class is an inner class, but should probably be a static inner class.
   As it is, there is a serious danger of a deadly embrace between the inner class
   and the thread local in the outer class. Because the inner class isn't static,
-	it retains a reference to the outer class. 
-	If the thread local contains a reference to an instance of the inner
-	class, the inner and outer instance will both be reachable
-	and not eligible for garbage collection.
+  it retains a reference to the outer class. 
+  If the thread local contains a reference to an instance of the inner
+  class, the inner and outer instance will both be reachable
+  and not eligible for garbage collection.
 </p>
 ]]>
     </Details>
