@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -117,6 +118,10 @@ public abstract class AbstractCloud implements Cloud {
 
     public void shutdown() {
 	    
+    }
+    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
+    	w.println("No cloud report available");
+    	return;
     }
 
 }

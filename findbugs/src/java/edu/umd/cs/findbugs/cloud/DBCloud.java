@@ -68,9 +68,9 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.Multiset;
 
 /**
  * @author pwilliam
@@ -96,7 +96,11 @@ public  class DBCloud extends AbstractCloud {
 		int id;
 		boolean inDatabase;
 		long firstSeen;
-		String bugLink, filedBy;
+		String bugLink = NONE;
+		String filedBy;
+		String bugStatus;
+		String bugAssignedTo;
+		String bugComponentName;
 		long bugFiled;
 		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
 		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
@@ -183,7 +187,7 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
-	void loadDatabaseInfo(String hash, int id, long firstSeen, String bugDatabaseKey, @CheckForNull Timestamp bugFiled, @CheckForNull String filedBy) {
+	void loadDatabaseInfo(String hash, int id, long firstSeen) {
 		BugData bd = instanceMap.get(hash);
 		if (bd == null)
 			return;
@@ -195,12 +199,7 @@ public  class DBCloud extends AbstractCloud {
 			bd.id = id;
 			bd.firstSeen = firstSeen;
 			bd.inDatabase = true;
-			bd.bugLink = bugDatabaseKey;
-			if (bugFiled != null)
-				bd.bugFiled = bugFiled.getTime();
-			else
-				bd.bugFiled = Long.MAX_VALUE;
-			bd.filedBy = filedBy;
+			bd.bugFiled = Long.MAX_VALUE;
 			idMap.put(id, bd);
 		}
 	}
@@ -212,31 +211,6 @@ public  class DBCloud extends AbstractCloud {
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
 	
 	public void bugsPopulated() {
-
-		if (false) {
-		String unknownComponent = getBugComponent(" huh ");
-		
-		for (BugInstance b : bugCollection.getCollection()) {
-			String className = b.getPrimaryClass().getClassName();
-			String component = getBugComponent(className.replace('.', '/'));
-			if (component != null && !component.equals(unknownComponent)) {
-				System.out.println("Happy");
-				continue;
-			}
-			
-			Collection<String> projects = projectMapping.getProjects(className);
-			System.out.println(projects);
-
-			int minLength = 16;
-			
-			int x = className.indexOf('.', minLength+1);
-			x = className.indexOf('.', x+1);
-			if (x == -1)
-				System.out.println(className);
-			else System.out.println(className.substring(0,x));
-		}
-			
-		}
 		
 		for (BugInstance b : bugCollection.getCollection())
 			if (!skipBug(b))
@@ -244,7 +218,7 @@ public  class DBCloud extends AbstractCloud {
 
 		try {
 			Connection c = getConnection();
-			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen, bugDatabaseKey, bugFiled, filedBy FROM findbugs_issue");
+			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -252,16 +226,12 @@ public  class DBCloud extends AbstractCloud {
 				int id = rs.getInt(col++);
 				String hash = rs.getString(col++);
 				Timestamp firstSeen = rs.getTimestamp(col++);
-				String bugDatabaseKey = rs.getString(col++);
-				Timestamp bugFiled = rs.getTimestamp(col++);
-				String filedBy = rs.getString(col++);
-				loadDatabaseInfo(hash, id, firstSeen.getTime(), bugDatabaseKey, bugFiled, filedBy);
+				
+				loadDatabaseInfo(hash, id, firstSeen.getTime());
 			}
 			rs.close();
 			ps.close();
 			
-			
-						
 			ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
 
 			rs = ps.executeQuery();
@@ -285,6 +255,38 @@ public  class DBCloud extends AbstractCloud {
 			}
 			rs.close();
 			ps.close();
+			
+			ps = c.prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				int col = 1;
+				String hash = rs.getString(col++);
+				String bugReportId = rs.getString(col++);
+				String whoFiled = rs.getString(col++);
+				Timestamp whenFiled = rs.getTimestamp(col++);
+				String status = rs.getString(col++);
+				String assignedTo = rs.getString(col++);
+				String componentName = rs.getString(col++);
+				
+				BugData data = instanceMap.get(hash);
+				
+				if (data != null) {
+					data.bugLink = bugReportId;
+					data.filedBy = whoFiled;
+					data.bugFiled = whenFiled.getTime();
+					data.bugAssignedTo = assignedTo;
+					data.bugStatus = status;
+					data.bugComponentName = componentName;
+				}
+
+			}
+			rs.close();
+			ps.close();
+
+			
+			
 			c.close();
 			
 			for (BugInstance b : bugCollection.getCollection())
@@ -321,6 +323,8 @@ public  class DBCloud extends AbstractCloud {
 			displayMessage("problem bulk loading database", e);
 			
 		}
+		
+		
 		
 	}
 
@@ -604,7 +608,7 @@ public  class DBCloud extends AbstractCloud {
 					return;
 				
 				PreparedStatement insertBugData =  
-				        c.prepareStatement("INSERT INTO findbugs_issue (firstSeen, lastSeen, hash, bugPattern, priority, primaryClass, bugDatabaseKey) VALUES (?,?,?,?,?,?,?)",  
+				        c.prepareStatement("INSERT INTO findbugs_issue (firstSeen, lastSeen, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?)",  
 				        		Statement.RETURN_GENERATED_KEYS);
 				Timestamp date = new Timestamp(timestamp);
 				int col = 1;
@@ -614,7 +618,6 @@ public  class DBCloud extends AbstractCloud {
 				insertBugData.setString(col++, b.getBugPattern().getType());
 				insertBugData.setInt(col++, b.getPriority());
 				insertBugData.setString(col++, b.getPrimaryClass().getClassName());
-				insertBugData.setString(col++, NONE);
 				insertBugData.executeUpdate();
 				ResultSet rs = insertBugData.getGeneratedKeys();
 				if (rs.next()) {
@@ -638,6 +641,7 @@ public  class DBCloud extends AbstractCloud {
 				int col = 1;
 				insertBugData.setTimestamp(col++, date);
 				insertBugData.setInt(col++, bug.id);
+				insertBugData.executeUpdate();
 				insertBugData.close();
 
 			} catch (Exception e) {
@@ -652,17 +656,33 @@ public  class DBCloud extends AbstractCloud {
         public void fileBug(BugData bug) {
         	try {
 				System.out.println("Filing bug");
-				PreparedStatement fileBug =  
-				        c.prepareStatement("UPDATE  findbugs_issue SET bugDatabaseKey = ?, firstSeen = ?, filedBy = ? WHERE id = ?");
+				PreparedStatement insert = c
+				.prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
+						 + " VALUES (?, ?, ?, ?)");
+				
 				Timestamp date = new Timestamp(bug.bugFiled);
 				int col = 1;
-				fileBug.setString(col++, bug.bugLink);
-				fileBug.setTimestamp(col++, date);
-				fileBug.setString(col++, bug.filedBy);
-				fileBug.setInt(col++, bug.id);
-				boolean result = fileBug.execute();
-				fileBug.close();
-				System.out.println("bug filing result = " + result);
+				insert.setString(col++, bug.instanceHash);
+				insert.setString(col++, PENDING);
+				insert.setString(col++,  bug.filedBy);
+				insert.setTimestamp(col++, date);
+				
+				int count = insert.executeUpdate();
+				insert.close();
+				if (count == 0) {
+					System.out.println("Try updating timestamp and who");
+					PreparedStatement updateBug =  
+				        c.prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE hash = ? and bugReportId = ?");
+					col = 1;
+					updateBug.setString(col++, bug.filedBy);
+					updateBug.setTimestamp(col++, date);
+					updateBug.setString(col++, bug.instanceHash);
+					updateBug.setString(col++, PENDING);
+					count = updateBug.executeUpdate();
+					updateBug.close();
+					System.out.println("updated existing bug report, result = " + count);
+				}
+				
 				
 
 			} catch (Exception e) {
@@ -1059,9 +1079,17 @@ public  class DBCloud extends AbstractCloud {
 		if (firstSeen < Long.MAX_VALUE) {
 			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
 		}
+		
 		BugDesignation primaryDesignation = bd.getPrimaryDesignation();
 		I18N i18n = I18N.instance();
 		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
+		if (canSeeCommentsByOthers) {
+			if (bd.bugStatus != null) {
+				builder.append(bd.bugComponentName);
+				builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
+				builder.append("\n\n");
+			}
+		}
 		for(BugDesignation d : bd.designations) 
 			if (d != primaryDesignation 
 					&& (canSeeCommentsByOthers || findbugsUser.equals(d.getUser()))) {
@@ -1200,4 +1228,102 @@ public  class DBCloud extends AbstractCloud {
     		return  String.format("%d issues synchronized, %d remain to be synchronized", handled, numToSync);
     }
     
+    
+    @Override
+    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
+    	
+    	Multiset<String> evaluations = new Multiset<String>();
+    	Multiset<String> designations = new Multiset<String>();
+    	Multiset<String> bugStatus = new Multiset<String>();
+    	
+    	int issuesWithThisManyReviews [] = new int[100];
+    	I18N i18n = I18N.instance();
+		Set<String> hashCodes = new HashSet<String>();
+		for(BugInstance b : bugs) {
+			hashCodes.add(b.getInstanceHash());
+		}
+		
+		int count = 0;
+		for(String hash : hashCodes) {
+			BugData bd = instanceMap.get(hash);
+			if (bd == null) 
+				continue;
+			count++;
+    		HashSet<String> reviewers = new HashSet<String>();
+    		if (bd.bugStatus != null)
+    			bugStatus.add(bd.bugStatus);
+    		for(BugDesignation d : bd.designations) 
+    		    if (reviewers.add(d.getUser())) {
+    		    	evaluations.add(d.getUser());
+    		    	designations.add(i18n.getUserDesignation(d.getDesignationKey()));
+    		    }
+    		
+    		int numReviews = Math.min( reviewers.size(), issuesWithThisManyReviews.length -1);
+    		issuesWithThisManyReviews[numReviews]++;
+    		
+    	}
+    	w.printf("Summary for %d  issues that are both in the cloud and loaded analysis\n\n", count);
+    	w.println("People who have performed the most reviews");
+    	printLeaderBoard(w, evaluations, 5, findbugsUser, true, "reviewer");
+    	
+    	w.println("\nDistribution of evaluations");
+    	printLeaderBoard(w, designations, 100, " --- ", false, "designation");
+    	
+    	w.println("\nDistribution of bug status");
+    	printLeaderBoard(w, bugStatus, 100, " --- ", false, "status of filed bug");
+    	
+    	w.println("\nDistribution of number of reviews");
+    	for(int i = 0; i < issuesWithThisManyReviews.length; i++) 
+    		if (issuesWithThisManyReviews[i] > 0) {
+    		w.printf("%4d  with %3d review", issuesWithThisManyReviews[i], i);
+    		if (i != 1) w.print("s");
+    		w.println();
+    			
+    	}
+
+    	
+    	
+    	
+    }
+	/**
+     * @param w
+	 * @param evaluations
+	 * @param listRank TODO
+	 * @param title TODO
+     */
+    private void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+	    int row = 1;
+    	int position = 0;
+    	int previousScore = -1;
+    	boolean foundAlwaysPrint = false;
+    	if (listRank)
+			w.printf("%3s %3s %s\n", "rnk", "num", title);
+		else
+			w.printf("%3s %s\n",  "num", title);
+		
+    	for(Map.Entry<String,Integer> e : evaluations.entriesInDecreasingFrequency()) {
+    		int num = e.getValue();
+    		if (num != previousScore) {
+    			position = row;
+    			previousScore = num;
+    		}
+    		String key = e.getKey();
+    		
+    		boolean shouldAlwaysPrint = key.equals(alwaysPrint);
+			if (row <= maxRows || shouldAlwaysPrint) {
+				if (listRank) 
+					w.printf("%3d %3d %s\n", position, num, key);
+				else
+					w.printf("%3d %s\n", num, key);
+			}
+			if (shouldAlwaysPrint)
+				foundAlwaysPrint = true;
+    		row++;
+    		if (foundAlwaysPrint && row >= maxRows) {
+    			w.printf("Total of %d %s\n", evaluations.numKeys(), title);
+    			break;
+    		}
+    		
+    	}
+    }
 }

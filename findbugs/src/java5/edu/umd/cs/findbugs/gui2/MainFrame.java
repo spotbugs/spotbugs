@@ -50,11 +50,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Nonnull;
@@ -879,6 +882,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		JMenu viewMenu = newJMenu("menu.view", "View");
 		
+		JMenuItem cloudReport = new JMenuItem("Cloud report");
+		cloudReport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				displayCloudReport();
+				
+			}
+		});
+		viewMenu.add(cloudReport);
+		viewMenu.addSeparator();
 		URL u = PluginLoader.getCoreResource("projectPaths.properties");
 		if (u != null) {
 
@@ -3004,9 +3016,77 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     }
 	
    public void displayNonmodelMessage(String title, String message) {
-	   System.out.println("Displaying nonmodel message " + title);
-	   System.out.println(message);
-	   DisplayNonmodelMessage.displayNonmodelMessage(title, message, this);
+	  DisplayNonmodelMessage.displayNonmodelMessage(title, message, this);
+   }
+   
+  
+  public void displayCloudReport() {
+	  Cloud cloud = this.bugCollection.getCloud();
+		if (cloud == null) {
+			JOptionPane.showMessageDialog(this, "There is no cloud");
+			
+			return;
+		}
+	  StringWriter stringWriter = new StringWriter();
+	  PrintWriter writer = new PrintWriter(stringWriter);
+	  cloud.printCloudReport(getDisplayedBugs(), writer);
+	  writer.close();
+	  String report = stringWriter.toString();
+	  System.out.println("Cloud report...");
+	  System.out.println(report);
+	DisplayNonmodelMessage.displayNonmodelMessage("Cloud report", report, this);
+	  
+  }
+	   
+   public Iterable<BugInstance> getDisplayedBugs() {
+	   return new Iterable<BugInstance>(){
+
+		public Iterator<BugInstance> iterator() {
+	       return new ShownBugsIterator();
+        }};
+   }
+   
+   class ShownBugsIterator implements Iterator<BugInstance> {
+	   Iterator<BugInstance> base = bugCollection.getCollection().iterator();
+	   boolean nextKnown;
+	   BugInstance next;
+	/* (non-Javadoc)
+     * @see java.util.Iterator#hasNext()
+     */
+    public boolean hasNext() {
+	   if (!nextKnown) {
+		   nextKnown = true;
+		   while (base.hasNext()) {
+			   next = base.next();
+			   if (shouldDisplayIssue(next)) 
+				   return true;
+		   }
+		   next = null;
+		   return false;
+	   }
+	   return next != null;
+    }
+	/* (non-Javadoc)
+     * @see java.util.Iterator#next()
+     */
+    public BugInstance next() {
+	    if (!hasNext())
+	    	throw new NoSuchElementException();
+	    BugInstance result = next;
+	    next = null;
+	    nextKnown = false;
+	    return result;
+	    
+    }
+	/* (non-Javadoc)
+     * @see java.util.Iterator#remove()
+     */
+    public void remove() {
+	    throw new UnsupportedOperationException();
+	    
+    }
+
+	   
    }
 
 }

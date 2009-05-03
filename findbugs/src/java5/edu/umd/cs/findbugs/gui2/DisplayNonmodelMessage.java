@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class DisplayNonmodelMessage {
 	}
     static  JFrame messageFrame;
     static JTextArea messageTextArea;
+    static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
     public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver) {
     	boolean positionWindow = false;
 	    if (messageFrame == null) {
@@ -53,6 +55,7 @@ public class DisplayNonmodelMessage {
 	    	messageTextArea.setEditable(false);
 	    	messageTextArea.setLineWrap(true);
 	    	messageTextArea.setWrapStyleWord(true);
+	    	messageTextArea.setFont(sourceFont);
 	    	try {
 	            messageFrame.setIconImage(ImageIO.read(MainFrame.class.getResource("smallBuggy.png")));
             } catch (IOException e1) {

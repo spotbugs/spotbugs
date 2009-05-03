@@ -582,9 +582,17 @@ public class CommentsArea {
 	}
 
 	protected void setDesignationNonLeaf(String designationName) {
+		if (nonleafUpdateDepth > 0)
+			return;
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
 		if (designationKey == null || frame.currentSelectedBugAspects == null)
 			return;
+		Cloud cloud = getMainFrame().bugCollection.getCloud();
+		if (cloud.getMode() == Cloud.Mode.VOTING) {
+			JOptionPane.showMessageDialog(frame, "FindBugs is configured in voting mode; no mass updates allowed");
+			return;
+		}
+		
 
 		BugSet filteredSet = frame.currentSelectedBugAspects
 				.getMatchingBugs(BugSet.getMainBugSet());
@@ -609,6 +617,7 @@ public class CommentsArea {
 		if (frame.currentSelectedBugLeaf == null)
 			updateCommentsFromNonLeafInformationFromSwingThread(frame.currentSelectedBugAspects);
 		else {
+			designationComboBox.setEnabled(true);
 			int selectedIndex = designationComboBox
 								.getSelectedIndex();
 			if (selectedIndex >= 0) 
@@ -618,6 +627,7 @@ public class CommentsArea {
 		}
 	}
 
+	int nonleafUpdateDepth = 0;
 	protected void updateCommentsFromNonLeafInformationFromSwingThread(BugAspects theAspects) {
 		if (theAspects == null)
 			return;
@@ -635,15 +645,21 @@ public class CommentsArea {
 					allSame = false;
 			}
 		}
-		;
+		nonleafUpdateDepth++;
+		try {
 		if (allSame) {
 			designationComboBox.setSelectedIndex(first);
 		} else {
 			designationComboBox.setSelectedIndex(0);
 		}
 		userCommentsText.setText(getNonLeafCommentsText(theAspects));
+		if (getCloud().getMode() == Cloud.Mode.VOTING) {
+			userCommentsText.setEnabled(false);
+		}
 		changed = false;
-		// setUserCommentInputEnableFromSwingThread(true);
+		} finally {
+			nonleafUpdateDepth--;
+		}
 	}
 
 	protected String getNonLeafCommentsText(BugAspects theAspects)
@@ -665,27 +681,7 @@ public class CommentsArea {
 			return "";
 		else return comments;
 	}
-	/*
-	protected String getNonLeafCommentsText(BugAspects theAspects)
-	{	if (theAspects == null)
-			return "";
-		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
-		boolean allSame = true;
-		String comments = null;
-		for (BugLeafNode nextNode : filteredSet) {
-		String commentsOnThisBug = nextNode.getBug().getAnnotationText();
-			if (comments == null) {
-				comments = commentsOnThisBug;
-			} else {
-				if (!commentsOnThisBug.equals(comments))
-					allSame = false;
-			}
-		}
-		if((comments == null) || (allSame == false))
-			return "";
-		else return comments;
-	}
-	*/
+
 	protected void setDesignationComboBox(String designationKey) {
 		assert designationComboBox.getItemCount() == designationKeys.size();
 		

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Date;
 import java.util.SortedSet;
@@ -161,4 +162,6 @@ public interface Cloud {
      * @param bugInstance
      */
     void storeUserAnnotation(BugInstance bugInstance);	
+    
+    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w);
 }

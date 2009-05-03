@@ -55,9 +55,7 @@ public class SplashFrame extends JWindow
 		Image imageReverse = toolkit.getImage(MainFrame.class.getResource("SplashBug1reverse.png"));
 		Image image2Reverse = toolkit.getImage(MainFrame.class.getResource("SplashBug2reverseB.png"));
 
-		//		JPanel temp = new JPanel(new BorderLayout());
-//		temp.setBorder(BorderFactory.createLineBorder(Color.black, 2));
-//		setContentPane(temp);
+
 		JLabel l = new JLabel(new ImageIcon(MainFrame.class.getResource("umdFindbugs.png")));
 		JPanel p = new JPanel();
 		Viewer viewer=new Viewer(image,image2,imageReverse,image2Reverse);
@@ -78,13 +76,11 @@ public class SplashFrame extends JWindow
 		Dimension panelSize = p.getPreferredSize();
 		bottom.setPreferredSize(new Dimension(panelSize.width, image.getHeight(null)+2));
 
-		setLocationByPlatform(true);
+		setLocationRelativeTo(null);
 
 //		g.drawImage(new ImageIcon("bugSplash3.png"),0 ,0 ,null);
 
 		pack();
-		screenSize = null;
-		labelSize = null;
 		viewer.animate();
 
 
