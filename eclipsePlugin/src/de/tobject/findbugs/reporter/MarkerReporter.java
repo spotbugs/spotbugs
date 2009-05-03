@@ -1,22 +1,22 @@
 /*
-	* FindBugs Eclipse Plug-in.
-	* Copyright (C) 2003 - 2004, Peter Friese
-	* Copyright (C) 2005, University of Maryland
-	*
-	* This library is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU Lesser General Public
-	* License as published by the Free Software Foundation; either
-	* version 2.1 of the License, or (at your option) any later version.
-	*
-	* This library is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-	* Lesser General Public License for more details.
-	*
-	* You should have received a copy of the GNU Lesser General Public
-	* License along with this library; if not, write to the Free Software
-	* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-	*/
+ * FindBugs Eclipse Plug-in.
+ * Copyright (C) 2003 - 2004, Peter Friese
+ * Copyright (C) 2005, University of Maryland
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 package de.tobject.findbugs.reporter;
 
@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,12 +38,13 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
-	* Creates a FindBugs marker in a runnable window.
-	*/
+ * Creates a FindBugs marker in a runnable window.
+ */
 public class MarkerReporter implements IWorkspaceRunnable {
 	private final BugCollection collection;
 	private static final boolean EXPERIMENTAL_BUGS = false;
@@ -69,16 +71,49 @@ public class MarkerReporter implements IWorkspaceRunnable {
 				continue;
 			}
 			// This triggers resource update on IResourceChangeListener's (BugTreeView)
-			addmarker(markerType, mp);
+			addMarker(markerType, mp);
 		}
 
 	}
 
-	private void addmarker(String markerType, MarkerParameter mp) throws CoreException {
-		IMarker marker = mp.resource.getMarkerTarget().createMarker(markerType);
+	private void addMarker(String markerType, MarkerParameter mp) throws CoreException {
+		IResource markerTarget = mp.resource.getMarkerTarget();
+		IMarker[] existingMarkers = markerTarget.findMarkers(markerType,
+				true, IResource.DEPTH_ZERO);
+		Map<String, Object> attributes = createMarkerAttributes(mp);
 
-		Map<String, Object> attributes = createMarkerAttributes(marker, mp);
-		setAttributes(marker, attributes);
+		// XXX Workaround for bug 2785257 (has to be solved better)
+		// see http://sourceforge.net/tracker/?func=detail&atid=614693&aid=2785257&group_id=96405
+		// currently we can't run FB only on a subset of classes related to the specific
+		// source folder if source folders have same class output directory.
+		// In this case the classes from BOTH source folders are examined by FB and
+		// new markers can be created for issues which are already reported.
+		// Therefore here we check if a marker with SAME bug id is already known,
+		// and if yes, delete it (replacing with newer one)
+		if(existingMarkers.length > 0){
+			IMarker oldMarker = findSameBug(attributes, existingMarkers);
+			if(oldMarker != null){
+				oldMarker.delete();
+			}
+		}
+		IMarker newMarker = markerTarget.createMarker(markerType);
+		setAttributes(newMarker, attributes);
+	}
+
+	private @CheckForNull
+	IMarker findSameBug(Map<String, Object> attributes, IMarker[] existingMarkers)
+			throws CoreException {
+		Object bugId = attributes.get(FindBugsMarker.UNIQUE_ID);
+		if (bugId == null) {
+			return null;
+		}
+		for (IMarker marker : existingMarkers) {
+			Object idAttribute = marker.getAttribute(FindBugsMarker.UNIQUE_ID);
+			if (bugId.equals(idAttribute)) {
+				return marker;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -115,11 +150,10 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	}
 
 	/**
-	 * @param marker non null
 	 * @param mp
 	 * @return attributes map which should be assigned to the given marker
 	 */
-	private Map<String, Object> createMarkerAttributes(IMarker marker, MarkerParameter mp) {
+	private Map<String, Object> createMarkerAttributes(MarkerParameter mp) {
 		Map<String, Object> attributes = new HashMap<String, Object>(23);
 		attributes.put(IMarker.LINE_NUMBER, mp.startLine);
 		attributes.put(FindBugsMarker.PRIMARY_LINE, mp.primaryLine);
