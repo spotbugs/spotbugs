@@ -84,6 +84,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
+	private File loadedFrom;
 	private List<File> currentWorkingDirectoryList;
 	/**
 	 * Project filename.
@@ -1189,7 +1190,7 @@ public class Project implements XMLWriteable {
 			   continue;
 		   }
 		   File f = new File(s);
-		   if (f.isAbsolute()) {
+		   if (f.isAbsolute() || currentWorkingDirectoryList.isEmpty()) {
 			   if (f.canRead())
 				   result.add(s);
 			   continue;
