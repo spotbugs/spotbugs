@@ -26,12 +26,14 @@ import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.CheckForNull;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 /**
  * @author pwilliam
@@ -50,7 +52,7 @@ public class DisplayNonmodelMessage {
 	    if (messageFrame == null) {
 	    	positionWindow = true;
 	    	messageFrame = new JFrame(title);
-	    	// messageFrame.setSize(300, 200);
+
 	    	messageTextArea = new JTextArea(15, 60);
 	    	messageTextArea.setEditable(false);
 	    	messageTextArea.setLineWrap(true);
@@ -80,8 +82,45 @@ public class DisplayNonmodelMessage {
 	    messageFrame.pack();
 	    if (positionWindow) 
 	    	messageFrame.setLocationRelativeTo(centerOver);
+	    messageFrame.setAlwaysOnTop(true);
+	    
 	    
 	    messageFrame.setVisible(true);
+	    Thread t = new Thread() {
+	    	public void run() {
+	    		final JFrame frame = DisplayNonmodelMessage.messageFrame;
+	    		if (frame == null)
+	    			return;
+	    		try {
+	    			if (!frame.isAlwaysOnTop()) {
+	    				SwingUtilities.invokeLater(moveToFront);
+	    				TimeUnit.SECONDS.sleep(1);
+	    				SwingUtilities.invokeLater(moveToFront);
+	    				return;
+	    				
+	    			}
+	                TimeUnit.SECONDS.sleep(4);
+                } catch (InterruptedException e) {
+	                assert true;
+                }
+	    		SwingUtilities.invokeLater(clearAlwaysOnTop);
+	    	}
+	    };
+	    t.start();
     }
 
+    static Runnable moveToFront = new Runnable() {
+    	public void run() {
+    		JFrame frame = messageFrame;
+			if (frame != null)
+				frame.toFront();
+    	}
+    };
+    static Runnable clearAlwaysOnTop = new Runnable() {
+    	public void run() {
+    		JFrame frame = messageFrame;
+			if (frame != null)
+				frame.setAlwaysOnTop(false);
+    	}
+    };
 }
