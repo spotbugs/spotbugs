@@ -1035,8 +1035,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 try {
                 	IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
 	                IsNullValueFrame isNullFrame = isNullDataflow.getFactAtLocation(location);
-					if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) 
-	                  bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
+	                BugAnnotation a = BugInstance.getSourceForTopStackValue(classContext,  method,  location);
+	                int priority = NORMAL_PRIORITY;
+	                if (a instanceof FieldAnnotation && ((FieldAnnotation)a).isStatic())
+	                	priority = LOW_PRIORITY;
+	                if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) 
+	                  bugAccumulator.accumulateBug(new BugInstance(this, "EC_NULL_ARG", priority)
 					  .addClassAndMethod(methodGen, sourceFile),
 					  SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
                 } catch (CFGBuilderException e) {
