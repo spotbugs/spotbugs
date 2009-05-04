@@ -479,6 +479,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
 		}
 		if (this.bugCollection != null && userAnnotationListener != null) {
+			
 			Cloud plugin = this.bugCollection.getCloud();
 			if (plugin != null) 
 				plugin.removeListener(userAnnotationListener);
@@ -489,6 +490,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		} else {
 			setProject(project);
 			this.bugCollection = bugCollection;
+			bugCollection.setRequestDatabaseCloud(true);
 			displayer.clearCache();
 
 			BugTreeModel model = (BugTreeModel) getTree().getModel();     
@@ -1559,7 +1561,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	JPanel makeNavigationPanel(String packageSelectorLabel, 
 			JComponent packageSelector, JComponent treeHeader, JComponent tree) {
 		JPanel topPanel = new JPanel();
-		topPanel.setMinimumSize(new Dimension(200,200));
+		topPanel.setMinimumSize(new Dimension(150,150));
 		
 		topPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();

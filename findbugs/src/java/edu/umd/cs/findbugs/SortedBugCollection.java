@@ -91,7 +91,6 @@ public class SortedBugCollection implements BugCollection {
 	private boolean withMessages = false;
 	private boolean applySuppressions = false;
 	private Cloud userAnnotationPlugin;
-	boolean runningWithoutSwingUI;
 	boolean shouldNotUsePlugin;
 	
 	final Project project;
@@ -100,19 +99,18 @@ public class SortedBugCollection implements BugCollection {
 		return project;
 	}
 	
+	boolean useDatabaseCloud = false;
+	public void setRequestDatabaseCloud(boolean useDatabaseCloud) {
+		this.useDatabaseCloud = useDatabaseCloud;
+	}
 	public @CheckForNull Cloud getCloud() {
-		if(runningWithoutSwingUI || shouldNotUsePlugin){
+		if (shouldNotUsePlugin) {
 			return null;
 		}
-		if(userAnnotationPlugin == null){
-			try {
-		    	userAnnotationPlugin = CloudFactory.getCloud(this);
-		    	shouldNotUsePlugin = userAnnotationPlugin == null;
-	        } catch (NoClassDefFoundError e) {
-	        	// TODO currently crash in Eclipse plugin which does not have gui2 classes
-	        	// and can't instantiate JDBCUserAnnotationPlugin here...
-	        	runningWithoutSwingUI = true;
-	        }
+		if (userAnnotationPlugin == null) {
+			userAnnotationPlugin = useDatabaseCloud ? CloudFactory.getDatabaseCloud(this) : CloudFactory.getPlainCloud(this);
+			shouldNotUsePlugin = userAnnotationPlugin == null;
+
 		}
 		return userAnnotationPlugin;
 	}

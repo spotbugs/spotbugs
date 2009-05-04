@@ -570,7 +570,7 @@ public class CommentsArea {
 		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
 			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
 			Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
-			if (plugin != null) {
+			if (plugin != null && plugin.supportsCloudReports()) {
 				BugInstance bug = frame.currentSelectedBugLeaf.getBug();
 				String report = plugin.getCloudReport(bug);
 				reportText.setText(report);
