@@ -111,7 +111,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 			priority = HIGH_PRIORITY;
 		
 		int nextOpcode = getNextOpcode();
-		if (nullCheckedFields.contains(f) || nextOpcode == IFNULL || nextOpcode == IFNONNULL) {
+		if (nullCheckedFields.contains(f) || nextOpcode == IFNULL || nextOpcode == IFNONNULL || nextOpcode == IFEQ || nextOpcode == IFNE) {
 			priority++;
 			nullCheckedFields.add(f);
 		}
