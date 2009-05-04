@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
@@ -209,7 +210,7 @@ public  class DBCloud extends AbstractCloud {
 		super(bugs);
 	}
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
-	
+	int sessionId = -1;
 	public void bugsPopulated() {
 		
 		for (BugInstance b : bugCollection.getCollection())
@@ -217,6 +218,8 @@ public  class DBCloud extends AbstractCloud {
 				getBugData(b.getInstanceHash()).bugs.add(b);
 
 		try {
+			long startTime = System.currentTimeMillis();
+			
 			Connection c = getConnection();
 			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
 			ResultSet rs = ps.executeQuery();
@@ -255,6 +258,9 @@ public  class DBCloud extends AbstractCloud {
 			}
 			rs.close();
 			ps.close();
+
+
+
 			
 			ps = c.prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
 
@@ -285,8 +291,29 @@ public  class DBCloud extends AbstractCloud {
 			rs.close();
 			ps.close();
 
-			
-			
+
+			long initialSyncTime = System.currentTimeMillis() - startTime;
+			PreparedStatement insertSession =  
+				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialSyncTime, numIssues, startTime)"
+						+ " VALUES (?,?,?,?,?)",  
+						Statement.RETURN_GENERATED_KEYS);
+			Timestamp now = new Timestamp(startTime);
+			int col = 1;
+			insertSession.setString(col++, findbugsUser);
+			insertSession.setString(col++, "");
+			insertSession.setString(col++,"");
+			insertSession.setString(col++, Version.RELEASE);
+			insertSession.setLong(col++, initialSyncTime);
+			insertSession.setInt(col++, bugCollection.getCollection().size());
+			insertSession.setTimestamp(col++, now);
+			insertSession.executeUpdate();
+			rs = insertSession.getGeneratedKeys();
+			if (rs.next()) {
+				sessionId = rs.getInt(1);	
+			}
+			insertSession.close();
+			rs.close();
+
 			c.close();
 			
 			for (BugInstance b : bugCollection.getCollection())
@@ -469,17 +496,30 @@ public  class DBCloud extends AbstractCloud {
 
 	@Override
     public void shutdown() {
-		if (!queue.isEmpty() && runnerThread.isAlive()) {
-		setErrorMsg("waiting for synchronization to complete before shutdown");
-		for(int i = 0; i < 100; i++) {
-			if (queue.isEmpty() || !runnerThread.isAlive())
-				break;
-			try {
-	            Thread.sleep(30);
-            } catch (InterruptedException e) {
-	           break;
-            }
+		try {
+			Connection c = getConnection();
+			PreparedStatement setEndTime = c.prepareStatement("UPDATE  findbugs_invocation SET endTime = ? WHERE id = ?");
+			Timestamp date = new Timestamp(System.currentTimeMillis());
+			int col = 1;
+			setEndTime.setTimestamp(col++, date);
+			setEndTime.setInt(col++, sessionId);
+			setEndTime.execute();
+		} catch (SQLException e) {
+			// we're in shutdown mode, not going to complain
+			assert true;
 		}
+
+		if (!queue.isEmpty() && runnerThread.isAlive()) {
+			setErrorMsg("waiting for synchronization to complete before shutdown");
+			for (int i = 0; i < 100; i++) {
+				if (queue.isEmpty() || !runnerThread.isAlive())
+					break;
+				try {
+					Thread.sleep(30);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
 		}
 		shutdown = true;
 		runnerThread.interrupt();
@@ -1048,7 +1088,7 @@ public  class DBCloud extends AbstractCloud {
 						
 					}
 				}
-				if (u.length() > 1500)
+				if (u.length() > MAX_URL_LENGTH - 500)
 					setErrorMsg("Bug link length is "+ u.length());
 				return new URL(u);
 			}

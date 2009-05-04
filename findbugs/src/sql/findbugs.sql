@@ -49,6 +49,19 @@ CREATE TABLE `findbugs_issue` (
   UNIQUE KEY `hash` (`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ;
 
+CREATE TABLE `findbugs_invocation` (
+  `id` int(11) NOT NULL auto_increment,
+  `who` varchar(64) NOT NULL,
+  `entryPoint` varchar(16) NOT NULL,
+  `dataSource` varchar(16) NOT NULL,
+  `fbVersion` varchar(16) NOT NULL,
+  `initialSyncTime` int(11) NOT NULL,
+  `numIssues` int(11) NOT NULL,
+  `startTime` datetime NOT NULL,
+  `endTime` datetime,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 --
 -- Constraints for dumped tables
 --
