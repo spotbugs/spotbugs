@@ -52,7 +52,6 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-//import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
@@ -650,13 +649,16 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	@Override
 	protected void mergeValues(TypeFrame otherFrame, TypeFrame resultFrame, int slot) throws DataflowAnalysisException {
-		Type value = typeMerger.mergeTypes(resultFrame.getValue(slot), otherFrame.getValue(slot));
+	
+		Type type2 = resultFrame.getValue(slot);
+		Type type1 = otherFrame.getValue(slot);
+		Type value = typeMerger.mergeTypes(type2, type1);
 		resultFrame.setValue(slot, value);
 
 		// Result type is exact IFF types are identical and both are exact
 
 		boolean typesAreIdentical =
-			otherFrame.getValue(slot).equals(resultFrame.getValue(slot));
+			type1.equals(type2);
 
 		boolean bothExact =
 			resultFrame.isExact(slot) && otherFrame.isExact(slot);
