@@ -618,7 +618,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 			OpcodeStack.Item item = null;
 			if (stack.getStackDepth() > 0) {
 				item = stack.getStackItem(0);
-				if (!item.isNull()) nullTested.add(f);
+				if (!item.isNull()) 
+					nullTested.add(f);
 			}
 			writtenFields.add(f);
 			
