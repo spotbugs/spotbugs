@@ -302,11 +302,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 * @return the database
 	 */
 	private<E> E getDatabase(Class<E> cls) {
-//		try {
-			return Global.getAnalysisCache().getDatabase(cls);
-//		} catch (CheckedAnalysisException e) {
-//			throw new IllegalStateException("Could not get database " + cls.getName(), e);
-//		}
+		return Global.getAnalysisCache().getDatabase(cls);
 	}
 
 	/**
