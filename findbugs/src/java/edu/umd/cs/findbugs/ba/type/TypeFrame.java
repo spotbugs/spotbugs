@@ -160,10 +160,39 @@ public class TypeFrame extends Frame<Type> {
 	
 	@Override 
 	public String toString() {
-		if (exactTypeSet.cardinality() == 0)
-			return super.toString();
-		return super.toString() + "; exact " + exactTypeSet;
+		if (isTop())
+			return "[TOP]";
+		if (isBottom())
+			return "[BOTTOM]";
+		StringBuilder buf = new StringBuilder();
+		buf.append('[');
+		int numSlots = getNumSlots();
+		int start = 0;
+		for (int i = start; i < numSlots; ++i) {
+
+			if (i == getNumLocals()) {
+				// Use a "|" character to visually separate locals from
+				// the operand stack.
+				int last = buf.length() - 1;
+				if (last >= 0) {
+					if (buf.charAt(last) == ',')
+						buf.deleteCharAt(last);
+				}
+				buf.append(" | ");
+			}
+			if (isExact(i))
+				buf.append("!");
+			String value = valueToString(getValue(i));
+			if (i == numSlots - 1 && value.endsWith(","))
+				value = value.substring(0, value.length() - 1);
+			buf.append(value);
+			// buf.append(' ');
+		}
+		buf.append(']');
+		return buf.toString();
 	}
+
+	
 
 
 
