@@ -435,7 +435,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 				for(int i = 0; i < switchLabels.length; i++) {
 					int v = switchLabels[i];
 					if (v <= -129 || v >= 128) {
-						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",
+						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",f
 								HIGH_PRIORITY)
 									.addClassAndMethod(this)
 									.addInt(v).describe(IntAnnotation.INT_VALUE),
@@ -486,22 +486,22 @@ public class DumbMethods extends OpcodeStackDetector  {
 							case IF_ICMPGT: // 127 > x
 								priority = LOW_PRIORITY; break;
 							case IF_ICMPGE: // 127 >= x : always true
-								priority = HIGH_PRIORITY; break;
+								priority = NORMAL_PRIORITY; break;
 							case IF_ICMPLT: // 127 < x : never true
-								priority = HIGH_PRIORITY; break;
+								priority = NORMAL_PRIORITY; break;
 							case IF_ICMPLE: // 127 <= x
 								priority = LOW_PRIORITY; break;
 							}
 						} else if (v1 == 128) {
 							switch(seen2) {
-							case IF_ICMPGT: // 128 > x
+							case IF_ICMPGT: // 128 > x; always true
 								priority = NORMAL_PRIORITY; break;
 							case IF_ICMPGE: // 128 >= x
 								priority = HIGH_PRIORITY; break;
 							case IF_ICMPLT: // 128 < x
 								priority = HIGH_PRIORITY; break;
-							case IF_ICMPLE: // 128 <= x
-								priority = HIGH_PRIORITY; break;
+							case IF_ICMPLE: // 128 <= x; never true
+								priority = NORMAL_PRIORITY; break;
 							}
 						} else if (v1 <= -129) {
 							priority = NORMAL_PRIORITY;
