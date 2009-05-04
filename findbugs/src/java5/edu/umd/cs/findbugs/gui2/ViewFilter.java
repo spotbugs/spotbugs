@@ -106,7 +106,8 @@ public class ViewFilter {
         },  I_WILL_FIX("I will fix") {
 	        @Override
 	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return cloud.getUserDesignation(b) == UserDesignation.I_WILL_FIX;
+	        	return cloud.getIWillFix(b);
+	        	
 	        }
         }, ALL("All issues") {
 	        @Override

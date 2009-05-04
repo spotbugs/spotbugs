@@ -26,7 +26,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
 
 /**
  * @author pwilliam
@@ -124,4 +123,7 @@ public abstract class AbstractCloud implements Cloud {
     	return;
     }
 
+    public boolean getIWillFix(BugInstance b) {
+    	return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
+    }
 }

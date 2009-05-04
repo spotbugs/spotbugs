@@ -1354,4 +1354,15 @@ public  class DBCloud extends AbstractCloud {
     		
     	}
     }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#getIWillFix(edu.umd.cs.findbugs.BugInstance)
+     */
+    public boolean getIWillFix(BugInstance b) {
+    	if (super.getIWillFix(b))
+    		return true;
+	   BugData bd =  getBugData(b);
+	   return bd != null && findbugsUser.equals(bd.bugAssignedTo);
+	   
+	   
+    }
 }

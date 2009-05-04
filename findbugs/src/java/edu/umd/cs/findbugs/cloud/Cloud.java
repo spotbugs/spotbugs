@@ -128,6 +128,8 @@ public interface Cloud {
 	Mode getMode();
 	void setMode(Mode m);
 	
+	boolean getIWillFix(BugInstance b);
+	
 	boolean supportsSourceLinks();
 	
 	String getUser();
