@@ -435,7 +435,7 @@ public class DumbMethods extends OpcodeStackDetector  {
 				for(int i = 0; i < switchLabels.length; i++) {
 					int v = switchLabels[i];
 					if (v <= -129 || v >= 128) {
-						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",f
+						accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",
 								HIGH_PRIORITY)
 									.addClassAndMethod(this)
 									.addInt(v).describe(IntAnnotation.INT_VALUE),
