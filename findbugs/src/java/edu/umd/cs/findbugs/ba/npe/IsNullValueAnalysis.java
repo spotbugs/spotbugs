@@ -453,8 +453,16 @@ public class IsNullValueAnalysis
 				fact = tmpFact;
 		} // if (fact.isValid())
 
+		if (DEBUG) {
+			System.out.println("At " + edge);
+			System.out.println("Merge " + fact + " into " + result);
+		}
+		
 		// Normal dataflow merge
 		mergeInto(fact, result);
+		if (DEBUG) {
+			System.out.println("getting " + result);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -585,9 +593,9 @@ public class IsNullValueAnalysis
 				} else if (tos.isDefinitelyNotNull()) {
 					// Predetermined comparison - one branch is infeasible
 					if (ifnull)
-						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
+						fallThroughDecision = tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
 					else // ifnonnull
-						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
+						ifcmpDecision =  tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
 				} else {
 					// As far as we know, both branches feasible
 					ifcmpDecision = ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
