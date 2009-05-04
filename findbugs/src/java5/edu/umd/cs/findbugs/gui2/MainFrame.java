@@ -501,11 +501,14 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
 				warnUserOfFilters();
 			}
+			
+			
 			updateStatusBar();
 		}
 		PreferencesFrame.getInstance().updateFilterPanel();
 		setProjectChanged(false);
 		reconfigMenuItem.setEnabled(true);
+		comments.configureForCurrentCloud();
 		newProject();
 		clearSourcePane();
 		clearSummaryTab();
@@ -3018,7 +3021,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     }
 	
    public void displayNonmodelMessage(String title, String message) {
-	  DisplayNonmodelMessage.displayNonmodelMessage(title, message, this);
+	  DisplayNonmodelMessage.displayNonmodelMessage(title, message, this, true);
    }
    
   
@@ -3036,7 +3039,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	  String report = stringWriter.toString();
 	  System.out.println("Cloud report...");
 	  System.out.println(report);
-	DisplayNonmodelMessage.displayNonmodelMessage("Cloud report", report, this);
+	DisplayNonmodelMessage.displayNonmodelMessage("Cloud report", report, this, false);
 	  
   }
 	   

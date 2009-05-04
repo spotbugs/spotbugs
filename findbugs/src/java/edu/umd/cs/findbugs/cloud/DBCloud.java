@@ -51,10 +51,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
@@ -295,7 +295,7 @@ public  class DBCloud extends AbstractCloud {
 			long initialSyncTime = System.currentTimeMillis() - startTime;
 			PreparedStatement insertSession =  
 				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialSyncTime, numIssues, startTime)"
-						+ " VALUES (?,?,?,?,?)",  
+						+ " VALUES (?,?,?,?,?,?,?)",  
 						Statement.RETURN_GENERATED_KEYS);
 			Timestamp now = new Timestamp(startTime);
 			int col = 1;
@@ -306,44 +306,16 @@ public  class DBCloud extends AbstractCloud {
 			insertSession.setLong(col++, initialSyncTime);
 			insertSession.setInt(col++, bugCollection.getCollection().size());
 			insertSession.setTimestamp(col++, now);
-			insertSession.executeUpdate();
+			int rowCount = insertSession.executeUpdate();
 			rs = insertSession.getGeneratedKeys();
 			if (rs.next()) {
 				sessionId = rs.getInt(1);	
+				
 			}
 			insertSession.close();
 			rs.close();
 
 			c.close();
-			
-			for (BugInstance b : bugCollection.getCollection())
-				if (!skipBug(b)) {
-					BugData bd  = getBugData(b.getInstanceHash());
-					if (!bd.inDatabase) {
-						storeNewBug(b);
-					} else {
-						issuesBulkHandled++;
-						long firstVersion = b.getFirstVersion();
-						long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-						if (firstSeen < minimumTimestamp) {
-							displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
-						}
-						else if (firstSeen < bd.firstSeen) {
-							bd.firstSeen = firstSeen;
-							storeFirstSeen(bd);
-						}
-						long lastVersion = b.getLastVersion();
-						if (lastVersion != -1) {
-							long lastSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-						}
-						
-						
-						BugDesignation designation = bd.getPrimaryDesignation();
-						if (designation != null)
-							b.setUserDesignation(new BugDesignation(designation));
-					}
-				}
-			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,6 +323,33 @@ public  class DBCloud extends AbstractCloud {
 			
 		}
 		
+		for (BugInstance b : bugCollection.getCollection())
+			if (!skipBug(b)) {
+				BugData bd  = getBugData(b.getInstanceHash());
+				if (!bd.inDatabase) {
+					storeNewBug(b);
+				} else {
+					issuesBulkHandled++;
+					long firstVersion = b.getFirstVersion();
+					long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
+					if (firstSeen < minimumTimestamp) {
+						displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
+					}
+					else if (firstSeen < bd.firstSeen) {
+						bd.firstSeen = firstSeen;
+						storeFirstSeen(bd);
+					}
+					long lastVersion = b.getLastVersion();
+					if (lastVersion != -1) {
+						long lastSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
+					}
+					
+					
+					BugDesignation designation = bd.getPrimaryDesignation();
+					if (designation != null)
+						b.setUserDesignation(new BugDesignation(designation));
+				}
+			}
 		
 		
 	}
@@ -484,6 +483,7 @@ public  class DBCloud extends AbstractCloud {
 
 	@Override
     public void shutdown() {
+		queue.add(new ShutdownTask());
 		try {
 			Connection c = getConnection();
 			PreparedStatement setEndTime = c.prepareStatement("UPDATE  findbugs_invocation SET endTime = ? WHERE id = ?");
@@ -579,6 +579,8 @@ public  class DBCloud extends AbstractCloud {
 					}
 
 				}
+			} catch (DatabaseSyncShutdownException e) {
+				assert true;
 			} catch (RuntimeException e) {
 				displayMessage("Runtime exception; database connection shutdown", e);
 			} catch (SQLException e) {
@@ -683,7 +685,6 @@ public  class DBCloud extends AbstractCloud {
          */
         public void fileBug(BugData bug) {
         	try {
-				System.out.println("Filing bug");
 				PreparedStatement insert = c
 				.prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
 						 + " VALUES (?, ?, ?, ?)");
@@ -698,7 +699,6 @@ public  class DBCloud extends AbstractCloud {
 				int count = insert.executeUpdate();
 				insert.close();
 				if (count == 0) {
-					System.out.println("Try updating timestamp and who");
 					PreparedStatement updateBug =  
 				        c.prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE hash = ? and bugReportId = ?");
 					col = 1;
@@ -708,7 +708,6 @@ public  class DBCloud extends AbstractCloud {
 					updateBug.setString(col++, PENDING);
 					count = updateBug.executeUpdate();
 					updateBug.close();
-					System.out.println("updated existing bug report, result = " + count);
 				}
 				
 				
@@ -724,6 +723,16 @@ public  class DBCloud extends AbstractCloud {
 
 	static interface Update {
 		void execute(DatabaseSyncTask t) throws SQLException;
+	}
+	
+	static class ShutdownTask implements Update {
+		public void execute(DatabaseSyncTask t)  {
+			throw new DatabaseSyncShutdownException();
+		}
+	}
+	
+	static class DatabaseSyncShutdownException extends RuntimeException {
+		
 	}
 	
 	boolean bugAlreadyFiled(BugInstance b) {
@@ -1030,13 +1039,14 @@ public  class DBCloud extends AbstractCloud {
     }
     
     static final int MAX_URL_LENGTH = 1999;
+    private static final String HAS_FILED_BUGS = "has_filed_bugs";
+    private boolean firstBugRequest = true;
     @Override
     @CheckForNull 
     public URL getBugLink(BugInstance b) {
-		System.out.println("Getting buf link for " + b);
 		try {
 			BugData bd = getBugData(b);
-
+		
 			String bugNumber = bd.bugLink;
 			BugFilingStatus status = getBugLinkStatus(b);
 			switch (status) {
@@ -1045,8 +1055,8 @@ public  class DBCloud extends AbstractCloud {
 				String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbuglink");
 				if (viewLinkPattern == null)
 					return null;
+				firstBugRequest = false;
 				String u = String.format(viewLinkPattern, bugNumber);
-				System.out.println("bug view link is " + u);
 				return new URL(u);
 			}
 			case FILE_BUG:
@@ -1058,7 +1068,22 @@ public  class DBCloud extends AbstractCloud {
 				String report = getBugReport(b);
 				String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
 				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
 				
+				if (!prefs.getBoolean(HAS_FILED_BUGS, false)) {
+					prefs.putBoolean(HAS_FILED_BUGS, true);
+					bugCollection.getProject().getGuiCallback().showMessageDialog(
+							"This looks like the first time you've filed a bug from this machine.\n"
+							+ "Please check the component the issue is assigned to. We make an semi-educated guess, but get it \n"
+							+ "badly wrong sometimes. Also, any help you can provide in terms of assigning it to the right person, \n"
+							+ "explaining the problem or editing the source code snippet will be helpful in getting the issue \n"
+							+ "resolved promptly.");
+				}
+				
+				int maxURLLength = MAX_URL_LENGTH;
+				if (firstBugRequest) 
+					maxURLLength = maxURLLength *2/3;
+				firstBugRequest = false;
 				String u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
 				if (u.length() > MAX_URL_LENGTH) {
 					report = getBugReportShorter(b);
@@ -1114,7 +1139,11 @@ public  class DBCloud extends AbstractCloud {
 		if (canSeeCommentsByOthers) {
 			if (bd.bugStatus != null) {
 				builder.append(bd.bugComponentName);
-				builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
+				if (bd.bugAssignedTo == null)
+					builder.append("\nBug status is " + bd.bugStatus);
+				else
+					builder.append("\nBug assigned to " + bd.bugAssignedTo + ", status is " + bd.bugStatus);
+				
 				builder.append("\n\n");
 			}
 		}
@@ -1210,11 +1239,9 @@ public  class DBCloud extends AbstractCloud {
     		
     		BugData bd = getBugData(b.getInstanceHash());
     		
-    		System.out.println("bug " + bd.bugLink + " already filed for " + b.getMessage());
-        	
+    		
     		return;
     	}
-    	System.out.println("requesting bug filed for " + b.getMessage());
     	queue.add(new FileBug(b));
     	updatedStatus();
     	}

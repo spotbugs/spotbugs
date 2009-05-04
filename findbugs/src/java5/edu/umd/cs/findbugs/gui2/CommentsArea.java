@@ -805,13 +805,20 @@ public class CommentsArea {
 	/**
      * @return
      */
-    private Cloud getCloud() {
+    private @CheckForNull Cloud getCloud() {
 	    MainFrame instance = MainFrame.getInstance();
 		BugCollection bugCollection = instance.bugCollection;
+		if (bugCollection == null)
+			return null;
 		return bugCollection.getCloud();
     }
 
 	private MainFrame getMainFrame() {
 	    return MainFrame.getInstance();
     }
+	
+	public void configureForCurrentCloud() {
+		Cloud cloud = getCloud();
+		answerSurvey.setEnabled(cloud.supportsBugLinks());
+	}
 }

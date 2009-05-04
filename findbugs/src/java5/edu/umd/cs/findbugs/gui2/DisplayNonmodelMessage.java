@@ -42,12 +42,12 @@ public class DisplayNonmodelMessage {
 	
 	
 	public static void main(String args[]) {
-		displayNonmodelMessage("Hello", "The quick brown fox jumped over the lazy dog", null);
+		displayNonmodelMessage("Hello", "The quick brown fox jumped over the lazy dog", null, false);
 	}
     static  JFrame messageFrame;
     static JTextArea messageTextArea;
     static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
-    public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver) {
+    public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver, boolean onTop) {
     	boolean positionWindow = false;
 	    if (messageFrame == null) {
 	    	positionWindow = true;
@@ -82,31 +82,11 @@ public class DisplayNonmodelMessage {
 	    messageFrame.pack();
 	    if (positionWindow) 
 	    	messageFrame.setLocationRelativeTo(centerOver);
-	    messageFrame.setAlwaysOnTop(true);
+	    messageFrame.setAlwaysOnTop(onTop);
 	    
 	    
 	    messageFrame.setVisible(true);
-	    Thread t = new Thread() {
-	    	public void run() {
-	    		final JFrame frame = DisplayNonmodelMessage.messageFrame;
-	    		if (frame == null)
-	    			return;
-	    		try {
-	    			if (!frame.isAlwaysOnTop()) {
-	    				SwingUtilities.invokeLater(moveToFront);
-	    				TimeUnit.SECONDS.sleep(1);
-	    				SwingUtilities.invokeLater(moveToFront);
-	    				return;
-	    				
-	    			}
-	                TimeUnit.SECONDS.sleep(4);
-                } catch (InterruptedException e) {
-	                assert true;
-                }
-	    		SwingUtilities.invokeLater(clearAlwaysOnTop);
-	    	}
-	    };
-	    t.start();
+	   
     }
 
     static Runnable moveToFront = new Runnable() {

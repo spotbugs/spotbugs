@@ -133,6 +133,7 @@ public class BugLoader {
 			return null;
 		}
 		SortedBugCollection col=new SortedBugCollection(project);
+		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(source);
         } catch (Exception e) {
@@ -145,6 +146,7 @@ public class BugLoader {
 	public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
 		
 		SortedBugCollection col=new SortedBugCollection(project);
+		col.setRequestDatabaseCloud(true);
 		try {
 	        col.readXML(url);
         } catch (Exception e) {
