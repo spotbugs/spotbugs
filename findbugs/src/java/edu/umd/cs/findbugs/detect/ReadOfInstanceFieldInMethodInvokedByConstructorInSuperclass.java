@@ -118,7 +118,9 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 		
 		for (ProgramPoint p : calledFrom) {
 			XMethod upcall = getConstructorThatCallsSuperConstructor(p.method);
-			if (calledFrom == null) 
+			if (calledFrom == null) // bug; wrong thing to check, we should generate a RCN kaboom warning here
+				continue;
+			if (upcall == null) 
 				continue;
 			Method upcallMethod = null;
 			for(Method m : getThisClass().getMethods()) {
