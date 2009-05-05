@@ -164,6 +164,8 @@ public  class DBCloud extends AbstractCloud {
         }
 	}
 
+	int updatesSentToDatabase;
+	Date lastUpdate = new Date();
 	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
 
 	Map<Integer, BugData> idMap = new HashMap<Integer, BugData>();
@@ -626,7 +628,8 @@ public  class DBCloud extends AbstractCloud {
 			} catch (Exception e) {
 				displayMessage("Problems looking up user annotations", e);
 			}
-
+			lastUpdate = new Date();
+			updatesSentToDatabase++;
 		}
 
 		
@@ -684,6 +687,7 @@ public  class DBCloud extends AbstractCloud {
          * @param bd
          */
         public void fileBug(BugData bug) {
+        	
         	try {
 				PreparedStatement insert = c
 				.prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
@@ -715,7 +719,8 @@ public  class DBCloud extends AbstractCloud {
 			} catch (Exception e) {
 				displayMessage("Problem filing bug", e);
 			}
-	        
+			lastUpdate = new Date();
+			updatesSentToDatabase++;
         }
 
 
@@ -1236,10 +1241,7 @@ public  class DBCloud extends AbstractCloud {
      */
     public void bugFiled(BugInstance b, Object bugLink) {
     	if (bugAlreadyFiled(b)) {
-    		
     		BugData bd = getBugData(b.getInstanceHash());
-    		
-    		
     		return;
     	}
     	queue.add(new FileBug(b));
@@ -1273,14 +1275,19 @@ public  class DBCloud extends AbstractCloud {
     	return getStatusMsg0();
     }
 
+    
     public String getStatusMsg0() {
-    	
+    	SimpleDateFormat format = new SimpleDateFormat("h:mm a");
     	int numToSync = queue.size();
     	int handled = this.issuesBulkHandled + runner.handled;
-    	if (numToSync == 0)
-    		return  String.format("%d issues synchronized", handled);
-    	else 
-    		return  String.format("%d issues synchronized, %d remain to be synchronized", handled, numToSync);
+    	if (numToSync > 0)
+    		return  String.format("%d remain to be synchronized", numToSync);
+    	else if (updatesSentToDatabase == 0)
+    		return  String.format("%d issues synchronized with database", 
+    				idMap.size());
+    	else return  String.format("%d classifications/bug filings sent to db, last updated at %s", 
+    				updatesSentToDatabase, format.format(lastUpdate)); 
+    		
     }
     
     
@@ -1335,9 +1342,6 @@ public  class DBCloud extends AbstractCloud {
     		w.println();
     			
     	}
-
-    	
-    	
     	
     }
 	/**
@@ -1384,6 +1388,7 @@ public  class DBCloud extends AbstractCloud {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#getIWillFix(edu.umd.cs.findbugs.BugInstance)
      */
+    @Override
     public boolean getIWillFix(BugInstance b) {
     	if (super.getIWillFix(b))
     		return true;
