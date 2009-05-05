@@ -29,7 +29,9 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.CommandLineUiCallback;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PrintingBugReporter;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
@@ -90,6 +92,9 @@ public class MergeSummarizeAndfView {
 		ProjectStats stats2 = newCollection.getProjectStats();
 		stats.addStats(stats2);
 
+                Project project = result.getProject();
+                project.add(newCollection.getProject());
+
 		return result;
 	}
 
@@ -108,18 +113,17 @@ public class MergeSummarizeAndfView {
                   }
                 }
 
+                IGuiCallback cliUiCallback = new CommandLineUiCallback();
 		SortedBugCollection results = null;
-		Project project = null;
 		for(int i = argCount; i < argv.length; i++) {
 			try {
-                                SortedBugCollection more = createPreconfiguredBugCollection(commandLine.workingDirList, commandLine.srcDirList);
+                                SortedBugCollection more = createPreconfiguredBugCollection(
+                                    commandLine.workingDirList, commandLine.srcDirList, cliUiCallback);
 
 				more.readXML(argv[i]);
-				if (project != null) {
-					project.add(more.getProject());
+				if (results != null) {
 					results = union(results, more);
 				} else {
-					project = more.getProject();
 					results = more;
 				}
 			} catch (IOException e) {
@@ -134,6 +138,7 @@ public class MergeSummarizeAndfView {
 			System.exit(1);
 		}
 
+                Project project = results.getProject();
 		MyBugReporter reporter = new MyBugReporter();
 		RuntimeException storedException = null;
 		for (BugInstance warning :  results.getCollection())
@@ -162,7 +167,7 @@ public class MergeSummarizeAndfView {
 
 	}
 
-  static SortedBugCollection createPreconfiguredBugCollection(List<String> workingDirList, List<String> srcDirList) {
+  static SortedBugCollection createPreconfiguredBugCollection(List<String> workingDirList, List<String> srcDirList, IGuiCallback guiCallback) {
     Project project = new Project();
     for (String cwd : workingDirList) {
       project.addWorkingDir(cwd);
@@ -170,6 +175,7 @@ public class MergeSummarizeAndfView {
     for (String srcDir : srcDirList) {
       project.addSourceDir(srcDir);
     }
+    project.setGuiCallback(guiCallback);
     return new SortedBugCollection(project);
   }
 
