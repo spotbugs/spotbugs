@@ -33,11 +33,11 @@ import java.util.Locale;
  * @author andy.st
  */
 public class CommandLineUiCallback implements IGuiCallback {
-  @Override public void showMessageDialog(String message) {
+   public void showMessageDialog(String message) {
     System.out.println(message);
   }
 
-  @Override public int showConfirmDialog(String message, String title, int optionType) {
+  public int showConfirmDialog(String message, String title, int optionType) {
     String confirmStr = "Yes (Y) or No (N)?";
     switch (optionType) {
       case JOptionPane.YES_NO_CANCEL_OPTION:
@@ -87,15 +87,15 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
   }
 
-  @Override public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
+   public InputStream getProgressMonitorInputStream(InputStream in, int length, String msg) {
     return in;
   }
 
-  @Override public void setErrorMessage(String errorMsg) {
+   public void setErrorMessage(String errorMsg) {
     System.err.println(errorMsg);
   }
 
-  @Override public void displayNonmodelMessage(String title, String message) {
+  public void displayNonmodelMessage(String title, String message) {
     System.out.println(String.format("Message: %s\n%s", title, message));
   }
 }
