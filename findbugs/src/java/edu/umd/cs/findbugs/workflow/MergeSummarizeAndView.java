@@ -175,7 +175,7 @@ public class MergeSummarizeAndView {
 					tooOld++;
 				else try {
 					if (shown == 0) {
-						System.out.printf("%4s %4s %s\n","days");
+						System.out.printf("%4s\n","days");
 						System.out.printf("%4s %4s %s\n","old", "rank", "issue");
 					}
 					shown++;
