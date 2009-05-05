@@ -534,6 +534,18 @@ public  class DBCloud extends AbstractCloud {
 
 		queue.add(new StoreUserAnnotation(data, bd));
 		updatedStatus();
+		if (firstTimeDoing(HAS_CLASSIFIED_ISSUES)) {
+			String msg = "This looks like the first time you've classified an issue from this machine.\n"
+				+ "Your classifications and comments are automatically synchronized with the database\n"
+				+ "whenever you update them.\n";
+			   if (mode == Mode.VOTING) 
+				  msg += "Once you've classified an issue, you can see how others have classified it.";
+				msg += "\nYour classification and comments are independent from filing a bug using an external\n"
+				      + "bug reporting system.";
+			
+			bugCollection.getProject().getGuiCallback().showMessageDialog(msg);
+		}
+
 	}
 
 	private boolean skipBug(BugInstance bug) {
@@ -951,10 +963,10 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	String getBugReport(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getBugPatternExplanation(b) + getBugReportTail(b);
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
 	}
 	String getBugReportShorter(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getUserEvaluation(b) +  getBugPatternExplanationLink(b) + getBugReportTail(b);
 	}
 	String getBugReportAbridged(BugInstance b) {
 		return getBugReportHead(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
@@ -1043,6 +1055,16 @@ public  class DBCloud extends AbstractCloud {
     
     static final int MAX_URL_LENGTH = 1999;
     private static final String HAS_FILED_BUGS = "has_filed_bugs";
+    private static final String HAS_CLASSIFIED_ISSUES = "has_classified_issues";
+    private static boolean firstTimeDoing(String activity) {
+		Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
+
+		if (!prefs.getBoolean(activity, false)) {
+			prefs.putBoolean(activity, true);
+			return true;
+		}
+		return false;
+	}
     private boolean firstBugRequest = true;
     @Override
     @CheckForNull 
@@ -1073,15 +1095,17 @@ public  class DBCloud extends AbstractCloud {
 				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
 				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
 				
-				if (!prefs.getBoolean(HAS_FILED_BUGS, false)) {
-					prefs.putBoolean(HAS_FILED_BUGS, true);
+				if (firstTimeDoing(HAS_FILED_BUGS)) 
 					bugCollection.getProject().getGuiCallback().showMessageDialog(
 							"This looks like the first time you've filed a bug from this machine.\n"
 							+ "Please check the component the issue is assigned to. We make an semi-educated guess, but get it \n"
 							+ "badly wrong sometimes. Also, any help you can provide in terms of assigning it to the right person, \n"
 							+ "explaining the problem or editing the source code snippet will be helpful in getting the issue \n"
-							+ "resolved promptly.");
-				}
+							+ "resolved promptly. \n\n"
+							+ "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.");
+							
+							
+				
 				
 				int maxURLLength = MAX_URL_LENGTH;
 				if (firstBugRequest) 
@@ -1097,7 +1121,8 @@ public  class DBCloud extends AbstractCloud {
 						String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
 							                   +" please cut and paste into the bug report as appropriate]\n\n"
 							                   + getBugReportSourceCode(b) 
-											+ getBugPatternExplanation(b);
+											 +  getUserEvaluation(b)
+											 + getBugPatternExplanation(b);
 						bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
 								"Additional information for " + b.getMessageWithoutPrefix(),
 								supplemental);
