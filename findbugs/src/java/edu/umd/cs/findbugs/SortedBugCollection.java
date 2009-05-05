@@ -971,7 +971,7 @@ public class SortedBugCollection implements BugCollection {
 
 
 	public SortedBugCollection duplicate() {
-		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator);
+          SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator, project.duplicate());
 
 		SortedBugCollection.cloneAll(dup.bugSet, this.bugSet);
 		dup.errorList.addAll(this.errorList);

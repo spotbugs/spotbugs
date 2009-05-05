@@ -174,7 +174,6 @@ public class Project implements XMLWriteable {
 		analysisTargets = appendWithoutDuplicates(analysisTargets, project2.analysisTargets);
 		srcDirList = appendWithoutDuplicates(srcDirList, project2.srcDirList);
 		auxClasspathEntryList = appendWithoutDuplicates(auxClasspathEntryList, project2.auxClasspathEntryList);
-
 	}
 
 	public static <T> List<T> appendWithoutDuplicates(List<T> lst1, List<T> lst2) {
@@ -238,7 +237,11 @@ public class Project implements XMLWriteable {
 	 *   source directory was already present
 	 */
 	public boolean addSourceDir(String dirName) {
-		return addToListInternal(srcDirList, makeAbsoluteCWD(dirName));
+          boolean isNew = false;
+          for (String dir : makeAbsoluteCwdCandidates(dirName)) {
+            isNew = addToListInternal(srcDirList, dir) || isNew;
+          }
+          return isNew;
 	}
 
 	/**
@@ -1065,26 +1068,48 @@ public class Project implements XMLWriteable {
 	 * current working directory.
 	 */
 	private  String makeAbsoluteCWD(String fileName) {
-
-		boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
-		if (hasProtocol) {
-	        return fileName;
-        }
-
-		if (new File(fileName).isAbsolute()) {
-	        return fileName;
-        }
-                if (currentWorkingDirectoryList.isEmpty()) {
-                  
-                }
-                for (File currentWorkingDirectory : currentWorkingDirectoryList) {
-                  File relativeToCurrent = new File(currentWorkingDirectory, fileName);
-                  if (relativeToCurrent.exists()) {
-                    return relativeToCurrent.toString();
-                  }
-                }
-		return fileName;
+          List<String> candidates = makeAbsoluteCwdCandidates(fileName);
+          return candidates.get(0);
 	}
+
+  /**
+   * Make the given filename absolute relative to the current working directory candidates.
+   *
+   * If the given filename exists in more than one of the working directories, a list of
+   * these existing absolute paths is returned.
+   *
+   * The returned list is guaranteed to be non-empty.
+   * The returned paths might exist or not exist and might be relative or absolute.
+   *
+   * @return A list of at least one candidate path for the given filename.
+   */
+  private List<String> makeAbsoluteCwdCandidates(String fileName) {
+    List<String> candidates = new ArrayList<String>();
+
+    boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
+    if (hasProtocol) {
+      candidates.add(fileName);
+      return candidates;
+    }
+
+    if (new File(fileName).isAbsolute()) {
+      candidates.add(fileName);
+      return candidates;
+    }
+
+    for (File currentWorkingDirectory : currentWorkingDirectoryList) {
+      File relativeToCurrent = new File(currentWorkingDirectory, fileName);
+      if (relativeToCurrent.exists()) {
+        candidates.add(relativeToCurrent.toString());
+      }
+    }
+
+    if (candidates.isEmpty()) {
+        candidates.add(fileName);
+    }
+
+    return candidates;
+  }
 
 	/**
 	 * Add a value to given list, making the Project modified
