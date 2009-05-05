@@ -126,4 +126,8 @@ public abstract class AbstractCloud implements Cloud {
     public boolean getIWillFix(BugInstance b) {
     	return getUserDesignation(b) == UserDesignation.I_WILL_FIX;
     }
+    
+    public boolean overallClassificationIsNotAProblem(BugInstance b) {
+		return false;
+	}
 }

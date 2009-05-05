@@ -160,6 +160,7 @@ public interface Cloud {
 	void setUserEvaluation(BugInstance b, String e, long timestamp);
 	
 	long getFirstSeen(BugInstance b);
+	boolean overallClassificationIsNotAProblem(BugInstance b);
 	/**
      * @param bugInstance
      */

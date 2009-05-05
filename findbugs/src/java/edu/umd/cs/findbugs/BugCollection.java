@@ -312,4 +312,5 @@ public interface BugCollection extends Iterable<BugInstance>
 	public Cloud getCloud();
 	
 	public void setRequestDatabaseCloud(boolean useDatabaseCloud);
+	public Cloud reinitializeCloud();
 }

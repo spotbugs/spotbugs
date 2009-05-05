@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -60,6 +61,7 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
@@ -119,6 +121,16 @@ public  class DBCloud extends AbstractCloud {
 			return null;
 		}
 		
+		Iterable<BugDesignation> getUniqueDesignations() {
+			if (designations.isEmpty())
+				return Collections.emptyList();
+			HashSet<String> reviewers = new HashSet<String>();
+			ArrayList<BugDesignation> result = new ArrayList<BugDesignation>(designations.size());
+			for(BugDesignation d : designations) 
+				if (reviewers.add(d.getUser()))
+						result.add(d);
+			return result;
+		}
 		Set<String> getReviewers() {
 			HashSet<String> reviewers = new HashSet<String>();
 			for(BugDesignation bd : designations)
@@ -549,11 +561,10 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	private boolean skipBug(BugInstance bug) {
-		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead();
+		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > 12;
 	}
 
 	
-	private static HashMap<String, Integer> issueId = new HashMap<String, Integer>();
 	private static final String PENDING = "-- pending --";
 	private static final String NONE = "none";
 
@@ -833,6 +844,32 @@ public  class DBCloud extends AbstractCloud {
     public long getFirstSeen(BugInstance b) {
 	   return getBugData(b).firstSeen;
     }
+    public boolean overallClassificationIsNotAProblem(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return false;
+    	int isAProblem = 0;
+    	int notAProblem = 0;
+    	for(BugDesignation d : bd.getUniqueDesignations() )
+    		switch(UserDesignation.valueOf(d.getDesignationKey())) {
+    		case I_WILL_FIX:
+    		case MUST_FIX:
+    		case SHOULD_FIX:
+    			isAProblem++;
+    			break;
+    		case 
+    			BAD_ANALYSIS:
+    		case	NOT_A_BUG: 
+    		case 	MOSTLY_HARMLESS:
+    		case OBSOLETE_CODE:
+    			notAProblem++;
+    			break;
+    		}
+    			
+    			
+    		return notAProblem > isAProblem;
+ 	  
+     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#getUser()
      */

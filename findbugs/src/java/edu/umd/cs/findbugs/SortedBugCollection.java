@@ -1200,6 +1200,15 @@ public class SortedBugCollection implements BugCollection {
 		}
 		return  in;
 	}
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugCollection#reinitializeCloud()
+     */
+    public Cloud reinitializeCloud() {
+    	userAnnotationPlugin = null;
+    	Cloud cloud = getCloud();
+    	cloud.bugsPopulated();
+    	return cloud;
+    }
 }
 
 // vim:ts=4
