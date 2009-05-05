@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.gui2.SplitLayout;
  * Compute the union of two sets of bug results,
  * preserving annotations.
  */
-public class MergeSummarizeAndfView {
+public class MergeSummarizeAndView {
 	
 	static class MyCommandLine extends CommandLine {
           public List<String> workingDirList = new ArrayList<String>();
@@ -103,7 +103,7 @@ public class MergeSummarizeAndfView {
 
 		final MyCommandLine commandLine = new MyCommandLine();
 
-		int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndfView.class.getName()
+		int argCount = commandLine.parse(argv, 1, Integer.MAX_VALUE, "Usage: " + MergeSummarizeAndView.class.getName()
 				+ " [options] [<results1> <results2> ... <resultsn>] ");
 
                 if (commandLine.workingDirList.isEmpty()) {
