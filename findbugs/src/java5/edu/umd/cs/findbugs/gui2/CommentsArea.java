@@ -228,29 +228,29 @@ public class CommentsArea {
 		
 		centerPanel.add(designationComboBox, c);
 		
-		c.gridx++;
-		c.weightx = 0;
-		centerPanel.add(fileBug, c);
 		
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy++;
 		c.weightx = 1;
 		c.weighty = 2;
-		c.gridwidth = 3;
+		c.gridwidth = 2;
 		c.fill=GridBagConstraints.BOTH;
 		centerPanel.add(commentsScrollP, c);
 		
 		if (true) {
 		
-			c.gridx = 0;
-			c.gridy = 2;
+			c.gridy++;
 			c.weightx = 1;
 			c.weighty = 1;
-			c.gridwidth = 3;
 			c.fill=GridBagConstraints.BOTH;
 		
 			centerPanel.add(reportScrollP, c);
 		}
+		c.gridy++;
+		c.weightx = 0;
+		c.weighty = 0;
+		c.fill=GridBagConstraints.HORIZONTAL;
+		centerPanel.add(fileBug, c);
 		
 		return centerPanel;
 	}
