@@ -131,7 +131,7 @@ public abstract class FindBugs  {
 	/**
 	 * Debug tracing.
 	 */
-	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug");
+	public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
 
 	// The following don't seem to be used...
 //	public static final boolean TIMEDEBUG = SystemProperties.getBoolean("findbugs.time");
@@ -140,7 +140,7 @@ public abstract class FindBugs  {
 	/**
 	 * FindBugs home directory.
 	 */
-	private static String home = SystemProperties.getProperty("findbugs.home");
+	private static String home = System.getProperty("findbugs.home");
 
 	/**
 	 * Known URL protocols.
