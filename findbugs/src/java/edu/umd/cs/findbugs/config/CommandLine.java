@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.util.Util;
 
 
 /**
@@ -142,11 +146,12 @@ public abstract class CommandLine {
 	 * @param ignoreBlankLines ignore blank lines
 	 * @return the expanded command line
 	 */
+	
+	
 	public static String[] expandOptionFiles(
 				String[] argv, boolean ignoreComments, boolean ignoreBlankLines)
 				throws IOException {
-		ArrayList<String> resultList = new ArrayList<String>();
-
+		ArrayList<String> resultList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
 		for (String arg : argv) {
 			if (!arg.startsWith("@")) {
 				resultList.add(arg);
@@ -157,31 +162,49 @@ public abstract class CommandLine {
 			try {
 				reader = new BufferedReader(new InputStreamReader(
 						new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
-				String line;
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-
-					if (ignoreComments && line.startsWith("#"))
-						continue;
-
-					if (ignoreBlankLines && line.equals(""))
-						continue;
-
-					resultList.add(line);
-				}
+				addCommandLineOptions(resultList, reader, ignoreComments, ignoreBlankLines);
 			} finally {
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (IOException ignore) {
-						// Ignore
-					}
-				}
+				Util.closeSilently(reader);
 			}
 		}
 
 		return resultList.toArray(new String[resultList.size()]);
 	}
+
+	public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
+	    ArrayList<String> resultList = new ArrayList<String>();
+		URL u = PluginLoader.getCoreResource("analysisOptions.properties");
+		if (u != null) {
+			BufferedReader reader = null;
+			try {
+				 reader = new BufferedReader(new InputStreamReader(u.openStream(), "UTF-8"));
+				addCommandLineOptions(resultList, reader, ignoreComments, ignoreBlankLines);
+			} catch (IOException e) {
+				AnalysisContext.logError("unable to load analysisOptions.properties", e);
+			} finally {
+				Util.closeSilently(reader);
+			}
+		}
+	    return resultList;
+    }
+
+	private static void addCommandLineOptions(ArrayList<String> resultList, BufferedReader reader, boolean ignoreComments,
+            boolean ignoreBlankLines) throws IOException {
+	    String line;
+	    while ((line = reader.readLine()) != null) {
+	    	line = line.trim();
+
+	    	if (ignoreComments && line.startsWith("#"))
+	    		continue;
+
+	    	if (ignoreBlankLines && line.equals(""))
+	    		continue;
+	    	if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length()-1) == '"')
+	    		resultList.add(line.substring(0, line.length()-1));
+	    	else for(String segment : line.split(" "))
+	    	  resultList.add(segment);
+	    }
+    }
 
 	public static class HelpRequestedException extends Exception {
 
