@@ -442,7 +442,6 @@ public  class DBCloud extends AbstractCloud {
 			return result;
 
 		} catch (Exception e) {
-
 			displayMessage("Unable to connect to database", e);
 			return false;
 		}
@@ -820,7 +819,11 @@ public  class DBCloud extends AbstractCloud {
 	private void displayMessage(String msg, Exception e) {
 		AnalysisContext.logError(msg, e);
 		if (!GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
-			bugCollection.getProject().getGuiCallback().showMessageDialog(msg + e.getMessage());
+                  StringWriter stackTraceWriter = new StringWriter();
+                  PrintWriter printWriter = new PrintWriter(stackTraceWriter);
+                  e.printStackTrace(printWriter);
+                  bugCollection.getProject().getGuiCallback().showMessageDialog(
+                      String.format("%s - %s\n%s", msg, e.getMessage(), stackTraceWriter.toString()));
 		} else {
 			System.err.println(msg);
 			e.printStackTrace(System.err);
