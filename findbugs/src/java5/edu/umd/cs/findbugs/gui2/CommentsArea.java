@@ -69,8 +69,7 @@ public class CommentsArea {
 
 	private ArrayList<String> designationKeys;
 
-	private JLabel whoWhen = new JLabel("          ");
-	private JButton answerSurvey = new JButton("File bug");
+	private JButton fileBug = new JButton("File bug");
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
@@ -133,14 +132,16 @@ public class CommentsArea {
 		
 		JScrollPane reportScrollP = new JScrollPane(reportText);
 
-		answerSurvey.setEnabled(false);
-		answerSurvey.setToolTipText("Click to file bug for this issue");
-		answerSurvey.addActionListener(new ActionListener(){
+		fileBug.setEnabled(false);
+		fileBug.setToolTipText("Click to file bug for this issue");
+		fileBug.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
 				if (frame.currentSelectedBugLeaf != null) {
 					BugInstance bug = frame.currentSelectedBugLeaf.getBug();
 					Cloud cloud = getMainFrame().bugCollection.getCloud();
+					if (!cloud.supportsBugLinks())
+						return;
 					URL u = cloud.getBugLink(bug);
 					if (u != null) {
 						System.out.println("Launching " + u);
@@ -218,18 +219,24 @@ public class CommentsArea {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.fill=GridBagConstraints.HORIZONTAL;
+		c.weightx = 0;
+		centerPanel.add(new JLabel("Classify:"), c);
+		
+		c.gridx++;
+		c.fill=GridBagConstraints.HORIZONTAL;
 		c.weightx = 1;
+		
 		centerPanel.add(designationComboBox, c);
 		
-		c.gridx = 1;
+		c.gridx++;
 		c.weightx = 0;
-		centerPanel.add(answerSurvey, c);
+		centerPanel.add(fileBug, c);
 		
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 1;
 		c.weighty = 2;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
 		c.fill=GridBagConstraints.BOTH;
 		centerPanel.add(commentsScrollP, c);
 		
@@ -239,7 +246,7 @@ public class CommentsArea {
 			c.gridy = 2;
 			c.weightx = 1;
 			c.weighty = 1;
-			c.gridwidth = 2;
+			c.gridwidth = 3;
 			c.fill=GridBagConstraints.BOTH;
 		
 			centerPanel.add(reportScrollP, c);
@@ -290,7 +297,7 @@ public class CommentsArea {
 		userCommentsText.setEnabled(isEnabled);
 		prevCommentsComboBox.setEnabled(isEnabled);
 		designationComboBox.setEnabled(isEnabled);
-		answerSurvey.setEnabled(isEnabled);
+		fileBug.setEnabled(isEnabled);
 	}
 
 	SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
@@ -310,10 +317,10 @@ public class CommentsArea {
 				Cloud plugin = getCloud();
 				if (plugin.supportsBugLinks()) {
 					BugFilingStatus status = plugin.getBugLinkStatus(bug);
-					answerSurvey.setText(status.toString());
-					answerSurvey.setEnabled(status.linkEnabled());
+					fileBug.setText(status.toString());
+					fileBug.setEnabled(status.linkEnabled());
 				} else {
-					answerSurvey.setEnabled(false);
+					fileBug.setEnabled(false);
 				}
 				setCurrentUserCommentsText(bug.getAnnotationText());
 				if (plugin.supportsCloudReports()) {
@@ -323,15 +330,6 @@ public class CommentsArea {
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug
 								.getUserDesignationKey()));
-				BugDesignation bd = bug.getNonnullUserDesignation();
-				String user = bd.getUser();
-				long time = bd.getTimestamp();
-				String msg;
-				if (user != null && user.length() > 0) {
-					 msg = user + " @ " + format.format(new Date(time));
-				} else
-					msg = "";
-				whoWhen.setText(msg);
 				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
 				setProjectChanged(b);
@@ -819,6 +817,6 @@ public class CommentsArea {
 	
 	public void configureForCurrentCloud() {
 		Cloud cloud = getCloud();
-		answerSurvey.setEnabled(cloud.supportsBugLinks());
+		fileBug.setEnabled(cloud.supportsBugLinks());
 	}
 }
