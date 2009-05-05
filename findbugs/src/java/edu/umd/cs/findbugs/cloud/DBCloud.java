@@ -375,8 +375,6 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	public boolean initialize() {
-		if (!bugCollection.getProject().isGuiAvaliable())
-			return false;
 		
 		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
 		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
