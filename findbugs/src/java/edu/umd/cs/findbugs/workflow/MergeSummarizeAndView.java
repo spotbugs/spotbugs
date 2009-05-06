@@ -157,7 +157,6 @@ public class MergeSummarizeAndView {
 		
 		cloud.setMode(Cloud.Mode.COMMUNAL);
 		MyBugReporter reporter = new MyBugReporter();
-                // TODO: Is firstSeen really in ms and not in seconds? If not, divide the following by 1000.
 		long old = System.currentTimeMillis() - commandLine.maxAge * 24 * 3600 * 1000L; 
 		RuntimeException storedException = null;
 		int badRank = 0;
