@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ProjectPackagePrefixes {
 
-	static class PrefixFilter {
+	public static class PrefixFilter {
 		final String[] parts;
 
 		PrefixFilter(String prefixes) {
@@ -99,10 +99,11 @@ public class ProjectPackagePrefixes {
 		}
     }
 
-	/**
-     * @param className
-     * @return
-     */
+
+    public PrefixFilter getFilter(String projectName) {
+	   return map.get(projectName);
+    }
+
     public TreeSet<String> getProjects(@DottedClassName String className) {
 	    TreeSet<String> results = new TreeSet<String>();
 		for (Map.Entry<String, PrefixFilter> e : map.entrySet()) {
@@ -111,7 +112,6 @@ public class ProjectPackagePrefixes {
 		}
 	    return results;
     }
-
 	static <T> void incrementCount(Map<T, Integer> counter, T t) {
 		incrementCount(counter, t, 1);
 	}
