@@ -152,17 +152,26 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     		if (superClassName.equals("java/lang/Enum"))
     			return Priorities.LOW_PRIORITY; 
     		boolean hasMutableField = false;
-    		boolean hasUpdates = false;
-    		for(XField f : xClass.getXFields()) 
-    			if (!f.isStatic() && !f.isFinal() && !f.isSynthetic()) {
-    				hasMutableField = true;
-    				if (unreadFields.isWrittenOutsideOfInitialization(f))
-    					hasUpdates = true;
-    			}
+			boolean hasUpdates = false;
+			for (XField f : xClass.getXFields())
+				if (!f.isStatic()) {
+					if (!f.isFinal() && !f.isSynthetic()) {
+						hasMutableField = true;
+						if (unreadFields.isWrittenOutsideOfInitialization(f))
+							hasUpdates = true;
+					}
+					String signature = f.getSignature();
+					if (signature.startsWith("Ljava/util/concurrent") || signature.startsWith("Ljava/lang/StringB")
+					        || signature.charAt(0) == '[' || signature.indexOf("Map") >= 0 || signature.indexOf("List") >= 0
+					        || signature.indexOf("Set") >= 0)
+						hasMutableField = hasUpdates = true;
+
+				}
         		
     		if (!hasMutableField && !xClass.isInterface())
     			return Priorities.LOW_PRIORITY;
-    		if (hasUpdates || className.startsWith("java/util"))
+    		if (hasUpdates || className.startsWith("java/util")
+    				  || className.indexOf("Map") >= 0 || className.indexOf("List") >= 0)
     			return Priorities.HIGH_PRIORITY;
     		return Priorities.NORMAL_PRIORITY;
     		
