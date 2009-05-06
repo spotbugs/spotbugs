@@ -1110,7 +1110,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	}
 	void newProject(){
 		clearSourcePane();
-		redoAnalysis.setEnabled(true);
+		if (curProject == null)
+		  redoAnalysis.setEnabled(false);
+		else 
+			redoAnalysis.setEnabled(!curProject.getFileList().isEmpty());
 
 		if(newProject){
 			setProjectChanged(true);
