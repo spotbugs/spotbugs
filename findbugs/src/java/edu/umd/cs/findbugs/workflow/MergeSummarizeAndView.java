@@ -169,7 +169,6 @@ public class MergeSummarizeAndView {
 					continue;
 				long firstSeen = cloud.getFirstSeen(warning);
 				boolean isOld = firstSeen != 0 && firstSeen < old;
-                                System.out.println(String.format("Warning %s, first seen %d, threshold %d", warning.toString(), firstSeen, old));
 				boolean highRank = rank > commandLine.maxRank;
 				if (highRank)
 					badRank++;
