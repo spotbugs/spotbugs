@@ -157,6 +157,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 			} else if (subtypes2.isSubtype(classOfField,dateFormatType)) {
 				tBugType = "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE";
 			}
+		if (getClassContext().getXClass().usesConcurrency())
+				priority--;
 		if (tBugType != null) {
 				
 				pendingBugs.put(getXField(), new BugInstance(this, tBugType, priority).addClass(currentClass).addField(this));
@@ -274,12 +276,18 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				tBugType = "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE";
 			} else 
 				throw new IllegalStateException("Not possible");
-			int priority = NORMAL_PRIORITY;
-			if (amVisitingMainMethod())
-				priority++;
-			else if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse")
+			int priority;
+			if (amVisitingMainMethod() )
+				priority = LOW_PRIORITY;
+			else {
+				if (getClassContext().getXClass().usesConcurrency())
+					priority = NORMAL_PRIORITY;
+				else 
+					priority = LOW_PRIORITY;
+			     if (invokedName.startsWith("set") || invokedName.equals("format") || invokedName.equals("add") || invokedName.equals("clear") || invokedName.equals("parse")
 					|| invokedName.equals("applyPattern"))
-				priority--;
+				  priority--;
+			}
 			bugAccumulator.accumulateBug(new BugInstance(this, tBugType, priority).addClassAndMethod(this).addCalledMethod(this)
 					.addOptionalField(field), this);
 

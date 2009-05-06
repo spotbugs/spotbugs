@@ -318,7 +318,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				priority++;
 			if (!sawGetStaticAfterPutStatic && priority < LOW_PRIORITY) 
 				priority = LOW_PRIORITY;
-
+			if (classContext.getXClass().usesConcurrency())
+				priority--;
 			// Report the bug.
 			InstructionHandle start = match.getLabeledInstruction("start");
 			InstructionHandle end = match.getLabeledInstruction("end");
