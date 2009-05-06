@@ -54,13 +54,14 @@ public class MergeSummarizeAndView {
 		public List<String> srcDirList = new ArrayList<String>();
 		int maxRank = 12;
 		int maxAge = 7;
-
+		boolean alwaysShowGui = false;
 
 		MyCommandLine() {
 			addOption("-workingDir", "filename", "Comma separated list of current working directory paths, used to resolve relative paths (Jar, AuxClasspathEntry, SrcDir)");
 			addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
 			addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
 			addOption("-maxAge", "days", "maximum age of issues to show in summary (default 7)");
+			addSwitch("-gui", "display GUI for any warnings. Default: Displays GUI for warnings meeting filtering criteria");
 		}
 
 		/* (non-Javadoc)
@@ -68,6 +69,8 @@ public class MergeSummarizeAndView {
 		 */
 		@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
+                  if (option.equals("-gui")) alwaysShowGui = true;
+                  else throw new IllegalArgumentException("Unknown option : " + option);
 		}
 
 		/* (non-Javadoc)
@@ -201,7 +204,7 @@ public class MergeSummarizeAndView {
 		if (storedException != null)
 			throw storedException;
 		
-		if (shown > 0) {
+		if (shown > 0 || (commandLine.alwaysShowGui && results.getCollection().size() > 0)) {
 			GUISaveState.loadInstance();
 			cloud.setMode(originalMode);
 			FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
