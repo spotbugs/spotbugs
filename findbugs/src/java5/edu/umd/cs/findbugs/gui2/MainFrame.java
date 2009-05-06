@@ -58,6 +58,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Nonnull;
@@ -124,6 +125,7 @@ import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ProjectPackagePrefixes.PrefixFilter;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -934,48 +936,26 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			viewMenu.add(cloudReport);
 			viewMenu.addSeparator();
 		}
-		URL u = PluginLoader.getCoreResource("projectPaths.properties");
-		if (u != null) {
-
-			ArrayList<String[]> lst = new ArrayList<String[]>();
-
-			try {
-				BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
-				while (true) {
-					String s = in.readLine();
-					if (s == null)
-						break;
-					String[] parts = s.split("=");
-					if (parts.length == 2)
-						lst.add(parts);
-				}
-				in.close();
-			} catch (IOException e1) {
-
-				AnalysisContext.logError("Error loading projects paths", e1);
+		if (projectPackagePrefixes.size() > 0 && this.bugCollection != null) {
+			TreeSet<String> projects = new TreeSet<String>();
+			for (BugInstance b : bugCollection.getCollection()) {
+				projects.addAll(projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName()));
 			}
-
-			if (lst.size() > 0) {
-
+			if (projects.size() > 0) {
 				JMenu setPaths = new JMenu("Set package paths");
 				viewMenu.add(setPaths);
 				viewMenu.addSeparator();
-				for (String[] p : lst) {
-					String project = p[0];
-					final String paths = p[1].replace('/','.');
-					JMenuItem item = new JMenuItem(project);
-					item.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							textFieldForPackagesToDisplay.setText(paths);
-							viewFilter.setPackagesToDisplay(paths);
-						}
-					});
-					setPaths.add(item);
+				for(String projectName : projects) {
+					JMenuItem item = new JMenuItem(projectName);
+					ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
+					String paths = filter.toString();
+					textFieldForPackagesToDisplay.setText(paths);
+					viewFilter.setPackagesToDisplay(paths);
 				}
 			}
-
+			
 		}
-
+		
 		ButtonGroup rankButtonGroup = new ButtonGroup();
 		for(final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
