@@ -227,7 +227,8 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     							if (vna.getValue(pos).equals(vn) && live.get(pos)) {
     								BugAnnotation ba = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, vn, 
     										vnaDataflow.getFactAtLocation(location), "VALUE_OF");
-    								
+    								if (ba == null) 
+    									continue;
     								String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
     								if (!isIgnored)
     									pattern = "UNKNOWN";
@@ -235,7 +236,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     	    						int priority = getPriorityForBeingMutable(type);
 									BugInstance bugInstance = new BugInstance(this,  pattern, priority)
     											.addClassAndMethod(methodGen,sourceFileName)
-    											.addCalledMethod(methodGen, invoke).add(new TypeAnnotation(type)).addOptionalAnnotation(ba);
+    											.addCalledMethod(methodGen, invoke).add(new TypeAnnotation(type)).add(ba);
     								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
     										classContext, method, location);
     								accumulator.accumulateBug(bugInstance, where);
