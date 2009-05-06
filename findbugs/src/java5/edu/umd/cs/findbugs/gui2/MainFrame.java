@@ -937,7 +937,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			viewMenu.addSeparator();
 		}
 		if (projectPackagePrefixes.size() > 0 && this.bugCollection != null) {
-			TreeSet<String> projects = new TreeSet<String>();
+			TreeSet<String> projects = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 			for (BugInstance b : bugCollection.getCollection()) {
 				projects.addAll(projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName()));
 			}
@@ -948,9 +948,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				for(String projectName : projects) {
 					JMenuItem item = new JMenuItem(projectName);
 					ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
-					String paths = filter.toString();
-					textFieldForPackagesToDisplay.setText(paths);
-					viewFilter.setPackagesToDisplay(paths);
+					final String paths = filter.toString();
+					setPaths.add(item);
+					item.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e) {
+							textFieldForPackagesToDisplay.setText(paths);
+							viewFilter.setPackagesToDisplay(paths);
+						}});   
 				}
 			}
 			
