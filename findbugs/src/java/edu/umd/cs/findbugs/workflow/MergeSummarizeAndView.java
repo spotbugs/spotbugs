@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,7 +193,7 @@ public class MergeSummarizeAndView {
 		if (badRank > 0 || tooOld > 0) {
 			System.out.print("\nplus ");
 			if (badRank > 0) 
-				System.out.printf("%d less scary issues", badRank);
+				System.out.printf("%d less scary recent issues", badRank);
 			if (badRank > 0 && tooOld > 0)
 				System.out.printf(" and ");
 			if (tooOld > 0)
@@ -203,6 +204,11 @@ public class MergeSummarizeAndView {
 			throw storedException;
 		
 		if (shown > 0 || (commandLine.alwaysShowGui && results.getCollection().size() > 0)) {
+			if (GraphicsEnvironment.isHeadless()) {
+				System.out.println("Running in GUI headless mode, can't open GUI");
+				cloud.shutdown();
+				return;
+			}
 			GUISaveState.loadInstance();
 			cloud.setMode(originalMode);
 			FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
