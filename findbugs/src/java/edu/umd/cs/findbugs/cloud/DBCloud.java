@@ -1372,10 +1372,13 @@ public  class DBCloud extends AbstractCloud {
 		}
 		
 		int count = 0;
+		int notInCloud = 0;
 		for(String hash : hashCodes) {
 			BugData bd = instanceMap.get(hash);
-			if (bd == null) 
+			if (bd == null) { 
+				notInCloud++;
 				continue;
+			}
 			count++;
     		HashSet<String> reviewers = new HashSet<String>();
     		if (bd.bugStatus != null)
@@ -1390,7 +1393,16 @@ public  class DBCloud extends AbstractCloud {
     		issuesWithThisManyReviews[numReviews]++;
     		
     	}
-    	w.printf("Summary for %d  issues that are both in the cloud and loaded analysis\n\n", count);
+		if (count == 0) {
+			w.printf("None of the %d issues in the current view are in the cloud\n\n", notInCloud);
+	    	return;
+		}
+		if (notInCloud == 0) {
+			w.printf("Summary for %d issues that are in the current view\n\n", count);
+		}else {
+			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)\n\n", count, notInCloud);
+		}
+    	w.printf("Summary for %d issues that are both in the cloud and current view\n\n", count);
     	w.println("People who have performed the most reviews");
     	printLeaderBoard(w, evaluations, 5, findbugsUser, true, "reviewer");
     	
