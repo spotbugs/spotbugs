@@ -509,6 +509,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		setProjectChanged(false);
 		reconfigMenuItem.setEnabled(true);
 		comments.configureForCurrentCloud();
+		setViewMenu();
 		newProject();
 		clearSourcePane();
 		clearSummaryTab();
@@ -873,6 +874,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		if (windowMenu != null)
 			menuBar.add(windowMenu);
+		
+		viewMenu = newJMenu("menu.view", "View");
+		setViewMenu();
+		menuBar.add(viewMenu);
 
 		final ActionMap map = tree.getActionMap();
 
@@ -885,17 +890,50 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		menuBar.add(navMenu);
 
-		JMenu viewMenu = newJMenu("menu.view", "View");
-		
-		JMenuItem cloudReport = new JMenuItem("Cloud report");
-		cloudReport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				displayCloudReport();
 				
-			}
-		});
-		viewMenu.add(cloudReport);
-		viewMenu.addSeparator();
+		JMenu designationMenu = newJMenu("menu.designation", "Designation");
+		int i = 0;
+		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
+			String name = I18N.instance().getUserDesignation(key);
+			addDesignationItem(designationMenu, name, keyEvents[i++]);
+		}
+		menuBar.add(designationMenu);
+
+		if (!MAC_OS_X) {		
+			// On Mac, 'About' appears under Findbugs menu, so no need for it here
+			JMenu helpMenu = newJMenu("menu.help_menu", "Help");
+			JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
+			helpMenu.add(aboutItem);
+
+				aboutItem.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent evt) {
+							about();
+						}
+					});
+				menuBar.add(helpMenu);
+		}
+		return menuBar;
+	}
+	
+	JMenu viewMenu ;
+	public void setViewMenu() {
+
+		Cloud cloud = this.bugCollection == null ? null : this.bugCollection.getCloud();
+			
+		viewMenu.removeAll();
+		
+		if (cloud != null && cloud.supportsCloudSummaries()) {
+			JMenuItem cloudReport = new JMenuItem("Cloud summary");
+			cloudReport.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					displayCloudReport();
+
+				}
+			});
+			viewMenu.add(cloudReport);
+			viewMenu.addSeparator();
+		}
 		URL u = PluginLoader.getCoreResource("projectPaths.properties");
 		if (u != null) {
 
@@ -937,7 +975,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			}
 
 		}
-		
+
 		ButtonGroup rankButtonGroup = new ButtonGroup();
 		for(final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
@@ -948,13 +986,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setRank(r);
-                }});   
+				}});   
 			viewMenu.add(rbMenuItem);
 		}
 		viewMenu.addSeparator();
 
 		ButtonGroup evalButtonGroup = new ButtonGroup();
 		for(final ViewFilter.EvaluationFilter r : ViewFilter.EvaluationFilter.values()) {
+			if (cloud != null && !r.supported(cloud)) 
+				continue;
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
 			evalButtonGroup.add(rbMenuItem);
 			if (r == ViewFilter.EvaluationFilter.ALL) 
@@ -963,7 +1003,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setEvaluation(r);
-                }});   
+				}});   
 			viewMenu.add(rbMenuItem);
 		}
 		viewMenu.addSeparator();
@@ -977,38 +1017,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setFirstSeen(r);
-                }});   
+				}});   
 			viewMenu.add(rbMenuItem);
 		}
 
-		       
-		menuBar.add(viewMenu);
-		
-		JMenu designationMenu = newJMenu("menu.designation", "Designation");
-		int i = 0;
-		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
-		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
-			String name = I18N.instance().getUserDesignation(key);
-			addDesignationItem(designationMenu, name, keyEvents[i++]);
-		}
-		menuBar.add(designationMenu);
-
-		if (!MAC_OS_X) {		
-			// On Mac, 'About' appears under Findbugs menu, so no need for it here
-			JMenu helpMenu = newJMenu("menu.help_menu", "Help");
-			JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
-			helpMenu.add(aboutItem);
-
-				aboutItem.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent evt) {
-							about();
-						}
-					});
-				menuBar.add(helpMenu);
-		}
-		return menuBar;
 	}
 	
+	public void resetCommentsInputPane() {
+		guiLayout.resetCommentsInputPane();
+	}
 	ViewFilter viewFilter = new ViewFilter(this);
 	/**
 	 * @param map
@@ -3034,12 +3051,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 	  StringWriter stringWriter = new StringWriter();
 	  PrintWriter writer = new PrintWriter(stringWriter);
-	  cloud.printCloudReport(getDisplayedBugs(), writer);
+	  cloud.printCloudSummary(getDisplayedBugs(), writer);
 	  writer.close();
 	  String report = stringWriter.toString();
-	  System.out.println("Cloud report...");
-	  System.out.println(report);
-	DisplayNonmodelMessage.displayNonmodelMessage("Cloud report", report, this, false);
+	DisplayNonmodelMessage.displayNonmodelMessage("Cloud summary", report, this, false);
 	  
   }
 	   

@@ -130,4 +130,16 @@ public abstract class AbstractCloud implements Cloud {
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
 		return false;
 	}
+    
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#printCloudSummary(java.lang.Iterable, java.io.PrintWriter)
+     */
+    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w) {
+	   return;
+	    
+    }
+    
+    public boolean supportsCloudSummaries() {
+    	return false;
+    }
 }

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.PrintWriter;
+
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
@@ -128,6 +130,8 @@ public class BugCollectionStorageCloud extends AbstractCloud {
     	 throw new UnsupportedOperationException();
 	    
     }
+
+
 
 	
 

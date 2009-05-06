@@ -167,5 +167,6 @@ public interface Cloud {
      */
     void storeUserAnnotation(BugInstance bugInstance);	
     
-    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w);
+    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w);
+    public boolean supportsCloudSummaries();
 }

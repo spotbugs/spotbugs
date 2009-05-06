@@ -234,6 +234,10 @@ public  class DBCloud extends AbstractCloud {
 				commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
 				getBugData(b.getInstanceHash()).bugs.add(b);
 			}
+		if (commonPrefix == null)
+			commonPrefix = "<no bugs>";
+		else if (commonPrefix.length() > 128)
+			commonPrefix = commonPrefix.substring(0, 128);
 		try {
 			long startTime = System.currentTimeMillis();
 			
@@ -302,7 +306,6 @@ public  class DBCloud extends AbstractCloud {
 			}
 			rs.close();
 			ps.close();
-
 
 			long initialSyncTime = System.currentTimeMillis() - startTime;
 			PreparedStatement insertSession =  
@@ -546,7 +549,7 @@ public  class DBCloud extends AbstractCloud {
 		updatedStatus();
 		if (firstTimeDoing(HAS_CLASSIFIED_ISSUES)) {
 			String msg = "Classification and comments have been sent to database.\n"
-				+ "You'll only see this message the first do your classifcations/comments are sent\n"
+				+ "You'll only see this message the first time your classifcations/comments are sent\n"
 				+ "to the database.";
 			   if (mode == Mode.VOTING) 
 				  msg += "\nOnce you've classified an issue, you can see how others have classified it.";
@@ -1108,6 +1111,7 @@ public  class DBCloud extends AbstractCloud {
     private boolean firstBugRequest = true;
     static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
 	static final int POSTMORTEM_RANK = SystemProperties.getInteger("findbugs.postmortem.rank", 4);
+	static final String BUG_LINK_FORMAT = SystemProperties.getProperty("findbugs.filebug.link");
 	
     @Override
     @CheckForNull 
@@ -1130,8 +1134,7 @@ public  class DBCloud extends AbstractCloud {
 			case FILE_BUG:
 			case FILE_AGAIN: {
 
-				String bugLinkPattern = SystemProperties.getProperty("findbugs.filebug.link");
-				if (bugLinkPattern == null)
+				if (BUG_LINK_FORMAT == null)
 					return null;
 				String report = getBugReport(b);
 				String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
@@ -1151,13 +1154,13 @@ public  class DBCloud extends AbstractCloud {
 				if (firstBugRequest) 
 					maxURLLength = maxURLLength *2/3;
 				firstBugRequest = false;
-				String u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
+				String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
 				if (u.length() > MAX_URL_LENGTH) {
 					report = getBugReportShorter(b);
-					u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
+					u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
 					if (u.length() > MAX_URL_LENGTH) {
 						report = getBugReportAbridged(b);
-						u = String.format(bugLinkPattern, component, urlEncode(summary), urlEncode(report));
+						u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
 						String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
 							                   +" please cut and paste into the bug report as appropriate]\n\n"
 							                   + getBugReportSourceCode(b) 
@@ -1188,7 +1191,7 @@ public  class DBCloud extends AbstractCloud {
     
     @Override
     public boolean supportsBugLinks() {
-		return true;
+		return BUG_LINK_FORMAT != null;
 	}
 
 	@Override
@@ -1355,7 +1358,7 @@ public  class DBCloud extends AbstractCloud {
     
     
     @Override
-    public void printCloudReport(Iterable<BugInstance> bugs, PrintWriter w) {
+    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w) {
     	
     	Multiset<String> evaluations = new Multiset<String>();
     	Multiset<String> designations = new Multiset<String>();
@@ -1459,5 +1462,11 @@ public  class DBCloud extends AbstractCloud {
 	   return bd != null && findbugsUser.equals(bd.bugAssignedTo);
 	   
 	   
+    }
+		/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#supportsCloudSummaries()
+     */
+    public boolean supportsCloudSummaries() {
+	   return true;
     }
 }

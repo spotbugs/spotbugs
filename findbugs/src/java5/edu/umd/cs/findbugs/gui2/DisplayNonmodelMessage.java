@@ -82,7 +82,7 @@ public class DisplayNonmodelMessage {
 	    messageFrame.pack();
 	    if (positionWindow) 
 	    	messageFrame.setLocationRelativeTo(centerOver);
-	    messageFrame.setAlwaysOnTop(onTop);
+	    // messageFrame.setAlwaysOnTop(onTop);
 	    
 	    
 	    messageFrame.setVisible(true);

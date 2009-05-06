@@ -42,5 +42,7 @@ public interface FindBugsLayoutManager {
 	public void setSourceTitle(String title);
 	
 	public JComponent getSourceViewComponent();
+	
+	public void resetCommentsInputPane();
 
 }

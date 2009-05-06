@@ -88,6 +88,10 @@ public class CommentsArea {
 	 * Create center panel that holds the user input combo boxes and TextArea.
 	 */
 	JPanel createCommentsInputPanel() {
+		BugCollection bc = getMainFrame().bugCollection;
+		
+		Cloud cloud = bc == null ? null : bc.getCloud();
+		
 		JPanel centerPanel = new JPanel();
 		GridBagLayout layout = new GridBagLayout();
 
@@ -235,8 +239,7 @@ public class CommentsArea {
 		c.fill=GridBagConstraints.BOTH;
 		centerPanel.add(commentsScrollP, c);
 		
-		if (true) {
-		
+		if (cloud != null && cloud.supportsCloudReports()) {
 			c.gridy++;
 			c.weightx = 1;
 			c.weighty = 1;
@@ -244,11 +247,14 @@ public class CommentsArea {
 		
 			centerPanel.add(reportScrollP, c);
 		}
-		c.gridy++;
-		c.weightx = 0;
-		c.weighty = 0;
-		c.fill=GridBagConstraints.HORIZONTAL;
-		centerPanel.add(fileBug, c);
+		
+		if (cloud != null && cloud.supportsBugLinks()) {
+			c.gridy++;
+			c.weightx = 0;
+			c.weighty = 0;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			centerPanel.add(fileBug, c);
+		}
 		
 		return centerPanel;
 	}
@@ -818,5 +824,7 @@ public class CommentsArea {
 		Cloud cloud = getCloud();
 		if (false) 
 			fileBug.setEnabled(cloud.supportsBugLinks());
+		
+		MainFrame.getInstance().resetCommentsInputPane();
 	}
 }

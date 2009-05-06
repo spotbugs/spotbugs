@@ -58,6 +58,12 @@ public class SplitLayout implements FindBugsLayoutManager {
 		return null;
 	}
 
+	
+	public void resetCommentsInputPane() {
+		int position = topLeftSPane.getDividerLocation();
+		topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
+		topLeftSPane.setDividerLocation(position);
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
 	 */

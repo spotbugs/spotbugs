@@ -72,30 +72,55 @@ public class ViewFilter {
 			boolean show(DBCloud cloud, BugInstance b) {
 				return cloud.getReviewers(b).contains(cloud.getUser());
 			}
+
+			@Override
+            public boolean supported(Cloud cloud) {
+	            return true;
+            }
 		},
 		NOT_REVIEWED_BY_ME("Not classified by me") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return !cloud.getReviewers(b).contains(cloud.getUser());
 			}
+
+			@Override
+           public boolean supported(Cloud cloud) {
+	            return true;
+            }
 		},
 		NO_REVIEWS("No one has classified") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return cloud.getReviewers(b).isEmpty();
 			}
+
+			@Override
+            public boolean supported(Cloud cloud) {
+	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+            }
 		},
 		HAS_REVIEWS("Someone has classified") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return !cloud.getReviewers(b).isEmpty();
 			}
+
+
+			@Override
+           public  boolean supported(Cloud cloud) {
+	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+            }
 		},
 		NO_ONE_COMMITTED_TO_FIXING("Has no fixers") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return !cloud.isClaimed(b);
 			}
+			@Override
+            public boolean supported(Cloud cloud) {
+	           return cloud instanceof DBCloud && cloud.getMode() != Cloud.Mode.SECRET;
+            }
 		},
 		I_WILL_FIX("I will fix") {
 			@Override
@@ -103,6 +128,10 @@ public class ViewFilter {
 				return cloud.getIWillFix(b);
 
 			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	            return true;
+            }
 		},
 		HAS_FILED_BUGS("Has entry in bug database") {
 			@Override
@@ -110,18 +139,30 @@ public class ViewFilter {
 				return cloud.getBugLinkStatus(b).bugIsFiled();
 
 			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	           return  cloud.supportsBugLinks();
+            }
 		},
 		NO_FILED_BUGS("Don't have entry in bug database") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return !cloud.getBugLinkStatus(b).bugIsFiled();
 			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	           return  cloud.supportsBugLinks();
+            }
 		},
 		ALL("All issues") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return true;
 			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	           return true;
+            }
         }; 
         
         EvaluationFilter(String displayName) {
@@ -130,6 +171,8 @@ public class ViewFilter {
 		final String displayName;
 
 		abstract boolean show(DBCloud cloud, BugInstance b);
+		public abstract boolean supported(Cloud cloud);
+	       
         public boolean show(MainFrame mf, BugInstance b) {
 	        Cloud c = mf.bugCollection.getCloud();
 	        if (c instanceof DBCloud) 
