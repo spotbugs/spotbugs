@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,6 +30,7 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -37,6 +39,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.POP;
 import org.apache.bcel.generic.Type;
 
@@ -47,6 +50,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -55,6 +59,8 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -64,6 +70,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
@@ -120,7 +127,49 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 	}
 
     final static boolean DEBUG = false;
+    
+    static HashSet<String> immutableClassNames = new HashSet<String>();
+    static {
+    	immutableClassNames.add("java/lang/Integer");
+    	immutableClassNames.add("java/lang/Long");
+    	immutableClassNames.add("java/lang/String");
+    	immutableClassNames.add("java/util/Comparator");
+    }
 
+    private static int getPriorityForBeingMutable(Type type) {
+    	if (type instanceof ArrayType) {
+    		return HIGH_PRIORITY;
+    	} else if (type instanceof ObjectType) {
+    		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+    		
+    		ClassDescriptor cd = DescriptorFactory.getClassDescriptor((ObjectType)type);
+    		@SlashedClassName String className = cd.getClassName();
+    		if (immutableClassNames.contains(className))
+    			return Priorities.LOW_PRIORITY;
+    		
+    		XClass xClass =  AnalysisContext.currentXFactory().getXClass(cd);
+    		@SlashedClassName String superClassName = xClass.getSuperclassDescriptor().getClassName();
+    		if (superClassName.equals("java/lang/Enum"))
+    			return Priorities.LOW_PRIORITY; 
+    		boolean hasMutableField = false;
+    		boolean hasUpdates = false;
+    		for(XField f : xClass.getXFields()) 
+    			if (!f.isStatic() && !f.isFinal() && !f.isSynthetic()) {
+    				hasMutableField = true;
+    				if (unreadFields.isWrittenOutsideOfInitialization(f))
+    					hasUpdates = true;
+    			}
+        		
+    		if (!hasMutableField && !xClass.isInterface())
+    			return Priorities.LOW_PRIORITY;
+    		if (hasUpdates || className.startsWith("java/util"))
+    			return Priorities.HIGH_PRIORITY;
+    		return Priorities.NORMAL_PRIORITY;
+    		
+    		
+    	} else
+    		return Priorities.IGNORE_PRIORITY;
+    }
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
     		if (method.isSynthetic() || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) return;
     		
@@ -135,6 +184,8 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     		MethodGen methodGen = classContext.getMethodGen(method);
     		CFG cfg = classContext.getCFG(method);
     		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+    		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+    		
     		String sourceFileName = javaClass.getSourceFileName();
 			
     		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -160,6 +211,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     						BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
     						ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
     						ValueNumber vn = vna.getTopValue();
+    						
     						int locals = vna.getNumLocals();
     						boolean isRetained = false;
     						for(int pos = 0; pos < locals; pos++) 
@@ -170,11 +222,11 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     								String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
     								if (!isIgnored)
     									pattern = "UNKNOWN";
-    								
-									BugInstance bugInstance = new BugInstance(this,  pattern, 
-    										Priorities.NORMAL_PRIORITY)
+    								Type type = typeDataflow.getAnalysis().getFactAtLocation(location).getTopValue();
+    	    						int priority = getPriorityForBeingMutable(type);
+									BugInstance bugInstance = new BugInstance(this,  pattern, priority)
     											.addClassAndMethod(methodGen,sourceFileName)
-    											.addCalledMethod(methodGen, invoke).addOptionalAnnotation(ba);
+    											.addCalledMethod(methodGen, invoke).add(new TypeAnnotation(type)).addOptionalAnnotation(ba);
     								SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(
     										classContext, method, location);
     								accumulator.accumulateBug(bugInstance, where);
