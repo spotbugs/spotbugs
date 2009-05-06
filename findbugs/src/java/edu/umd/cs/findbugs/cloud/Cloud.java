@@ -29,6 +29,7 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * An interface for describing how a bug collection
@@ -71,7 +72,7 @@ public interface Cloud {
 	};
 	
     public static enum BugFilingStatus {
-		FILE_BUG("File bug") {
+		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label","File bug")) {
 			@Override
 			public boolean bugIsFiled() {
 				return false;
@@ -83,7 +84,7 @@ public interface Cloud {
 				return false;
 			}
 		},
-		VIEW_BUG("View bug"), NA("") {
+		VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label","View bug")), NA("") {
 			@Override
 			public boolean linkEnabled() {
 				return false;

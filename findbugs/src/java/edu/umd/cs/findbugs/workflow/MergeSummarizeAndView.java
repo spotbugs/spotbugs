@@ -153,8 +153,6 @@ public class MergeSummarizeAndView {
 		Cloud cloud = results.reinitializeCloud();
 		Project project = results.getProject();
 		Cloud.Mode originalMode = cloud.getMode();
-		System.out.println("Cloud is " + cloud.getClass().getName());
-		System.out.println("Original cloud mode is " + originalMode);
 		
 		cloud.setMode(Cloud.Mode.COMMUNAL);
 		MyBugReporter reporter = new MyBugReporter();
@@ -213,6 +211,8 @@ public class MergeSummarizeAndView {
 			instance.waitUntilReady();
 
 			instance.openBugCollection(results);
+		} else {
+			cloud.shutdown();
 		}
 
 

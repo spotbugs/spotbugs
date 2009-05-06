@@ -67,53 +67,61 @@ public class ViewFilter {
 	}
 
 	enum EvaluationFilter implements ViewFilterEnum {
-		NO_REVIEWS("No one has reviewed") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-		        return cloud.getReviewers(b).isEmpty();
-	        }
-        }, MY_REVIEWS("My reviews") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return cloud.getReviewers(b).contains(cloud.getUser());
-	        }},
-	       NOT_REVIEWED_BY_ME("Not reviewed by me") {
-		        @Override
-		        boolean show(DBCloud cloud, BugInstance b) {
-		        	return !cloud.getReviewers(b).contains(cloud.getUser());
-		        }
-        }, HAS_REVIEWS("Someone has reviewed") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return !cloud.getReviewers(b).isEmpty();
-	        }
-        },  NO_ONE_COMMITTED_TO_FIXING("Has no fixers") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return !cloud.isClaimed(b);
-	        }
-        }, HAS_FILED_BUGS("Has bugs filed against them") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return cloud.getBugLinkStatus(b).bugIsFiled();
-	        	
-	        }
-        }, NO_FILED_BUGS("Don't have bugs filed against them") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return !cloud.getBugLinkStatus(b).bugIsFiled();
-	        }
-        },  I_WILL_FIX("I will fix") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-	        	return cloud.getIWillFix(b);
-	        	
-	        }
-        }, ALL("All issues") {
-	        @Override
-	        boolean show(DBCloud cloud, BugInstance b) {
-		       return true;
-	        }
+		MY_REVIEWS("Classified by me") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getReviewers(b).contains(cloud.getUser());
+			}
+		},
+		NOT_REVIEWED_BY_ME("Not classified by me") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return !cloud.getReviewers(b).contains(cloud.getUser());
+			}
+		},
+		NO_REVIEWS("No one has classified") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getReviewers(b).isEmpty();
+			}
+		},
+		HAS_REVIEWS("Someone has classified") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return !cloud.getReviewers(b).isEmpty();
+			}
+		},
+		NO_ONE_COMMITTED_TO_FIXING("Has no fixers") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return !cloud.isClaimed(b);
+			}
+		},
+		I_WILL_FIX("I will fix") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getIWillFix(b);
+
+			}
+		},
+		HAS_FILED_BUGS("Has entry in bug database") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getBugLinkStatus(b).bugIsFiled();
+
+			}
+		},
+		NO_FILED_BUGS("Don't have entry in bug database") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return !cloud.getBugLinkStatus(b).bugIsFiled();
+			}
+		},
+		ALL("All issues") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return true;
+			}
         }; 
         
         EvaluationFilter(String displayName) {

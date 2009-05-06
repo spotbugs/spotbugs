@@ -29,7 +29,6 @@ import java.awt.event.ItemListener;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 
 import javax.swing.JButton;
@@ -47,7 +46,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -69,7 +67,7 @@ public class CommentsArea {
 
 	private ArrayList<String> designationKeys;
 
-	private JButton fileBug = new JButton("File bug");
+	private JButton fileBug = new JButton(BugFilingStatus.FILE_BUG.toString());
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
@@ -297,8 +295,8 @@ public class CommentsArea {
 		userCommentsText.setEnabled(isEnabled);
 		prevCommentsComboBox.setEnabled(isEnabled);
 		designationComboBox.setEnabled(isEnabled);
-		fileBug.setEnabled(isEnabled);
 	}
+
 
 	SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 	/**
@@ -654,6 +652,7 @@ public class CommentsArea {
 		if (getCloud().getMode() == Cloud.Mode.VOTING) {
 			userCommentsText.setEnabled(false);
 		}
+		fileBug.setEnabled(false);
 		changed = false;
 		} finally {
 			nonleafUpdateDepth--;
@@ -817,6 +816,7 @@ public class CommentsArea {
 	
 	public void configureForCurrentCloud() {
 		Cloud cloud = getCloud();
-		fileBug.setEnabled(cloud.supportsBugLinks());
+		if (false) 
+			fileBug.setEnabled(cloud.supportsBugLinks());
 	}
 }

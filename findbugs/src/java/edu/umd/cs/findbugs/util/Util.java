@@ -249,5 +249,20 @@ public class Util {
 	   return iterator.next();
     }
     
+    
+    public static String commonPrefix(String s1, String s2) {
+    	if (s1 == null) return s2;
+    	if (s2 == null) return s1;
+    	int minLength = Math.min(s1.length(), s2.length());
+    	for(int i = 0; i < minLength; i++) 
+    		if (s1.charAt(i) != s2.charAt(i)) 
+    			return s1.substring(0,i);
+    	if (s1.length() == minLength)
+    		return s1;
+    	assert s2.length() == minLength;
+    	return s2;
+    	
+    	
+    }
    
 }

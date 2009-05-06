@@ -74,6 +74,7 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Multiset;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author pwilliam
@@ -156,7 +157,7 @@ public  class DBCloud extends AbstractCloud {
 			d = new BugDesignation(UserDesignation.UNCLASSIFIED.name(), System.currentTimeMillis(), "", findbugsUser);
 			return d;
 		}
-		/**
+		/**filebug
          * @return
          */
         public boolean canSeeCommentsByOthers() {
@@ -227,28 +228,28 @@ public  class DBCloud extends AbstractCloud {
 	int sessionId = -1;
 	public void bugsPopulated() {
 		
+		String commonPrefix = null;
 		for (BugInstance b : bugCollection.getCollection())
-			if (!skipBug(b))
+			if (!skipBug(b)) {
+				commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
 				getBugData(b.getInstanceHash()).bugs.add(b);
-
+			}
 		try {
 			long startTime = System.currentTimeMillis();
 			
 			Connection c = getConnection();
 			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
 			ResultSet rs = ps.executeQuery();
-
+			
 			while (rs.next()) {
 				int col = 1;
 				int id = rs.getInt(col++);
 				String hash = rs.getString(col++);
 				Timestamp firstSeen = rs.getTimestamp(col++);
-				
 				loadDatabaseInfo(hash, id, firstSeen.getTime());
 			}
 			rs.close();
 			ps.close();
-			
 			ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
 
 			rs = ps.executeQuery();
@@ -272,9 +273,6 @@ public  class DBCloud extends AbstractCloud {
 			}
 			rs.close();
 			ps.close();
-
-
-
 			
 			ps = c.prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
 
@@ -308,8 +306,8 @@ public  class DBCloud extends AbstractCloud {
 
 			long initialSyncTime = System.currentTimeMillis() - startTime;
 			PreparedStatement insertSession =  
-				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialSyncTime, numIssues, startTime)"
-						+ " VALUES (?,?,?,?,?,?,?)",  
+				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialSyncTime, numIssues, startTime, commonPrefix)"
+						+ " VALUES (?,?,?,?,?,?,?,?)",  
 						Statement.RETURN_GENERATED_KEYS);
 			Timestamp now = new Timestamp(startTime);
 			int col = 1;
@@ -320,6 +318,7 @@ public  class DBCloud extends AbstractCloud {
 			insertSession.setLong(col++, initialSyncTime);
 			insertSession.setInt(col++, bugCollection.getCollection().size());
 			insertSession.setTimestamp(col++, now);
+			insertSession.setString(col++, commonPrefix);
 			int rowCount = insertSession.executeUpdate();
 			rs = insertSession.getGeneratedKeys();
 			if (rs.next()) {
@@ -546,11 +545,11 @@ public  class DBCloud extends AbstractCloud {
 		queue.add(new StoreUserAnnotation(data, bd));
 		updatedStatus();
 		if (firstTimeDoing(HAS_CLASSIFIED_ISSUES)) {
-			String msg = "This looks like the first time you've classified an issue from this machine.\n"
-				+ "Your classifications and comments are automatically synchronized with the database\n"
-				+ "whenever you update them.\n";
+			String msg = "Classification and comments have been sent to database.\n"
+				+ "You'll only see this message the first do your classifcations/comments are sent\n"
+				+ "to the database.";
 			   if (mode == Mode.VOTING) 
-				  msg += "Once you've classified an issue, you can see how others have classified it.";
+				  msg += "\nOnce you've classified an issue, you can see how others have classified it.";
 				msg += "\nYour classification and comments are independent from filing a bug using an external\n"
 				      + "bug reporting system.";
 			
@@ -860,8 +859,7 @@ public  class DBCloud extends AbstractCloud {
     		case SHOULD_FIX:
     			isAProblem++;
     			break;
-    		case 
-    			BAD_ANALYSIS:
+    		case BAD_ANALYSIS:
     		case	NOT_A_BUG: 
     		case 	MOSTLY_HARMLESS:
     		case OBSOLETE_CODE:
@@ -978,6 +976,8 @@ public  class DBCloud extends AbstractCloud {
 
 		if (BUG_NOTE != null) {
 			out.println(BUG_NOTE);
+			if (POSTMORTEM_NOTE != null && BugRanker.findRank(b) <= POSTMORTEM_RANK && !overallClassificationIsNotAProblem(b))
+				out.println(POSTMORTEM_NOTE);
 			out.println();
 		}
 
@@ -1106,6 +1106,9 @@ public  class DBCloud extends AbstractCloud {
 		return false;
 	}
     private boolean firstBugRequest = true;
+    static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
+	static final int POSTMORTEM_RANK = SystemProperties.getInteger("findbugs.postmortem.rank", 4);
+	
     @Override
     @CheckForNull 
     public URL getBugLink(BugInstance b) {
@@ -1117,7 +1120,7 @@ public  class DBCloud extends AbstractCloud {
 			switch (status) {
 			case VIEW_BUG: {
 
-				String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbuglink");
+				String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbug.link");
 				if (viewLinkPattern == null)
 					return null;
 				firstBugRequest = false;
@@ -1127,21 +1130,18 @@ public  class DBCloud extends AbstractCloud {
 			case FILE_BUG:
 			case FILE_AGAIN: {
 
-				String bugLinkPattern = SystemProperties.getProperty("findbugs.buglink");
+				String bugLinkPattern = SystemProperties.getProperty("findbugs.filebug.link");
 				if (bugLinkPattern == null)
 					return null;
 				String report = getBugReport(b);
 				String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
 				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
-				
 				if (firstTimeDoing(HAS_FILED_BUGS)) 
 					bugCollection.getProject().getGuiCallback().showMessageDialog(
-							"This looks like the first time you've filed a bug from this machine.\n"
-							+ "Please check the component the issue is assigned to. We make an semi-educated guess, but get it \n"
-							+ "badly wrong sometimes. Also, any help you can provide in terms of assigning it to the right person, \n"
-							+ "explaining the problem or editing the source code snippet will be helpful in getting the issue \n"
-							+ "resolved promptly. \n\n"
+							"This looks like the first time you've filed a bug from this machine. Please:\n"
+							+ " * Please check the component the issue is assigned to; we sometimes get it wrong."
+							+ " * Try to figure out the right person to assign it to."
+							+ " * Provide the information needed to understand the issue."
 							+ "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.");
 							
 							
@@ -1164,7 +1164,7 @@ public  class DBCloud extends AbstractCloud {
 											 +  getUserEvaluation(b)
 											 + getBugPatternExplanation(b);
 						bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
-								"Additional information for " + b.getMessageWithoutPrefix(),
+								"Cut and paste into bug entry for " + b.getMessageWithoutPrefix(),
 								supplemental);
 						
 					}
@@ -1215,9 +1215,9 @@ public  class DBCloud extends AbstractCloud {
 				builder.append("\n\n");
 			}
 		}
-		for(BugDesignation d : bd.designations) 
+		for(BugDesignation d : bd.getUniqueDesignations()) 
 			if (d != primaryDesignation 
-					&& (canSeeCommentsByOthers || findbugsUser.equals(d.getUser()))) {
+					&& (canSeeCommentsByOthers && !findbugsUser.equals(d.getUser()))) {
 				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
 						i18n.getUserDesignation(d.getDesignationKey())));
 				if (d.getAnnotationText().length() > 0) {
