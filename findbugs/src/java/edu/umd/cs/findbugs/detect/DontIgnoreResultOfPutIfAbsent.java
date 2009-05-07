@@ -168,7 +168,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
 				}
         		
-    		if (!hasMutableField && !xClass.isInterface())
+    		if (!hasMutableField && !xClass.isInterface()  && !xClass.isAbstract())
     			return Priorities.LOW_PRIORITY;
     		if (hasUpdates || className.startsWith("java/util")
     				  || className.indexOf("Map") >= 0 || className.indexOf("List") >= 0)
