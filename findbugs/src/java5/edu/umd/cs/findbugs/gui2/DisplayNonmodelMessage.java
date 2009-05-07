@@ -53,7 +53,7 @@ public class DisplayNonmodelMessage {
 	    	positionWindow = true;
 	    	messageFrame = new JFrame(title);
 
-	    	messageTextArea = new JTextArea(15, 60);
+	    	messageTextArea = new JTextArea(40, 80);
 	    	messageTextArea.setEditable(false);
 	    	messageTextArea.setLineWrap(true);
 	    	messageTextArea.setWrapStyleWord(true);
@@ -82,24 +82,48 @@ public class DisplayNonmodelMessage {
 	    messageFrame.pack();
 	    if (positionWindow) 
 	    	messageFrame.setLocationRelativeTo(centerOver);
-	    // messageFrame.setAlwaysOnTop(onTop);
+
 	    
 	    
 	    messageFrame.setVisible(true);
-	   
-    }
+	    messageFrame.toFront();
+	    if (onTop) {
+	    	messageFrame.setAlwaysOnTop(true);
+	    	new Thread(clearAlwaysOnTopLater).start();
+	    }
+	 }
 
+    static void sleep(int seconds) {
+    	try {
+	        TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+	       assert true;
+        }
+    }
+    
+    static Runnable moveToFrontLater = new Runnable() {
+    	public void run() {
+    		sleep(5);
+    		SwingUtilities.invokeLater(moveToFront);
+    	}
+    };
+    static Runnable clearAlwaysOnTopLater = new Runnable() {
+    	public void run() {
+    		sleep(5);
+    		SwingUtilities.invokeLater(clearAlwaysOnTop);
+    	}
+    };
     static Runnable moveToFront = new Runnable() {
     	public void run() {
     		JFrame frame = messageFrame;
-			if (frame != null)
+    		if (frame != null)
 				frame.toFront();
     	}
     };
     static Runnable clearAlwaysOnTop = new Runnable() {
     	public void run() {
     		JFrame frame = messageFrame;
-			if (frame != null)
+    		if (frame != null)
 				frame.setAlwaysOnTop(false);
     	}
     };
