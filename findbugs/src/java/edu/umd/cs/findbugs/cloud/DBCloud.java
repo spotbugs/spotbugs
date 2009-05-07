@@ -1108,6 +1108,10 @@ public  class DBCloud extends AbstractCloud {
 		}
 		return false;
 	}
+    private static void alreadyDone(String activity) {
+		Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
+		prefs.putBoolean(activity, true);
+	}
     private boolean firstBugRequest = true;
     static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
 	static final int POSTMORTEM_RANK = SystemProperties.getInteger("findbugs.postmortem.rank", 4);
@@ -1131,57 +1135,68 @@ public  class DBCloud extends AbstractCloud {
 				String u = String.format(viewLinkPattern, bugNumber);
 				return new URL(u);
 			}
-			case FILE_BUG:
-			case FILE_AGAIN: {
-
-				if (BUG_LINK_FORMAT == null)
-					return null;
-				String report = getBugReport(b);
-				String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
-				String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-				if (firstTimeDoing(HAS_FILED_BUGS)) 
+			case FILE_BUG: {
+				URL u =  getBugFilingLink(b);
+				if (u != null && firstTimeDoing(HAS_FILED_BUGS)) 
 					bugCollection.getProject().getGuiCallback().showMessageDialog(
 							"This looks like the first time you've filed a bug from this machine. Please:\n"
-							+ " * Please check the component the issue is assigned to; we sometimes get it wrong."
-							+ " * Try to figure out the right person to assign it to."
-							+ " * Provide the information needed to understand the issue."
+							+ " * Please check the component the issue is assigned to; we sometimes get it wrong.\n"
+							+ " * Try to figure out the right person to assign it to.\n"
+							+ " * Provide the information needed to understand the issue.\n"
 							+ "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.");
-							
-							
-				
-				
-				int maxURLLength = MAX_URL_LENGTH;
-				if (firstBugRequest) 
-					maxURLLength = maxURLLength *2/3;
-				firstBugRequest = false;
-				String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-				if (u.length() > MAX_URL_LENGTH) {
-					report = getBugReportShorter(b);
-					u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-					if (u.length() > MAX_URL_LENGTH) {
-						report = getBugReportAbridged(b);
-						u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-						String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
-							                   +" please cut and paste into the bug report as appropriate]\n\n"
-							                   + getBugReportSourceCode(b) 
-											 +  getUserEvaluation(b)
-											 + getBugPatternExplanation(b);
-						bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
-								"Cut and paste into bug entry for " + b.getMessageWithoutPrefix(),
-								supplemental);
-						
-					}
-				}
-				if (u.length() > MAX_URL_LENGTH - 500)
-					setErrorMsg("Bug link length is "+ u.length());
-				return new URL(u);
 			}
+				
+				 
+			case FILE_AGAIN:
+			 alreadyDone(HAS_FILED_BUGS);
+			 return getBugFilingLink(b);
 			}
 		} catch (Exception e) {
 
 		}
 		return null;
 	}
+	/**
+     * @param b
+     * @return
+     * @throws MalformedURLException
+     */
+    private URL getBugFilingLink(BugInstance b) throws MalformedURLException {
+	    {
+
+	    	if (BUG_LINK_FORMAT == null)
+	    		return null;
+	    	String report = getBugReport(b);
+	    	String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
+	    	String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+	    	
+	    	int maxURLLength = MAX_URL_LENGTH;
+	    	if (firstBugRequest) 
+	    		maxURLLength = maxURLLength *2/3;
+	    	firstBugRequest = false;
+	    	String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+	    	if (u.length() > MAX_URL_LENGTH) {
+	    		report = getBugReportShorter(b);
+	    		u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+	    		if (u.length() > MAX_URL_LENGTH) {
+	    			report = getBugReportAbridged(b);
+	    			u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+	    			String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
+	    				                   +" please cut and paste into the bug report as appropriate]\n\n"
+	    				                   + getBugReportSourceCode(b) 
+	    								 +  getUserEvaluation(b)
+	    								 + getBugPatternExplanation(b);
+	    			bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
+	    					"Cut and paste into bug entry for " + b.getMessageWithoutPrefix(),
+	    					supplemental);
+	    			
+	    		}
+	    	}
+	    	if (u.length() > MAX_URL_LENGTH - 500)
+	    		setErrorMsg("Bug link length is "+ u.length());
+	    	return new URL(u);
+	    }
+    }
     
     @Override
     public boolean supportsCloudReports() {
