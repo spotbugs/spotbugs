@@ -7841,7 +7841,7 @@ public @NonNegative Integer example(@Negative Integer value) {
   
   <BugPattern type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED">
 	  <ShortDescription>Return value of putIfAbsent ignored, value passed to putIfAbsent reused</ShortDescription>
-	  <LongDescription>Return value of putIfAbsent is ignored, but {3} is reused in {1}</LongDescription>
+	  <LongDescription>Return value of putIfAbsent is ignored, but {4} is reused in {1}</LongDescription>
 	  <Details>
 		  <![CDATA[
 		The <code>putIfAbsent</code> method is typically used to ensure that a 
@@ -7849,7 +7849,8 @@ public @NonNegative Integer example(@Negative Integer value) {
 		if absent succeeds).  
 		If you ignore the return value and retain a reference to the value passed in, 
 		you run the risk of retaining a value that is not the one that is associated with the key in the map.  
-		If you use this value, your program may behave incorrectly.
+		If it matters which one you use and you use the one that isn't stored in the map,
+		your program will behave incorrectly.
 		  ]]>
 	  </Details>
   </BugPattern>
