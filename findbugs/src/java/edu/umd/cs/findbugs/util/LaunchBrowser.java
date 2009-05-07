@@ -71,8 +71,6 @@ public class LaunchBrowser {
 		}
 		jnlpShowMethod = showMethod;
 		jnlpShowObject = showObject;
-		System.out.println(SystemProperties.getBoolean("findbugs.launchFirefox"));
-		System.out.println(SystemProperties.getProperty("os.name"));
 	}
 
 
