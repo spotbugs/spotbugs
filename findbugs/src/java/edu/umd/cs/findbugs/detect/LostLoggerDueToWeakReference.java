@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -38,12 +39,14 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  */
 public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 
-	BugReporter bugReporter;
+	final BugReporter bugReporter;
+	final BugAccumulator bugAccumulator;
 
-	HashSet<String> namesOfSetterMethods = new HashSet<String>();
+	final HashSet<String> namesOfSetterMethods = new HashSet<String>();
 
 	public LostLoggerDueToWeakReference(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		this.bugAccumulator = new BugAccumulator(bugReporter);
 		namesOfSetterMethods.add("addHandler");
 		namesOfSetterMethods.add("setUseParentHandlers");
 		namesOfSetterMethods.add("setLevel");
@@ -53,23 +56,22 @@ public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 	@Override
 	public void visit(Code code) {
 		if (getMethodSig().indexOf("Logger") == -1) {
-			sawGetLogger = sawSetLogger = -1;
+			sawGetLogger = -1;
 			loggerEscaped = loggerImported = false;
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 			if (false) {
 				System.out.println(getFullyQualifiedMethodName());
-				System.out.printf("%d %d %s %s\n", sawGetLogger, sawSetLogger, loggerEscaped, loggerImported);
+				System.out.printf("%d %s %s\n", sawGetLogger, loggerEscaped, loggerImported);
 
 			}
-			if (sawGetLogger >= 0 && sawSetLogger >= 0 && !loggerEscaped && !loggerImported)
-				bugReporter.reportBug(new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(
-				        this, sawSetLogger));
+			if (sawGetLogger >= 0 && !loggerEscaped && !loggerImported)
+				bugAccumulator.reportAccumulatedBugs();
+			else 
+				bugAccumulator.clearBugs();
 		}
 	}
 
 	int sawGetLogger;
-
-	int sawSetLogger;
 
 	boolean loggerEscaped;
 
@@ -88,7 +90,9 @@ public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 		case INVOKEVIRTUAL:
 			if (getClassConstantOperand().equals("java/util/logging/Logger")
 			        && namesOfSetterMethods.contains(getNameConstantOperand())) {
-				sawSetLogger = getPC();
+				bugAccumulator.accumulateBug(
+						new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", NORMAL_PRIORITY)
+						.addClassAndMethod(this), this);
 				break;
 			}
 			checkForImport();
