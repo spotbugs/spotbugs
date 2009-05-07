@@ -149,21 +149,25 @@ public class PluginLoader {
 	 */
 	private URL getResource(String name) {
 		URL url = null;
-		
+
 		if (classLoader instanceof URLClassLoader) {
 			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
 			url = urlClassLoader.findResource(name);
+			if (url == null)
+				url = urlClassLoader.findResource("/" + name);
 		}
-		
-		if (url == null) {
+
+		if (false && url == null) {
 			url = classLoader.getResource(name);
+			if (url == null)
+				url = classLoader.getResource("/" + name);
 		}
-		
-		if (url != null) 
+
+		if (url != null)
 			return url;
-		 if (corePlugin) 
-			 return loadFromFindBugsEtcDir(name);
-		 return null;
+		if (corePlugin)
+			return loadFromFindBugsEtcDir(name);
+		return null;
 	}
 
 	public static @CheckForNull
@@ -640,6 +644,9 @@ public class PluginLoader {
 		return child.getText();
 	}
 
+	public boolean isCorePlugin() {
+		return corePlugin;
+	}
 }
 
 // vim:ts=4

@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -208,7 +211,7 @@ public class DetectorFactoryCollection {
 		// See what plugins are available in the ${findbugs.home}/plugin directory
 		//
 		
-		File pluginDir = new File(homeDir + File.separator + "plugin");
+		File pluginDir = new File(new File(homeDir), "plugin");
 		File[] contentList = pluginDir.listFiles();
 		if (contentList == null) {
 			pluginList = new URL[0];
@@ -308,7 +311,6 @@ public class DetectorFactoryCollection {
 		if (loaded) 
 			throw new IllegalStateException();
 		
-		
 		//
 		// Load the core plugin.
 		//
@@ -321,24 +323,50 @@ public class DetectorFactoryCollection {
 
 		// If we are running under jaws, just use the loaded plugin
 		if (SystemProperties.getBoolean("findbugs.jaws")) {
+			URL pluginList = PluginLoader.getCoreResource("pluginlist.properties");
 			List<URL> plugins = new ArrayList<URL>();
-			int i = 1;
-			while (true) {
-				String plugin = SystemProperties.getProperty("findbugs.jaws.plugin" + i);
-				if (plugin == null)
-					break;
+			if (pluginList != null) {
 				try {
-					URL url = new URL(plugin);
-					URLConnection urlConnection = url.openConnection();
-					String type = urlConnection.getContentType();
-					jawsDebugMessage("plugin " + plugin + " has type " + type);
-					plugins.add(url);
-				} catch (Exception e) {
-					jawsDebugMessage("Unable to load plugin " + plugin);
+					
+				jawsDebugMessage(pluginList.toString());
+				String urlname = pluginList.toString();
+				URL base = pluginList;
+				int pos = urlname.indexOf("!/");
+				if (pos >= 0 && urlname.startsWith("jar:")) {
+					urlname = urlname.substring(4,pos);
+					base = new URL(urlname);
 				}
-				i++;
+				
+				BufferedReader in = new BufferedReader(new InputStreamReader(pluginList.openStream()));
+				while (true) {
+					String plugin = in.readLine();
+					
+					if (plugin == null)
+						break;
+					URL url = new URL(base, plugin);
+					try {
+					URLConnection connection = url.openConnection();
+					String contentType = connection.getContentType();
+					jawsDebugMessage("contentType : " + contentType);
+					if (connection instanceof HttpURLConnection) 
+						((HttpURLConnection)connection).disconnect();
+					plugins.add(url);
+					} catch  (Exception e) {
+						jawsDebugMessage("error loading " + url + " : " + e.getMessage());
+						
+					}
+					
+				}
+				in.close();
+				} catch (Exception e) {
+					jawsDebugMessage("error : " + e.getMessage());
+					
+				}
+				
 			}
+
 			setPluginList(plugins.toArray(new URL[plugins.size()]));
+		
 		} else {
 			// Load all detector plugins.
 			determinePlugins();
@@ -349,8 +377,7 @@ public class DetectorFactoryCollection {
 		//
 		for (final URL url : pluginList) {
 			try {
-				if (FindBugs.DEBUG)
-					System.out.println("Loading plugin: " + url.toString());
+				jawsDebugMessage("Loading plugin: " + url.toString());
 				PluginLoader pluginLoader = AccessController.doPrivileged(new PrivilegedExceptionAction<PluginLoader>() {
 
 					public PluginLoader run() throws PluginException {
@@ -360,11 +387,11 @@ public class DetectorFactoryCollection {
 				});
 				loadPlugin(pluginLoader);
 			} catch (PluginException e) {
-				System.err.println("Warning: could not load plugin " + url + ": " + e.toString());
+				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			} catch (PrivilegedActionException e) {
-				System.err.println("Warning: could not load plugin " + url + ": " + e.toString());
+				jawsErrorMessage("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			}
@@ -383,6 +410,14 @@ public class DetectorFactoryCollection {
     private void jawsDebugMessage(String message) {
 	    if (DEBUG_JAWS)
 	    	JOptionPane.showMessageDialog(null, message);
+	    else if  (FindBugs.DEBUG)
+	    	System.err.println(message);
+    }
+    private void jawsErrorMessage(String message) {
+	    if (DEBUG_JAWS)
+	    	JOptionPane.showMessageDialog(null, message);
+	    else 
+	    	System.err.println(message);
     }
 
 	private void loadPlugin(PluginLoader pluginLoader) throws PluginException {
@@ -392,8 +427,13 @@ public class DetectorFactoryCollection {
 		pluginByIdMap.put(plugin.getPluginId(), plugin);
 
 		// Register all of the detectors that this plugin contains
+		boolean show = !pluginLoader.isCorePlugin();
 		for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator(); j.hasNext();) {
 			DetectorFactory factory = j.next();
+			if (show) {
+				jawsDebugMessage("Loading detector for " + factory.getFullName());
+				show = false;
+			}
 			registerDetector(factory);
 		}
 
