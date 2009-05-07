@@ -104,6 +104,10 @@
 		<include name="**/*.pdf"/>
 	</patternset>
 
+        <fileset id="plugin.jars" dir="${plugin.dir}" includes="*.jar"/>
+	<property name="prop.plugin.jars" refid="plugin.jars"/>
+
+
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
 	<target name="build" depends="jars,scripts,anttask"/>
@@ -866,6 +870,10 @@
 		<copy todir="${jnlp.dir}" file="${jar.dir}/commons-lang-2.4.jar"/>		
 		<copy todir="${jnlp.dir}" file="${jar.dir}/AppleJavaExtensions.jar"/>
 		<copy todir="${jnlp.dir}" file="${docsrc.dir}/buggy-sm.png"/>		
+		<copy todir="${jnlp.dir}">
+			<fileset refid="plugin.jars"/>
+		</copy>
+		<echo file="${plugin.dir}/pluginlist.properties">${prop.plugin.jars}</echo>
 		<jar destfile="${jnlp.dir}/findbugs.jar" update="yes">
 					<fileset dir="${plugin.dir}">
 						<include name="*.properties"/>
