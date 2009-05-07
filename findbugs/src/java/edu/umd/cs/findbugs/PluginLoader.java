@@ -157,7 +157,7 @@ public class PluginLoader {
 				url = urlClassLoader.findResource("/" + name);
 		}
 
-		if (false && url == null) {
+		if (url == null) {
 			url = classLoader.getResource(name);
 			if (url == null)
 				url = classLoader.getResource("/" + name);
