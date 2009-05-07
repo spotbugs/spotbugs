@@ -67,13 +67,13 @@ public class CommentsArea {
 
 	private ArrayList<String> designationKeys;
 
-	private JButton fileBug = new JButton(BugFilingStatus.FILE_BUG.toString());
+	private JButton fileBug; 
 
 	LinkedList<String> prevCommentsList = new LinkedList<String>();
 
 	final static private int prevCommentsMaxSize = 10;
 
-	private JComboBox prevCommentsComboBox = new JComboBox();
+	private JComboBox prevCommentsComboBox; 
 
 	private boolean dontShowAnnotationConfirmation = false;
 
@@ -133,7 +133,7 @@ public class CommentsArea {
 		reportText.setEditable(false);
 		
 		JScrollPane reportScrollP = new JScrollPane(reportText);
-
+		fileBug = new JButton(BugFilingStatus.FILE_BUG.toString());
 		fileBug.setEnabled(false);
 		fileBug.setToolTipText("Click to file bug for this issue");
 		fileBug.addActionListener(new ActionListener(){
@@ -146,9 +146,7 @@ public class CommentsArea {
 						return;
 					URL u = cloud.getBugLink(bug);
 					if (u != null) {
-						System.out.println("Launching " + u);
 						if (LaunchBrowser.showDocument(u)) {
-							System.out.println("Launched " + u);
 							cloud.bugFiled(bug, null);
 							getMainFrame().syncBugInformation();
 						}
@@ -157,7 +155,7 @@ public class CommentsArea {
 	            
             }});
 		
-		
+		 prevCommentsComboBox = new JComboBox();
 		prevCommentsComboBox.setEnabled(false);
 		prevCommentsComboBox
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reuse_comments", "Use this to reuse a previous textual comment for this bug"));
