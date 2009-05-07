@@ -1219,8 +1219,8 @@ public  class DBCloud extends AbstractCloud {
 			}
 		}
 		for(BugDesignation d : bd.getUniqueDesignations()) 
-			if (d != primaryDesignation 
-					&& (canSeeCommentsByOthers && !findbugsUser.equals(d.getUser()))) {
+			if (d == primaryDesignation 
+					|| (canSeeCommentsByOthers && !findbugsUser.equals(d.getUser()))) {
 				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
 						i18n.getUserDesignation(d.getDesignationKey())));
 				if (d.getAnnotationText().length() > 0) {
@@ -1402,7 +1402,6 @@ public  class DBCloud extends AbstractCloud {
 		}else {
 			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)\n\n", count, notInCloud);
 		}
-    	w.printf("Summary for %d issues that are both in the cloud and current view\n\n", count);
     	w.println("People who have performed the most reviews");
     	printLeaderBoard(w, evaluations, 5, findbugsUser, true, "reviewer");
     	
@@ -1457,7 +1456,7 @@ public  class DBCloud extends AbstractCloud {
 				foundAlwaysPrint = true;
     		row++;
     		if (foundAlwaysPrint && row >= maxRows) {
-    			w.printf("Total of %d %s\n", evaluations.numKeys(), title);
+    			w.printf("Total of %d %ss\n", evaluations.numKeys(), title);
     			break;
     		}
     		
