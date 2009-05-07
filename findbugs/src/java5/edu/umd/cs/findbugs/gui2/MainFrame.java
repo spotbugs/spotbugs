@@ -934,7 +934,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		final int count;
 		@Override
         public String toString() {
-			return String.format("%d in %s",count, projectName);
+			return String.format("%s -- [%d issues]", projectName, count);
 		}
 	}
 	public void selectPackagePrefixByProject() {
@@ -953,7 +953,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			return;
 		}
 		ArrayList<ProjectSelector> selectors = new ArrayList<ProjectSelector>(projects.size() + 1);
-		ProjectSelector everything = new ProjectSelector("all issues", "", total);
+		ProjectSelector everything = new ProjectSelector("all projects", "", total);
 		selectors.add(everything);
 		for (String projectName : projects) {
 			ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
