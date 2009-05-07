@@ -46,7 +46,10 @@ public class Multiset<K> {
 		else
 			map.put(k, v + 1);
 	}
-
+	public void addAll(Iterable<K> c) {
+		for(K k : c)
+			add(k);
+	}
 	public int getCount(K k) {
 		Integer v = map.get(k);
 		if (v == null)
