@@ -260,6 +260,20 @@ public class ViewFilter {
 		return packagePrefixes;
 	}
 
+
+	public boolean showIgnoringPackagePrefixes(BugInstance b) {
+		if (!firstSeen.show(mf, b)) {
+			return false;
+		}
+		if (!rank.show(mf, b)) {
+			return false;
+		}
+		if (!eval.show(mf, b)) {
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean show(BugInstance b) {
 		String[] pp = packagePrefixes;
 		if (pp != null && pp.length > 0) {
@@ -275,16 +289,7 @@ public class ViewFilter {
 			}
 		}
 
-		if (!firstSeen.show(mf, b)) {
-			return false;
-		}
-		if (!rank.show(mf, b)) {
-			return false;
-		}
-		if (!eval.show(mf, b)) {
-			return false;
-		}
-		return true;
+		return showIgnoringPackagePrefixes(b);
 
 	}
 

@@ -42,14 +42,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -119,7 +117,6 @@ import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -141,6 +138,7 @@ import edu.umd.cs.findbugs.gui.Logger;
 import edu.umd.cs.findbugs.gui2.BugTreeModel.TreeModification;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
+import edu.umd.cs.findbugs.util.Multiset;
 
 @SuppressWarnings("serial")
 
@@ -195,7 +193,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	static final String TITLE_START_TXT = "FindBugs: ";
 
 	private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
-	private JButton findButton = newButton("button.find", "Find");
+	private JButton findButton = newButton("button.find", "First");
 	private JButton findNextButton = newButton("button.findNext", "Next");
 	private JButton findPreviousButton = newButton("button.findPrev", "Previous");
 
@@ -609,6 +607,13 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return popupMenu;
 	}
 
+	boolean shouldDisplayIssueIgnoringPackagePrefixes(BugInstance b) {
+		Project project = getProject();
+		Filter suppressionFilter = project.getSuppressionFilter();
+		if (null == bugCollection || suppressionFilter.match(b))
+			return false;
+		return viewFilter.showIgnoringPackagePrefixes(b);
+		}
 
 	boolean shouldDisplayIssue(BugInstance b) {
 		Project project = getProject();
@@ -918,13 +923,57 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		return menuBar;
 	}
 	
+	static class ProjectSelector {
+        public ProjectSelector(String projectName, String filter, int count) {
+	        this.projectName = projectName;
+	        this.filter = filter;
+	        this.count = count;
+        }
+		final  String projectName;
+		final String filter;
+		final int count;
+		@Override
+        public String toString() {
+			return String.format("%d in %s",count, projectName);
+		}
+	}
+	public void selectPackagePrefixByProject() {
+		TreeSet<String> projects = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		Multiset<String> count = new Multiset<String>();
+		int total = 0;
+		for (BugInstance b : bugCollection.getCollection())
+			if (shouldDisplayIssueIgnoringPackagePrefixes(b)){
+			TreeSet<String> projectsForThisBug = projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName());
+			projects.addAll(projectsForThisBug);
+			count.addAll(projectsForThisBug);
+			total++;
+		}
+		if (projects.size() == 0) {
+			JOptionPane.showMessageDialog(this, "No issues in current view");
+			return;
+		}
+		ArrayList<ProjectSelector> selectors = new ArrayList<ProjectSelector>(projects.size() + 1);
+		ProjectSelector everything = new ProjectSelector("all issues", "", total);
+		selectors.add(everything);
+		for (String projectName : projects) {
+			ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
+			selectors.add(new ProjectSelector(projectName, filter.toString(), count.getCount(projectName)));
+		}
+		ProjectSelector choice = (ProjectSelector) JOptionPane.showInputDialog(null, "Choose a project to set appropriate package prefix(es)", "Select package prefixes by package",
+		        JOptionPane.QUESTION_MESSAGE, null, selectors.toArray(), everything);
+		if (choice == null)
+			return;
+
+		textFieldForPackagesToDisplay.setText(choice.filter);
+		viewFilter.setPackagesToDisplay(choice.filter);
+
+	}
 	JMenu viewMenu ;
 	public void setViewMenu() {
 
 		Cloud cloud = this.bugCollection == null ? null : this.bugCollection.getCloud();
 			
 		viewMenu.removeAll();
-		
 		if (cloud != null && cloud.supportsCloudSummaries()) {
 			JMenuItem cloudReport = new JMenuItem("Cloud summary");
 			cloudReport.addActionListener(new ActionListener() {
@@ -934,31 +983,21 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				}
 			});
 			viewMenu.add(cloudReport);
-			viewMenu.addSeparator();
 		}
 		if (projectPackagePrefixes.size() > 0 && this.bugCollection != null) {
-			TreeSet<String> projects = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-			for (BugInstance b : bugCollection.getCollection()) {
-				projects.addAll(projectPackagePrefixes.getProjects(b.getPrimaryClass().getClassName()));
-			}
-			if (projects.size() > 0) {
-				JMenu setPaths = new JMenu("Set package paths");
-				viewMenu.add(setPaths);
-				viewMenu.addSeparator();
-				for(String projectName : projects) {
-					JMenuItem item = new JMenuItem(projectName);
-					ProjectPackagePrefixes.PrefixFilter filter = projectPackagePrefixes.getFilter(projectName);
-					final String paths = filter.toString();
-					setPaths.add(item);
-					item.addActionListener(new ActionListener(){
-						public void actionPerformed(ActionEvent e) {
-							textFieldForPackagesToDisplay.setText(paths);
-							viewFilter.setPackagesToDisplay(paths);
-						}});   
+			JMenuItem selectPackagePrefixMenu = new JMenuItem("Select package prefix by project...");
+			selectPackagePrefixMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					selectPackagePrefixByProject();
+
 				}
-			}
+			});
+			viewMenu.add(selectPackagePrefixMenu);
+			
 			
 		}
+		if (viewMenu.getItemCount() > 0)
+			viewMenu.addSeparator();
 		
 		ButtonGroup rankButtonGroup = new ButtonGroup();
 		for(final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
@@ -2312,6 +2351,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		styleSheet.addRule("body {font-size: " + Driver.getFontSize() +"pt}");
 		styleSheet.addRule("H1 {color: red;  font-size: 120%; font-weight: bold;}");
 		styleSheet.addRule("code {font-family: courier; font-size: " + Driver.getFontSize() +"pt}");
+		styleSheet.addRule(" a:link { color: #0000FF; } ");
+		styleSheet.addRule(" a:visited { color: #800080; } ");
+		styleSheet.addRule(" a:active { color: #FF0000; text-decoration: underline; } ");
 		htmlEditorKit.setStyleSheet(styleSheet);
 		summaryHtmlArea.setEditorKit(htmlEditorKit);
 	}
@@ -2350,9 +2392,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		GridBagConstraints c = new GridBagConstraints();
 		JPanel thePanel = new JPanel();
 		thePanel.setLayout(gridbag);
-		findButton.setToolTipText("Enter text and click here to find first occurrence");
-		findNextButton.setToolTipText("click here to find next occurrence");
-		findPreviousButton.setToolTipText("click here to find previous occurrence");
+		findButton.setToolTipText("Find first occurrence");
+		findNextButton.setToolTipText("Find next occurrence");
+		findPreviousButton.setToolTipText("Find previous occurrence");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.weightx = 1.0;
