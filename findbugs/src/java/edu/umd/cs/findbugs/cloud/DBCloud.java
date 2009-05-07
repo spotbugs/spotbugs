@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1005,11 +1006,16 @@ public  class DBCloud extends AbstractCloud {
 		        + "\n";
 	}
 
+	private String getLineTerminatedUserEvaluation(BugInstance b) {
+		String result = getUserEvaluation(b);
+		if (result.length() == 0) return "";
+		return result.trim()+"\n";
+	}
 	String getBugReport(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
 	}
 	String getBugReportShorter(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getUserEvaluation(b) +  getBugPatternExplanationLink(b) + getBugReportTail(b);
+		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) +  getBugPatternExplanationLink(b) + getBugReportTail(b);
 	}
 	String getBugReportAbridged(BugInstance b) {
 		return getBugReportHead(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
@@ -1041,19 +1047,36 @@ public  class DBCloud extends AbstractCloud {
 				SourceFile sourceFile = MainFrame.getInstance().getSourceFinder().findSourceFile(primarySource);
 				BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
 				int lineNumber = 1;
-				out.println("\nRelevant source code:");
+				String commonWhiteSpace = null;
+				List<SourceLine> source = new ArrayList<SourceLine>();
 				while (lineNumber <= lastLine + 4) {
 					String txt = in.readLine();
 					if (txt == null)
 						break;
 					if (lineNumber >= firstLine - 4) {
-						if (lineNumber > lastLine && txt.trim().length() == 0)
-							break;
-						out.printf("%4d: %s\n", lineNumber, txt);
+						String trimmed = txt.trim();
+						if (trimmed.length() == 0) {
+							if (lineNumber > lastLine)
+								break;
+							txt = trimmed;
+							
+						}
+						source.add(new SourceLine(lineNumber, txt));
+						commonWhiteSpace = commonLeadingWhitespace(commonWhiteSpace, txt);
 					}
 					lineNumber++;
 				}
 				in.close();
+				
+				out.println("\nRelevant source code:");
+				for(SourceLine s : source) {
+					if (s.text.length() == 0)
+							out.printf("%5d: \n", s.line);
+					else 
+						out.printf("%5d:   %s\n", s.line, s.text.substring(commonWhiteSpace.length()));
+				}
+				
+				
 				out.println();
 			} catch (IOException e) {
 				assert true;
@@ -1067,6 +1090,28 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
+	String commonLeadingWhitespace(String soFar, String txt) {
+		if (txt.length() == 0)
+			return soFar;
+		if (soFar == null) 
+			return txt;
+		soFar = Util.commonPrefix(soFar, txt);
+		for(int i = 0; i < soFar.length(); i++) {
+			if (!Character.isWhitespace(soFar.charAt(i)))
+					return soFar.substring(0,i);
+		}
+		return soFar;
+		
+		
+	}
+	static class SourceLine {
+        public SourceLine(int line, String text) {
+	        this.line = line;
+	        this.text = text;
+        }
+		final int line;
+		final String text;
+	}
 	String getBugReportTail(BugInstance b) {
 		return "\nFindBugs issue identifier (do not modify or remove): " + b.getInstanceHash();
 	}
@@ -1184,16 +1229,14 @@ public  class DBCloud extends AbstractCloud {
 	    			String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
 	    				                   +" please cut and paste into the bug report as appropriate]\n\n"
 	    				                   + getBugReportSourceCode(b) 
-	    								 +  getUserEvaluation(b)
+	    								 +  getLineTerminatedUserEvaluation(b)
 	    								 + getBugPatternExplanation(b);
 	    			bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
-	    					"Cut and paste into bug entry for " + b.getMessageWithoutPrefix(),
+	    					"Cut and paste as needed into bug entry",
 	    					supplemental);
 	    			
 	    		}
 	    	}
-	    	if (u.length() > MAX_URL_LENGTH - 500)
-	    		setErrorMsg("Bug link length is "+ u.length());
 	    	return new URL(u);
 	    }
     }
@@ -1234,8 +1277,7 @@ public  class DBCloud extends AbstractCloud {
 			}
 		}
 		for(BugDesignation d : bd.getUniqueDesignations()) 
-			if (d == primaryDesignation 
-					|| (canSeeCommentsByOthers && !findbugsUser.equals(d.getUser()))) {
+			if (findbugsUser.equals(d.getUser())|| canSeeCommentsByOthers ) {
 				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
 						i18n.getUserDesignation(d.getDesignationKey())));
 				if (d.getAnnotationText().length() > 0) {
