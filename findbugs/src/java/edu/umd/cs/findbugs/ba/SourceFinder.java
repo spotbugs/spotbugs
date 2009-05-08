@@ -451,7 +451,56 @@ public class SourceFinder {
 
 		throw new FileNotFoundException("Can't find source file " + fileName);
 	}
+	
+	public boolean hasSourceFile(SourceLineAnnotation source) {
+		if (source.isSourceFileKnown())
+			return hasSourceFile(source.getPackageName(), source.getSourceFile());
+		String packageName = source.getPackageName();
+		String baseClassName = source.getClassName();
+		int i = baseClassName.lastIndexOf('.');
+		baseClassName = baseClassName.substring(i+1);
+		int j = baseClassName.indexOf("$");
+		if (j >= 0)
+			baseClassName = baseClassName.substring(0,j);
+		return hasSourceFile(packageName, baseClassName + ".java");
 
+	}
+	
+	public boolean hasSourceFile(String packageName, String fileName) {
+		// On windows the fileName specification is different between a file in a directory tree, and a 
+		// file in a zip file. In a directory tree the separator used is '\', while in a zip it's '/'
+		// Therefore for each repository figure out what kind it is and use the appropriate separator.
+
+		// In all practicality, this code could just use the hardcoded '/' char, as windows can open 
+		// files with this separator, but to allow for the mythical 'other' platform that uses an
+		// alternate separator, make a distinction
+
+		// Create a fully qualified source filename using the package name for both directories and zips
+		String platformName = packageName.replace('.', File.separatorChar) + 
+								(packageName.length() > 0 ? File.separator : "") + fileName;
+		String canonicalName = packageName.replace('.', '/') + 
+								(packageName.length() > 0 ? "/" : "") + fileName;
+
+		// Is the file in the cache already? Always cache it with the canonical name
+		SourceFile sourceFile = cache.get(canonicalName);
+		if (sourceFile != null)
+			return true;
+
+		// Find this source file, add its data to the cache
+		if (DEBUG) System.out.println("Trying " + fileName +  " in package " + packageName + "...");
+		// Query each element of the source path to find the requested source file
+		for (SourceRepository repos : repositoryList) {
+			if (repos instanceof BlockingSourceRepository && !((BlockingSourceRepository)repos).isReady())
+				continue;
+			fileName = repos.isPlatformDependent() ? platformName : canonicalName;
+			if (DEBUG) System.out.println("Looking in " + repos  + " for " + fileName);
+			if (repos.contains(fileName)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 	/**
      * @param project
      */
