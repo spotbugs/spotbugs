@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
@@ -216,14 +217,22 @@ public class ViewFilter {
 
 	FirstSeenFilter firstSeen = FirstSeenFilter.ALL;
 
-	String[] packagePrefixes;
+	String[] classSearchStrings;
 
+	static final Pattern legalClassSearchString =
+		Pattern.compile("[\\p{javaLowerCase}\\p{javaUpperCase}0-9.$/_]*");
 	void setPackagesToDisplay(String value) {
 		value = value.replace('/', '.').trim();
 		if (value.length() == 0)
-			packagePrefixes = new String[0];
-		else
-			packagePrefixes = value.split("[ ,:]+");
+			classSearchStrings = new String[0];
+		else {
+			String [] parts = value.split("[ ,:]+");
+			for(String p : parts)
+				if (legalClassSearchString.matcher(p).matches())
+					throw new IllegalArgumentException("Class search string isn't a legal classname substring: " + p);
+			
+			classSearchStrings = parts;
+		}
 		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 	}
 
@@ -256,7 +265,7 @@ public class ViewFilter {
 	}
 
 	public String[] getPackagePrefixes() {
-		return packagePrefixes;
+		return classSearchStrings;
 	}
 
 
@@ -273,13 +282,13 @@ public class ViewFilter {
 		return true;
 	}
 	
-	public static boolean matchedPrefixes(String[] packagePrefixes, @DottedClassName String className) {
-		String[] pp = packagePrefixes;
+	public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
+		String[] pp = classSearchStrings;
 		if (pp == null || pp.length == 0)
 			return true;
 
 		for (String p : pp)
-			if (p.length() > 0 && className.startsWith(p))
+			if (p.length() > 0 && className.indexOf(p) >= 0)
 				return true;
 
 		return false;
@@ -289,7 +298,7 @@ public class ViewFilter {
 		
 		String className = b.getPrimaryClass().getClassName();
 		
-		return matchedPrefixes(packagePrefixes, className) && showIgnoringPackagePrefixes(b);
+		return matchedPrefixes(classSearchStrings, className) && showIgnoringPackagePrefixes(b);
 
 	}
 

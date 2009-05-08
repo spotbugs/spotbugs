@@ -481,8 +481,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		if (this.bugCollection != null && userAnnotationListener != null) {
 			
 			Cloud plugin = this.bugCollection.getCloud();
-			if (plugin != null) 
+			if (plugin != null)  {
 				plugin.removeListener(userAnnotationListener);
+				plugin.shutdown();
+			}
+			
 			}
 		// setRebuilding(false);
 		if (bugCollection == null) {
@@ -1713,11 +1716,15 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     	textFieldForPackagesToDisplay.addActionListener(new ActionListener(){
     
     		public void actionPerformed(ActionEvent e) {
+    			try {
              viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+    			} catch (IllegalArgumentException err) {
+    				JOptionPane.showMessageDialog(MainFrame.this, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
+    			}
             }});
     
-    	textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of package prefixes to restrict the view to those packages");
-    	JPanel topPanel = makeNavigationPanel("Package prefixes:", textFieldForPackagesToDisplay, tableheader, treePanel);
+    	textFieldForPackagesToDisplay.setToolTipText("Provide a comma separated list of class search strings to restrict the view to classes containing those substrings");
+    	JPanel topPanel = makeNavigationPanel("Class search strings:", textFieldForPackagesToDisplay, tableheader, treePanel);
     	cardPanel = new JPanel(new CardLayout());
     	waitPanel = new JPanel();
     	waitPanel.add(new JLabel("Please wait..."));

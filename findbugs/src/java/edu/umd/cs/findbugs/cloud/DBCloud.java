@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
@@ -69,6 +70,7 @@ import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -233,8 +235,17 @@ public  class DBCloud extends AbstractCloud {
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
 	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.db.promptForUserName", false);
 	int sessionId = -1;
+	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 	public void bugsPopulated() {
+		queue.add(new PopulateBugs());
 		
+	}
+	
+	class PopulateBugs implements Update {
+		
+
+	    public void execute(DatabaseSyncTask t) throws SQLException {
+
 		String commonPrefix = null;
 		for (BugInstance b : bugCollection.getCollection())
 			if (!skipBug(b)) {
@@ -314,11 +325,18 @@ public  class DBCloud extends AbstractCloud {
 			rs.close();
 			ps.close();
 
-			long initialLoadTime = startTime - StartTime.START_TIME;
-			long initialSyncTime = System.currentTimeMillis() - startTime;
+			long jvmStartTime = StartTime.START_TIME - StartTime.VM_START_TIME;
+			SortedBugCollection sbc = (SortedBugCollection) bugCollection;
+			long findbugsStartTime = sbc.getTimeStartedLoading() -  StartTime.START_TIME;
+			
+			
+			long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading() ;
+			long lostTime = startTime - sbc.getTimeStartedLoading() ;
+			
+			long initialSyncTime = System.currentTimeMillis() -  sbc.getTimeFinishedLoading();
 			PreparedStatement insertSession =  
-				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
-						+ " VALUES (?,?,?,?,?,?,?,?,?)",  
+				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+						+ " VALUES (?,?,?,?,?,?,?,?,?,?,?)",  
 						Statement.RETURN_GENERATED_KEYS);
 			Timestamp now = new Timestamp(startTime);
 			int col = 1;
@@ -326,6 +344,8 @@ public  class DBCloud extends AbstractCloud {
 			insertSession.setString(col++, "");
 			insertSession.setString(col++,"");
 			insertSession.setString(col++, Version.RELEASE);
+			insertSession.setLong(col++, jvmStartTime);
+			insertSession.setLong(col++, findbugsStartTime);
 			insertSession.setLong(col++, initialLoadTime);
 			insertSession.setLong(col++, initialSyncTime);
 			insertSession.setInt(col++, bugCollection.getCollection().size());
@@ -375,8 +395,11 @@ public  class DBCloud extends AbstractCloud {
 						b.setUserDesignation(new BugDesignation(designation));
 				}
 			}
+		initialSyncDone.countDown();
 		
-		
+	}
+
+	
 	}
 
 	int issuesBulkHandled = 0;

@@ -93,6 +93,21 @@ public class SortedBugCollection implements BugCollection {
 	private Cloud userAnnotationPlugin;
 	boolean shouldNotUsePlugin;
 	
+	long timeStartedLoading, timeFinishedLoading;
+	
+	/**
+     * @return Returns the timeStartedLoading.
+     */
+    public long getTimeStartedLoading() {
+    	return timeStartedLoading;
+    }
+	/**
+     * @return Returns the timeFinishedLoading.
+     */
+    public long getTimeFinishedLoading() {
+    	return timeFinishedLoading;
+    }
+
 	final Project project;
 	
 	public Project getProject() {
@@ -242,6 +257,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	private void doReadXML(@WillClose InputStream in, File base) throws IOException, DocumentException {
+		timeStartedLoading = System.currentTimeMillis();
 		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);
 		Profiler profiler = getProjectStats().getProfiler();
 		profiler.start(handler.getClass());
@@ -270,6 +286,8 @@ public class SortedBugCollection implements BugCollection {
 			Util.closeSilently(in);
 			profiler.end(handler.getClass());
 		}
+		timeFinishedLoading = System.currentTimeMillis();
+		
 		Cloud plugin = getCloud();
 		if (plugin != null)
 			plugin.bugsPopulated();
