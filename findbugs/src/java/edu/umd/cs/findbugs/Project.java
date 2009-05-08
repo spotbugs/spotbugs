@@ -183,9 +183,8 @@ public class Project implements XMLWriteable {
 
 	}
 	public void setCurrentWorkingDirectory(File f) {
-		 this.currentWorkingDirectoryList.clear();
-         if (f != null)
-        	 this.currentWorkingDirectoryList.add(f);
+		if (f != null)
+			addWorkingDir(f.toString());
 	}
 	/**
 	 * Return whether or not this Project has unsaved modifications.
