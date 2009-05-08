@@ -3075,12 +3075,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	  Cloud cloud = this.bugCollection.getCloud();
 		if (cloud == null) {
 			JOptionPane.showMessageDialog(this, "There is no cloud");
-			
 			return;
 		}
 	  StringWriter stringWriter = new StringWriter();
 	  PrintWriter writer = new PrintWriter(stringWriter);
-	  cloud.printCloudSummary(getDisplayedBugs(), writer);
+	  cloud.printCloudSummary(writer, getDisplayedBugs(), viewFilter.getPackagePrefixes());
 	  writer.close();
 	  String report = stringWriter.toString();
 	DisplayNonmodelMessage.displayNonmodelMessage("Cloud summary", report, this, false);
@@ -3137,5 +3136,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 	   
    }
+/* (non-Javadoc)
+ * @see edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String, java.lang.String, java.lang.String)
+ */
+public String showQuestionDialog(String message, String title, String defaultValue) {
+	return (String) JOptionPane.showInputDialog(this, message, title, JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
+}
 
 }

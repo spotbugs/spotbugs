@@ -317,6 +317,7 @@ public class CommentsArea {
 				boolean b = frame.getProjectChanged();
 				BugInstance bug = node.getBug();
 				Cloud plugin = getCloud();
+
 				if (plugin.supportsBugLinks()) {
 					BugFilingStatus status = plugin.getBugLinkStatus(bug);
 					fileBug.setText(status.toString());
@@ -324,15 +325,20 @@ public class CommentsArea {
 				} else {
 					fileBug.setEnabled(false);
 				}
-				setCurrentUserCommentsText(bug.getAnnotationText());
-				if (plugin.supportsCloudReports()) {
-					String report = plugin.getCloudReport(bug);
-					reportText.setText(report);
+				if (!plugin.canStoreUserAnnotation(bug)) {
+					designationComboBox.setSelectedIndex(0);
+					setCurrentUserCommentsText("");
+					reportText.setText("Issue not persisted to database");
+					setUserCommentInputEnableFromSwingThread(false);
+				} else {
+					setCurrentUserCommentsText(bug.getAnnotationText());
+					if (plugin.supportsCloudReports()) {
+						String report = plugin.getCloudReport(bug);
+						reportText.setText(report);
+					}
+					designationComboBox.setSelectedIndex(designationKeys.indexOf(bug.getUserDesignationKey()));
+					setUserCommentInputEnableFromSwingThread(plugin.canStoreUserAnnotation(bug));
 				}
-				designationComboBox.setSelectedIndex(designationKeys
-						.indexOf(bug
-								.getUserDesignationKey()));
-				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
 				setProjectChanged(b);
 			}
@@ -617,6 +623,14 @@ public class CommentsArea {
 		if (frame.currentSelectedBugLeaf == null)
 			updateCommentsFromNonLeafInformationFromSwingThread(frame.currentSelectedBugAspects);
 		else {
+			Cloud cloud = getMainFrame().bugCollection.getCloud();
+			BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+			if (!cloud.canStoreUserAnnotation(bug)) {
+				designationComboBox.setEnabled(false);
+				designationComboBox.setSelectedIndex(0);
+				return;
+			}
+			
 			designationComboBox.setEnabled(true);
 			int selectedIndex = designationComboBox
 								.getSelectedIndex();

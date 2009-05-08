@@ -166,7 +166,7 @@ public interface Cloud {
      * @param bugInstance
      */
     void storeUserAnnotation(BugInstance bugInstance);	
-    
-    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w);
+    boolean canStoreUserAnnotation(BugInstance bugInstance);	
+    public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes);
     public boolean supportsCloudSummaries();
 }

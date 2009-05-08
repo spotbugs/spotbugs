@@ -25,8 +25,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.DBCloud;
-import edu.umd.cs.findbugs.cloud.UserDesignation;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * @author pugh
@@ -274,22 +273,23 @@ public class ViewFilter {
 		return true;
 	}
 	
-	public boolean show(BugInstance b) {
+	public static boolean matchedPrefixes(String[] packagePrefixes, @DottedClassName String className) {
 		String[] pp = packagePrefixes;
-		if (pp != null && pp.length > 0) {
-			String packageName = b.getPrimaryClass().getClassName();
-			boolean match = false;
-			for (String p : pp)
-				if (p.length() > 0 && packageName.startsWith(p)) {
-					match = true;
-					break;
-				}
-			if (!match) {
-				return false;
-			}
-		}
+		if (pp == null || pp.length == 0)
+			return true;
 
-		return showIgnoringPackagePrefixes(b);
+		for (String p : pp)
+			if (p.length() > 0 && className.startsWith(p))
+				return true;
+
+		return false;
+
+	}
+	public boolean show(BugInstance b) {
+		
+		String className = b.getPrimaryClass().getClassName();
+		
+		return matchedPrefixes(packagePrefixes, className) && showIgnoringPackagePrefixes(b);
 
 	}
 

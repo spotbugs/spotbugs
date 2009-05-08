@@ -98,4 +98,11 @@ public class CommandLineUiCallback implements IGuiCallback {
   public void displayNonmodelMessage(String title, String message) {
     System.out.println(String.format("Message: %s\n%s", title, message));
   }
+
+/* (non-Javadoc)
+ * @see edu.umd.cs.findbugs.IGuiCallback#showQuestionDialog(java.lang.String, java.lang.String, java.lang.String)
+ */
+public String showQuestionDialog(String message, String title, String defaultValue) {
+	throw new UnsupportedOperationException();
+}
 }

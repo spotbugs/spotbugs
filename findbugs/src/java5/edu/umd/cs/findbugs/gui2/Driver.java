@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import java.io.File;
 import java.util.Locale;
+
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.StartTime;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 
 /**
  * This is where it all begins
@@ -33,23 +35,26 @@ import java.util.Locale;
  * 
  */
 public class Driver {
-	
+
 	private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
 
-	private static GUI2CommandLine commandLine = new GUI2CommandLine();
+	private static GUI2CommandLine commandLine;
 	private static SplashFrame splash;
 
 	public static void main(String[] args) throws Exception {
+		/** Force start time to be computed */
+		long startTime = StartTime.START_TIME;
+		
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 		{
 			System.setProperty("apple.laf.useScreenMenuBar","true");
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");	
 			Debug.println("Mac OS detected");
 		}
-
 		splash = new SplashFrame();
 		splash.setVisible(true);
-		 
+		commandLine = new GUI2CommandLine();
+		
 		int numParsed = commandLine.parse(args, 0, 1, USAGE);
 
 		//

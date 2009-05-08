@@ -134,12 +134,16 @@ public abstract class AbstractCloud implements Cloud {
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#printCloudSummary(java.lang.Iterable, java.io.PrintWriter)
      */
-    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w) {
+    public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
 	   return;
 	    
     }
     
     public boolean supportsCloudSummaries() {
     	return false;
+    }
+    
+    public boolean canStoreUserAnnotation(BugInstance bugInstance) {
+    	return true;
     }
 }

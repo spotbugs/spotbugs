@@ -31,6 +31,7 @@ import java.net.URLConnection;
 public interface IGuiCallback {
 	void showMessageDialog(String message);
 	int showConfirmDialog(String message, String title, int optionType);
+	String showQuestionDialog(String message, String title, String defaultValue);
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
     void setErrorMessage(String errorMsg);
     void displayNonmodelMessage(String title, String message);

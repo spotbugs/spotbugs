@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -39,6 +38,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -65,14 +65,19 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
+import edu.umd.cs.findbugs.gui2.ViewFilter;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
@@ -226,6 +231,7 @@ public  class DBCloud extends AbstractCloud {
 		super(bugs);
 	}
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
+	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.db.promptForUserName", false);
 	int sessionId = -1;
 	public void bugsPopulated() {
 		
@@ -308,10 +314,11 @@ public  class DBCloud extends AbstractCloud {
 			rs.close();
 			ps.close();
 
+			long initialLoadTime = startTime - StartTime.START_TIME;
 			long initialSyncTime = System.currentTimeMillis() - startTime;
 			PreparedStatement insertSession =  
-				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialSyncTime, numIssues, startTime, commonPrefix)"
-						+ " VALUES (?,?,?,?,?,?,?,?)",  
+				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, initialLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+						+ " VALUES (?,?,?,?,?,?,?,?,?)",  
 						Statement.RETURN_GENERATED_KEYS);
 			Timestamp now = new Timestamp(startTime);
 			int col = 1;
@@ -319,6 +326,7 @@ public  class DBCloud extends AbstractCloud {
 			insertSession.setString(col++, "");
 			insertSession.setString(col++,"");
 			insertSession.setString(col++, Version.RELEASE);
+			insertSession.setLong(col++, initialLoadTime);
 			insertSession.setLong(col++, initialSyncTime);
 			insertSession.setInt(col++, bugCollection.getCollection().size());
 			insertSession.setTimestamp(col++, now);
@@ -376,6 +384,7 @@ public  class DBCloud extends AbstractCloud {
 		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
+	final static int MAX_DB_RANK = SystemProperties.getInt("findbugs.db.maxrank", 12);
 	String url, dbUser, dbPassword, findbugsUser, dbName;
 	@CheckForNull Pattern sourceFileLinkPattern;
 	String sourceFileLinkFormat;
@@ -415,11 +424,20 @@ public  class DBCloud extends AbstractCloud {
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null)
 			return false;
 		if (findbugsUser == null) {
-			findbugsUser = System.getProperty("user.name", "");
-			if (false) try {
-				findbugsUser += "@" 
-					  + InetAddress.getLocalHost().getHostName();
-			} catch (Exception e) {}
+			if (PROMPT_FOR_USER_NAME) {
+				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
+				findbugsUser = prefs.get("user.name",  null);
+			}
+			if (findbugsUser == null)
+				findbugsUser = System.getProperty("user.name", "");
+			if (PROMPT_FOR_USER_NAME) {
+				findbugsUser = bugCollection.getProject().getGuiCallback().showQuestionDialog(
+						 "Your username (to record your comments in database)",
+						 "Connect to database as?", 
+						 findbugsUser == null ? "" : findbugsUser);
+			}
+			if (findbugsUser == null)
+				return false;
 		}
 		
 		loadBugComponents();
@@ -563,7 +581,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	private boolean skipBug(BugInstance bug) {
-		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > 12;
+		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > MAX_DB_RANK;
 	}
 
 	
@@ -821,7 +839,7 @@ public  class DBCloud extends AbstractCloud {
 
 	private void displayMessage(String msg, Exception e) {
 		AnalysisContext.logError(msg, e);
-		if (!GraphicsEnvironment.isHeadless() && bugCollection.getProject().isGuiAvaliable()) {
+		if (bugCollection.getProject().isGuiAvaliable()) {
                   StringWriter stackTraceWriter = new StringWriter();
                   PrintWriter printWriter = new PrintWriter(stackTraceWriter);
                   e.printStackTrace(printWriter);
@@ -1415,7 +1433,7 @@ public  class DBCloud extends AbstractCloud {
     
     
     @Override
-    public void printCloudSummary(Iterable<BugInstance> bugs, PrintWriter w) {
+    public void printCloudSummary(PrintWriter w, Iterable<BugInstance> bugs, String[] packagePrefixes) {
     	
     	Multiset<String> evaluations = new Multiset<String>();
     	Multiset<String> designations = new Multiset<String>();
@@ -1428,6 +1446,33 @@ public  class DBCloud extends AbstractCloud {
 			hashCodes.add(b.getInstanceHash());
 		}
 		
+		int packageCount = 0;
+		int classCount = 0;
+		int ncss = 0;
+		ProjectStats projectStats = bugCollection.getProjectStats();
+		for(PackageStats ps : projectStats.getPackageStats()) 
+			if (ViewFilter.matchedPrefixes(packagePrefixes, ps.getPackageName())) {
+				packageCount++;
+				for(ClassStats cs : ps.getClassStats()) 	
+					if (ViewFilter.matchedPrefixes(packagePrefixes, cs.getName())) {
+					  classCount++;
+					  ncss += cs.size();
+				}
+		}
+		
+		
+		if (packagePrefixes != null && packagePrefixes.length > 0) {
+			String lst = Arrays.asList(packagePrefixes).toString();
+			w.println("Code analyzed in " + lst.substring(1, lst.length()-1));
+		}
+		else 
+			w.println("Code analyzed");
+		if (classCount == 0)
+			w.println("No classes were analyzed");
+		else 
+			w.printf("%5d packages\n%5d classes\n%5d thousands of lines of non-commenting source statements\n",
+					packageCount, classCount, (ncss+999)/1000);
+		w.println();
 		int count = 0;
 		int notInCloud = 0;
 		for(String hash : hashCodes) {
@@ -1536,5 +1581,11 @@ public  class DBCloud extends AbstractCloud {
      */
     public boolean supportsCloudSummaries() {
 	   return true;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.cloud.Cloud#canStoreUserAnnotation(edu.umd.cs.findbugs.BugInstance)
+     */
+    public boolean canStoreUserAnnotation(BugInstance bugInstance) {
+	   return !skipBug(bugInstance);
     }
 }
