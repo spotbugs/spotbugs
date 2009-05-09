@@ -26,7 +26,9 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * We found a problem with the new OpenJDK that everyone is now using to compile
@@ -37,7 +39,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * logger reference. That means that the garbage collector is free to reclaim
  * that memory, which means that the logger configuration is lost.
  */
-public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
+public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 
 	final BugReporter bugReporter;
 	final BugAccumulator bugAccumulator;
@@ -90,8 +92,12 @@ public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 		case INVOKEVIRTUAL:
 			if (getClassConstantOperand().equals("java/util/logging/Logger")
 			        && namesOfSetterMethods.contains(getNameConstantOperand())) {
+				int priority = HIGH_PRIORITY;
+				if (getMethod().isStatic() && getMethodName().equals("main") 
+						&& getMethodSig().equals("([Ljava/lang/String;)V"))
+					priority = NORMAL_PRIORITY;;
 				bugAccumulator.accumulateBug(
-						new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", NORMAL_PRIORITY)
+						new BugInstance(this, "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE", priority)
 						.addClassAndMethod(this), this);
 				break;
 			}
@@ -120,6 +126,14 @@ public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 		if (getSigConstantOperand().endsWith("Logger;"))
 			loggerImported = true;
 	}
+	private void checkForEscape() {
+		int numArguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
+		for(int i = 0; i < numArguments; i++) {
+			OpcodeStack.Item item = stack.getStackItem(i);
+			if (item.getSignature().endsWith("Logger;"))
+				loggerEscaped = true;
+		}
+	}
 
 	private void checkForMethodExportImport() {
 		String sig = getSigConstantOperand();
@@ -133,6 +147,10 @@ public class LostLoggerDueToWeakReference extends BytecodeScanningDetector {
 		String sig = getSigConstantOperand();
 		if (sig.indexOf("Logger") >= 0)
 			loggerEscaped = true;
+		OpcodeStack.Item item = stack.getStackItem(0);
+		if (item.getSignature().endsWith("Logger;"))
+			loggerEscaped = true;
+		
 	}
 
 	private void emitWarning() {
