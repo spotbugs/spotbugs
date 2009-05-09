@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.util;
 
+import javax.annotation.meta.When;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -92,13 +94,14 @@ public abstract class ClassName {
 	 * @param className a class name
 	 * @return the same class name in dotted format
 	 */
-	public static @DottedClassName String toDottedClassName(@SlashedClassName String className) {
+	public static @DottedClassName String toDottedClassName(@SlashedClassName(when=When.UNKNOWN) String className) {
 		if (className.indexOf('/') >= 0) {
-			className = DescriptorFactory.canonicalizeString(className.replace('/', '.'));
+			return DescriptorFactory.canonicalizeString(className.replace('/', '.'));
 		}
 		return className;
 	}
 
+		
 	/**
 	 * extract the package name from a dotted class name.
 	 * Package names are always in dotted format.

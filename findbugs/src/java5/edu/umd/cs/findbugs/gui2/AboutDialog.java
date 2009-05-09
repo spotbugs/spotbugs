@@ -213,7 +213,6 @@ public class AboutDialog extends javax.swing.JDialog {
 		try {
 			if (evt.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED)) {
 				URL url = evt.getURL();
-				//showInBrowser(url.toString());
 				LaunchBrowser.showDocument(url);
 			}
 		}
