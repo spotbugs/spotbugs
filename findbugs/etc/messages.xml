@@ -7860,7 +7860,7 @@ public @NonNegative Integer example(@Negative Integer value) {
 	  <LongDescription>Changes to logger could be lost in {1}</LongDescription>
 	  <Details>
 		  <![CDATA[
-<p>OpenJDK introduces a potential compatibility.
+<p>OpenJDK introduces a potential incompatibility.
  In particular, the java.util.logging.Logger behavior has
   changed. Instead of using strong references, it now uses weak references
   internally. That's a reasonable change, but unfortunately some code relies on
