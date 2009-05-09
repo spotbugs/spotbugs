@@ -117,9 +117,13 @@ public  class DBCloud extends AbstractCloud {
 		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
 		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
 		
-		@CheckForNull BugDesignation getPrimaryDesignation() {
-			BugDesignation primaryDesignation = mode.getPrimaryDesignation(findbugsUser, designations);
-			return primaryDesignation;
+		@CheckForNull
+		BugDesignation getPrimaryDesignation() {
+			for (BugDesignation bd : designations)
+				if (findbugsUser.equals(bd.getUser()))
+					return bd;
+
+			return null;
 		}
 
 
@@ -205,6 +209,11 @@ public  class DBCloud extends AbstractCloud {
 	}
 	
 	BugData getBugData(BugInstance bug) {
+		try {
+	        initialSyncDone.await();
+        } catch (InterruptedException e) {
+	       throw new RuntimeException(e);
+        }
 		BugData bugData = getBugData(bug.getInstanceHash());
 		bugData.bugs.add(bug);
 		return bugData;
@@ -241,6 +250,7 @@ public  class DBCloud extends AbstractCloud {
 		
 	}
 	
+	static boolean invocationRecorded;
 	class PopulateBugs implements Update {
 		
 
@@ -325,10 +335,13 @@ public  class DBCloud extends AbstractCloud {
 			rs.close();
 			ps.close();
 
+			if (!invocationRecorded) {
 			long jvmStartTime = StartTime.START_TIME - StartTime.VM_START_TIME;
 			SortedBugCollection sbc = (SortedBugCollection) bugCollection;
 			long findbugsStartTime = sbc.getTimeStartedLoading() -  StartTime.START_TIME;
 			
+			URL findbugsURL = PluginLoader.getCoreResource("findbugs.xml");
+			String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
 			
 			long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading() ;
 			long lostTime = startTime - sbc.getTimeStartedLoading() ;
@@ -341,8 +354,8 @@ public  class DBCloud extends AbstractCloud {
 			Timestamp now = new Timestamp(startTime);
 			int col = 1;
 			insertSession.setString(col++, findbugsUser);
-			insertSession.setString(col++, "");
-			insertSession.setString(col++,"");
+			insertSession.setString(col++, limitToMaxLength(loadURL,128));
+			insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
 			insertSession.setString(col++, Version.RELEASE);
 			insertSession.setLong(col++, jvmStartTime);
 			insertSession.setLong(col++, findbugsStartTime);
@@ -359,7 +372,8 @@ public  class DBCloud extends AbstractCloud {
 			}
 			insertSession.close();
 			rs.close();
-
+			invocationRecorded = true;
+			}
 			c.close();
 			
 		} catch (Exception e) {
@@ -400,6 +414,12 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	
+	}
+	
+	private String limitToMaxLength(String s, int maxLength) {
+		if (s.length() <= maxLength)
+			return s;
+		return s.substring(0, maxLength);
 	}
 
 	int issuesBulkHandled = 0;
@@ -568,15 +588,23 @@ public  class DBCloud extends AbstractCloud {
 		runnerThread.interrupt();
 	}
 
+	private RuntimeException shutdownException = new RuntimeException("DBCloud shutdown");
+	private void checkForShutdown() {
+		if (!shutdown) return;
+		IllegalStateException e = new IllegalStateException("DBCloud has already been shutdown");
+		e.initCause(shutdownException);
+		throw e;
+	}
 	
 	public void storeNewBug(BugInstance bug) {
 
+		checkForShutdown();
 		queue.add(new StoreNewBug(bug));
 		updatedStatus();
 	}
 
 	public void storeFirstSeen(final BugData bd) {
-
+		checkForShutdown();
 		queue.add(new Update(){
 
 			public void execute(DatabaseSyncTask t) throws SQLException {
@@ -586,7 +614,7 @@ public  class DBCloud extends AbstractCloud {
 		updatedStatus();
 	}
 	public void storeUserAnnotation(BugData data, BugDesignation bd) {
-
+		checkForShutdown();
 		queue.add(new StoreUserAnnotation(data, bd));
 		updatedStatus();
 		if (firstTimeDoing(HAS_CLASSIFIED_ISSUES)) {
@@ -1404,6 +1432,8 @@ public  class DBCloud extends AbstractCloud {
      * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
      */
     public void bugFiled(BugInstance b, Object bugLink) {
+    	checkForShutdown();
+		
     	if (bugAlreadyFiled(b)) {
     		BugData bd = getBugData(b.getInstanceHash());
     		return;
@@ -1474,13 +1504,10 @@ public  class DBCloud extends AbstractCloud {
 		int ncss = 0;
 		ProjectStats projectStats = bugCollection.getProjectStats();
 		for(PackageStats ps : projectStats.getPackageStats()) 
-			if (ViewFilter.matchedPrefixes(packagePrefixes, ps.getPackageName())) {
+			if (ViewFilter.matchedPrefixes(packagePrefixes, ps.getPackageName()) &&  ps.size() > 0 && ps.getNumClasses() > 0) {
 				packageCount++;
-				for(ClassStats cs : ps.getClassStats()) 	
-					if (ViewFilter.matchedPrefixes(packagePrefixes, cs.getName())) {
-					  classCount++;
-					  ncss += cs.size();
-				}
+				 ncss += ps.size();
+				 classCount += ps.getNumClasses();
 		}
 		
 		
@@ -1493,7 +1520,7 @@ public  class DBCloud extends AbstractCloud {
 		if (classCount == 0)
 			w.println("No classes were analyzed");
 		else 
-			w.printf("%5d packages\n%5d classes\n%5d thousands of lines of non-commenting source statements\n",
+			w.printf("%,7d packages\n%,7d classes\n%,7d thousands of lines of non-commenting source statements\n",
 					packageCount, classCount, (ncss+999)/1000);
 		w.println();
 		int count = 0;

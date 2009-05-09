@@ -988,7 +988,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			viewMenu.add(cloudReport);
 		}
 		if (projectPackagePrefixes.size() > 0 && this.bugCollection != null) {
-			JMenuItem selectPackagePrefixMenu = new JMenuItem("Select package prefix by project...");
+			JMenuItem selectPackagePrefixMenu = new JMenuItem("Select class search strings by project...");
 			selectPackagePrefixMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					selectPackagePrefixByProject();

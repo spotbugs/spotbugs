@@ -259,6 +259,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						analysisError = new AnalysisError("Unknown error");
 						stackTrace.clear();
 					}
+				}  else if (outerElement.equals("FindBugsSummary") && qName.equals("PackageStats")) {
+					String packageName = getRequiredAttribute(attributes, "package", qName);
+					int numClasses = Integer.valueOf(
+							getRequiredAttribute(attributes, "total_types", qName));
+					int size = Integer.valueOf(
+							getRequiredAttribute(attributes, "total_size", qName));
+					bugCollection.getProjectStats().putIfAbsentPackageStats(packageName, numClasses, size);
+					
 				} else if (outerElement.equals("PackageStats")) {
 					if (qName.equals("ClassStats")) {
 						String className = getRequiredAttribute(attributes, "class", qName);

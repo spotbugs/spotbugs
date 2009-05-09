@@ -39,37 +39,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public interface Cloud {
 	
-	enum Mode { COMMUNAL {
-	    @Override
-	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
-		    if (designations.isEmpty()) 
-		    	return null;
-		    return designations.first();
-	    }
-    }, VOTING {
-	    @Override
-	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
-		   for(BugDesignation bd : designations) {
-			   if (user.equals(bd.getUser())) {
-				   // has voted
-				   return designations.first();
-			   }
-		   }
-		   return null;
-	    }
-    }, SECRET {
-	    @Override
-	    BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations) {
-	    	 for(BugDesignation bd : designations) {
-	    		 if (user.equals(bd.getUser())) {
-					  return bd;
-				   }
-			   }
-			   return null;
-	    }
-    };
-	abstract @CheckForNull BugDesignation getPrimaryDesignation(String user, SortedSet<BugDesignation> designations);
-	};
+	enum Mode { COMMUNAL, VOTING , SECRET  };
 	
     public static enum BugFilingStatus {
 		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label","File bug")) {

@@ -48,6 +48,7 @@ public class PackageStats implements XMLWriteable {
 		private final int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
 		private int size;
 
+
 		public ClassStats(String name, String sourceFile) {
 			this.name = name;
 			this.sourceFile = sourceFile;
@@ -119,6 +120,11 @@ public class PackageStats implements XMLWriteable {
 	// nBugs[0] is total; nBugs[n] is total for bug priority n
 	private int[] nBugs = new int[] { 0, 0, 0, 0, 0 };
 	private int size;
+	private int numClasses;
+	
+	public String toString() {
+		return String.format("%s, %d classes, %d ncss",  packageName, numClasses, size);
+	}
 
 	// list of errors for this package
 	//private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
@@ -129,6 +135,11 @@ public class PackageStats implements XMLWriteable {
 
 	public PackageStats(String packageName) {
 		this.packageName = packageName;
+	}
+	public PackageStats(String packageName, int numClasses, int size) {
+		this.packageName = packageName;
+		this.numClasses = numClasses;
+		this.size = size;
 	}
 
 	public Collection<ClassStats> getClassStats() {
@@ -150,6 +161,7 @@ public class PackageStats implements XMLWriteable {
 		if ( result == null ) {
 			result = new ClassStats(name, sourceFile);
 			packageMembers.put(name, result);
+			numClasses = packageMembers.size();
 		}
 
 		return result;
@@ -177,6 +189,10 @@ public class PackageStats implements XMLWriteable {
     }
 
 	public void addClass(String name, String sourceFile, boolean isInterface, int size) {
+		if (packageMembers.isEmpty()) {
+			this.size = 0;
+			this.numClasses = 0;
+		}
 		ClassStats classStats = getClassStats(name, sourceFile);
 		classStats.setInterface(isInterface);
 		classStats.setSize(size);
@@ -184,6 +200,10 @@ public class PackageStats implements XMLWriteable {
 	}
 
 	public void addClass(ClassStats classStats) {
+		if (packageMembers.isEmpty()) {
+			this.size = 0;
+			this.numClasses = 0;
+		}
 		packageMembers.put(classStats.getName(), classStats);
 		size += classStats.size();
 	}
@@ -192,6 +212,13 @@ public class PackageStats implements XMLWriteable {
 		return packageName;
 	}
 
+	public int getNumClasses() {
+		return numClasses;
+	}
+
+	public void setNumClasses(int numClasses) {
+		this.numClasses = numClasses;
+	}
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException{
 
@@ -199,8 +226,11 @@ public class PackageStats implements XMLWriteable {
 
 		xmlOutput.addAttribute("package", packageName);
 		xmlOutput.addAttribute("total_bugs", String.valueOf(nBugs[0]));
+		int numClasses = packageMembers.size();
+		if (numClasses == 0)
+			numClasses = this.numClasses;
 		xmlOutput.addAttribute("total_types",
-			String.valueOf(packageMembers.size()));
+			String.valueOf(numClasses));
 		xmlOutput.addAttribute("total_size", String.valueOf(size));
 		writeBugPriorities(xmlOutput, nBugs);
 
@@ -244,6 +274,7 @@ public class PackageStats implements XMLWriteable {
 		for(int i = 0; i < nBugs.length; i++)
 			nBugs[i] = 0;
 		size = 0;
+		numClasses = packageMembers.size();
 		for(ClassStats classStats :  packageMembers.values()) {
 			for(int i = 0; i < nBugs.length; i++)
 				nBugs[i] += classStats.getBugsAtPriority(i);

@@ -32,6 +32,7 @@ import org.dom4j.DocumentException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -59,7 +60,11 @@ public class SetBugDatabaseInfo {
 
 		boolean withMessages = false;
 		boolean purgeStats = false;
+		boolean purgeClassStats = false;
+		boolean purgeMissingClasses = false;
+		
 		boolean resetSource = false;
+		boolean resetProject = false;
 
 		long revisionTimestamp = 0L;
 
@@ -71,8 +76,11 @@ public class SetBugDatabaseInfo {
 			addOption("-name", "name", "set name for (last) revision");
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
 			addSwitch("-resetSource", "remove all source search paths");
+			addSwitch("-resetProject", "remove all source search paths, analysis and auxilary classpath entries");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
+			addSwitch("-purgeClassStats", "purge/delete information about sizes of analyzed class files, but retain class stats");
+			addSwitch("-purgeMissingClasses", "purge list of missing classes");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
 			addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
 			addSwitch("-withMessages", "Add bug descriptions");
@@ -84,8 +92,14 @@ public class SetBugDatabaseInfo {
 				withMessages = true;
 			else if (option.equals("-resetSource"))
 				resetSource = true;
+			else if (option.equals("-resetProject"))
+				resetProject = true;
 			else if (option.equals("-purgeStats"))
 				purgeStats = true;
+			else if (option.equals("-purgeClassStats"))
+				purgeClassStats = true;
+			else if (option.equals("-purgeMissingClasses"))
+				purgeMissingClasses = true;
 			else
 				throw new IllegalArgumentException("no option " + option);
 
@@ -136,12 +150,24 @@ public class SetBugDatabaseInfo {
 		if (commandLine.exclusionFilterFile != null) {
 			project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
 		}
+		if (commandLine.resetProject) {
+			project.getSourceDirList().clear();
+			project.getFileList().clear();
+			project.getAuxClasspathEntryList().clear();
+			
+		}
 		if (commandLine.resetSource)
 			project.getSourceDirList().clear();
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
 		if (commandLine.purgeStats)
 			origCollection.getProjectStats().getPackageStats().clear();
+		if (commandLine.purgeClassStats)
+			for(PackageStats ps : origCollection.getProjectStats().getPackageStats()) {
+				ps.getClassStats().clear();
+			}
+		if (commandLine.purgeMissingClasses)
+			origCollection.clearMissingClasses();
 
 		Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
 		if (!commandLine.searchSourcePaths.isEmpty()) {

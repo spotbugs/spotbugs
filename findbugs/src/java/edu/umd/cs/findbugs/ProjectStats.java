@@ -178,7 +178,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		totalClasses++;
 		totalSize += size;
 	}
-
+	
 	/**
 	 * Report that a class has been analyzed.
 	 *
@@ -372,7 +372,14 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 		return stat;
 	}
-
+	public void putIfAbsentPackageStats(String packageName, int numClasses, int size) {
+		PackageStats stat = packageStatsMap.get(packageName);
+		if (stat == null) {
+			stat = new PackageStats(packageName, numClasses, size);
+			packageStatsMap.put(packageName, stat);
+			
+		}
+	}
 	/**
 	 * @param stats2
 	 */

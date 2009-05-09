@@ -210,7 +210,7 @@ public interface BugCollection extends Iterable<BugInstance>
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException;
 
 	public void clearClassFeatures();
-
+	public void clearMissingClasses();
 	/**
 	 * Read XML data from given file into this object,
 	 * populating given Project as a side effect.

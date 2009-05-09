@@ -94,6 +94,7 @@ public class SortedBugCollection implements BugCollection {
 	boolean shouldNotUsePlugin;
 	
 	long timeStartedLoading, timeFinishedLoading;
+	String dataSource = "";
 	
 	/**
      * @return Returns the timeStartedLoading.
@@ -106,6 +107,10 @@ public class SortedBugCollection implements BugCollection {
      */
     public long getTimeFinishedLoading() {
     	return timeFinishedLoading;
+    }
+    
+    public String getDataSource() {
+    	return dataSource;
     }
 
 	final Project project;
@@ -225,12 +230,14 @@ public class SortedBugCollection implements BugCollection {
 	public void readXML(File file)
 			throws IOException, DocumentException {
 		project.setCurrentWorkingDirectory(file.getParentFile());
+		dataSource = file.getAbsolutePath();
 		InputStream in = progessMonitoredInputStream(file, "Loading analysis");
 		readXML(in, file);
 	}
 	public void readXML(URL u)
 	throws IOException, DocumentException {
 		InputStream in = progessMonitoredInputStream(u.openConnection(), "Loading analysis");
+		dataSource = u.toString();
 		readXML(in);
 	}
 	/**
@@ -1017,6 +1024,9 @@ public class SortedBugCollection implements BugCollection {
 
 	}
 
+	public void clearMissingClasses() {
+		missingClassSet.clear();
+	}
 	/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
 		 */
