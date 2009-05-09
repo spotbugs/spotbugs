@@ -955,8 +955,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClass(@DottedClassName String className) {
-		className = ClassName.toDottedClassName(className);
-		ClassAnnotation classAnnotation = new ClassAnnotation(className);
+		ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
 		add(classAnnotation);
 		return this;
 	}
