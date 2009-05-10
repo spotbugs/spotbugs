@@ -126,16 +126,15 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 		if (getSigConstantOperand().endsWith("Logger;"))
 			loggerImported = true;
 	}
-	private void checkForEscape() {
+
+
+	private void checkForMethodExportImport() {
 		int numArguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
 		for(int i = 0; i < numArguments; i++) {
 			OpcodeStack.Item item = stack.getStackItem(i);
 			if (item.getSignature().endsWith("Logger;"))
 				loggerEscaped = true;
 		}
-	}
-
-	private void checkForMethodExportImport() {
 		String sig = getSigConstantOperand();
 		int pos = sig.indexOf(")");
 		int loggerPos = sig.indexOf("Logger");
