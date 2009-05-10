@@ -1,6 +1,8 @@
 package bugIdeas;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Filter;
 import java.util.logging.Level;
@@ -39,7 +41,21 @@ public class Ideas_2009_05_06 {
 			}
 		});
 	}
+	
+	static Object foo1;
+	static List<Logger> foo2 = new ArrayList<Logger>();
 
+	
+	public static void falsePositive1() {
+		Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
+		logger.setLevel(Level.FINER);
+		foo1 = logger;
+	}
+	public static void falsePositive2() {
+		Logger logger = Logger.getLogger("edu.umd.cs.findbugs");
+		logger.setLevel(Level.FINER);
+		foo2.add(logger);
+	}
 	public static void main(String[] args) throws Exception {
 		initLogging(); // adds a file handler to the logger
 		System.gc(); // logger configuration lost
