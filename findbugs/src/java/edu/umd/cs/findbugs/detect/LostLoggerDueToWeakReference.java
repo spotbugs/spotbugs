@@ -111,6 +111,12 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 			checkForMethodExportImport();
 			break;
 
+		case CHECKCAST:
+			String sig = getClassConstantOperand();
+			if (sig.indexOf("Logger") >= 0)
+				loggerImported = true;
+			break;
+			
 		case GETFIELD:
 		case GETSTATIC:
 			checkForImport();
