@@ -59,6 +59,7 @@
 
 
 	<target name="runfindbugs" depends="classes">	
+		<echo>Home is ${findbugs.home}/lib/findbugs-ant.jar</echo>
 		<parallel threadsPerProcessor="1">
 			<antcall target="historyNormal"/> <!--   run findbugs effort=default, then merge or copy results -->       <!-- run findbugs effort=max, then merge or copy results -->
 		</parallel>
@@ -66,7 +67,7 @@
 
 	<target name="runNormal" depends="classes">
 		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
-                         output="xml" timestampNow="true" reportLevel="low" effort="default" outputFile="build/normal.xml">
+                         output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar"/>
 			<class location="${basedir}/build/classes" />
