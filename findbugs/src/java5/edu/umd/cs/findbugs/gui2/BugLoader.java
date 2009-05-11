@@ -153,6 +153,8 @@ public class BugLoader {
         	String msg = SystemProperties.getOSDependentProperty("findbugs.unableToLoadViaURL");
         	if (msg == null)
         		msg = e.getMessage();
+        	else 
+        		msg = String.format(msg);
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "\n" +  msg);
         }
 		addDeadBugMatcher(project);
