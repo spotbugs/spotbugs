@@ -437,7 +437,7 @@ public  class DBCloud extends AbstractCloud {
 	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
 	Map<String,String> prefixBugComponentMapping = new HashMap<String,String>();
 
-	private Connection getConnection() throws SQLException {
+	Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, dbUser, dbPassword);
 	}
 
@@ -890,7 +890,7 @@ public  class DBCloud extends AbstractCloud {
 
 	private void displayMessage(String msg, Exception e) {
 		AnalysisContext.logError(msg, e);
-		if (bugCollection.getProject().isGuiAvaliable()) {
+		if (bugCollection != null && bugCollection.getProject().isGuiAvaliable()) {
                   StringWriter stackTraceWriter = new StringWriter();
                   PrintWriter printWriter = new PrintWriter(stackTraceWriter);
                   e.printStackTrace(printWriter);

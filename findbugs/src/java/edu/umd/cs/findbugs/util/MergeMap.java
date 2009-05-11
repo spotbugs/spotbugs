@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public abstract class MergeMap<K, V> {
 
-	static class MinMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
+	public static class MinMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
 		@Override
 		protected V mergeValues(V oldValue, V newValue) {
 
@@ -38,7 +38,7 @@ public abstract class MergeMap<K, V> {
 		}
 	}
 
-	static class MaxMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
+	public static class MaxMap<K, V extends Comparable<? super V>> extends MergeMap<K, V> {
 
 		@Override
 		protected V mergeValues(V oldValue, V newValue) {
@@ -53,15 +53,15 @@ public abstract class MergeMap<K, V> {
 
 	protected abstract V mergeValues(V oldValue, V newValue);
 
-	MergeMap() {
+	public MergeMap() {
 		map = new HashMap<K, V>();
 	}
 
-	MergeMap(Map<K, V> map) {
+	public MergeMap(Map<K, V> map) {
 		this.map = map;
 	}
 
-	V put(K k, V v) {
+	public V put(K k, V v) {
 		V currentValue = map.get(k);
 		if (currentValue == null) {
 			map.put(k, v);
@@ -74,11 +74,11 @@ public abstract class MergeMap<K, V> {
 		return result;
 	}
 
-	V get(K k) {
+	public V get(K k) {
 		return map.get(k);
 	}
 
-	Set<Map.Entry<K, V>> entrySet() {
+	public Set<Map.Entry<K, V>> entrySet() {
 		return map.entrySet();
 	}
 

@@ -29,8 +29,17 @@ import java.util.Map.Entry;
  * @author pwilliam
  */
 public class Multiset<K> {
-	HashMap<K, Integer> map = new HashMap<K, Integer>();
+	final Map<K, Integer> map;
+	
+	public Multiset() {
+		map = new HashMap<K, Integer>();
+	}
 
+	public Multiset(Map<K,Integer> map) {
+		this.map = map;
+	}
+
+		
 	public void clear() {
 		map.clear();
 	}
@@ -55,6 +64,10 @@ public class Multiset<K> {
 		if (v == null)
 			return 0;
 		return v;
+	}
+	
+	public Iterable<Map.Entry<K, Integer>> entrySet() {
+		return map.entrySet();
 	}
 
 	public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
