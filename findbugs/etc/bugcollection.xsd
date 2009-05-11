@@ -231,7 +231,7 @@
 				<xs:element name="FindBugsSummary">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="FileStats" maxOccurs="unbounded">
+							<xs:element name="FileStats" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:attribute name="path" type="xs:string" use="required"/>
 									<xs:attribute name="bugCount" type="xs:unsignedInt"
@@ -241,10 +241,10 @@
 									<xs:attribute name="bugHash" type="xs:string" use="optional"/>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="PackageStats" maxOccurs="unbounded">
+							<xs:element name="PackageStats" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="ClassStats" maxOccurs="unbounded">
+										<xs:element name="ClassStats" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:attribute name="class" type="xs:string"
 												use="required"/>
