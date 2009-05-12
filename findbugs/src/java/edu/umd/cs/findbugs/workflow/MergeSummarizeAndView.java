@@ -190,7 +190,8 @@ public class MergeSummarizeAndView {
 			}
 		
 		if (badRank > 0 || tooOld > 0) {
-			System.out.print("\nplus ");
+			if (shown > 0)
+				System.out.print("\nplus ");
 			if (badRank > 0) 
 				System.out.printf("%d less scary recent issues", badRank);
 			if (badRank > 0 && tooOld > 0)
