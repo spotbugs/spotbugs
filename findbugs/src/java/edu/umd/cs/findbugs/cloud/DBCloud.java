@@ -433,7 +433,7 @@ public  class DBCloud extends AbstractCloud {
 						}
 					}
 				initialSyncDone.countDown();
-				long delay = 10*60*1000; // 5 minutes
+				long delay = 10*60*1000; // 10 minutes
 				resyncTimer.schedule(new TimerTask() {
 
 					@Override
