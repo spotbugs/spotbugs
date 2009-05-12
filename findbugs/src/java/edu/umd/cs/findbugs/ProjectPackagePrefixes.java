@@ -196,7 +196,7 @@ public class ProjectPackagePrefixes {
 					if (s == null)
 						break;
 					String[] parts = s.split("=");
-					if (parts.length == 2)
+					if (parts.length == 2 && !map.containsKey(parts[0]))
 						map.put(parts[0], new PrefixFilter(parts[1]));
 				}
 				in.close();

@@ -576,9 +576,13 @@ public  class DBCloud extends AbstractCloud {
 					continue;
 				int x = s.indexOf(' ');
 				if (x == -1)
-					prefixBugComponentMapping.put("", s);
-				else
-					prefixBugComponentMapping.put(s.substring(x+1), s.substring(0,x));
+					if (!prefixBugComponentMapping.containsKey(""))
+						prefixBugComponentMapping.put("", s);
+				else {
+					String prefix = s.substring(x+1);
+					if (!prefixBugComponentMapping.containsKey(prefix))
+						prefixBugComponentMapping.put(prefix, s.substring(0,x));
+				}
 				
 			}
 			in.close();
