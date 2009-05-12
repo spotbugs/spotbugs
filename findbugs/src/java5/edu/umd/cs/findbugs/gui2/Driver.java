@@ -35,15 +35,14 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
  * 
  */
 public class Driver {
-
+	/** Force start time to be computed */
+	private static long START_TIME = StartTime.START_TIME;
+	
 	private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
-
-	private static GUI2CommandLine commandLine;
+	private static GUI2CommandLine commandLine = new GUI2CommandLine();
 	private static SplashFrame splash;
 
 	public static void main(String[] args) throws Exception {
-		/** Force start time to be computed */
-		long startTime = StartTime.START_TIME;
 		
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 		{
@@ -53,7 +52,6 @@ public class Driver {
 		}
 		splash = new SplashFrame();
 		splash.setVisible(true);
-		commandLine = new GUI2CommandLine();
 		
 		int numParsed = commandLine.parse(args, 0, 1, USAGE);
 
