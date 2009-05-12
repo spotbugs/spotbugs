@@ -448,9 +448,7 @@ public class Filter {
 
 	public static void main(String[] args) throws Exception {
 		DetectorFactoryCollection df = DetectorFactoryCollection.instance();
-		for(Plugin p : df.plugins()) {
-			System.out.println(p.getProvider());
-		}
+		
 		final FilterCommandLine commandLine = new FilterCommandLine();
 
 		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
