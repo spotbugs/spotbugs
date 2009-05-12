@@ -6787,6 +6787,23 @@ author intended.
  	</Details>
   </BugPattern>
 
+  <BugPattern type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED">
+    <ShortDescription>MessageFormat supplied where printf style format expected</ShortDescription>
+    <LongDescription>{2} needs printf-style format but called with MessageFormat</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+A method is called that expects a Java printf format string and a list of arguments.
+However, the format string doesn't contain any format specifiers (e.g., %s) but
+does contain message format elements (e.g., {0}).  It is likely
+that the code is supplying a MessageFormat string when a printf-style format string
+is required. At runtime, all of the arguments will be ignored
+and the format string will be returned exactly as provided without any formatting.
+</p>
+</p>
+]]>
+ 	</Details>
+  </BugPattern>
   <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
     <ShortDescription>More arguments are passed that are actually used in the format string</ShortDescription>
     <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
