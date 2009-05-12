@@ -573,11 +573,30 @@ public class CommentsArea {
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
 		if (designationKey == null)
 			return;
+		BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+		BugInstance bug = frame.currentSelectedBugLeaf.getBug();
+		String oldValue = bug.getUserDesignationKey();
+		if (designationKey.equals(oldValue))
+			return;
+		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
+		if (plugin != null && designationKey.equals("I_WILL_FIX")) {
+			String claimedBy = plugin.claimedBy(bug);
+			if (!plugin.getUser().equals(claimedBy)) {
+				int result = JOptionPane.showConfirmDialog(null, 
+						claimedBy + " has already said they will fix this issue\n"
+						+ "Do you want to also be listed as fixing this issue?\n"
+						+ "If so, please coordinate with " + claimedBy,
+					 "Issue already claimed", JOptionPane.YES_NO_CANCEL_OPTION);
+				if (result == JOptionPane.CANCEL_OPTION)
+					return;
+				if (result != JOptionPane.YES_OPTION)
+					designationKey = "MUST_FIX";	
+			}
+				
+				
+		}
 		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
-			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
-			Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
 			if (plugin != null && plugin.supportsCloudReports()) {
-				BugInstance bug = frame.currentSelectedBugLeaf.getBug();
 				String report = plugin.getCloudReport(bug);
 				reportText.setText(report);
 			}

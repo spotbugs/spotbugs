@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -44,6 +47,16 @@ import edu.umd.cs.findbugs.util.Multiset;
  * @author pwilliam
  */
 public class DBStats {
+	
+	enum Rank { SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
+	  static Rank getRank(int rank) {
+		  if (rank <= 4) return SCARIEST;
+		  if (rank <= 9) return SCARY;
+		  if (rank <= 14) return TROUBLING;
+		  if (rank <= 20) return OF_CONCERN;
+		  return UNRANKED;
+	  }
+	}
 	
 	static Timestamp bucketByHour(Timestamp t) {
 		Timestamp result = new Timestamp(t.getTime());
@@ -104,7 +117,7 @@ public class DBStats {
 			}
 			in.close();
 		}
-		
+		I18N i18n = I18N.instance();
 		
 		
 		DBCloud cloud = new DBCloud(null);
@@ -112,7 +125,26 @@ public class DBStats {
 		Connection c = cloud.getConnection();
 		
 		
-		PreparedStatement ps = c.prepareStatement("SELECT who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix"
+		Map<Integer,Rank> bugRank = new HashMap<Integer, Rank>();
+		PreparedStatement ps = c.prepareStatement("SELECT id, bugPattern, priority FROM findbugs_issue");
+		ResultSet rs = ps.executeQuery();
+		while (rs.next()) {
+			int col = 1;
+			 int id = rs.getInt(col++);
+			String bugType = rs.getString(col++);
+			int priority  = rs.getInt(col++);
+			BugPattern bugPattern = i18n.lookupBugPattern(bugType);
+			if (bugPattern != null) {
+				int rank = BugRanker.findRank(bugPattern, priority);
+				bugRank.put(id, Rank.getRank(rank));
+			}
+		}
+		rs.close();
+		ps.close();
+		
+		
+		
+		ps = c.prepareStatement("SELECT who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix"
 					+ " FROM findbugs_invocation");
 		
 		MergeMap.MinMap <String, Timestamp> firstUse = new MergeMap.MinMap<String,Timestamp>();
@@ -121,7 +153,7 @@ public class DBStats {
 		
 		HashSet<String> participants = new HashSet<String>();
 		Multiset<String> participantsPerOffice = new Multiset<String>(new TreeMap<String,Integer>());
-		ResultSet rs = ps.executeQuery();
+		 rs = ps.executeQuery();
 		int invocationCount = 0;
 		long invocationTotal = 0;
 		long loadTotal = 0;
@@ -170,12 +202,26 @@ public class DBStats {
 			String designation = rs.getString(col++);
 			String comment = rs.getString(col++);
 			Timestamp when = rs.getTimestamp(col++);
+			Rank rank = bugRank.get(id);
 			reviewers.put(who, when);
 			String issueReviewer = who+"-" + issueId;
 			if (issueReviews.add(issueReviewer)) {
 				uniqueReviews.put(issueReviewer, when);
 				allIssues.add(designation);
 				issueReviewedBy.add(who);
+				if (rank != null)
+					switch(rank) {
+					case SCARIEST:
+						scariestIssues.add(designation);
+						break;
+					case SCARY:
+						scaryIssues.add(designation);
+						break;
+					case TROUBLING:
+						troublingIssues.add(designation);
+						break;
+						
+					}
 			}
 				
 		}
@@ -192,9 +238,10 @@ public class DBStats {
 		printTimeSeries("Unique reviewers", reviewers);
 		printTimeSeries("Total reviews", uniqueReviews);	
 		
-		System.out.println("Designations");
-		for(Map.Entry<String, Integer> e : allIssues.entrySet())
-			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
+		printMultiset("All issues", allIssues);
+		printMultiset("Scariest issues", scariestIssues);
+		printMultiset("Scary issues", scaryIssues);
+		printMultiset("Troubling issues", troublingIssues);
 		
 		System.out.println();
 		System.out.println("Participants by office");
@@ -207,6 +254,16 @@ public class DBStats {
 		w.flush();
 	
 	}
+
+	/**
+     * @param allIssues
+     */
+    private static void printMultiset(String title, Multiset<String> allIssues) {
+	    System.out.println(title);
+		for(Map.Entry<String, Integer> e : allIssues.entrySet())
+			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
+		System.out.println();
+    }
 
 	private static void printTimeSeries(String title, MergeMap.MinMap<String, Timestamp> firstUse) {
 		System.out.println(title);

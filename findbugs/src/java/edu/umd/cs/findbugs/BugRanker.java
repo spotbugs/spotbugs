@@ -63,11 +63,22 @@ public class BugRanker {
 
 	public int rankBug(BugInstance bug) {
 		BugPattern bugPattern = bug.getBugPattern();
-		Integer value = rankBugPattern(bugPattern);
+		int priority = bug.getPriority();
+		return rankBugPattern(bugPattern, priority);
+
+	}
+
+	/**
+     * @param bugPattern
+     * @param priority
+     * @return
+     */
+    public int rankBugPattern(BugPattern bugPattern, int priority) {
+	    Integer value = rankBugPattern(bugPattern);
 		if (value == null)
 			return 25;
 		int v = value.intValue();
-		switch (bug.getPriority()) {
+		switch (priority) {
 		case Priorities.HIGH_PRIORITY:
 			break;
 		case Priorities.NORMAL_PRIORITY:
@@ -80,8 +91,7 @@ public class BugRanker {
 			return 26;
 		}
 		return Math.min(20, Math.max(1, v));
-
-	}
+    }
 
 	private Integer rankBugPattern(BugPattern bugPattern) {
 	    String type = bugPattern.getType();
@@ -97,11 +107,23 @@ public class BugRanker {
 	
 	public static int findRank(BugInstance bug) {
 		for(Plugin p : DetectorFactoryCollection.instance().plugins()) {
-			int rank = p.rankBug(bug);
+			BugRanker r = p.getBugRanker();
+			int rank = r.rankBug(bug);
 			if (rank <= 20) 
 				return rank;
 		}
 		return 30;
 	}
+
+	public static int findRank(BugPattern pattern, int priority) {
+		for(Plugin p : DetectorFactoryCollection.instance().plugins()) {
+			BugRanker r = p.getBugRanker();
+			int rank = r.rankBugPattern(pattern, priority);
+			if (rank <= 20) 
+				return rank;
+		}
+		return 30;
+	}
+
 
 }

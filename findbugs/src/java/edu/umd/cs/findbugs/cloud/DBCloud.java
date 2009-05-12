@@ -155,12 +155,9 @@ public  class DBCloud extends AbstractCloud {
 			return reviewers;
 		}
 		boolean isClaimed() {
-			Set<String> users = new HashSet<String>();
-			for(BugDesignation bd : designations) {
-				if (users.add(bd.getUser()) 
-						&& bd.getDesignationKey().equals(UserDesignation.I_WILL_FIX.name()))
+			for(BugDesignation bd : getUniqueDesignations()) {
+				if (bd.getDesignationKey().equals(UserDesignation.I_WILL_FIX.name()))
 					return true;
-				
 			}
 			return false;
 		}
@@ -374,9 +371,13 @@ public  class DBCloud extends AbstractCloud {
 					long lostTime = startTime - sbc.getTimeStartedLoading();
 
 					long initialSyncTime = System.currentTimeMillis() - sbc.getTimeFinishedLoading();
+					String os = SystemProperties.getProperty("os.name", "");
+					String osVersion = SystemProperties.getProperty("os.version");
+					if (osVersion != null)
+						os = os +" " + osVersion;
 					PreparedStatement insertSession = c
 					        .prepareStatement(
-					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, os, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
 					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 					Timestamp now = new Timestamp(startTime);
 					int col = 1;
@@ -384,6 +385,7 @@ public  class DBCloud extends AbstractCloud {
 					insertSession.setString(col++, limitToMaxLength(loadURL, 128));
 					insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
 					insertSession.setString(col++, Version.RELEASE);
+					insertSession.setString(col++, limitToMaxLength(os,128));
 					insertSession.setLong(col++, jvmStartTime);
 					insertSession.setLong(col++, findbugsStartTime);
 					insertSession.setLong(col++, initialLoadTime);

@@ -314,6 +314,10 @@ public class Plugin {
 	   this.bugRanker = ranker;
     }
     
+    public BugRanker getBugRanker() {
+ 	   return bugRanker;
+     }
+  
     public int rankBug(BugInstance bug) {
     	if (bugRanker == null)
     		return 29;
