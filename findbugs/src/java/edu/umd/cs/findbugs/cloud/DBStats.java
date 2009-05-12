@@ -105,7 +105,7 @@ public class DBStats {
 		rs.close();
 		ps.close();
 		
-		ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation ORDERE BY time DESC");
+		ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation ORDER BY time DESC");
 		rs = ps.executeQuery();
 		
 		Multiset<String> allIssues = new Multiset<String>();
