@@ -145,7 +145,8 @@ public class DBStats {
 		
 		PrintWriter w = new PrintWriter(System.out);
 		
-		cloud.printLeaderBoard(w, issueReviewedBy, 6, "", true, "num issues reviewed");
+		DBCloud.printLeaderBoard(w, issueReviewedBy, 6, "", true, "num issues reviewed");
+		w.flush();
 	
 	}
 
