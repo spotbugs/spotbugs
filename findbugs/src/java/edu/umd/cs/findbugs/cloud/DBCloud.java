@@ -113,7 +113,7 @@ public  class DBCloud extends AbstractCloud {
 		String bugStatus;
 		String bugAssignedTo;
 		String bugComponentName;
-		long bugFiled;
+		long bugFiled = Long.MAX_VALUE;
 		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
 		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
 		
@@ -232,7 +232,6 @@ public  class DBCloud extends AbstractCloud {
 			bd.id = id;
 			bd.firstSeen = firstSeen;
 			bd.inDatabase = true;
-			bd.bugFiled = Long.MAX_VALUE;
 			idMap.put(id, bd);
 		}
 	}
@@ -251,12 +250,14 @@ public  class DBCloud extends AbstractCloud {
 	}
 	
 	static boolean invocationRecorded;
+	boolean bugsLoaded = false;
 	class PopulateBugs implements Update {
 		
 
 	    public void execute(DatabaseSyncTask t) throws SQLException {
 
 		String commonPrefix = null;
+		if (!bugsLoaded)  {
 		for (BugInstance b : bugCollection.getCollection())
 			if (!skipBug(b)) {
 				commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
@@ -266,12 +267,16 @@ public  class DBCloud extends AbstractCloud {
 			commonPrefix = "<no bugs>";
 		else if (commonPrefix.length() > 128)
 			commonPrefix = commonPrefix.substring(0, 128);
+		}
 		try {
 			long startTime = System.currentTimeMillis();
 			
 			Connection c = getConnection();
-			PreparedStatement ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
-			ResultSet rs = ps.executeQuery();
+			PreparedStatement ps;
+			ResultSet rs;
+			if (!bugsLoaded) {
+			 ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
+			 rs = ps.executeQuery();
 			
 			while (rs.next()) {
 				int col = 1;
@@ -282,6 +287,7 @@ public  class DBCloud extends AbstractCloud {
 			}
 			rs.close();
 			ps.close();
+			}
 			ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
 
 			rs = ps.executeQuery();
@@ -298,8 +304,9 @@ public  class DBCloud extends AbstractCloud {
 				
 				if (data != null) {
 					BugDesignation bd = new BugDesignation(designation, when.getTime(), comment, who);
-					bugDesignationId.put(bd, id);
-					data.designations.add(bd);
+					if (data.designations.add(bd))
+						bugDesignationId.put(bd, id);
+					
 				}
 
 			}
@@ -381,7 +388,7 @@ public  class DBCloud extends AbstractCloud {
 			displayMessage("problem bulk loading database", e);
 			
 		}
-		
+		if (!bugsLoaded) {
 		for (BugInstance b : bugCollection.getCollection())
 			if (!skipBug(b)) {
 				BugData bd  = getBugData(b.getInstanceHash());
@@ -398,25 +405,20 @@ public  class DBCloud extends AbstractCloud {
 						bd.firstSeen = firstSeen;
 						storeFirstSeen(bd);
 					}
-					long lastVersion = b.getLastVersion();
-					if (lastVersion != -1) {
-						long lastSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-					}
-					
 					
 					BugDesignation designation = bd.getPrimaryDesignation();
 					if (designation != null)
 						b.setUserDesignation(new BugDesignation(designation));
 				}
 			}
+		bugsLoaded = true;
 		initialSyncDone.countDown();
-		
+	    }
+	    bugsLoaded = true;
 	}
-
-	
 	}
 	
-	private String limitToMaxLength(String s, int maxLength) {
+	private static String limitToMaxLength(String s, int maxLength) {
 		if (s.length() <= maxLength)
 			return s;
 		return s.substring(0, maxLength);
