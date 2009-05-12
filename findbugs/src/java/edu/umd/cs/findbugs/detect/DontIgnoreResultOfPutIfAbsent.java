@@ -148,9 +148,14 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     			return Priorities.LOW_PRIORITY;
     		
     		XClass xClass =  AnalysisContext.currentXFactory().getXClass(cd);
-    		@SlashedClassName String superClassName = xClass.getSuperclassDescriptor().getClassName();
-    		if (superClassName.equals("java/lang/Enum"))
-    			return Priorities.LOW_PRIORITY; 
+    		if (xClass == null)
+    			return Priorities.IGNORE_PRIORITY;
+    		ClassDescriptor superclassDescriptor = xClass.getSuperclassDescriptor();
+    		if (superclassDescriptor != null) {
+    			@SlashedClassName String superClassName = superclassDescriptor.getClassName();
+    			if (superClassName.equals("java/lang/Enum"))
+    				return Priorities.LOW_PRIORITY; 
+    		}
     		boolean hasMutableField = false;
 			boolean hasUpdates = false;
 			for (XField f : xClass.getXFields())
