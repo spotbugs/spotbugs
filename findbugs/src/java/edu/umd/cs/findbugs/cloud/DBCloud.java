@@ -249,8 +249,10 @@ public  class DBCloud extends AbstractCloud {
 	}
 	
 	long boundDuration(long milliseconds) {
-		if (milliseconds < 0) return milliseconds;
-		if (milliseconds > 1000*1000) return 1000*1000;
+		if (milliseconds < 0) 
+			return 0;
+		if (milliseconds > 1000*1000) 
+			return 1000*1000;
 		return milliseconds;
 	}
 	static boolean invocationRecorded;
