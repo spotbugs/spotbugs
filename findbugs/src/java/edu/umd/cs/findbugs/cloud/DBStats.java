@@ -19,17 +19,22 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
 
@@ -75,7 +80,33 @@ public class DBStats {
 			return 1;
         }
 	}
+	
 	public static void main(String args[]) throws Exception {
+		 Map<String,String> officeLocation = new HashMap<String,String>();
+		
+		URL u = PluginLoader.getCoreResource("offices.properties");
+		if (u != null) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
+			while(true) {
+				String s = in.readLine();
+				if (s == null) break;
+				if (s.trim().length() == 0)
+					continue;
+				int x = s.indexOf(':');
+				
+				if (x == -1)
+					continue;
+				String office = s.substring(0,x);
+				for(String person : s.substring(x+1).split(" ")) 
+					officeLocation.put(person, office);
+
+				
+			}
+			in.close();
+		}
+		
+		
+		
 		DBCloud cloud = new DBCloud(null);
 		cloud.initialize();
 		Connection c = cloud.getConnection();
@@ -88,6 +119,8 @@ public class DBStats {
 		MergeMap.MinMap <String, Timestamp> reviewers = new MergeMap.MinMap<String,Timestamp>();
 		MergeMap.MinMap <String, Timestamp> uniqueReviews = new MergeMap.MinMap<String,Timestamp>();
 		
+		HashSet<String> participants = new HashSet<String>();
+		Multiset<String> participantsPerOffice = new Multiset<String>();
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()) {
 			int col = 1;
@@ -102,6 +135,12 @@ public class DBStats {
 			int numIssues = rs.getInt(col++);
 			Timestamp when = rs.getTimestamp(col++);
 			firstUse.put(who, when);
+			if (participants.add(who)) {
+				String office = officeLocation.get(who);
+				if (office == null) office = "unknown";
+				participantsPerOffice.add(office);
+			}
+				
 		}
 		rs.close();
 		ps.close();
@@ -140,9 +179,16 @@ public class DBStats {
 		printTimeSeries("Unique users", firstUse);
 		printTimeSeries("Unique reviewers", reviewers);
 		printTimeSeries("Total reviews", uniqueReviews);	
+		
+		System.out.println("Designations");
 		for(Map.Entry<String, Integer> e : allIssues.entrySet())
 			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
 		
+		System.out.println();
+		System.out.println("Participants by office");
+		for(Map.Entry<String, Integer> e : participantsPerOffice.entrySet())
+			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
+		System.out.println();
 		PrintWriter w = new PrintWriter(System.out);
 		
 		DBCloud.printLeaderBoard(w, issueReviewedBy, 6, "", true, "num issues reviewed");
