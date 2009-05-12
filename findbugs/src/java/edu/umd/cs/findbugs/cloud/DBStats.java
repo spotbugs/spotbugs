@@ -120,8 +120,11 @@ public class DBStats {
 		MergeMap.MinMap <String, Timestamp> uniqueReviews = new MergeMap.MinMap<String,Timestamp>();
 		
 		HashSet<String> participants = new HashSet<String>();
-		Multiset<String> participantsPerOffice = new Multiset<String>();
+		Multiset<String> participantsPerOffice = new Multiset<String>(new TreeMap<String,Integer>());
 		ResultSet rs = ps.executeQuery();
+		int invocationCount = 0;
+		long invocationTotal = 0;
+		long loadTotal = 0;
 		while (rs.next()) {
 			int col = 1;
 			String who = rs.getString(col++);
@@ -134,6 +137,9 @@ public class DBStats {
 			int dbSync = rs.getInt(col++);
 			int numIssues = rs.getInt(col++);
 			Timestamp when = rs.getTimestamp(col++);
+			invocationCount++;
+			invocationTotal += jvmLoad + fbLoad + analysisLoad + dbSync;
+			loadTotal +=  fbLoad + analysisLoad + dbSync;
 			firstUse.put(who, when);
 			if (participants.add(who)) {
 				String office = officeLocation.get(who);
@@ -176,6 +182,12 @@ public class DBStats {
 		rs.close();
 		
 		c.close();
+		
+		System.out.printf("%6d invocations\n", invocationCount);
+		System.out.printf("%6d invocations time\n", invocationTotal/invocationCount);
+		System.out.printf("%6d load time\n", loadTotal/invocationCount);
+		System.out.println();
+		
 		printTimeSeries("Unique users", firstUse);
 		printTimeSeries("Unique reviewers", reviewers);
 		printTimeSeries("Total reviews", uniqueReviews);	
