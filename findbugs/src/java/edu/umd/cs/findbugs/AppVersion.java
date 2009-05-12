@@ -59,7 +59,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	}
 	public AppVersion(long sequence) {
 		this.sequence = sequence;
-		this.timestamp = -1;
+		this.timestamp = System.currentTimeMillis();
 		this.releaseName = "";
 	}
 
@@ -87,6 +87,8 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	 * @return Returns the timestamp.
 	 */
 	public long getTimestamp() {
+		if (timestamp <= 0)
+			return System.currentTimeMillis();
 		return timestamp;
 	}
 

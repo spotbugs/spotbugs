@@ -91,7 +91,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
-	final static long minimumTimestamp = 1000000000000L;
+	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 2008");
 	Mode mode = Mode.VOTING;
 	
 	public Mode getMode() {
@@ -168,9 +168,7 @@ public  class DBCloud extends AbstractCloud {
 			d = new BugDesignation(UserDesignation.UNCLASSIFIED.name(), System.currentTimeMillis(), "", findbugsUser);
 			return d;
 		}
-		/**filebug
-         * @return
-         */
+
         public boolean canSeeCommentsByOthers() {
 	       switch(mode) {
 	       case SECRET: return false;
@@ -250,6 +248,11 @@ public  class DBCloud extends AbstractCloud {
 		
 	}
 	
+	long boundDuration(long milliseconds) {
+		if (milliseconds < 0) return milliseconds;
+		if (milliseconds > 1000*1000) return 1000*1000;
+		return milliseconds;
+	}
 	static boolean invocationRecorded;
 	
 	class PopulateBugs implements Update {
@@ -371,6 +374,10 @@ public  class DBCloud extends AbstractCloud {
 					long lostTime = startTime - sbc.getTimeStartedLoading();
 
 					long initialSyncTime = System.currentTimeMillis() - sbc.getTimeFinishedLoading();
+					
+					
+					
+					
 					String os = SystemProperties.getProperty("os.name", "");
 					String osVersion = SystemProperties.getProperty("os.version");
 					if (osVersion != null)
@@ -386,10 +393,10 @@ public  class DBCloud extends AbstractCloud {
 					insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
 					insertSession.setString(col++, Version.RELEASE);
 					insertSession.setString(col++, limitToMaxLength(os,128));
-					insertSession.setLong(col++, jvmStartTime);
-					insertSession.setLong(col++, findbugsStartTime);
-					insertSession.setLong(col++, initialLoadTime);
-					insertSession.setLong(col++, initialSyncTime);
+					insertSession.setLong(col++, boundDuration(jvmStartTime));
+					insertSession.setLong(col++, boundDuration(findbugsStartTime));
+					insertSession.setLong(col++, boundDuration(initialLoadTime));
+					insertSession.setLong(col++, boundDuration(initialSyncTime));
 					insertSession.setInt(col++, bugCollection.getCollection().size());
 					insertSession.setTimestamp(col++, now);
 					insertSession.setString(col++, commonPrefix);

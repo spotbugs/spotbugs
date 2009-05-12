@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.cloud;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -226,6 +227,7 @@ public class DBStats {
 		ps.close();
 		
 		Multiset<String> bugStatus = new Multiset<String>();
+		HashSet<String> bugsSeen = new HashSet<String>();
 		
 		ps = c.prepareStatement("SELECT bugReportId,status, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
 		rs = ps.executeQuery();
@@ -234,7 +236,9 @@ public class DBStats {
 			String  id = rs.getString(col++);
 			String status = rs.getString(col++);
 			Timestamp when = rs.getTimestamp(col++);
-			System.out.printf("%20s %20s\n", id, status);
+			if (!bugsSeen.add(id))
+				System.out.println("Dup bug: " + id);
+			
 			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE))
 				bugStatus.add(status);
 		}
@@ -243,45 +247,67 @@ public class DBStats {
 		ps.close();
 		c.close();
 		
+		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time\n", invocationTotal/invocationCount);
 		System.out.printf("%6d load time\n", loadTotal/invocationCount);
 		System.out.println();
 		
-		printTimeSeries("Unique users", firstUse);
-		printTimeSeries("Unique reviewers", reviewers);
-		printTimeSeries("Total reviews", uniqueReviews);	
+		printTimeSeries("users.csv", "Unique users", firstUse);
+		printTimeSeries("reviewers.csv", "Unique reviewers", reviewers);
+		printTimeSeries("reviews.csv", "Total reviews", uniqueReviews);	
 		
-		printMultiset("Bug status", bugStatus);
 		
-		printMultiset("All issues", allIssues);
-		printMultiset("Scariest issues", scariestIssues);
-		printMultiset("Scary issues", scaryIssues);
-		printMultiset("Troubling issues", troublingIssues);
+		PrintWriter out = new PrintWriter("bug_status.csv");
+		out.println("Status,Number of bugs");
+		printMultiset(out, "Bug status", bugStatus);
+		out.close();
 		
-		System.out.println();
-		PrintWriter w = new PrintWriter(System.out);
 		
-		DBCloud.printLeaderBoard(w, participantsPerOffice, 8, "", true, "participants per office");
-		w.println();
-		DBCloud.printLeaderBoard(w, issueReviewedBy, 8, "", true, "num issues reviewed");
-		w.println();
-		w.flush();
+		out = new PrintWriter("reviews_by_rank_and_category.csv");
+		out.println("Rank,Category,Number of reviews");
+		printMultisetContents(out, "Scariest,", scariestIssues);
+		printMultisetContents(out, "Scary,", scaryIssues);
+		printMultisetContents(out, "Troubling,", troublingIssues);
+		out.close();
+		
+
+		out = new PrintWriter("most_bugs_filed_office.csv");
+		
+		DBCloud.printLeaderBoard(out, participantsPerOffice, 8, "", true, "participants per office");
+		out.close();
+		
+		out = new PrintWriter("most_bugs_filed_individual.csv");
+		
+		DBCloud.printLeaderBoard(out, issueReviewedBy, 8, "", true, "num issues reviewed");
+		out.close();
 	
 	}
 
 	/**
-     * @param allIssues
+     * @param out TODO
+	 * @param allIssues
      */
-    private static void printMultiset(String title, Multiset<String> allIssues) {
-	    System.out.println(title);
-		for(Map.Entry<String, Integer> e : allIssues.entrySet())
-			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
-		System.out.println();
+    private static void printMultiset(PrintWriter out, String title, Multiset<String> allIssues) {
+	    out.println(title);
+		printMultisetContents(out, "", allIssues);
+		out.println();
     }
 
-	private static void printTimeSeries(String title, MergeMap.MinMap<String, Timestamp> firstUse) {
-		System.out.println(title);
+	/**
+     * @param allIssues
+     */
+    private static void printMultisetContents(PrintWriter out, String prefix, Multiset<String> allIssues) {
+	    for(Map.Entry<String, Integer> e : allIssues.entrySet())
+			out.printf("%s%s,%d\n", prefix, e.getKey(), e.getValue());
+    }
+
+    
+    
+    
+	private static void printTimeSeries(String filename, String title, MergeMap.MinMap<String, Timestamp> firstUse) throws FileNotFoundException {
+		PrintWriter out = new PrintWriter(filename);
+		out.println(title);
 	    TreeSet<TimeSeries<String, Timestamp>> series = new TreeSet<TimeSeries<String, Timestamp>>();
 		for(Map.Entry<String, Timestamp> e : firstUse.entrySet()) {
 			series.add(new TimeSeries<String,Timestamp>(e.getKey(), e.getValue()));
@@ -295,9 +321,9 @@ public class DBStats {
 		SimpleDateFormat format = new SimpleDateFormat("h a EEE");
 		for(Map.Entry<Timestamp, Integer> e : counter.entrySet()) {
 			total += e.getValue();
-			System.out.printf("%4d, %s\n", total, format.format(e.getKey()));
+			out.printf("%4d, %s\n", total, format.format(e.getKey()));
 		}
-		System.out.println();
+		out.close();
 		
     }
 
