@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -45,6 +46,7 @@ public class DBStats {
 		result.setNanos(0);
 		return result;
 	}
+	
 	
 	static class TimeSeries<K, V extends Comparable<? super V>> implements Comparable<TimeSeries<K,V>>{
 		final K k;
@@ -78,12 +80,14 @@ public class DBStats {
 		Connection c = cloud.getConnection();
 		
 		
-		PreparedStatement queryInvocations = c.prepareStatement("SELECT who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix"
+		PreparedStatement ps = c.prepareStatement("SELECT who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix"
 					+ " FROM findbugs_invocation");
 		
 		MergeMap.MinMap <String, Timestamp> firstUse = new MergeMap.MinMap<String,Timestamp>();
+		MergeMap.MinMap <String, Timestamp> reviewers = new MergeMap.MinMap<String,Timestamp>();
+		MergeMap.MinMap <String, Timestamp> uniqueReviews = new MergeMap.MinMap<String,Timestamp>();
 		
-		ResultSet rs = queryInvocations.executeQuery();
+		ResultSet rs = ps.executeQuery();
 		while (rs.next()) {
 			int col = 1;
 			String who = rs.getString(col++);
@@ -99,14 +103,54 @@ public class DBStats {
 			firstUse.put(who, when);
 		}
 		rs.close();
-		queryInvocations.close();
+		ps.close();
+		
+		ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation ORDERE BY time DESC");
+		rs = ps.executeQuery();
+		
+		Multiset<String> allIssues = new Multiset<String>();
+		Multiset<String> scariestIssues = new Multiset<String>();
+		Multiset<String> scaryIssues = new Multiset<String>();
+		Multiset<String> troublingIssues = new Multiset<String>();
+		
+		HashSet<String> issueReviews = new HashSet<String>();
+		while (rs.next()) {
+			int col = 1;
+			int id = rs.getInt(col++);
+			int issueId = rs.getInt(col++);
+			String who = rs.getString(col++);
+			String designation = rs.getString(col++);
+			String comment = rs.getString(col++);
+			Timestamp when = rs.getTimestamp(col++);
+			reviewers.put(who, when);
+			String issueReviewer = who+"-" + issueId;
+			if (issueReviews.add(issueReviewer)) {
+				uniqueReviews.put(issueReviewer, when);
+				allIssues.add(designation);
+			}
+				
+			
+		}
+		rs.close();
+
 		
 		c.close();
-		TreeSet<TimeSeries<String, Timestamp>> series = new 	TreeSet<TimeSeries<String, Timestamp>>();
+		printTimeSeries("Unique users", firstUse);
+		printTimeSeries("Unique reviewers", reviewers);
+		printTimeSeries("Total reviews", uniqueReviews);	
+		for(Map.Entry<String, Integer> e : allIssues.entrySet())
+			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
+		
+	
+	
+	}
+
+	private static void printTimeSeries(String title, MergeMap.MinMap<String, Timestamp> firstUse) {
+		System.out.println(title);
+	    TreeSet<TimeSeries<String, Timestamp>> series = new 	TreeSet<TimeSeries<String, Timestamp>>();
 		for(Map.Entry<String, Timestamp> e : firstUse.entrySet()) {
 			series.add(new TimeSeries(e.getKey(), e.getValue()));
 		}
-		
 		
 		Multiset<Timestamp> counter = new Multiset<Timestamp>(new TreeMap<Timestamp, Integer>());
 		for(TimeSeries<String, Timestamp> t : series) {
@@ -118,9 +162,8 @@ public class DBStats {
 			total += e.getValue();
 			System.out.printf("%4d, %s\n", total, format.format(e.getKey()));
 		}
-			
-	
-	
-	}
+		System.out.println();
+		
+    }
 
 }
