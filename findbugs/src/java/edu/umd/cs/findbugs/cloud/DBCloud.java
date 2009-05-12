@@ -1579,7 +1579,7 @@ public  class DBCloud extends AbstractCloud {
 	 * @param listRank TODO
 	 * @param title TODO
      */
-    private void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+     static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
 	    int row = 1;
     	int position = 0;
     	int previousScore = -1;

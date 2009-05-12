@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.cloud;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -108,6 +109,8 @@ public class DBStats {
 		ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation ORDER BY time DESC");
 		rs = ps.executeQuery();
 		
+		Multiset<String> issueReviewedBy =  new Multiset<String>();
+		
 		Multiset<String> allIssues = new Multiset<String>();
 		Multiset<String> scariestIssues = new Multiset<String>();
 		Multiset<String> scaryIssues = new Multiset<String>();
@@ -127,12 +130,11 @@ public class DBStats {
 			if (issueReviews.add(issueReviewer)) {
 				uniqueReviews.put(issueReviewer, when);
 				allIssues.add(designation);
+				issueReviewedBy.add(who);
 			}
 				
-			
 		}
 		rs.close();
-
 		
 		c.close();
 		printTimeSeries("Unique users", firstUse);
@@ -141,7 +143,9 @@ public class DBStats {
 		for(Map.Entry<String, Integer> e : allIssues.entrySet())
 			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
 		
-	
+		PrintWriter w = new PrintWriter(System.out);
+		
+		cloud.printLeaderBoard(w, issueReviewedBy, 6, "", true, "num issues reviewed");
 	
 	}
 
@@ -149,7 +153,7 @@ public class DBStats {
 		System.out.println(title);
 	    TreeSet<TimeSeries<String, Timestamp>> series = new TreeSet<TimeSeries<String, Timestamp>>();
 		for(Map.Entry<String, Timestamp> e : firstUse.entrySet()) {
-			series.add(new TimeSeries(e.getKey(), e.getValue()));
+			series.add(new TimeSeries<String,Timestamp>(e.getKey(), e.getValue()));
 		}
 		
 		Multiset<Timestamp> counter = new Multiset<Timestamp>(new TreeMap<Timestamp, Integer>());
