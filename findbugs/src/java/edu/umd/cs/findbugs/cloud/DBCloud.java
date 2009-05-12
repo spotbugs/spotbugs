@@ -1293,11 +1293,13 @@ public  class DBCloud extends AbstractCloud {
 			case FILE_BUG: {
 				URL u =  getBugFilingLink(b);
 				if (u != null && firstTimeDoing(HAS_FILED_BUGS)) {
+					String bugFilingNote = String.format(SystemProperties.getProperty("findbugs.filebug.note",""));
 					int response = bugCollection.getProject().getGuiCallback().showConfirmDialog(
 							"This looks like the first time you've filed a bug from this machine. Please:\n"
 							+ " * Please check the component the issue is assigned to; we sometimes get it wrong.\n"
 							+ " * Try to figure out the right person to assign it to.\n"
 							+ " * Provide the information needed to understand the issue.\n"
+							+ bugFilingNote
 							+ "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.",
 							"Do you want to file a bug report", JOptionPane.YES_NO_OPTION);
 					if (response != JOptionPane.YES_OPTION)
