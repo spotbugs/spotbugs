@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -75,7 +77,6 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
@@ -191,6 +192,8 @@ public  class DBCloud extends AbstractCloud {
 
 	int updatesSentToDatabase;
 	Date lastUpdate = new Date();
+	Date resync;
+	int resyncCount;
 	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
 
 	Map<Integer, BugData> idMap = new HashMap<Integer, BugData>();
@@ -245,177 +248,200 @@ public  class DBCloud extends AbstractCloud {
 	int sessionId = -1;
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 	public void bugsPopulated() {
-		queue.add(new PopulateBugs());
+		queue.add(new PopulateBugs(true));
 		
 	}
 	
 	static boolean invocationRecorded;
-	boolean bugsLoaded = false;
+	
 	class PopulateBugs implements Update {
+		final boolean performFullLoad;
 		
-
+		PopulateBugs(boolean performFullLoad) {
+			this.performFullLoad = performFullLoad;
+		}
 	    public void execute(DatabaseSyncTask t) throws SQLException {
 
-		String commonPrefix = null;
-		if (!bugsLoaded)  {
-		for (BugInstance b : bugCollection.getCollection())
-			if (!skipBug(b)) {
-				commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
-				getBugData(b.getInstanceHash()).bugs.add(b);
-			}
-		if (commonPrefix == null)
-			commonPrefix = "<no bugs>";
-		else if (commonPrefix.length() > 128)
-			commonPrefix = commonPrefix.substring(0, 128);
-		}
-		try {
-			long startTime = System.currentTimeMillis();
-			
-			Connection c = getConnection();
-			PreparedStatement ps;
-			ResultSet rs;
-			if (!bugsLoaded) {
-			 ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
-			 rs = ps.executeQuery();
-			
-			while (rs.next()) {
-				int col = 1;
-				int id = rs.getInt(col++);
-				String hash = rs.getString(col++);
-				Timestamp firstSeen = rs.getTimestamp(col++);
-				loadDatabaseInfo(hash, id, firstSeen.getTime());
-			}
-			rs.close();
-			ps.close();
-			}
-			ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				int col = 1;
-				int id = rs.getInt(col++);
-				int issueId = rs.getInt(col++);
-				String who = rs.getString(col++);
-				String designation = rs.getString(col++);
-				String comment = rs.getString(col++);
-				Timestamp when = rs.getTimestamp(col++);
-				BugData data = idMap.get(issueId);
-				
-				if (data != null) {
-					BugDesignation bd = new BugDesignation(designation, when.getTime(), comment, who);
-					if (data.designations.add(bd))
-						bugDesignationId.put(bd, id);
-					
-				}
-
-			}
-			rs.close();
-			ps.close();
-			
-			ps = c.prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				int col = 1;
-				String hash = rs.getString(col++);
-				String bugReportId = rs.getString(col++);
-				String whoFiled = rs.getString(col++);
-				Timestamp whenFiled = rs.getTimestamp(col++);
-				String status = rs.getString(col++);
-				String assignedTo = rs.getString(col++);
-				String componentName = rs.getString(col++);
-				
-				BugData data = instanceMap.get(hash);
-				
-				if (data != null) {
-					data.bugLink = bugReportId;
-					data.filedBy = whoFiled;
-					data.bugFiled = whenFiled.getTime();
-					data.bugAssignedTo = assignedTo;
-					data.bugStatus = status;
-					data.bugComponentName = componentName;
-				}
-
-			}
-			rs.close();
-			ps.close();
-
-			if (!invocationRecorded) {
-			long jvmStartTime = StartTime.START_TIME - StartTime.VM_START_TIME;
-			SortedBugCollection sbc = (SortedBugCollection) bugCollection;
-			long findbugsStartTime = sbc.getTimeStartedLoading() -  StartTime.START_TIME;
-			
-			URL findbugsURL = PluginLoader.getCoreResource("findbugs.xml");
-			String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
-			
-			long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading() ;
-			long lostTime = startTime - sbc.getTimeStartedLoading() ;
-			
-			long initialSyncTime = System.currentTimeMillis() -  sbc.getTimeFinishedLoading();
-			PreparedStatement insertSession =  
-				c.prepareStatement("INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
-						+ " VALUES (?,?,?,?,?,?,?,?,?,?,?)",  
-						Statement.RETURN_GENERATED_KEYS);
-			Timestamp now = new Timestamp(startTime);
-			int col = 1;
-			insertSession.setString(col++, findbugsUser);
-			insertSession.setString(col++, limitToMaxLength(loadURL,128));
-			insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
-			insertSession.setString(col++, Version.RELEASE);
-			insertSession.setLong(col++, jvmStartTime);
-			insertSession.setLong(col++, findbugsStartTime);
-			insertSession.setLong(col++, initialLoadTime);
-			insertSession.setLong(col++, initialSyncTime);
-			insertSession.setInt(col++, bugCollection.getCollection().size());
-			insertSession.setTimestamp(col++, now);
-			insertSession.setString(col++, commonPrefix);
-			int rowCount = insertSession.executeUpdate();
-			rs = insertSession.getGeneratedKeys();
-			if (rs.next()) {
-				sessionId = rs.getInt(1);	
-				
-			}
-			insertSession.close();
-			rs.close();
-			invocationRecorded = true;
-			}
-			c.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			displayMessage("problem bulk loading database", e);
-			
-		}
-		if (!bugsLoaded) {
-		for (BugInstance b : bugCollection.getCollection())
-			if (!skipBug(b)) {
-				BugData bd  = getBugData(b.getInstanceHash());
-				if (!bd.inDatabase) {
-					storeNewBug(b);
-				} else {
-					issuesBulkHandled++;
-					long firstVersion = b.getFirstVersion();
-					long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-					if (firstSeen < minimumTimestamp) {
-						displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
+			String commonPrefix = null;
+			int updates = 0;
+			if (performFullLoad) {
+				for (BugInstance b : bugCollection.getCollection())
+					if (!skipBug(b)) {
+						commonPrefix = Util.commonPrefix(commonPrefix, b.getPrimaryClass().getClassName());
+						getBugData(b.getInstanceHash()).bugs.add(b);
 					}
-					else if (firstSeen < bd.firstSeen) {
-						bd.firstSeen = firstSeen;
-						storeFirstSeen(bd);
-					}
-					
-					BugDesignation designation = bd.getPrimaryDesignation();
-					if (designation != null)
-						b.setUserDesignation(new BugDesignation(designation));
-				}
+				if (commonPrefix == null)
+					commonPrefix = "<no bugs>";
+				else if (commonPrefix.length() > 128)
+					commonPrefix = commonPrefix.substring(0, 128);
 			}
-		bugsLoaded = true;
-		initialSyncDone.countDown();
-	    }
-	    bugsLoaded = true;
-	}
+			try {
+				long startTime = System.currentTimeMillis();
+
+				Connection c = getConnection();
+				PreparedStatement ps;
+				ResultSet rs;
+				if (performFullLoad) {
+					ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
+					rs = ps.executeQuery();
+
+					while (rs.next()) {
+						int col = 1;
+						int id = rs.getInt(col++);
+						String hash = rs.getString(col++);
+						Timestamp firstSeen = rs.getTimestamp(col++);
+						loadDatabaseInfo(hash, id, firstSeen.getTime());
+					}
+					rs.close();
+					ps.close();
+				}
+				ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
+
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					int col = 1;
+					int id = rs.getInt(col++);
+					int issueId = rs.getInt(col++);
+					String who = rs.getString(col++);
+					String designation = rs.getString(col++);
+					String comment = rs.getString(col++);
+					Timestamp when = rs.getTimestamp(col++);
+					BugData data = idMap.get(issueId);
+
+					if (data != null) {
+						BugDesignation bd = new BugDesignation(designation, when.getTime(), comment, who);
+						if (data.designations.add(bd)) {
+							bugDesignationId.put(bd, id);
+							updates++;
+						}
+
+					}
+
+				}
+				rs.close();
+				ps.close();
+
+				ps = c
+				        .prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
+
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					int col = 1;
+					String hash = rs.getString(col++);
+					String bugReportId = rs.getString(col++);
+					String whoFiled = rs.getString(col++);
+					Timestamp whenFiled = rs.getTimestamp(col++);
+					String status = rs.getString(col++);
+					String assignedTo = rs.getString(col++);
+					String componentName = rs.getString(col++);
+
+					BugData data = instanceMap.get(hash);
+
+					if (data != null) {
+						if (Util.nullSafeEquals(data.bugLink, bugReportId)
+							&& Util.nullSafeEquals(data.filedBy, whoFiled)
+							&& data.bugFiled == whenFiled.getTime()
+							&& Util.nullSafeEquals(data.bugAssignedTo, assignedTo)
+							&& Util.nullSafeEquals(data.bugStatus, status)
+							&& Util.nullSafeEquals(data.bugComponentName, componentName))
+							continue;
+						
+						data.bugLink = bugReportId;
+						data.filedBy = whoFiled;
+						data.bugFiled = whenFiled.getTime();
+						data.bugAssignedTo = assignedTo;
+						data.bugStatus = status;
+						data.bugComponentName = componentName;
+						updates++;
+					}
+
+				}
+				rs.close();
+				ps.close();
+
+				if (!invocationRecorded) {
+					long jvmStartTime = StartTime.START_TIME - StartTime.VM_START_TIME;
+					SortedBugCollection sbc = (SortedBugCollection) bugCollection;
+					long findbugsStartTime = sbc.getTimeStartedLoading() - StartTime.START_TIME;
+
+					URL findbugsURL = PluginLoader.getCoreResource("findbugs.xml");
+					String loadURL = findbugsURL == null ? "" : findbugsURL.toString();
+
+					long initialLoadTime = sbc.getTimeFinishedLoading() - sbc.getTimeStartedLoading();
+					long lostTime = startTime - sbc.getTimeStartedLoading();
+
+					long initialSyncTime = System.currentTimeMillis() - sbc.getTimeFinishedLoading();
+					PreparedStatement insertSession = c
+					        .prepareStatement(
+					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+					Timestamp now = new Timestamp(startTime);
+					int col = 1;
+					insertSession.setString(col++, findbugsUser);
+					insertSession.setString(col++, limitToMaxLength(loadURL, 128));
+					insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
+					insertSession.setString(col++, Version.RELEASE);
+					insertSession.setLong(col++, jvmStartTime);
+					insertSession.setLong(col++, findbugsStartTime);
+					insertSession.setLong(col++, initialLoadTime);
+					insertSession.setLong(col++, initialSyncTime);
+					insertSession.setInt(col++, bugCollection.getCollection().size());
+					insertSession.setTimestamp(col++, now);
+					insertSession.setString(col++, commonPrefix);
+					int rowCount = insertSession.executeUpdate();
+					rs = insertSession.getGeneratedKeys();
+					if (rs.next()) {
+						sessionId = rs.getInt(1);
+
+					}
+					insertSession.close();
+					rs.close();
+					invocationRecorded = true;
+				}
+				c.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				displayMessage("problem bulk loading database", e);
+			}
+			if (updates > 0) { 
+				resync = new Date();
+				resyncCount = updates;
+			}
+			if (performFullLoad) {
+				for (BugInstance b : bugCollection.getCollection())
+					if (!skipBug(b)) {
+						BugData bd = getBugData(b.getInstanceHash());
+						if (!bd.inDatabase) {
+							storeNewBug(b);
+						} else {
+							long firstVersion = b.getFirstVersion();
+							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
+							if (firstSeen < minimumTimestamp) {
+								displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
+							} else if (firstSeen < bd.firstSeen) {
+								bd.firstSeen = firstSeen;
+								storeFirstSeen(bd);
+							}
+
+							BugDesignation designation = bd.getPrimaryDesignation();
+							if (designation != null)
+								b.setUserDesignation(new BugDesignation(designation));
+						}
+					}
+				initialSyncDone.countDown();
+				long delay = 10*60*1000; // 5 minutes
+				resyncTimer.schedule(new TimerTask() {
+
+					@Override
+                    public void run() {
+						queue.add(new PopulateBugs(true));
+                    }}, delay, delay);
+			}
+			updatedStatus();
+		}
 	}
 	
 	private static String limitToMaxLength(String s, int maxLength) {
@@ -424,7 +450,6 @@ public  class DBCloud extends AbstractCloud {
 		return s.substring(0, maxLength);
 	}
 
-	int issuesBulkHandled = 0;
 	private String getProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
 	}
@@ -558,8 +583,10 @@ public  class DBCloud extends AbstractCloud {
 
 	final Thread runnerThread = new Thread(runner, "Database synchronization thread");
 
+	final Timer resyncTimer = new Timer("Resync scheduler", true);
 	@Override
     public void shutdown() {
+		resyncTimer.cancel();
 		queue.add(new ShutdownTask());
 		try {
 			Connection c = getConnection();
@@ -602,7 +629,6 @@ public  class DBCloud extends AbstractCloud {
 
 		checkForShutdown();
 		queue.add(new StoreNewBug(bug));
-		updatedStatus();
 	}
 
 	public void storeFirstSeen(final BugData bd) {
@@ -613,7 +639,6 @@ public  class DBCloud extends AbstractCloud {
 	           t.storeFirstSeen(bd);
 	            
             }});
-		updatedStatus();
 	}
 	public void storeUserAnnotation(BugData data, BugDesignation bd) {
 		checkForShutdown();
@@ -921,6 +946,7 @@ public  class DBCloud extends AbstractCloud {
     public long getFirstSeen(BugInstance b) {
 	   return getBugData(b).firstSeen;
     }
+    @Override
     public boolean overallClassificationIsNotAProblem(BugInstance b) {
     	BugData bd = getBugData(b);
     	if (bd == null)
@@ -1475,13 +1501,16 @@ public  class DBCloud extends AbstractCloud {
     public String getStatusMsg0() {
     	SimpleDateFormat format = new SimpleDateFormat("h:mm a");
     	int numToSync = queue.size();
-    	int handled = this.issuesBulkHandled + runner.handled;
     	if (numToSync > 0)
     		return  String.format("%d remain to be synchronized", numToSync);
     	else if (updatesSentToDatabase == 0)
     		return  String.format("%d issues synchronized with database", 
     				idMap.size());
-    	else return  String.format("%d classifications/bug filings sent to db, last updated at %s", 
+    	else if (resync != null && resync.after(lastUpdate))
+    		return  String.format("%d updates received from db at %s", 
+    				resyncCount, format.format(resync)); 
+    	else
+    		return  String.format("%d classifications/bug filings sent to db, last updated at %s", 
     				updatesSentToDatabase, format.format(lastUpdate)); 
     		
     }
