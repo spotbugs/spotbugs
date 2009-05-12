@@ -385,7 +385,7 @@ public  class DBCloud extends AbstractCloud {
 					PreparedStatement insertSession = c
 					        .prepareStatement(
 					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, os, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
-					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 					Timestamp now = new Timestamp(startTime);
 					int col = 1;
 					insertSession.setString(col++, findbugsUser);
@@ -430,7 +430,8 @@ public  class DBCloud extends AbstractCloud {
 							long firstVersion = b.getFirstVersion();
 							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
 							if (firstSeen < minimumTimestamp) {
-								displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
+								firstSeen = System.currentTimeMillis();
+								// displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
 							} else if (firstSeen < bd.firstSeen) {
 								bd.firstSeen = firstSeen;
 								storeFirstSeen(bd);
