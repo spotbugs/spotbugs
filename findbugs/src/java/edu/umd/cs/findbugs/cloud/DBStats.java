@@ -147,7 +147,7 @@ public class DBStats {
 
 	private static void printTimeSeries(String title, MergeMap.MinMap<String, Timestamp> firstUse) {
 		System.out.println(title);
-	    TreeSet<TimeSeries<String, Timestamp>> series = new 	TreeSet<TimeSeries<String, Timestamp>>();
+	    TreeSet<TimeSeries<String, Timestamp>> series = new TreeSet<TimeSeries<String, Timestamp>>();
 		for(Map.Entry<String, Timestamp> e : firstUse.entrySet()) {
 			series.add(new TimeSeries(e.getKey(), e.getValue()));
 		}
