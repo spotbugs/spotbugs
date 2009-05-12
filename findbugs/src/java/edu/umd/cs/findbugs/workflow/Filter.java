@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
+import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -446,7 +447,10 @@ public class Filter {
 	static SourceSearcher sourceSearcher;
 
 	public static void main(String[] args) throws Exception {
-		DetectorFactoryCollection.instance();
+		DetectorFactoryCollection df = DetectorFactoryCollection.instance();
+		for(Plugin p : df.plugins()) {
+			System.out.println(p.getProvider());
+		}
 		final FilterCommandLine commandLine = new FilterCommandLine();
 
 		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
