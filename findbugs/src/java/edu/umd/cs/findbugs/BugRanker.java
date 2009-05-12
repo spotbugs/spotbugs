@@ -106,23 +106,22 @@ public class BugRanker {
     }
 	
 	public static int findRank(BugInstance bug) {
+		int finalRank = 30;
 		for(Plugin p : DetectorFactoryCollection.instance().plugins()) {
 			BugRanker r = p.getBugRanker();
-			int rank = r.rankBug(bug);
-			if (rank <= 20) 
-				return rank;
+			finalRank = Math.min(finalRank,r.rankBug(bug));
+
 		}
-		return 30;
+		return finalRank;
 	}
 
 	public static int findRank(BugPattern pattern, int priority) {
+		int finalRank = 30;
 		for(Plugin p : DetectorFactoryCollection.instance().plugins()) {
 			BugRanker r = p.getBugRanker();
-			int rank = r.rankBugPattern(pattern, priority);
-			if (rank <= 20) 
-				return rank;
+			finalRank = Math.min(finalRank, r.rankBugPattern(pattern, priority));
 		}
-		return 30;
+		return finalRank;
 	}
 
 
