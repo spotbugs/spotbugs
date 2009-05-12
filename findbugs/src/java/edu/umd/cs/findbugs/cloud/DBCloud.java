@@ -666,8 +666,8 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	
-	private static final String PENDING = "-- pending --";
-	private static final String NONE = "none";
+	public static final String PENDING = "-- pending --";
+	public static final String NONE = "none";
 
 	class DatabaseSyncTask implements Runnable {
 

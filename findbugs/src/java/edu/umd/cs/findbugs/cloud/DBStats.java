@@ -79,7 +79,8 @@ public class DBStats {
 	        this.v = v;
         }
         
-       public String toString() {
+       @Override
+    public String toString() {
     	   return v + " " + k;
        }
 
@@ -144,7 +145,7 @@ public class DBStats {
 		
 		
 		
-		ps = c.prepareStatement("SELECT who, entryPoint, dataSource, fbVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix"
+		ps = c.prepareStatement("SELECT who,  jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, timestamp"
 					+ " FROM findbugs_invocation");
 		
 		MergeMap.MinMap <String, Timestamp> firstUse = new MergeMap.MinMap<String,Timestamp>();
@@ -160,14 +161,10 @@ public class DBStats {
 		while (rs.next()) {
 			int col = 1;
 			String who = rs.getString(col++);
-			String entryPoint = rs.getString(col++);
-			String dataSource = rs.getString(col++);
-			String fbVersion = rs.getString(col++);
 			int jvmLoad = rs.getInt(col++);
 			int fbLoad = rs.getInt(col++);
 			int analysisLoad = rs.getInt(col++);
 			int dbSync = rs.getInt(col++);
-			int numIssues = rs.getInt(col++);
 			Timestamp when = rs.getTimestamp(col++);
 			invocationCount++;
 			invocationTotal += jvmLoad + fbLoad + analysisLoad + dbSync;
@@ -175,7 +172,8 @@ public class DBStats {
 			firstUse.put(who, when);
 			if (participants.add(who)) {
 				String office = officeLocation.get(who);
-				if (office == null) office = "unknown";
+				if (office == null) 
+					office = "unknown";
 				participantsPerOffice.add(office);
 			}
 				
@@ -183,7 +181,7 @@ public class DBStats {
 		rs.close();
 		ps.close();
 		
-		ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation ORDER BY time DESC");
+		ps = c.prepareStatement("SELECT id, issueId, who, designation, timestamp FROM findbugs_evaluation ORDER BY timestamp DESC");
 		rs = ps.executeQuery();
 		
 		Multiset<String> issueReviewedBy =  new Multiset<String>();
@@ -199,8 +197,7 @@ public class DBStats {
 			int id = rs.getInt(col++);
 			int issueId = rs.getInt(col++);
 			String who = rs.getString(col++);
-			String designation = rs.getString(col++);
-			String comment = rs.getString(col++);
+			String designation =  i18n.getUserDesignation(rs.getString(col++));
 			Timestamp when = rs.getTimestamp(col++);
 			Rank rank = bugRank.get(id);
 			reviewers.put(who, when);
@@ -225,8 +222,25 @@ public class DBStats {
 			}
 				
 		}
-		rs.close();
+		rs.close();	
+		ps.close();
 		
+		Multiset<String> bugStatus = new Multiset<String>();
+		
+		ps = c.prepareStatement("SELECT bugReportId,status, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
+		rs = ps.executeQuery();
+		while (rs.next()) {
+			int col = 1;
+			String  id = rs.getString(col++);
+			String status = rs.getString(col++);
+			Timestamp when = rs.getTimestamp(col++);
+			System.out.printf("%20s %20s\n", id, status);
+			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE))
+				bugStatus.add(status);
+		}
+		
+		rs.close();	
+		ps.close();
 		c.close();
 		
 		System.out.printf("%6d invocations\n", invocationCount);
@@ -238,19 +252,20 @@ public class DBStats {
 		printTimeSeries("Unique reviewers", reviewers);
 		printTimeSeries("Total reviews", uniqueReviews);	
 		
+		printMultiset("Bug status", bugStatus);
+		
 		printMultiset("All issues", allIssues);
 		printMultiset("Scariest issues", scariestIssues);
 		printMultiset("Scary issues", scaryIssues);
 		printMultiset("Troubling issues", troublingIssues);
 		
 		System.out.println();
-		System.out.println("Participants by office");
-		for(Map.Entry<String, Integer> e : participantsPerOffice.entrySet())
-			System.out.printf("%s,%d\n", e.getKey(), e.getValue());
-		System.out.println();
 		PrintWriter w = new PrintWriter(System.out);
 		
-		DBCloud.printLeaderBoard(w, issueReviewedBy, 6, "", true, "num issues reviewed");
+		DBCloud.printLeaderBoard(w, participantsPerOffice, 8, "", true, "participants per office");
+		w.println();
+		DBCloud.printLeaderBoard(w, issueReviewedBy, 8, "", true, "num issues reviewed");
+		w.println();
 		w.flush();
 	
 	}
