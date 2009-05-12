@@ -154,6 +154,13 @@ public class Util {
 		return o1.equals(o2);
 	}
 
+	public static <T extends Comparable<? super T>> int  
+	    nullSafeCompareTo(@CheckForNull T o1, @CheckForNull T o2) {
+		if (o1 == o2) return 0;
+		if (o1 == null) return -1;
+		if (o2 == null) return 1;
+		return o1.compareTo(o2);
+	}
 	public static Reader getReader(@WillCloseWhenClosed InputStream in) throws UnsupportedEncodingException {
 		return new InputStreamReader(in, "UTF-8");
 	}
