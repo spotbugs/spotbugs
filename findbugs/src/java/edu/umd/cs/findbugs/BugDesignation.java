@@ -199,18 +199,31 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 	}
 
 	
+	 public boolean equals(Object o) {
+		 if (!(o instanceof BugDesignation))
+			 return false;
+		 return this.compareTo((BugDesignation)o) == 0;
+	 }
     public int compareTo(BugDesignation o) {
+    	if (this == o)
+    		return 0;
 	    int result = - Util.compare(this.timestamp, o.timestamp);
 	    if (result != 0) 
 	    	return result;
 	   
-
-	    if (this.user != null && o.user != null) {
-	    	result = this.user.compareTo(o.user);
-	    	if (result != 0) 
+	    result = Util.nullSafeCompareTo(this.user, o.user);
+	    if (result != 0) 
 	    		return result;
-	    }
-	    return Util.compare(System.identityHashCode(this) , System.identityHashCode(o));
+	    
+	    result = Util.nullSafeCompareTo(this.designation, o.designation);
+	    if (result != 0) 
+	    		return result;
+	    result = Util.nullSafeCompareTo(this.annotationText, o.annotationText);
+	    if (result != 0) 
+	    		return result;
+	  
+	    return 0;
+	    
     }
 
 }
