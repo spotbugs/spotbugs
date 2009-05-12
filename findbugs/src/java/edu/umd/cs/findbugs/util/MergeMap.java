@@ -78,6 +78,9 @@ public abstract class MergeMap<K, V> {
 		return map.get(k);
 	}
 
+	public boolean containsKey(K k) {
+		return map.containsKey(k);
+	}
 	public Set<Map.Entry<K, V>> entrySet() {
 		return map.entrySet();
 	}

@@ -189,6 +189,8 @@ public  class DBCloud extends AbstractCloud {
 	int updatesSentToDatabase;
 	Date lastUpdate = new Date();
 	Date resync;
+	Date attemptedResync;
+	
 	int resyncCount;
 	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
 
@@ -265,7 +267,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	    public void execute(DatabaseSyncTask t) throws SQLException {
 
-			String commonPrefix = null;
+	    	String commonPrefix = null;
 			int updates = 0;
 			if (performFullLoad) {
 				for (BugInstance b : bugCollection.getCollection())
@@ -418,11 +420,13 @@ public  class DBCloud extends AbstractCloud {
 				e.printStackTrace();
 				displayMessage("problem bulk loading database", e);
 			}
-			if (updates > 0) { 
-				resync = new Date();
-				resyncCount = updates;
-			}
-			if (performFullLoad) {
+			if (!performFullLoad) {
+				attemptedResync = new Date();
+				if (updates > 0) { 
+					resync = attemptedResync;
+					resyncCount = updates;
+				}
+			} else {
 				for (BugInstance b : bugCollection.getCollection())
 					if (!skipBug(b)) {
 						BugData bd = getBugData(b.getInstanceHash());
@@ -445,18 +449,27 @@ public  class DBCloud extends AbstractCloud {
 						}
 					}
 				initialSyncDone.countDown();
+				assert !scheduled;
+				
 				long delay = 10*60*1000; // 10 minutes
-				resyncTimer.schedule(new TimerTask() {
+				if (!scheduled) 
+					resyncTimer.schedule(new TimerTask() {
 
 					@Override
                     public void run() {
-						queue.add(new PopulateBugs(true));
+						if (attemptedResync == null || lastUpdate.after(attemptedResync) || numSkipped++ > 6) {
+							numSkipped = 0;
+							queue.add(new PopulateBugs(false));
+						}
                     }}, delay, delay);
+				scheduled = true;
 			}
 			updatedStatus();
 		}
 	}
-	
+	 
+	boolean scheduled = false;
+	int numSkipped = 0;
 	private static String limitToMaxLength(String s, int maxLength) {
 		if (s.length() <= maxLength)
 			return s;
@@ -1527,12 +1540,12 @@ public  class DBCloud extends AbstractCloud {
     	int numToSync = queue.size();
     	if (numToSync > 0)
     		return  String.format("%d remain to be synchronized", numToSync);
-    	else if (updatesSentToDatabase == 0)
-    		return  String.format("%d issues synchronized with database", 
-    				idMap.size());
     	else if (resync != null && resync.after(lastUpdate))
     		return  String.format("%d updates received from db at %s", 
     				resyncCount, format.format(resync)); 
+    	else if (updatesSentToDatabase == 0)
+    		return  String.format("%d issues synchronized with database", 
+    				idMap.size());
     	else
     		return  String.format("%d classifications/bug filings sent to db, last updated at %s", 
     				updatesSentToDatabase, format.format(lastUpdate)); 
@@ -1635,15 +1648,27 @@ public  class DBCloud extends AbstractCloud {
 	 * @param title TODO
      */
      static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
+    	 if (listRank)
+ 			w.printf("%3s %3s %s\n", "rnk", "num", title);
+ 		else
+ 			w.printf("%3s %s\n",  "num", title);
+    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %3d %s\n" : "%2$3d %3$s\n"  , title);
+    }
+	/**
+     * @param w
+     * @param evaluations
+     * @param maxRows
+     * @param alwaysPrint
+     * @param listRank
+     * @param title
+     */
+     static void printLeaderBoard2(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint,
+            String format, String title) {
 	    int row = 1;
     	int position = 0;
     	int previousScore = -1;
     	boolean foundAlwaysPrint = false;
-    	if (listRank)
-			w.printf("%3s %3s %s\n", "rnk", "num", title);
-		else
-			w.printf("%3s %s\n",  "num", title);
-		
+    		
     	for(Map.Entry<String,Integer> e : evaluations.entriesInDecreasingFrequency()) {
     		int num = e.getValue();
     		if (num != previousScore) {
@@ -1653,18 +1678,19 @@ public  class DBCloud extends AbstractCloud {
     		String key = e.getKey();
     		
     		boolean shouldAlwaysPrint = key.equals(alwaysPrint);
-			if (row <= maxRows || shouldAlwaysPrint) {
-				if (listRank) 
-					w.printf("%3d %3d %s\n", position, num, key);
-				else
-					w.printf("%3d %s\n", num, key);
-			}
+			if (row <= maxRows || shouldAlwaysPrint) 
+				w.printf(format, position, num, key);
+			
 			if (shouldAlwaysPrint)
 				foundAlwaysPrint = true;
     		row++;
-    		if (foundAlwaysPrint && row >= maxRows) {
-    			w.printf("Total of %d %ss\n", evaluations.numKeys(), title);
-    			break;
+    		if (row >= maxRows) {
+    			if (alwaysPrint == null) 
+    				break;
+    			if (foundAlwaysPrint) {
+        			w.printf("Total of %d %ss\n", evaluations.numKeys(), title);
+        			break;
+        		} 
     		}
     		
     	}

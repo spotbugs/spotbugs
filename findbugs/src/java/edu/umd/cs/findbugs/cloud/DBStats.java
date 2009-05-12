@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -80,6 +81,7 @@ public class DBStats {
 	        this.v = v;
         }
         
+      	
        @Override
     public String toString() {
     	   return v + " " + k;
@@ -126,7 +128,6 @@ public class DBStats {
 		cloud.initialize();
 		Connection c = cloud.getConnection();
 		
-		
 		Map<Integer,Rank> bugRank = new HashMap<Integer, Rank>();
 		PreparedStatement ps = c.prepareStatement("SELECT id, bugPattern, priority FROM findbugs_issue");
 		ResultSet rs = ps.executeQuery();
@@ -146,7 +147,7 @@ public class DBStats {
 		
 		
 		
-		ps = c.prepareStatement("SELECT who,  jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, timestamp"
+		ps = c.prepareStatement("SELECT who,  jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, timestamp, numIssues"
 					+ " FROM findbugs_invocation");
 		
 		MergeMap.MinMap <String, Timestamp> firstUse = new MergeMap.MinMap<String,Timestamp>();
@@ -154,6 +155,7 @@ public class DBStats {
 		MergeMap.MinMap <String, Timestamp> uniqueReviews = new MergeMap.MinMap<String,Timestamp>();
 		
 		HashSet<String> participants = new HashSet<String>();
+		Multiset<String> invocations = new Multiset<String>();
 		Multiset<String> participantsPerOffice = new Multiset<String>(new TreeMap<String,Integer>());
 		 rs = ps.executeQuery();
 		int invocationCount = 0;
@@ -167,10 +169,13 @@ public class DBStats {
 			int analysisLoad = rs.getInt(col++);
 			int dbSync = rs.getInt(col++);
 			Timestamp when = rs.getTimestamp(col++);
+			int numIssues = rs.getInt(col++);
 			invocationCount++;
 			invocationTotal += jvmLoad + fbLoad + analysisLoad + dbSync;
 			loadTotal +=  fbLoad + analysisLoad + dbSync;
 			firstUse.put(who, when);
+			if (numIssues > 3000)
+				invocations.add(who);
 			if (participants.add(who)) {
 				String office = officeLocation.get(who);
 				if (office == null) 
@@ -198,7 +203,11 @@ public class DBStats {
 			int id = rs.getInt(col++);
 			int issueId = rs.getInt(col++);
 			String who = rs.getString(col++);
-			String designation =  i18n.getUserDesignation(rs.getString(col++));
+			String designation = rs.getString(col++);
+			if (designation.equals("OBSOLETE_CODE"))
+				designation= "Obsolete code";
+			else 
+				designation =  i18n.getUserDesignation(designation);
 			Timestamp when = rs.getTimestamp(col++);
 			Rank rank = bugRank.get(id);
 			reviewers.put(who, when);
@@ -253,6 +262,7 @@ public class DBStats {
 		System.out.printf("%6d load time\n", loadTotal/invocationCount);
 		System.out.println();
 		
+			
 		printTimeSeries("users.csv", "Unique users", firstUse);
 		printTimeSeries("reviewers.csv", "Unique reviewers", reviewers);
 		printTimeSeries("reviews.csv", "Total reviews", uniqueReviews);	
@@ -264,6 +274,11 @@ public class DBStats {
 		out.close();
 		
 		
+		out = new PrintWriter("reviews_by_category.csv");
+		out.println("Rank,Number of reviews");
+		printMultisetContents(out, "", allIssues);
+		out.close();
+		
 		out = new PrintWriter("reviews_by_rank_and_category.csv");
 		out.println("Rank,Category,Number of reviews");
 		printMultisetContents(out, "Scariest,", scariestIssues);
@@ -272,14 +287,14 @@ public class DBStats {
 		out.close();
 		
 
-		out = new PrintWriter("most_bugs_filed_office.csv");
-		
-		DBCloud.printLeaderBoard(out, participantsPerOffice, 8, "", true, "participants per office");
+		out = new PrintWriter("most_participants_by_office.csv");
+		out.println("rank,participants,office");
+		DBCloud.printLeaderBoard2(out, participantsPerOffice, 100, null, "%s,%s,%s\n", "participants per office");
 		out.close();
 		
-		out = new PrintWriter("most_bugs_filed_individual.csv");
-		
-		DBCloud.printLeaderBoard(out, issueReviewedBy, 8, "", true, "num issues reviewed");
+		out = new PrintWriter("most_issues_reviewed_individual.csv");
+		out.println("rank,reviews,reviewers");
+		DBCloud.printLeaderBoard2(out, issueReviewedBy, 100, null, "%s,%s,%s\n", "num issues reviewed");
 		out.close();
 	
 	}
@@ -289,9 +304,8 @@ public class DBStats {
 	 * @param allIssues
      */
     private static void printMultiset(PrintWriter out, String title, Multiset<String> allIssues) {
-	    out.println(title);
-		printMultisetContents(out, "", allIssues);
-		out.println();
+	    printMultisetContents(out, "", allIssues);
+		
     }
 
 	/**
@@ -303,11 +317,12 @@ public class DBStats {
     }
 
     
-    
+    final static  Date fixitStart = new Date("May 11, 2009");
+	
     
 	private static void printTimeSeries(String filename, String title, MergeMap.MinMap<String, Timestamp> firstUse) throws FileNotFoundException {
 		PrintWriter out = new PrintWriter(filename);
-		out.println(title);
+		out.println(title+",time,full time");
 	    TreeSet<TimeSeries<String, Timestamp>> series = new TreeSet<TimeSeries<String, Timestamp>>();
 		for(Map.Entry<String, Timestamp> e : firstUse.entrySet()) {
 			series.add(new TimeSeries<String,Timestamp>(e.getKey(), e.getValue()));
@@ -319,9 +334,12 @@ public class DBStats {
 		}
 		int total = 0;
 		SimpleDateFormat format = new SimpleDateFormat("h a EEE");
+		SimpleDateFormat defaultFormat = new SimpleDateFormat();
 		for(Map.Entry<Timestamp, Integer> e : counter.entrySet()) {
+			Timestamp time = e.getKey();
 			total += e.getValue();
-			out.printf("%4d, %s\n", total, format.format(e.getKey()));
+			if (time.after(fixitStart))
+			  out.printf("%d,%s,%s\n", total, format.format(time), defaultFormat.format(time));
 		}
 		out.close();
 		
