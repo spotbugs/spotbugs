@@ -117,7 +117,7 @@ public interface Cloud {
 	String getCloudReport(BugInstance b);
 	
 	boolean supportsClaims();
-	String claimedBy(BugInstance b);	
+	@CheckForNull String claimedBy(BugInstance b);	
 	boolean claim(BugInstance b);
 	
 	long getUserTimestamp(BugInstance b);

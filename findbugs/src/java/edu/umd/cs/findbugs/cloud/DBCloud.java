@@ -1710,13 +1710,29 @@ public  class DBCloud extends AbstractCloud {
 		/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#supportsCloudSummaries()
      */
+    @Override
     public boolean supportsCloudSummaries() {
 	   return true;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#canStoreUserAnnotation(edu.umd.cs.findbugs.BugInstance)
      */
+    @Override
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
 	   return !skipBug(bugInstance);
     }
+    
+	@Override
+    public @CheckForNull String claimedBy(BugInstance b) {
+		BugData bd = getBugData(b);
+		if (bd == null)
+			return null;
+		for(BugDesignation designation : bd.getUniqueDesignations()) {
+			if ("I_WILL_FIX".equals(designation.getDesignationKey()))
+					return designation.getUser();
+		}
+		return null;
+		
+	}
+	
 }

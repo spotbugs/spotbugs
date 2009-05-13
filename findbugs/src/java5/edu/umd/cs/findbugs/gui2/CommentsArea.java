@@ -581,7 +581,7 @@ public class CommentsArea {
 		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
 		if (plugin != null && designationKey.equals("I_WILL_FIX")) {
 			String claimedBy = plugin.claimedBy(bug);
-			if (!plugin.getUser().equals(claimedBy)) {
+			if (claimedBy != null && !plugin.getUser().equals(claimedBy)) {
 				int result = JOptionPane.showConfirmDialog(null, 
 						claimedBy + " has already said they will fix this issue\n"
 						+ "Do you want to also be listed as fixing this issue?\n"
@@ -592,8 +592,6 @@ public class CommentsArea {
 				if (result != JOptionPane.YES_OPTION)
 					designationKey = "MUST_FIX";	
 			}
-				
-				
 		}
 		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
 			if (plugin != null && plugin.supportsCloudReports()) {
