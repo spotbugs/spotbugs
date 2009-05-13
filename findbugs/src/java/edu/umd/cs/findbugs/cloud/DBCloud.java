@@ -588,10 +588,10 @@ public  class DBCloud extends AbstractCloud {
 				if (s.trim().length() == 0)
 					continue;
 				int x = s.indexOf(' ');
-				if (x == -1)
+				if (x == -1) {
 					if (!prefixBugComponentMapping.containsKey(""))
 						prefixBugComponentMapping.put("", s);
-				else {
+				} else {
 					String prefix = s.substring(x+1);
 					if (!prefixBugComponentMapping.containsKey(prefix))
 						prefixBugComponentMapping.put(prefix, s.substring(0,x));
@@ -599,6 +599,8 @@ public  class DBCloud extends AbstractCloud {
 				
 			}
 			in.close();
+			for(Map.Entry e : prefixBugComponentMapping.entrySet())
+				System.out.println(e);
 		}
 		} catch (IOException e) {
 			AnalysisContext.logError("Unable to load bug component properties", e);
