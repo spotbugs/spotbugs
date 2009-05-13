@@ -1644,7 +1644,7 @@ public  class DBCloud extends AbstractCloud {
 			w.printf("Summary for %d issues that are in the current view and cloud (%d not in cloud)\n\n", count, notInCloud);
 		}
     	w.println("People who have performed the most reviews");
-    	printLeaderBoard(w, evaluations, 5, findbugsUser, true, "reviewer");
+    	printLeaderBoard(w, evaluations, 9, findbugsUser, true, "reviewer");
     	
     	w.println("\nDistribution of evaluations");
     	printLeaderBoard(w, designations, 100, " --- ", false, "designation");
