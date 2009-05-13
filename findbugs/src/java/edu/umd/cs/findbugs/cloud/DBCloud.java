@@ -1649,11 +1649,26 @@ public  class DBCloud extends AbstractCloud {
      */
      static void printLeaderBoard(PrintWriter w, Multiset<String> evaluations, int maxRows, String alwaysPrint, boolean listRank, String title) {
     	 if (listRank)
- 			w.printf("%3s %3s %s\n", "rnk", "num", title);
+ 			w.printf("%3s %4s %s\n", "rnk", "num", title);
  		else
- 			w.printf("%3s %s\n",  "num", title);
-    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %3d %s\n" : "%2$3d %3$s\n"  , title);
+ 			w.printf("%4s %s\n",  "num", title);
+    	printLeaderBoard2(w, evaluations, maxRows, alwaysPrint, listRank ? "%3d %4d %s\n" : "%2$4d %3$s\n"  , title);
     }
+     
+    static final String LEADERBOARD_BLACKLIST = SystemProperties.getProperty("findbugs.leaderboard.blacklist");
+ 	static final Pattern LEADERBOARD_BLACKLIST_PATTERN;
+ 	static {
+ 		Pattern p = null;
+ 		if (LEADERBOARD_BLACKLIST != null) 
+ 			try {
+ 				p = Pattern.compile(LEADERBOARD_BLACKLIST.replace(',', '|'));
+ 			} catch (Exception e) {
+ 				assert true;
+ 			}
+ 			LEADERBOARD_BLACKLIST_PATTERN = p;	
+ 			
+ 	}
+
 	/**
      * @param w
      * @param evaluations
@@ -1676,6 +1691,8 @@ public  class DBCloud extends AbstractCloud {
     			previousScore = num;
     		}
     		String key = e.getKey();
+    		if (LEADERBOARD_BLACKLIST_PATTERN != null && LEADERBOARD_BLACKLIST_PATTERN.matcher(key).matches())
+    			continue;
     		
     		boolean shouldAlwaysPrint = key.equals(alwaysPrint);
 			if (row <= maxRows || shouldAlwaysPrint) 
