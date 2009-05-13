@@ -267,6 +267,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 	    public void execute(DatabaseSyncTask t) throws SQLException {
 
+	    	if (startShutdown) return;
 	    	String commonPrefix = null;
 			int updates = 0;
 			if (performFullLoad) {
@@ -300,6 +301,8 @@ public  class DBCloud extends AbstractCloud {
 					rs.close();
 					ps.close();
 				}
+				if (startShutdown) return;
+		    	
 				ps = c.prepareStatement("SELECT id, issueId, who, designation, comment, time FROM findbugs_evaluation");
 
 				rs = ps.executeQuery();
@@ -326,7 +329,8 @@ public  class DBCloud extends AbstractCloud {
 				}
 				rs.close();
 				ps.close();
-
+				if (startShutdown) return;
+		    	
 				ps = c
 				        .prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
 
@@ -365,7 +369,8 @@ public  class DBCloud extends AbstractCloud {
 				}
 				rs.close();
 				ps.close();
-
+				if (startShutdown) return;
+		    	
 				if (!invocationRecorded) {
 					long jvmStartTime = StartTime.START_TIME - StartTime.VM_START_TIME;
 					SortedBugCollection sbc = (SortedBugCollection) bugCollection;
@@ -420,6 +425,8 @@ public  class DBCloud extends AbstractCloud {
 				e.printStackTrace();
 				displayMessage("problem bulk loading database", e);
 			}
+			if (startShutdown) return;
+	    	
 			if (!performFullLoad) {
 				attemptedResync = new Date();
 				if (updates > 0) { 
@@ -451,8 +458,13 @@ public  class DBCloud extends AbstractCloud {
 				initialSyncDone.countDown();
 				assert !scheduled;
 				
+				if (startShutdown)
+					return;
+				
 				long delay = 10*60*1000; // 10 minutes
-				if (!scheduled) 
+				if (!scheduled) {
+					try {
+				
 					resyncTimer.schedule(new TimerTask() {
 
 					@Override
@@ -462,6 +474,10 @@ public  class DBCloud extends AbstractCloud {
 							queue.add(new PopulateBugs(false));
 						}
                     }}, delay, delay);
+					} catch (Exception e) {
+						AnalysisContext.logError("Error scheduling resync", e);
+					}
+				}
 				scheduled = true;
 			}
 			updatedStatus();
@@ -608,6 +624,7 @@ public  class DBCloud extends AbstractCloud {
 	final LinkedBlockingQueue<Update> queue = new LinkedBlockingQueue<Update>();
 
 	volatile boolean shutdown = false;
+	volatile boolean startShutdown = false;
 
 	final DatabaseSyncTask runner = new DatabaseSyncTask();
 
@@ -616,6 +633,8 @@ public  class DBCloud extends AbstractCloud {
 	final Timer resyncTimer = new Timer("Resync scheduler", true);
 	@Override
     public void shutdown() {
+		
+		startShutdown = true;
 		resyncTimer.cancel();
 		queue.add(new ShutdownTask());
 		try {
