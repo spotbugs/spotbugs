@@ -204,10 +204,19 @@ public class DBStats {
 			int issueId = rs.getInt(col++);
 			String who = rs.getString(col++);
 			String designation = rs.getString(col++);
-			if (designation.equals("OBSOLETE_CODE"))
-				designation= "Obsolete code";
-			else 
+			switch (UserDesignation. valueOf(designation)) {
+			case OBSOLETE_CODE:
+				designation= "obsolete code";
+				break;
+			case MUST_FIX: 
+				designation= "Must fix";
+				break;
+			case SHOULD_FIX: 
+				designation= "Should fix";
+				break;
+			default:
 				designation =  i18n.getUserDesignation(designation);
+			}
 			Timestamp when = rs.getTimestamp(col++);
 			Rank rank = bugRank.get(id);
 			reviewers.put(who, when);
