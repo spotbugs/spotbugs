@@ -599,8 +599,6 @@ public  class DBCloud extends AbstractCloud {
 				
 			}
 			in.close();
-			for(Map.Entry e : prefixBugComponentMapping.entrySet())
-				System.out.println(e);
 		}
 		} catch (IOException e) {
 			AnalysisContext.logError("Unable to load bug component properties", e);
