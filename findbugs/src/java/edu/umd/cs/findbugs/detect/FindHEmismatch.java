@@ -505,10 +505,10 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 		.addSourceLine(this));
 	}
 
-	static final Pattern mapPattern = Pattern.compile("HashMap<L([^;<]*);");
+	static final Pattern mapPattern = Pattern.compile("[^y]HashMap<L([^;<]*);");
 	static final Pattern hashTablePattern = Pattern.compile("Hashtable<L([^;<]*);");
 
-	static final Pattern setPattern = Pattern.compile("HashSet<L([^;<]*);");
+	static final Pattern setPattern = Pattern.compile("[^y]HashSet<L([^;<]*);");
 	@CheckForNull String findHashedClassInSignature(String sig) {
 		Matcher m = mapPattern.matcher(sig);
 		if (m.find())
