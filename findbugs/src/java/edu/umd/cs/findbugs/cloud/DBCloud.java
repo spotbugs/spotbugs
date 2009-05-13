@@ -709,8 +709,20 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
+	 private static final String HAS_SKIPPED_BUG = "has_skipped_bugs";
+	  
+		
 	private boolean skipBug(BugInstance bug) {
-		return bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > MAX_DB_RANK;
+		boolean result = bug.getBugPattern().getCategory().equals("NOISE") || bug.isDead() || BugRanker.findRank(bug) > MAX_DB_RANK;
+		if (result && firstTimeDoing(HAS_SKIPPED_BUG)) {
+			bugCollection.getProject().getGuiCallback().showMessageDialog(
+						    "To limit database load, some issues are not persisted to database.\n"
+							+ "For example, issues with rank greater than " + MAX_DB_RANK + " are not stored in the db.\n"
+					        + "One of more of the issues you are reviewing will not be persisted,\n"
+					        + "and you will not be able to record an evalution of those issues.\n"
+					        + "As we scale up the database, we hope to relax these restrictions");
+		}
+		return result;
 	}
 
 	
