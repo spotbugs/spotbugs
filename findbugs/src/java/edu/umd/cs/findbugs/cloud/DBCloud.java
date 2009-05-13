@@ -389,12 +389,13 @@ public  class DBCloud extends AbstractCloud {
 					
 					String os = SystemProperties.getProperty("os.name", "");
 					String osVersion = SystemProperties.getProperty("os.version");
+					String jvmVersion = SystemProperties.getProperty("java.runtime.version");
 					if (osVersion != null)
 						os = os +" " + osVersion;
 					PreparedStatement insertSession = c
 					        .prepareStatement(
-					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, os, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
-					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, os, jvmVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 					Timestamp now = new Timestamp(startTime);
 					int col = 1;
 					insertSession.setString(col++, findbugsUser);
@@ -402,6 +403,7 @@ public  class DBCloud extends AbstractCloud {
 					insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
 					insertSession.setString(col++, Version.RELEASE);
 					insertSession.setString(col++, limitToMaxLength(os,128));
+					insertSession.setString(col++, limitToMaxLength(jvmVersion,64));
 					insertSession.setLong(col++, boundDuration(jvmStartTime));
 					insertSession.setLong(col++, boundDuration(findbugsStartTime));
 					insertSession.setLong(col++, boundDuration(initialLoadTime));
