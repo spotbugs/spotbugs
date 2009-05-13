@@ -198,6 +198,16 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 		}
 	}
 
+	public int hashCode() {
+		int hash = (int) this.timestamp;
+		if (user != null)
+			hash += user.hashCode();
+		if (designation != null)
+			hash += designation.hashCode();
+		if (annotationText != null)
+			hash += annotationText.hashCode();
+		return hash;
+	}
 	
 	 public boolean equals(Object o) {
 		 if (!(o instanceof BugDesignation))
