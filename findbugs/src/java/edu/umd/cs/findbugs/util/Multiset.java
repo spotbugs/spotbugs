@@ -49,11 +49,14 @@ public class Multiset<K> {
 	}
 
 	public void add(K k) {
+		add(k,1);
+	}
+	public void add(K k, int val) {
 		Integer v = map.get(k);
 		if (v == null)
-			map.put(k, 1);
+			map.put(k, val);
 		else
-			map.put(k, v + 1);
+			map.put(k, v + val);
 	}
 	public void addAll(Iterable<K> c) {
 		for(K k : c)

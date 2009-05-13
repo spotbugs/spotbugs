@@ -196,6 +196,8 @@ public class DBStats {
 		Multiset<String> scariestIssues = new Multiset<String>();
 		Multiset<String> scaryIssues = new Multiset<String>();
 		Multiset<String> troublingIssues = new Multiset<String>();
+		Multiset<Integer> scoreForIssue = new Multiset<Integer>();
+		Multiset<Integer> reviewsForIssue = new Multiset<Integer>();
 		
 		HashSet<String> issueReviews = new HashSet<String>();
 		while (rs.next()) {
@@ -204,19 +206,33 @@ public class DBStats {
 			int issueId = rs.getInt(col++);
 			String who = rs.getString(col++);
 			String designation = rs.getString(col++);
-			switch (UserDesignation. valueOf(designation)) {
+			UserDesignation d = UserDesignation.valueOf(designation);
+			designation = getDesignationTitle(i18n, d);
+			int score;
+			switch (d) {
+
+			case BAD_ANALYSIS:
+				score = -3;
+				break;
+			case NOT_A_BUG:
 			case OBSOLETE_CODE:
-				designation= "obsolete code";
+				score = -2;
 				break;
-			case MUST_FIX: 
-				designation= "Must fix";
+			case MOSTLY_HARMLESS:
+				score = -1;
 				break;
-			case SHOULD_FIX: 
-				designation= "Should fix";
+			case SHOULD_FIX:
+				score = 1;
 				break;
+			case MUST_FIX:
+			case I_WILL_FIX:
+				score = 2;
 			default:
-				designation =  i18n.getUserDesignation(designation);
+				score = 0;
+				break;
 			}
+			scoreForIssue.add(issueId, score);
+			reviewsForIssue.add(issueId);
 			Timestamp when = rs.getTimestamp(col++);
 			Rank rank = bugRank.get(id);
 			reviewers.put(who, when);
@@ -265,6 +281,19 @@ public class DBStats {
 		ps.close();
 		c.close();
 		
+		Multiset<String> overallEvaluation = new Multiset<String>();
+		for(Map.Entry<Integer,Integer> e :  scoreForIssue.entrySet()) {
+			int value = e.getValue();
+			int num = reviewsForIssue.getCount(e.getKey());
+			if (num == 0)
+				continue;
+			int score = (int) Math.round(value / (double) num);
+			System.out.printf("%s %2d %2d\n", score, value, num);
+			overallEvaluation.add(
+					getDesignationTitle(i18n, getDesignationFromScore(score)));
+		}
+
+		
 		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time\n", invocationTotal/invocationCount);
@@ -284,9 +313,15 @@ public class DBStats {
 		
 		
 		out = new PrintWriter("reviews_by_category.csv");
-		out.println("Rank,Number of reviews");
+		out.println("Category,Number of reviews");
 		printMultisetContents(out, "", allIssues);
 		out.close();
+		
+		out = new PrintWriter("overall_review_of_issue.csv");
+		out.println("Category,Number of issues");
+		printMultisetContents(out, "", overallEvaluation);
+		out.close();
+	
 		
 		out = new PrintWriter("reviews_by_rank_and_category.csv");
 		out.println("Rank,Category,Number of reviews");
@@ -307,6 +342,49 @@ public class DBStats {
 		out.close();
 	
 	}
+
+	/**
+     * @param value
+     */
+    private static UserDesignation getDesignationFromScore(int value) {
+	    if (value <= -3)
+	    	return UserDesignation.BAD_ANALYSIS;
+	    else switch(value) {
+	    case -2:
+	    	return  UserDesignation.NOT_A_BUG;
+	    case -1:
+	    	return UserDesignation.MOSTLY_HARMLESS;
+	    case 0:
+	    	return UserDesignation.NEEDS_STUDY;
+	    case 1:
+	    	return UserDesignation.SHOULD_FIX;
+	    default:
+	    	return UserDesignation.MUST_FIX;
+	    }
+    }
+
+	/**
+     * @param i18n
+     * @param d
+     * @return
+     */
+    private static String getDesignationTitle(I18N i18n, UserDesignation d) {
+	    String designation;
+	    switch (d) {
+	    case OBSOLETE_CODE:
+	    	designation= "obsolete code";
+	    	break;
+	    case MUST_FIX: 
+	    	designation= "Must fix";
+	    	break;
+	    case SHOULD_FIX: 
+	    	designation= "Should fix";
+	    	break;
+	    default:
+	    	designation =  i18n.getUserDesignation(d.name());
+	    }
+	    return designation;
+    }
 
 	/**
      * @param out TODO
