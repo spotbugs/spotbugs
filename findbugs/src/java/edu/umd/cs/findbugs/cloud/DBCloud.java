@@ -1368,7 +1368,7 @@ public  class DBCloud extends AbstractCloud {
 				String statusString = rs.getString(col++);
 				String assignedTo = rs.getString(col++);
 				String componentName = rs.getString(col++);
-				if (bugReportId.equals(PENDING)) {
+				if (bugReportId.equals(PENDING) && !findbugsUser.equals(whoFiled)) {
 					if (!pendingStatusHasExpired(whenFiled.getTime()))
 						pendingFiledAt = whenFiled;
 					continue;
