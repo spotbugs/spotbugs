@@ -85,7 +85,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 		case INVOKESTATIC:
 			if (getClassConstantOperand().equals("java/util/logging/Logger") && getNameConstantOperand().equals("getLogger")) {
 				OpcodeStack.Item item = stack.getStackItem(0);
-				if (! ".".equals(item.getConstant()))
+				if (! "".equals(item.getConstant()))
 					sawGetLogger = getPC();
 				break;
 			}
