@@ -227,6 +227,7 @@ public class DBStats {
 			case MUST_FIX:
 			case I_WILL_FIX:
 				score = 2;
+				break;
 			default:
 				score = 0;
 				break;
