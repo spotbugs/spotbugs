@@ -871,25 +871,13 @@ public  class DBCloud extends AbstractCloud {
         public void fileBug(BugData bug) {
         	
         	try {
-				PreparedStatement insert = c
-				.prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
-						 + " VALUES (?, ?, ?, ?)");
-				
-				Timestamp date = new Timestamp(bug.bugFiled);
-				int col = 1;
-				insert.setString(col++, bug.instanceHash);
-				insert.setString(col++, PENDING);
-				insert.setString(col++,  bug.filedBy);
-				insert.setTimestamp(col++, date);
-				
-				int count = insert.executeUpdate();
-				insert.close();
+        		int count = insertPendingRecord(c, bug, bug.bugFiled, bug.filedBy);
 				if (count == 0) {
 					PreparedStatement updateBug =  
 				        c.prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE hash = ? and bugReportId = ?");
-					col = 1;
+					int col = 1;
 					updateBug.setString(col++, bug.filedBy);
-					updateBug.setTimestamp(col++, date);
+					updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
 					updateBug.setString(col++, bug.instanceHash);
 					updateBug.setString(col++, PENDING);
 					count = updateBug.executeUpdate();
@@ -907,6 +895,28 @@ public  class DBCloud extends AbstractCloud {
 
 
 	}
+
+	/**
+     * @param bug
+     * @return
+     * @throws SQLException
+     */
+    static private int insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
+        int count;
+        PreparedStatement insert = c
+        .prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
+        		 + " VALUES (?, ?, ?, ?)");
+        
+        Timestamp date = new Timestamp(when);
+        int col = 1;
+        insert.setString(col++, bug.instanceHash);
+        insert.setString(col++, PENDING);
+        insert.setString(col++,  who);
+        insert.setTimestamp(col++, date);
+        count = insert.executeUpdate();
+        insert.close();
+        return count;
+    }
 
 	static interface Update {
 		void execute(DatabaseSyncTask t) throws SQLException;
@@ -1323,51 +1333,128 @@ public  class DBCloud extends AbstractCloud {
 	static final String BUG_LINK_FORMAT = SystemProperties.getProperty("findbugs.filebug.link");
 	
     @Override
-    @CheckForNull 
-    public URL getBugLink(BugInstance b) {
-		try {
-			BugData bd = getBugData(b);
-		
-			String bugNumber = bd.bugLink;
-			BugFilingStatus status = getBugLinkStatus(b);
-			switch (status) {
-			case VIEW_BUG: {
+    @CheckForNull
+	public URL getBugLink(BugInstance b) {
+		BugData bd = getBugData(b);
 
-				String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbug.link");
-				if (viewLinkPattern == null)
+		String bugNumber = bd.bugLink;
+		BugFilingStatus status = getBugLinkStatus(b);
+		if (status == BugFilingStatus.VIEW_BUG)
+			return getBugViewLink(bugNumber);
+
+		Connection c = null;
+		try {
+			c = getConnection();
+			PreparedStatement ps = c
+			        .prepareStatement("SELECT bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport WHERE hash=?");
+			ps.setString(1, b.getInstanceHash());
+			ResultSet rs = ps.executeQuery();
+
+			rs = ps.executeQuery();
+
+			Timestamp pendingFiledAt = null;
+
+			while (rs.next()) {
+				int col = 1;
+				String bugReportId = rs.getString(col++);
+				String whoFiled = rs.getString(col++);
+				Timestamp whenFiled = rs.getTimestamp(col++);
+				String statusString = rs.getString(col++);
+				String assignedTo = rs.getString(col++);
+				String componentName = rs.getString(col++);
+				if (bugReportId.equals(PENDING)) {
+					if (!pendingStatusHasExpired(whenFiled.getTime()))
+						pendingFiledAt = whenFiled;
+					continue;
+				}
+				if (bugReportId.equals(NONE)) 
+					continue;
+				
+				rs.close();
+				ps.close();
+				bd.bugLink = bugReportId;
+				bd.filedBy = whoFiled;
+				bd.bugFiled = whenFiled.getTime();
+				bd.bugAssignedTo = assignedTo;
+				bd.bugStatus = statusString;
+				bd.bugComponentName = componentName;
+				int answer = getBugCollection().getProject().getGuiCallback().showConfirmDialog(
+				        "Sorry, but since the time we last received updates from the database,\n"
+				                + "someone else already filed a bug report. Would you like to view the bug report?",
+				        "Someone else already filed a bug report", JOptionPane.YES_NO_OPTION);
+				if (answer == JOptionPane.NO_OPTION)
 					return null;
-				firstBugRequest = false;
-				String u = String.format(viewLinkPattern, bugNumber);
-				return new URL(u);
+				return getBugViewLink(bugReportId);
 			}
-			case FILE_BUG: {
-				URL u =  getBugFilingLink(b);
+			rs.close();
+			ps.close();
+
+			if (pendingFiledAt != null) {
+				bd.bugLink = PENDING;
+				bd.bugFiled = pendingFiledAt.getTime();
+				getBugCollection().getProject().getGuiCallback().showMessageDialog(
+				        "Sorry, but since the time we last received updates from the database,\n"
+				                + "someone else already has started a bug report for this issue. ");
+				return null;
+
+			}
+
+			// OK, not in database
+			if (status == BugFilingStatus.FILE_BUG) {
+
+				URL u = getBugFilingLink(b);
 				if (u != null && firstTimeDoing(HAS_FILED_BUGS)) {
-					String bugFilingNote = String.format(SystemProperties.getProperty("findbugs.filebug.note",""));
+					String bugFilingNote = String.format(SystemProperties.getProperty("findbugs.filebug.note", ""));
 					int response = bugCollection.getProject().getGuiCallback().showConfirmDialog(
-							"This looks like the first time you've filed a bug from this machine. Please:\n"
-							+ " * Please check the component the issue is assigned to; we sometimes get it wrong.\n"
-							+ " * Try to figure out the right person to assign it to.\n"
-							+ " * Provide the information needed to understand the issue.\n"
-							+ bugFilingNote
-							+ "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.",
-							"Do you want to file a bug report", JOptionPane.YES_NO_OPTION);
+					        "This looks like the first time you've filed a bug from this machine. Please:\n"
+					                + " * Please check the component the issue is assigned to; we sometimes get it wrong.\n"
+					                + " * Try to figure out the right person to assign it to.\n"
+					                + " * Provide the information needed to understand the issue.\n" + bugFilingNote
+					                + "Note that classifying an issue is distinct from (and lighter weight than) filing a bug.",
+					        "Do you want to file a bug report", JOptionPane.YES_NO_OPTION);
 					if (response != JOptionPane.YES_OPTION)
 						return null;
 				}
+				if (u != null)
+					insertPendingRecord(c, bd, System.currentTimeMillis(), findbugsUser);
 				return u;
 			}
-				
-				 
-			case FILE_AGAIN:
-			 alreadyDone(HAS_FILED_BUGS);
-			 return getBugFilingLink(b);
-			}
-		} catch (Exception e) {
 
+			else {
+				assert status == BugFilingStatus.FILE_AGAIN;
+				alreadyDone(HAS_FILED_BUGS);
+				URL u = getBugFilingLink(b);
+				if (u != null)
+					insertPendingRecord(c, bd, System.currentTimeMillis(), findbugsUser);
+				return u;
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			Util.closeSilently(c);
 		}
+
 		return null;
 	}
+	/**
+     * @param bugNumber
+     * @return
+     * @throws MalformedURLException
+     */
+    private @CheckForNull URL getBugViewLink(String bugNumber)  {
+	    String viewLinkPattern = SystemProperties.getProperty("findbugs.viewbug.link");
+	    if (viewLinkPattern == null)
+	    	return null;
+	    firstBugRequest = false;
+	    String u = String.format(viewLinkPattern, bugNumber);
+	    try {
+	        return new URL(u);
+        } catch (MalformedURLException e) {
+	       return null;
+        }
+    }
 	/**
      * @param b
      * @return
@@ -1429,7 +1516,6 @@ public  class DBCloud extends AbstractCloud {
 			builder.append(String.format("First seen %s\n", format.format(new Timestamp(firstSeen))));
 		}
 		
-		BugDesignation primaryDesignation = bd.getPrimaryDesignation();
 		I18N i18n = I18N.instance();
 		boolean canSeeCommentsByOthers = bd.canSeeCommentsByOthers();
 		if (canSeeCommentsByOthers) {
@@ -1511,10 +1597,13 @@ public  class DBCloud extends AbstractCloud {
     	if (link.equals(PENDING)) {
     		if (findbugsUser.equals(bd.filedBy))
     			return BugFilingStatus.FILE_AGAIN;
-    		else if (System.currentTimeMillis() - bd.bugFiled > 2*60*60*1000L)
-    			return BugFilingStatus.FILE_BUG; 
-    		else 
-    			return BugFilingStatus.BUG_PENDING;
+            else {
+	            long whenFiled = bd.bugFiled;
+	            if (pendingStatusHasExpired(whenFiled))
+	            	return BugFilingStatus.FILE_BUG; 
+	            else 
+	            	return BugFilingStatus.BUG_PENDING;
+            }
     	}
     	try {
     		Integer.parseInt(link);
@@ -1525,6 +1614,13 @@ public  class DBCloud extends AbstractCloud {
     	}
     	
     	return  BugFilingStatus.NA;
+    }
+	/**
+     * @param whenFiled
+     * @return
+     */
+    private boolean pendingStatusHasExpired(long whenFiled) {
+	    return System.currentTimeMillis() - whenFiled > 60*60*1000L;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#bugFiled(edu.umd.cs.findbugs.BugInstance, java.lang.Object)
