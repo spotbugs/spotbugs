@@ -237,7 +237,7 @@ public class DBStats {
 			scoreForIssue.add(issueId, score);
 			reviewsForIssue.add(issueId);
 			Timestamp when = rs.getTimestamp(col++);
-			Rank rank = bugRank.get(id);
+			Rank rank = bugRank.get(issueId);
 			reviewers.put(who, when);
 			String issueReviewer = who+"-" + issueId;
 			if (issueReviews.add(issueReviewer)) {
