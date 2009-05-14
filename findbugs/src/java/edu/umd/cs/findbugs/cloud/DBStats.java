@@ -200,6 +200,8 @@ public class DBStats {
 		Multiset<Integer> reviewsForIssue = new Multiset<Integer>();
 		
 		HashSet<String> issueReviews = new HashSet<String>();
+		HashSet<Integer> missingRank = new HashSet<Integer>();
+		
 		while (rs.next()) {
 			int col = 1;
 			int id = rs.getInt(col++);
@@ -255,6 +257,12 @@ public class DBStats {
 						break;
 						
 					}
+				else {
+					if (missingRank.add(id)) {
+						System.out.println("No rank for " + id);
+					}
+						
+				}
 			}
 				
 		}
