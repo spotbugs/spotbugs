@@ -297,8 +297,8 @@ public class DBStats {
 		
 		
 		System.out.printf("%6d invocations\n", invocationCount);
-		System.out.printf("%6d invocations time\n", invocationTotal/invocationCount);
-		System.out.printf("%6d load time\n", loadTotal/invocationCount);
+		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
+		System.out.printf("%6d load time (secs)\n", loadTotal/invocationCount/1000);
 		System.out.println();
 		
 			
