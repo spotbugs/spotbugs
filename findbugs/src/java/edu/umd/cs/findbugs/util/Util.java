@@ -32,6 +32,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +50,6 @@ import javax.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 
 /**
  * @author William Pugh
@@ -178,6 +179,15 @@ public class Util {
 		return  getWriter(new FileOutputStream(filename));
 	}
 	
+	public static void closeSilently(@WillClose Connection c) {
+		try {
+			if (c != null)
+				c.close();
+		} catch (SQLException e) {
+			assert true;
+		}
+	}
+
 	public static void closeSilently(@WillClose InputStream in) {
 		try {
 			if (in != null)
