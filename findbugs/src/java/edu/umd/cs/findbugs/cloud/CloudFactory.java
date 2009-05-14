@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.cloud;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * @author pwilliam
@@ -32,9 +33,14 @@ public class CloudFactory {
 	}
 	
 	public static Cloud getDatabaseCloud(BugCollection bc) {
+		if (bc == null) 
+			return new BugCollectionStorageCloud(bc);
 		Cloud c = new DBCloud(bc);
 		if (c.initialize())
 			return c;
+		bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to database");
+    	if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
+    		System.exit(1);
 		return new BugCollectionStorageCloud(bc);
 	}
 	
