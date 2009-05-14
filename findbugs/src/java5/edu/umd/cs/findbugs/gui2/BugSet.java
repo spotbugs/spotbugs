@@ -238,7 +238,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		if (doneContainsMap.containsKey(keyValuePair))
 			return doneContainsMap.get(keyValuePair);
 
-		for(BugLeafNode p: filterNoCache().mainList)
+		for(BugLeafNode p: filteredBugsCached().mainList)
 		{
 			if (p.matches(keyValuePair))
 			{
@@ -296,7 +296,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 			cacheSortables();
 	}
 
-	public BugSet filterNoCache()
+	private BugSet filteredBugsNoCache()
 	{
 
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
@@ -305,6 +305,17 @@ public class BugSet implements Iterable<BugLeafNode>{
 				people.add(p);
 		}
 		return new BugSet(people,false);
+	}
+	
+	BugSet cache = null;
+	public void clearCache() {
+		cache = null;
+	}
+	private BugSet filteredBugsCached()
+	{
+		if (cache == null)
+			cache = filteredBugsNoCache();
+		return cache;
 	}
 
 	public BugSet getBugsMatchingFilter(Matcher m)
@@ -319,16 +330,16 @@ public class BugSet implements Iterable<BugLeafNode>{
 
 	public int size()
 	{
-		return filterNoCache().sizeUnfiltered();
+		return filteredBugsCached().sizeUnfiltered();
 	}
 
 	public int indexOf(BugLeafNode p)
 	{
-		return filterNoCache().indexOfUnfiltered(p);
+		return filteredBugsCached().indexOfUnfiltered(p);
 	}
 
 	public BugLeafNode get(int index)
 	{
-		return filterNoCache().getUnfiltered(index);
+		return filteredBugsCached().getUnfiltered(index);
 	}
 }

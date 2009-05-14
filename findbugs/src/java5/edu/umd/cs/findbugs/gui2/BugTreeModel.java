@@ -85,7 +85,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 	{	
 		private BugAspects root = new BugAspects();
 		private SorterTableColumnModel st;
-		private BugSet data;
+		private BugSet bugSet;
 		private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 		private JTree tree;
 		static ArrayList<BugLeafNode> selectedBugLeafNodes = new ArrayList<BugLeafNode>();
@@ -102,8 +102,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			st.addColumnModelListener(this);
 			this.tree = tree;
 			this.st = st;
-			this.data = data;
-			BugSet.setAsRootAndCache(this.data);
+			this.bugSet = data;
+			BugSet.setAsRootAndCache(this.bugSet);
 			root.setCount(data.size());
 			FilterActivity.addFilterListener(bugTreeFilterListener);
 			if (DEBUG) 
@@ -138,7 +138,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		{
 			this.root = new BugAspects(other.root);
 			this.st = other.st;
-			this.data = new BugSet(other.data);
+			this.bugSet = new BugSet(other.bugSet);
 			//this.listeners = other.listeners;
 			this.tree = other.tree;
 		}
@@ -150,6 +150,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			tree.removeTreeExpansionListener(this);
 		}
 
+		public void clearViewCache() {
+			bugSet.clearCache();
+		}
 		public Object getRoot()
 		{
 			return root;
@@ -163,7 +166,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			assert queryDepth <= treeLevels;
 			
 			if (treeLevels==0 && a.size()==0)//Root without any sortables
-				return data.get(index);
+				return bugSet.get(index);
 			if (SystemProperties.ASSERTIONS_ENABLED) 
 				for(int i = 0; i < queryDepth; i++) {
 					Sortables treeSortable = st.getOrderBeforeDivider().get(i);
@@ -174,11 +177,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			try {
 				if (queryDepth < treeLevels) {
 					BugAspects child = a.addToNew(enumsThatExist(a).get(index));
-					child.setCount(data.query(child).size());
+					child.setCount(bugSet.query(child).size());
 					return child;
 				}	
 			else
-				return data.query(a).get(index);
+				return bugSet.query(a).get(index);
 			}
 			catch (IndexOutOfBoundsException e)
 			{
@@ -197,12 +200,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 			BugAspects a = (BugAspects) o;
 
 					if (st.getOrderBeforeDivider().size()==0 && a.size() == 0)//If its the root and we aren't sorting by anything
-						return data.size();
+						return bugSet.size();
 
 					if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
 						return enumsThatExist(a).size();
 					else
-						return data.query(a).size();
+						return bugSet.query(a).size();
 		}
 
 
@@ -218,7 +221,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 							st.getOrderBeforeDivider().get(0) :
 								st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().indexOf(a.last().key) + 1));
 
-					String[] all = key.getAll(data.query(a));
+					String[] all = key.getAll(bugSet.query(a));
 					ArrayList<SortableValue> result = new ArrayList<SortableValue>();
 					for (String i : all)
 						result.add(new SortableValue(key, i));
@@ -240,7 +243,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 			if (isLeaf(child))
 			{
-				return data.query((BugAspects) parent).indexOf((BugLeafNode) child);
+				return bugSet.query((BugAspects) parent).indexOf((BugLeafNode) child);
 			}
 			else
 			{
@@ -310,8 +313,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		void changeSet(BugSet set)
 		{
 			BugSet.setAsRootAndCache(set);
-			data=new BugSet(set);
-			root.setCount(data.size());
+			bugSet=new BugSet(set);
+			root.setCount(bugSet.size());
 			rebuild();
 		}
 
@@ -349,7 +352,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 						newModel = new BugTreeModel(BugTreeModel.this);
 						newModel.listeners = listeners;
 						newModel.resetData();
-						newModel.data.sortList();
+						newModel.bugSet.sortList();
 					}
 					finally
 					{
@@ -454,7 +457,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		public void resetData()//FIXME:  Does this need a setAsRootAndCache() on the new BugSet?
 		{
 			if (TRACE) System.out.println("Reseting data in bug tree model");
-			data=new BugSet(data);
+			bugSet=new BugSet(bugSet);
 		}
 
 		FilterListener bugTreeFilterListener = new MyFilterListener();
@@ -463,8 +466,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 		{
 			if (TRACE) System.out.println("clearing cache in bug tree model");
 			resetData();
-			BugSet.setAsRootAndCache(data);//FIXME:  Should this be in resetData?  Does this allow our main list to not be the same as the data in our tree?
-			root.setCount(data.size());
+			BugSet.setAsRootAndCache(bugSet);//FIXME:  Should this be in resetData?  Does this allow our main list to not be the same as the data in our tree?
+			root.setCount(bugSet.size());
 
 			rebuild();
 		}
@@ -733,7 +736,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 
 		public void sortBranch(TreePath pathToBranch)
 		{
-			BugSet bs=data.query((BugAspects)pathToBranch.getLastPathComponent());
+			BugSet bs=bugSet.query((BugAspects)pathToBranch.getLastPathComponent());
 			bs.sortList();
 			Debug.println("Data in sorted branch: " + pathToBranch.getLastPathComponent());
 			for (BugLeafNode b: bs)
@@ -872,7 +875,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
 				}
 			}
 
-			root.setCount(data.size());
+			root.setCount(bugSet.size());
 			TreePath changedPath=new TreePath(root);
 			treeNodeChanged(changedPath);
 			changedPath=new TreePath(event.getPath());

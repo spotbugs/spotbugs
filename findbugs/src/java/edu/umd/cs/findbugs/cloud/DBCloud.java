@@ -322,6 +322,9 @@ public  class DBCloud extends AbstractCloud {
 						if (data.designations.add(bd)) {
 							bugDesignationId.put(bd, id);
 							updates++;
+							for(BugInstance bug : data.bugs) {
+								updatedIssue(bug);
+							}
 						}
 
 					}
@@ -364,6 +367,9 @@ public  class DBCloud extends AbstractCloud {
 						data.bugStatus = status;
 						data.bugComponentName = componentName;
 						updates++;
+						for(BugInstance bug : data.bugs) {
+							updatedIssue(bug);
+						}
 					}
 
 				}
@@ -1544,7 +1550,9 @@ public  class DBCloud extends AbstractCloud {
      * @see edu.umd.cs.findbugs.cloud.Cloud#storeUserAnnotation(edu.umd.cs.findbugs.BugInstance)
      */
     public void storeUserAnnotation(BugInstance bugInstance) {
+    	
 	    storeUserAnnotation(getBugData(bugInstance), bugInstance.getNonnullUserDesignation());
+	    updatedIssue(bugInstance);
 	    
     }
     

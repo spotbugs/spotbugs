@@ -527,8 +527,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				userAnnotationListener = new CloudListener() {
 
 					public void issueUpdate(BugInstance bug) {
-						// TODO Auto-generated method stub
-
+						if (currentSelectedBugLeaf != null
+								&& currentSelectedBugLeaf.getBug() == bug)
+							comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
 					}
 
 					public void statusUpdated() {
@@ -540,6 +541,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 	}
 
+	void resetViewCache() {
+		 ((BugTreeModel) getTree().getModel()).clearViewCache();
+	}
 	final Runnable updateStatusBarRunner = new Runnable() {
 
 		public void run() {
@@ -969,6 +973,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 		textFieldForPackagesToDisplay.setText(choice.filter);
 		viewFilter.setPackagesToDisplay(choice.filter);
+		resetViewCache();
 
 	}
 	JMenu viewMenu ;
@@ -1012,6 +1017,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setRank(r);
+					resetViewCache();
 				}});   
 			viewMenu.add(rbMenuItem);
 		}
@@ -1029,6 +1035,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setEvaluation(r);
+					resetViewCache();
 				}});   
 			viewMenu.add(rbMenuItem);
 		}
@@ -1043,6 +1050,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 
 				public void actionPerformed(ActionEvent e) {
 					viewFilter.setFirstSeen(r);
+					resetViewCache();
 				}});   
 			viewMenu.add(rbMenuItem);
 		}
@@ -1717,7 +1725,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
     
     		public void actionPerformed(ActionEvent e) {
     			try {
-             viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+    				viewFilter.setPackagesToDisplay(textFieldForPackagesToDisplay.getText());
+    				resetViewCache();
     			} catch (IllegalArgumentException err) {
     				JOptionPane.showMessageDialog(MainFrame.this, err.getMessage(), "Bad class search string", JOptionPane.ERROR_MESSAGE);
     			}
