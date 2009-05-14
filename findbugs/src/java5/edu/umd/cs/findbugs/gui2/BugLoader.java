@@ -156,7 +156,7 @@ public class BugLoader {
         	else 
         		msg = String.format(msg);
         	JOptionPane.showMessageDialog(mainFrame,"Could not read " +  url + "\n" +  msg);
-        	if (SystemProperties.getBoolean("failIfUnableToLoadViaURL"))
+        	if (SystemProperties.getBoolean("findbugs.failIfUnableToLoadViaURL"))
         		System.exit(1);
         }
 		addDeadBugMatcher(project);
