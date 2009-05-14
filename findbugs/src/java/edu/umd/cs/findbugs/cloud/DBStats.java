@@ -289,7 +289,7 @@ public class DBStats {
 			if (num == 0)
 				continue;
 			int score = (int) Math.round(value / (double) num);
-			System.out.printf("%s %2d %2d\n", score, value, num);
+			// System.out.printf("%s %2d %2d\n", score, value, num);
 			overallEvaluation.add(
 					getDesignationTitle(i18n, getDesignationFromScore(score)));
 		}
