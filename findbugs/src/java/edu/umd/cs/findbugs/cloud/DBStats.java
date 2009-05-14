@@ -49,7 +49,40 @@ import edu.umd.cs.findbugs.util.Multiset;
  * @author pwilliam
  */
 public class DBStats {
-	
+	enum BUG_STATUS {ACCEPTED, ASSIGNED, FIXED, FIX_LATER, NEW, 
+		VERIFIED, VERIFIER_ASSIGNED, WILL_NOT_FIX, DUPLICATE;
+		public static int score(String name) {
+			try {
+				BUG_STATUS value = valueOf(name);
+				return value.score();
+			} catch (RuntimeException e) {
+				return 0;
+			}
+		}
+
+		public int score() {
+			switch (this) {
+			case NEW:
+				return 0;
+
+			case ACCEPTED:
+			case DUPLICATE:
+			case WILL_NOT_FIX:
+				return 1;
+
+			case ASSIGNED:
+			case FIXED:
+			case FIX_LATER:
+			case VERIFIED:
+			case VERIFIER_ASSIGNED:
+				return 2;
+
+			default:
+				throw new IllegalStateException();
+			}
+		}
+	}
+
 	enum Rank { SCARIEST, SCARY, TROUBLING, OF_CONCERN, UNRANKED;
 	  static Rank getRank(int rank) {
 		  if (rank <= 4) return SCARIEST;
@@ -271,19 +304,25 @@ public class DBStats {
 		
 		Multiset<String> bugStatus = new Multiset<String>();
 		HashSet<String> bugsSeen = new HashSet<String>();
+		Multiset<String> bugScore = new Multiset<String>();
 		
-		ps = c.prepareStatement("SELECT bugReportId,status, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
+		Multiset<String> bugsFiled = new Multiset<String>();
+		ps = c.prepareStatement("SELECT bugReportId,status, whoFiled, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
 		rs = ps.executeQuery();
 		while (rs.next()) {
 			int col = 1;
 			String  id = rs.getString(col++);
 			String status = rs.getString(col++);
+			String who = rs.getString(col++);
 			Timestamp when = rs.getTimestamp(col++);
 			if (false && !bugsSeen.add(id))
 				System.out.println("Dup bug: " + id);
 			
-			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE))
+			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE)) {
 				bugStatus.add(status);
+				bugsFiled.add(who);
+				bugScore.add(who, BUG_STATUS.score(status));
+			}
 		}
 		
 		rs.close();	
@@ -339,6 +378,22 @@ public class DBStats {
 		printMultisetContents(out, "Troubling,", troublingIssues);
 		out.close();
 		
+		out = new PrintWriter("bugs_filed.csv");
+		out.println("rank,bugs filed,who");
+		DBCloud.printLeaderBoard2(out, bugsFiled, 100, null, "%s,%s,%s\n", "participants per office");
+		out.close();
+	
+		out = new PrintWriter("bug_score.csv");
+		out.println("rank,bug score,who");
+		DBCloud.printLeaderBoard2(out, bugScore, 100, null, "%s,%s,%s\n", "participants per office");
+		out.close();
+
+		
+		out = new PrintWriter("most_participants_by_office.csv");
+		out.println("rank,participants,office");
+		DBCloud.printLeaderBoard2(out, participantsPerOffice, 100, null, "%s,%s,%s\n", "participants per office");
+		out.close();
+	
 
 		out = new PrintWriter("most_participants_by_office.csv");
 		out.println("rank,participants,office");
@@ -347,7 +402,7 @@ public class DBStats {
 		
 		out = new PrintWriter("most_issues_reviewed_individual.csv");
 		out.println("rank,reviews,reviewers");
-		DBCloud.printLeaderBoard2(out, issueReviewedBy, 100, null, "%s,%s,%s\n", "num issues reviewed");
+		DBCloud.printLeaderBoard2(out, issueReviewedBy, 10000, null, "%s,%s,%s\n", "num issues reviewed");
 		out.close();
 	
 	}
