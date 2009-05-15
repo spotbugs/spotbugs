@@ -19,14 +19,22 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
 
 public class TestingGround extends OpcodeStackDetector {
 
@@ -40,28 +48,136 @@ public class TestingGround extends OpcodeStackDetector {
 	public void visit(Code code) {
 		boolean interesting = true;
 		if (interesting)  {
-			// initialize any variables we want to initialize for the method
+			state = 0;
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen != GETSTATIC) {
-			return;
+
+	
+	boolean interestingQuick(XField xField) {
+		if (xField.isFinal() || xField.isVolatile()  || xField.isSynthetic() || !xField.isStatic())
+			return false;
+		if (xField.getName().indexOf('$') >= 0)
+			return false;
+		String sig = xField.getSignature();
+		char c = sig.charAt(0);
+		if (c != 'L' && c != '[') 
+			return false;
+		if (sig.startsWith("Ljava/lang/"))
+			return false;
+		
+		return true;
+	}
+	
+	boolean interestingDeep(XField xField) {
+			String sig = xField.getSignature();
+		if (sig.charAt(0) == 'L') {
+			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(sig);
+
+			while (fieldType != null) {
+				XClass fieldClass;
+                try {
+                    fieldClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, fieldType);
+                } catch (CheckedAnalysisException e) {
+                  break;
+                }
+				
+				String name = fieldClass.getClassDescriptor().getClassName();
+				if (name.startsWith("java/awt") || name.startsWith("javax/swing"))
+					return false;
+				if (name.equals("java/lang/Object")) 
+					break;
+				fieldType = fieldClass.getSuperclassDescriptor();
+			}
 		}
-		XField f = getXFieldOperand();
-		FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-		Item summary = fieldSummary.getSummary(f);
-		System.out.println(getFullyQualifiedMethodName() + " " + f + " " + f.isFinal() + " " + summary);
+
+		return true;
 	}
 
-	private void emitWarning() {
-		System.out.println("Warn about " + getMethodName()); // TODO
+	
+	@Override
+	public void sawBranchTo(int pc) {
+		if (state == 999)
+			state = 2;
+		else
+			state = 0;
 	}
+	int state;
+	int target;
+	int startPC;
+	boolean sawNew;
+	XField f;
+	@Override
+	public void sawOpcode(int seen) {
+		// System.out.printf("%5d %9s: %d\n", getPC(), OPCODE_NAMES[seen], state);
+		if (isReturn(seen)) {
+			state = 0;
+			return;
+		}
+		
+		if (state > 1 && getPC() >= target) {
+			if ((state == 4 || state == 3 && !f.isVolatile()) && interestingDeep(f)) {
+				// found it
+				int priority = LOW_PRIORITY;
+				boolean isDefaultAccess =
+						(getMethod().getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
+				if (getMethod().isPublic())
+					priority = NORMAL_PRIORITY;
+				else if (getMethod().isProtected() || isDefaultAccess)
+					priority = NORMAL_PRIORITY;
+				String signature = f.getSignature();
+				if (signature.startsWith("[") || signature.startsWith("Ljava/util/"))
+					priority--;
+				if (!sawNew) 
+					priority++;
+				if (state == 3 && priority < LOW_PRIORITY) 
+					priority = LOW_PRIORITY;
+				if (getXClass().usesConcurrency())
+					priority--;
+				// Report the bug.
+				bugReporter.reportBug(new BugInstance(this, state == 4 ? "LI_LAZY_INIT_UPDATE_STATIC" : "LI_LAZY_INIT_STATIC", priority)
+						.addClassAndMethod(this)
+						.addField(f).describe("FIELD_ON")
+						.addSourceLineRange(getClassContext(), this, startPC, getPC()));
+			
+
+			}
+			state = 0;
+		}
+		switch (state) {
+		case 0:
+			if (seen == GETSTATIC) {
+				XField xField = getXFieldOperand();
+				if (interestingQuick(xField)) {
+					state = 1;
+					f = getXFieldOperand();
+					sawNew = false;
+					startPC = getPC();
+				}
+			}
+			break;
+		case 1:
+			if (seen == IFNONNULL) {
+				state = 999;
+				target = getBranchTarget();
+			}
+			break;
+		case 2:
+			if (seen == PUTSTATIC) {
+				if (getXFieldOperand().equals(f))
+					state = 3;
+				else 
+					state = 0;
+			} else if (seen == NEW || seen == INVOKESTATIC && getNameConstantOperand().startsWith("new"))
+				sawNew = true;
+			break;
+		case 3:
+			if (seen == GETSTATIC && getXFieldOperand().equals(f))
+				state = 4;
+			break;
+		}
+
+	}
+
 
 }
