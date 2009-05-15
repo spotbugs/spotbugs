@@ -153,8 +153,7 @@ public class TestingGround extends OpcodeStackDetector {
 			if (seen == GETSTATIC) {
 				XField xField = getXFieldOperand();
 				if (xField == null) {
-					System.out.println("Got null xfield for " + getClassConstantOperand() + "." + getNameConstantOperand()
-					        + " : " + getSigConstantOperand());
+					
 					return;
 				}
 				if (interestingQuick(xField)) {
@@ -177,7 +176,7 @@ public class TestingGround extends OpcodeStackDetector {
 			break;
 		case 2:
 			if (seen == PUTSTATIC) {
-				if (getXFieldOperand().equals(f))
+				if (f.equals(getXFieldOperand()))
 					state = 3;
 				else
 					resetStateMachine();
@@ -198,11 +197,11 @@ public class TestingGround extends OpcodeStackDetector {
 			break;
 		case 3:
 
-			if (seen == GETSTATIC && getXFieldOperand().equals(f))
+			if (seen == GETSTATIC && f.equals(getXFieldOperand()))
 				state = 4;
 			break;
 		case 10:
-			if (seen == GETSTATIC && getXFieldOperand().equals(f))
+			if (seen == GETSTATIC && f.equals(getXFieldOperand()))
 				state = 11;
 			break;
 		case 11:
