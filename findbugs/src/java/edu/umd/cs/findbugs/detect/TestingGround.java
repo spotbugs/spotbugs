@@ -48,7 +48,7 @@ public class TestingGround extends OpcodeStackDetector {
 	public void visit(Code code) {
 		boolean interesting = true;
 		if (interesting)  {
-			state = 0;
+			resetStateMachine();
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
 	}
@@ -99,8 +99,8 @@ public class TestingGround extends OpcodeStackDetector {
 	public void sawBranchTo(int pc) {
 		if (state == 999)
 			state = 2;
-		else
-			state = 0;
+        else if (state != 10)
+	        resetStateMachine();
 	}
 	int state;
 	int target;
@@ -110,12 +110,12 @@ public class TestingGround extends OpcodeStackDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		// System.out.printf("%5d %9s: %d\n", getPC(), OPCODE_NAMES[seen], state);
-		if (isReturn(seen)) {
-			state = 0;
+		if (isReturn(seen) && state != 11 && target != -42) {
+			resetStateMachine();
 			return;
 		}
 		
-		if (state > 1 && getPC() >= target) {
+		if (state > 1 && (getPC() >= target && target >= 0 || isReturn(seen) && target == -42)) {
 			if ((state == 4 || state == 3 && !f.isVolatile()) && interestingDeep(f)) {
 				// found it
 				int priority = LOW_PRIORITY;
@@ -142,7 +142,7 @@ public class TestingGround extends OpcodeStackDetector {
 			
 
 			}
-			state = 0;
+			resetStateMachine();
 		}
 		switch (state) {
 		case 0:
@@ -160,14 +160,18 @@ public class TestingGround extends OpcodeStackDetector {
 			if (seen == IFNONNULL) {
 				state = 999;
 				target = getBranchTarget();
-			}
+			} else if (seen == IFNULL) {
+				state = 10;
+				target = getBranchTarget();
+			} else
+	            resetStateMachine();
 			break;
 		case 2:
 			if (seen == PUTSTATIC) {
 				if (getXFieldOperand().equals(f))
 					state = 3;
-				else 
-					state = 0;
+                else
+	                resetStateMachine();
 			} else if (seen == NEW || seen == INVOKESTATIC && getNameConstantOperand().startsWith("new"))
 				sawNew = true;
 			break;
@@ -175,9 +179,29 @@ public class TestingGround extends OpcodeStackDetector {
 			if (seen == GETSTATIC && getXFieldOperand().equals(f))
 				state = 4;
 			break;
+		case 10: 
+			if (seen == GETSTATIC && getXFieldOperand().equals(f))
+				state = 11;
+			break;
+		case 11: 
+			if (isReturn(seen) && target == getPC() + 1) {
+				state = 2;
+				target = -42;
+			} else
+	            resetStateMachine();
+			break;
 		}
 
+
 	}
+
+	/**
+     * 
+     */
+    private void resetStateMachine() {
+	    state = 0;
+	    target = -1;
+    }
 
 
 }
