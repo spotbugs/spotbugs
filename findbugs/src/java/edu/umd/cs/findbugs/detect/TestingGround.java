@@ -47,45 +47,46 @@ public class TestingGround extends OpcodeStackDetector {
 	@Override
 	public void visit(Code code) {
 		boolean interesting = true;
-		if (interesting)  {
+		if (interesting) {
 			resetStateMachine();
+			// System.out.println();
+			// System.out.println(getFullyQualifiedMethodName());
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
 	}
 
-	
 	boolean interestingQuick(XField xField) {
-		if (xField.isFinal() || xField.isVolatile()  || xField.isSynthetic() || !xField.isStatic())
+		if (xField.isFinal() || xField.isVolatile() || xField.isSynthetic() || !xField.isStatic())
 			return false;
 		if (xField.getName().indexOf('$') >= 0)
 			return false;
 		String sig = xField.getSignature();
 		char c = sig.charAt(0);
-		if (c != 'L' && c != '[') 
+		if (c != 'L' && c != '[')
 			return false;
 		if (sig.startsWith("Ljava/lang/"))
 			return false;
-		
+
 		return true;
 	}
-	
+
 	boolean interestingDeep(XField xField) {
-			String sig = xField.getSignature();
+		String sig = xField.getSignature();
 		if (sig.charAt(0) == 'L') {
 			ClassDescriptor fieldType = DescriptorFactory.createClassDescriptorFromFieldSignature(sig);
 
 			while (fieldType != null) {
 				XClass fieldClass;
-                try {
-                    fieldClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, fieldType);
-                } catch (CheckedAnalysisException e) {
-                  break;
-                }
-				
+				try {
+					fieldClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, fieldType);
+				} catch (CheckedAnalysisException e) {
+					break;
+				}
+
 				String name = fieldClass.getClassDescriptor().getClassName();
 				if (name.startsWith("java/awt") || name.startsWith("javax/swing"))
 					return false;
-				if (name.equals("java/lang/Object")) 
+				if (name.equals("java/lang/Object"))
 					break;
 				fieldType = fieldClass.getSuperclassDescriptor();
 			}
@@ -94,33 +95,38 @@ public class TestingGround extends OpcodeStackDetector {
 		return true;
 	}
 
-	
 	@Override
 	public void sawBranchTo(int pc) {
 		if (state == 999)
 			state = 2;
-        else if (state != 10)
-	        resetStateMachine();
+		else if (state != 10)
+			resetStateMachine();
 	}
+
 	int state;
+
 	int target;
+
 	int startPC;
+
 	boolean sawNew;
+
 	XField f;
+
 	@Override
 	public void sawOpcode(int seen) {
-		// System.out.printf("%5d %9s: %d\n", getPC(), OPCODE_NAMES[seen], state);
+		// System.out.printf("%5d %9s: %d\n", getPC(), OPCODE_NAMES[seen],
+		// state);
 		if (isReturn(seen) && state != 11 && target != -42) {
 			resetStateMachine();
 			return;
 		}
-		
+
 		if (state > 1 && (getPC() >= target && target >= 0 || isReturn(seen) && target == -42)) {
 			if ((state == 4 || state == 3 && !f.isVolatile()) && interestingDeep(f)) {
 				// found it
 				int priority = LOW_PRIORITY;
-				boolean isDefaultAccess =
-						(getMethod().getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
+				boolean isDefaultAccess = (getMethod().getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
 				if (getMethod().isPublic())
 					priority = NORMAL_PRIORITY;
 				else if (getMethod().isProtected() || isDefaultAccess)
@@ -128,18 +134,16 @@ public class TestingGround extends OpcodeStackDetector {
 				String signature = f.getSignature();
 				if (signature.startsWith("[") || signature.startsWith("Ljava/util/"))
 					priority--;
-				if (!sawNew) 
+				if (!sawNew)
 					priority++;
-				if (state == 3 && priority < LOW_PRIORITY) 
+				if (state == 3 && priority < LOW_PRIORITY)
 					priority = LOW_PRIORITY;
 				if (getXClass().usesConcurrency())
 					priority--;
 				// Report the bug.
-				bugReporter.reportBug(new BugInstance(this, state == 4 ? "LI_LAZY_INIT_UPDATE_STATIC" : "LI_LAZY_INIT_STATIC", priority)
-						.addClassAndMethod(this)
-						.addField(f).describe("FIELD_ON")
-						.addSourceLineRange(getClassContext(), this, startPC, getPC()));
-			
+				bugReporter.reportBug(new BugInstance(this, state == 4 ? "LI_LAZY_INIT_UPDATE_STATIC" : "LI_LAZY_INIT_STATIC",
+				        priority).addClassAndMethod(this).addField(f).describe("FIELD_ON").addSourceLineRange(getClassContext(),
+				        this, startPC, getPC()));
 
 			}
 			resetStateMachine();
@@ -148,6 +152,11 @@ public class TestingGround extends OpcodeStackDetector {
 		case 0:
 			if (seen == GETSTATIC) {
 				XField xField = getXFieldOperand();
+				if (xField == null) {
+					System.out.println("Got null xfield for " + getClassConstantOperand() + "." + getNameConstantOperand()
+					        + " : " + getSigConstantOperand());
+					return;
+				}
 				if (interestingQuick(xField)) {
 					state = 1;
 					f = getXFieldOperand();
@@ -164,44 +173,55 @@ public class TestingGround extends OpcodeStackDetector {
 				state = 10;
 				target = getBranchTarget();
 			} else
-	            resetStateMachine();
+				resetStateMachine();
 			break;
 		case 2:
 			if (seen == PUTSTATIC) {
 				if (getXFieldOperand().equals(f))
 					state = 3;
-                else
-	                resetStateMachine();
-			} else if (seen == NEW || seen == INVOKESTATIC && getNameConstantOperand().startsWith("new"))
-				sawNew = true;
+				else
+					resetStateMachine();
+			} else
+				switch (seen) {
+				case NEW:
+				case NEWARRAY:
+				case MULTIANEWARRAY:
+				case ANEWARRAY:
+					sawNew = true;
+					break;
+				case INVOKESTATIC:
+					if (getNameConstantOperand().startsWith("new"))
+						sawNew = true;
+					break;
+				}
+
 			break;
 		case 3:
+
 			if (seen == GETSTATIC && getXFieldOperand().equals(f))
 				state = 4;
 			break;
-		case 10: 
+		case 10:
 			if (seen == GETSTATIC && getXFieldOperand().equals(f))
 				state = 11;
 			break;
-		case 11: 
+		case 11:
 			if (isReturn(seen) && target == getPC() + 1) {
 				state = 2;
 				target = -42;
 			} else
-	            resetStateMachine();
+				resetStateMachine();
 			break;
 		}
-
 
 	}
 
 	/**
      * 
      */
-    private void resetStateMachine() {
-	    state = 0;
-	    target = -1;
-    }
-
+	private void resetStateMachine() {
+		state = 0;
+		target = -1;
+	}
 
 }
