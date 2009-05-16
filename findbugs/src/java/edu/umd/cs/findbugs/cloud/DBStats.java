@@ -315,8 +315,13 @@ public class DBStats {
 			String status = rs.getString(col++);
 			String who = rs.getString(col++);
 			Timestamp when = rs.getTimestamp(col++);
-			if (false && !bugsSeen.add(id))
-				System.out.println("Dup bug: " + id);
+			if (!bugsSeen.add(id)) {
+				if (false) 
+					System.out.println("Dup bug: " + id);
+				continue;
+			}
+				
+				
 			
 			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE)) {
 				bugStatus.add(status);
