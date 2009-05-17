@@ -67,6 +67,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private int totalClasses;
 	private int referencedClasses;
 	private int totalSize;
+	private int totalSizeFromPackageStats;
+	private int totalClassesFromPackageStats;
 	private Date analysisTimestamp;
 	private Footprint baseFootprint;
 	private String java_vm_version = SystemProperties.getProperty("java.vm.version");
@@ -103,7 +105,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 
 	public int getCodeSize() {
-		return totalSize;
+		if (totalSize > 0)
+			return totalSize;
+		return totalSizeFromPackageStats;
 	}
 	public int getTotalBugs() {
 		return totalErrors[0];
@@ -133,7 +137,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Get the number of classes analyzed.
 	 */
 	public int getNumClasses() {
-		return totalClasses;
+		if (totalClasses > 0)
+			return totalClasses;
+		return totalClassesFromPackageStats;
 	}
 
 	/**
@@ -376,6 +382,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		PackageStats stat = packageStatsMap.get(packageName);
 		if (stat == null) {
 			stat = new PackageStats(packageName, numClasses, size);
+			totalSizeFromPackageStats += size;
+			totalClassesFromPackageStats += numClasses;
 			packageStatsMap.put(packageName, stat);
 			
 		}
@@ -384,8 +392,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * @param stats2
 	 */
 	public void addStats(ProjectStats stats2) {
-		totalSize += stats2.totalSize;
-		totalClasses += stats2.totalClasses;
+		totalSize += stats2.getCodeSize();
+		totalSizeFromPackageStats += stats2.getCodeSize();
+		totalClasses += stats2.getNumClasses();
+		totalClassesFromPackageStats += stats2.getNumClasses();
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] += stats2.totalErrors[i];
 		
