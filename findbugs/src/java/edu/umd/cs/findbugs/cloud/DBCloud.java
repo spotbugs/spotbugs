@@ -909,6 +909,22 @@ public  class DBCloud extends AbstractCloud {
      */
     static private int insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
         int count;
+        PreparedStatement query = c
+        .prepareStatement("SELECT  bugReportId, whoFiled FROM findbugs_bugreport where hash=?");
+        query.setString(1, bug.instanceHash);
+        ResultSet rs = query.executeQuery();
+        if (rs.next()) {
+        	String bugReportId = rs.getString(1);
+        	String whoFiled = rs.getString(2);
+        	rs.close();
+        	query.close();
+        	if (!bugReportId.equals(PENDING) || !who.equals(whoFiled))
+        		throw new IllegalArgumentException(whoFiled + " already filed bug report " + bugReportId + " for " + bug.instanceHash);
+        	return 1;
+        }
+        rs.close();
+        query.close();
+     
         PreparedStatement insert = c
         .prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
         		 + " VALUES (?, ?, ?, ?)");
