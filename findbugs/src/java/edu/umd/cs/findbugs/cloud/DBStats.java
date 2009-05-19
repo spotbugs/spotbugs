@@ -162,17 +162,21 @@ public class DBStats {
 		Connection c = cloud.getConnection();
 		
 		Map<Integer,Rank> bugRank = new HashMap<Integer, Rank>();
-		PreparedStatement ps = c.prepareStatement("SELECT id, bugPattern, priority FROM findbugs_issue");
+		Map<String, Integer> detailedBugRank = new HashMap<String, Integer>();
+		
+		PreparedStatement ps = c.prepareStatement("SELECT id, hash, bugPattern, priority FROM findbugs_issue");
 		ResultSet rs = ps.executeQuery();
 		while (rs.next()) {
 			int col = 1;
 			 int id = rs.getInt(col++);
+			 String hash = rs.getString(col++);
 			String bugType = rs.getString(col++);
 			int priority  = rs.getInt(col++);
 			BugPattern bugPattern = i18n.lookupBugPattern(bugType);
 			if (bugPattern != null) {
 				int rank = BugRanker.findRank(bugPattern, priority);
 				bugRank.put(id, Rank.getRank(rank));
+				detailedBugRank.put(hash, rank);
 			}
 		}
 		rs.close();
@@ -302,26 +306,40 @@ public class DBStats {
 		rs.close();	
 		ps.close();
 		
+		PrintWriter scaryBugs = new PrintWriter("bugReportsForScaryIssues.csv");
+		scaryBugs.println("assignedTo,status,rank,postmortem");
 		Multiset<String> bugStatus = new Multiset<String>();
 		HashSet<String> bugsSeen = new HashSet<String>();
 		Multiset<String> bugScore = new Multiset<String>();
 		
 		Multiset<String> bugsFiled = new Multiset<String>();
-		ps = c.prepareStatement("SELECT bugReportId,status, whoFiled, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
+		ps = c.prepareStatement("SELECT bugReportId,hash,status, whoFiled,assignedTo, postmortem, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
 		rs = ps.executeQuery();
 		while (rs.next()) {
 			int col = 1;
 			String  id = rs.getString(col++);
+			String hash = rs.getString(col++);
+			
 			String status = rs.getString(col++);
+			
 			String who = rs.getString(col++);
+			String assignedTo = rs.getString(col++);
+			String postmortem = rs.getString(col++);
+			
 			Timestamp when = rs.getTimestamp(col++);
-			if (!bugsSeen.add(id)) {
-				if (false) 
-					System.out.println("Dup bug: " + id);
+			if (!bugsSeen.add(id))
 				continue;
+			Integer rank = detailedBugRank.get(hash);
+			if (rank == null) {
+				System.out.println("Could not find hash " + hash + " for " +id);
 			}
-				
-				
+			if (assignedTo != null && !"NEW".equals(status) 
+					&& (rank != null && rank <= 4 || postmortem != null)) {
+				if (postmortem != null) 
+				      scaryBugs.printf("%s,%s,%s,%d,POSTMORTEM\n", assignedTo, id, status, rank);
+				else 
+					scaryBugs.printf("%s,%s,%s,%d\n", assignedTo, id, status, rank);
+			} 
 			
 			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE)) {
 				bugStatus.add(status);
@@ -333,7 +351,7 @@ public class DBStats {
 		rs.close();	
 		ps.close();
 		c.close();
-		
+		scaryBugs.close();
 		Multiset<String> overallEvaluation = new Multiset<String>();
 		for(Map.Entry<Integer,Integer> e :  scoreForIssue.entrySet()) {
 			int value = e.getValue();
