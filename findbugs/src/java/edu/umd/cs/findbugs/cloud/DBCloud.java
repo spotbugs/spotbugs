@@ -877,21 +877,7 @@ public  class DBCloud extends AbstractCloud {
         public void fileBug(BugData bug) {
         	
         	try {
-        		int count = insertPendingRecord(c, bug, bug.bugFiled, bug.filedBy);
-				if (count == 0) {
-					PreparedStatement updateBug =  
-				        c.prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE hash = ? and bugReportId = ?");
-					int col = 1;
-					updateBug.setString(col++, bug.filedBy);
-					updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
-					updateBug.setString(col++, bug.instanceHash);
-					updateBug.setString(col++, PENDING);
-					count = updateBug.executeUpdate();
-					updateBug.close();
-				}
-				
-				
-
+        		insertPendingRecord(c, bug, bug.bugFiled, bug.filedBy);
 			} catch (Exception e) {
 				displayMessage("Problem filing bug", e);
 			}
@@ -907,38 +893,60 @@ public  class DBCloud extends AbstractCloud {
      * @return
      * @throws SQLException
      */
-    static private int insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
-        int count;
-        PreparedStatement query = c
-        .prepareStatement("SELECT  bugReportId, whoFiled FROM findbugs_bugreport where hash=?");
-        query.setString(1, bug.instanceHash);
-        ResultSet rs = query.executeQuery();
-        if (rs.next()) {
-        	String bugReportId = rs.getString(1);
-        	String whoFiled = rs.getString(2);
-        	rs.close();
-        	query.close();
-        	if (!bugReportId.equals(PENDING) || !who.equals(whoFiled))
-        		throw new IllegalArgumentException(whoFiled + " already filed bug report " + bugReportId + " for " + bug.instanceHash);
-        	return 1;
-        }
-        rs.close();
-        query.close();
-     
-        PreparedStatement insert = c
-        .prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
-        		 + " VALUES (?, ?, ?, ?)");
-        
-        Timestamp date = new Timestamp(when);
-        int col = 1;
-        insert.setString(col++, bug.instanceHash);
-        insert.setString(col++, PENDING);
-        insert.setString(col++,  who);
-        insert.setTimestamp(col++, date);
-        count = insert.executeUpdate();
-        insert.close();
-        return count;
-    }
+     private void insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
+		int count;
+		int pendingId = -1;
+		PreparedStatement query = c
+		        .prepareStatement("SELECT  id, bugReportId, whoFiled, whenFiled FROM findbugs_bugreport where hash=?");
+		query.setString(1, bug.instanceHash);
+		ResultSet rs = query.executeQuery();
+		boolean needsUpdate = false;
+
+		while (rs.next()) {
+			int col = 1;
+			int id = rs.getInt(col++);
+			String bugReportId = rs.getString(col++);
+			String whoFiled = rs.getString(col++);
+			Timestamp whenFiled = rs.getTimestamp(col++);
+			if (!bugReportId.equals(PENDING) || !who.equals(whoFiled) && !pendingStatusHasExpired(whenFiled.getTime())) {
+				rs.close();
+				query.close();
+				throw new IllegalArgumentException(whoFiled + " already filed bug report " + bugReportId + " for "
+				        + bug.instanceHash);
+			}
+			pendingId = id;
+			needsUpdate = !who.equals(whoFiled);
+		}
+		rs.close();
+		query.close();
+
+		if (pendingId == -1) {
+			PreparedStatement insert = c
+			        .prepareStatement("INSERT INTO findbugs_bugreport (hash, bugReportId, whoFiled, whenFiled)"
+			                + " VALUES (?, ?, ?, ?)");
+
+			Timestamp date = new Timestamp(when);
+			int col = 1;
+			insert.setString(col++, bug.instanceHash);
+			insert.setString(col++, PENDING);
+			insert.setString(col++, who);
+			insert.setTimestamp(col++, date);
+			count = insert.executeUpdate();
+			insert.close();
+		}
+
+		else if (needsUpdate) {
+
+			PreparedStatement updateBug = c
+			        .prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE id = ?");
+			int col = 1;
+			updateBug.setString(col++, bug.filedBy);
+			updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
+			updateBug.setInt(col++, pendingId);
+			count = updateBug.executeUpdate();
+			updateBug.close();
+		}
+	}
 
 	static interface Update {
 		void execute(DatabaseSyncTask t) throws SQLException;
