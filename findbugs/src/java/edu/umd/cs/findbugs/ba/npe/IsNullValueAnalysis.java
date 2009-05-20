@@ -579,29 +579,9 @@ public class IsNullValueAnalysis
 			{
 				IsNullValue tos = lastFrame.getTopValue();
 				boolean ifnull = (lastInSourceOpcode == Constants.IFNULL);
-
-				// Initially, assume neither branch is feasible.
-				IsNullValue ifcmpDecision = null;
-				IsNullValue fallThroughDecision = null;
-
-				if (tos.isDefinitelyNull()) {
-					// Predetermined comparison - one branch is infeasible
-					if (ifnull)
-						ifcmpDecision = IsNullValue.pathSensitiveNullValue();
-					else // ifnonnull
-						fallThroughDecision = IsNullValue.pathSensitiveNullValue();
-				} else if (tos.isDefinitelyNotNull()) {
-					// Predetermined comparison - one branch is infeasible
-					if (ifnull)
-						fallThroughDecision = tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
-					else // ifnonnull
-						ifcmpDecision =  tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
-				} else {
-					// As far as we know, both branches feasible
-					ifcmpDecision = ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
-					fallThroughDecision = ifnull ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
-				}
-				return new IsNullConditionDecision(prevVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
+				ValueNumber prevTopValue = prevVnaFrame.getTopValue();
+				
+				return handleIfNull(tos, prevTopValue, ifnull);
 			}
 		case Constants.IF_ACMPEQ:
 		case Constants.IF_ACMPNE:
@@ -613,7 +593,8 @@ public class IsNullValueAnalysis
 				boolean nextToTosNull = nextToTos.isDefinitelyNull();
 
 				boolean cmpeq = (lastInSourceOpcode == Constants.IF_ACMPEQ);
-
+				
+			
 				// Initially, assume neither branch is feasible.
 				IsNullValue ifcmpDecision = null;
 				IsNullValue fallThroughDecision = null;
@@ -627,11 +608,12 @@ public class IsNullValueAnalysis
 					else // cmpne
 						fallThroughDecision = IsNullValue.pathSensitiveNullValue();
 				} else if (tosNull || nextToTosNull) {
-					// We have updated information about whichever value is not null;
-					// both branches are feasible
-					value = prevVnaFrame.getStackValue(tosNull ? 1 : 0);
-					ifcmpDecision = cmpeq ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
-					fallThroughDecision = cmpeq ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+					if (tosNull)
+						return handleIfNull(nextToTos, prevVnaFrame.getStackValue(1), cmpeq);
+					
+					assert nextToTosNull;
+					return handleIfNull(tos, prevVnaFrame.getStackValue(0), cmpeq);
+
 				} else if (tos.isDefinitelyNotNull() && !nextToTos.isDefinitelyNotNull()) {
 					// learn that nextToTos is definitely non null on one branch
 					value = prevVnaFrame.getStackValue(1);
@@ -665,6 +647,31 @@ public class IsNullValueAnalysis
 
 		return null; // no information gained
 	}
+
+	private IsNullConditionDecision handleIfNull(IsNullValue tos, ValueNumber prevTopValue, boolean ifnull) {
+	    // Initially, assume neither branch is feasible.
+	    IsNullValue ifcmpDecision = null;
+	    IsNullValue fallThroughDecision = null;
+
+	    if (tos.isDefinitelyNull()) {
+	    	// Predetermined comparison - one branch is infeasible
+	    	if (ifnull)
+	    		ifcmpDecision = IsNullValue.pathSensitiveNullValue();
+	    	else // ifnonnull
+	    		fallThroughDecision = IsNullValue.pathSensitiveNullValue();
+	    } else if (tos.isDefinitelyNotNull()) {
+	    	// Predetermined comparison - one branch is infeasible
+	    	if (ifnull)
+	    		fallThroughDecision = tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
+	    	else // ifnonnull
+	    		ifcmpDecision =  tos.wouldHaveBeenAKaboom() ? tos : IsNullValue.pathSensitiveNonNullValue();
+	    } else {
+	    	// As far as we know, both branches feasible
+	    	ifcmpDecision = ifnull ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+	    	fallThroughDecision = ifnull ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+	    }
+	    return new IsNullConditionDecision(prevTopValue, ifcmpDecision, fallThroughDecision);
+    }
 
 	/**
 	 * Update is-null information at a branch target based on information gained at a
