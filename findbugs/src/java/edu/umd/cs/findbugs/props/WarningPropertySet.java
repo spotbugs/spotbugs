@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.props;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.CheckReturnValue;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
@@ -129,7 +131,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
 	 *            the WarningProperty
 	 * @return true if the set contains the WarningProperty, false if not
 	 */
-	public boolean containsProperty(T prop) {
+	public @CheckReturnValue boolean containsProperty(T prop) {
 		return map.keySet().contains(prop);
 	}
 

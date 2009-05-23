@@ -713,7 +713,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (false && !refValue.mightBeNull())
 			return;
 
-		// if (!refValue.isDefinitelyNull()) return;
+		
+		if (!refValue.isDefinitelyNull()) return;
 		// Get the value number
 		ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getStartFact(basicBlock);
 		if (!vnaFrame.isValid())
@@ -721,9 +722,40 @@ public class NullDerefAndRedundantComparisonFinder {
 		ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
 		Location location = new Location(exceptionThrowerHandle, basicBlock);
 		if (DEBUG) System.out.println("Warning: VN " + valueNumber + " invf: " + frame + " @ " + location);
+		
+		boolean isConsistent = true;
+		Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
+		BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		LineNumberTable table = method.getLineNumberTable();
+		int position = exceptionThrowerHandle.getPosition();
+		int line = table == null ? 0 : table.getSourceLine(position);
+		while (bbIter.hasNext()) {
+			BasicBlock bb = bbIter.next();
 
+			if (!bb.isNullCheck()) 
+				continue;
+			
+			InstructionHandle eth = bb.getExceptionThrower();
+			if (eth == exceptionThrowerHandle) continue;
+			if (eth.getInstruction().getOpcode() != exceptionThrower.getOpcode())
+				continue;
+		
+			int ePosition = eth.getPosition();
+			if (ePosition == position 
+					|| table != null && line == table.getSourceLine(ePosition)) {
+			
+				
+			// apparent clone
+			IsNullValue rv = frame.getInstance(eth.getInstruction(), classContext.getConstantPoolGen());
+			if (!rv.equals(refValue))
+				isConsistent = false;
+			}
+				
+				
+			
+		}
 		// Issue a warning
-		collector.foundNullDeref(location, valueNumber, refValue, vnaFrame);
+		collector.foundNullDeref(location, valueNumber, refValue, vnaFrame, isConsistent);
 	}
 
 	/**

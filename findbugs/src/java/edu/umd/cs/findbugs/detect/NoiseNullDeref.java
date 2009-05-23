@@ -290,8 +290,16 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 				|| method.getName().indexOf("Test") >= 0;
 	}
 
+	/**
+     * @deprecated Use {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)} instead
+     */
+    public void foundNullDeref(Location location, ValueNumber valueNumber,
+    		IsNullValue refValue, ValueNumberFrame vnaFrame) {
+                foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
+            }
+
 	public void foundNullDeref(Location location, ValueNumber valueNumber,
-			IsNullValue refValue, ValueNumberFrame vnaFrame) {
+			IsNullValue refValue, ValueNumberFrame vnaFrame, boolean isConsistent) {
 		if (!refValue.isNullOnComplicatedPath23())
 			return;
 		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();

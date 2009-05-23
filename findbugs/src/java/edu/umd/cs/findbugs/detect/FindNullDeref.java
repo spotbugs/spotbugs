@@ -34,6 +34,7 @@ import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -835,8 +836,16 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				|| method.getName().indexOf("Test") >= 0;
 	}
 
+	/**
+     * @deprecated Use {@link #foundNullDeref(Location,ValueNumber,IsNullValue,ValueNumberFrame,boolean)} instead
+     */
+    public void foundNullDeref(Location location, ValueNumber valueNumber,
+    		IsNullValue refValue, ValueNumberFrame vnaFrame) {
+                foundNullDeref(location, valueNumber, refValue, vnaFrame, true);
+            }
+
 	public void foundNullDeref(Location location, ValueNumber valueNumber,
-			IsNullValue refValue, ValueNumberFrame vnaFrame) {
+			IsNullValue refValue, ValueNumberFrame vnaFrame, boolean isConsistent) {
 		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
 			return;
@@ -848,24 +857,29 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame, "VALUE_OF");
-		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));
+		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), isConsistent);
 		Instruction ins = location.getHandle().getInstruction();
-		if (ins instanceof InvokeInstruction) {
+		if (ins instanceof InvokeInstruction && refValue.isDefinitelyNull()) {
 			InvokeInstruction iins = (InvokeInstruction) ins;
 			if (iins.getMethodName(classContext.getConstantPoolGen()).equals("close") 
 					&& iins.getSignature(classContext.getConstantPoolGen()).equals("()V")) 
-				propertySet.containsProperty(NullDerefProperty.CLOSING_NULL);
+				propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
 		}
-		boolean duplicated = propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED);
-		try {
-			CFG cfg = classContext.getCFG(method);
-			if (cfg.getLocationsContainingInstructionWithOffset(pc)
-					.size() > 1) {
-				propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
+		boolean duplicated = false;
+		if (!isConsistent) {
+			if (propertySet.containsProperty(NullDerefProperty.DEREFS_ARE_CLONED))
 				duplicated = true;
+
+			else try {
+				CFG cfg = classContext.getCFG(method);
+				if (cfg.getLocationsContainingInstructionWithOffset(pc)
+						.size() > 1) {
+					propertySet.addProperty(NullDerefProperty.DEREFS_ARE_INLINED_FINALLY_BLOCKS);
+					duplicated = true;
+				}
+			} catch (CFGBuilderException e) {
+				AnalysisContext.logError("huh", e);
 			}
-		} catch (CFGBuilderException e) {
-			AnalysisContext.logError("huh", e);
 		}
 
 		boolean caught = inCatchNullBlock(location);
@@ -875,7 +889,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		
 		if (refValue.isDefinitelyNull()) {
 			String type = "NP_ALWAYS_NULL";
-			if (onExceptionPath) type =  "NP_ALWAYS_NULL_EXCEPTION";
+			if (propertySet.containsProperty(NullDerefProperty.CLOSING_NULL))
+				type = "NP_CLOSING_NULL";
+			else if (onExceptionPath) 
+				type =  "NP_ALWAYS_NULL_EXCEPTION";
 			else if (duplicated)
 				type = "NP_NULL_ON_SOME_PATH";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
@@ -925,7 +942,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			WarningPropertyUtil.addPropertiesForDataMining(propertySet,
 					classContext, method, location);
 		}
-		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));
+		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location), false);
 		
 		propertySet.decorateBugInstance(bugInstance);
 
@@ -1247,7 +1264,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		
 		WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
 		
-		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
+		addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
 
 		int distance1 = minPC(derefLocationSet) - maxPC(assignedNullLocationSet);
 		int distance2 = minPC(derefLocationSet) - maxPC(doomedLocations);
@@ -1364,7 +1381,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			bugInstance.describe("FIELD_CONTAINS_VALUE");
 		
 		
-		addPropertiesForDereferenceLocations(propertySet, derefLocationSet);
+		addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
 		
 		if (!assignedNullLocationSet.isEmpty() && distance > 100)
 			propertySet.addProperty(NullDerefProperty.LONG_RANGE_NULL_SOURCE);
@@ -1398,10 +1415,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 
 	/**
      * @param propertySet
-     * @param derefLocationSet
+	 * @param derefLocationSet
+	 * @param isConsistent TODO
      */
     private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
-            Collection<Location> derefLocationSet) {
+            Collection<Location> derefLocationSet, boolean isConsistent) {
 	    boolean derefOutsideCatchBlock = false;
 	    boolean allDerefsAtDoomedLocations = true;
 		for (Location loc : derefLocationSet) {
@@ -1423,7 +1441,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 				propertySet.addProperty(GeneralWarningProperty.FALSE_POSITIVE);
 			else propertySet.addProperty(NullDerefProperty.DEREFS_IN_CATCH_BLOCKS);
 		}
-		if (!uniqueDereferenceLocations)
+		if (!isConsistent && !uniqueDereferenceLocations)
 			// Add a WarningProperty
 			propertySet.addProperty(NullDerefProperty.DEREFS_ARE_CLONED);
 		
@@ -1436,6 +1454,16 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
      */
     private boolean uniqueLocations(Collection<Location> derefLocationSet) {
 	    boolean uniqueDereferenceLocations = false;
+	    CodeException[] exceptionTable = method.getCode().getExceptionTable();
+	    if (exceptionTable == null)
+	    	return true;
+	    checkForCatchAll: {
+	    	for(CodeException e : exceptionTable) 
+	    		if (e.getCatchType() == 0) 
+	    			break checkForCatchAll;
+	    	return true;
+	    }
+
 		LineNumberTable table = method.getLineNumberTable();
 		if (table == null)
 			uniqueDereferenceLocations = true;

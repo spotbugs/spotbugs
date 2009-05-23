@@ -4781,6 +4781,20 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="NP_CLOSING_NULL">
+    <ShortDescription>close() invoked on a value that is always null</ShortDescription>
+    <LongDescription>Can't close {2.givenClass} since it is always null in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> close() is being invoked on a value that is always null. If this statement is executed,
+a null pointer exception will occur. But the big risk here you never close
+something that should be closed. 
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
     <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
     <LongDescription>Store of null value into field {2.givenClass} annotated NonNull at {1}</LongDescription>
@@ -5580,6 +5594,9 @@ generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as
 the absolute value of that hashcode.  If the hashcode 
 is <code>Integer.MIN_VALUE</code>, then the result will be negative as well (since 
 <code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>).
+</p>
+<p>One out of 2^32 strings have a hashCode of Integer.MIN_VALUE,
+including "polygenelubricants" "GydZG_" and ""DESIGNING WORKHOUSES".
 </p>
 ]]>
     </Details>
