@@ -656,6 +656,8 @@ public  class DBCloud extends AbstractCloud {
 			setEndTime.setTimestamp(col++, date);
 			setEndTime.setInt(col++, sessionId);
 			setEndTime.execute();
+			setEndTime.close();
+			c.close();
 		} catch (SQLException e) {
 			// we're in shutdown mode, not going to complain
 			assert true;
@@ -1150,6 +1152,8 @@ public  class DBCloud extends AbstractCloud {
     public void setUserTimestamp(BugInstance b, long timestamp) {
     	BugData data = getBugData(b);
     	
+    	if (data == null)
+    		return;
 	    BugDesignation bd = data.getNonnullUserDesignation();
 
 	    bd.setTimestamp(timestamp);

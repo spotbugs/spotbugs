@@ -1024,7 +1024,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		
 		viewMenu.addSeparator();
 
-		if (cloud.getMode() == Cloud.Mode.COMMUNAL) {
+		if (cloud != null && cloud.getMode() == Cloud.Mode.COMMUNAL) {
 			ButtonGroup overallClassificationButtonGroup = new ButtonGroup();
 			for (final ViewFilter.OverallClassificationFilter r : ViewFilter.OverallClassificationFilter.values()) {
 				if (cloud != null && !r.supported(cloud))
