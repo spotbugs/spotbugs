@@ -46,19 +46,21 @@ extends OpcodeStackDetector {
 		if (value == null || !(value instanceof String)) return;
 		String regex = (String) value;
 		if (!regex.equals(".")) return;
+		int priority = HIGH_PRIORITY;
 		if (ignorePasswordMasking) {
+			  priority = NORMAL_PRIORITY;
 			  OpcodeStack.Item top = stack.getStackItem(0);
 			  Object topValue = top.getConstant();
 			  if (topValue instanceof String) {
 				  String replacementString = (String) topValue;
-				  if (replacementString.length() == 1 &&  replacementString.toLowerCase().equals("x") || replacementString.equals("-") || replacementString.equals("*") || replacementString.equals("\\*")) return;
+				  if (replacementString.toLowerCase().equals("x") || replacementString.equals("-") || replacementString.equals("*") || replacementString.equals("\\*")) 
+					  return;
+				  if (replacementString.length() == 1 && getMethodName().toLowerCase().indexOf("pass") >= 0)
+					  priority = LOW_PRIORITY;
 			  }
-
 		}
 
-
-	   bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
-				ignorePasswordMasking ? NORMAL_PRIORITY : HIGH_PRIORITY)
+	   bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", priority)
 								.addClassAndMethod(this)
 								.addCalledMethod(this)
 								.addSourceLine(this)
