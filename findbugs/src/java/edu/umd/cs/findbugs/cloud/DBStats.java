@@ -392,12 +392,12 @@ public class DBStats {
 		patternScore.turnTotalIntoAverage(patternCount);
 		patternVariance.turnTotalIntoAverage(patternCount);
 		
-		printAverageAndVariance("patternScore.csv", "average,variance,pattern", patternScore, patternVariance);
+		printAverageAndVariance("patternScore.csv", "average,variance,pattern", patternScore, patternVariance, patternCount);
 		
 		issueScore.turnTotalIntoAverage(reviewsForIssue);
 		issueVariance.turnTotalIntoAverage(reviewsForIssue);
 		
-		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueScore);
+		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueVariance);
 		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
@@ -463,19 +463,26 @@ public class DBStats {
 	
 	}
 	
-	private static <E> void printAverageAndVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance) throws FileNotFoundException {
+	private static <E> void printAverageAndVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance, Multiset<E> count) throws FileNotFoundException {
 		PrintWriter out = new PrintWriter(filename);
 		out.println(header);
-		for(Map.Entry<E, Double> e : average.entriesInDecreasingOrder()) 
-		  out.printf("%5.1f %5.1f %s\n", e.getValue(), variance.getValue(e.getKey()), e.getKey());
+		for(Map.Entry<E, Double> e : average.entriesInDecreasingOrder()) {
+	        E key = e.getKey();
+	        out.printf("%5.1f %5.1f %5d %s\n", e.getValue(), variance.getValue(key), count.getCount(key), key);
+        }
 		out.close();
 	}
 	
-	private static <E> void printHighVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance) throws FileNotFoundException {
+	private static <E> void printHighVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance, Multiset<E> count) 
+				throws FileNotFoundException {
 		PrintWriter out = new PrintWriter(filename);
 		out.println(header);
-		for(Map.Entry<E, Double> e : variance.entriesInDecreasingOrder()) 
-		  out.printf("%5.1f %5.1f %s\n",  e.getValue(), average.getValue(e.getKey()), e.getKey());
+		for(Map.Entry<E, Double> e : variance.entriesInDecreasingOrder()) {
+	        E key = e.getKey();
+	        int elementCount = count.getCount(key);
+	        if (elementCount >= 3)
+			  out.printf("%5.1f %5.1f %5d %s\n",  e.getValue(), average.getValue(key), elementCount, key);
+        }
 		out.close();
 	}
 
