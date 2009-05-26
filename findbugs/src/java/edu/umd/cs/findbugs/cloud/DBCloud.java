@@ -543,6 +543,7 @@ public  class DBCloud extends AbstractCloud {
 		findbugsUser = getProperty("findbugsUser");
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null)
 			return false;
+		
 		if (findbugsUser == null) {
 			if (PROMPT_FOR_USER_NAME) {
 				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
@@ -1350,11 +1351,31 @@ public  class DBCloud extends AbstractCloud {
     		return 0;
     	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
     	double total = 0;
+    	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
-    		total += UserDesignation.valueOf(d.getDesignationKey()).score();
+    		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
+    		if (designation == UserDesignation.OBSOLETE_CODE) 
+    			continue;
+			total += designation.score();
+			count++;
     	}
-    	return total /  uniqueDesignations.size();
+    	return total /  count++;
     }
+    
+	@Override
+    public  double getPortionObsoleteClassifications(BugInstance b) {
+		BugData bd = getBugData(b);
+    	if (bd == null)
+    		return 0;
+
+		int count = 0;
+		Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
+		for(BugDesignation d : uniqueDesignations) 
+			if (UserDesignation.valueOf(d.getDesignationKey()) ==  UserDesignation.OBSOLETE_CODE)
+			  count++;
+		return ((double)count)/uniqueDesignations.size();
+	}
+	
     @Override
     public double getClassificationVariance(BugInstance b) {
     	BugData bd = getBugData(b);
@@ -1363,14 +1384,19 @@ public  class DBCloud extends AbstractCloud {
     	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
     	double total = 0;
     	double totalSquares = 0;
+    	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
-    		int score = UserDesignation.valueOf(d.getDesignationKey()).score();
+    		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
+    		if (designation == UserDesignation.OBSOLETE_CODE) 
+    			continue;
+    		int score = designation.score();
 			total += score;
 			totalSquares += score*score;
+			count++;
     	}
-    	int num = uniqueDesignations.size();
-    	double average = total/num;
-    	return totalSquares / num - average*average;
+    	
+    	double average = total/count;
+    	return totalSquares / count - average*average;
     }
     public Set<String> getReviewers(BugInstance b) {
     	BugData bd = getBugData(b);

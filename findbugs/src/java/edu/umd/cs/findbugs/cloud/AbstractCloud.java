@@ -134,6 +134,11 @@ public abstract class AbstractCloud implements Cloud {
 	public  double getClassificationScore(BugInstance b) {
 		return getUserDesignation(b).score();
 	}
+	public  double getPortionObsoleteClassifications(BugInstance b) {
+		if ( getUserDesignation(b) == UserDesignation.OBSOLETE_CODE)
+			return 1.0;
+		return 0.0;
+	}
 	public  double getClassificationVariance(BugInstance b) {
 		return 0;
 	}

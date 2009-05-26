@@ -130,6 +130,7 @@ public interface Cloud {
 	void setUserDesignation(BugInstance b, UserDesignation u, long timestamp);
 	  double getClassificationScore(BugInstance b);
 	  double getClassificationVariance(BugInstance b);
+	  double getPortionObsoleteClassifications(BugInstance b);
 	  int getNumberReviewers(BugInstance b);
 	   
 	String getUserEvaluation(BugInstance b);

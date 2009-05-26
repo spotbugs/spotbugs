@@ -290,8 +290,8 @@ public class DBStats {
 		rs.close();	
 		ps.close();
 		
-		PrintWriter scaryBugs = new PrintWriter("bugReportsForScaryIssues.csv");
-		scaryBugs.println("assignedTo,status,rank,postmortem");
+		PrintWriter scariestBugs = new PrintWriter("bugReportsForScariestIssues.csv");
+		scariestBugs.println("assignedTo,status,rank,note");
 		Multiset<String> bugStatus = new Multiset<String>();
 		HashSet<String> bugsSeen = new HashSet<String>();
 		Multiset<String> bugScore = new Multiset<String>();
@@ -325,9 +325,9 @@ public class DBStats {
 			if (assignedTo != null && !"NEW".equals(status) 
 					&& (rank != null && rank <= 4 || postmortem != null)) {
 				if (postmortem != null) 
-				      scaryBugs.printf("%s,%s,%s,%d,POSTMORTEM\n", assignedTo, id, status, rank);
+				      scariestBugs.printf("%s,%s,%s,%d,POSTMORTEM\n", assignedTo, id, status, rank);
 				else 
-					scaryBugs.printf("%s,%s,%s,%d\n", assignedTo, id, status, rank);
+					scariestBugs.printf("%s,%s,%s,%d\n", assignedTo, id, status, rank);
 			} 
 			
 			if (!id.equals(DBCloud.PENDING) && !id.equals(DBCloud.NONE)) {
@@ -340,7 +340,7 @@ public class DBStats {
 		rs.close();	
 		ps.close();
 		c.close();
-		scaryBugs.close();
+		scariestBugs.close();
 		Multiset<String> overallEvaluation = new Multiset<String>();
 		for(Map.Entry<Integer,Integer> e :  scoreForIssue.entrySet()) {
 			int value = e.getValue();
