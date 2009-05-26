@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.AllocationInstruction;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -255,8 +256,12 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 					if (DEBUG) System.out.println(location);
 					if (ins instanceof AllocationInstruction)
 						sawNEW = true;
-					else if (ins instanceof InvokeInstruction)
+					else if (ins instanceof InvokeInstruction) {
+						if (ins instanceof INVOKESTATIC 
+								&& ((INVOKESTATIC)ins).getMethodName(classContext.getConstantPoolGen()).startsWith("new"))
+							sawNEW = true;
 						sawINVOKE = true;
+					}
 	
 
 					// Compute lock set intersection for all matched instructions.
