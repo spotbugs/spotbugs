@@ -392,7 +392,7 @@ public class DBStats {
 		patternScore.turnTotalIntoAverage(patternCount);
 		patternVariance.turnTotalIntoAverage(patternCount);
 		
-		printAverageAndVariance("patternScore.csv", "average,variance,pattern", patternScore, patternVariance, patternCount);
+		printPatterns("patternScore.csv", "average,variance,rank,count,pattern", patternScore, patternVariance, patternCount);
 		
 		issueScore.turnTotalIntoAverage(reviewsForIssue);
 		issueVariance.turnTotalIntoAverage(reviewsForIssue);
@@ -463,12 +463,15 @@ public class DBStats {
 	
 	}
 	
-	private static <E> void printAverageAndVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance, Multiset<E> count) throws FileNotFoundException {
+	private static  void printPatterns(String filename, String header, FractionalMultiset<String> average, FractionalMultiset<String> variance, Multiset<String> count) throws FileNotFoundException {
+		I18N i18n = I18N.instance();
 		PrintWriter out = new PrintWriter(filename);
 		out.println(header);
-		for(Map.Entry<E, Double> e : average.entriesInDecreasingOrder()) {
-	        E key = e.getKey();
-	        out.printf("%5.1f %5.1f %5d %s\n", e.getValue(), variance.getValue(key), count.getCount(key), key);
+		for(Map.Entry<String, Double> e : average.entriesInDecreasingOrder()) {
+	        String key = e.getKey();
+	        BugPattern pattern = i18n.lookupBugPattern(key);
+			if (pattern != null) 
+	        out.printf("%5.1f %5.1f %5d %5d %s\n", e.getValue(), variance.getValue(key),  BugRanker.findRank(pattern, 1), count.getCount(key), key);
         }
 		out.close();
 	}
@@ -480,8 +483,10 @@ public class DBStats {
 		for(Map.Entry<E, Double> e : variance.entriesInDecreasingOrder()) {
 	        E key = e.getKey();
 	        int elementCount = count.getCount(key);
-	        if (elementCount >= 3)
-			  out.printf("%5.1f %5.1f %5d %s\n",  e.getValue(), average.getValue(key), elementCount, key);
+	        Double v = e.getValue();
+	        if (elementCount >= 3 && v >= 0.5) 
+	            out.printf("%5.1f %5.1f %5d %s\n",  v, average.getValue(key), elementCount, key);
+            
         }
 		out.close();
 	}
