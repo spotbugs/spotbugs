@@ -397,7 +397,17 @@ public class DBStats {
 		issueScore.turnTotalIntoAverage(reviewsForIssue);
 		issueVariance.turnTotalIntoAverage(reviewsForIssue);
 		
-		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueVariance, reviewsForIssue);
+		PrintWriter out1 = new PrintWriter("issueVariance.csv");
+        out1.println("variance,average,pattern");
+        for(Map.Entry<Integer, Double> e1 : issueVariance.entriesInDecreasingOrder()) {
+            Integer key = e1.getKey();
+            int elementCount = reviewsForIssue.getCount(key);
+            Double v = e1.getValue();
+            if (elementCount >= 3 && v >= 0.5) 
+                out1.printf("%5.1f %5.1f %5d %7d %s\n",  v, issueScore.getValue(key), elementCount, key, bugPattern.get(key));
+            
+        }
+        out1.close();
 		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
@@ -476,21 +486,6 @@ public class DBStats {
 		out.close();
 	}
 	
-	private static <E> void printHighVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance, Multiset<E> count) 
-				throws FileNotFoundException {
-		PrintWriter out = new PrintWriter(filename);
-		out.println(header);
-		for(Map.Entry<E, Double> e : variance.entriesInDecreasingOrder()) {
-	        E key = e.getKey();
-	        int elementCount = count.getCount(key);
-	        Double v = e.getValue();
-	        if (elementCount >= 3 && v >= 0.5) 
-	            out.printf("%5.1f %5.1f %5d %s\n",  v, average.getValue(key), elementCount, key);
-            
-        }
-		out.close();
-	}
-
 	/**
      * @param value
      */
