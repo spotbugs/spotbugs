@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.util.FractionalMultiset;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
 
@@ -162,6 +163,7 @@ public class DBStats {
 		Connection c = cloud.getConnection();
 		
 		Map<Integer,Rank> bugRank = new HashMap<Integer, Rank>();
+		Map<Integer,String> bugPattern = new HashMap<Integer, String>();
 		Map<String, Integer> detailedBugRank = new HashMap<String, Integer>();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT id, hash, bugPattern, priority FROM findbugs_issue");
@@ -172,11 +174,12 @@ public class DBStats {
 			 String hash = rs.getString(col++);
 			String bugType = rs.getString(col++);
 			int priority  = rs.getInt(col++);
-			BugPattern bugPattern = i18n.lookupBugPattern(bugType);
-			if (bugPattern != null) {
-				int rank = BugRanker.findRank(bugPattern, priority);
+			BugPattern pattern = i18n.lookupBugPattern(bugType);
+			if (pattern != null) {
+				int rank = BugRanker.findRank(pattern, priority);
 				bugRank.put(id, Rank.getRank(rank));
 				detailedBugRank.put(hash, rank);
+				bugPattern.put(id, pattern.getType());
 			}
 		}
 		rs.close();
@@ -234,6 +237,7 @@ public class DBStats {
 		Multiset<String> scaryIssues = new Multiset<String>();
 		Multiset<String> troublingIssues = new Multiset<String>();
 		Multiset<Integer> scoreForIssue = new Multiset<Integer>();
+		Multiset<Integer> squareScoreForIssue = new Multiset<Integer>();
 		Multiset<Integer> reviewsForIssue = new Multiset<Integer>();
 		
 		HashSet<String> issueReviews = new HashSet<String>();
@@ -272,6 +276,8 @@ public class DBStats {
 				break;
 			}
 			scoreForIssue.add(issueId, score);
+			squareScoreForIssue.add(issueId, score*score);
+			
 			reviewsForIssue.add(issueId);
 			Timestamp when = rs.getTimestamp(col++);
 			Rank rank = bugRank.get(issueId);
@@ -311,6 +317,11 @@ public class DBStats {
 		Multiset<String> bugStatus = new Multiset<String>();
 		HashSet<String> bugsSeen = new HashSet<String>();
 		Multiset<String> bugScore = new Multiset<String>();
+		FractionalMultiset<String> patternScore = new FractionalMultiset<String>();
+		Multiset<String> patternCount = new Multiset<String>();
+		FractionalMultiset<String> patternVariance = new FractionalMultiset<String>();
+		FractionalMultiset<Integer> issueVariance = new FractionalMultiset<Integer>();
+		FractionalMultiset<Integer> issueScore = new FractionalMultiset<Integer>();
 		
 		Multiset<String> bugsFiled = new Multiset<String>();
 		ps = c.prepareStatement("SELECT bugReportId,hash,status, whoFiled,assignedTo, postmortem, timestamp FROM findbugs_bugreport ORDER BY timestamp DESC");
@@ -355,16 +366,38 @@ public class DBStats {
 		Multiset<String> overallEvaluation = new Multiset<String>();
 		for(Map.Entry<Integer,Integer> e :  scoreForIssue.entrySet()) {
 			int value = e.getValue();
-			int num = reviewsForIssue.getCount(e.getKey());
+			Integer issue = e.getKey();
+			int num = reviewsForIssue.getCount(issue);
 			if (num == 0)
 				continue;
-			int score = (int) Math.round(value / (double) num);
+			double average = value / (double) num;
+			int score = (int) Math.round(average);
+			double square = squareScoreForIssue.getCount(issue) / (double) num;
+			double variance = square - average*average;
+			
+			
+			String pattern = bugPattern.get(issue);
+			patternCount.add(pattern);
+			patternScore.add(pattern, score);
+			patternVariance.add(pattern, variance);
+			issueVariance.add(issue, variance);
+			issueScore.add(issue, score);
+			
 			// System.out.printf("%s %2d %2d\n", score, value, num);
 			overallEvaluation.add(
 					getDesignationTitle(i18n, getDesignationFromScore(score)));
+			
 		}
 
+		patternScore.turnTotalIntoAverage(patternCount);
+		patternVariance.turnTotalIntoAverage(patternCount);
 		
+		printAverageAndVariance("patternScore.csv", "average,variance,pattern", patternScore, patternVariance);
+		
+		issueScore.turnTotalIntoAverage(reviewsForIssue);
+		issueVariance.turnTotalIntoAverage(reviewsForIssue);
+		
+		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueScore);
 		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
@@ -428,6 +461,22 @@ public class DBStats {
 		DBCloud.printLeaderBoard2(out, issueReviewedBy, 10000, null, "%s,%s,%s\n", "num issues reviewed");
 		out.close();
 	
+	}
+	
+	private static <E> void printAverageAndVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance) throws FileNotFoundException {
+		PrintWriter out = new PrintWriter(filename);
+		out.println(header);
+		for(Map.Entry<E, Double> e : average.entriesInDecreasingOrder()) 
+		  out.printf("%5.1f %5.1f %s\n", e.getValue(), variance.getValue(e.getKey()), e.getKey());
+		out.close();
+	}
+	
+	private static <E> void printHighVariance(String filename, String header, FractionalMultiset<E> average, FractionalMultiset<E> variance) throws FileNotFoundException {
+		PrintWriter out = new PrintWriter(filename);
+		out.println(header);
+		for(Map.Entry<E, Double> e : variance.entriesInDecreasingOrder()) 
+		  out.printf("%5.1f %5.1f %s\n",  e.getValue(), average.getValue(e.getKey()), e.getKey());
+		out.close();
 	}
 
 	/**
