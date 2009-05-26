@@ -346,6 +346,9 @@ public class ViewFilter {
 		if (!eval.show(mf, b)) {
 			return false;
 		}
+		if (!classificationFilter.show(mf, b)) {
+			return false;
+		}
 		return true;
 	}
 	
