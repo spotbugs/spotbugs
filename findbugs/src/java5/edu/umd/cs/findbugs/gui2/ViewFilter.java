@@ -26,6 +26,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.DBCloud;
+import edu.umd.cs.findbugs.cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
@@ -66,17 +67,79 @@ public class ViewFilter {
 
 	}
 
-	enum EvaluationFilter implements ViewFilterEnum {
+	enum OverallClassificationFilter implements ViewFilterEnum {
+		SHOULD_FIX("Overall classification is should fix") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				double score = cloud.getClassificationScore(b);
+				return score >= UserDesignation.SHOULD_FIX.score();
+			}
+		},
+		DONT_FIX("Overall classification is don't fix") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				double score = cloud.getClassificationScore(b);
+				return score <= UserDesignation.MOSTLY_HARMLESS.score();
+			}
+		},
+		UNCERTAIN("Overall classification is uncertain") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b))
+					return false;
+				if (cloud.getNumberReviewers(b) >= 2)
+					return true;
+				return false;
+			}
+		},
+		HIGH_VARIANCE("Controversial (high variance)") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				double variance = cloud.getClassificationVariance(b);
+				return variance >= 0.5;
+			}
+
+		},
+		ALL("All issues") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return true;
+			}
+
+		};
+		OverallClassificationFilter(String displayName) {
+			this.displayName = displayName;
+		}
+
+		final String displayName;
+
+		abstract boolean show(DBCloud cloud, BugInstance b);
+
+		public boolean supported(Cloud cloud) {
+			return true;
+		}
+
+		public boolean show(MainFrame mf, BugInstance b) {
+			Cloud c = mf.bugCollection.getCloud();
+			if (c instanceof DBCloud)
+				return show((DBCloud) c, b);
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return displayName;
+		}
+	}
+
+	
+	enum CloudFilter implements ViewFilterEnum {
 		MY_REVIEWS("Classified by me") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
 				return cloud.getReviewers(b).contains(cloud.getUser());
 			}
 
-			@Override
-            public boolean supported(Cloud cloud) {
-	            return true;
-            }
 		},
 		NOT_REVIEWED_BY_ME("Not classified by me") {
 			@Override
@@ -84,10 +147,6 @@ public class ViewFilter {
 				return !cloud.getReviewers(b).contains(cloud.getUser());
 			}
 
-			@Override
-           public boolean supported(Cloud cloud) {
-	            return true;
-            }
 		},
 		NO_REVIEWS("No one has classified") {
 			@Override
@@ -128,10 +187,7 @@ public class ViewFilter {
 				return cloud.getIWillFix(b);
 
 			}
-			@Override
-			public boolean supported(Cloud cloud) {
-	            return true;
-            }
+			
 		},
 		HAS_FILED_BUGS("Has entry in bug database") {
 			@Override
@@ -159,19 +215,17 @@ public class ViewFilter {
 			boolean show(DBCloud cloud, BugInstance b) {
 				return true;
 			}
-			@Override
-			public boolean supported(Cloud cloud) {
-	           return true;
-            }
         }; 
         
-        EvaluationFilter(String displayName) {
+        CloudFilter(String displayName) {
         	this.displayName = displayName;
         }
 		final String displayName;
 
 		abstract boolean show(DBCloud cloud, BugInstance b);
-		public abstract boolean supported(Cloud cloud);
+		public boolean supported(Cloud cloud) {
+			return true;
+		}
 	       
         public boolean show(MainFrame mf, BugInstance b) {
 	        Cloud c = mf.bugCollection.getCloud();
@@ -215,7 +269,8 @@ public class ViewFilter {
 	final MainFrame mf;
 
 	RankFilter rank = RankFilter.ALL;
-	EvaluationFilter eval = EvaluationFilter.ALL;
+	CloudFilter eval = CloudFilter.ALL;
+	OverallClassificationFilter classificationFilter = OverallClassificationFilter.ALL;
 
 	FirstSeenFilter firstSeen = FirstSeenFilter.ALL;
 
@@ -248,14 +303,24 @@ public class ViewFilter {
 
 	}
 	
-	public EvaluationFilter getEvaluation() {
+	public CloudFilter getEvaluation() {
 		return eval;
 	}
-	public void setEvaluation(EvaluationFilter eval) {
+	public void setEvaluation(CloudFilter eval) {
+		if (this.eval == eval)
+			return;
 		this.eval = eval;
 		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 
 	}
+	public void setClassification(OverallClassificationFilter classificationFilter) {
+		if (this.classificationFilter == classificationFilter)
+			return;
+		this.classificationFilter = classificationFilter;
+		FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+
+	}
+
 	public FirstSeenFilter getFirstSeen() {
 		return firstSeen;
 	}

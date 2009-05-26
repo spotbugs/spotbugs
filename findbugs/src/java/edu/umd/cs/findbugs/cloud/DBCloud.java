@@ -92,7 +92,7 @@ import edu.umd.cs.findbugs.util.Util;
 public  class DBCloud extends AbstractCloud {
 
 	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 2008");
-	Mode mode = Mode.VOTING;
+	Mode mode = Mode.COMMUNAL;
 	
 	public Mode getMode() {
 		return mode;
@@ -136,7 +136,7 @@ public  class DBCloud extends AbstractCloud {
 			return null;
 		}
 		
-		Iterable<BugDesignation> getUniqueDesignations() {
+		Collection<BugDesignation> getUniqueDesignations() {
 			if (designations.isEmpty())
 				return Collections.emptyList();
 			HashSet<String> reviewers = new HashSet<String>();
@@ -583,7 +583,10 @@ public  class DBCloud extends AbstractCloud {
 			return result;
 
 		} catch (Exception e) {
-			displayMessage("Unable to connect to database", e);
+			while (e != null) {
+				displayMessage("Unable to connect to " + dbName + " via " + dbUser, e);
+				e = (Exception) e.getCause();
+			}
 			return false;
 		}
 	}
@@ -1327,7 +1330,44 @@ public  class DBCloud extends AbstractCloud {
         }
     }
     
+    @Override
+    public int getNumberReviewers(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return 0;
+    	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
+    	return uniqueDesignations.size();
+	  }
     
+    @Override
+    public double getClassificationScore(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return 0;
+    	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
+    	double total = 0;
+    	for(BugDesignation d : uniqueDesignations) {
+    		total += UserDesignation.valueOf(d.getDesignationKey()).score();
+    	}
+    	return total /  uniqueDesignations.size();
+    }
+    @Override
+    public double getClassificationVariance(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return 0;
+    	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
+    	double total = 0;
+    	double totalSquares = 0;
+    	for(BugDesignation d : uniqueDesignations) {
+    		int score = UserDesignation.valueOf(d.getDesignationKey()).score();
+			total += score;
+			totalSquares += score*score;
+    	}
+    	int num = uniqueDesignations.size();
+    	double average = total/num;
+    	return totalSquares / num - average*average;
+    }
     public Set<String> getReviewers(BugInstance b) {
     	BugData bd = getBugData(b);
     	if (bd == null)

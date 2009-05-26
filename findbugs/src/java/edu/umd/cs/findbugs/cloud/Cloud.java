@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.cloud;
 
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
 import java.util.SortedSet;
 
@@ -30,6 +31,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.cloud.DBCloud.BugData;
 
 /**
  * An interface for describing how a bug collection
@@ -126,7 +128,10 @@ public interface Cloud {
 	
 	UserDesignation getUserDesignation(BugInstance b);
 	void setUserDesignation(BugInstance b, UserDesignation u, long timestamp);
-	
+	  double getClassificationScore(BugInstance b);
+	  double getClassificationVariance(BugInstance b);
+	  int getNumberReviewers(BugInstance b);
+	   
 	String getUserEvaluation(BugInstance b);
 	void setUserEvaluation(BugInstance b, String e, long timestamp);
 	

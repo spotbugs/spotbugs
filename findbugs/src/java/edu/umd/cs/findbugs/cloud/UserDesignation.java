@@ -31,6 +31,26 @@ public enum UserDesignation {
 	SHOULD_FIX,
 	MUST_FIX,
 	I_WILL_FIX,
-	OBSOLETE_CODE,
+	OBSOLETE_CODE;
 
+	
+	public int score() {
+		switch (this) {
+
+		case BAD_ANALYSIS:
+			return -3;
+		case NOT_A_BUG:
+		case OBSOLETE_CODE:
+			return  -2;
+		case MOSTLY_HARMLESS:
+			return -1;
+		case SHOULD_FIX:
+			return  1;
+		case MUST_FIX:
+		case I_WILL_FIX:
+			return 2;	
+		default:
+			return 0;
+		}
+	}
 }

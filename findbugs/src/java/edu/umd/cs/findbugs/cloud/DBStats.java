@@ -251,30 +251,8 @@ public class DBStats {
 			String designation = rs.getString(col++);
 			UserDesignation d = UserDesignation.valueOf(designation);
 			designation = getDesignationTitle(i18n, d);
-			int score;
-			switch (d) {
-
-			case BAD_ANALYSIS:
-				score = -3;
-				break;
-			case NOT_A_BUG:
-			case OBSOLETE_CODE:
-				score = -2;
-				break;
-			case MOSTLY_HARMLESS:
-				score = -1;
-				break;
-			case SHOULD_FIX:
-				score = 1;
-				break;
-			case MUST_FIX:
-			case I_WILL_FIX:
-				score = 2;
-				break;
-			default:
-				score = 0;
-				break;
-			}
+			int score = d.score();
+			
 			scoreForIssue.add(issueId, score);
 			squareScoreForIssue.add(issueId, score*score);
 			

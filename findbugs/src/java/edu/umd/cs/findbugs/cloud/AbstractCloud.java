@@ -131,6 +131,17 @@ public abstract class AbstractCloud implements Cloud {
 		return false;
 	}
     
+	public  double getClassificationScore(BugInstance b) {
+		return getUserDesignation(b).score();
+	}
+	public  double getClassificationVariance(BugInstance b) {
+		return 0;
+	}
+	public int getNumberReviewers(BugInstance b) {
+		if (getUserDesignation(b) == UserDesignation.UNCLASSIFIED)
+			return 0;
+		return 1;
+	  }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#printCloudSummary(java.lang.Iterable, java.io.PrintWriter)
      */

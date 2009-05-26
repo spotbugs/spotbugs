@@ -1021,15 +1021,37 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				}});   
 			viewMenu.add(rbMenuItem);
 		}
+		
 		viewMenu.addSeparator();
 
+		if (cloud.getMode() == Cloud.Mode.COMMUNAL) {
+			ButtonGroup overallClassificationButtonGroup = new ButtonGroup();
+			for (final ViewFilter.OverallClassificationFilter r : ViewFilter.OverallClassificationFilter.values()) {
+				if (cloud != null && !r.supported(cloud))
+					continue;
+				JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+				overallClassificationButtonGroup.add(rbMenuItem);
+				if (r == ViewFilter.OverallClassificationFilter.ALL)
+					rbMenuItem.setSelected(true);
+				rbMenuItem.addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						viewFilter.setClassification(r);
+						resetViewCache();
+					}
+				});
+				viewMenu.add(rbMenuItem);
+			}
+			viewMenu.addSeparator();
+		}
+		
 		ButtonGroup evalButtonGroup = new ButtonGroup();
-		for(final ViewFilter.EvaluationFilter r : ViewFilter.EvaluationFilter.values()) {
+		for(final ViewFilter.CloudFilter r : ViewFilter.CloudFilter.values()) {
 			if (cloud != null && !r.supported(cloud)) 
 				continue;
 			JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
 			evalButtonGroup.add(rbMenuItem);
-			if (r == ViewFilter.EvaluationFilter.ALL) 
+			if (r == ViewFilter.CloudFilter.ALL) 
 				rbMenuItem.setSelected(true);
 			rbMenuItem.addActionListener(new ActionListener(){
 
