@@ -424,20 +424,13 @@ public class DBStats {
 		
 		out = new PrintWriter("bugs_filed.csv");
 		out.println("rank,bugs filed,who");
-		DBCloud.printLeaderBoard2(out, bugsFiled, 100, null, "%s,%s,%s\n", "participants per office");
+		DBCloud.printLeaderBoard2(out, bugsFiled, 200, null, "%s,%s,%s\n", "participants per office");
 		out.close();
 	
 		out = new PrintWriter("bug_score.csv");
 		out.println("rank,bug score,who");
-		DBCloud.printLeaderBoard2(out, bugScore, 100, null, "%s,%s,%s\n", "participants per office");
+		DBCloud.printLeaderBoard2(out, bugScore, 200, null, "%s,%s,%s\n", "participants per office");
 		out.close();
-
-		
-		out = new PrintWriter("most_participants_by_office.csv");
-		out.println("rank,participants,office");
-		DBCloud.printLeaderBoard2(out, participantsPerOffice, 100, null, "%s,%s,%s\n", "participants per office");
-		out.close();
-	
 
 		out = new PrintWriter("most_participants_by_office.csv");
 		out.println("rank,participants,office");
