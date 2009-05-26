@@ -397,7 +397,7 @@ public class DBStats {
 		issueScore.turnTotalIntoAverage(reviewsForIssue);
 		issueVariance.turnTotalIntoAverage(reviewsForIssue);
 		
-		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueVariance);
+		printHighVariance("issueVariance.csv", "variance,average,pattern", issueScore, issueVariance, reviewsForIssue);
 		
 		System.out.printf("%6d invocations\n", invocationCount);
 		System.out.printf("%6d invocations time (secs)\n", invocationTotal/invocationCount/1000);
