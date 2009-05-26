@@ -466,8 +466,8 @@ public class Naming extends PreorderVisitor implements Detector {
 						instanceMembers = true;
 				if (!instanceMembers && getSuperclassName().equals("java/lang/Object"))
 					priority+=2;
-				if (realVoidConstructor == null)
-					priority++;
+				if (realVoidConstructor != null)
+					priority = LOW_PRIORITY;
 
 				bugReporter.reportBug(new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this)
 				        .lowerPriorityIfDeprecated());
