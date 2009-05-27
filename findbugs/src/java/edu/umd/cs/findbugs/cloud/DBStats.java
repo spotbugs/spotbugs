@@ -60,7 +60,14 @@ public class DBStats {
 				return 0;
 			}
 		}
-
+		public static int stage(String name) {
+			try {
+				BUG_STATUS value = valueOf(name);
+				return value.stage();
+			} catch (RuntimeException e) {
+				return 0;
+			}
+		}
 		public int score() {
 			switch (this) {
 			case NEW:
@@ -77,6 +84,31 @@ public class DBStats {
 			case VERIFIED:
 			case VERIFIER_ASSIGNED:
 				return 2;
+
+			default:
+				throw new IllegalStateException();
+			}
+		}
+		public int stage() {
+			switch (this) {
+			case NEW:
+			case DUPLICATE:
+				return 0;
+
+			case ASSIGNED:
+				return 1;
+
+			case WILL_NOT_FIX:
+			case ACCEPTED:
+				return 2;
+				
+			case FIX_LATER:
+				return 3;
+			case FIXED:
+				return 4;
+			case VERIFIED:
+			case VERIFIER_ASSIGNED:
+				return 5;
 
 			default:
 				throw new IllegalStateException();
@@ -239,6 +271,7 @@ public class DBStats {
 		Multiset<Integer> scoreForIssue = new Multiset<Integer>();
 		Multiset<Integer> squareScoreForIssue = new Multiset<Integer>();
 		Multiset<Integer> reviewsForIssue = new Multiset<Integer>();
+		Multiset<Integer> scoredReviews = new Multiset<Integer>();
 		
 		HashSet<String> issueReviews = new HashSet<String>();
 		HashSet<Integer> missingRank = new HashSet<Integer>();
@@ -253,8 +286,11 @@ public class DBStats {
 			designation = getDesignationTitle(i18n, d);
 			int score = d.score();
 			
-			scoreForIssue.add(issueId, score);
-			squareScoreForIssue.add(issueId, score*score);
+			if (d != UserDesignation.OBSOLETE_CODE) {
+				scoreForIssue.add(issueId, score);
+				squareScoreForIssue.add(issueId, score*score);
+				scoredReviews.add(issueId);
+			}
 			
 			reviewsForIssue.add(issueId);
 			Timestamp when = rs.getTimestamp(col++);
@@ -345,7 +381,7 @@ public class DBStats {
 		for(Map.Entry<Integer,Integer> e :  scoreForIssue.entrySet()) {
 			int value = e.getValue();
 			Integer issue = e.getKey();
-			int num = reviewsForIssue.getCount(issue);
+			int num = scoredReviews.getCount(issue);
 			if (num == 0)
 				continue;
 			double average = value / (double) num;
