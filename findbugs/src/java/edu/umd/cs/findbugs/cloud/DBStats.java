@@ -392,10 +392,11 @@ public class DBStats {
 			
 			String pattern = bugPattern.get(issue);
 			patternCount.add(pattern);
-			patternScore.add(pattern, score);
+			patternScore.add(pattern, average);
 			patternVariance.add(pattern, variance);
 			issueVariance.add(issue, variance);
-			issueScore.add(issue, score);
+			issueScore.add(issue, average);
+
 			
 			// System.out.printf("%s %2d %2d\n", score, value, num);
 			overallEvaluation.add(
@@ -418,7 +419,7 @@ public class DBStats {
             int elementCount = reviewsForIssue.getCount(key);
             Double v = e1.getValue();
             if (elementCount >= 3 && v >= 0.5) 
-                out1.printf("%5.1f %5.1f %5d %7d %s\n",  v, issueScore.getValue(key), elementCount, key, bugPattern.get(key));
+                out1.printf("%3.1f,%3.1f,%d,%d,%s\n",  v, issueScore.getValue(key), elementCount, key, bugPattern.get(key));
             
         }
         out1.close();
