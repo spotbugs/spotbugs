@@ -817,10 +817,10 @@ public class ConvertToARFF {
 
 	public static void main(String[] argv) throws Exception {
 		// Expand any option files
-		argv = CommandLine.expandOptionFiles(argv, true, true);
+		C2ACommandLine commandLine = new C2ACommandLine();
+		argv = commandLine.expandOptionFiles(argv, true, true);
 
 		// Parse command line arguments
-		C2ACommandLine commandLine = new C2ACommandLine();
 		int argCount = commandLine.parse(argv);
 		if (argCount > argv.length - 3) {
 			commandLine.printUsage(System.err);

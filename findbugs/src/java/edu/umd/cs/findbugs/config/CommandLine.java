@@ -148,27 +148,38 @@ public abstract class CommandLine {
 	 */
 	
 	
-	public static String[] expandOptionFiles(
+	public String[] expandOptionFiles(
 				String[] argv, boolean ignoreComments, boolean ignoreBlankLines)
-				throws IOException {
-		ArrayList<String> resultList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
-		for (String arg : argv) {
-			if (!arg.startsWith("@")) {
-				resultList.add(arg);
-				continue;
-			}
+            throws IOException, HelpRequestedException {
+          // Add all expanded options at the end of the options list, before the list of
+          // jar/zip/class files and directories.
+          // At the end of the options to preserve the order of the options (e.g. -adjustPriority
+          // must always come after -pluginList).
+          int lastOptionIndex = parse(argv, true);
+          ArrayList<String> resultList = new ArrayList<String>();
+          ArrayList<String> expandedOptionsList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
+          for (int i = 0; i < lastOptionIndex; i++) {
+            String arg = argv[i];
+            if (!arg.startsWith("@")) {
+              resultList.add(arg);
+              continue;
+            }
 
-			BufferedReader reader = null;
-			try {
-				reader = new BufferedReader(new InputStreamReader(
-						new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
-				addCommandLineOptions(resultList, reader, ignoreComments, ignoreBlankLines);
-			} finally {
-				Util.closeSilently(reader);
-			}
-		}
+            BufferedReader reader = null;
+            try {
+              reader = new BufferedReader(new InputStreamReader(
+                                              new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
+              addCommandLineOptions(expandedOptionsList, reader, ignoreComments, ignoreBlankLines);
+            } finally {
+              Util.closeSilently(reader);
+            }
+          }
+          resultList.addAll(expandedOptionsList);
+          for (int i = lastOptionIndex; i < argv.length; i++) {
+            resultList.add(argv[i]);
+          }
 
-		return resultList.toArray(new String[resultList.size()]);
+          return resultList.toArray(new String[resultList.size()]);
 	}
 
 	public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
@@ -262,6 +273,10 @@ public abstract class CommandLine {
 	 * @throws HelpRequestedException 
 	 */
 	public int parse(String argv[]) throws IOException, HelpRequestedException {
+		return parse(argv, false);
+        }
+
+	private int parse(String argv[], boolean dryRun) throws IOException, HelpRequestedException {
 		int arg = 0;
 
 		while (arg < argv.length) {
@@ -286,10 +301,10 @@ public abstract class CommandLine {
 				if (arg >= argv.length)
 					throw new IllegalArgumentException("Option " + option + " requires an argument");
 				String argument = argv[arg];
-				handleOptionWithArgument(option, argument);
+				if (!dryRun) handleOptionWithArgument(option, argument);
 				++arg;
 			} else {
-				handleOption(option, optionExtraPart);
+				if (!dryRun) handleOption(option, optionExtraPart);
 				++arg;
 			}
 		}

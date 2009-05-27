@@ -263,14 +263,18 @@ public abstract class FindBugs  {
 	 * @throws IOException
 	 * @throws FilterException
 	 */
-	public static void processCommandLine(TextUICommandLine commandLine, String[] argv, IFindBugsEngine findBugs) throws IOException, FilterException {
+  public static void processCommandLine(TextUICommandLine commandLine, String[] argv, IFindBugsEngine findBugs) throws IOException, FilterException {
 		// Expand option files in command line.
 		// An argument beginning with "@" is treated as specifying
 		// the name of an option file.
 		// Each line of option files are treated as a single argument.
 		// Blank lines and comment lines (beginning with "#")
 		// are ignored.
-		argv = CommandLine.expandOptionFiles(argv, true, true);
+                try {
+                  argv = commandLine.expandOptionFiles(argv, true, true);
+                } catch (HelpRequestedException e) {
+                  showHelp(commandLine);
+                }
 
 		int argCount = 0;
 		try {
