@@ -46,7 +46,7 @@ public class TestingGround extends OpcodeStackDetector {
 
 	@Override
 	public void visit(Code code) {
-		boolean interesting = true;
+		boolean interesting = !getMethod().isSynchronized() && getMethod().isStatic() && !getMethodName().equals("<clinit>");
 		if (interesting) {
 			resetStateMachine();
 			// System.out.println();
