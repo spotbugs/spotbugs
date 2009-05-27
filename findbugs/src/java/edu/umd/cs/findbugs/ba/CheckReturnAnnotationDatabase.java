@@ -82,6 +82,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.lang.String", "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.lang.String", "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.lang.String", "matches", "(Ljava/lang/String;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.lang.String", "intern", "()Ljava/lang/String;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.lang.String", "<init>", "([BLjava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.lang.String", "<init>", "(Ljava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
@@ -93,6 +94,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.math.BigDecimal", "intValueExact", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigDecimal", "shortValueExact", "()S", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigDecimal", "byteValueExact", "()B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.math.BigDecimal", "<init>", "(Ljava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.math.BigDecimal", "intValue", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
