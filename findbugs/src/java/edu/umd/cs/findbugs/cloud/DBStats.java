@@ -413,7 +413,7 @@ public class DBStats {
 		issueVariance.turnTotalIntoAverage(reviewsForIssue);
 		
 		PrintWriter out1 = new PrintWriter("issueVariance.csv");
-        out1.println("variance,average,pattern");
+        out1.println("variance,average,count,key,pattern");
         for(Map.Entry<Integer, Double> e1 : issueVariance.entriesInDecreasingOrder()) {
             Integer key = e1.getKey();
             int elementCount = reviewsForIssue.getCount(key);
@@ -489,7 +489,7 @@ public class DBStats {
 	        String key = e.getKey();
 	        BugPattern pattern = i18n.lookupBugPattern(key);
 			if (pattern != null) 
-	        out.printf("%5.1f %5.1f %5d %5d %s\n", e.getValue(), variance.getValue(key),  BugRanker.findRank(pattern, 1), count.getCount(key), key);
+	          out.printf("%1.1f,%1.1f,%d,%d,%s\n", e.getValue(), variance.getValue(key),  BugRanker.findRank(pattern, 1), count.getCount(key), key);
         }
 		out.close();
 	}
