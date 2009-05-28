@@ -55,6 +55,7 @@ public class SetBugDatabaseInfo {
 
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
+		String projectName;
 
 		String exclusionFilterFile;
 
@@ -74,6 +75,7 @@ public class SetBugDatabaseInfo {
 
 		SetInfoCommandLine() {
 			addOption("-name", "name", "set name for (last) revision");
+			addOption("-projectName", "name", "set name for project");
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
 			addSwitch("-resetSource", "remove all source search paths");
 			addSwitch("-resetProject", "remove all source search paths, analysis and auxilary classpath entries");
@@ -109,6 +111,8 @@ public class SetBugDatabaseInfo {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
+			if (option.equals("-projectName"))
+				projectName = argument;
 			else if (option.equals("-suppress"))
 				exclusionFilterFile = argument;
 			else if (option.equals("-timestamp"))
@@ -143,6 +147,8 @@ public class SetBugDatabaseInfo {
 
 		if (commandLine.revisionName != null)
 			origCollection.setReleaseName(commandLine.revisionName);
+		if (commandLine.projectName != null)
+			origCollection.getProject().setProjectName(commandLine.projectName);
 		if (commandLine.revisionTimestamp != 0)
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
 		origCollection.setWithMessages(commandLine.withMessages);
