@@ -149,9 +149,12 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 				int priority = unreadFields.getReadFields().contains(xField)  ? NORMAL_PRIORITY : LOW_PRIORITY;
 				if (possibleTarget != null) 
 					priority--;
-				FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-				if (fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor()))
-					priority++;
+				else {
+					FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+					if (nextOpcode == IFNONNULL || fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor()))
+						priority++;
+					}
+			
 				pendingBugs.add(new BugInstance(this, "UR_UNINIT_READ", priority)
 				.addClassAndMethod(this)
 				.addField(f)
