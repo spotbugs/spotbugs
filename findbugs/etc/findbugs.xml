@@ -129,6 +129,10 @@
 	</WithinPass>
 	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindUninitializedGet"/>
+	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
 		<Later class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"/>
 	</WithinPass>
 	<SplitPass>
