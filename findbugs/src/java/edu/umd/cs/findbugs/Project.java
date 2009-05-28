@@ -151,7 +151,8 @@ public class Project implements XMLWriteable {
 	public Project duplicate() {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
-                dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
+        dup.currentWorkingDirectoryList.addAll(this.currentWorkingDirectoryList);
+        dup.projectName = this.projectName;
 		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
 		dup.analysisTargets.addAll(this.analysisTargets);
