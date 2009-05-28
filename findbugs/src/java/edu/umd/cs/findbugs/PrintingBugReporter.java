@@ -19,11 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -66,6 +70,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 			"Generate HTML output (default stylesheet is default.xsl)");
+			addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
+				  "specify list of plugin Jar files to load");
 		}
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
@@ -98,10 +104,19 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		 */
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
-			// TODO Auto-generated method stub
+			if (option.equals("-pluginList")) {
+				String pluginListStr = argument;
+				ArrayList<URL> pluginList = new ArrayList<URL>();
+				StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
+				while (tok.hasMoreTokens()) {
+					pluginList.add(new File(tok.nextToken()).toURL());
+				}
 
+				DetectorFactoryCollection.rawInstance().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+			} else {
+				throw new IllegalStateException();
+			}
 		}
-
 	}
 	public static void main(String[] args) throws Exception {
 
