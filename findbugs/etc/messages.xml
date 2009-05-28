@@ -6199,7 +6199,9 @@ contents of the arrays, use java.util.Arrays.equals(Object[], Object[]).
 <p>
 This method invokes the .equals(Object o) method on an array. Since arrays do not override the equals
 method of Object, calling equals on an array is the same as comparing their addresses. To compare the
-contents of the arrays, use java.util.Arrays.equals(Object[], Object[]).
+contents of the arrays, use <code>java.util.Arrays.equals(Object[], Object[])</code>.
+To compare the addresses of the arrays, it would be
+less confusing to explicitly pointer equality using <code>==</code>.
 </p>
 ]]>
     </Details>
@@ -6822,7 +6824,7 @@ and the format string will be returned exactly as provided without any formattin
  	</Details>
   </BugPattern>
   <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
-    <ShortDescription>More arguments are passed that are actually used in the format string</ShortDescription>
+    <ShortDescription>More arguments are passed than are actually used in the format string</ShortDescription>
     <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
     <Details>
 <![CDATA[
