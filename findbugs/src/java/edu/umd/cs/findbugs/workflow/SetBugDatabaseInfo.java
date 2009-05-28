@@ -111,7 +111,7 @@ public class SetBugDatabaseInfo {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-name"))
 				revisionName = argument;
-			if (option.equals("-projectName"))
+			else if (option.equals("-projectName"))
 				projectName = argument;
 			else if (option.equals("-suppress"))
 				exclusionFilterFile = argument;
