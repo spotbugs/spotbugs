@@ -135,13 +135,13 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 			UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
 			XField xField = XFactory.createReferencedXField(this);
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-			int nextOpcode = codeBytes[getPC() + 3];
-			// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
+			int nextOpcode = 0xff & codeBytes[getPC() + 3];
 			if (nextOpcode != POP
 					&& !initializedFields.contains(f) 
 					&& declaredFields.contains(f)
 					&& !containerFields.contains(f)
 					&& !unreadFields.isContainerField(xField)) {
+				// System.out.println("Next opcode: " + OPCODE_NAMES[nextOpcode]);
 				LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), getNameConstantOperand(), xField.getSignature());
 				if (possibleTarget == null)
 					possibleTarget = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(), 
