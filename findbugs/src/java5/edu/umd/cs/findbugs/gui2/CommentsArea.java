@@ -127,7 +127,7 @@ public class CommentsArea {
 		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
 		
 		reportText.setLineWrap(true);
-		userCommentsText
+		reportText
 				.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.report", "Information about the bug here"));
 		reportText.setWrapStyleWord(true);
 		reportText.setEditable(false);
