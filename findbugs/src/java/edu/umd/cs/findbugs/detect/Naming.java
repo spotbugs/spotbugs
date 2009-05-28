@@ -464,8 +464,12 @@ public class Naming extends PreorderVisitor implements Detector {
 				for(Field f : this.getThisClass().getFields())
 					if (!f.isStatic())
 						instanceMembers = true;
-				if (!instanceMembers && getSuperclassName().equals("java/lang/Object"))
+				if (!codeDoesSomething(code) && !instanceMembers && getSuperclassName().equals("java/lang/Object"))
 					priority+=2;
+				if (hasBadMethodNames)
+					priority++;
+				if (!getXClass().getAnnotations().isEmpty())
+					priority++;
 				if (realVoidConstructor != null)
 					priority = LOW_PRIORITY;
 
