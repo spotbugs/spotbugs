@@ -894,7 +894,9 @@ public class Project implements XMLWriteable {
 		writeXML(xmlOutput, null);
 	}
 		public void writeXML(XMLOutput xmlOutput, @CheckForNull Object destination) throws IOException {
-		XMLAttributeList attributeList = new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
+		XMLAttributeList attributeList = new XMLAttributeList();
+		if (!getProjectFileName().equals(UNNAMED_PROJECT))
+			attributeList.addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
 		if (getProjectName() != null) {
 	        attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
         }
