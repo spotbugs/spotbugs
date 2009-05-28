@@ -36,7 +36,9 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -65,6 +67,25 @@ public class FieldSummary {
 		return result;
 	}
 
+	public boolean  callsOverriddenMethodsFromConstructor(ClassDescriptor c) {
+		return callsOverriddenMethodsFromConstructor.contains(c);
+	}
+
+	public boolean callsOverriddenMethodsFromSuperConstructor(ClassDescriptor c) {
+		try {
+			while (true) {
+				XClass cx = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+				c = cx.getSuperclassDescriptor();
+				if (c == null)
+					return false;
+				if (callsOverriddenMethodsFromConstructor(c))
+					return true;
+			}
+		} catch (CheckedAnalysisException e) {
+			return false;
+		}
+		
+	}
 	public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
 		 Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
 		 if (set == null) {
