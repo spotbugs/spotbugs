@@ -19,112 +19,90 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
+public class FindFieldSelfAssignment extends OpcodeStackDetector implements StatelessDetector {
 	private BugReporter bugReporter;
+
 	int state;
-
-
 
 	public FindFieldSelfAssignment(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
-
-
 	@Override
-		 public void visit(Code obj) {
+	public void visit(Code obj) {
 		state = 0;
 		super.visit(obj);
 		initializedFields.clear();
 	}
 
-
 	int register;
+
 	String f;
+
 	String className;
+
 	Set<String> initializedFields = new HashSet<String>();
 
 	@Override
-		 public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 
+		if (seen == PUTFIELD) {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			OpcodeStack.Item next = stack.getStackItem(1);
+			
+			
+			XField f = top.getXField();
+			if (f != null && f.equals(getXFieldOperand()) && next.getRegisterNumber() == top.getFieldLoadedFromRegister()) {
+				int priority = NORMAL_PRIORITY;
+
+				LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
+				        getMethod(), getNameConstantOperand(), getSigConstantOperand());
+				if (possibleMatch == null)
+					possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
+					        getNameConstantOperand(), getSigConstantOperand());
+				if (possibleMatch != null)
+						priority--;
+				
+				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
+				        .addReferencedField(this).addOptionalAnnotation(possibleMatch).addSourceLine(this));
+				
+			}
+		}
 		switch (state) {
 		case 0:
-			if (seen == ALOAD_0)
-				state = 1;
-			else if (seen == DUP)
+			if (seen == DUP)
 				state = 6;
 			break;
-		case 1:
-			if (seen == ALOAD_0)
-				state = 2;
-			else
-				state = 0;
-			break;
-		case 2:
-			if (seen == GETFIELD) {
-				state = 3;
-				f = getRefConstantOperand();
-				className = getClassConstantOperand();
-			} else
-				state = 0;
-			break;
-		case 3:
-			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
-
-				int priority = NORMAL_PRIORITY;
-				
-				LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(), getMethod(), 
-						getNameConstantOperand(), getSigConstantOperand());
-				if (possibleMatch != null)
-					priority = HIGH_PRIORITY;
-				else {
-					possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(), 
-							getNameConstantOperand(), getSigConstantOperand());
-					if (possibleMatch != null)
-						priority--;
-				}
-				
-				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
-						.addClassAndMethod(this)
-						.addReferencedField(this)
-						.addOptionalAnnotation(possibleMatch)
-						.addSourceLine(this));
-			}
-			state = 0;
-			break;
-		 case 6:
+			case 6:
 			if (isRegisterStore()) {
 				state = 7;
 				register = getRegisterOperand();
-			} else state = 0;
+			} else
+				state = 0;
 			break;
 		case 7:
-			if (isRegisterStore() && register ==  getRegisterOperand()) {
+			if (isRegisterStore() && register == getRegisterOperand()) {
 				bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
-				.addSourceLine(this));
-			} 
+				        .addClassAndMethod(this).add(
+				                LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
+				        .addSourceLine(this));
+			}
 			state = 0;
 			break;
 		}
-
-		if (seen == PUTFIELD  && getClassConstantOperand().equals(className))
-			initializedFields.add(getRefConstantOperand());
 
 	}
 
