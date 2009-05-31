@@ -67,6 +67,7 @@ public class Update {
 	private Map<BugInstance,Void> matchedOldBugs = new IdentityHashMap<BugInstance,Void>();
 
 	boolean noPackageMoves = false;
+	boolean useAnalysisTimes = false;
 
 	boolean preciseMatch = false;
 	boolean precisePriorityMatch = false;
@@ -92,6 +93,8 @@ public class Update {
 			"explicit filename for merged results (standard out used if not specified)");
 			addSwitch("-quiet",
 			"don't generate any outout to standard out unless there is an error");
+			addSwitch("-useAnalysisTimes",
+			"use analysis timestamp rather than code timestamp in history");
 			addSwitch("-withMessages",
 			"Add bug description");
 			addOption("-onlyMostRecent", "number", "only use the last # input files");
@@ -121,6 +124,8 @@ public class Update {
 				precisePriorityMatch = true;
 			} else if (option.equals("-quiet"))
 				verbose = false;
+			else if (option.equals("-useAnalysisTimes"))
+				useAnalysisTimes = true;
 			else if (option.equals("-withMessages"))
 				withMessages = true;
 			else
@@ -447,6 +452,8 @@ public class Update {
 				}
 
 				origCollection.setReleaseName(firstPathParts[commonPrefix]);
+				if (useAnalysisTimes)
+					origCollection.setTimestamp(origCollection.getAnalysisTimestamp());
 			}
 
 			for (BugInstance bug : origCollection.getCollection())
@@ -476,6 +483,8 @@ public class Update {
 							|| newCollection.getReleaseName().length() == 0)
 						newCollection
 						.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
+					if (useAnalysisTimes)
+						newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
 
 					origCollection = mergeCollections(origCollection,
 							newCollection, true, false);
@@ -518,13 +527,6 @@ public class Update {
 
 	}
 
-	/**
-	 * @deprecated Use {@link #matchBugs(Comparator<BugInstance>,BugCollection,BugCollection,boolean,boolean)} instead
-	 */
-	private void matchBugs(Comparator<BugInstance> bugInstanceComparator,
-			BugCollection origCollection, BugCollection newCollection, boolean matchDeadBugsInRemovedClasses) {
-		matchBugs(bugInstanceComparator, origCollection, newCollection, matchDeadBugsInRemovedClasses, false);
-	}
 
 	private void matchBugs(Comparator<BugInstance> bugInstanceComparator,
 			BugCollection origCollection, BugCollection newCollection, boolean matchDeadBugsInRemovedClasses, boolean matchFixedBugs) {
