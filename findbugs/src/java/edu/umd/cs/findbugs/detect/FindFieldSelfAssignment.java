@@ -65,7 +65,9 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 			
 			
 			XField f = top.getXField();
-			if (f != null && f.equals(getXFieldOperand()) && next.getRegisterNumber() == top.getFieldLoadedFromRegister()) {
+			int registerNumber = next.getRegisterNumber();
+			if (f != null && f.equals(getXFieldOperand()) 
+					&& registerNumber >= 0 && registerNumber == top.getFieldLoadedFromRegister()) {
 				int priority = NORMAL_PRIORITY;
 
 				LocalVariableAnnotation possibleMatch = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
