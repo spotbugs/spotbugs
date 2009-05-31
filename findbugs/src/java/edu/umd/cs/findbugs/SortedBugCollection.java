@@ -1080,7 +1080,7 @@ public class SortedBugCollection implements BugCollection {
 		dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
 		dup.sequence = this.sequence;
 		dup.analysisVersion = this.analysisVersion;
-		dup.analysisTimestamp = dup.analysisTimestamp;
+		dup.analysisTimestamp = this.analysisTimestamp;
 		dup.timestamp = this.timestamp;
 		dup.releaseName = this.releaseName;
 		for (AppVersion appVersion : appVersionList) {

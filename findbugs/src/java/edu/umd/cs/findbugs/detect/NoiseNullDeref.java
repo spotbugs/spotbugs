@@ -326,7 +326,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 			
 			if (iins.getMethodName(cpg).equals("close") 
 					&& iins.getSignature(cpg).equals("()V")) 
-				propertySet.containsProperty(NullDerefProperty.CLOSING_NULL);
+				propertySet.addProperty(NullDerefProperty.CLOSING_NULL);
 		} else if (ins instanceof FieldInstruction) {
 			FieldInstruction fins = (FieldInstruction) ins;
 			XField referencedField = XFactory.createXField(fins, cpg);
