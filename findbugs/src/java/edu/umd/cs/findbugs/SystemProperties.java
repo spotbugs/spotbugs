@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.io.IO;
  */
 public class SystemProperties {
 
-	private static Properties properties = new Properties(System.getProperties());
+	private static Properties properties = new Properties();
 	public final static boolean ASSERTIONS_ENABLED;
 	private final static String OS_NAME;
 	static {
@@ -155,16 +155,11 @@ public class SystemProperties {
 	 * @return string value (or null if the property does not exist)
 	 */
 	public static String getOSDependentProperty(String name) {
-		try {
 		String osDependentName = name + OS_NAME;
-		String value =  properties.getProperty(osDependentName);
+		String value =  getProperty(osDependentName);
 		if (value != null)
 			return value;
-		return properties.getProperty(name);
-		} catch (Exception e) {
-			assert true;
-		}
-		return null;
+		return getProperty(name);
 	}
 
 	/**
@@ -173,11 +168,14 @@ public class SystemProperties {
 	 */
 	public static String getProperty(String name) {
 		try {
-			return properties.getProperty(name);
+			String value = properties.getProperty(name);
+			if (value != null)
+				return value;
+			return System.getProperty(name);
 		} catch (Exception e) {
-			assert true;
+			return null;
 		}
-		return null;
+		
 	}
 
 	/**
@@ -187,7 +185,10 @@ public class SystemProperties {
 	 */
 	public static String getProperty(String name, String defaultValue) {
 		try {
-		return properties.getProperty(name, defaultValue);
+		String value = properties.getProperty(name);
+		if (value != null)
+			return value;
+		return System.getProperty(name, defaultValue);
 		} catch (Exception e) {
 			return defaultValue;
 		}
