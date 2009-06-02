@@ -98,6 +98,8 @@ public class Filter {
 
 		public boolean withSource = false;
 		public boolean withSourceSpecified = false;
+		public boolean knownSource = false;
+		public boolean knownSourceSpecified = false;
 		public boolean introducedByChange = false;
 		public boolean introducedByChangeSpecified = false;
 
@@ -131,6 +133,7 @@ public class Filter {
 		FilterCommandLine() {
 
 			addSwitch("-not", "reverse (all) switches for the filter");
+			addSwitchWithOptionalExtraPart("-knownSource", "trurh", "Only issues that have known source locations");
 			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for which source is available");
 			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
 			addOption("-excludeBugs", "baseline bug collection", "exclude bugs already contained in the baseline bug collection");
@@ -312,8 +315,14 @@ public class Filter {
 			if (applySuppressionSpecified && applySuppression 
 					&& suppressionFilter.match(bug))
 				return false;
+			SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
+			
+			if (knownSourceSpecified) {
+				if (primarySourceLineAnnotation.isUnknown() == knownSource)
+					return false;
+			}
 			if (withSourceSpecified) {
-				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
+				if (sourceSearcher.findSource(primarySourceLineAnnotation) != withSource) 
 					return false;
 			}
 			return true;
