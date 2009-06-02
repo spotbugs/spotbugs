@@ -2634,11 +2634,14 @@ public void initialize() {
 		 lvValues.set(index, value);
 	 }
 
-	 private Item getLVValue(int index) {
+	 public Item getLVValue(int index) {
 		 if (index >= lvValues.size())
 			 return new Item(); 
 
 		 return lvValues.get(index);
+	 }
+	 public int getNumLocalValues() {
+		 return lvValues.size();
 	 }
 
 	/**
