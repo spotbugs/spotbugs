@@ -91,7 +91,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
-	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 2008");
+	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 1992");
 	Mode mode = Mode.COMMUNAL;
 	
 	public Mode getMode() {
@@ -584,10 +584,9 @@ public  class DBCloud extends AbstractCloud {
 			return result;
 
 		} catch (Exception e) {
-			while (e != null) {
-				displayMessage("Unable to connect to " + dbName + " via " + dbUser, e);
-				e = (Exception) e.getCause();
-			}
+			
+			displayMessage("Unable to connect to " + dbName, e);
+			
 			return false;
 		}
 	}
@@ -1617,7 +1616,7 @@ public  class DBCloud extends AbstractCloud {
 
 	@Override
     public String getCloudReport(BugInstance b) {
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd");
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd, yyyy");
 		StringBuilder builder = new StringBuilder();
 		BugData bd = getBugData(b);
 		long firstSeen = bd.firstSeen;
