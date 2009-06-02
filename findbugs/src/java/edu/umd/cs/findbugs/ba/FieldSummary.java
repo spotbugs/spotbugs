@@ -60,7 +60,7 @@ public class FieldSummary {
 		if (field == null) 
 			return new OpcodeStack.Item();
 		OpcodeStack.Item result = summary.get(field);
-		if (result == null) {
+		if (result == null || field.isVolatile()) {
 	        String signature = field.getSignature();
 	        return new OpcodeStack.Item(signature);
         }
