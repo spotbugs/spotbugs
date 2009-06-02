@@ -7922,7 +7922,7 @@ after the call to initLogging, the logger configuration is lost
  System.gc(); // logger configuration lost
  Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected
 }</pre></p>
-<p><em>Ulf Ochsenfahrt</em></p>
+<p><em>Ulf Ochsenfahrt and Eric Fellheimer</em></p>
 		  ]]>
 	  </Details>
   </BugPattern>
