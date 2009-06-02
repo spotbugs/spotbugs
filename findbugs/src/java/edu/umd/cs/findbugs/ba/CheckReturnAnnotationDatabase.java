@@ -98,8 +98,10 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.math.BigDecimal", "intValue", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+		addMethodAnnotation("java.math.BigInteger", "precision", "()I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.math.BigInteger", "<init>", "(Ljava/lang/String;)V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.net.InetAddress", "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
