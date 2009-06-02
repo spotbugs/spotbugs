@@ -76,7 +76,19 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 					possibleMatch = LocalVariableAnnotation.findUniqueBestMatchingParameter(getClassContext(), getMethod(),
 					        getNameConstantOperand(), getSigConstantOperand());
 				if (possibleMatch != null)
-						priority--;
+					priority--;
+				else {
+					String signature = stack.getLVValue(registerNumber).getSignature();
+					for(int i = 0; i < stack.getNumLocalValues(); i++) if (i != register) {
+						if (stack.getLVValue(i).getSignature().equals(signature)) {
+							priority--;
+							break;
+						}
+					}
+				}
+					
+					
+					
 				
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority).addClassAndMethod(this)
 				        .addReferencedField(this).addOptionalAnnotation(possibleMatch).addSourceLine(this));
