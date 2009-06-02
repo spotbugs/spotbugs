@@ -404,11 +404,18 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
-	private boolean isInnerClass(JavaClass obj) {
+	private static boolean isInnerClass(JavaClass obj) {
 		for (Field f : obj.getFields())
 			if (f.getName().startsWith("this$"))
 				return true;
 		return false;
+	}
+
+	private static @CheckForNull String getSignatureOfOuterClass(JavaClass obj) {
+		for (Field f : obj.getFields())
+			if (f.getName().startsWith("this$"))
+				return f.getSignature();
+		return null;
 	}
 
 	private boolean markedAsNotUsable(Method obj) {
@@ -434,7 +441,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	private static @CheckForNull
 	Method findVoidConstructor(JavaClass clazz) {
 		for (Method m : clazz.getMethods())
-			if (isVoidConstructor(m))
+			if (isVoidConstructor(clazz, m))
 				return m;
 		return null;
 
@@ -459,7 +466,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					priority--;
 				boolean instanceMembers = false;
 				for(Method m : this.getThisClass().getMethods())
-					if (!m.isStatic() && m != obj && !isVoidConstructor(m) )
+					if (!m.isStatic() && m != obj && !isVoidConstructor(getThisClass(), m) )
 						instanceMembers = true;
 				for(Field f : this.getThisClass().getFields())
 					if (!f.isStatic())
@@ -521,8 +528,12 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	}
 
-	private static boolean isVoidConstructor(Method m) {
-	    return m.getName().equals("<init>")  && m.getSignature().equals("()V");
+	private static boolean isVoidConstructor(JavaClass clazz, Method m) {
+		String outerClassSignature = getSignatureOfOuterClass(clazz);
+		if (outerClassSignature == null) 
+			outerClassSignature = "";
+	    return m.getName().equals("<init>")  
+	      && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
 	/**
