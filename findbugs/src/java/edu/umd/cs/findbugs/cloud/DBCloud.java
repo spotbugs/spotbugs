@@ -1354,12 +1354,21 @@ public  class DBCloud extends AbstractCloud {
     	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
     		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
-    		if (designation == UserDesignation.OBSOLETE_CODE) 
+    		if (nonVoting(designation)) 
     			continue;
 			total += designation.score();
 			count++;
     	}
     	return total /  count++;
+    }
+	/**
+     * @param designation
+     * @return
+     */
+    private boolean nonVoting(UserDesignation designation) {
+	    return designation == UserDesignation.OBSOLETE_CODE
+	      || designation == UserDesignation.NEEDS_STUDY
+	      || designation == UserDesignation.UNCLASSIFIED;
     }
     
 	@Override
@@ -1387,7 +1396,7 @@ public  class DBCloud extends AbstractCloud {
     	int count = 0;
     	for(BugDesignation d : uniqueDesignations) {
     		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
-    		if (designation == UserDesignation.OBSOLETE_CODE) 
+    		if (nonVoting(designation)) 
     			continue;
     		int score = designation.score();
 			total += score;
