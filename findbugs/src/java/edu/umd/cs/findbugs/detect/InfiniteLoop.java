@@ -392,7 +392,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 	private boolean constantSince(Item item1, int branchTarget) {
 		int reg = item1.getRegisterNumber();
 		if (reg >= 0)
-		return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
+		  return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
 		if (item1.getConstant() != null)
 			return true;
 		return false;
