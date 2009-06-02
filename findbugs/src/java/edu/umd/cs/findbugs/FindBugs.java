@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
-import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -141,6 +140,8 @@ public abstract class FindBugs  {
 	 * FindBugs home directory.
 	 */
 	private static String home = System.getProperty("findbugs.home");
+
+	public static boolean noAnalysis = Boolean.getBoolean("findbugs.noAnalysis");
 
 	/**
 	 * Known URL protocols.

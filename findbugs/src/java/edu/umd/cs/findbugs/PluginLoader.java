@@ -308,7 +308,7 @@ public class PluginLoader {
 		}
 
 		// Create a DetectorFactory for all Detector nodes
-		try {
+		if (!FindBugs.noAnalysis) try {
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			int detectorCount = 0;
 			for (Node detectorNode : detectorNodeList) {
