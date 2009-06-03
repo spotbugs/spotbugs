@@ -23,6 +23,7 @@ import static org.apache.bcel.Constants.LCMP;
 import static org.apache.bcel.Constants.LOR;
 import static org.apache.bcel.Constants.LSUB;
 import static org.apache.bcel.Constants.LXOR;
+import static org.apache.bcel.Constants.POP;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -102,18 +103,22 @@ public class FindSelfComparison2 implements Detector {
 				InvokeInstruction iins = (InvokeInstruction) ins;
 				String invoking = iins.getName(cpg);
 				if (invoking.equals("equals") || invoking.equals("compareTo")) {
-				if (methodGen.getName().toLowerCase().indexOf("test") >= 0) break;
-				if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0) break;
-				if (classContext.getJavaClass().getSuperclassName().toLowerCase().indexOf("test") >= 0) break;
+					if (methodGen.getName().toLowerCase().indexOf("test") >= 0)
+						break;
+					if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0)
+						break;
+					if (classContext.getJavaClass().getSuperclassName().toLowerCase().indexOf("test") >= 0)
+						break;
+					if (location.getHandle().getNext().getInstruction().getOpcode() == POP)
+						break;
+					String sig = iins.getSignature(cpg);
 
-			   String sig = iins.getSignature(cpg);
-
-			   SignatureParser parser = new SignatureParser(sig);
-			   if (parser.getNumParameters() == 1 && 
-					   (invoking.equals("equals") && sig.endsWith(";)Z")
-					   || invoking.equals("compareTo")  && sig.endsWith(";)I")))
-				   checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
-
+					SignatureParser parser = new SignatureParser(sig);
+					if (parser.getNumParameters() == 1
+					        && (invoking.equals("equals") && sig.endsWith(";)Z") || invoking.equals("compareTo")
+					                && sig.endsWith(";)I")))
+						checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen,
+						        sourceFile);
 
 				}
 				break;

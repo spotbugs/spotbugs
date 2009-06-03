@@ -87,19 +87,22 @@ public class FindSelfComparison extends OpcodeStackDetector {
 		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKEINTERFACE:
-			if (getClassName().toLowerCase().indexOf("test") >= 0) break;
-			if (getMethodName().toLowerCase().indexOf("test") >= 0) break;
-			if (getSuperclassName().toLowerCase().indexOf("test") >= 0) break;
-
+			if (getClassName().toLowerCase().indexOf("test") >= 0)
+				break;
+			if (getMethodName().toLowerCase().indexOf("test") >= 0)
+				break;
+			if (getSuperclassName().toLowerCase().indexOf("test") >= 0)
+				break;
+			if (getNextOpcode() == POP)
+				break;
 			String name = getNameConstantOperand();
-			if (name.equals("equals") || 
-					name.equals("compareTo")) {
-			String sig = getSigConstantOperand();
-			SignatureParser parser = new SignatureParser(sig);
-			if (parser.getNumParameters() == 1 && 
-					(name.equals("equals") && sig.endsWith(";)Z")
-					|| name.equals("compareTo")  && sig.endsWith(";)I")))
-				checkForSelfOperation(seen, "COMPARISON");
+			
+			if (name.equals("equals") || name.equals("compareTo")) {
+				String sig = getSigConstantOperand();
+				SignatureParser parser = new SignatureParser(sig);
+				if (parser.getNumParameters() == 1
+				        && (name.equals("equals") && sig.endsWith(";)Z") || name.equals("compareTo") && sig.endsWith(";)I")))
+					checkForSelfOperation(seen, "COMPARISON");
 			}
 			break;
 
