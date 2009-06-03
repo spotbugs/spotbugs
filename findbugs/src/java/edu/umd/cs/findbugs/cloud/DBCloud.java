@@ -548,15 +548,15 @@ public  class DBCloud extends AbstractCloud {
 			if (PROMPT_FOR_USER_NAME) {
 				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
 				findbugsUser = prefs.get("user.name",  null);
-			}
-			if (findbugsUser == null)
-				findbugsUser = System.getProperty("user.name", "");
-			if (PROMPT_FOR_USER_NAME) {
 				findbugsUser = bugCollection.getProject().getGuiCallback().showQuestionDialog(
-						 "Your username (to record your comments in database)",
-						 "Connect to database as?", 
+						 "Name/handle/email for recording your evaluations?\n"
+						 + "(sorry, no authentication or confidentiality currently provided)",
+						 "Name for recording your evaluations", 
 						 findbugsUser == null ? "" : findbugsUser);
 			}
+			else if (findbugsUser == null)
+				findbugsUser = System.getProperty("user.name", "");
+			
 			if (findbugsUser == null)
 				return false;
 		}
@@ -645,6 +645,7 @@ public  class DBCloud extends AbstractCloud {
 	@Override
     public void shutdown() {
 		
+		try {
 		startShutdown = true;
 		resyncTimer.cancel();
 		queue.add(new ShutdownTask());
@@ -675,9 +676,12 @@ public  class DBCloud extends AbstractCloud {
 				}
 			}
 		}
-		shutdown = true;
-		runnerThread.interrupt();
+		} finally {
+			shutdown = true;
+			runnerThread.interrupt(); 
+		} 
 	}
+
 
 	private RuntimeException shutdownException = new RuntimeException("DBCloud shutdown");
 	private void checkForShutdown() {
