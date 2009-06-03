@@ -5909,13 +5909,14 @@ you are setting it to is fully populated/initialized.
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>Synchronization performed on java.util.concurrent Lock</ShortDescription>
-    <LongDescription>Synchronization performed on java.util.concurrent Lock in {1}</LongDescription>
+    <ShortDescription>Synchronization performed on {2}</ShortDescription>
+    <LongDescription>Synchronization performed on {2} in {1}</LongDescription>
 <Details>
 <![CDATA[
-<p> This method performs synchronization on an implementation of
-<code>java.util.concurrent.locks.Lock</code>.  You should use
-the <code>lock()</code> and <code>unlock()</code> methods instead.
+<p> This method performs synchronization an object that is an instance of
+a class from the java.util.concurrent package (or its subclasses). Instances
+of these classes have there own concurrency control mechanisms that are distinct from
+and incompatible with the use of the keyword <code>synchronized</code>.
 </p>
 ]]>
 </Details>
@@ -8004,7 +8005,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="INT">Suspicious integer expression</BugCode>
   <BugCode abbrev="BIT">Suspicious bitwise logical expression</BugCode>
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
-  <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
+  <BugCode abbrev="JLM">Synchronization on java.util.concurrent objects</BugCode>
   <BugCode abbrev="UPM">Private method is never called</BugCode>
   <BugCode abbrev="UMAC">Uncallable method of anonymous class</BugCode>
   <BugCode abbrev="EI2">Storing reference to mutable object</BugCode>
