@@ -40,6 +40,8 @@ public class DefaultNullnessAnnotations {
 		database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
 
+		database.addMethodAnnotation("java.lang.ref.ReferenceQueue", "poll", "()Ljava/lang/ref/Reference;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.lang.ref.Reference", "get", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.lang.Class", "newInstance", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.lang.Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", true, NullnessAnnotation.NONNULL);
 		database.addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
@@ -103,6 +105,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+		//database.addMethodAnnotation("java.util.Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
