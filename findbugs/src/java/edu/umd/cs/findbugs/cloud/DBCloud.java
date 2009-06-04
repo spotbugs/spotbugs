@@ -91,6 +91,10 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
+	/**
+     * 
+     */
+    private static final String USER_NAME = "user.name";
 	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 1992");
 	Mode mode = Mode.COMMUNAL;
 	
@@ -334,8 +338,7 @@ public  class DBCloud extends AbstractCloud {
 				ps.close();
 				if (startShutdown) return;
 		    	
-				ps = c
-				        .prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
+				ps = c.prepareStatement("SELECT hash, bugReportId, whoFiled, whenFiled, status, assignedTo, componentName FROM findbugs_bugreport");
 
 				rs = ps.executeQuery();
 
@@ -520,6 +523,10 @@ public  class DBCloud extends AbstractCloud {
 
 	public boolean initialize() {
 		
+		String mode = getProperty("votingmode");
+		if (mode != null)
+			setMode(Mode.valueOf(mode.toUpperCase()));
+		
 		String sp = SystemProperties.getProperty("findbugs.sourcelink.pattern");
 		String sf = SystemProperties.getProperty("findbugs.sourcelink.format");
 		String sfwl = SystemProperties.getProperty("findbugs.sourcelink.formatWithLine");
@@ -547,15 +554,17 @@ public  class DBCloud extends AbstractCloud {
 		if (findbugsUser == null) {
 			if (PROMPT_FOR_USER_NAME) {
 				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
-				findbugsUser = prefs.get("user.name",  null);
+				findbugsUser = prefs.get(USER_NAME,  null);
 				findbugsUser = bugCollection.getProject().getGuiCallback().showQuestionDialog(
 						 "Name/handle/email for recording your evaluations?\n"
 						 + "(sorry, no authentication or confidentiality currently provided)",
 						 "Name for recording your evaluations", 
 						 findbugsUser == null ? "" : findbugsUser);
+				if (findbugsUser != null)
+					prefs.put(USER_NAME, findbugsUser);
 			}
 			else if (findbugsUser == null)
-				findbugsUser = System.getProperty("user.name", "");
+				findbugsUser = System.getProperty(USER_NAME, "");
 			
 			if (findbugsUser == null)
 				return false;
