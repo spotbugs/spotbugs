@@ -113,6 +113,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -721,12 +722,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		editMenu.setMnemonic(KeyEvent.VK_E);
 
 		//Edit fileMenu JMenu object.
-		JMenuItem newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
 		JMenuItem openMenuItem = newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
 		recentMenu = newJMenu("menu.recent", "Recent");
 		recentMenuCache=new RecentMenu(recentMenu);
 		JMenuItem saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);
-		redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
 		JMenuItem importFilter = newJMenuItem("menu.importFilter_item", "Import filter...");
 		JMenuItem exportFilter = newJMenuItem("menu.exportFilter_item", "Export filter...");
 		
@@ -741,14 +740,18 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		}
 		JMenu windowMenu = guiLayout.createWindowMenu();
 
+		JMenuItem newProjectMenuItem  = null;
+		if (!FindBugs.noAnalysis) {
+			newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
 
-		attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
+			attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
 
-		newProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				newProjectMenu();
-			}
-		});
+			newProjectMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					newProjectMenu();
+				}
+			});
+		}
 
 		reconfigMenuItem.setEnabled(false);
 		attachAcceleratorKey(reconfigMenuItem, KeyEvent.VK_F);
@@ -770,6 +773,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			}
 		});
 
+		if (!FindBugs.noAnalysis) {
+		redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
+		
 		redoAnalysis.setEnabled(false);
 		attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
 		redoAnalysis.addActionListener(new ActionListener(){
@@ -777,6 +783,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				redoAnalysis();
 			}
 		});
+		}
 
 		openMenuItem.setEnabled(true);
 		attachAcceleratorKey(openMenuItem, KeyEvent.VK_O);
@@ -809,7 +816,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			}
 		});
 
-		fileMenu.add(newProjectMenuItem);
+		if (!FindBugs.noAnalysis)
+			fileMenu.add(newProjectMenuItem);
 		fileMenu.add(reconfigMenuItem);
 		fileMenu.addSeparator();
 
@@ -822,8 +830,10 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		fileMenu.add(saveAsMenuItem);
 		fileMenu.add(saveMenuItem);
 
-		fileMenu.addSeparator();
-		fileMenu.add(redoAnalysis);
+		if (!FindBugs.noAnalysis) {	
+			fileMenu.addSeparator();
+			fileMenu.add(redoAnalysis);
+			}
 		// fileMenu.add(mergeMenuItem);
 
 		if (exitMenuItem != null) {
