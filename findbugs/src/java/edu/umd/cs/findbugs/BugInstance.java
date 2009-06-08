@@ -1041,6 +1041,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 
+	public BugInstance addType(Type type) {
+		TypeAnnotation typeAnnotation = new TypeAnnotation(type);
+		add(typeAnnotation);
+		return this;
+	}
+
 	public BugInstance addFoundAndExpectedType(Type foundType, Type expectedType) {
 		
 		add( new TypeAnnotation(foundType, TypeAnnotation.FOUND_ROLE));
@@ -1892,6 +1898,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			
 		return this;
 
+	}
+	
+	public BugInstance addSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+		BugAnnotation b =  getSourceForTopStackValue( classContext,  method,  location) ;
+		return this.addOptionalAnnotation(b);
 	}
 	public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
 		int pc = location.getHandle().getPosition();

@@ -120,15 +120,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		
-		if (seen == MONITORENTER) {
-			OpcodeStack.Item item = stack.getStackItem(0);
-			if (item.getSignature().startsWith("Ljava/util/concurrent/")) {
-				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY).addClassAndMethod(this)
-						.addType(item.getSignature())
-						.addValueSource(item, getMethod(), getPC())
-						.addSourceLine(this));
-			}
-		}
+
 		if (seen == INVOKEVIRTUAL &&   getNameConstantOperand().equals("hashCode")
 				&&   getSigConstantOperand().equals("()I")
 				&& stack.getStackDepth() > 0) {

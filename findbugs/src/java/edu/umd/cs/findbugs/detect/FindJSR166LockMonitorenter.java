@@ -136,19 +136,29 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 				return;
 			}
 
-			boolean isSubtype;
+			boolean isSubtype = false;
 			try {
 				isSubtype = Hierarchy.isSubtype((ReferenceType) type, LOCK_TYPE);
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
-				return;
 			}
-
+			String sig = type.getSignature();
+			
 			if (isSubtype) {				
 				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
 						.addClassAndMethod(classContext.getJavaClass(), method)
+						.addType(sig)
+						.addSourceForTopStackValue(classContext, method, location)
 						.addSourceLine(classContext,method, location)
 						);
+			} else if (sig.startsWith("Ljava/util/concurrent/")) { 
+					int priority = "Ljava/util/concurrent/CopyOnWriteArrayList".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
+					bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
+							.addClassAndMethod(classContext.getJavaClass(), method)
+							.addType(sig)
+							.addSourceForTopStackValue(classContext, method, location)
+							.addSourceLine(classContext,method, location));
+
 			}
 		}
 	}
