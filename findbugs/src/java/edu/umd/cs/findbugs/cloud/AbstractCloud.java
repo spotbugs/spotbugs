@@ -162,4 +162,8 @@ public abstract class AbstractCloud implements Cloud {
     public boolean canStoreUserAnnotation(BugInstance bugInstance) {
     	return true;
     }
+
+    public double getClassificationDisagreement(BugInstance b) {
+	    return 0;
+    }
 }

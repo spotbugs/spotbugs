@@ -1419,6 +1419,26 @@ public  class DBCloud extends AbstractCloud {
     	double average = total/count;
     	return totalSquares / count - average*average;
     }
+    @Override
+    public double getClassificationDisagreement(BugInstance b) {
+    	BugData bd = getBugData(b);
+    	if (bd == null)
+    		return 0;
+    	Collection<BugDesignation> uniqueDesignations = bd.getUniqueDesignations();
+    	int shouldFix = 0;
+    	int dontFix = 0;
+    	for(BugDesignation d : uniqueDesignations) {
+    		UserDesignation designation = UserDesignation.valueOf(d.getDesignationKey());
+    		if (nonVoting(designation)) 
+    			continue;
+    		int score = designation.score();
+    		if (score > 0)
+    			shouldFix++;
+    		else 
+    			dontFix++;
+    	}
+    	return Math.min(shouldFix, dontFix) / (double) (shouldFix + dontFix);
+    }
     public Set<String> getReviewers(BugInstance b) {
     	BugData bd = getBugData(b);
     	if (bd == null)

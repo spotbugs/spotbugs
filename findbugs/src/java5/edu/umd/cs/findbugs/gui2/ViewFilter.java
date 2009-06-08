@@ -92,11 +92,11 @@ public class ViewFilter {
 				return false;
 			}
 		},
-		HIGH_VARIANCE("Controversial (high variance)") {
+		HIGH_VARIANCE("Controversial") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
-				double variance = cloud.getClassificationVariance(b);
-				return variance >= 0.5;
+				double variance = cloud.getClassificationDisagreement(b);
+				return variance > 0.26;
 			}
 
 		},
