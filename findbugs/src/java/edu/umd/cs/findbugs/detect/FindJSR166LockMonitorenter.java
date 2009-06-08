@@ -152,7 +152,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 						.addSourceLine(classContext,method, location)
 						);
 			} else if (sig.startsWith("Ljava/util/concurrent/")) { 
-					int priority = "Ljava/util/concurrent/CopyOnWriteArrayList".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
+					int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
 					bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
 							.addClassAndMethod(classContext.getJavaClass(), method)
 							.addType(sig)
