@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 
 public class IncompatibleTypes {
+	private static final ObjectType GWT_JAVASCRIPTOBJECT_TYPE = ObjectTypeFactory.getInstance("com.google.gwt.core.client.JavaScriptObject");
 	private static final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
 	private static final ObjectType MAP_TYPE = ObjectTypeFactory.getInstance("java.util.Map");
 	private static final ClassDescriptor LIST_DESCRIPTOR = DescriptorFactory.createClassDescriptor(List.class);
@@ -191,6 +192,8 @@ public class IncompatibleTypes {
 		try {
 
 			if (!Hierarchy.isSubtype(expectedType, actualType) && !Hierarchy.isSubtype(actualType, expectedType)) {
+				if (Hierarchy.isSubtype(expectedType, GWT_JAVASCRIPTOBJECT_TYPE) && Hierarchy.isSubtype(actualType, GWT_JAVASCRIPTOBJECT_TYPE))
+					return SEEMS_OK;
 				// See if the types are related by inheritance.
 				ClassDescriptor lhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(expectedType.getClassName());
 				ClassDescriptor rhsDescriptor = DescriptorFactory.createClassDescriptorFromDottedClassName(actualType.getClassName());
