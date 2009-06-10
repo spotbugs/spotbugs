@@ -55,6 +55,11 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
  * @author David Hovemeyer
  */
 public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
+	/**
+     * 
+     */
+    private static final String UTIL_CONCURRRENT_SIG_PREFIX = "Ljava/util/concurrent/";
+
 	private BugReporter bugReporter;
 
 	private static final ObjectType LOCK_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Lock");
@@ -143,23 +148,26 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 				bugReporter.reportMissingClass(e);
 			}
 			String sig = type.getSignature();
-			
+			boolean isUtilConcurrentSig = sig.startsWith(UTIL_CONCURRRENT_SIG_PREFIX);
+            
 			if (isSubtype) {				
-				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", 
+							isUtilConcurrentSig ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(classContext.getJavaClass(), method)
 						.addType(sig)
 						.addSourceForTopStackValue(classContext, method, location)
 						.addSourceLine(classContext,method, location)
 						);
-			} else if (sig.startsWith("Ljava/util/concurrent/")) { 
-					int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
-					bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-							.addClassAndMethod(classContext.getJavaClass(), method)
-							.addType(sig)
-							.addSourceForTopStackValue(classContext, method, location)
-							.addSourceLine(classContext,method, location));
+			} else if (isUtilConcurrentSig) { 
+	            		int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
+	            		bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
+	            				.addClassAndMethod(classContext.getJavaClass(), method)
+	            				.addType(sig)
+	            				.addSourceForTopStackValue(classContext, method, location)
+	            				.addSourceLine(classContext,method, location));
 
-			}
+	            
+            }
 		}
 	}
 
