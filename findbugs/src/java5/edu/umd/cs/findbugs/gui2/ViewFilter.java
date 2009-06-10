@@ -82,10 +82,17 @@ public class ViewFilter {
 				return score <= UserDesignation.MOSTLY_HARMLESS.score();
 			}
 		},
+		OBSOLETE("Overall classification is obsolete code") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				double score = cloud.getPortionObsoleteClassifications(b);
+				return score >= 0.5;
+			}
+		},
 		UNCERTAIN("Overall classification is uncertain") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
-				if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b))
+				if (SHOULD_FIX.show(cloud, b) || DONT_FIX.show(cloud, b) || OBSOLETE.show(cloud, b))
 					return false;
 				if (cloud.getNumberReviewers(b) >= 2)
 					return true;
