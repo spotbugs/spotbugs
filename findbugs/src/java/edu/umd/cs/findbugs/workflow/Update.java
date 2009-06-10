@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.PackageStats;
@@ -73,6 +74,7 @@ public class Update {
 	boolean precisePriorityMatch = false;
 	int mostRecent = -1;
 
+	int maxRank = 20;
 	class UpdateCommandLine extends CommandLine {
 		boolean overrideRevisionNames = false;
 
@@ -91,6 +93,9 @@ public class Update {
 			"only consider two warnings to be the same if their priorities match exactly");
 			addOption("-output", "output file",
 			"explicit filename for merged results (standard out used if not specified)");
+			addOption("-maxRank", "max rank",
+			"maximum rank for issues to store");
+		
 			addSwitch("-quiet",
 			"don't generate any outout to standard out unless there is an error");
 			addSwitch("-useAnalysisTimes",
@@ -138,7 +143,9 @@ public class Update {
 		throws IOException {
 			if (option.equals("-output"))
 				outputFilename = argument;
-			else if (option.equals("-onlyMostRecent")) {
+			else if (option.equals("-maxRank")) {
+				maxRank = Integer.parseInt(argument);
+			}else if (option.equals("-onlyMostRecent")) {
 				mostRecent = Integer.parseInt(argument);
 			}
 			else throw new IllegalArgumentException("Can't handle option "
@@ -462,6 +469,8 @@ public class Update {
 					throw new IllegalStateException("Illegal Version range: "
 							+ bug.getFirstVersion() + ".." + bug.getLastVersion());
 
+			trimToMaxRank(origCollection);
+			
 			while (argCount <= (args.length - 1)) {
 
 				BugCollection newCollection = new SortedBugCollection();
@@ -485,7 +494,7 @@ public class Update {
 						.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 					if (useAnalysisTimes)
 						newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
-
+					trimToMaxRank(newCollection);
 					origCollection = mergeCollections(origCollection,
 							newCollection, true, false);
 				} catch (IOException e) {
@@ -510,6 +519,19 @@ public class Update {
 				origCollection.writeXML(System.out);
 
 	}
+
+	/**
+     * @param origCollection
+     */
+    private void trimToMaxRank(BugCollection origCollection) {
+	    if (maxRank < 20) 
+	    	for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
+	    		BugInstance b = i.next();
+	    		if (BugRanker.findRank(b) > maxRank)
+	    			i.remove();
+
+	    	}
+    }
 
 	private static int lengthCommonPrefix(String[] string, String[] string2) {
 		int maxLength = Math.min(string.length, string2.length);
