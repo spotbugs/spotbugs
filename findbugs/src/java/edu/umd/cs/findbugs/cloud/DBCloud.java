@@ -453,10 +453,7 @@ public  class DBCloud extends AbstractCloud {
 						} else {
 							long firstVersion = b.getFirstVersion();
 							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-							if (firstSeen < minimumTimestamp) {
-								firstSeen = System.currentTimeMillis();
-								// displayMessage("Got timestamp of " + firstSeen + " which is equal to " + new Date(firstSeen));
-							} else if (firstSeen < bd.firstSeen) {
+							if (firstSeen < minimumTimestamp && (firstSeen < bd.firstSeen || bd.firstSeen < minimumTimestamp)) {
 								bd.firstSeen = firstSeen;
 								storeFirstSeen(bd);
 							}
