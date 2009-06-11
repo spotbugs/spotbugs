@@ -53,6 +53,13 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 	XMethod potentialSuperCall;
 	@Override
 	public void visitJavaClass(JavaClass obj) {
+		try {
+	       obj.getSuperClass();
+        } catch (ClassNotFoundException e) {
+	       AnalysisContext.reportMissingClass(e);
+	       return;
+        }
+		
 		String superclassName2 = getSuperclassName();
 		boolean weird = superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0;
 		boolean hasAnonymousName = ClassName.isAnonymous(obj.getClassName());
