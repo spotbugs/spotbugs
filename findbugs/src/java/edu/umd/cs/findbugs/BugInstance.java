@@ -273,6 +273,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return priority;
 	}
 
+	
+	public int getBugRank() {
+		return BugRanker.findRank(this);
+	}
 	/**
 	 * Get a string describing the bug priority and type.
 	 * e.g. "High Priority Correctness"

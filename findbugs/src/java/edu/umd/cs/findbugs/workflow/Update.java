@@ -469,7 +469,7 @@ public class Update {
 					throw new IllegalStateException("Illegal Version range: "
 							+ bug.getFirstVersion() + ".." + bug.getLastVersion());
 
-			trimToMaxRank(origCollection);
+			BugRanker.trimToMaxRank(origCollection, maxRank);
 			
 			while (argCount <= (args.length - 1)) {
 
@@ -494,7 +494,8 @@ public class Update {
 						.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 					if (useAnalysisTimes)
 						newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
-					trimToMaxRank(newCollection);
+					BugRanker.trimToMaxRank(origCollection, maxRank);
+					
 					origCollection = mergeCollections(origCollection,
 							newCollection, true, false);
 				} catch (IOException e) {
@@ -520,18 +521,7 @@ public class Update {
 
 	}
 
-	/**
-     * @param origCollection
-     */
-    private void trimToMaxRank(BugCollection origCollection) {
-	    if (maxRank < 20) 
-	    	for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
-	    		BugInstance b = i.next();
-	    		if (BugRanker.findRank(b) > maxRank)
-	    			i.remove();
 
-	    	}
-    }
 
 	private static int lengthCommonPrefix(String[] string, String[] string2) {
 		int maxLength = Math.min(string.length, string2.length);

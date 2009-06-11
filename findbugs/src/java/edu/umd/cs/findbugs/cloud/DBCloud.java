@@ -665,7 +665,7 @@ public  class DBCloud extends AbstractCloud {
 			setEndTime.execute();
 			setEndTime.close();
 			c.close();
-		} catch (SQLException e) {
+		} catch (Throwable e) {
 			// we're in shutdown mode, not going to complain
 			assert true;
 		}

@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.util.Util;
@@ -124,5 +125,15 @@ public class BugRanker {
 		return finalRank;
 	}
 
+
+    public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
+	    if (maxRank < 20) 
+	    	for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
+	    		BugInstance b = i.next();
+	    		if (BugRanker.findRank(b) > maxRank)
+	    			i.remove();
+
+	    	}
+    }
 
 }
