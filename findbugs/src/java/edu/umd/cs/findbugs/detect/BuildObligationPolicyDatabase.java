@@ -19,32 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.annotations.CleanupObligation;
-import edu.umd.cs.findbugs.annotations.CreatesObligation;
-import edu.umd.cs.findbugs.annotations.DischargesObligation;
-import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntryType;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector2;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.XClass;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
-import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
-import edu.umd.cs.findbugs.ba.obl.Obligation;
-import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
-import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
-import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.ml.SplitCamelCaseIdentifier;
-import edu.umd.cs.findbugs.util.ExactStringMatcher;
-import edu.umd.cs.findbugs.util.RegexStringMatcher;
-import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
@@ -52,6 +30,37 @@ import javax.annotation.WillNotClose;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CleanupObligation;
+import edu.umd.cs.findbugs.annotations.CreatesObligation;
+import edu.umd.cs.findbugs.annotations.DischargesObligation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
+import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
+import edu.umd.cs.findbugs.ba.obl.MatchMethodEntry;
+import edu.umd.cs.findbugs.ba.obl.Obligation;
+import edu.umd.cs.findbugs.ba.obl.ObligationFactory;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabase;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseActionType;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntry;
+import edu.umd.cs.findbugs.ba.obl.ObligationPolicyDatabaseEntryType;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.ml.SplitCamelCaseIdentifier;
+import edu.umd.cs.findbugs.util.ExactStringMatcher;
+import edu.umd.cs.findbugs.util.RegexStringMatcher;
+import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
 
 /**
  * Build the ObligationPolicyDatabase used by ObligationAnalysis.
@@ -64,6 +73,26 @@ import org.apache.bcel.generic.Type;
  */
 public class BuildObligationPolicyDatabase implements Detector2, NonReportingDetector {
 	
+	
+	static class AuxilaryObligationPropertyDatabase extends MethodPropertyDatabase<String> {
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#decodeProperty(java.lang.String)
+         */
+        @Override
+        protected String decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+	        return propStr;
+        }
+
+		/* (non-Javadoc)
+         * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#encodeProperty(java.lang.Object)
+         */
+        @Override
+        protected String encodeProperty(String property) {
+	       return property;
+        }
+	
+	}
 	private static final boolean INFER_CLOSE_METHODS = SystemProperties.getBoolean("oa.inferclose", true);
 	private static final boolean DEBUG_ANNOTATIONS = SystemProperties.getBoolean("oa.debug.annotations");
 	private static final boolean DUMP_DB = SystemProperties.getBoolean("oa.dumpdb");
@@ -96,6 +125,27 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
 	
 		database = new ObligationPolicyDatabase();
 		addBuiltInPolicies();
+		URL u = PluginLoader.getCoreResource("obligationPolicy.db");
+		try {
+		if (u != null) {
+			AuxilaryObligationPropertyDatabase db = new AuxilaryObligationPropertyDatabase();
+			db.read(u.openStream());
+			for(Map.Entry<MethodDescriptor, String> e: db.entrySet()) {
+				String [] v = e.getValue().split(",");
+				Obligation obligation = database.getFactory().getObligationByName(v[2]);
+				if (obligation == null)
+					obligation = database.getFactory().addObligation(v[2]);
+				database.addEntry(new MatchMethodEntry(e.getKey(),
+						ObligationPolicyDatabaseActionType.valueOf(v[0]),
+						ObligationPolicyDatabaseEntryType.valueOf(v[1]),
+						obligation));
+			}
+			
+			
+		}
+		} catch (Exception e) {
+			AnalysisContext.logError("Unable to read " + u, e);
+		}
 		scanForResourceTypes();
 
 		Global.getAnalysisCache().eagerlyPutDatabase(ObligationPolicyDatabase.class, database);

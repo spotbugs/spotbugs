@@ -19,12 +19,18 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.SystemProperties;
+
+import java.net.URL;
 import java.util.LinkedList;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.generic.ReferenceType;
 
 /**
@@ -48,6 +54,9 @@ public class ObligationPolicyDatabase {
 	public ObligationPolicyDatabase() {
 		this.factory = new ObligationFactory();
 		this.entryList = new LinkedList<ObligationPolicyDatabaseEntry>();
+		
+	
+		
 	}
 
 	public ObligationFactory getFactory() {

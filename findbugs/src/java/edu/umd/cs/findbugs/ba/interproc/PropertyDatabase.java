@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,9 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 
 	public Set<KeyType> getKeys() {
 		return propertyMap.keySet();
+	}
+	public Collection<Map.Entry<KeyType, ValueType>> entrySet() {
+		return propertyMap.entrySet();
 	}
 	/**
 	 * Return whether or not the database is empty.

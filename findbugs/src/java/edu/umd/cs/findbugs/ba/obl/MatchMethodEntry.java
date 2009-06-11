@@ -24,6 +24,7 @@ import java.util.Collection;
 import org.apache.bcel.generic.ReferenceType;
 
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ExactStringMatcher;
 import edu.umd.cs.findbugs.util.StringMatcher;
 import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
@@ -67,6 +68,18 @@ public class MatchMethodEntry implements ObligationPolicyDatabaseEntry {
 			action, entryType, obligations);
 	}
 
+	public MatchMethodEntry(
+			MethodDescriptor method,
+			ObligationPolicyDatabaseActionType action,
+			ObligationPolicyDatabaseEntryType entryType,
+			Obligation... obligations) {
+		this(
+			new SubtypeTypeMatcher(method.getClassDescriptor()),
+			new ExactStringMatcher(method.getName()),
+			new ExactStringMatcher(method.getSignature()),
+			method.isStatic(),
+			action, entryType, obligations);
+	}
 	/**
 	 * Constructor.
 	 * 
