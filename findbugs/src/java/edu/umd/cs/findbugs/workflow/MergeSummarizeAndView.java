@@ -273,7 +273,7 @@ public class MergeSummarizeAndView {
 		}
 
 		results.setRequestDatabaseCloud(true);
-		results.reinitializeCloud();
+		cloud = results.reinitializeCloud();             
 		Project project = results.getProject();
 		originalMode = cloud.getMode();
 
