@@ -1155,7 +1155,7 @@ public class Project implements XMLWriteable {
 	}
 
 	public void addTimestamp(long timestamp) {
-		if (this.timestampForAnalyzedClasses < timestamp) {
+		if (this.timestampForAnalyzedClasses < timestamp && FindBugs.MINIMUM_TIMESTAMP < timestamp) {
 	        this.timestampForAnalyzedClasses = timestamp;
         }
 	}

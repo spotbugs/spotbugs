@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -447,13 +448,16 @@ public abstract class FindBugs  {
 
 			if (project.getProjectName() == null)
 				project.setProjectName(findBugs.getProjectName());
-			if (project.getTimestamp() != 0) {
-				bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
-				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
+			long timestamp = project.getTimestamp();
+			if (timestamp != 0 && timestamp > FindBugs.MINIMUM_TIMESTAMP) {
+				bugCollectionBugReporter.getBugCollection().setTimestamp(timestamp);
+				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(timestamp);
 			}
 
 		}
 	}
+
+	public final static long MINIMUM_TIMESTAMP = java.util.Date.parse("Oct 1, 1992");
 }
 
 // vim:ts=4

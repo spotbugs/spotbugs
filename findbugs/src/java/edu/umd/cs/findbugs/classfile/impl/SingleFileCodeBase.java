@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
@@ -148,7 +149,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
 	public void setLastModifiedTime(long lastModifiedTime) {
-		if (lastModifiedTime > 0) {
+		if (lastModifiedTime > 0 && lastModifiedTime > FindBugs.MINIMUM_TIMESTAMP) {
 			this.lastModifiedTime = lastModifiedTime;
 		}
 	}

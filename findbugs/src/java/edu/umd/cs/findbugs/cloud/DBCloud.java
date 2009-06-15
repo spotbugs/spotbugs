@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PluginLoader;
@@ -96,7 +97,6 @@ public  class DBCloud extends AbstractCloud {
      * 
      */
     private static final String USER_NAME = "user.name";
-	final static long minimumTimestamp = java.util.Date.parse("Oct 1, 1992");
 	Mode mode = Mode.COMMUNAL;
 	
 	public Mode getMode() {
@@ -454,7 +454,7 @@ public  class DBCloud extends AbstractCloud {
 						} else {
 							long firstVersion = b.getFirstVersion();
 							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-							if (firstSeen < minimumTimestamp && (firstSeen < bd.firstSeen || bd.firstSeen < minimumTimestamp)) {
+							if (firstSeen < FindBugs.MINIMUM_TIMESTAMP && (firstSeen < bd.firstSeen || bd.firstSeen < FindBugs.MINIMUM_TIMESTAMP)) {
 								bd.firstSeen = firstSeen;
 								storeFirstSeen(bd);
 							}

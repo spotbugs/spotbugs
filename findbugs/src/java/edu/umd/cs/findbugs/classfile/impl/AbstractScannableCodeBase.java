@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 
@@ -93,7 +94,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
 	public void setLastModifiedTime(long lastModifiedTime) {
-		if (lastModifiedTime > 0) {
+		if (lastModifiedTime > 0 && lastModifiedTime > FindBugs.MINIMUM_TIMESTAMP) {
 			this.lastModifiedTime = lastModifiedTime;
 		}
 	}
