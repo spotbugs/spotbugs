@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.Locale;
 
@@ -104,5 +105,12 @@ public class CommandLineUiCallback implements IGuiCallback {
  */
 public String showQuestionDialog(String message, String title, String defaultValue) {
 	throw new UnsupportedOperationException();
+}
+
+/* (non-Javadoc)
+ * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
+ */
+public boolean showDocument(URL u) {
+	return false;
 }
 }

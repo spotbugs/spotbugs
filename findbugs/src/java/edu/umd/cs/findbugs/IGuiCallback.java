@@ -18,10 +18,8 @@
  */
 package edu.umd.cs.findbugs;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
+import java.net.URL;
 
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
@@ -35,4 +33,5 @@ public interface IGuiCallback {
     InputStream getProgressMonitorInputStream(InputStream in, int length, String msg);
     void setErrorMessage(String errorMsg);
     void displayNonmodelMessage(String title, String message);
+    boolean showDocument(URL u);
 }

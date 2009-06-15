@@ -3190,5 +3190,11 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 public String showQuestionDialog(String message, String title, String defaultValue) {
 	return (String) JOptionPane.showInputDialog(this, message, title, JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
 }
+/* (non-Javadoc)
+ * @see edu.umd.cs.findbugs.IGuiCallback#showDocument(java.net.URL)
+ */
+public boolean showDocument(URL u) {
+	return LaunchBrowser.showDocument(u);
+}
 
 }

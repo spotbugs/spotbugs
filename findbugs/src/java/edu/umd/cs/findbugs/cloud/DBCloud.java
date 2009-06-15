@@ -83,6 +83,7 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.gui2.ViewFilter;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -848,6 +849,7 @@ public  class DBCloud extends AbstractCloud {
 				        		Statement.RETURN_GENERATED_KEYS);
 				Timestamp date = new Timestamp(timestamp);
 				int col = 1;
+				bug.firstSeen = timestamp;
 				insertBugData.setTimestamp(col++, date);
 				insertBugData.setTimestamp(col++, date);
 				insertBugData.setString(col++, bug.instanceHash);
@@ -1467,8 +1469,10 @@ public  class DBCloud extends AbstractCloud {
 	}
     private boolean firstBugRequest = true;
     static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
-	static final int POSTMORTEM_RANK = SystemProperties.getInteger("findbugs.postmortem.rank", 4);
+	static final int POSTMORTEM_RANK = SystemProperties.getInt("findbugs.postmortem.rank", 4);
 	static final String BUG_LINK_FORMAT = SystemProperties.getProperty("findbugs.filebug.link");
+	static final String BUG_LOGIN_LINK = SystemProperties.getProperty("findbugs.filebug.login");
+	static final String BUG_LOGIN_MSG = SystemProperties.getProperty("findbugs.filebug.loginMsg");
 	
     @Override
     @CheckForNull
@@ -1608,8 +1612,18 @@ public  class DBCloud extends AbstractCloud {
 	    	String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
 	    	
 	    	int maxURLLength = MAX_URL_LENGTH;
-	    	if (firstBugRequest) 
-	    		maxURLLength = maxURLLength *2/3;
+	    	if (firstBugRequest) {
+	    		if (BUG_LOGIN_LINK != null && BUG_LOGIN_MSG != null) {
+	    			URL u = new URL(String.format(BUG_LOGIN_LINK));
+	    			if (!bugCollection.getProject().getGuiCallback().showDocument(u))
+	    				return null;
+	    			int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
+	    			if (r == JOptionPane.CANCEL_OPTION)
+	    				return null;
+	    		}
+	    		else 
+	    			maxURLLength = maxURLLength *2/3;
+	    	}
 	    	firstBugRequest = false;
 	    	String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
 	    	if (u.length() > MAX_URL_LENGTH) {
