@@ -227,7 +227,7 @@
 		</xmlvalidate>
 	</target>
 
-	<target name="validatesampleoutput" depends="validatesamplexmloutput,validatesamplehtmloutput"/>
+	<target name="validatesampleoutput" depends="validatesamplexmloutput"/>
 		
 	<!-- Build jar files. -->
 	<target name="allClassFilesJar" depends="classes,validate,version">
@@ -517,6 +517,14 @@
       <class location="${classes.dir}" />
       <sourcePath path="src/java:src/java5:src/junit"/>
 	  <auxClasspath refid="tools.classpath"/>
+    </findbugs>
+    <findbugs home="."
+              output="xml"
+			  jvmargs="-ea -Xmx900m"
+			  projectName="FindBugsTestCases"
+    		  timeout="1800000"
+              outputFile="${sampleoutput.dir}/findbugsTestCases.xml" >
+      <class location="../findbugsTestCases/build/classes" />
     </findbugs>
   </target>
 
