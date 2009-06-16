@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LineNumberTable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -51,6 +52,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
 	@Override
 	public void visit(Code obj) {
+		// System.out.println(getFullyQualifiedMethodName());
 		whichRegister = -1;
 		registerLoadCount = 0;
 		state = 0;
@@ -78,13 +80,21 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		
-	    if (seen == PUTFIELD) {
+	    checkPUTFIELD: if (seen == PUTFIELD) {
 	    	OpcodeStack.Item obj = stack.getStackItem(1);
 	    	OpcodeStack.Item value = stack.getStackItem(0);
 	    	XField f = getXFieldOperand();
 	    	if (putFieldPC + 10 > getPC() 
 	    			&& f.equals(putFieldXField)
 	    			&& obj.equals(putFieldObj)) {
+	    		LineNumberTable table = getCode().getLineNumberTable();
+	    		if (table != null) {
+	    			int first = table.getSourceLine(putFieldPC);
+	    			int second = table.getSourceLine(getPC());
+	    			if (first+1 < second) 
+	    				break checkPUTFIELD;
+	    		} else if (putFieldPC + 4 < getPC()) 
+	    			break checkPUTFIELD;
 	    		int priority = value.equals(putFieldValue) ? NORMAL_PRIORITY : HIGH_PRIORITY;
 	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
