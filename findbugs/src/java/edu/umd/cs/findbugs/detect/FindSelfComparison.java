@@ -82,7 +82,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	OpcodeStack.Item obj = stack.getStackItem(1);
 	    	OpcodeStack.Item value = stack.getStackItem(0);
 	    	XField f = getXFieldOperand();
-	    	if (putFieldPC + 5 > getPC() 
+	    	if (putFieldPC + 10 > getPC() 
 	    			&& f.equals(putFieldXField)
 	    			&& obj.equals(putFieldObj)) {
 	    		int priority = value.equals(putFieldValue) ? NORMAL_PRIORITY : HIGH_PRIORITY;
