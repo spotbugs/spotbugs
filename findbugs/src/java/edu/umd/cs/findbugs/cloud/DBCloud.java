@@ -452,20 +452,20 @@ public  class DBCloud extends AbstractCloud {
 					resyncCount = updates;
 				}
 			} else {
-				long analysisTime = bugCollection.getTimestamp();
+				long stillPresentAt = bugCollection.getTimestamp();
 				for (BugInstance b : bugCollection.getCollection())
 					if (!skipBug(b)) {
 						BugData bd = getBugData(b.getInstanceHash());
 						if (!bd.inDatabase) {
-							storeNewBug(b, analysisTime);
+							storeNewBug(b, stillPresentAt);
 						} else {
 							long firstVersion = b.getFirstVersion();
 							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
-							if (firstSeen < FindBugs.MINIMUM_TIMESTAMP && (firstSeen < bd.firstSeen || bd.firstSeen < FindBugs.MINIMUM_TIMESTAMP)) {
+							if (FindBugs.validTimestamp(firstSeen) && (firstSeen < bd.firstSeen || !FindBugs.validTimestamp(bd.firstSeen))) {
 								bd.firstSeen = firstSeen;
 								storeFirstSeen(bd);
-							} else if (analysisTime > FindBugs.MINIMUM_TIMESTAMP && analysisTime > bd.lastSeen + LAST_SEEN_UPDATE_WINDOW) {
-								storeLastSeen(bd, analysisTime);
+							} else if (FindBugs.validTimestamp(stillPresentAt) && stillPresentAt > bd.lastSeen + LAST_SEEN_UPDATE_WINDOW) {
+								storeLastSeen(bd, stillPresentAt);
 							}
 
 							BugDesignation designation = bd.getPrimaryDesignation();
@@ -1046,7 +1046,7 @@ public  class DBCloud extends AbstractCloud {
 		final long analysisTime;
 		public void execute(DatabaseSyncTask t) throws SQLException {
 	        BugData data = getBugData(bug.getInstanceHash());
-	        if (data.lastSeen < analysisTime && analysisTime > FindBugs.MINIMUM_TIMESTAMP)
+	        if (data.lastSeen < analysisTime && FindBugs.validTimestamp(analysisTime))
 	        	data.lastSeen = analysisTime;
 	       
 	         long timestamp = bugCollection.getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();

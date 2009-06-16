@@ -449,7 +449,7 @@ public abstract class FindBugs  {
 			if (project.getProjectName() == null)
 				project.setProjectName(findBugs.getProjectName());
 			long timestamp = project.getTimestamp();
-			if (timestamp != 0 && timestamp > FindBugs.MINIMUM_TIMESTAMP) {
+			if (FindBugs.validTimestamp(timestamp)) {
 				bugCollectionBugReporter.getBugCollection().setTimestamp(timestamp);
 				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(timestamp);
 			}
@@ -458,6 +458,14 @@ public abstract class FindBugs  {
 	}
 
 	public final static long MINIMUM_TIMESTAMP = java.util.Date.parse("Oct 1, 1992");
+
+	/**
+     * @param timestamp
+     * @return
+     */
+    public static boolean validTimestamp(long timestamp) {
+        return timestamp > MINIMUM_TIMESTAMP;
+    }
 }
 
 // vim:ts=4

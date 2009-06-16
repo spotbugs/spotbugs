@@ -94,7 +94,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
 	public void setLastModifiedTime(long lastModifiedTime) {
-		if (lastModifiedTime > 0 && lastModifiedTime > FindBugs.MINIMUM_TIMESTAMP) {
+		if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime)) {
 			this.lastModifiedTime = lastModifiedTime;
 		}
 	}
