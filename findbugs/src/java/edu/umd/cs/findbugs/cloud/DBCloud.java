@@ -238,7 +238,7 @@ public  class DBCloud extends AbstractCloud {
 		} else {
 			bd.id = id;
 			bd.firstSeen = firstSeen;
-			bd.firstSeen = lastSeen;
+			bd.lastSeen = lastSeen;
 			
 			bd.inDatabase = true;
 			idMap.put(id, bd);
