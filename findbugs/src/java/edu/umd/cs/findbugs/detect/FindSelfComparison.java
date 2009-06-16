@@ -95,7 +95,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	putFieldObj = obj;
 	    	putFieldValue = value;
 	    	
-	    }
+	    } else if (isReturn(seen))
+	    	resetDoubleAssignmentState();
 	    
 	    
 		if (false) switch (state) {
