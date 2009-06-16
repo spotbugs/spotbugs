@@ -40,13 +40,21 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	String f;
 	String className;
 	int state;
+	
 	int putFieldRegister;
+	
+	int putFieldPC = Integer.MIN_VALUE;
+	OpcodeStack.Item putFieldObj;
+	OpcodeStack.Item putFieldValue;
+	XField putFieldXField;
 	
 
 	@Override
 	public void visit(Code obj) {
 		whichRegister = -1;
 		registerLoadCount = 0;
+		state = 0;
+		putFieldPC = Integer.MIN_VALUE;
 		super.visit(obj);
 		bugAccumulator.reportAccumulatedBugs();
 	}
@@ -55,7 +63,24 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		
-		switch (state) {
+	    if (seen == PUTFIELD) {
+	    	OpcodeStack.Item obj = stack.getStackItem(1);
+	    	OpcodeStack.Item value = stack.getStackItem(0);
+	    	XField f = getXFieldOperand();
+	    	if (putFieldPC + 10 > getPC() 
+	    			&& putFieldXField.equals(f)
+	    			&& putFieldObj.equals(obj)) {
+	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
+				.addReferencedField(this), this);
+	    	}
+	    	putFieldPC = getPC();
+	    	putFieldXField = f;
+	    	putFieldObj = obj;
+	    	putFieldValue = value;
+	    	
+	    }
+		if (false) switch (state) {
 		case 0:
 			if (seen == DUP_X1) state = 4;
 			break;
