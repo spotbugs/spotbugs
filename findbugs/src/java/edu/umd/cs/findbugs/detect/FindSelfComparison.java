@@ -54,11 +54,26 @@ public class FindSelfComparison extends OpcodeStackDetector {
 		whichRegister = -1;
 		registerLoadCount = 0;
 		state = 0;
-		putFieldPC = Integer.MIN_VALUE;
+		resetDoubleAssignmentState();
 		super.visit(obj);
+		resetDoubleAssignmentState();
 		bugAccumulator.reportAccumulatedBugs();
 	}
 
+	/**
+     * 
+     */
+    private void resetDoubleAssignmentState() {
+	    putFieldPC = Integer.MIN_VALUE;
+		putFieldXField = null;
+		putFieldValue = null;
+		putFieldObj = null;
+    }
+
+	@Override
+    public void sawBranchTo(int target) {
+		resetDoubleAssignmentState();
+	}
 	@Override
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
@@ -67,10 +82,11 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	OpcodeStack.Item obj = stack.getStackItem(1);
 	    	OpcodeStack.Item value = stack.getStackItem(0);
 	    	XField f = getXFieldOperand();
-	    	if (putFieldPC + 10 > getPC() 
-	    			&& putFieldXField.equals(f)
-	    			&& putFieldObj.equals(obj)) {
-	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+	    	if (putFieldPC + 5 > getPC() 
+	    			&& f.equals(putFieldXField)
+	    			&& obj.equals(putFieldObj)) {
+	    		int priority = value.equals(putFieldValue) ? NORMAL_PRIORITY : HIGH_PRIORITY;
+	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
 				.addReferencedField(this), this);
 	    	}
@@ -80,6 +96,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	putFieldValue = value;
 	    	
 	    }
+	    
+	    
 		if (false) switch (state) {
 		case 0:
 			if (seen == DUP_X1) state = 4;
