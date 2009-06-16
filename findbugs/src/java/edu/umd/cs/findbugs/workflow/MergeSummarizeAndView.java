@@ -21,10 +21,15 @@ package edu.umd.cs.findbugs.workflow;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 
@@ -32,6 +37,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.CommandLineUiCallback;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.PrintingBugReporter;
 import edu.umd.cs.findbugs.Project;
@@ -61,9 +67,11 @@ public class MergeSummarizeAndView {
 
 		public int maxConsideredRank = 14;
 
-		public int maxAge = 7;
+		public int maxAge = 10000;
 
 		public boolean alwaysShowGui = false;
+		
+		public @CheckForNull Date baselineDate;
 	}
 
 	static class MSVCommandLine extends CommandLine {
@@ -77,7 +85,8 @@ public class MergeSummarizeAndView {
 			addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
 			addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
 			addOption("-maxConsideredRank", "rank", "maximum rank of issues to consider (default 14)");
-			addOption("-maxAge", "days", "maximum age of issues to show in summary (default 7)");
+			addOption("-maxAge", "days", "maximum age of issues to show in summary");
+			addOption("-baseine", "date", "issues before this date are considered old (date format is MM/dd/yyy)");
 			addSwitch("-gui", "display GUI for any warnings. Default: Displays GUI for warnings meeting filtering criteria");
 		}
 
@@ -113,7 +122,13 @@ public class MergeSummarizeAndView {
 				options.maxRank = Integer.parseInt(argument);
 			else if (option.equals("-maxAge"))
 				options.maxAge = Integer.parseInt(argument);
-			else
+			else if (option.equals("-baseline"))
+	            try {
+	                options.baselineDate = new SimpleDateFormat("MM/dd/yyyy").parse(argument);
+                } catch (ParseException e) {
+	               System.err.println("Date " + argument + " not in MM/dd/yyyy format (e.g., 05/13/2009)");
+                }
+            else
 				throw new IllegalArgumentException("Unknown option : " + option);
 		}
 
@@ -280,6 +295,11 @@ public class MergeSummarizeAndView {
 		cloud.setMode(Cloud.Mode.COMMUNAL);
 		MyBugReporter reporter = new MyBugReporter();
 		long old = System.currentTimeMillis() - options.maxAge * 24 * 3600 * 1000L;
+		if (options.baselineDate != null) {
+			long old2 = options.baselineDate.getTime();
+			if (old2 > old) 
+				old = old2;
+		}
 		for (BugInstance warning : results.getCollection())
 			if (!reporter.isApplySuppressions() || !project.getSuppressionFilter().match(warning)) {
 				int rank = BugRanker.findRank(warning);
@@ -291,7 +311,7 @@ public class MergeSummarizeAndView {
 				}
 
 				long firstSeen = cloud.getFirstSeen(warning);
-				boolean isOld = firstSeen != 0 && firstSeen < old;
+				boolean isOld = FindBugs.validTimestamp(firstSeen) && firstSeen < old;
 				boolean highRank = rank > options.maxRank;
 				if (highRank)
 					numLowConfidence++;
