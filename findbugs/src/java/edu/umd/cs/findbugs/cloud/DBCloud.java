@@ -123,6 +123,7 @@ public  class DBCloud extends AbstractCloud {
 		long bugFiled = Long.MAX_VALUE;
 		SortedSet<BugDesignation> designations = new TreeSet<BugDesignation>();
 		Collection<BugInstance> bugs = new LinkedHashSet<BugInstance>();
+		long lastSeen;
 		
 		@CheckForNull
 		BugDesignation getPrimaryDesignation() {
@@ -226,7 +227,7 @@ public  class DBCloud extends AbstractCloud {
 
 	}
 
-	void loadDatabaseInfo(String hash, int id, long firstSeen) {
+	void loadDatabaseInfo(String hash, int id, long firstSeen, long lastSeen) {
 		BugData bd = instanceMap.get(hash);
 		if (bd == null)
 			return;
@@ -237,6 +238,8 @@ public  class DBCloud extends AbstractCloud {
 		} else {
 			bd.id = id;
 			bd.firstSeen = firstSeen;
+			bd.firstSeen = lastSeen;
+			
 			bd.inDatabase = true;
 			idMap.put(id, bd);
 		}
@@ -255,6 +258,7 @@ public  class DBCloud extends AbstractCloud {
 		
 	}
 	
+	private static final long LAST_SEEN_UPDATE_WINDOW = TimeUnit.MILLISECONDS.convert(7*24*3600, TimeUnit.SECONDS);
 	long boundDuration(long milliseconds) {
 		if (milliseconds < 0) 
 			return 0;
@@ -293,7 +297,7 @@ public  class DBCloud extends AbstractCloud {
 				PreparedStatement ps;
 				ResultSet rs;
 				if (performFullLoad) {
-					ps = c.prepareStatement("SELECT id, hash, firstSeen FROM findbugs_issue");
+					ps = c.prepareStatement("SELECT id, hash, firstSeen, lastSeen FROM findbugs_issue");
 					rs = ps.executeQuery();
 
 					while (rs.next()) {
@@ -301,7 +305,9 @@ public  class DBCloud extends AbstractCloud {
 						int id = rs.getInt(col++);
 						String hash = rs.getString(col++);
 						Timestamp firstSeen = rs.getTimestamp(col++);
-						loadDatabaseInfo(hash, id, firstSeen.getTime());
+						Timestamp lastSeen = rs.getTimestamp(col++);
+						
+						loadDatabaseInfo(hash, id, firstSeen.getTime(), lastSeen.getTime());
 					}
 					rs.close();
 					ps.close();
@@ -446,17 +452,20 @@ public  class DBCloud extends AbstractCloud {
 					resyncCount = updates;
 				}
 			} else {
+				long analysisTime = bugCollection.getTimestamp();
 				for (BugInstance b : bugCollection.getCollection())
 					if (!skipBug(b)) {
 						BugData bd = getBugData(b.getInstanceHash());
 						if (!bd.inDatabase) {
-							storeNewBug(b);
+							storeNewBug(b, analysisTime);
 						} else {
 							long firstVersion = b.getFirstVersion();
 							long firstSeen = bugCollection.getAppVersionFromSequenceNumber(firstVersion).getTimestamp();
 							if (firstSeen < FindBugs.MINIMUM_TIMESTAMP && (firstSeen < bd.firstSeen || bd.firstSeen < FindBugs.MINIMUM_TIMESTAMP)) {
 								bd.firstSeen = firstSeen;
 								storeFirstSeen(bd);
+							} else if (analysisTime > FindBugs.MINIMUM_TIMESTAMP && analysisTime > bd.lastSeen + LAST_SEEN_UPDATE_WINDOW) {
+								storeLastSeen(bd, analysisTime);
 							}
 
 							BugDesignation designation = bd.getPrimaryDesignation();
@@ -698,10 +707,10 @@ public  class DBCloud extends AbstractCloud {
 		throw e;
 	}
 	
-	public void storeNewBug(BugInstance bug) {
+	public void storeNewBug(BugInstance bug, long analysisTime) {
 
 		checkForShutdown();
-		queue.add(new StoreNewBug(bug));
+		queue.add(new StoreNewBug(bug, analysisTime));
 	}
 
 	public void storeFirstSeen(final BugData bd) {
@@ -710,6 +719,15 @@ public  class DBCloud extends AbstractCloud {
 
 			public void execute(DatabaseSyncTask t) throws SQLException {
 	           t.storeFirstSeen(bd);
+	            
+            }});
+	}
+	public void storeLastSeen(final BugData bd, final long timestamp) {
+		checkForShutdown();
+		queue.add(new Update(){
+
+			public void execute(DatabaseSyncTask t) throws SQLException {
+	           t.storeLastSeen(bd, timestamp);
 	            
             }});
 	}
@@ -837,7 +855,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 
 		
-		public void newBug(BugInstance b, long timestamp) {
+		public void newBug(BugInstance b) {
 			try {
 				BugData bug = getBugData(b.getInstanceHash());
 				
@@ -847,11 +865,9 @@ public  class DBCloud extends AbstractCloud {
 				PreparedStatement insertBugData =  
 				        c.prepareStatement("INSERT INTO findbugs_issue (firstSeen, lastSeen, hash, bugPattern, priority, primaryClass) VALUES (?,?,?,?,?,?)",  
 				        		Statement.RETURN_GENERATED_KEYS);
-				Timestamp date = new Timestamp(timestamp);
 				int col = 1;
-				bug.firstSeen = timestamp;
-				insertBugData.setTimestamp(col++, date);
-				insertBugData.setTimestamp(col++, date);
+				insertBugData.setTimestamp(col++, new Timestamp(bug.firstSeen));
+				insertBugData.setTimestamp(col++,  new Timestamp(bug.lastSeen));
 				insertBugData.setString(col++, bug.instanceHash);
 				insertBugData.setString(col++, b.getBugPattern().getType());
 				insertBugData.setInt(col++, b.getPriority());
@@ -876,6 +892,23 @@ public  class DBCloud extends AbstractCloud {
 				PreparedStatement insertBugData =  
 				        c.prepareStatement("UPDATE  findbugs_issue SET firstSeen = ? WHERE id = ?");
 				Timestamp date = new Timestamp(bug.firstSeen);
+				int col = 1;
+				insertBugData.setTimestamp(col++, date);
+				insertBugData.setInt(col++, bug.id);
+				insertBugData.executeUpdate();
+				insertBugData.close();
+
+			} catch (Exception e) {
+				displayMessage("Problems looking up user annotations", e);
+			}
+
+		}
+		public void storeLastSeen(BugData bug, long timestamp) {
+			try {
+				
+				PreparedStatement insertBugData =  
+				        c.prepareStatement("UPDATE  findbugs_issue SET lastSeen = ? WHERE id = ?");
+				Timestamp date = new Timestamp(timestamp);
 				int col = 1;
 				insertBugData.setTimestamp(col++, date);
 				insertBugData.setInt(col++, bug.id);
@@ -1005,16 +1038,23 @@ public  class DBCloud extends AbstractCloud {
 		
 	}
 	 class StoreNewBug implements Update {
-        public StoreNewBug(BugInstance bug) {
+        public StoreNewBug(BugInstance bug, long analysisTime) {
 	        this.bug = bug;
+	        this.analysisTime = analysisTime;
         }
 		final BugInstance bug;
+		final long analysisTime;
 		public void execute(DatabaseSyncTask t) throws SQLException {
 	        BugData data = getBugData(bug.getInstanceHash());
+	        if (data.lastSeen < analysisTime && analysisTime > FindBugs.MINIMUM_TIMESTAMP)
+	        	data.lastSeen = analysisTime;
+	       
+	         long timestamp = bugCollection.getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
+	        data.firstSeen = timestamp;
 	        if (data.inDatabase) 
 	        	return;
-	        long timestamp = bugCollection.getAppVersionFromSequenceNumber(bug.getFirstVersion()).getTimestamp();
-	        t.newBug(bug, timestamp);
+	       
+	        t.newBug(bug);
 	        data.inDatabase = true;
         }
 	}
