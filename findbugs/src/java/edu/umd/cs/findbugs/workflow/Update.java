@@ -494,7 +494,7 @@ public class Update {
 						.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 					if (useAnalysisTimes)
 						newCollection.setTimestamp(newCollection.getAnalysisTimestamp());
-					BugRanker.trimToMaxRank(origCollection, maxRank);
+					BugRanker.trimToMaxRank(newCollection, maxRank);
 					
 					origCollection = mergeCollections(origCollection,
 							newCollection, true, false);
