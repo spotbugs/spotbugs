@@ -2004,8 +2004,13 @@ public  class DBCloud extends AbstractCloud {
     		return true;
 	   BugData bd =  getBugData(b);
 	   return bd != null && findbugsUser.equals(bd.bugAssignedTo);
-	   
-	   
+    }
+    
+    
+    
+    public boolean getWillNotBeFixed(BugInstance b) {
+    	BugData bd =  getBugData(b);
+  	   return bd != null && bd.inDatabase && "WILL_NOT_FIX".equals(bd.bugStatus);
     }
 		/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#supportsCloudSummaries()

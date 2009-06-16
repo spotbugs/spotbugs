@@ -217,6 +217,16 @@ public class ViewFilter {
 	           return  cloud.supportsBugLinks();
             }
 		},
+		WILL_NOT_FIX("bug database entry marked Will Not Fix") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getWillNotBeFixed(b);
+			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	           return  cloud.supportsBugLinks();
+            }
+		},
 		ALL("All issues") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {
