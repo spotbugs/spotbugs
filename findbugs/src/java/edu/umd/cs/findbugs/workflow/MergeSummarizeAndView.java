@@ -86,7 +86,7 @@ public class MergeSummarizeAndView {
 			addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
 			addOption("-maxConsideredRank", "rank", "maximum rank of issues to consider (default 14)");
 			addOption("-maxAge", "days", "maximum age of issues to show in summary");
-			addOption("-baseine", "date", "issues before this date are considered old (date format is MM/dd/yyy)");
+			addOption("-baseline", "date", "issues before this date are considered old (date format is MM/dd/yyyy)");
 			addSwitch("-gui", "display GUI for any warnings. Default: Displays GUI for warnings meeting filtering criteria");
 		}
 
