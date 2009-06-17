@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.DBCloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.gui2.FindBugsLayoutManagerFactory;
 import edu.umd.cs.findbugs.gui2.GUISaveState;
@@ -186,12 +187,15 @@ public class MergeSummarizeAndView {
 	int tooOld = 0;
 
 	int harmless = 0;
+	boolean isConnectedToCloud;
 
 	Cloud cloud;
 
 	Cloud.Mode originalMode;
 
 	final MSVOptions options;
+	
+	
 
 	/**
 	 * @param options
@@ -212,6 +216,10 @@ public class MergeSummarizeAndView {
 		}
 	}
 
+
+	public boolean isConnectedToCloud() {
+		return isConnectedToCloud;
+	}
 	/**
 	 * @return Returns true if there were bugs that passed all of the cutoffs.
 	 */
@@ -250,8 +258,10 @@ public class MergeSummarizeAndView {
 	}
 
 	private void shutdown() {
-		if (cloud != null)
+		if (cloud != null) {
 			cloud.shutdown();
+			cloud = null;
+		}
 	}
 
 	private void load() {
@@ -288,7 +298,8 @@ public class MergeSummarizeAndView {
 		}
 
 		results.setRequestDatabaseCloud(true);
-		cloud = results.reinitializeCloud();             
+		cloud = results.reinitializeCloud();      
+		isConnectedToCloud = cloud instanceof DBCloud;
 		Project project = results.getProject();
 		originalMode = cloud.getMode();
 
