@@ -34,13 +34,21 @@ public class EditDistance {
 			return 1;
 		return 2;
 	}
+	
+	public static double editDistanceRatio(String str1, String
+			 str2) {
+		double distance = editDistance(str1, str2);
+		int maxDistance = 2* Math.max(str1.length(), str2.length());
+		return Math.min(distance / maxDistance, distance/4);
+	}
+	
 	public static int editDistance(String str1, String
 												 str2) {
 		int n1 = str1.length();
 		int n2 = str2.length();
 		int diff = Math.abs(n1-n2);
-		if (diff > 4)
-			return 2*diff;
+		if (diff > 6)
+			return 2 * Math.max(n1, n2);
 		int[][] distance = new int[n1+1][];
 
 		for(int i=0; i<=n1; i++){

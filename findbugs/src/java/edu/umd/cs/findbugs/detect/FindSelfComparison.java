@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.EditDistance;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
@@ -114,14 +115,22 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    		if (f.isVolatile()) 
 	    			priority++;
 	    		XField intendedTarget = null;
+	    		
+	    		double minimumDistance = 0.6;
 	    		for(XField f2 : x.getXFields()) 
 	    			if (!f.equals(f2) && !f2.isStatic() && !f2.isFinal() && !f2.isSynthetic() 
 	    					&& f2.getSignature().equals(f.getSignature())) {
-	    				intendedTarget = f2;
-	    				priority--;
+	    				
+	    				double distance = EditDistance.editDistanceRatio(f.getName(), f2.getName());
+	    				if (minimumDistance > distance) {
+	    					minimumDistance = distance;
+	    					intendedTarget = f2;
+	    				}
+	    				
 	    				break;
 	    			}
-	    		
+	    		if (intendedTarget != null)
+	    			priority--;
 	    		BugInstance bug = new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
 				.addReferencedField(this);
