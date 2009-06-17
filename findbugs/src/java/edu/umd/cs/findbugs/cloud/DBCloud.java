@@ -93,7 +93,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
-	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = true;
+	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
 	/**
      * 
      */
