@@ -518,6 +518,12 @@
       <sourcePath path="src/java:src/java5:src/junit"/>
 	  <auxClasspath refid="tools.classpath"/>
     </findbugs>
+  </target>
+
+  <target name="findbugsTestCases" depends="anttask,classes,junittests,jars">
+   <property name="findbugs.home" value="." />
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <mkdir dir="${sampleoutput.dir}"/>
     <findbugs home="."
               output="xml"
 			  jvmargs="-ea -Xmx900m"
