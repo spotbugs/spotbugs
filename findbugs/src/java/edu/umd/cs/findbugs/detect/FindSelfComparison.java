@@ -96,6 +96,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    		} else if (putFieldPC + 4 < getPC()) 
 	    			break checkPUTFIELD;
 	    		int priority = value.equals(putFieldValue) ? NORMAL_PRIORITY : HIGH_PRIORITY;
+	    		if (putFieldValue.isNull() || putFieldValue.hasConstantValue(0)) 
+	    			priority++;
 	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
 				.addReferencedField(this), this);
@@ -107,6 +109,11 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	
 	    } else if (isReturn(seen))
 	    	resetDoubleAssignmentState();
+	    else if (seen == GETFIELD  && getXFieldOperand().equals(putFieldXField)) {
+	    	OpcodeStack.Item obj = stack.getStackItem(0);
+	    	if (obj.equals(putFieldObj))
+	    		resetDoubleAssignmentState();
+	    }
 	    
 	    
 		if (false) switch (state) {
