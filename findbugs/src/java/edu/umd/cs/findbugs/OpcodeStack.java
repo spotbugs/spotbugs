@@ -701,6 +701,11 @@ public class OpcodeStack implements Constants2
 		lastUpdate = new ArrayList<Integer>();
 	}
 
+	public boolean hasIncomingBranches(int pc) {
+		return jumpEntryLocations.get(pc)
+			  && jumpEntries.get(pc)  != null;
+		
+	}
 	boolean needToMerge = true;
 	private boolean reachOnlyByBranch = false;
 	public static String getExceptionSig(DismantleBytecode dbc, CodeException e) {

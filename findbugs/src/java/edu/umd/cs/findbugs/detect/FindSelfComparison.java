@@ -25,9 +25,11 @@ import org.apache.bcel.classfile.LineNumberTable;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -80,27 +82,53 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		
-	    checkPUTFIELD: if (seen == PUTFIELD) {
+		if (stack.hasIncomingBranches(getPC()))
+			resetDoubleAssignmentState();
+		
+	     if (seen == PUTFIELD) {
 	    	OpcodeStack.Item obj = stack.getStackItem(1);
 	    	OpcodeStack.Item value = stack.getStackItem(0);
 	    	XField f = getXFieldOperand();
-	    	if (putFieldPC + 10 > getPC() 
+	    	XClass x = getXClassOperand();
+    		
+	    	checkPUTFIELD: if (putFieldPC + 10 > getPC() 
 	    			&& f.equals(putFieldXField)
-	    			&& obj.equals(putFieldObj)) {
+	    			&& !f.isSynthetic()
+	    			&& obj.equals(putFieldObj)
+	    			&& x != null) {
+	    		
 	    		LineNumberTable table = getCode().getLineNumberTable();
 	    		if (table != null) {
 	    			int first = table.getSourceLine(putFieldPC);
 	    			int second = table.getSourceLine(getPC());
-	    			if (first+1 < second || first > second) 
+	    			if (first+1 != second && first != second) 
 	    				break checkPUTFIELD;
-	    		} else if (putFieldPC + 4 < getPC()) 
+	    		} else if (putFieldPC + 3 != getPC()) 
 	    			break checkPUTFIELD;
-	    		int priority = value.equals(putFieldValue) ? NORMAL_PRIORITY : HIGH_PRIORITY;
+	    		
+	    		int priority = NORMAL_PRIORITY;
+	    		if (value.equals(putFieldValue) && putFieldPC + 3 != getPC())
+	    			priority++;
 	    		if (putFieldValue.isNull() || putFieldValue.hasConstantValue(0)) 
 	    			priority++;
-	    		bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
+	    		if (f.isVolatile()) 
+	    			priority++;
+	    		XField intendedTarget = null;
+	    		for(XField f2 : x.getXFields()) 
+	    			if (!f.equals(f2) && !f2.isStatic() && !f2.isFinal() && !f2.isSynthetic() 
+	    					&& f2.getSignature().equals(f.getSignature())) {
+	    				intendedTarget = f2;
+	    				priority--;
+	    				break;
+	    			}
+	    		
+	    		BugInstance bug = new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
-				.addReferencedField(this), this);
+				.addReferencedField(this);
+	    		if (intendedTarget != null) 
+	    			bug.addField(intendedTarget).describe(FieldAnnotation.DID_YOU_MEAN_ROLE);
+	    		
+				bugAccumulator.accumulateBug(bug, this);
 	    	}
 	    	putFieldPC = getPC();
 	    	putFieldXField = f;
