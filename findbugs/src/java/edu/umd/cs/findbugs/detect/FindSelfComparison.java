@@ -91,7 +91,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    		if (table != null) {
 	    			int first = table.getSourceLine(putFieldPC);
 	    			int second = table.getSourceLine(getPC());
-	    			if (first+1 < second) 
+	    			if (first+1 < second || first > second) 
 	    				break checkPUTFIELD;
 	    		} else if (putFieldPC + 4 < getPC()) 
 	    			break checkPUTFIELD;
