@@ -116,12 +116,14 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    			priority++;
 	    		XField intendedTarget = null;
 	    		
-	    		double minimumDistance = 0.6;
+	    		double minimumDistance = 2;
+	    		int matches = 0;
 	    		for(XField f2 : x.getXFields()) 
 	    			if (!f.equals(f2) && !f2.isStatic() && !f2.isFinal() && !f2.isSynthetic() 
 	    					&& f2.getSignature().equals(f.getSignature())) {
 	    				
 	    				double distance = EditDistance.editDistanceRatio(f.getName(), f2.getName());
+	    				matches++;
 	    				if (minimumDistance > distance) {
 	    					minimumDistance = distance;
 	    					intendedTarget = f2;
@@ -129,7 +131,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    				
 	    				break;
 	    			}
-	    		if (intendedTarget != null)
+	    		if (minimumDistance >  0.6 && matches > 1) 
+	    			intendedTarget = null;
+	    		else if (intendedTarget != null)
 	    			priority--;
 	    		BugInstance bug = new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", priority)
 				.addClassAndMethod(this)
