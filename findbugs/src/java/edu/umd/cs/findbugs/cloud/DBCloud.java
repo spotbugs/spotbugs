@@ -93,6 +93,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
+	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = true;
 	/**
      * 
      */
@@ -547,6 +548,8 @@ public  class DBCloud extends AbstractCloud {
 			this.sourceFileLinkFormatWithLine = sfwl;
 			} catch (RuntimeException e) {
 				AnalysisContext.logError("Could not compile pattern " + sp, e);
+				if (THROW_EXCEPTION_IF_CANT_CONNECT)
+					throw e;
 			}
 		}
 		String sqlDriver = getProperty("dbDriver");
@@ -555,8 +558,11 @@ public  class DBCloud extends AbstractCloud {
 		dbUser = getProperty("dbUser");
 		dbPassword = getProperty("dbPassword");
 		findbugsUser = getProperty("findbugsUser");
-		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null)
+		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
+			if (THROW_EXCEPTION_IF_CANT_CONNECT)
+				throw new RuntimeException("Unable to load database properties");
 			return false;
+		}
 		
 		if (findbugsUser == null) {
 			if (PROMPT_FOR_USER_NAME) {
@@ -573,8 +579,11 @@ public  class DBCloud extends AbstractCloud {
 			else if (findbugsUser == null)
 				findbugsUser = System.getProperty(USER_NAME, "");
 			
-			if (findbugsUser == null)
+			if (findbugsUser == null) {
+				if (THROW_EXCEPTION_IF_CANT_CONNECT)
+					throw new RuntimeException("Unable to get reviewer user name for database");
 				return false;
+			}
 		}
 		
 		loadBugComponents();
@@ -588,7 +597,7 @@ public  class DBCloud extends AbstractCloud {
 			if (rs.next()) {
 				int count = rs.getInt(1);
 				
-				result = findbugsUser != null;
+				result = true;
 			}
 			rs.close();
 			stmt.close();
@@ -596,13 +605,25 @@ public  class DBCloud extends AbstractCloud {
 			if (result) {
 				runnerThread.setDaemon(true);
 				runnerThread.start();
-			}
-			return result;
+				return true;
+			} else if (THROW_EXCEPTION_IF_CANT_CONNECT) {
+				throw new RuntimeException("Unable to get database results");
+				
+			} else
+				return false;
+			
 
+		} catch (RuntimeException e) {
+			displayMessage("Unable to connect to " + dbName, e);
+			
+			if (THROW_EXCEPTION_IF_CANT_CONNECT)
+				throw e;
+			return false;	
 		} catch (Exception e) {
 			
 			displayMessage("Unable to connect to " + dbName, e);
-			
+			if (THROW_EXCEPTION_IF_CANT_CONNECT)
+				throw new RuntimeException("Unable to connect to database", e);
 			return false;
 		}
 	}
