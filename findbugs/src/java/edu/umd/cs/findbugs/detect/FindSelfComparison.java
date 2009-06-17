@@ -110,7 +110,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    		int priority = NORMAL_PRIORITY;
 	    		if (value.equals(putFieldValue) && putFieldPC + 3 != getPC())
 	    			priority++;
-	    		if (putFieldValue.isNull() || putFieldValue.hasConstantValue(0)) 
+	    		boolean storeOfDefaultValue = putFieldValue.isNull() || putFieldValue.hasConstantValue(0);
+				if (storeOfDefaultValue) 
 	    			priority++;
 	    		if (f.isVolatile()) 
 	    			priority++;
@@ -131,7 +132,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    				
 	    				break;
 	    			}
-	    		if (minimumDistance >  0.6 && matches > 1) 
+	    		if (minimumDistance >  0.6 && (matches > 1 || storeOfDefaultValue))
 	    			intendedTarget = null;
 	    		else if (intendedTarget != null)
 	    			priority--;
