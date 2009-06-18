@@ -130,7 +130,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    					intendedTarget = f2;
 	    				}
 	    				
-	    				break;
 	    			}
 	    		if (minimumDistance >  0.6 && (matches > 1 || storeOfDefaultValue))
 	    			intendedTarget = null;
