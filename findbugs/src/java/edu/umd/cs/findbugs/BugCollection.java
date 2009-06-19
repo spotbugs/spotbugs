@@ -290,6 +290,12 @@ public interface BugCollection extends Iterable<BugInstance>
 	 * Set whether textual messages should be added to any generated XML
 	 */
 	public void setWithMessages(boolean withMessages);
+	
+	/**
+	 * Set whether we should minimize XML
+	 */
+	public void setMinimalXML(boolean minimalXML);
+
 
 	/**
 	 * Return whether textual messages will be added to any generated XML

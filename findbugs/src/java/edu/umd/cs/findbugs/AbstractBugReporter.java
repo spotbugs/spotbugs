@@ -105,6 +105,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	private int verbosityLevel;
 	private int priorityThreshold;
+	private int rankThreshold;
 	private boolean analysisUnderway, relaxed;
 	private int errorCount;
 
@@ -129,6 +130,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 	public void setPriorityThreshold(int threshold) {
 		this.priorityThreshold = threshold;
 	}
+	public void setRankThreshold(int threshold) {
+		this.rankThreshold = threshold;
+	}
 
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
@@ -149,7 +153,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 			}
 			return;
 		}
-		if (bugInstance.getPriority() <= priorityThreshold || relaxed) {
+		if (bugInstance.getPriority() <= priorityThreshold  && bugInstance.getBugRank() <= rankThreshold 
+				|| relaxed) {
 			doReportBug(bugInstance);
 		} else {
 			if(DEBUG) {

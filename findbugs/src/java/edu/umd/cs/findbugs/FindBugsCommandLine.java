@@ -122,7 +122,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		} else if (option.equals("-adjustExperimental")) {
 			BugInstance.setAdjustExperimental(true);
 		} else {
-			throw new IllegalStateException();
+			throw new IllegalArgumentException("Don't understand option " + option);
 		}
 	}
 

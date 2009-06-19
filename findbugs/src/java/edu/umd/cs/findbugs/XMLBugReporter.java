@@ -37,16 +37,26 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	public void setAddMessages(boolean enable) {
 		getBugCollection().setWithMessages(enable);
 	}
+	
 	@Override
 	public void finish() {
 		try {
 		Project project = getProject();
-		if (project == null) throw new NullPointerException("No project");
+		if (project == null) 
+			throw new NullPointerException("No project");
 		getBugCollection().writeXML(outputStream);
 		} catch (IOException e) {
 			throw new FatalException("Error writing XML output", e);
 		}
 	}
+
+	/**
+     * @param xmlMinimal
+     */
+    public void setMinimalXML(boolean xmlMinimal) {
+    	getBugCollection().setMinimalXML(xmlMinimal);
+	    
+    }
 
 }
 

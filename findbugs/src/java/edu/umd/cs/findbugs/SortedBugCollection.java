@@ -89,6 +89,7 @@ public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
+	private boolean minimalXML = false;
 	private boolean applySuppressions = false;
 	private Cloud userAnnotationPlugin;
 	boolean shouldNotUsePlugin;
@@ -469,7 +470,7 @@ public class SortedBugCollection implements BugCollection {
 						SourceLineAnnotation.generateRelativeSource(base, project);
 				}
 			}
-			if (earlyStats)
+			if (earlyStats && !minimalXML)
 				getProjectStats().writeXML(xmlOutput,withMessages);
 			
 			// Write BugInstances
@@ -499,9 +500,10 @@ public class SortedBugCollection implements BugCollection {
 			writeBugCodes( xmlOutput);
 		}
 		// Errors, missing classes
-		emitErrors(xmlOutput);
+		if (!minimalXML)
+			emitErrors(xmlOutput);
 
-		if (!earlyStats) {
+		if (!earlyStats  && !minimalXML) {
 			// Statistics
 			getProjectStats().writeXML(xmlOutput, withMessages);
 		}
@@ -1236,6 +1238,13 @@ public class SortedBugCollection implements BugCollection {
     	Cloud cloud = getCloud();
     	cloud.bugsPopulated();
     	return cloud;
+    }
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugCollection#setMinimalXML(boolean)
+     */
+    public void setMinimalXML(boolean minimalXML) {
+	   this.minimalXML = minimalXML;
+	    
     }
 }
 

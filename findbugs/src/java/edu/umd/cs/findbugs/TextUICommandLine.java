@@ -75,6 +75,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private boolean relaxedReportingMode = false;
 	private boolean useLongBugCodes = false;
 	private boolean showProgress = false;
+	private boolean xmlMinimal = false;
+	
 	private boolean xmlWithMessages = false;
 	private boolean xmlWithAbridgedMessages = false;
 	private String stylesheet = null;
@@ -86,6 +88,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private boolean setExitCode = false;
 	private boolean noClassOk = false;
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
+	private int rankThreshold = 19;
 	private PrintStream outputStream = null;
 	private Set<String> bugCategorySet = null;
 	private UserPreferences userPreferences;
@@ -115,6 +118,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-low", "report all warnings");
 		addSwitch("-medium", "report only medium and high priority warnings [default]");
 		addSwitch("-high", "report only high priority warnings");
+		addOption("-maxRank", "rank", "only report issues with a bug rank at least as scary as that provided");
 		addSwitch("-sortByClass", "sort warnings by class");
 		addSwitchWithOptionalExtraPart("-xml", "withMessages",
 				"XML output (optionally with messages)");
@@ -231,6 +235,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				else if (optionExtraPart.equals("withAbridgedMessages")) {
 					xmlWithMessages = true;
 					xmlWithAbridgedMessages = true;
+				} else if (optionExtraPart.equals("minimal")) {
+					xmlWithMessages = false;
+					xmlMinimal = true;
 				} else
 					throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
 			}
@@ -284,6 +291,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
 				System.exit(1);
 			}
+		} else if (option.equals("-maxRank")) {
+			this.rankThreshold = Integer.parseInt(argument);
 		} else if (option.equals("-projectName")) {
 			this.projectName = argument;
 		} else if (option.equals("-release")) {
@@ -451,6 +460,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			{
 				XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
 				xmlBugReporter.setAddMessages(xmlWithMessages);
+				xmlBugReporter.setMinimalXML(xmlMinimal);
+				
 				textuiBugReporter = xmlBugReporter;
 			}
 			break;
@@ -471,6 +482,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
 
 		textuiBugReporter.setPriorityThreshold(priorityThreshold);
+		textuiBugReporter.setRankThreshold(rankThreshold);
 		textuiBugReporter.setUseLongBugCodes(useLongBugCodes);
 
 		if (outputStream != null)
