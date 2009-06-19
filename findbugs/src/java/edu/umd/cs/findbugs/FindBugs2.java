@@ -85,6 +85,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	
 	private static final boolean DEBUG_UA = SystemProperties.getBoolean("ua.debug");
 
+	private int rankThreshold;
 	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
 	private Project project;
@@ -813,7 +814,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
 			 */
 			public boolean choose(DetectorFactory factory) {
-				return FindBugs.isDetectorEnabled(FindBugs2.this, factory) || forcedEnabled.contains(factory);
+				return FindBugs.isDetectorEnabled(FindBugs2.this, factory, rankThreshold) || forcedEnabled.contains(factory);
 			}
 			public void enable(DetectorFactory factory) {
 				forcedEnabled.add(factory);
@@ -1072,6 +1073,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
      */
     public void setApplySuppression(boolean applySuppression) {
     	this.analysisOptions.applySuppression = applySuppression;  
+    }
+    
+	 public void setRankThreshold(int rankThreshold) {
+    	this.rankThreshold = rankThreshold;  
     }
     
     public void finishSettings() {

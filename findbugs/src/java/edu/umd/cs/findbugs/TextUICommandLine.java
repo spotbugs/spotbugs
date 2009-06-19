@@ -485,6 +485,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		textuiBugReporter.setRankThreshold(rankThreshold);
 		textuiBugReporter.setUseLongBugCodes(useLongBugCodes);
 
+		if (findBugs instanceof IFindBugsEngine2) 
+			((IFindBugsEngine2)findBugs).setRankThreshold(rankThreshold);
 		if (outputStream != null)
 			textuiBugReporter.setOutputStream(outputStream);
 

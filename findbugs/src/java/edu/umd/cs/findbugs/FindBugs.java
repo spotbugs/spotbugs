@@ -207,9 +207,10 @@ public abstract class FindBugs  {
 	 * 
 	 * @param findBugs the IFindBugsEngine
 	 * @param factory the DetectorFactory
+	 * @param rankThreshold TODO
 	 * @return true if the DetectorFactory should be enabled, false otherwise
 	 */
-	public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory) {
+	public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
 		if (!factory.getPlugin().isEnabled())
 			return false;
 
@@ -223,10 +224,28 @@ public abstract class FindBugs  {
 		if (!AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
 				&& factory.isDetectorClassSubtypeOf(InterproceduralFirstPassDetector.class))
 			return false;
+		
+		int maxRank = Integer.MAX_VALUE;
+		Set<BugPattern> reportedBugPatterns = factory.getReportedBugPatterns();
+		boolean isNonReportingDetector = factory.isDetectorClassSubtypeOf(FirstPassDetector.class);
+		if (!isNonReportingDetector && !reportedBugPatterns.isEmpty()) {
+			for (BugPattern b : reportedBugPatterns) {
+				int rank = BugRanker.findRank(b, Priorities.HIGH_PRIORITY);
+				if (maxRank > rank)
+					maxRank = rank;
+			}
+			if (maxRank > rankThreshold) {
+				if (false) {
+					System.out.println("Detector " + factory.getShortName() + " has max rank " + maxRank + ", disabling");
+					System.out.println("Reports : " + reportedBugPatterns);
+				}
+				return false;
+			}
+		}
+	
 
 		// Training detectors are enabled if, and only if, we are emitting training output
 		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class);
-		boolean isNonReportingDetector = factory.isDetectorClassSubtypeOf(FirstPassDetector.class);
 		if (findBugs.emitTrainingOutput()) {
 			return isTrainingDetector || isNonReportingDetector;
 		}

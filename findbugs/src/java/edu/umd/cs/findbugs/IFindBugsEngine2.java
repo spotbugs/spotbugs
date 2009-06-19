@@ -29,4 +29,5 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public interface IFindBugsEngine2 extends IFindBugsEngine {
+	 void setRankThreshold(int rankThreshold);
 }
