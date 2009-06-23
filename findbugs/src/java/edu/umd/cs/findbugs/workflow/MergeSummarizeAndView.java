@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.CommandLineUiCallback;
@@ -180,7 +181,7 @@ public class MergeSummarizeAndView {
 
 	SortedBugCollection results;
 
-	ArrayList<BugInstance> scaryBugs = new ArrayList<BugInstance>();
+	SortedBugCollection  scaryBugs;
 
 	int numLowConfidence = 0;
 
@@ -224,16 +225,22 @@ public class MergeSummarizeAndView {
 	 * @return Returns true if there were bugs that passed all of the cutoffs.
 	 */
 	public int numScaryBugs() {
-		return scaryBugs.size();
+		return scaryBugs.getCollection().size();
 	}
 
 	/**
 	 * @return Returns the bugs that passed all of the cutoffs
 	 */
-	public Iterable<BugInstance> getScaryBugs() {
+	public BugCollection getScaryBugs() {
 		return scaryBugs;
 	}
 
+	/**
+	 * @return Returns all of the merged bugs
+	 */
+	public BugCollection getAllBugs() {
+		return scaryBugs;
+	}
 	/**
 	 * @return Returns the number of issues classified as harmless
 	 */
@@ -262,6 +269,7 @@ public class MergeSummarizeAndView {
 			cloud.shutdown();
 			cloud = null;
 		}
+		results = scaryBugs = null;
 	}
 
 	private void load() {
@@ -273,7 +281,6 @@ public class MergeSummarizeAndView {
 		}
 
 		IGuiCallback cliUiCallback = new CommandLineUiCallback();
-		SortedBugCollection results = null;
 		for (String analysisFile : options.analysisFiles) {
 			try {
 				SortedBugCollection more = createPreconfiguredBugCollection(options.workingDirList, options.srcDirList,
@@ -304,15 +311,16 @@ public class MergeSummarizeAndView {
 		originalMode = cloud.getMode();
 
 		cloud.setMode(Cloud.Mode.COMMUNAL);
-		MyBugReporter reporter = new MyBugReporter();
 		long old = System.currentTimeMillis() - options.maxAge * 24 * 3600 * 1000L;
 		if (options.baselineDate != null) {
 			long old2 = options.baselineDate.getTime();
 			if (old2 > old) 
 				old = old2;
 		}
+		
+		scaryBugs = results.createEmptyCollectionWithMetadata();
 		for (BugInstance warning : results.getCollection())
-			if (!reporter.isApplySuppressions() || !project.getSuppressionFilter().match(warning)) {
+			if (!project.getSuppressionFilter().match(warning)) {
 				int rank = BugRanker.findRank(warning);
 				if (rank > 20)
 					continue;
@@ -335,7 +343,7 @@ public class MergeSummarizeAndView {
 
 	private void report() {
 
-		boolean hasScaryBugs = !scaryBugs.isEmpty();
+		boolean hasScaryBugs = !scaryBugs.getCollection().isEmpty();
 		if (hasScaryBugs) {
 			System.out.printf("%4s\n", "days");
 			System.out.printf("%4s %4s %s\n", "old", "rank", "issue");
@@ -403,14 +411,7 @@ public class MergeSummarizeAndView {
 
 	static final long NOW = System.currentTimeMillis();
 
-	static class MyBugReporter extends PrintingBugReporter {
-
-		@Override
-		public void printBug(BugInstance bugInstance) {
-			super.printBug(bugInstance);
-		}
-	}
-
+	
 }
 
 // vim:ts=3
