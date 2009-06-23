@@ -157,35 +157,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    }
 	    
 	    
-		if (false) switch (state) {
-		case 0:
-			if (seen == DUP_X1) state = 4;
-			break;
-
-		case 4:
-			if (seen == PUTFIELD) {
-
-				f = getRefConstantOperand();
-				className = getClassConstantOperand();
-				OpcodeStack.Item item1 = stack.getStackItem(1);
-				putFieldRegister = item1.getRegisterNumber();
-				if (putFieldRegister >= 0)
-					state = 5;
-				else state = 0;
-			} else
-				state = 0;
-			break;
-		case 5:
-			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
-				OpcodeStack.Item item1 = stack.getStackItem(1);
-				if (putFieldRegister == item1.getRegisterNumber())
-				bugAccumulator.accumulateBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addReferencedField(this), this);
-			}
-			state = 0;
-			break;
-		}
 		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKEINTERFACE:
