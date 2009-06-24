@@ -60,6 +60,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -84,7 +85,6 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.gui2.MainFrame;
 import edu.umd.cs.findbugs.gui2.ViewFilter;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -1169,7 +1169,10 @@ public  class DBCloud extends AbstractCloud {
     public String getUserEvaluation(BugInstance b) {
     	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
     	if (bd == null) return "";
-    	return bd.getAnnotationText();
+    	String result =  bd.getAnnotationText();
+    	if (result == null)
+    		return "";
+    	return result;
     }
 	/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#getUserTimestamp(edu.umd.cs.findbugs.BugInstance)
@@ -1288,9 +1291,17 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	private String getLineTerminatedUserEvaluation(BugInstance b) {
-		String result = getUserEvaluation(b);
-		if (result.length() == 0) return "";
-		return result.trim()+"\n";
+		UserDesignation designation = getUserDesignation(b);
+		
+		String result;
+		if (designation != UserDesignation.UNCLASSIFIED)
+			result = "Classified as: " +  designation.toString() + "\n";
+		else 
+			result = "";
+		String eval = getUserEvaluation(b).trim();
+		if (eval.length() > 0) 
+			result = result +  eval + "\n";
+		return result;
 	}
 	String getBugReport(BugInstance b) {
 		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
