@@ -3078,6 +3078,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	    			assert project == bc.getProject();
 	    			setBugCollection(bc);
 	    		}
+	    		changeTitle();
 	    	}});
     }
     
