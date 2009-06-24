@@ -1159,7 +1159,8 @@ public  class DBCloud extends AbstractCloud {
 
     public UserDesignation getUserDesignation(BugInstance b) {
     	BugDesignation bd =  getBugData(b).getPrimaryDesignation();
-    	if (bd == null) return UserDesignation.UNCLASSIFIED;
+    	if (bd == null) 
+    		return UserDesignation.UNCLASSIFIED;
     	return UserDesignation.valueOf(bd.getDesignationKey());
     }
 	/* (non-Javadoc)
@@ -1535,6 +1536,8 @@ public  class DBCloud extends AbstractCloud {
 	static final String BUG_LOGIN_LINK = SystemProperties.getProperty("findbugs.filebug.login");
 	static final String BUG_LOGIN_MSG = SystemProperties.getProperty("findbugs.filebug.loginMsg");
 	
+	static final String COMPONENT_FOR_BAD_ANALYSIS = SystemProperties.getProperty("findbugs.filebug.badAnalysisComponent");
+	
     @Override
     @CheckForNull
 	public URL getBugLink(BugInstance b) {
@@ -1669,7 +1672,12 @@ public  class DBCloud extends AbstractCloud {
 	    	if (BUG_LINK_FORMAT == null)
 	    		return null;
 	    	String report = getBugReport(b);
-	    	String component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
+	    	String component;
+	    	if (getUserDesignation(b) == UserDesignation.BAD_ANALYSIS 
+	    			&& COMPONENT_FOR_BAD_ANALYSIS != null)
+	    		component = COMPONENT_FOR_BAD_ANALYSIS;
+	    	else
+	    		component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
 	    	String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
 	    	
 	    	int maxURLLength = MAX_URL_LENGTH;
