@@ -2090,7 +2090,7 @@ public  class DBCloud extends AbstractCloud {
     
     public boolean getBugIsUnassigned(BugInstance b) {
 		BugData bd = getBugData(b);
-		return bd != null && bd.inDatabase
+		return bd != null && bd.inDatabase && getBugLinkStatus(b) == BugFilingStatus.VIEW_BUG
 		        && ("NEW".equals(bd.bugStatus) || bd.bugAssignedTo == null || bd.bugAssignedTo.length() == 0);
 	}
 
