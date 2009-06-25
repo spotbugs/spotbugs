@@ -269,7 +269,6 @@ public class MergeSummarizeAndView {
 			cloud.shutdown();
 			cloud = null;
 		}
-		results = scaryBugs = null;
 	}
 
 	private void load() {
