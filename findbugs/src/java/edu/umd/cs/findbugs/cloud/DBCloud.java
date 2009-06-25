@@ -1542,7 +1542,7 @@ public  class DBCloud extends AbstractCloud {
 	}
     private boolean firstBugRequest = true;
     static final String POSTMORTEM_NOTE = SystemProperties.getProperty("findbugs.postmortem.note");
-	static final int POSTMORTEM_RANK = SystemProperties.getInt("findbugs.postmortem.rank", 4);
+	static final int POSTMORTEM_RANK = SystemProperties.getInt("findbugs.postmortem.maxRank", 4);
 	static final String BUG_LINK_FORMAT = SystemProperties.getProperty("findbugs.filebug.link");
 	static final String BUG_LOGIN_LINK = SystemProperties.getProperty("findbugs.filebug.login");
 	static final String BUG_LOGIN_MSG = SystemProperties.getProperty("findbugs.filebug.loginMsg");
