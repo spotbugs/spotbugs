@@ -140,6 +140,7 @@ public class CommentsArea {
 
 			public void actionPerformed(ActionEvent e) {
 				if (frame.currentSelectedBugLeaf != null) {
+					saveComments();
 					BugInstance bug = frame.currentSelectedBugLeaf.getBug();
 					Cloud cloud = getMainFrame().bugCollection.getCloud();
 					if (!cloud.supportsBugLinks())
@@ -851,7 +852,7 @@ public class CommentsArea {
 	
 	public void configureForCurrentCloud() {
 		Cloud cloud = getCloud();
-		if (false) 
+		if (fileBug != null) 
 			fileBug.setEnabled(cloud.supportsBugLinks());
 		
 		MainFrame.getInstance().resetCommentsInputPane();
