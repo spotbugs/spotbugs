@@ -1017,12 +1017,13 @@ public  class DBCloud extends AbstractCloud {
 		else if (needsUpdate) {
 
 			PreparedStatement updateBug = c
-			        .prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ? and whenFiled = ? WHERE id = ?");
+			        .prepareStatement("UPDATE  findbugs_bugreport SET whoFiled = ?,  whenFiled = ? WHERE id = ?");
 			try {
 				int col = 1;
 				updateBug.setString(col++, bug.filedBy);
 				updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
 				updateBug.setInt(col++, pendingId);
+				System.out.println(updateBug);
 				updateBug.executeUpdate();
 			} catch (SQLException e) {
 				String msg = "Problem inserting pending record for id " + pendingId + ", bug hash " + bug.instanceHash;
