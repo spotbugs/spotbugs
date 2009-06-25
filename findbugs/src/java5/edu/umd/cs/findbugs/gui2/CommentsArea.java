@@ -629,6 +629,7 @@ public class CommentsArea {
 	}
 
 	protected boolean changeDesignationOfBug(BugLeafNode theNode, String selection) {
+		saveComments();
 		BugInstance bug = theNode.getBug();
 		String oldValue = bug.getUserDesignationKey();
 		if (selection.equals(oldValue))
