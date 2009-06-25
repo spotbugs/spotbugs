@@ -965,7 +965,6 @@ public  class DBCloud extends AbstractCloud {
      * @throws SQLException
      */
      private void insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
-		int count;
 		int pendingId = -1;
 		PreparedStatement query = c
 		        .prepareStatement("SELECT  id, bugReportId, whoFiled, whenFiled FROM findbugs_bugreport where hash=?");
@@ -973,6 +972,7 @@ public  class DBCloud extends AbstractCloud {
 		ResultSet rs = query.executeQuery();
 		boolean needsUpdate = false;
 
+		try {
 		while (rs.next()) {
 			int col = 1;
 			int id = rs.getInt(col++);
@@ -988,8 +988,16 @@ public  class DBCloud extends AbstractCloud {
 			pendingId = id;
 			needsUpdate = !who.equals(whoFiled);
 		}
+		} catch (SQLException e) {
+			String msg = "Problem inserting pending record for " + bug.instanceHash;
+			AnalysisContext.logError(msg, e);
+			System.out.println(msg);
+			e.printStackTrace();
+			return;
+		} finally {
 		rs.close();
 		query.close();
+		}
 
 		if (pendingId == -1) {
 			PreparedStatement insert = c
@@ -1002,7 +1010,7 @@ public  class DBCloud extends AbstractCloud {
 			insert.setString(col++, PENDING);
 			insert.setString(col++, who);
 			insert.setTimestamp(col++, date);
-			count = insert.executeUpdate();
+			insert.executeUpdate();
 			insert.close();
 		}
 
@@ -1014,7 +1022,7 @@ public  class DBCloud extends AbstractCloud {
 			updateBug.setString(col++, bug.filedBy);
 			updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
 			updateBug.setInt(col++, pendingId);
-			count = updateBug.executeUpdate();
+			updateBug.executeUpdate();
 			updateBug.close();
 		}
 	}
