@@ -227,6 +227,16 @@ public class ViewFilter {
 	           return  cloud.supportsBugLinks();
             }
 		},
+		BUG_STATUS_IS_UNASSIGNED("bug database entry is unassigned") {
+			@Override
+			boolean show(DBCloud cloud, BugInstance b) {
+				return cloud.getBugIsUnassigned(b);
+			}
+			@Override
+			public boolean supported(Cloud cloud) {
+	           return  cloud.supportsBugLinks();
+            }
+		},
 		ALL("All issues") {
 			@Override
 			boolean show(DBCloud cloud, BugInstance b) {

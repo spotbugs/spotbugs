@@ -2088,10 +2088,17 @@ public  class DBCloud extends AbstractCloud {
     
     
     
-    public boolean getWillNotBeFixed(BugInstance b) {
-    	BugData bd =  getBugData(b);
-  	   return bd != null && bd.inDatabase && "WILL_NOT_FIX".equals(bd.bugStatus);
-    }
+    public boolean getBugIsUnassigned(BugInstance b) {
+		BugData bd = getBugData(b);
+		return bd != null && bd.inDatabase
+		        && ("NEW".equals(bd.bugStatus) || bd.bugAssignedTo == null || bd.bugAssignedTo.length() == 0);
+	}
+
+	public boolean getWillNotBeFixed(BugInstance b) {
+		BugData bd = getBugData(b);
+		return bd != null && bd.inDatabase && getBugLinkStatus(b) == BugFilingStatus.VIEW_BUG
+		        && "WILL_NOT_FIX".equals(bd.bugStatus);
+	}
 		/* (non-Javadoc)
      * @see edu.umd.cs.findbugs.cloud.Cloud#supportsCloudSummaries()
      */
