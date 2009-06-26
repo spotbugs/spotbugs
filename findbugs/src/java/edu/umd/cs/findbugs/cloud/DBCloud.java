@@ -991,12 +991,10 @@ public  class DBCloud extends AbstractCloud {
 		} catch (SQLException e) {
 			String msg = "Problem inserting pending record for " + bug.instanceHash;
 			AnalysisContext.logError(msg, e);
-			System.out.println(msg);
-			e.printStackTrace();
 			return;
 		} finally {
-		rs.close();
-		query.close();
+			rs.close();
+			query.close();
 		}
 
 		if (pendingId == -1) {
@@ -1023,13 +1021,10 @@ public  class DBCloud extends AbstractCloud {
 				updateBug.setString(col++, bug.filedBy);
 				updateBug.setTimestamp(col++, new Timestamp(bug.bugFiled));
 				updateBug.setInt(col++, pendingId);
-				System.out.println(updateBug);
 				updateBug.executeUpdate();
 			} catch (SQLException e) {
 				String msg = "Problem inserting pending record for id " + pendingId + ", bug hash " + bug.instanceHash;
 				AnalysisContext.logError(msg, e);
-				System.out.println(msg);
-				e.printStackTrace();
 			} finally {
 				updateBug.close();
 			}
