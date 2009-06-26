@@ -43,7 +43,6 @@ public class Dom4JXMLOutput implements XMLOutput {
 	 * @param topLevel the Document or Element that is the root of
 	 *                 the tree to be built
 	 */
-	@CreatesObligation
 	public Dom4JXMLOutput(Branch topLevel) {
 		this.stack = new LinkedList<Branch>();
 		stack.addLast(topLevel);
