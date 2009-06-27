@@ -1950,6 +1950,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	}
 
+	public BugInstance addValueSource(OpcodeStack.Item item, DismantleBytecode dbc) {
+		return addValueSource(item, dbc.getMethod(), dbc.getPC());
+	}
+	
 	public BugInstance addValueSource(OpcodeStack.Item item, Method method, int pc) {
 		addOptionalAnnotation(getValueSource(item, method, pc));
 		return this;
