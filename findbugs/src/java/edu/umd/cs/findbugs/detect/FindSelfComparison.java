@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
+import edu.umd.cs.findbugs.util.Util;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
@@ -93,7 +94,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	XClass x = getXClassOperand();
     		
 	    	checkPUTFIELD: if (putFieldPC + 10 > getPC() 
-	    			&& f.equals(putFieldXField)
+	    			&& f != null && obj != null && f.equals(putFieldXField)
 	    			&& !f.isSynthetic()
 	    			&& obj.equals(putFieldObj)
 	    			&& x != null) {
@@ -150,7 +151,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	    	
 	    } else if (isReturn(seen))
 	    	resetDoubleAssignmentState();
-	    else if (seen == GETFIELD  && getXFieldOperand().equals(putFieldXField)) {
+	    else if (seen == GETFIELD  && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
 	    	OpcodeStack.Item obj = stack.getStackItem(0);
 	    	if (obj.equals(putFieldObj))
 	    		resetDoubleAssignmentState();
