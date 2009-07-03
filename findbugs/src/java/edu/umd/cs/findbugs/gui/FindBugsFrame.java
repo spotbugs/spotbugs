@@ -3313,7 +3313,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		if (srcLine == null)
 			return false;
 
-		if(sourceFinder.getProject() != project){			
+		if(sourceFinder == null || sourceFinder.getProject() != project){			
 			sourceFinder = new SourceFinder(project);
 		}
 		
