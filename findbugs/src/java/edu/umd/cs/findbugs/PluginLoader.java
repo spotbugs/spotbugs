@@ -525,8 +525,12 @@ public class PluginLoader {
 		try {
 			URL bugRankURL = getResource("bugrank.txt");
 
-			if (bugRankURL == null) 
-				throw new PluginException("Couldn't parse \"bugrank.txt\"");
+			if (bugRankURL == null){ 
+				// see https://sourceforge.net/tracker/?func=detail&aid=2816102&group_id=96405&atid=614693
+				// plugin can not have bugrank.txt. In this case, an empty bugranker will be created
+				if (DEBUG) System.out.println("bugrank.txt not found for plugin " + pluginId);
+				//TODO report this even if !DEBUG				
+			}
 			BugRanker ranker = new BugRanker(bugRankURL);
 			plugin.setBugRanker(ranker);
 		} catch (UnsupportedEncodingException e) {

@@ -35,7 +35,15 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class BugRanker {
 	
+	/**
+	 * @param u may be null. In this case, a default value will be used for all bugs
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
 	public BugRanker(URL u) throws UnsupportedEncodingException, IOException {
+		if(u == null){
+			return;
+		}
 		BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream(), "UTF-8"));
 		while (true) {
 			String s = in.readLine();
@@ -56,11 +64,11 @@ public class BugRanker {
 		Util.closeSilently(in);
 	}
 
-	HashMap<String, Integer> bugPatterns = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> bugPatterns = new HashMap<String, Integer>();
 
-	HashMap<String, Integer> bugKinds = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> bugKinds = new HashMap<String, Integer>();
 
-	HashMap<String, Integer> bugCategories = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> bugCategories = new HashMap<String, Integer>();
 
 	public int rankBug(BugInstance bug) {
 		BugPattern bugPattern = bug.getBugPattern();
