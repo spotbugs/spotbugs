@@ -981,52 +981,59 @@
           point="org.eclipse.core.runtime.adapters">
        <factory
              adaptableType="de.tobject.findbugs.view.BugExplorerView"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="de.tobject.findbugs.view.BugExplorerView"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
            <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
              adaptableType="org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
              adaptableType="org.eclipse.jdt.internal.ui.javaeditor.ClassFileEditor"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySheetPage" />
        </factory>
        <factory
              adaptableType="org.eclipse.core.resources.IMarker"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="org.eclipse.core.internal.resources.Marker"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="edu.umd.cs.findbugs.BugInstance"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="edu.umd.cs.findbugs.BugPattern"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="org.eclipse.ui.internal.views.markers.MarkerEntry"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter type="org.eclipse.ui.views.properties.IPropertySource" />
        </factory>
        <factory
              adaptableType="de.tobject.findbugs.view.explorer.BugGroup"
-             class="de.tobject.findbugs.view.explorer.PropertyPageAdapterFactory">
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
+          <adapter
+                type="org.eclipse.ui.views.properties.IPropertySource">
+          </adapter>
+       </factory>
+       <factory
+             adaptableType="edu.umd.cs.findbugs.BugAnnotation"
+             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter
                 type="org.eclipse.ui.views.properties.IPropertySource">
           </adapter>

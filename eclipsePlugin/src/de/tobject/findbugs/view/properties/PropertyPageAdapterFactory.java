@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.tobject.findbugs.view.explorer;
+package de.tobject.findbugs.view.properties;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,6 +47,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.view.BugExplorerView;
+import de.tobject.findbugs.view.explorer.BugGroup;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 
@@ -163,8 +165,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		for (Method method : methods) {
 			if (method.getParameterTypes().length == 0) {
 				String name = method.getName();
-				if ((name.startsWith("get") || name.startsWith("is"))
-						&& !name.equals("getClass")) {
+				if ((name.startsWith("get") || name.startsWith("is") || name.startsWith("has"))
+						&& (!name.equals("getClass") && !name.equals("hashCode"))) {
 					methodList.add(method);
 				}
 			}
@@ -174,7 +176,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
 	public static String getReadableName(Method method) {
 		String name = method.getName();
-		return name.startsWith("get") ? name.substring(3) : name.startsWith("is") ? name
+		return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3) : name.startsWith("is") ? name
 				.substring(2) : name;
 	}
 
@@ -266,7 +268,8 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 		if (adapterType == IPropertySource.class) {
 			if (adaptableObject instanceof BugPattern
 					|| adaptableObject instanceof BugInstance
-					|| adaptableObject instanceof BugGroup) {
+					|| adaptableObject instanceof BugGroup
+					|| adaptableObject instanceof BugAnnotation) {
 				return new PropertySource(adaptableObject);
 			}
 			IMarker marker = null;
