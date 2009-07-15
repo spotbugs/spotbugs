@@ -153,13 +153,14 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			break;
 
 		case SEEN_NEW:
-			if (DEBUG && seen == INVOKEVIRTUAL) {
-				System.out.println("Invoke virtual");
-				System.out.println("   " + getNameConstantOperand());
-				System.out.println("   " + getClassConstantOperand());
-				System.out.println("   " + getSigConstantOperand());
-			}
-			if (seen == INVOKEVIRTUAL
+			if (seen == INVOKESPECIAL 
+					&& "<init>".equals(getNameConstantOperand())
+					&& "(Ljava/lang/String;)V".equals(getSigConstantOperand())
+					&& getClassConstantOperand().startsWith("java/lang/StringBu")
+					&& registerOnStack >= 0) {
+				state = SEEN_APPEND1;
+				stringSource = registerOnStack;
+			} else if (seen == INVOKEVIRTUAL
 					&& "append".equals(getNameConstantOperand())
 					&& getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				if (DEBUG) System.out.println("Saw string being appended from register " + registerOnStack);
@@ -248,23 +249,29 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			}
 			break;
 		}
-		registerOnStack = -1;
-		switch (seen) {
-		case ALOAD_0:
-			registerOnStack = 0;
-			break;
-		case ALOAD_1:
-			registerOnStack = 1;
-			break;
-		case ALOAD_2:
-			registerOnStack = 2;
-			break;
-		case ALOAD_3:
-			registerOnStack = 3;
-			break;
-		case ALOAD:
-			registerOnStack = getRegisterOperand();
-			break;
+		
+		if (seen == INVOKESTATIC && getNameConstantOperand().equals("valueOf") && getClassConstantOperand().equals("java/lang/String") 
+				&& getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/String;")) {
+			// leave registerOnStack unchanged
+		} else {
+			registerOnStack = -1;
+			switch (seen) {
+			case ALOAD_0:
+				registerOnStack = 0;
+				break;
+			case ALOAD_1:
+				registerOnStack = 1;
+				break;
+			case ALOAD_2:
+				registerOnStack = 2;
+				break;
+			case ALOAD_3:
+				registerOnStack = 3;
+				break;
+			case ALOAD:
+				registerOnStack = getRegisterOperand();
+				break;
+			}
 		}
 		if (DEBUG && state != oldState)
 			System.out.println("At PC " + getPC()
