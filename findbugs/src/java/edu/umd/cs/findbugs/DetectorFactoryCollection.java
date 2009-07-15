@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -37,6 +38,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
 
 /**
@@ -49,6 +51,8 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
  */
 public class DetectorFactoryCollection {
 	private HashMap<String, Plugin> pluginByIdMap = new HashMap<String, Plugin>();
+	private Plugin corePlugin;
+	private BugRanker adjustmentBugRanker;
 	private ArrayList<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
 	private HashMap<String, DetectorFactory> factoriesByDetectorClassName =
@@ -82,7 +86,7 @@ public class DetectorFactoryCollection {
 	}
 
 	/**
-	 * Set the instance that should be retured as the singleton instance.
+	 * Set the instance that should be returned as the singleton instance.
 	 * 
 	 * @param instance the singleton instance to be set
 	 */
@@ -137,6 +141,16 @@ public class DetectorFactoryCollection {
 	public Iterable<Plugin> plugins() {
 		ensureLoaded();
 		return pluginByIdMap.values();
+	}
+	
+	Plugin getCorePlugin() {
+		ensureLoaded();
+		return corePlugin;
+	}
+	
+	BugRanker getAdjustmentBugRanker() {
+		ensureLoaded();
+		return adjustmentBugRanker;
 	}
 
 	/**
@@ -317,11 +331,19 @@ public class DetectorFactoryCollection {
 		PluginLoader corePluginLoader = new PluginLoader();
 		try {
 			loadPlugin(corePluginLoader);
+			corePlugin = corePluginLoader.getPlugin();
 		} catch (PluginException e) {
 			throw new IllegalStateException("Warning: could not load FindBugs core plugin: " + e.toString(), e);
 		}
+		
+		URL u = PluginLoader.loadFromFindBugsEtcDir(BugRanker.ADJUST_FILENAME);
+        
+		try {
+			adjustmentBugRanker = new BugRanker(u);
+        } catch (IOException e1) {
+	       AnalysisContext.logError("Unable to parse " + u, e1);
+        }
 
-		// If we are running under jaws, just use the loaded plugin
 		if (SystemProperties.getBoolean("findbugs.jaws")) {
 			URL pluginList = PluginLoader.getCoreResource("pluginlist.properties");
 			List<URL> plugins = new ArrayList<URL>();

@@ -230,7 +230,7 @@ public abstract class FindBugs  {
 		boolean isNonReportingDetector = factory.isDetectorClassSubtypeOf(FirstPassDetector.class);
 		if (!isNonReportingDetector && !reportedBugPatterns.isEmpty()) {
 			for (BugPattern b : reportedBugPatterns) {
-				int rank = BugRanker.findRank(b, Priorities.HIGH_PRIORITY);
+				int rank = BugRanker.findRank(b, factory.getPlugin(), Priorities.HIGH_PRIORITY);
 				if (maxRank > rank)
 					maxRank = rank;
 			}
