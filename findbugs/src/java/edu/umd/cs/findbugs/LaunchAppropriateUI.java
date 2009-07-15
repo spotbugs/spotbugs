@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.gui2.Driver;
+
 /**
  * Class to launch the appropriate textUI or GUI.
  * This class is the Main-Class in the findbugs.jar
@@ -107,24 +109,7 @@ public class LaunchAppropriateUI {
 		} else if (launchProperty == SHOW_VERSION) {
 			Version.main(new String[]{"-release"});
 		} else {
-			String version = System.getProperty("java.version");
-
-			Class<?> launchClass = null;
-			if ("1.5".compareTo(version) <= 0) {
-				try {
-					launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver", false,
-						LaunchAppropriateUI.class.getClassLoader());
-				} catch (ClassNotFoundException e) {
-					assert true;
-				}
-			}
-			
-			if (launchClass == null || launchProperty == GUI1) {
-				launchClass = edu.umd.cs.findbugs.gui.FindBugsFrame.class;
-			}
-
-			Method mainMethod = launchClass.getMethod("main", args.getClass());
-			mainMethod.invoke(null, (Object) args);
+			Driver.main(args);
 		}
 		
 	}
