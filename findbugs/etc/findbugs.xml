@@ -125,6 +125,10 @@
 	</WithinPass>
 	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindMaskedFields"/>
 	</WithinPass>
 	<WithinPass>
