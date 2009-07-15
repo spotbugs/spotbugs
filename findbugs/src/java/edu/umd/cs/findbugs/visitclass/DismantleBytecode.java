@@ -878,7 +878,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		formatter.setGroupingUsed(false);
 	}
 	public void printOpCode( int seen) {
-		System.out.print("  TestingGround: [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
+		System.out.print("  " + this.getClass().getSimpleName() + ": [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
 		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
 		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
