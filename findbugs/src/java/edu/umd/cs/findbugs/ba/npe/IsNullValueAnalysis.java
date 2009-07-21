@@ -194,7 +194,6 @@ public class IsNullValueAnalysis
 				result.setDecision(null);
 			else {
 				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
-				//if (DEBUG) System.out.println("Decision=" + decision);
 				result.setDecision(decision);
 			}
 		}
@@ -363,8 +362,6 @@ public class IsNullValueAnalysis
 								System.out.println("Updating edge information for " + decision.getValue());
 							}
 							final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
-							// TODO: prevIsNullValueFrame is not used
-							final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
 							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
 							IsNullValue decisionValue = decision.getDecision(edgeType);
@@ -531,14 +528,17 @@ public class IsNullValueAnalysis
 			return null; // doesn't end in null comparison
 
 		final short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
-		// System.out.println("last opcode: " + Constants.OPCODE_NAMES[lastInSourceOpcode]);
 		if (lastInSourceOpcode == Constants.IFEQ || lastInSourceOpcode == Constants.IFNE ) {
+			// check for instanceof check
 			InstructionHandle prev = lastInSourceHandle.getPrev();
-			if (prev == null) return null;
+			if (prev == null) 
+				return null;
 			short secondToLastOpcode = prev.getInstruction().getOpcode();
 			// System.out.println("Second last opcode: " +  Constants.OPCODE_NAMES[secondToLastOpcode]);
-			if (secondToLastOpcode != Constants.INSTANCEOF) return null;
-			if (instanceOfFrame == null) return null;
+			if (secondToLastOpcode != Constants.INSTANCEOF) 
+				return null;
+			if (instanceOfFrame == null) 
+				return null;
 			IsNullValue tos = instanceOfFrame.getTopValue();
 			boolean isNotInstanceOf = (lastInSourceOpcode != Constants.IFNE);
 			Location atInstanceOf = new Location(prev, basicBlock);
@@ -601,7 +601,7 @@ public class IsNullValueAnalysis
 				ValueNumber value;
 
 				if (tosNull && nextToTosNull) {
-					// Redundant comparision: both values are null, only one branch is feasible
+					// Redundant comparison: both values are null, only one branch is feasible
 					value = null; // no value will be replaced - just want to indicate that one of the branches is infeasible
 					if (cmpeq)
 						ifcmpDecision = IsNullValue.pathSensitiveNullValue();
@@ -636,7 +636,7 @@ public class IsNullValueAnalysis
 					}
 				} else {
 					// No information gained
-					break;
+					return null;
 				}
 
 				return new IsNullConditionDecision(value, ifcmpDecision, fallThroughDecision);
@@ -645,7 +645,7 @@ public class IsNullValueAnalysis
 			throw new IllegalStateException();
 		}
 
-		return null; // no information gained
+		
 	}
 
 	private IsNullConditionDecision handleIfNull(IsNullValue tos, ValueNumber prevTopValue, boolean ifnull) {
@@ -761,26 +761,6 @@ public class IsNullValueAnalysis
 		return result;
 	}
 
-//	/**
-//	 * Test driver.
-//	 */
-//	public static void main(String[] argv) throws Exception {
-//		if (argv.length != 1) {
-//			System.err.println("Usage: " + IsNullValueAnalysis.class.getName() + " <class file>");
-//			System.exit(1);
-//		}
-//
-//		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
-//			@Override
-//			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
-//					throws CFGBuilderException, DataflowAnalysisException {
-//
-//				return classContext.getIsNullValueDataflow(method);
-//			}
-//		};
-//
-//		driver.execute(argv[0]);
-//	}
 
 }
 

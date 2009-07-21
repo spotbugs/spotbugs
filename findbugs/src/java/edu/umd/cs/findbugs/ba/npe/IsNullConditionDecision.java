@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.util.Util;
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  */
-public class IsNullConditionDecision implements EdgeTypes {
+public class IsNullConditionDecision {
 	private final @CheckForNull ValueNumber value;
 	private final @CheckForNull IsNullValue ifcmpDecision;
 	private final @CheckForNull IsNullValue fallThroughDecision;
@@ -107,11 +107,14 @@ public class IsNullConditionDecision implements EdgeTypes {
 	 *         if the edge is infeasible
 	 */
 	public @CheckForNull IsNullValue getDecision(int edgeType) {
-		assert edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE;
-		if (edgeType == IFCMP_EDGE)
+		switch(edgeType) {
+		case EdgeTypes.IFCMP_EDGE:
 			return ifcmpDecision;
-		else
+		case EdgeTypes.FALL_THROUGH_EDGE:
 			return fallThroughDecision;
+		default:
+			throw new IllegalArgumentException("Bad edge type: " + edgeType);
+		}
 	}
 
 	@Override
