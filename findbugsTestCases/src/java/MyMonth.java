@@ -2,11 +2,14 @@
 
 import java.util.Date;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class MyMonth extends Date{
 
 	/**
 	 * @param args
 	 */
+	@ExpectWarning("DMI,DLS")
 	public static void main(String[] args) {
 
 		Date x=new Date();

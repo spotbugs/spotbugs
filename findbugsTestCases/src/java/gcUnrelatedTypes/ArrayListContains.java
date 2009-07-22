@@ -2,6 +2,8 @@ package gcUnrelatedTypes;
 
 import java.util.ArrayList;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class ArrayListContains<T> {
 
 	static class Dummy {
@@ -26,7 +28,7 @@ public class ArrayListContains<T> {
 	private ArrayList<? extends T> genericEF;
 	private ArrayList<? super T> genericSF;		
 
-
+	@ExpectWarning("GC")
 	public ArrayListContains(
 			ArrayList<?> wildcardF, 
 			ArrayList<Dummy> dummyF, 
@@ -95,7 +97,7 @@ public class ArrayListContains<T> {
 
 	}
 
-
+	@ExpectWarning("GC")
 	public void testFields() {
 		Dummy dummy = new Dummy();
 		DummyChild dummyChild = new DummyChild();

@@ -1,8 +1,11 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 class SwitchFallthrough {
 	
 	static class DeadStoreToField {
 	int x;
 	
+	@ExpectWarning("SF")
 	void deadStoreToField(int i) {
 		switch(i) {
 		case 0:
@@ -21,6 +24,7 @@ class SwitchFallthrough {
 
 	}
 	}
+	@ExpectWarning("SF")
 	int reallyBad(int i) {
 		int result = 0;
 		switch(i) {
@@ -40,6 +44,7 @@ class SwitchFallthrough {
 		return result;
 
 	}
+	@ExpectWarning("SF")
 	int notSoBad(int i) {
 		int result = 0;
 		int x=0;

@@ -1,6 +1,9 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Getter {
 	int x;
 
+	@ExpectWarning("UG")
 	public int getX() {
 		return x;
 	}

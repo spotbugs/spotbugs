@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1923609 {
 	
 	// Attempt to get FindBugs to warn on writing a HashMap to an ObjectOutputStream
-	
+	@NoWarning("DMI")
 	public void writeMapStringString() throws IOException {
 		ObjectOutputStream os = new ObjectOutputStream(new ByteArrayOutputStream());
 		Map<String,String> m = new HashMap<String,String>();
@@ -29,6 +32,7 @@ public class Bug1923609 {
 		}
 	}
 	
+	@NoWarning("DMI")
 	public void writeMapThreadThread() throws IOException {
 		ObjectOutputStream os = new ObjectOutputStream(new ByteArrayOutputStream());
 		Map<Thread,Thread> m = new HashMap<Thread,Thread>();
@@ -113,6 +117,7 @@ public class Bug1923609 {
 		
 	}
 
+	@ExpectWarning("DMI")
 	public void writeMyMap() throws IOException {
  		ObjectOutputStream os = new ObjectOutputStream(new ByteArrayOutputStream());
 		Map<String,String> m = new MyMap<String,String>();

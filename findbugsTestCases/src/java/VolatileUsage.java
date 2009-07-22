@@ -1,4 +1,7 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 class VolatileUsage {
+	@ExpectWarning("VO")
 	volatile int[] a;
 
 	int[] b;

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class EvenUnknownTypesAreNotRecursive {
 	
 	/** Really, we want this to be a class that is not available for analysis */
@@ -16,6 +18,7 @@ public class EvenUnknownTypesAreNotRecursive {
 	/**
 	 * @param args
 	 */
+	@ExpectWarning("DMI,GC")
 	public static void main(String args[]) {
 		
 		Set<A> sa = new HashSet<A>();

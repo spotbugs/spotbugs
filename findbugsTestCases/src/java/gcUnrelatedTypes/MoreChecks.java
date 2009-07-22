@@ -3,7 +3,10 @@ package gcUnrelatedTypes;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class MoreChecks {
+	@ExpectWarning("GC")
 	public void test() {
 		LinkedList<Integer> lst = new LinkedList<Integer>();
 		lst.add(1);

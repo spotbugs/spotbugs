@@ -1,6 +1,10 @@
 import java.util.Date;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class FormatString {
+	@ExpectWarning("FS")
 	public static void main(String args[]) {
 		falsePositive();
 		
@@ -21,6 +25,7 @@ public class FormatString {
 		varargsMethod((Object[]) args);
 	}
 
+	@NoWarning("FS")
 	public static void falsePositive() {
 		System.out.printf("last updated %1$tY-%1$tm-%1$te %1$tH:%1$tM:%1$tS.%1$tL, threshold %2$d min.\n",
                 new Date(),

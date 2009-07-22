@@ -3,12 +3,14 @@ package sfBugs;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Bug1874856 {
 
 	public static void main(String args[]) {
 		falsePositive();
 	}
-		
+	@ExpectWarning("FS")	
 	public static void falsePositive() {
 		// None of these should yield warnings; NOT TRUE
 		Calendar c = new GregorianCalendar(1993, 4, 23);

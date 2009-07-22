@@ -71,6 +71,7 @@ public class Bug2539590 {
 		}
 	}
 
+	@ExpectWarning("SF")
 	public static int fallthroughMethodNoDefaultClobber(int which) {
 		int result = 0;
 		switch (which) {

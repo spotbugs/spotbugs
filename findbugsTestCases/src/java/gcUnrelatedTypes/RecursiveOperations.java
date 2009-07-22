@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class RecursiveOperations {
 	
+	@ExpectWarning("DMI")
 	public static void main(String args []) {
 		Set s = new HashSet();
 		s.contains(s);
