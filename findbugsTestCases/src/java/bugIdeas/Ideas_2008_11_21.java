@@ -2,6 +2,8 @@ package bugIdeas;
 
 import java.util.Date;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Ideas_2008_11_21 {
 	
 	
@@ -16,6 +18,7 @@ public class Ideas_2008_11_21 {
 		return (flags & FOO) != 0;
 	}
 	
+	@ExpectWarning("BSHIFT")
 	boolean testShift(int x) {
 		return x == x >>> 32;
 	}
