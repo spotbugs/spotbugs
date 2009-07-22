@@ -33,7 +33,39 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
+
 public class IsNullValueFrame extends Frame<IsNullValue> {
+	
+	static class PointerEqualityInfo {
+		final ValueNumber addr1, addr2;
+		final boolean areEqual;
+		public PointerEqualityInfo(ValueNumber addr1, ValueNumber addr2, boolean areEqual) {
+	        if (addr1.getNumber() > addr2.getNumber()) {
+	        	ValueNumber tmp = addr1;
+	        	addr1 = addr2;
+	        	addr2 = tmp;
+	        }
+	        this.addr1 = addr1;
+	        this.addr2 = addr2;
+	        this.areEqual = areEqual;
+        }
+		
+        @Override
+        public int hashCode() {
+	       throw new UnsupportedOperationException();
+        }
+		
+        @Override
+        public boolean equals(Object obj) {
+	        if (this == obj)
+		        return true;
+	        if (!(obj instanceof PointerEqualityInfo))
+		        return false;
+	        PointerEqualityInfo other = (PointerEqualityInfo) obj;
+	        return this.addr1.equals(other.addr1) && this.addr2.equals(other.addr2) && this.areEqual == other.areEqual;
+        }
+
+	}
 	private IsNullConditionDecision decision;
 	private boolean trackValueNumbers;
 	private Map<ValueNumber, IsNullValue> knownValueMap;
@@ -47,7 +79,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 
 	public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
-		if (vnaFrameAfter.isTop() && !isTop()) throw new IllegalArgumentException("VNA frame is top");
+		if (vnaFrameAfter.isTop() && !isTop()) 
+			throw new IllegalArgumentException("VNA frame is top");
 		if (!trackValueNumbers) return;
 		if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) return;
 		for(Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext(); ) {
@@ -99,8 +132,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 	public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
-		if (oldValueNumber == null || newValueNumber == null) throw new NullPointerException();
-		if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) return;
+		if (oldValueNumber == null || newValueNumber == null) 
+			throw new NullPointerException();
+		if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) 
+			return;
 		IsNullValue isNullValue = knownValueMap.get(oldValueNumber);
 		if (isNullValue != null) {
 			knownValueMap.put(newValueNumber, isNullValue);
@@ -141,7 +176,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			if (otherKnownValue == null) {
 				if (IsNullValueAnalysis.DEBUG) {
 					System.out.println("No match for " + entry.getKey());
-
 				}
 				continue;
 			}
@@ -177,11 +211,14 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
 	@Override
 	public boolean sameAs(Frame<IsNullValue> other) {
-		if (!(other instanceof IsNullValueFrame)) return false;
+		if (!(other instanceof IsNullValueFrame)) 
+			return false;
 		if (!super.sameAs(other)) return false;
 		IsNullValueFrame o2 = (IsNullValueFrame) other;
-		if (!Util.nullSafeEquals(decision, o2.decision)) return false;
-		if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) return false;
+		if (!Util.nullSafeEquals(decision, o2.decision)) 
+			return false;
+		if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) 
+			return false;
 
 		return true;
 	}

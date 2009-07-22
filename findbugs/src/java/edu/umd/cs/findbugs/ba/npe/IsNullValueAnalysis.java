@@ -24,7 +24,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.IF_ACMPNE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -50,9 +52,11 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -74,12 +78,12 @@ public class IsNullValueAnalysis
 		if (DEBUG) System.out.println("inva.debug enabled");
 	}
 
-	private MethodGen methodGen;
-	private IsNullValueFrameModelingVisitor visitor;
-	private ValueNumberDataflow vnaDataflow;
-	private TypeDataflow typeDataflow;
+	private final MethodGen methodGen;
+	private final IsNullValueFrameModelingVisitor visitor;
+	private final ValueNumberDataflow vnaDataflow;
+	private final TypeDataflow typeDataflow;
 	
-	private CFG cfg;
+	private final CFG cfg;
 	private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
 	private final boolean trackValueNumbers;
 
@@ -88,6 +92,7 @@ public class IsNullValueAnalysis
 	private IsNullValueFrame cachedEntryFact;
 
 	private JavaClassAndMethod classAndMethod;
+	private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
 
 	public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
 							   TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
@@ -106,10 +111,91 @@ public class IsNullValueAnalysis
 		this.typeDataflow = typeDataflow;
 		this.cfg = cfg;
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
-
+		this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
+		
 		if (DEBUG) {
 			System.out.println("IsNullValueAnalysis for " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 		}
+	}
+
+
+	enum PointerEqualityCheckState {
+		INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
+	}
+	
+	public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+		PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
+		int target = Integer.MAX_VALUE;
+		Location test = null;
+		
+		for(Location loc : cfg.orderedLocations()) {
+			Instruction ins = loc.getHandle().getInstruction();
+			switch(state) {
+			case INIT :
+				assert ins instanceof org.apache.bcel.generic.NOP;
+				state = PointerEqualityCheckState.START;
+				break;
+			case START:
+				if (ins instanceof org.apache.bcel.generic.ALOAD) 
+					state = PointerEqualityCheckState.SAW1;
+				else return null;
+				break;
+			case SAW1:
+				if (ins instanceof org.apache.bcel.generic.ALOAD) 
+					state = PointerEqualityCheckState.SAW2;
+				else return null;
+				break;
+			case SAW2:
+				if (ins instanceof org.apache.bcel.generic.IF_ACMPNE) {
+					state = PointerEqualityCheckState.IFEQUAL;
+					 target = ((IF_ACMPNE)ins).getIndex() + loc.getHandle().getPosition();
+					 test = loc;
+				} else return null;
+				break;
+			case IFEQUAL:
+				if (ins instanceof org.apache.bcel.generic.ReturnInstruction || ins instanceof ATHROW) {
+					state = PointerEqualityCheckState.IFNOTEQUAL;
+				}
+				else if (ins instanceof org.apache.bcel.generic.BranchInstruction) {
+					return null;
+				}
+				break;	
+			case IFNOTEQUAL:
+				if (loc.getHandle().getPosition() == target) {
+					try {
+						ValueNumberFrame vnaFrame = vna.getFactAtLocation(test);
+
+	                    return new PointerEqualityCheck(vnaFrame.getStackValue(0), vnaFrame.getStackValue(1), target);
+                    } catch (DataflowAnalysisException e) {
+                    	return null;
+                    }
+				}
+				else return null;
+					
+			}
+		}
+		return null;
+	}
+		
+	
+	private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+		if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC)
+			return null;
+		if (pointerEqualityCheck.reg1.equals(knownNull))
+			return pointerEqualityCheck.reg2;
+		if (pointerEqualityCheck.reg2.equals(knownNull))
+			return pointerEqualityCheck.reg1;
+		return null;
+	}
+	
+	public static class PointerEqualityCheck {
+		final ValueNumber reg1, reg2;
+		final int firstValuePC;
+		public PointerEqualityCheck(ValueNumber reg1, ValueNumber reg2, int firstValuePC) {
+	        this.reg1 = reg1;
+	        this.reg2 = reg2;
+	        this.firstValuePC = firstValuePC;
+        }
 	}
 
 	public void setClassAndMethod(JavaClassAndMethod classAndMethod) {
@@ -346,45 +432,56 @@ public class IsNullValueAnalysis
 				// Determine if the edge conveys any information about the
 				// null/non-null status of operands in the incoming frame.
 				if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE) {
-					IsNullConditionDecision decision = getResultFact(edge.getSource()).getDecision();
+					IsNullValueFrame resultFact = getResultFact(sourceBlock);
+					IsNullConditionDecision decision = resultFact.getDecision();
 					if (decision != null) {
 						if (!decision.isEdgeFeasible(edgeType)) {
 							// The incoming edge is infeasible; just use TOP
 							// as the start fact for this block.
 							tmpFact = createFact();
 							tmpFact.setTop();
-						} else if (decision.getValue() != null) {
-							// A value has been determined for this edge.
-							// Use the value to update the is-null information in
-							// the start fact for this block.
+						} else {
+	                        ValueNumber valueTested = decision.getValue();
+	                        if (valueTested != null) {
+	                        	// A value has been determined for this edge.
+	                        	// Use the value to update the is-null information in
+	                        	// the start fact for this block.
 
-							if (DEBUG) {
-								System.out.println("Updating edge information for " + decision.getValue());
-							}
-							final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
-							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+	                        	if (DEBUG) {
+	                        		System.out.println("Updating edge information for " + valueTested);
+	                        	}
+	                        	final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
+	                        	final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
-							IsNullValue decisionValue = decision.getDecision(edgeType);
-							if (decisionValue != null) {
-								if (decisionValue.isDefinitelyNull()) {
-									// Make a note of the value that has become null
-									// due to the if comparison.
-									addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
-											atIf,
-											decision.getValue()
-									));
-								}
-								if (DEBUG) {
-									System.out.println("Set decision information");
-									System.out.println("  " + decision.getValue() + " becomes " + decisionValue);
-									System.out.println("  prev available loads: " + prevVnaFrame.availableLoadMapAsString());
-									System.out.println("  target available loads: " + targetVnaFrame.availableLoadMapAsString());
-								}
-								tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
-										targetVnaFrame, decisionValue);
-							}
+	                        	IsNullValue decisionValue = decision.getDecision(edgeType);
+	                        	if (decisionValue != null) {
+	                        	
+	                        		if (DEBUG) {
+	                        			System.out.println("Set decision information");
+	                        			System.out.println("  " + valueTested + " becomes " + decisionValue);
+	                        			System.out.println("  at " + targetBlock.getFirstInstruction().getPosition());
+	                        			System.out.println("  prev available loads: " + prevVnaFrame.availableLoadMapAsString());
+	                        			System.out.println("  target available loads: " + targetVnaFrame.availableLoadMapAsString());
+	                        		}
+	                        		tmpFact = replaceValues(fact, tmpFact, valueTested, prevVnaFrame,
+	                        				targetVnaFrame, decisionValue);
+	                        		if (decisionValue.isDefinitelyNull()) {
+	                        			// Make a note of the value that has become null
+	                        			// due to the if comparison.
+	                        			addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
+	                        					atIf,
+	                        					valueTested
+	                        			));
+	                        			ValueNumber knownNonnull = getKnownNonnullDueToPointerDisequality(valueTested, 
+	                        					atIf.getHandle().getPosition());
+	                        			if (knownNonnull != null)
+	                        			  tmpFact = replaceValues(fact, tmpFact, knownNonnull, prevVnaFrame,
+		                        			  	targetVnaFrame, IsNullValue.checkedNonNullValue());
+	                        		}
+	                        	}
 
-						}
+	                        }
+                        }
 					}
 				} // if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE)
 
