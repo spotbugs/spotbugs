@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class UserMistakes {
+	@ExpectWarning("RE,RV")
 	public static void main(String[] args) throws IOException {
 		String name="Mr. Ed";
 		name=name.replaceAll(".", "s.");

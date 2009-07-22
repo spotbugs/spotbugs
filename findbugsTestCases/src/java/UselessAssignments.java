@@ -1,6 +1,10 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 class UselessAssignments {
+	@ExpectWarning("UuF,UrF")
 	int foo, bar,g1,g2;
 
+	@ExpectWarning("DLS,SA")
 	public UselessAssignments(int Foo, int Bar) {
 		int x,y;
 		foo = foo;

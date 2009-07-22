@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class UncalledPrivateMethod {
 	// Interesting tidbit:
 	// Sun's javac makes class initializer methods "default static",
@@ -5,6 +7,7 @@ public class UncalledPrivateMethod {
 	// lead to spurious warnings.
 	private static final Object myObject = new Object();
 
+	@ExpectWarning("UrF")
 	String s;
 
 	private void foo(String s) {
@@ -15,6 +18,7 @@ public class UncalledPrivateMethod {
 		System.out.println(s);
 	}
 
+	@ExpectWarning("UPM")
 	private void foobar(int i) {
 	}
 
