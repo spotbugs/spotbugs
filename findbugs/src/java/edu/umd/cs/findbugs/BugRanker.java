@@ -178,20 +178,18 @@ public class BugRanker {
     }
 	
     private static BugRanker getAdjustmentBugRanker() {
-    	IAnalysisCache analysisCache = Global.getAnalysisCache();
-    	DetectorFactoryCollection factory = analysisCache.getDatabase(DetectorFactoryCollection.class);
-    	return factory.getAdjustmentBugRanker();
+    	DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
+		return factory.getAdjustmentBugRanker();
     }
     private static BugRanker getCoreRanker() {
-    	IAnalysisCache analysisCache = Global.getAnalysisCache();
-    	DetectorFactoryCollection factory = analysisCache.getDatabase(DetectorFactoryCollection.class);
-    	return factory.getCorePlugin().getBugRanker();
+    	DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
+		return factory.getCorePlugin().getBugRanker();
     }
 	public static int findRank(BugInstance bug) {
 		DetectorFactory detectorFactory = bug.getDetectorFactory();
 		Plugin plugin = detectorFactory == null ? null : detectorFactory.getPlugin();
 		BugRanker adjustmentRanker = getAdjustmentBugRanker();
-		BugRanker pluginRanker = plugin.getBugRanker();
+		BugRanker pluginRanker = plugin == null ? null : plugin.getBugRanker();
 		BugRanker coreRanker = getCoreRanker();
 		if (pluginRanker == coreRanker)
 			return rankBug(bug, adjustmentRanker, coreRanker);
