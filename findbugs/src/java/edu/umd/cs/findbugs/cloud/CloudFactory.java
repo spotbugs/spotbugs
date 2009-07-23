@@ -34,7 +34,7 @@ public class CloudFactory {
 	
 	public static Cloud getDatabaseCloud(BugCollection bc) {
 		if (bc == null) 
-			return new BugCollectionStorageCloud(bc);
+			throw new NullPointerException("bug collection must be nonnull");
 		Cloud c = new DBCloud(bc);
 		if (c.initialize())
 			return c;

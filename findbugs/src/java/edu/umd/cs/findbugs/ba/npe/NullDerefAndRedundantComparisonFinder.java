@@ -725,7 +725,6 @@ public class NullDerefAndRedundantComparisonFinder {
 		
 		boolean isConsistent = true;
 		Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
-		BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		LineNumberTable table = method.getLineNumberTable();
 		int position = exceptionThrowerHandle.getPosition();
 		int line = table == null ? 0 : table.getSourceLine(position);

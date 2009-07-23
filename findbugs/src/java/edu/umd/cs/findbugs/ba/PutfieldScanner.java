@@ -45,7 +45,7 @@ public class PutfieldScanner {
 
 	static class Scanner extends OpcodeStackDetector {
 
-		 Map<Integer, OpcodeStack.Item>  putfields =  new TreeMap<Integer, OpcodeStack.Item> ();
+		Map<Integer, OpcodeStack.Item>  putfields =  new TreeMap<Integer, OpcodeStack.Item> ();
 		public Scanner(JavaClass theClass, Method targetMethod, XField target) {
 			this.theClass = theClass;
 			this.targetMethod = targetMethod;
@@ -60,7 +60,10 @@ public class PutfieldScanner {
 
 		@Override
 		public void sawOpcode(int seen) {
-			if (seen == PUTFIELD && getXFieldOperand().equals(targetField) 
+			if (seen != PUTFIELD)
+				return;
+			XField xFieldOperand = getXFieldOperand();
+			if (xFieldOperand != null && xFieldOperand.equals(targetField) 
 					&& stack.getStackItem(1).getRegisterNumber() == 0)
 				putfields.put(getPC(), new OpcodeStack.Item(stack.getStackItem(0)));
 				

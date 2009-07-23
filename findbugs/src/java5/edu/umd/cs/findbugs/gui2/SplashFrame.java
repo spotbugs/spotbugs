@@ -67,8 +67,6 @@ public class SplashFrame extends JWindow
 		getContentPane().add(p, BorderLayout.CENTER);
 		getContentPane().add(bottom, BorderLayout.SOUTH);
 		pack();
-		Dimension screenSize =
-			Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension labelSize = l.getPreferredSize();
 		p.setPreferredSize(new Dimension(labelSize.width + 50, labelSize.height + 20));
 		p.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));

@@ -595,8 +595,6 @@ public  class DBCloud extends AbstractCloud {
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
 			boolean result = false;
 			if (rs.next()) {
-				int count = rs.getInt(1);
-				
 				result = true;
 			}
 			rs.close();
@@ -867,6 +865,7 @@ public  class DBCloud extends AbstractCloud {
 					bugDesignationId.put(bd, id);
 				}
 				rs.close();
+				insertEvaluation.close();
 
 			} catch (Exception e) {
 				displayMessage("Problems looking up user annotations", e);
@@ -1579,8 +1578,6 @@ public  class DBCloud extends AbstractCloud {
 			ps.setString(1, b.getInstanceHash());
 			ResultSet rs = ps.executeQuery();
 
-			rs = ps.executeQuery();
-
 			Timestamp pendingFiledAt = null;
 
 			while (rs.next()) {
@@ -1718,10 +1715,10 @@ public  class DBCloud extends AbstractCloud {
 	    	}
 	    	firstBugRequest = false;
 	    	String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-	    	if (u.length() > MAX_URL_LENGTH) {
+	    	if (u.length() > maxURLLength) {
 	    		report = getBugReportShorter(b);
 	    		u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-	    		if (u.length() > MAX_URL_LENGTH) {
+	    		if (u.length() > maxURLLength) {
 	    			report = getBugReportAbridged(b);
 	    			u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
 	    			String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
@@ -1777,8 +1774,9 @@ public  class DBCloud extends AbstractCloud {
 			if (findbugsUser.equals(d.getUser())|| canSeeCommentsByOthers ) {
 				builder.append(String.format("%s @ %s: %s\n", d.getUser(), format.format(new Timestamp(d.getTimestamp())), 
 						i18n.getUserDesignation(d.getDesignationKey())));
-				if (d.getAnnotationText().length() > 0) {
-					builder.append(d.getAnnotationText());
+				String annotationText = d.getAnnotationText();
+				if (annotationText != null && annotationText.length() > 0) {
+					builder.append(annotationText);
 					builder.append("\n\n");
 				}
 			}
@@ -1875,7 +1873,6 @@ public  class DBCloud extends AbstractCloud {
     	checkForShutdown();
 		
     	if (bugAlreadyFiled(b)) {
-    		BugData bd = getBugData(b.getInstanceHash());
     		return;
     	}
     	queue.add(new FileBug(b));

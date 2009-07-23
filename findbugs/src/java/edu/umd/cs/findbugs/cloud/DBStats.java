@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.util.FractionalMultiset;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
+import edu.umd.cs.findbugs.util.Util;
 
 
 
@@ -136,6 +137,26 @@ public class DBStats {
 	
 	
 	static class TimeSeries<K, V extends Comparable<? super V>> implements Comparable<TimeSeries<K,V>>{
+		@Override
+        public int hashCode() {
+	        final int prime = 31;
+	        int result = 1;
+	        result = prime * result + ((k == null) ? 0 : k.hashCode());
+	        result = prime * result + ((v == null) ? 0 : v.hashCode());
+	        return result;
+        }
+
+
+		@Override
+        public boolean equals(Object obj) {
+	        if (this == obj)
+		        return true;
+	        if (!(obj instanceof TimeSeries))
+		        return false;
+	        TimeSeries other = (TimeSeries) obj;
+	      return Util.nullSafeEquals(this.k, other.k) && Util.nullSafeEquals(this.v, other.v);
+        }
+
 		final K k;
 		final int keyHash;
 		final V v;

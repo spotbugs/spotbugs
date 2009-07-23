@@ -78,7 +78,6 @@ public class BugLoader {
 		fb.setProjectName(p.getProjectName());
 
 		fb.execute();
-		List<String> possibleDirectories=p.getSourceDirList();
 		MainFrame instance = MainFrame.getInstance();
 
 		SourceFinder sourceFinder = new SourceFinder(p);

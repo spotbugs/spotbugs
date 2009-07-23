@@ -310,7 +310,7 @@ public class MergeSummarizeAndView {
 		originalMode = cloud.getMode();
 
 		cloud.setMode(Cloud.Mode.COMMUNAL);
-		long old = System.currentTimeMillis() - options.maxAge * 24 * 3600 * 1000L;
+		long old = System.currentTimeMillis() - options.maxAge * (24 * 3600 * 1000L);
 		if (options.baselineDate != null) {
 			long old2 = options.baselineDate.getTime();
 			if (old2 > old) 

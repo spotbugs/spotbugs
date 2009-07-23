@@ -180,7 +180,6 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugsIssues");
 			boolean result = false;
 			if (rs.next()) {
-				int count = rs.getInt(1);
 				if (!GraphicsEnvironment.isHeadless() && project.isGuiAvaliable()) {
 					int choice = project.getGuiCallback().showConfirmDialog(
 					        "Store comments in " + dbName + " as user " + findbugsUser + "?", "Connect to database?",
@@ -467,7 +466,7 @@ public class JDBCUserAnnotationPlugin implements UserAnnotationPlugin {
 			updateUserAnnotation.setString(col++, annotationText);
 			updateUserAnnotation.setDate(col++, new java.sql.Date(Math.max(lastSeen.getTime(), timestamp)));
 			updateUserAnnotation.setInt(col++, id);
-			boolean result = updateUserAnnotation.execute();
+			updateUserAnnotation.execute();
 			return;
 
 		}

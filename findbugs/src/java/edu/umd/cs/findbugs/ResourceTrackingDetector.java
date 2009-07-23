@@ -141,8 +141,6 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	private boolean mightCloseResource(ClassContext classContext, Method method,
 	        ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
 
-		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
-
 		CFG cfg = classContext.getCFG(method);
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 

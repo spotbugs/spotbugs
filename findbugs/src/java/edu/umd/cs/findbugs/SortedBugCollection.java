@@ -1236,7 +1236,8 @@ public class SortedBugCollection implements BugCollection {
     public Cloud reinitializeCloud() {
     	userAnnotationPlugin = null;
     	Cloud cloud = getCloud();
-    	cloud.bugsPopulated();
+    	if (cloud != null) 
+    		cloud.bugsPopulated();
     	return cloud;
     }
 	/* (non-Javadoc)

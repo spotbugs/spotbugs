@@ -46,12 +46,9 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends OpcodeStackDetector {
 
-	BugReporter bugReporter;
-
-	BugAccumulator accumulator;
+	final BugAccumulator accumulator;
 
 	public ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 		this.accumulator = new BugAccumulator(bugReporter);
 	}
 	

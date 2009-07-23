@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -234,12 +236,28 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	
 	public static class FinalConstant extends ObjectType {
 		private static final long serialVersionUID = 1L;
-		final XField field;
-
-		public FinalConstant(@DottedClassName String type, XField field) {
+		final  @Nonnull XField field;
+		public FinalConstant(@DottedClassName String type, @Nonnull XField field) {
 			super(type);
 			this.field = field;
 		}
+
+		@Override
+        public int hashCode() {
+	      return  super.hashCode() * 31 + field.hashCode();
+	      
+        }
+
+		@Override
+        public boolean equals(Object obj) {
+	        if (this == obj)
+		        return true;
+	        if (!(obj instanceof FinalConstant))
+		        return false;
+	        FinalConstant other = (FinalConstant) obj;
+	        return this.field.equals(other.field);
+        }
+
 
 		public XField getXField() {
 			return field;

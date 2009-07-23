@@ -237,22 +237,24 @@ public class SourceFinder {
 				InputStream in = null;
 				OutputStream out = null;
 				try {
-				URLConnection connection = new URL(url).openConnection();
-				if(getProject().isGuiAvaliable()){
-					int size = connection.getContentLength();
-					in =  getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), 
-							size, "Loading source via url");
-				} else {
-					in = connection.getInputStream();
-				}
-				out = new FileOutputStream(file);
-				IO.copy(in, out);
-				r.setBase(new ZipSourceRepository(new ZipFile(file)));
+					URLConnection connection = new URL(url).openConnection();
+					if(getProject().isGuiAvaliable()){
+						int size = connection.getContentLength();
+						in =  getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), 
+								size, "Loading source via url");
+					} else {
+						in = connection.getInputStream();
+					}
+					out = new FileOutputStream(file);
+					IO.copy(in, out);
+					r.setBase(new ZipSourceRepository(new ZipFile(file)));
 				} catch (IOException e) {
+					assert true;
+				} finally {
 					Util.closeSilently(in);
 					Util.closeSilently(out);
 				}
-            }}, "Source loading thread");
+			}}, "Source loading thread");
 		t.setDaemon(true);
 		t.start();
 		return r;

@@ -58,7 +58,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author David Hovemeyer
  */
 public class AnalysisRun {
-	private Project project;
 	private FindBugsFrame frame;
 	private String summary;
 	private Logger logger;
@@ -70,7 +69,6 @@ public class AnalysisRun {
 	 * Creates a new instance of AnalysisRun.
 	 */
 	public AnalysisRun(Project project, FindBugsFrame frame) {
-		this.project = project;
 		this.frame = frame;
 		this.logger = frame.getLogger();
 		this.reporter = new SwingGUIBugReporter(this);

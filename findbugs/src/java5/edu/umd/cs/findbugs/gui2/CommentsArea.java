@@ -686,7 +686,8 @@ public class CommentsArea {
 			designationComboBox.setSelectedIndex(0);
 		}
 		userCommentsText.setText(getNonLeafCommentsText(theAspects));
-		if (getCloud().getMode() == Cloud.Mode.VOTING) {
+		Cloud cloud = getCloud();
+		if (cloud != null && cloud.getMode() == Cloud.Mode.VOTING) {
 			userCommentsText.setEnabled(false);
 		}
 		fileBug.setEnabled(false);

@@ -53,7 +53,7 @@ public class OpcodeStackScanner {
 
 	static class Scanner extends OpcodeStackDetector {
 
-		public Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
+		Scanner(JavaClass theClass, Method targetMethod, int targetPC) {
 			this.theClass = theClass;
 			this.targetMethod = targetMethod;
 			this.targetPC = targetPC;

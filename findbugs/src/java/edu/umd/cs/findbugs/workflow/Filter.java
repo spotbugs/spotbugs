@@ -456,7 +456,7 @@ public class Filter {
 	static SourceSearcher sourceSearcher;
 
 	public static void main(String[] args) throws Exception {
-		DetectorFactoryCollection df = DetectorFactoryCollection.instance();
+		DetectorFactoryCollection.instance();
 		
 		final FilterCommandLine commandLine = new FilterCommandLine();
 

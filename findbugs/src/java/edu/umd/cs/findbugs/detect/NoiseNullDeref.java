@@ -149,11 +149,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 	private final BugReporter bugReporter;
 	private final BugAccumulator bugAccumulator;
 
-	// Cached database stuff
-	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
-
-	private boolean checkedDatabases = false;
-
 	// Transient state
 	private ClassContext classContext;
 
@@ -214,10 +209,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null)
 			return;
-		if (!checkedDatabases) {
-			checkDatabases();
-			checkedDatabases = true;
-		}
+		
 
 		// UsagesRequiringNonNullValues uses =
 		// classContext.getUsagesRequiringNonNullValues(method);
@@ -268,16 +260,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		return deadBlocks;
 	}
 
-	/**
-	 * Check whether or not the various interprocedural databases we can use
-	 * exist and are nonempty.
-	 */
-	private void checkDatabases() {
-		AnalysisContext analysisContext = AnalysisContext
-				.currentAnalysisContext();
-		unconditionalDerefParamDatabase = analysisContext
-				.getUnconditionalDerefParamDatabase();
-	}
+
 
 	static class CheckCallSitesAndReturnInstructions {}
 
@@ -310,7 +293,6 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase,
 		if (onExceptionPath) {
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
-		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = ValueNumberSourceInfo.findAnnotationFromValueNumber(method,
 				location, valueNumber, vnaFrame, "VALUE_OF");
 		addPropertiesForDereferenceLocations(propertySet, Collections.singleton(location));

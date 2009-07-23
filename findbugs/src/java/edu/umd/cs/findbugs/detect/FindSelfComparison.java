@@ -44,7 +44,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	}
 	String f;
 	String className;
-	int state;
 	
 	int putFieldRegister;
 	
@@ -59,7 +58,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 		// System.out.println(getFullyQualifiedMethodName());
 		whichRegister = -1;
 		registerLoadCount = 0;
-		state = 0;
 		resetDoubleAssignmentState();
 		super.visit(obj);
 		resetDoubleAssignmentState();
