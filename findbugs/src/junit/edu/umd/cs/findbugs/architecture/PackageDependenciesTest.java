@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 /**
  * Verifies the package dependencies.
  *
- * @author Tomás Pollak
+ * @author Tomas Pollak
  * @author Andrei Loskutov
  */
 public class PackageDependenciesTest extends TestCase {
