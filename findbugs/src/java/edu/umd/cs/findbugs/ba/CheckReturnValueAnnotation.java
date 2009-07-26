@@ -54,9 +54,9 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
 
 
-	@CheckForNull public static CheckReturnValueAnnotation parse(String s, String priority) {
-		if (!s.endsWith("CheckReturnValue")) return null;
-		if (priority == null) return CHECK_RETURN_VALUE_MEDIUM;
+	@CheckForNull public static CheckReturnValueAnnotation parse(String priority) {
+		if (priority == null) 
+			return CHECK_RETURN_VALUE_MEDIUM;
 		if (priority.endsWith("HIGH"))
 			return CHECK_RETURN_VALUE_HIGH;
 		if (priority.endsWith("MEDIUM"))
