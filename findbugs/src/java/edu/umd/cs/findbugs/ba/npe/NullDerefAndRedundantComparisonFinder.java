@@ -714,7 +714,8 @@ public class NullDerefAndRedundantComparisonFinder {
 			return;
 
 		
-		if (!refValue.isDefinitelyNull()) return;
+		if (!refValue.isDefinitelyNull()) 
+			return;
 		// Get the value number
 		ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getStartFact(basicBlock);
 		if (!vnaFrame.isValid())
