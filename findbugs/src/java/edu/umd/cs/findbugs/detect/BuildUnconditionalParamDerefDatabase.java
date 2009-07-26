@@ -122,6 +122,15 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 
 				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
 					TypeQualifierAnnotation directTypeQualifierAnnotation = TypeQualifierApplications.getDirectTypeQualifierAnnotation(xmethod, i, nonnullTypeQualifierValue);
+					boolean implicitNullCheckForEquals = false;
+					if (directTypeQualifierAnnotation == null 
+							&& method.getName().equals("equals")
+							&& method.getSignature().equals("(Ljava/lang/Object;)Z")
+							&& !method.isStatic()) {
+						implicitNullCheckForEquals = true;
+						directTypeQualifierAnnotation =  TypeQualifierAnnotation.getValue(nonnullTypeQualifierValue, When.MAYBE);
+					}
+							
 					if (directTypeQualifierAnnotation == null || directTypeQualifierAnnotation.when == When.ALWAYS) 
 						unconditionalDerefSet.set(i);
 					else {
@@ -131,8 +140,9 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 							priority--;
 						if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || xmethod.getName().equals("<init>") || jclass.isFinal())
 							priority--;
+						String bugPattern = implicitNullCheckForEquals ? "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" : "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE";
 						reportBug(
-								new BugInstance(this, "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", priority)
+								new BugInstance(this, bugPattern,priority)
 									.addClassAndMethod(jclass, method)
 									.add(LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
 					}
