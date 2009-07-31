@@ -487,8 +487,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			 * @see java.io.FileFilter#accept(java.io.File)
 			 */
 			public boolean accept(File pathname) {
-				String path = pathname.getParent();
-				return Archive.isArchiveFileName(path);
+				String path = pathname.getPath();
+				boolean isArchive = Archive.isArchiveFileName(path);
+				return isArchive;
 			}
 		});
 		if (fileList == null) {
