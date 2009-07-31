@@ -60,7 +60,11 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** There is only one store of this local. (Maybe it's final?) */
 	public static final DeadLocalStoreProperty SINGLE_STORE = new DeadLocalStoreProperty("SINGLE_STORE",
 			PriorityAdjustment.FALSE_POSITIVE);
-
+	
+	/** There is a dup immediately before the store; perhaps a ++ operation */
+	public static final DeadLocalStoreProperty DUP_THEN_STORE = new DeadLocalStoreProperty("DUP_THEN_STORE",
+			PriorityAdjustment.FALSE_POSITIVE);
+	
 	/** There are no loads of this local. (Maybe it's final?). */
 	public static final DeadLocalStoreProperty NO_LOADS = new DeadLocalStoreProperty("NO_LOADS",
 			PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY);

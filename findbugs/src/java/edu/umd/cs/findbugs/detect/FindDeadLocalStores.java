@@ -40,6 +40,7 @@ import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
+import org.apache.bcel.generic.DUP;
 import org.apache.bcel.generic.DUP2;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
@@ -461,9 +462,8 @@ public class FindDeadLocalStores implements Detector {
 							.equals("<init>"))
 							|| prevIns instanceof ANEWARRAY || prevIns instanceof NEWARRAY || prevIns instanceof MULTIANEWARRAY) {
 						deadObjectStore = true;
-
-					}
-
+					} else if (prevIns instanceof DUP) 
+						propertySet.addProperty(DeadLocalStoreProperty.DUP_THEN_STORE);
 				}
 				if (deadObjectStore)
 					propertySet.addProperty(DeadLocalStoreProperty.DEAD_OBJECT_STORE);
