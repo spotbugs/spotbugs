@@ -299,7 +299,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 			
 			BugInstance bug = new BugInstance(this,
 					"EQ_DOESNT_OVERRIDE_EQUALS", NORMAL_PRIORITY)
-					.addClass(this).addMethod(inheritedEquals);
+					.addClass(this).addMethod(inheritedEquals).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
 			bugReporter.reportBug(bug);
 		}  
 	}
