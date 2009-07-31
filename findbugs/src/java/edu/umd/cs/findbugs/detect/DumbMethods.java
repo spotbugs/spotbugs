@@ -256,8 +256,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 		}
 
 
-		if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL
-				&& getClassConstantOperand().equals("java/util/Random") ) {
+		if (seen == INVOKEVIRTUAL && getClassConstantOperand().equals("java/util/Random")  
+				&& (freshRandomOnTos || freshRandomOneBelowTos )) {
 			accumulator.accumulateBug(new BugInstance(this,
 					"DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
 					.addClassAndMethod(this)
