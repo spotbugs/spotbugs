@@ -98,7 +98,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String projectName="";
 	private String sourceInfoFile = null;
 	private boolean xargs = false;
-	private boolean scanNestedArchives = false;
+	private boolean scanNestedArchives = true;
 	private boolean applySuppression;
 
 	/**
