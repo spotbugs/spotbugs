@@ -117,5 +117,5 @@ exec "$fb_javacmd" \
 	-Dfindbugs.home="$findbugs_home" \
 	$jvm_debug $jvm_maxheap $jvm_ea $jvm_conservespace $jvm_user_props \
 	-Dfindbugs.launchUI=$fb_launchui \
-	-jar $FINDBUGS_HOME/lib/findbugs.jar \
+	-jar $findbugs_home/lib/findbugs.jar \
 	${@:+"$@"}
