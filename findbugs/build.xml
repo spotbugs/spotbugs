@@ -291,7 +291,6 @@
 		<jar destfile="${jar.dir}/findbugs-full-${release.number}.jar" manifest="etc/MANIFEST-findbugs-full.MF">
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
-				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/antTask/**"/>
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
