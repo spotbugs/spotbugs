@@ -349,8 +349,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 							  ResourceCollection<Stream> resourceCollection)
 			throws CFGBuilderException, DataflowAnalysisException {
 
-		if (isMainMethod(method)) return;
-
+		
 		potentialOpenStreamList.clear();
 
 		JavaClass javaClass = classContext.getJavaClass();
@@ -452,9 +451,13 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
+			String leakClass = stream.getStreamBase();
+			if (isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader")) )
+					return;
+
 			bugAccumulator.accumulateBug(new BugInstance(this, pos.bugType, pos.priority)
 					.addClassAndMethod(methodGen, sourceFile)
-					.addTypeOfNamedClass(stream.getStreamBase()).describe(TypeAnnotation.CLOSEIT_ROLE), 
+					.addTypeOfNamedClass(leakClass).describe(TypeAnnotation.CLOSEIT_ROLE), 
 					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
 		}
 	}

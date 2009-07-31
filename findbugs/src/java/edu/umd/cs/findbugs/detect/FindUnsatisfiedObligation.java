@@ -214,11 +214,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 				return;
 			}
 
-			// Don't analyze main() methods
-			if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main")
-					&& methodDescriptor.getSignature().equals("([Ljava/lang/String;)V")) {
-				return;
-			}
+			
 
 			if (DEBUG) {
 				System.out.println("*** Analyzing method " + methodDescriptor);
@@ -311,8 +307,16 @@ public class FindUnsatisfiedObligation extends CFGDetector {
 		}
 
 		private void reportWarning(Obligation obligation, State state) {
+			String className = obligation.getClassName();
+			
+			if (methodDescriptor.isStatic() && methodDescriptor.getName().equals("main")
+					&& methodDescriptor.getSignature().equals("([Ljava/lang/String;)V") 
+					&& (className.contains("InputStream") ||  className.contains("Reader"))) {
+				// Don't report unclosed input streams and readers in main() methods
+				return;
+			}
 			BugInstance bugInstance = new BugInstance(FindUnsatisfiedObligation.this, "OBL_UNSATISFIED_OBLIGATION", NORMAL_PRIORITY)
-				.addClassAndMethod(methodDescriptor).addClass(obligation.getClassName())
+				.addClassAndMethod(methodDescriptor).addClass(className)
 				.describe("CLASS_REFTYPE");
 
 			// Report how many instances of the obligation are remaining
