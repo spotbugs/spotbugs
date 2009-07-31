@@ -37,6 +37,13 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 */
 public class Footprint {
 
+	/**
+     * 
+     */
+    private static final int NOCLASSDEF_ERROR = -9;
+    private static final int CLASSCAST_ERROR = -8;
+    private static final int ERROR_ERROR = -7;
+    private static final int RUNTIME_EXCEPTION = -6;
 	private long cpuTime = -1;   // in nanoseconds
 	private long clockTime = -1; // in milliseconds
 	private long peakMem = -1;   // in bytes
@@ -62,22 +69,28 @@ public class Footprint {
 	}
 
 	private void pullData() {
-
+		
 		try {
 			cpuTime = new OperatingSystemBeanWrapper().getProcessCpuTime();
-		} catch (NoClassDefFoundError ncdfe) { cpuTime = -9; }
-		  catch (ClassCastException cce) { cpuTime = -8; }
-		  catch (Error error) { cpuTime = -7; } // catch possible Error thrown when complied by the Eclipse compiler
+		} catch (NoClassDefFoundError ncdfe) { cpuTime = NOCLASSDEF_ERROR; }
+		  catch (ClassCastException cce) { cpuTime = CLASSCAST_ERROR; }
+		  catch (Error error) { cpuTime = ERROR_ERROR; } // catch possible Error thrown when complied by the Eclipse compiler
+		  catch (RuntimeException error) { cpuTime = RUNTIME_EXCEPTION; } // catch possible Error thrown when complied by the Eclipse compiler
+
 
 		clockTime = System.currentTimeMillis(); // or new java.util.Date().getTime()	;
 
 		try {
 			peakMem = new MemoryBeanWrapper().getPeakUsage();
-		} catch (NoClassDefFoundError ncdfe) { peakMem = -9; }
+		} catch (NoClassDefFoundError ncdfe) { peakMem = NOCLASSDEF_ERROR; }
+		  catch (Error ncdfe) { peakMem = CLASSCAST_ERROR; }
+		  catch (RuntimeException ncdfe) { peakMem = RUNTIME_EXCEPTION; }
 
 		try {
 			collectionTime = new CollectionBeanWrapper().getCollectionTime();
-		} catch (NoClassDefFoundError ncdfe) { collectionTime = -9; }
+		} catch (NoClassDefFoundError ncdfe) { collectionTime = NOCLASSDEF_ERROR; }
+		  catch (Error ncdfe) { peakMem = ERROR_ERROR; }
+		  catch (RuntimeException ncdfe) { collectionTime = RUNTIME_EXCEPTION; }
 	}
 
 	public long getCpuTime() {
@@ -104,7 +117,7 @@ public class Footprint {
 
 	// -------- begin static inner classes --------
 
-	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating
+	/** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
 	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
 	public static class MemoryBeanWrapper {
 		List<MemoryPoolMXBean> mlist = ManagementFactory.getMemoryPoolMXBeans();
@@ -118,11 +131,13 @@ public class Footprint {
 			for (MemoryPoolMXBean mpBean : mlist) {
 				try {
 					java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
-					if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
+					if (memUsage != null) 
+						sum += memUsage.getUsed(); // or getCommitted()
 					// System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
 					//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
 				} catch (RuntimeException e) {
-					AnalysisContext.logError("Error getting peak usage", e);
+					assert true;
+					// AnalysisContext.logError("Error getting peak usage", e);
 				}
 			}
 			// System.out.println();
@@ -146,7 +161,7 @@ public class Footprint {
 		}
 	}
 
-	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating
+	/** Wrapper so that possible NoClassDefFoundError can be caught. Instantiating
 	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
 	public static class CollectionBeanWrapper {
 		List<GarbageCollectorMXBean> clist = ManagementFactory.getGarbageCollectorMXBeans();
