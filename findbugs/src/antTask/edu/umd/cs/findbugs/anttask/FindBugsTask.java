@@ -318,20 +318,30 @@ public class FindBugsTask extends AbstractFindBugsTask {
 	 * Set the exclude filter file 
 	 */
 	public void setExcludeFilter(File filterFile) {
-		this.excludeFile = filterFile;
+		if (filterFile!= null && filterFile.length() > 0)
+			
+		  this.excludeFile = filterFile;
+		else 
+			  this.excludeFile = null;
 	}
 
 	/**
 	 * Set the exclude filter file 
 	 */
 	public void setIncludeFilter(File filterFile) {
-		this.includeFile = filterFile;
+		if (filterFile!= null && filterFile.length() > 0)
+			this.includeFile = filterFile;
+		else
+			this.includeFile = null;
 	}
 	/**
 	 * Set the exclude filter file 
 	 */
 	public void setBaselineBugs(File baselineBugs) {
-		this.baselineBugs = baselineBugs;
+		if (baselineBugs!= null && baselineBugs.length() > 0)
+			this.baselineBugs = baselineBugs;
+		else
+			this.baselineBugs = null;
 	}
 	/**
 	 * Set the project file 
