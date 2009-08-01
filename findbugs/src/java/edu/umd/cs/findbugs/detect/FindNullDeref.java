@@ -222,6 +222,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println("Pre FND ");
 
+		if ((method.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
+			return;
+		
 		MethodGen methodGen = classContext.getMethodGen(method);
 		
 		if (methodGen == null)
