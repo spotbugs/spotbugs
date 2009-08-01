@@ -38,7 +38,9 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -143,20 +145,6 @@ public class Naming extends PreorderVisitor implements Detector {
 							// the method we don't override is also defined in our class
 							priority = NORMAL_PRIORITY;
 							intentional = true;
-						} else {
-							for (JavaClass s : clazz.getSuperClasses())
-								if ((m3 = definedIn(s, m)) != null) {
-									// the method we define is also defined in our superclass
-									priority = NORMAL_PRIORITY;
-									break;
-								}
-						if (m3 == null)
-							for (JavaClass i : clazz.getAllInterfaces())
-								if ((m3 = definedIn(i, m)) != null) {
-									priority = NORMAL_PRIORITY;
-									// the method we define is also defined in an interface
-									break;
-								}
 						}
 					} catch (ClassNotFoundException e) {
 						priority++;
@@ -171,12 +159,16 @@ public class Naming extends PreorderVisitor implements Detector {
 
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
 						String pattern = intentional ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
-
+						Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
+						if (!overrides.isEmpty()) {
+							if (intentional) 
+								break;
+							priority++;
+						}
 						BugInstance bug = new BugInstance(this, pattern, priority).addClass(m.getClassName()).addMethod(m)
-						        .addClass(m2.getClassName()).addMethod(m2);
-						if (m3 != null)
-							bug.addMethod(m3);
-						propertySet.decorateBugInstance(bug);
+						        .addClass(m2.getClassName()).describe(ClassAnnotation.SUPERCLASS_ROLE).addMethod(m2).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+						if (m3 != null) 
+							bug.addMethod(m3).describe(MethodAnnotation.METHOD_OVERRIDDEN);propertySet.decorateBugInstance(bug);
 						bugReporter.reportBug(bug);
 					} else if (!m.getSignature().equals(m2.getSignature())
 					        && removePackageNamesFromSignature(m.getSignature()).equals(
@@ -195,9 +187,9 @@ public class Naming extends PreorderVisitor implements Detector {
 							String p2 = s2.next();
 							if (!p.equals(p2)) {
 								BugInstance bug = new BugInstance(this, pattern, priority).addClass(m.getClassName())
-								        .addMethod(m).addClass(m2.getClassName()).addMethod(m2).addFoundAndExpectedType(p, p2);
-								if (m3 != null)
-									bug.addMethod(m3);
+								        .addMethod(m).addClass(m2.getClassName()).describe(ClassAnnotation.SUPERCLASS_ROLE).addMethod(m2).describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE).addFoundAndExpectedType(p, p2);
+								if (m3 != null) 
+									bug.addMethod(m3).describe(MethodAnnotation.METHOD_OVERRIDDEN);
 								propertySet.decorateBugInstance(bug);
 								bugReporter.reportBug(bug);
 
