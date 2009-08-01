@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.util.Archive;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
@@ -43,7 +44,8 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
 	final File file;
 
-	final MapCache<String, ZipInputStreamCodeBaseEntry> map = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
+	final MapCache<String, ZipInputStreamCodeBaseEntry> map 
+	  = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
 
 	final HashSet<String> entries = new HashSet<String>();
 
@@ -67,12 +69,17 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 			if (DEBUG) {
 				System.out.println("Reading zip input stream " + file);
 			}
-			int count = 0;
+			
 			while ((ze = zis.getNextEntry()) != null) {
-				if (!ze.isDirectory() && (ze.getName().equals("META-INF/MANIFEST.MF") || ze.getName().endsWith(".class"))) {
-					entries.add(ze.getName());
-					if (ze.getName().equals("META-INF/MANIFEST.MF")) {
-						map.put(ze.getName(), build(zis, ze));
+				String name = ze.getName();
+				if (!ze.isDirectory() 
+						&& (name.equals("META-INF/MANIFEST.MF") 
+								|| name.endsWith(".class")
+								|| Archive.isArchiveFileName(name)
+								)) {
+					entries.add(name);
+					if (name.equals("META-INF/MANIFEST.MF")) {
+						map.put(name, build(zis, ze));
 					}
 				}
 				zis.closeEntry();

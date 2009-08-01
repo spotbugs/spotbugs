@@ -70,7 +70,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
 			// FIXME: potentially long blocking operation - should be interruptible
 			ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
 			if(resource == null) {
-				return;
+				throw new ResourceNotFoundException(resourceName);
 			}
 			inputStream = resource.openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
