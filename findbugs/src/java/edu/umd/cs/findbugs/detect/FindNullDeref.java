@@ -50,6 +50,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -108,7 +109,10 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
@@ -219,6 +223,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			System.out.println("Pre FND ");
 
 		MethodGen methodGen = classContext.getMethodGen(method);
+		
 		if (methodGen == null)
 			return;
 		if (!checkedDatabases) {
@@ -226,6 +231,21 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			checkedDatabases = true;
 		}
 
+
+		XMethod xMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+		
+		ClassDescriptor junitTestAnnotation =  DescriptorFactory.createClassDescriptor("org/junit/Test");
+		AnnotationValue av =  xMethod.getAnnotation(junitTestAnnotation);
+		if (av != null) {
+			Object value = av.getValue("expected");
+			
+			if (value instanceof Type) {
+	            String className = ((Type)value).getClassName();
+	            if ( className.equals("java.lang.NullPointerException"))
+	            	return;
+            }
+		}
+		
 		// UsagesRequiringNonNullValues uses =
 		// classContext.getUsagesRequiringNonNullValues(method);
 		this.method = method;
