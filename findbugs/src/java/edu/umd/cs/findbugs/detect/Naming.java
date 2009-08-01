@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -134,14 +135,15 @@ public class Naming extends PreorderVisitor implements Detector {
 					WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
 
 					int priority = HIGH_PRIORITY;
+					boolean intentional = false;
 					XMethod m3 = null;
 					try {
 						JavaClass clazz = Repository.lookupClass(m.getClassName());
-						if ((m3 = definedIn(clazz, m2)) == null) {
+						if ((m3 = definedIn(clazz, m2)) != null) {
 							// the method we don't override is also defined in our class
 							priority = NORMAL_PRIORITY;
-						}
-						if (m3 == null)
+							intentional = true;
+						} else {
 							for (JavaClass s : clazz.getSuperClasses())
 								if ((m3 = definedIn(s, m)) != null) {
 									// the method we define is also defined in our superclass
@@ -155,6 +157,7 @@ public class Naming extends PreorderVisitor implements Detector {
 									// the method we define is also defined in an interface
 									break;
 								}
+						}
 					} catch (ClassNotFoundException e) {
 						priority++;
 						AnalysisContext.reportMissingClass(e);
@@ -166,10 +169,8 @@ public class Naming extends PreorderVisitor implements Detector {
 					else if (m.isDeprecated() || m2.isDeprecated())
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
 
-	
-
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
-						String pattern = m3 != null ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
+						String pattern = intentional ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
 
 						BugInstance bug = new BugInstance(this, pattern, priority).addClass(m.getClassName()).addMethod(m)
 						        .addClass(m2.getClassName()).addMethod(m2);
@@ -180,8 +181,13 @@ public class Naming extends PreorderVisitor implements Detector {
 					} else if (!m.getSignature().equals(m2.getSignature())
 					        && removePackageNamesFromSignature(m.getSignature()).equals(
 					                removePackageNamesFromSignature(m2.getSignature()))) {
-						String pattern = m3 != null ? "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
-
+						String pattern = intentional ? "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
+						Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
+						if (!overrides.isEmpty()) {
+							if (intentional) 
+								break;
+							priority++;
+						}
 						Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
 						Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
 						while (s.hasNext()) {
