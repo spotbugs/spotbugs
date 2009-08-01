@@ -156,14 +156,20 @@ public abstract class AbstractBugReporter implements BugReporter {
 			}
 			return;
 		}
-		if (bugInstance.getPriority() <= priorityThreshold  && bugInstance.getBugRank() <= rankThreshold 
+		int priority = bugInstance.getPriority();
+		int bugRank = bugInstance.getBugRank();
+		if (priority <= priorityThreshold  && bugRank <= rankThreshold 
 				|| relaxed) {
 			doReportBug(bugInstance);
 		} else {
 			if(DEBUG) {
-				System.out.println(
+				if (priority <= priorityThreshold) 
+					System.out.println(
 					"AbstractBugReporter: Filtering due to priorityThreshold " +
-					bugInstance.getPriority() + " > " + priorityThreshold);
+					priority + " > " + priorityThreshold);
+				else System.out.println(
+						"AbstractBugReporter: Filtering due to rankThreshold " +
+						bugRank + " > " + rankThreshold);
 			}
 		}
 	}

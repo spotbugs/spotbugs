@@ -126,12 +126,13 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	  type = "DM_NUMBER_CTOR";
 	}
 
+	BugInstance bug = new BugInstance(this, type, prio)
+      .addClass(this)
+      .addMethod(this)
+      .addCalledMethod(this)
+      .addMethod(shouldCall).describe("SHOULD_CALL");
 	bugAccumulator.accumulateBug(
-			new BugInstance(this, type, prio)
-			  .addClass(this)
-			  .addMethod(this)
-			  .addCalledMethod(this)
-			  .addMethod(shouldCall).describe("SHOULD_CALL"), 
+			bug, 
 			this);
   }
 }
