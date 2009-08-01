@@ -183,11 +183,13 @@ public class Hierarchy2 {
 		try {
 			XClass xc = getXClass(c);
 			XMethod xm = xc.findMatchingMethod(m.getMethodDescriptor());
-			if (xm != null && !accumulator.add(xm)) return;
+			if (xm != null && !accumulator.add(xm)) 
+				return;
 			findSuperMethods(xc.getSuperclassDescriptor(), m, accumulator);
 			for(ClassDescriptor i : xc.getInterfaceDescriptorList())
 				findSuperMethods(i, m, accumulator);
-			if (!accumulator.add(m)) return;
+			if (!accumulator.add(m)) 
+				return;
 
 		} catch (CheckedAnalysisException e) {
 			AnalysisContext.logError("Error finding super methods for " + m, e);
