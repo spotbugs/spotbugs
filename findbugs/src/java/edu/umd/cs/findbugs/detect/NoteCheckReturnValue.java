@@ -75,21 +75,19 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 		if  (!BCELUtil.preTiger(javaClass)) javaClass.accept(this);
 	}
 
-		@Override
-				 public void visitAnnotation(String annotationClass, Map<String, Object> map,
- boolean runtimeVisible)  {
-		if (!annotationClass.endsWith("CheckReturnValue")) return;
-		if (!visitingMethod()) return;
-		BCPMethodReturnCheck.addMethodWhoseReturnMustBeChecked(
-			"+" + getDottedClassName(),
-			getMethodName(),
-			getMethodSig(),
-			getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
+	@Override
+	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+		if (!annotationClass.endsWith("CheckReturnValue"))
+			return;
+		if (!visitingMethod())
+			return;
+		BCPMethodReturnCheck.addMethodWhoseReturnMustBeChecked("+" + getDottedClassName(), getMethodName(), getMethodSig(),
+		        getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
 
 		if (SAVE_TRAINING != null) {
 			checkReturnValueDatabase.add(XFactory.createXMethod(this));
 		}
-		}
+	}
 
 	public void report() {
 		if (SAVE_TRAINING != null) {
