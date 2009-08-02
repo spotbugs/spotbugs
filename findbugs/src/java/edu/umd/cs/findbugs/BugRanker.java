@@ -151,7 +151,11 @@ public class BugRanker {
 		}
     }
     public static int rankBug(BugInstance bug, BugRanker... rankers) {
-    	return rankBugPattern(bug.getBugPattern(), rankers) + priorityAdjustment(bug.getPriority());
+    	int rankBugPattern = rankBugPattern(bug.getBugPattern(), rankers);
+		int priorityAdjustment = priorityAdjustment(bug.getPriority());
+		if (rankBugPattern > 20)
+			return rankBugPattern + priorityAdjustment;
+		return Math.min(rankBugPattern + priorityAdjustment, 20);
     }
     
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
