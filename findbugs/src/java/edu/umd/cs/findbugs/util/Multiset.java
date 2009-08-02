@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class Multiset<K> {
 		return result;
 	}
 
-	static class EntryComparator<E> implements Comparator<Map.Entry<E, Integer>> {
+	static class EntryComparator<E> implements Comparator<Map.Entry<E, Integer>>, Serializable {
 
 		public int compare(Entry<E, Integer> o1, Entry<E, Integer> o2) {
 			int c1 = o1.getValue();

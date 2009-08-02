@@ -155,13 +155,5 @@ public class HTML {
 		return writer.toString();
 	}
 	
-	public static void main(String args[]) throws Exception {
-		
-		BugPattern p = I18N.instance().lookupBugPattern("IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION");
-		System.out.println(p.getDetailText());
-		
-		System.out.println("---");
-		System.out.println(p.getDetailPlainText());
-	}
 
 }

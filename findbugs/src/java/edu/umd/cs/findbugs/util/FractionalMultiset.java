@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,13 +99,13 @@ public class FractionalMultiset<K> {
 		return System.identityHashCode(o1.getKey()) - System.identityHashCode(o2.getKey());
 	}
 
-	static class DecreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>> {
+	static class DecreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
 		public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
 			return compareValues(o1, o2);
 		}
 	}
 
-	static class IncreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>> {
+	static class IncreasingOrderEntryComparator<E> implements Comparator<Map.Entry<E, Double>>, Serializable {
 		public int compare(Entry<E, Double> o1, Entry<E, Double> o2) {
 			return -compareValues(o1, o2);
 		}

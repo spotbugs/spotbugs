@@ -17,6 +17,15 @@ public class WriteOnceProperties  extends Properties {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
 	public String getProperty(String key) {
 		String result =  super.getProperty(key);
 		if (result != null && result.length() > 0 && !propertReadAt.containsKey(key))
