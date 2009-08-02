@@ -288,12 +288,12 @@ public class FindDeadLocalStores implements Detector {
 					liveStoreSourceLineSet.set(sourceLineAnnotation.getStartLine());
 				}
 
-				String name = lvAnnotation.getName();
-				if (name.charAt(0) == '$' || name.charAt(0) == '_')
+				String lvName = lvAnnotation.getName();
+				if (lvName.charAt(0) == '$' || lvName.charAt(0) == '_')
 					propertySet.addProperty(DeadLocalStoreProperty.SYNTHETIC_NAME);
-				if (EXCLUDED_LOCALS.contains(name))
+				if (EXCLUDED_LOCALS.contains(lvName))
 					continue;
-				propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, name);
+				propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, lvName);
 
 							boolean isParameter = local < localsThatAreParameters;
 				if (isParameter)
@@ -302,7 +302,7 @@ public class FindDeadLocalStores implements Detector {
 				Field shadowedField = null;
 				
 				for (Field f : javaClass.getFields()) {
-					if (f.getName().equals(name)) {
+					if (f.getName().equals(lvName)) {
 						shadowedField = f;
 						propertySet.addProperty(DeadLocalStoreProperty.SHADOWS_FIELD);
 						break;
@@ -448,6 +448,10 @@ public class FindDeadLocalStores implements Detector {
 				if (ins instanceof IINC) {
 					// special handling of IINC
 
+					if (method.getName().equals("main") && method.isStatic()
+							&& method.getSignature().equals("([Ljava/lang/String;)V"))	
+					  propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_MAIN);
+					
 					propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT);
 					if (localIncrementCount[local] == 1) {
 						propertySet.addProperty(DeadLocalStoreProperty.SINGLE_DEAD_INCREMENT);
@@ -506,7 +510,6 @@ public class FindDeadLocalStores implements Detector {
 				if (javaClass.getClassName().endsWith("_jsp"))
 					propertySet.addProperty(DeadLocalStoreProperty.IN_JSP_PAGE);
 				else if (javaClass.isSynthetic() || sourceFile != null && !sourceFile.endsWith(".java")) {
-					String lvName = lvAnnotation.getName();
 					if (sourceFile.endsWith(".gxp") && (lvName.startsWith("gxp$" ) || lvName.startsWith("gxp_"))) 
 						continue;
 					propertySet.addProperty(DeadLocalStoreProperty.NOT_JAVA);
