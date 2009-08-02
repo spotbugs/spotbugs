@@ -16,7 +16,7 @@
       <all-permissions/> 
   </security> 
   <resources> 
-    <j2se version="1.5+" initial-heap-size="300m" max-heap-size="1500m"/>
+    <j2se version="1.5+" initial-heap-size="300m" max-heap-size="600m"/>
     <jar href="findbugs.jar"/>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
