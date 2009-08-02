@@ -28,9 +28,11 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -51,7 +53,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * 
  * @author Mikko Tiihonen
  */
-public class NumberConstructor extends BytecodeScanningDetector {
+public class NumberConstructor extends OpcodeStackDetector {
 
   private final Map<String, XMethod> boxClasses = new HashMap<String, XMethod>();
   private final BugAccumulator bugAccumulator;
@@ -123,6 +125,13 @@ public class NumberConstructor extends BytecodeScanningDetector {
 	  type = "DM_FP_NUMBER_CTOR";
 	} else {
 	  prio = NORMAL_PRIORITY;
+	  Object constantValue = stack.getStackItem(0).getConstant();
+	  if (constantValue instanceof Number) {
+		  long value = ((Number)constantValue).longValue();
+		  if (value < -128 || value > 127)
+			  prio = LOW_PRIORITY;
+	  }
+	  
 	  type = "DM_NUMBER_CTOR";
 	}
 
