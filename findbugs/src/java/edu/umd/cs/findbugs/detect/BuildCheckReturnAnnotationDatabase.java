@@ -83,7 +83,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 				for (Object aClass : (Object[]) v) {
 					if (aClass instanceof String && lastPortion((String) aClass).equals("CheckReturnValue")) {
 						CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse((String) map.get("priority"));
-						AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
+						if (n != null)
+							AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
 						        annotationTarget, getDottedClassName(), n);
 					}
 				}
@@ -113,8 +114,10 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 			n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
 		} else
 			return;
+		if (n == null) 
+			return;
 		if (visitingMethod())
-		AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDirectAnnotation(
+			AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDirectAnnotation(
 		        XFactory.createXMethod(this), n);
 		else
 			AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase().addDefaultAnnotation(
