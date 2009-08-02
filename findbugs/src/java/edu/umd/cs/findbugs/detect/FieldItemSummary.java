@@ -84,7 +84,9 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 			OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
 			if (invokedOn.getRegisterNumber() == 0 && !classOperand.equals(getClassName())) {
 				sawInitializeSuper = true;
-				fieldSummary.sawSuperCall(getXMethod(), getXMethodOperand());
+				XMethod invoked = getXMethodOperand();
+				if (invoked != null)
+					fieldSummary.sawSuperCall(getXMethod(), invoked);
 			}
 
 		}
