@@ -19,6 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
@@ -29,6 +39,8 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.ba.XClass;
@@ -41,15 +53,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Check uses of the ExpectWarning and NoWarning annotations.
@@ -66,6 +69,9 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 	
 	private ClassDescriptor expectWarning;
 	private ClassDescriptor noWarning;
+	private ClassDescriptor desireWarning;
+	private ClassDescriptor desireNoWarning;
+	
 	private boolean warned;
 	
 	public CheckExpectedWarnings(BugReporter bugReporter) {
@@ -74,6 +80,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 			reporter = (BugCollectionBugReporter) realBugReporter;
 			expectWarning = DescriptorFactory.createClassDescriptor(ExpectWarning.class);
 			noWarning = DescriptorFactory.createClassDescriptor(NoWarning.class);
+			desireWarning = DescriptorFactory.createClassDescriptor(DesireWarning.class);
+			desireNoWarning = DescriptorFactory.createClassDescriptor(DesireNoWarning.class);
 		}
 	}
 
@@ -144,13 +152,15 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 			if (DEBUG) {
 				System.out.println("CEW: checking " + xmethod.toString());
 			}
-			check(xmethod, expectWarning, true);
-			check(xmethod, noWarning, false);
+			check(xmethod, expectWarning, true, HIGH_PRIORITY);
+			check(xmethod, desireWarning, true, NORMAL_PRIORITY);
+			check(xmethod, noWarning, false, HIGH_PRIORITY);
+			check(xmethod, desireNoWarning, false, NORMAL_PRIORITY);
 		}
 
 	}
 
-	private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings) {
+	private void check(XMethod xmethod, ClassDescriptor annotation, boolean expectWarnings, int priority) {
 		AnnotationValue expect = xmethod.getAnnotation(annotation);
 		if (expect != null) {
 			if (DEBUG) {
@@ -165,10 +175,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 					System.out.println("  *** Found " + count + " " + bugCode + " warnings");
 				}
 				if (expectWarnings && count == 0 && possibleBugCodes.contains(bugCode)) {
-					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", NORMAL_PRIORITY).addClassAndMethod(xmethod.getMethodDescriptor()).
+					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
 							addString(bugCode));
 				} else if (!expectWarnings && count > 0) {
-					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", NORMAL_PRIORITY).addClassAndMethod(xmethod.getMethodDescriptor()).
+					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
 							addString(bugCode));
 				}
 			}
