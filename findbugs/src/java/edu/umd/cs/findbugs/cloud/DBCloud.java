@@ -587,10 +587,10 @@ public  class DBCloud extends AbstractCloud {
 		}
 		
 		loadBugComponents();
-		
+		Connection c = null;
 		try {
 			Class.forName(sqlDriver);
-			Connection c = getConnection();
+			c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) from  findbugs_issue");
 			boolean result = false;
@@ -623,6 +623,8 @@ public  class DBCloud extends AbstractCloud {
 			if (THROW_EXCEPTION_IF_CANT_CONNECT)
 				throw new RuntimeException("Unable to connect to database", e);
 			return false;
+		} finally {
+			Util.closeSilently(c);
 		}
 	}
 	
@@ -684,8 +686,9 @@ public  class DBCloud extends AbstractCloud {
 		startShutdown = true;
 		resyncTimer.cancel();
 		queue.add(new ShutdownTask());
+		Connection c = null;
 		try {
-			Connection c = getConnection();
+			c = getConnection();
 			PreparedStatement setEndTime = c.prepareStatement("UPDATE  findbugs_invocation SET endTime = ? WHERE id = ?");
 			Timestamp date = new Timestamp(System.currentTimeMillis());
 			int col = 1;
@@ -693,10 +696,11 @@ public  class DBCloud extends AbstractCloud {
 			setEndTime.setInt(col++, sessionId);
 			setEndTime.execute();
 			setEndTime.close();
-			c.close();
 		} catch (Throwable e) {
 			// we're in shutdown mode, not going to complain
 			assert true;
+		} finally {
+			Util.closeSilently(c);
 		}
 
 		if (!queue.isEmpty() && runnerThread.isAlive()) {
@@ -965,13 +969,15 @@ public  class DBCloud extends AbstractCloud {
      */
      private void insertPendingRecord(Connection c, BugData bug, long when, String who) throws SQLException {
 		int pendingId = -1;
-		PreparedStatement query = c
+		PreparedStatement query = null;
+		ResultSet rs = null;
+		boolean needsUpdate = false;
+		try {
+		 query = c
 		        .prepareStatement("SELECT  id, bugReportId, whoFiled, whenFiled FROM findbugs_bugreport where hash=?");
 		query.setString(1, bug.instanceHash);
-		ResultSet rs = query.executeQuery();
-		boolean needsUpdate = false;
+		 rs = query.executeQuery();
 
-		try {
 		while (rs.next()) {
 			int col = 1;
 			int id = rs.getInt(col++);
