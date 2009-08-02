@@ -128,7 +128,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		if (!(o instanceof XMethod))
 			return null;
 		XMethod m = (XMethod) o;	
-		if (m.getName().startsWith("access$")) return null;
+		if (m.getName().startsWith("access$")) 
+			return null;
 		else if (m.getName().equals("<init>")) {
 			try {
 				if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass))
