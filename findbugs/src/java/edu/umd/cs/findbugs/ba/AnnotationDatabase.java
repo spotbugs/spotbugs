@@ -31,7 +31,6 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -104,6 +103,22 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	Map<Object, AnnotationEnum> cachedMaximal= new MapCache<Object, AnnotationEnum>(20000);
 	@CheckForNull
 	public AnnotationEnum getResolvedAnnotation(Object o, boolean getMinimal) {
+		if (o instanceof XMethod) {
+			XMethod m = (XMethod) o;
+			if (m.getName().startsWith("access$")) {
+				InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
+				try {
+	                InnerClassAccess ica = icam.getInnerClassAccess(m.getClassName(), m.getName());
+	                if (ica != null && ica.isLoad()) {
+	                	o = ica.getField();
+	                }
+                } catch (ClassNotFoundException e) {
+	               AnalysisContext.reportMissingClass(e);
+	               return null;
+                }
+				
+			}
+		}
 		Map<Object, AnnotationEnum> cache;
 		if (getMinimal) cache = cachedMinimal;
 		else cache = cachedMaximal;

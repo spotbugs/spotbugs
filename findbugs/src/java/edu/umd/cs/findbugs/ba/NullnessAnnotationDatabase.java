@@ -79,7 +79,6 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		if (o instanceof XMethodParameter) {
 			XMethodParameter mp = (XMethodParameter) o;
 			XMethod m = mp.getMethod();
-			if (m.getName().startsWith("access$")) return null;
 			// TODO: Handle argument to equals specially: generate special bug code for it
 			int parameterNumber = mp.getParameterNumber();
 			if (parameterNumber == 0) {
@@ -99,8 +98,6 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		else if (o instanceof XMethod) {
 			XMethod m = (XMethod) o;
 			String name = m.getName();
-			if (name.startsWith("access$")) 
-				return null;
 			String signature = m.getSignature();
 			if (!m.isStatic() && (name.equals("clone") && signature.equals("()Ljava/lang/Object;")
 					|| name.equals("toString") && signature.equals("()Ljava/lang/String;")
@@ -111,9 +108,10 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 					return NullnessAnnotation.NONNULL;
 			}
 			
-			} else if (o instanceof XField) {
+		} else if (o instanceof XField) {
 			XField f = (XField) o;
-			if (f.getName().startsWith("this$")) return NullnessAnnotation.NONNULL;
+			if (f.getName().startsWith("this$")) 
+				return NullnessAnnotation.NONNULL;
 		}
 		NullnessAnnotation result =  super.getResolvedAnnotation(o, getMinimal);
 		return result;

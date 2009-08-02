@@ -34,6 +34,8 @@ import org.objectweb.asm.Type;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.InnerClassAccess;
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -482,20 +484,35 @@ public class TypeQualifierApplications {
 	 *         AnnotatedObject
 	 */
 	public static TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(
-			final AnnotatedObject o,
+			AnnotatedObject o,
 			TypeQualifierValue typeQualifierValue) {
-
+		if (o instanceof XMethod) {
+			XMethod m = (XMethod) o;
+			if (m.getName().startsWith("access$")) {
+				InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
+				try {
+	                InnerClassAccess ica = icam.getInnerClassAccess(m.getClassName(), m.getName());
+	                if (ica != null && ica.isLoad()) {
+	                	o = ica.getField();
+	                }
+                } catch (ClassNotFoundException e) {
+	               AnalysisContext.reportMissingClass(e);
+	               return null;
+                }
+				
+			}
+		}
 		TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, o);
-
+		final AnnotatedObject o2 = o;
 		if (CHECK_EXCLUSIVE && tqa == null && typeQualifierValue.isExclusiveQualifier()) {
 			tqa = computeExclusiveQualifier(typeQualifierValue, new ComputeEffectiveTypeQualifierAnnotation() {
 				public TypeQualifierAnnotation compute(TypeQualifierValue tqv) {
-					return computeEffectiveTypeQualifierAnnotation(tqv, o);
+					return computeEffectiveTypeQualifierAnnotation(tqv, o2);
 				}
 
 				@Override
 				public String toString() {
-					return o.toString();
+					return o2.toString();
 				}
 			});
 		}
