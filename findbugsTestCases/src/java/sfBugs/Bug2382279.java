@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
 public class Bug2382279 {
     private Connection con;
@@ -43,7 +43,7 @@ public class Bug2382279 {
      *    created at Bug2382279.java:[line 47] is not discharged
      *
      * ******************** */
-    @NoWarning("OBL,ODR")
+    @DesireNoWarning("OBL,ODR")
     public ResultSet execute(String query) throws SQLException {
         // test code adapted from bug report
         ResultSet rs;

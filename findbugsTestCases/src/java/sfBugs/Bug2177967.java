@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-
 public class Bug2177967 {
 
 	Properties properties = new Properties();

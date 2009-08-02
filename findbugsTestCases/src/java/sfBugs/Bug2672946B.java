@@ -15,8 +15,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /* ********************
  * Behavior at filing:  false positive NP from getField()

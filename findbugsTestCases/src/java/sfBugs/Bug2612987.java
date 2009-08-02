@@ -11,10 +11,10 @@
  
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnegative;
+
+import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
 public class Bug2612987
 {
@@ -30,7 +30,7 @@ public class Bug2612987
      * Behavior at filing:
      *   TQ warning thrown for explicitly checked (and annotated) parameter
      * ******************** */
-    @NoWarning("TQ")
+    @DesireNoWarning("TQ")
     public void set(@CheckForSigned int possibleNegativeValue) {
         if(possibleNegativeValue >= 0)
             nonNegativeValue = possibleNegativeValue;

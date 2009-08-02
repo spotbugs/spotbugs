@@ -1,12 +1,25 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.DefaultAnnotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.meta.TypeQualifierDefault;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug2311502 {
 
+	@Documented
+	@Nonnull
+	@TypeQualifierDefault(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ReturnValuesAreNonnullByDefault {
+	}
+	
 	/**
 	 * Should flag code as unsafe. 
 	 */
@@ -27,8 +40,10 @@ public class Bug2311502 {
 	    }
 	    
 	}
-	@DefaultAnnotation(NonNull.class)
-	static public class NPNonNullReturnViolationBug {
+	
+	
+	static public @ReturnValuesAreNonnullByDefault 
+	class NPNonNullReturnViolationBug {
 	    
 	    @CheckForNull
 	    private Object junkField;

@@ -3,7 +3,6 @@ package jsr305;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 
 @DefaultFooParameters
 public class TestDefaultAnnotations {

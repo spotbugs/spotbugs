@@ -12,11 +12,10 @@
 
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2602466 {
 
@@ -28,7 +27,7 @@ public class Bug2602466 {
      *   constant value outside the range of values that will be cached
      *   (which is currently -128 <= x <= 127)
      * ******************** */
-    @NoWarning("Bx")
+   // Now reported as a low priority issue
     public void setHighValueKey() {
         error_lookup.put(new Long(0x80000001), "Unknown error.");
     }

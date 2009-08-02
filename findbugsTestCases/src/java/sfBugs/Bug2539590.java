@@ -12,8 +12,8 @@
 
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2539590 {
 
@@ -52,7 +52,8 @@ public class Bug2539590 {
 	 * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
 	 * to the next case At Bug2539590.java:[lines 33-35]
 	 */
-	@NoWarning("SF")
+	@NoWarning("SF_SWITCH_FALLTHROUGH")
+	@ExpectWarning("SF_SWITCH_NO_DEFAULT")
 	public static void fallthroughMethodNoDefault(int which) {
 		switch (which) {
 		case 0:
@@ -61,7 +62,7 @@ public class Bug2539590 {
 	}
 
 
-	@NoWarning("SF")
+
 	public static void fallthroughMethod(int which) {
 		switch (which) {
 		case 0:
