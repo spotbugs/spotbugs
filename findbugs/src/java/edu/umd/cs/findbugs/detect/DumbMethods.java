@@ -880,7 +880,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 			if (sig.equals("()V")
 			||  sig.equals("(Ljava/lang/String;)V")
 			||  sig.equals("(Ljava/lang/ThreadGroup;Ljava/lang/String;)V")) {
-				if (!getMethodName().equals("<init>") || (getPC() > 20)) {
+				OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
+				if (!getMethodName().equals("<init>") || invokedOn.getRegisterNumber() != 0) {
 					accumulator.accumulateBug(new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY)
 							.addClassAndMethod(this), this);
 
