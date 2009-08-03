@@ -72,6 +72,17 @@ public interface XMethod extends ClassMember, AnnotatedObject {
      * @return is the method a synthetic stub method?
      */
     public boolean isStub();
+    
+    /**
+     * @return whether the method is a bridge method
+     */
+    public boolean isBridged();
+    
+    /**
+     * @return the signature for the bridge method
+     */
+    public String getBridgeSignature();
+    
     /**
      * @return does this method unconditionally throw an UnsupportedOperationException? 
      */

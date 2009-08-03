@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Descriptor uniquely identifying a method in a class.
@@ -28,6 +29,12 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public class MethodDescriptor
 		extends FieldOrMethodDescriptor {
+	
+	/**
+	 * The bridge method signature or null if this method is not bridged
+	 */
+	private final String bridgeMethodSignature;
+
 	/**
 	 * Constructor.
 	 * 
@@ -37,9 +44,46 @@ public class MethodDescriptor
 	 * @param isStatic        true if method is static, false otherwise
 	 */
 	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, boolean isStatic) {
+		this(className, methodName, methodSignature, null, isStatic);
+	}
+	
+	/**
+     * Constructor.
+    
+     * @param className             name of the class containing the method, in VM format (e.g., "java/lang/String")
+     * @param methodName            name of the method
+     * @param methodSignature       signature of the method
+     * @param bridgeMethodSignature the bridge method signature or null
+     * @param isStatic              true if method is static, false otherwise
+     * @param isBridged             true if method is bridged, false otherwise
+     * @deprecated Use {@link #MethodDescriptor(String,String,String,String,boolean)} instead
+     */
+    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, String bridgeMethodSignature, boolean isStatic, boolean isBridged) {
+        this(className, methodName, methodSignature, bridgeMethodSignature, isStatic);
+    }
+
+	/**
+	 * Constructor.
+
+	 * @param className             name of the class containing the method, in VM format (e.g., "java/lang/String")
+	 * @param methodName            name of the method
+	 * @param methodSignature       signature of the method
+	 * @param bridgeMethodSignature the bridge method signature or null
+	 * @param isStatic              true if method is static, false otherwise
+	 */
+	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, String bridgeMethodSignature, boolean isStatic) {
 		super(className, methodName, methodSignature, isStatic);
 		assert methodSignature.charAt(0) == '(';
 		assert methodSignature.indexOf(')') > 0;
+		this.bridgeMethodSignature = DescriptorFactory.canonicalizeString(bridgeMethodSignature);
 	}
 
+
+    public final boolean isBridged() {
+    	return bridgeMethodSignature != null;
+    }
+    
+    public final String getBridgeSignature() {
+        return bridgeMethodSignature;
+    }
 }

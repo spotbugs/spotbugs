@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import edu.umd.cs.findbugs.SystemProperties;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,6 +44,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.analysis.FieldInfo;
 import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo.Builder;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -185,6 +185,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 						boolean sawBranch = false;
 						boolean sawStubThrow = false;
 						boolean justSawInitializationOfUnsupportedOperationException;
+						boolean isBridge = (access & Opcodes.ACC_SYNTHETIC) != 0 &&  (access & Opcodes.ACC_BRIDGE) != 0;
+						String bridgedMethodSignature;
 						State state = State.INITIAL;
 						StubState stubState = StubState.INITIAL;
 						
@@ -273,6 +275,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 							justSawInitializationOfUnsupportedOperationException 
 							   = opcode == Opcodes.INVOKESPECIAL && owner.equals("java/lang/UnsupportedOperationException") 
 							   && name.equals("<init>");
+							
+							if (isBridge) switch (opcode) {
+								case Opcodes.INVOKEVIRTUAL:
+								case Opcodes.INVOKESPECIAL:
+								case Opcodes.INVOKESTATIC:
+								case Opcodes.INVOKEINTERFACE:
+									bridgedMethodSignature = desc;
+								}
+							
 							// System.out.println("Call from " + ClassParserUsingASM.this.slashedClassName + " to " + owner + " : " + desc);
 							if (desc.indexOf('[') == -1 && desc.indexOf('L') == -1) return;
 							if (ClassParserUsingASM.this.slashedClassName.equals(owner)) return;
@@ -300,17 +311,20 @@ public class ClassParserUsingASM implements ClassParserInterface {
 										mBuilder.setIsStub();
 										
 									}
-								}
-									
+								}									
 								// else System.out.println(slashedClassName+"."+methodName+methodDesc + " is thrower");
 							}
 							MethodInfo methodInfo = mBuilder.build();
-							((ClassInfo.Builder)cBuilder).addMethodDescriptor(
-									methodInfo);
+							Builder classBuilder = (ClassInfo.Builder)cBuilder;
+							if (isBridge && !bridgedMethodSignature.equals(methodDesc))
+									classBuilder.addBridgeMethodDescriptor(methodInfo, bridgedMethodSignature);
+							else 
+								classBuilder.addMethodDescriptor(methodInfo);								
+							
 							if (methodInfo.usesConcurrency())
-								((ClassInfo.Builder)cBuilder).setUsesConcurrency();
+								classBuilder.setUsesConcurrency();
 							if (methodInfo.isStub())
-								((ClassInfo.Builder)cBuilder).setHasStubs();
+								classBuilder.setHasStubs();
 						}
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,

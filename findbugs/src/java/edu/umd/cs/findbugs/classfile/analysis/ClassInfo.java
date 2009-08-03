@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -64,6 +65,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 		private List<MethodInfo> methodDescriptorList  = new LinkedList<MethodInfo>();
 
+		/**
+		 * Mapping from one method signature to its bridge method signature
+		 */
+		private Map<String, String> bridgedSignatures = new HashMap<String, String>();
+
 
 		private ClassDescriptor immediateEnclosingClass;
 		final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
@@ -75,10 +81,19 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         public ClassInfo build() {
 			FieldInfo fields [];
 			MethodInfo methods[];
-			
 			if (fieldDescriptorList.size() == 0)
 				fields = FieldInfo.EMPTY_ARRAY;
 			else fields = fieldDescriptorList.toArray(new FieldInfo[fieldDescriptorList.size()]);
+
+			for (ListIterator<MethodInfo> mths = methodDescriptorList.listIterator(); mths.hasNext();) {
+				MethodInfo method = mths.next();
+				String signature = method.getSignature();
+				String bridgeSignature = bridgedSignatures.get(signature);
+				if (bridgeSignature != null) {
+					MethodInfo bridgeMethod = method.copyAndSetBridgeSignature(bridgeSignature);
+					mths.set(bridgeMethod);
+				}
+			}
 			if (methodDescriptorList.size() == 0)
 				methods = MethodInfo.EMPTY_ARRAY;
 			else methods = methodDescriptorList.toArray(new MethodInfo[methodDescriptorList.size()]);
@@ -127,6 +142,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		}
 		public void addMethodDescriptor(MethodInfo method) {
 			methodDescriptorList.add(method);
+		}
+		public void addBridgeMethodDescriptor(MethodInfo method, String bridgedSignature) {
+			if (bridgedSignature != null) {
+				bridgedSignatures.put(bridgedSignature, method.getSignature());
+			}
+			addMethodDescriptor(method);
 		}
 
 		/**

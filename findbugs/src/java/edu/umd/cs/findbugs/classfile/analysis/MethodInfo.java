@@ -110,7 +110,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		}
 
 		public MethodInfo build() {
-			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
+			return new MethodInfo(className, methodName, methodSignature, methodSourceSignature, null, accessFlags, isUnconditionalThrower, isUnsupported, usesConcurrency, 
 				 isStub, exceptions, methodAnnotations, methodParameterAnnotations);
 		}
 
@@ -140,6 +140,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	static IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
 	static IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
 
+
 	/**
 	 * @param className
 	 * @param methodName
@@ -150,11 +151,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isStub TODO
 	 * @param isStatic
 	 */
-	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
+	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,  String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
-	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, 
-	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
-		super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
+	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, @CheckForNull String[] exceptions,
+	        Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
+		super(className, methodName, methodSignature, bridgeMethodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
 		this.accessFlags = accessFlags;
 		this.exceptions = exceptions;
 		if (exceptions != null) 
@@ -168,7 +169,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 		this.usesConcurrency = usesConcurrency;
 		this.isStub = isStub;
 	}
-
+	 
 	 public @CheckForNull String [] getThrownExceptions() {
 		 return exceptions;
 	 }
@@ -401,4 +402,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
  	   return isStub;
      }
 
+	final MethodInfo copyAndSetBridgeSignature(String bridgeSignature) {
+		return new MethodInfo(getSlashedClassName(), getName(), getSignature(), methodSourceSignature, bridgeSignature,
+		        accessFlags, false, false, usesConcurrency, isStub, exceptions, methodAnnotations, methodParameterAnnotations);
+	}
 }

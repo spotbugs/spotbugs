@@ -20,13 +20,13 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 class UnresolvedXMethod extends AbstractMethod  {
 	protected UnresolvedXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
-		super(className, methodName, methodSig, accessFlags);
+		super(className, methodName, methodSig, null, accessFlags);
 		if (XFactory.DEBUG_UNRESOLVED) {
 			System.out.println("Unresolved xmethod: " + this);
 		}
 	}
 	protected UnresolvedXMethod(MethodDescriptor m) {
-		super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), 0);
+		super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(),m.getBridgeSignature(), 0);
 		if (XFactory.DEBUG_UNRESOLVED) {
 			System.out.println("Unresolved xmethod: " + this);
 		}
