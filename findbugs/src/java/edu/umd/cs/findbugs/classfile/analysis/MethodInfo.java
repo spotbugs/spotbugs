@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import java.lang.annotation.ElementType;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +41,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -53,7 +53,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	static public class Builder {
 		int accessFlags;
 
-		final String className, methodName, methodSignature;
+		final @SlashedClassName String className;
+		final String methodName, methodSignature;
 
 		String [] exceptions;
 		String methodSourceSignature;
@@ -66,7 +67,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 
 		final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(4);
 
-		public Builder(@DottedClassName String className, String methodName, String methodSignature, int accessFlags) {
+		public Builder(@SlashedClassName String className, String methodName, String methodSignature, int accessFlags) {
 			this.className = className;
 			this.methodName = methodName;
 			this.methodSignature = methodSignature;
@@ -149,7 +150,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isStub TODO
 	 * @param isStatic
 	 */
-	 MethodInfo(String className, String methodName, String methodSignature, String methodSourceSignature,
+	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
 	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, 
 	        @CheckForNull String[] exceptions, Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {

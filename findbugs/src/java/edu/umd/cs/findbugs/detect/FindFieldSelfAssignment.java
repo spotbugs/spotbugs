@@ -50,10 +50,6 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 
 	int register;
 
-	String f;
-
-	String className;
-
 	Set<String> initializedFields = new HashSet<String>();
 
 	@Override
@@ -100,7 +96,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
 			if (seen == DUP)
 				state = 6;
 			break;
-			case 6:
+		case 6:
 			if (isRegisterStore()) {
 				state = 7;
 				register = getRegisterOperand();

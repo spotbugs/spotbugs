@@ -85,7 +85,6 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
-	private File loadedFrom;
 	private List<File> currentWorkingDirectoryList;
 	/**
 	 * Project filename.

@@ -255,7 +255,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	        if (!(obj instanceof FinalConstant))
 		        return false;
 	        FinalConstant other = (FinalConstant) obj;
-	        return this.field.equals(other.field);
+	        
+	        return super.equals(other) && this.field.equals(other.field);
         }
 
 

@@ -78,8 +78,7 @@ public class BugLoader {
 		fb.setProjectName(p.getProjectName());
 
 		fb.execute();
-		MainFrame instance = MainFrame.getInstance();
-
+		
 		return pcb.getBugCollection();
 	}
 

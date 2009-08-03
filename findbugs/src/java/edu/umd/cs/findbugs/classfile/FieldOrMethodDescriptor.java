@@ -28,9 +28,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName, Comparable {
-	/**
-     * 
-     */
+
     private static final int CACHE_SIZE = 100;
 	private final @SlashedClassName String slashedClassName;
 	private final String name;

@@ -79,7 +79,8 @@ public abstract class ClassName {
 	 * @param className a class name
 	 * @return the same class name in slashed format
 	 */
-	public static @SlashedClassName String toSlashedClassName(String className) {
+	public static @SlashedClassName String toSlashedClassName(
+			@SlashedClassName(when=When.UNKNOWN) String className) {
 		if (className.indexOf('.') >= 0) {
 			return DescriptorFactory.canonicalizeString(className.replace('.', '/'));
 		}

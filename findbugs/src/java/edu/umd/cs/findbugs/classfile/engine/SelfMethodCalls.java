@@ -38,19 +38,9 @@ import edu.umd.cs.findbugs.util.MultiMap;
  * @author pugh
  */
 public class SelfMethodCalls {
-	/**
-     * @param desc2
-     * @return
-     */
-    static private boolean interestingSignature(String desc2) {
-        int firstL = desc2.indexOf('L');
-		int firstArray = desc2.indexOf('[');
-		int firstRParen = desc2.indexOf(')');
-		if (firstL >= 0) 
-			return true;
-		if (firstArray >= 0) 
-			return true;
-		return false;
+
+    static private boolean interestingSignature(String signature) {
+        return !signature.equals("()V");
     }
 	public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
 		final MultiMap<T, T> map = new MultiMap<T,T>(HashSet.class);

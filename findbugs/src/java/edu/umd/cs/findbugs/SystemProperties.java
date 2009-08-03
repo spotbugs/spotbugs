@@ -200,14 +200,11 @@ public class SystemProperties {
 	private static final Pattern URL_REWRITE_PATTERN;
 	static {
 		Pattern p = null;
-		if (URL_REWRITE_PATTERN_STRING != null)
+		if (URL_REWRITE_PATTERN_STRING != null && URL_REWRITE_FORMAT != null) 
 			try {
-				if (URL_REWRITE_FORMAT == null) 
-					AnalysisContext.logError("found findbugs.urlRewritePattern but not findbugs.urlRewriteFormat");
-				else 
-					p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
+				p = Pattern.compile(URL_REWRITE_PATTERN_STRING);
 			} catch (Exception e) {
-				AnalysisContext.logError("Could not compile url rewrite pattern " + URL_REWRITE_PATTERN_STRING, e);
+				assert true;
 			}
 		URL_REWRITE_PATTERN = p;
 	}

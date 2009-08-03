@@ -42,10 +42,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 	public FindSelfComparison(BugReporter bugReporter) {
 		this.bugAccumulator = new BugAccumulator(bugReporter);
 	}
-	String f;
-	String className;
-	
-	int putFieldRegister;
 	
 	int putFieldPC = Integer.MIN_VALUE;
 	OpcodeStack.Item putFieldObj;
@@ -64,9 +60,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
 		bugAccumulator.reportAccumulatedBugs();
 	}
 
-	/**
-     * 
-     */
     private void resetDoubleAssignmentState() {
 	    putFieldPC = Integer.MIN_VALUE;
 		putFieldXField = null;
