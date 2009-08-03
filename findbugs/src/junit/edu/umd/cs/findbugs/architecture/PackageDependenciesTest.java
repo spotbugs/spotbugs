@@ -39,6 +39,8 @@ public class PackageDependenciesTest extends TestCase {
 		assertPackageConstraint("edu.umd.cs.findbugs.ba", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.bcel", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.classfile", expectedNotEfferent);
+		assertPackageConstraint("edu.umd.cs.findbugs.cloud", expectedNotEfferent);
+		assertPackageConstraint("edu.umd.cs.findbugs.cloud.db", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.detect", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.graph", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.io", expectedNotEfferent);
@@ -52,13 +54,13 @@ public class PackageDependenciesTest extends TestCase {
 	}
 
 	public void testCloudDependencies() {
-		String expectedNotEfferent = "edu.umd.cs.findbugs.cloud";
+		String expectedNotEfferent = "edu.umd.cs.findbugs.cloud.db";
 		assertPackageConstraint("edu.umd.cs.findbugs", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.asm", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.ba", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.bcel", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.classfile", expectedNotEfferent);
-		assertPackageConstraint("edu.umd.cs.findbugs.cloudInterface", expectedNotEfferent);
+		assertPackageConstraint("edu.umd.cs.findbugs.cloud", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.detect", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.graph", expectedNotEfferent);
 		assertPackageConstraint("edu.umd.cs.findbugs.io", expectedNotEfferent);

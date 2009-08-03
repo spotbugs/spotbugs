@@ -65,8 +65,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.cloudInterface.Cloud;
-import edu.umd.cs.findbugs.cloudInterface.CloudFactory;
+import edu.umd.cs.findbugs.cloud.Cloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;

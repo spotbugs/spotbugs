@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud;
+package edu.umd.cs.findbugs.cloud.db;
 
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
@@ -81,7 +81,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.cloudInterface.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -246,7 +246,7 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	
-	DBCloud(BugCollection bugs) {
+	public DBCloud(BugCollection bugs) {
 		super(bugs);
 	}
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));

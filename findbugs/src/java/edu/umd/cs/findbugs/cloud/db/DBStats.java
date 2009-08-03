@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud;
+package edu.umd.cs.findbugs.cloud.db;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
-import edu.umd.cs.findbugs.cloudInterface.Cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.FractionalMultiset;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -541,7 +541,7 @@ public class DBStats {
      * @param d
      * @return
      */
-    private static String getDesignationTitle(I18N i18n, edu.umd.cs.findbugs.cloudInterface.Cloud.UserDesignation d) {
+    private static String getDesignationTitle(I18N i18n, edu.umd.cs.findbugs.cloud.Cloud.UserDesignation d) {
 	    String designation;
 	    switch (d) {
 	    case OBSOLETE_CODE:

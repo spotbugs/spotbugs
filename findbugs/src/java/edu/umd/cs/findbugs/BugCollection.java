@@ -27,7 +27,7 @@ import java.util.Iterator;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.cloudInterface.Cloud;
+import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import javax.annotation.WillClose;

@@ -67,8 +67,10 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 				boolean first = true;
 				for(SourceLineAnnotation s : found) {
 					bug.add(s);
-					if (first) first = false;
-					else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+					if (first) 
+						first = false;
+					else 
+						bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
 				}
 
 				bugReporter.reportBug(bug);

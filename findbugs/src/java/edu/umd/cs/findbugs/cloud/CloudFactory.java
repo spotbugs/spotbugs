@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloudInterface;
+package edu.umd.cs.findbugs.cloud;
 
 import java.lang.reflect.Constructor;
 
@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class CloudFactory {
 	
 	public static Cloud getCloud(BugCollection bc) {
-		String cloudClassName = SystemProperties.getProperty("cloudClass","edu.umd.cs.findbugs.cloud.DBCloud");
+		String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname","edu.umd.cs.findbugs.cloud.db.DBCloud");
 		try {
 	        Class<? extends Cloud> cloudClass 
 	        = Class.forName(cloudClassName).asSubclass(Cloud.class);
