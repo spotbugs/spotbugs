@@ -189,8 +189,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		String className = jclass.getClassName();
 		if (CLASS != null && !className.equals(CLASS))
 			return;
-		Method[] methodList = jclass.getMethods();
-		for (Method method : methodList) {
+		
+		for (Method method : classContext.getMethodsInCallOrder()) {
 			try {
 				if (method.isAbstract() || method.isNative()
 						|| method.getCode() == null)
