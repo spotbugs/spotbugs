@@ -112,6 +112,9 @@ public class ForwardTypeQualifierDataflowFactory
 					FlowValue topFlowValue = flowSet.getValue(topVN);
 					
 					if (topFlowValue != null) {
+						if (TypeQualifierDatabase.DEBUG) {
+							System.out.println("at pc " + handle.getPosition() + " of " + xmethod +", return value for "  + tqv + " is " + topFlowValue);
+						}
 						if (effectiveFlowValue == null) {
 							effectiveFlowValue = topFlowValue;
 						} else {
@@ -123,7 +126,9 @@ public class ForwardTypeQualifierDataflowFactory
 			
 			if (effectiveFlowValue == FlowValue.ALWAYS || effectiveFlowValue == FlowValue.NEVER) {
 				TypeQualifierDatabase tqdb = Global.getAnalysisCache().getDatabase(TypeQualifierDatabase.class);
-				
+				if (TypeQualifierDatabase.DEBUG) {
+					System.out.println("inferring return value for " + xmethod +" of"  + tqv + " : " + effectiveFlowValue);
+				}
 				tqa = TypeQualifierAnnotation.getValue(tqv, effectiveFlowValue == FlowValue.ALWAYS ? When.ALWAYS : When.NEVER);
 				tqdb.setReturnValue(xmethod.getMethodDescriptor(), tqv, tqa);
 			}

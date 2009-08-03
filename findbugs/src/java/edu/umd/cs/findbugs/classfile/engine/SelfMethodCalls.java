@@ -46,8 +46,10 @@ public class SelfMethodCalls {
         int firstL = desc2.indexOf('L');
 		int firstArray = desc2.indexOf('[');
 		int firstRParen = desc2.indexOf(')');
-		if (firstL >= 0 && firstL < firstRParen) return true;
-		if (firstArray >= 0 && firstArray < firstRParen) return true;
+		if (firstL >= 0) 
+			return true;
+		if (firstArray >= 0) 
+			return true;
 		return false;
     }
 	public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
@@ -67,8 +69,11 @@ public class SelfMethodCalls {
 	            return new EmptyVisitor() {
 	            	@Override
 	            	 public void visitMethodInsn(int opcode, String owner, String name2, String desc2)  {
-	            		if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2))
-	            			map.add(methods.get(name+desc + ((access & Opcodes.ACC_STATIC) != 0)), methods.get(name2+desc2 + (opcode == Opcodes.INVOKESTATIC)));
+	            		if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
+	            			T from = methods.get(name+desc + ((access & Opcodes.ACC_STATIC) != 0));
+							T to = methods.get(name2+desc2 + (opcode == Opcodes.INVOKESTATIC));
+							map.add(from, to);
+	            		}
 	            		
 	            	}
 

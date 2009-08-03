@@ -25,6 +25,7 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -58,8 +59,9 @@ public abstract class CFGDetector implements Detector2 {
 		IAnalysisCache analysisCache = Global.getAnalysisCache();
 
 		JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, classDescriptor);
-
-		for (Method method : jclass.getMethods()) {
+		ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
+		
+		for (Method method : classContext.getMethodsInCallOrder()) {
 			if (method.getCode() == null) {
 				continue;
 			}

@@ -36,7 +36,7 @@ public class TypeQualifierDatabase {
 	/**
 	 * If true, populate and use interprocedural database.
 	 */
-	public static final boolean USE_DATABASE = SystemProperties.getBoolean("ctq.usedatabase");
+	public static final boolean USE_DATABASE = SystemProperties.getBoolean("ctq.usedatabase", true);
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("ctq.db.debug");
 	
