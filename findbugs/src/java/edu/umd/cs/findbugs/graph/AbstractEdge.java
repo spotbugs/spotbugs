@@ -78,10 +78,10 @@ public class AbstractEdge
 	}
 
 	public int compareTo(ActualEdgeType other) {
-		int cmp = source.compareTo(other.source);
+		int cmp = source.compareTo(other.getSource());
 		if (cmp != 0)
 			return cmp;
-		return target.compareTo(other.target);
+		return target.compareTo(other.getTarget());
 	}
 
 	void setNextOutgoingEdge(ActualEdgeType edge) {
