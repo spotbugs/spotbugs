@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
@@ -170,33 +171,30 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 			StringTokenizer tok = new StringTokenizer(expectedBugCodes, ",");
 			while (tok.hasMoreTokens()) {
 				String bugCode = tok.nextToken();
-				int count = countWarnings(xmethod.getMethodDescriptor(), bugCode);
-				if (DEBUG) {
-					System.out.println("  *** Found " + count + " " + bugCode + " warnings");
-				}
-				if (expectWarnings && count == 0 && possibleBugCodes.contains(bugCode)) {
+				Collection<SourceLineAnnotation> bugs = countWarnings(xmethod.getMethodDescriptor(), bugCode);
+				if (expectWarnings && bugs.isEmpty() && possibleBugCodes.contains(bugCode)) {
 					reporter.reportBug(new BugInstance(this, "FB_MISSING_EXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
 							addString(bugCode));
-				} else if (!expectWarnings && count > 0) {
+				} else if (!expectWarnings) for(SourceLineAnnotation s : bugs) {
 					reporter.reportBug(new BugInstance(this, "FB_UNEXPECTED_WARNING", priority).addClassAndMethod(xmethod.getMethodDescriptor()).
-							addString(bugCode));
+							addString(bugCode).add(s));
 				}
 			}
 		}
 	}
 
-	private int countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
-		int count = 0;
+	private Collection<SourceLineAnnotation> countWarnings(MethodDescriptor methodDescriptor, String bugCode) {
 		Collection<BugInstance> warnings = warningsByMethod.get(methodDescriptor);
+		Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
 		if (warnings != null) {
 			for (BugInstance warning : warnings) {
 				BugPattern pattern = warning.getBugPattern();
 				if (pattern.getAbbrev().equals(bugCode)) {
-					count++;
+					matching.add(warning.getPrimarySourceLineAnnotation());
 				}
 			}
 		}
-		return count;
+		return matching;
 	}
 	
 	public void finishPass() {
