@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +27,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
@@ -47,8 +46,18 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @see NoWarning
  * @author Tom\u00e1s Pollak
  */
-@Ignore
+
 public class DetectorsTest {
+	/**
+     * 
+     */
+    private static final String FB_UNEXPECTED_WARNING = "FB_UNEXPECTED_WARNING";
+
+	/**
+     * 
+     */
+    private static final String FB_MISSING_EXPECTED_WARNING = "FB_MISSING_EXPECTED_WARNING";
+
 	private BugCollectionBugReporter bugReporter;
 
 	private IFindBugsEngine2 engine;
@@ -65,25 +74,26 @@ public class DetectorsTest {
 
 		engine.execute();
 
-		assertNoUnexpectedBugs();
-	}
-
-	private void assertNoUnexpectedBugs() {
 		// If there are zero bugs, then something's wrong
 		assertFalse(
 				"No bugs were reported. Something is wrong with the configuration",
 				bugReporter.getBugCollection().getCollection().isEmpty());
 
+		
 		List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();
 		for (BugInstance bug : bugReporter.getBugCollection()) {
-			if (isUnexpectedBug(bug)) {
+			if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
 				unexpectedBugs.add(bug);
+				System.out.println(bug.getMessageWithPriorityTypeAbbreviation());
+				System.out.println("  " + bug.getPrimarySourceLineAnnotation());
 			}
 		}
 
-		assertTrue("Unexpected bugs (" + unexpectedBugs.size() + "):"
-				+ getBugsLocations(unexpectedBugs), unexpectedBugs.isEmpty());
+		if (!unexpectedBugs.isEmpty())
+		  Assert.fail("Unexpected bugs (" + unexpectedBugs.size() + "):"+ getBugsLocations(unexpectedBugs));
 	}
+
+	
 
 	/**
 	 * Returns a printable String concatenating bug locations.
@@ -92,6 +102,13 @@ public class DetectorsTest {
 		StringBuilder message = new StringBuilder();
 		for (BugInstance bugInstance : unexpectedBugs) {
 			message.append("\n");
+			if (bugInstance.getBugPattern().getType().equals(FB_MISSING_EXPECTED_WARNING))
+				message.append("missing " );
+			else
+				message.append("unexpected " );
+			StringAnnotation pattern = (StringAnnotation) bugInstance.getAnnotations().get(2);
+			message.append(pattern.getValue());
+			message.append(" ");
 			message.append(bugInstance.getPrimarySourceLineAnnotation());
 		}
 		return message.toString();
@@ -101,8 +118,8 @@ public class DetectorsTest {
 	 * Returns if a bug instance is unexpected for this test.
 	 */
 	private boolean isUnexpectedBug(BugInstance bug) {
-		return "FB_MISSING_EXPECTED_WARNING".equals(bug.getType())
-				|| "FB_UNEXPECTED_WARNING".equals(bug.getType());
+		return FB_MISSING_EXPECTED_WARNING.equals(bug.getType())
+				|| FB_UNEXPECTED_WARNING.equals(bug.getType());
 	}
 
 	/**
@@ -133,15 +150,17 @@ public class DetectorsTest {
 		DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection
 				.instance();
 		engine.setDetectorFactoryCollection(detectorFactoryCollection);
-
-		bugReporter = new XMLBugReporter(project);
-		bugReporter.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
+		
+		bugReporter = new BugCollectionBugReporter(project);
+		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
+		
 		engine.setBugReporter(this.bugReporter);
-
-		UserPreferences preferences = UserPreferences.getUserPreferences();
-		preferences.enableAllDetectors(true);
+		UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
+		DetectorFactory checkExpectedWarnings = DetectorFactoryCollection.instance().getFactory("CheckExpectedWarnings");
+		preferences.enableDetector(checkExpectedWarnings, true);
 		preferences.getFilterSettings().clearAllCategories();
 		this.engine.setUserPreferences(preferences);
+
 
 		// This is ugly. We should think how to improve this.
 		project.addFile("../findbugsTestCases/build/classes/");
