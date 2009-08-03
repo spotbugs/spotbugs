@@ -58,6 +58,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
@@ -94,6 +95,8 @@ public class Project implements XMLWriteable {
 
 	private String projectName;
 
+	
+	
 	/**
 	 * Options.
 	 */
@@ -131,6 +134,7 @@ public class Project implements XMLWriteable {
 
 	@NonNull private Filter suppressionFilter = new Filter();
 
+	private SourceFinder sourceFinder;
 	/**
 	 * Create an anonymous project.
 	 */
@@ -163,6 +167,12 @@ public class Project implements XMLWriteable {
 		return dup;
 	}
 	
+	public SourceFinder getSourceFinder() {
+		if (sourceFinder == null) {
+			sourceFinder = new SourceFinder(this);
+		}
+		return sourceFinder;
+	}
 	public boolean isGuiAvaliable(){
 		return guiCallback != null;
 	}

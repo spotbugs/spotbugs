@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.cloudInterface.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.FractionalMultiset;
 import edu.umd.cs.findbugs.util.MergeMap;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -540,7 +541,7 @@ public class DBStats {
      * @param d
      * @return
      */
-    private static String getDesignationTitle(I18N i18n, UserDesignation d) {
+    private static String getDesignationTitle(I18N i18n, edu.umd.cs.findbugs.cloudInterface.Cloud.UserDesignation d) {
 	    String designation;
 	    switch (d) {
 	    case OBSOLETE_CODE:

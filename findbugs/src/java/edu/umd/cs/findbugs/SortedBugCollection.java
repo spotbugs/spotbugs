@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.awt.GraphicsEnvironment;
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -66,8 +65,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
+import edu.umd.cs.findbugs.cloudInterface.Cloud;
+import edu.umd.cs.findbugs.cloudInterface.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;
@@ -129,7 +128,7 @@ public class SortedBugCollection implements BugCollection {
 			return null;
 		}
 		if (userAnnotationPlugin == null) {
-			userAnnotationPlugin = useDatabaseCloud ? CloudFactory.getDatabaseCloud(this) : CloudFactory.getPlainCloud(this);
+			userAnnotationPlugin = useDatabaseCloud ? CloudFactory.getCloud(this) : CloudFactory.getPlainCloud(this);
 			shouldNotUsePlugin = userAnnotationPlugin == null;
 
 		}

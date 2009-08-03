@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud;
+package edu.umd.cs.findbugs.cloudInterface;
 
 import java.io.PrintWriter;
 import java.net.URL;
@@ -27,14 +27,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 
+
 /**
  * @author pwilliam
  */
 public abstract class AbstractCloud implements Cloud {
 
-	final BugCollection bugCollection;
+	protected final BugCollection bugCollection;
 	
-	AbstractCloud(BugCollection bugs) {
+	protected AbstractCloud(BugCollection bugs) {
 		this.bugCollection = bugs;
 	}
 	

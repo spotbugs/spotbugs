@@ -17,19 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.cloud;
-
-import java.io.PrintWriter;
+package edu.umd.cs.findbugs.cloudInterface;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 
+
 /**
  * @author pwilliam
  */
-public class BugCollectionStorageCloud extends AbstractCloud {
+ class BugCollectionStorageCloud extends AbstractCloud {
 
 	BugCollectionStorageCloud(BugCollection bc) {
 			super(bc);

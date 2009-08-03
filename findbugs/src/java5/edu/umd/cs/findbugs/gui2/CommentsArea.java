@@ -49,8 +49,8 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
+import edu.umd.cs.findbugs.cloudInterface.Cloud;
+import edu.umd.cs.findbugs.cloudInterface.Cloud.BugFilingStatus;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 /**

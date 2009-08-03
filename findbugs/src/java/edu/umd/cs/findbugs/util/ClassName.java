@@ -182,4 +182,18 @@ public abstract class ClassName {
         	return "";
         return packageName.substring(0, prefixLength-1);
     }
+
+
+	public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
+    	String[] pp = classSearchStrings;
+    	if (pp == null || pp.length == 0)
+    		return true;
+    
+    	for (String p : pp)
+    		if (p.length() > 0 && className.indexOf(p) >= 0)
+    			return true;
+    
+    	return false;
+    
+    }
 }

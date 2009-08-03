@@ -24,10 +24,11 @@ import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.cloud.DBCloud;
-import edu.umd.cs.findbugs.cloud.UserDesignation;
+import edu.umd.cs.findbugs.cloudInterface.Cloud;
+import edu.umd.cs.findbugs.cloudInterface.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * @author pugh
@@ -379,23 +380,17 @@ public class ViewFilter {
 		return true;
 	}
 	
-	public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
-		String[] pp = classSearchStrings;
-		if (pp == null || pp.length == 0)
-			return true;
-
-		for (String p : pp)
-			if (p.length() > 0 && className.indexOf(p) >= 0)
-				return true;
-
-		return false;
-
-	}
+	/**
+     * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)} instead
+     */
+    public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
+        return ClassName.matchedPrefixes(classSearchStrings, className);
+    }
 	public boolean show(BugInstance b) {
 		
 		String className = b.getPrimaryClass().getClassName();
 		
-		return matchedPrefixes(classSearchStrings, className) && showIgnoringPackagePrefixes(b);
+		return ClassName.matchedPrefixes(classSearchStrings, className) && showIgnoringPackagePrefixes(b);
 
 	}
 

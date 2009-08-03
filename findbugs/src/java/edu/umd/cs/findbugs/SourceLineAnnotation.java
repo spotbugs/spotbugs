@@ -753,19 +753,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 		writeXML(xmlOutput, false, false);
 	}
 
-	static final ThreadLocal<SourceFinder> sourceFinder = new ThreadLocal<SourceFinder>();
+	static final ThreadLocal<Project> myProject = new ThreadLocal<Project>();
 	static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<String>();
 	public static void generateRelativeSource(File relativeSourceBase, Project project) {
 		try {
 		SourceLineAnnotation.relativeSourceBase.set(relativeSourceBase.getCanonicalPath());
-		SourceFinder mySourceFinder  = new SourceFinder(project);
-		sourceFinder.set(mySourceFinder);
+		myProject.set(project);
 		} catch (IOException e) {
 			AnalysisContext.logError("Error resolving relative source base " + relativeSourceBase, e);
 		}
 	}
 	public static void clearGenerateRelativeSource() {
-		sourceFinder.remove();
+		myProject.remove();
 		relativeSourceBase.remove();
 	}
 
@@ -789,9 +788,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
 			attributeList.addAttribute("sourcepath", sourcePath);
-			SourceFinder mySourceFinder = sourceFinder.get();
-			if (mySourceFinder != null) {
+			Project project = myProject.get();
+			if (project != null) {
 				try {
+				SourceFinder mySourceFinder = project.getSourceFinder();
 				String fullPath = new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
 				String myRelativeSourceBase = relativeSourceBase.get();
 				if (fullPath.startsWith(myRelativeSourceBase))

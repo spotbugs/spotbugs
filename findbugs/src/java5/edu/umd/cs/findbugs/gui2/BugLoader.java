@@ -80,10 +80,6 @@ public class BugLoader {
 		fb.execute();
 		MainFrame instance = MainFrame.getInstance();
 
-		SourceFinder sourceFinder = new SourceFinder(p);
-		instance.setSourceFinder(sourceFinder);
-		
-
 		return pcb.getBugCollection();
 	}
 

@@ -304,8 +304,6 @@ public abstract class AnalysisContext {
 	 */
 	public final void setProject(Project project) {
 		this.project = project;
-		SourceFinder sourceFinder = getSourceFinder();
-		sourceFinder.setProject(project);
 	}
 
 	/**

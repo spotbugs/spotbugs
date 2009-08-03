@@ -123,13 +123,11 @@ import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ProjectPackagePrefixes.PrefixFilter;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SourceFinder;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudListener;
+import edu.umd.cs.findbugs.cloudInterface.Cloud;
+import edu.umd.cs.findbugs.cloudInterface.Cloud.CloudListener;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -237,7 +235,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	private Project curProject = new Project();
 	private JScrollPane treeScrollPane;
 	private JPanel treePanel;
-	SourceFinder sourceFinder;
 	private Object lock = new Object();
 	private boolean newProject = false;
 	final ProjectPackagePrefixes projectPackagePrefixes = new ProjectPackagePrefixes();
@@ -498,7 +495,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			displayer.clearCache();
 
 			BugTreeModel model = (BugTreeModel) getTree().getModel();     
-			setSourceFinder(new SourceFinder(project));
 			BugSet bs = new BugSet(bugCollection);
 			model.getOffListenerList();
 			model.changeSet(bs);
@@ -2166,7 +2162,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 		String clickToGoToText = edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to");
 		if (value instanceof SourceLineAnnotation) {
 			final SourceLineAnnotation note = (SourceLineAnnotation) value;
-			if (sourceCodeExist(note)) {
+			if (sourceCodeExists(note)) {
 				String srcStr = "";
 				int start = note.getStartLine();
 				int end = note.getEndLine();
@@ -2187,7 +2183,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			BugAnnotationWithSourceLines note = (BugAnnotationWithSourceLines) value;
 			final SourceLineAnnotation noteSrc = note.getSourceLines();
 			String srcStr = "";
-			if (noteSrc != null && sourceCodeExist(noteSrc)) {
+			if (noteSrc != null && sourceCodeExists(noteSrc)) {
 				int start = noteSrc.getStartLine();
 				int end = noteSrc.getEndLine();
 				if (start < 0 && end < 0)
@@ -2383,9 +2379,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	 * @param note
 	 * @return
 	 */
-	private boolean sourceCodeExist(@Nonnull SourceLineAnnotation note){
+	private boolean sourceCodeExists(@Nonnull SourceLineAnnotation note){
 		try{
-			sourceFinder.findSourceFile(note);
+			getProject().getSourceFinder().findSourceFile(note);
 		}catch(FileNotFoundException e){
 			return false;
 		}catch(IOException e){
@@ -2666,16 +2662,6 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 	
 	public synchronized void setProject(Project p) {
 		curProject=p;
-	}
-
-	public SourceFinder getSourceFinder() 
-	{
-		return sourceFinder;
-	}
-
-	public void setSourceFinder(SourceFinder sf)
-	{
-		sourceFinder=sf;
 	}
 
 	@SwingThread

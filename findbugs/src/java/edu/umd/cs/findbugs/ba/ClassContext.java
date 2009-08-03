@@ -232,7 +232,8 @@ public class ClassContext {
 
 	@CheckForNull List<Method> methodsInCallOrder = null;
 	public @NonNull List<Method> getMethodsInCallOrder() {
-		if (methodsInCallOrder != null) return methodsInCallOrder;
+		if (methodsInCallOrder != null) 
+			return methodsInCallOrder;
 		List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
 		final Map<String, Method> map = new HashMap<String, Method>();
 		

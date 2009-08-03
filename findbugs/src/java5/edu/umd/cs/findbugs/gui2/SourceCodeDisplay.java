@@ -88,7 +88,7 @@ public final class SourceCodeDisplay implements Runnable {
 	@NonNull
 	private JavaSourceDocument getDocument(SourceLineAnnotation source) {
 		try {
-			SourceFile sourceFile = frame.sourceFinder.findSourceFile(source);
+			SourceFile sourceFile = frame.getProject().getSourceFinder().findSourceFile(source);
 			String fullFileName = sourceFile.getFullFileName();
 			SoftReference<JavaSourceDocument> resultReference = map.get(fullFileName);
 			JavaSourceDocument result = null;

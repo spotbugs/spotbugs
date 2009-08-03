@@ -3313,9 +3313,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		if (srcLine == null)
 			return false;
 
-		if(sourceFinder == null || sourceFinder.getProject() != project){			
-			sourceFinder = new SourceFinder(project);
-		}
+		SourceFinder sourceFinder = project.getSourceFinder();
 		
 		// Look up the source file for this class.
 		String sourceFile;
@@ -3959,7 +3957,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private Project currentProject;
 	private JTree[] bugTreeList;
 	private AnalysisRun currentAnalysisRun;
-	private SourceFinder sourceFinder;
 	private BugInstance currentBugInstance; // be lazy in switching bug instance details
 	private SourceLineAnnotation currentSourceLineAnnotation; // as above
 	private String currentBugDetailsKey;

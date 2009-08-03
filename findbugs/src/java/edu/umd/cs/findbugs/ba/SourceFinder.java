@@ -331,12 +331,6 @@ public class SourceFinder {
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
 	
-	/**
-	 * This constructor shouldn't be used directly, it exists only for {@link ReflectionDatabaseFactory}
-	 */
-	public SourceFinder(){
-		this(new Project());
-	}
 
 	public SourceFinder(Project project) {
 		setProject(project);
@@ -506,7 +500,7 @@ public class SourceFinder {
 	/**
      * @param project
      */
-    public void setProject(Project project) {
+    private void setProject(Project project) {
 	    this.project = project;
 	    repositoryList = new LinkedList<SourceRepository>();
 		cache = new Cache();

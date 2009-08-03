@@ -109,7 +109,9 @@ public class LaunchAppropriateUI {
 		} else if (launchProperty == SHOW_VERSION) {
 			Version.main(new String[]{"-release"});
 		} else {
-			Driver.main(args);
+			Class<?> launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver");
+			Method mainMethod = launchClass.getMethod("main", args.getClass());
+			mainMethod.invoke(null, (Object) args);
 		}
 		
 	}

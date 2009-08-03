@@ -60,7 +60,6 @@ import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -82,9 +81,9 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.gui2.MainFrame;
-import edu.umd.cs.findbugs.gui2.ViewFilter;
+import edu.umd.cs.findbugs.cloudInterface.AbstractCloud;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -1331,8 +1330,6 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	String getBugReportSourceCode(BugInstance b) {
-		if (!MainFrame.isAvailable())
-			return "";
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter out = new PrintWriter(stringWriter);
 		ClassAnnotation primaryClass = b.getPrimaryClass();
@@ -1353,7 +1350,7 @@ public  class DBCloud extends AbstractCloud {
 		SourceLineAnnotation primarySource = primaryClass.getSourceLines();
 		if (primarySource.isSourceFileKnown() && firstLine >= 1 && firstLine <= lastLine && lastLine - firstLine < 50) {
 			try {
-				SourceFile sourceFile = MainFrame.getInstance().getSourceFinder().findSourceFile(primarySource);
+				SourceFile sourceFile = getBugCollection().getProject().getSourceFinder().findSourceFile(primarySource);
 				BufferedReader in = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
 				int lineNumber = 1;
 				String commonWhiteSpace = null;
@@ -1950,7 +1947,7 @@ public  class DBCloud extends AbstractCloud {
 		int ncss = 0;
 		ProjectStats projectStats = bugCollection.getProjectStats();
 		for(PackageStats ps : projectStats.getPackageStats()) 
-			if (ViewFilter.matchedPrefixes(packagePrefixes, ps.getPackageName()) &&  ps.size() > 0 && ps.getNumClasses() > 0) {
+			if (ClassName.matchedPrefixes(packagePrefixes, ps.getPackageName()) &&  ps.size() > 0 && ps.getNumClasses() > 0) {
 				packageCount++;
 				 ncss += ps.size();
 				 classCount += ps.getNumClasses();

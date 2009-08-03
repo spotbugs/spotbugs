@@ -108,7 +108,6 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ReflectionDatabaseFactory<AnnotationRetentionDatabase>(AnnotationRetentionDatabase.class),
 		new ReflectionDatabaseFactory<JCIPAnnotationDatabase>(JCIPAnnotationDatabase.class),
 		new ReflectionDatabaseFactory<NullnessAnnotationDatabase>(NullnessAnnotationDatabase.class),
-		new ReflectionDatabaseFactory<SourceFinder>(SourceFinder.class),
 		new ReflectionDatabaseFactory<SourceInfoMap>(SourceInfoMap.class),
 		new ReflectionDatabaseFactory<FieldStoreTypeDatabase>(FieldStoreTypeDatabase.class),
 		new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
