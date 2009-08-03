@@ -6222,10 +6222,24 @@ less confusing to explicitly pointer equality using <code>==</code>.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
+    <ShortDescription>equals(...) used to compare incompatible arrays</ShortDescription>
+    <LongDescription>{1} uses equals to compare a {2} and a {3}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This method invokes the .equals(Object o) to compare two arrays, but the arrays of
+of incompatible types (e.g., String[] and StringBuffer[], or String[] and int[]).
+They will never be equal. In addition, when equals(...) is used to compare arrays it
+only checks to see if they are the same array, and ignores the contents of the arrays.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="UOE_USE_OBJECT_EQUALS">
-    <ShortDescription>Calls to equals on a final class that doesn't override Object's version</ShortDescription>
-    <LongDescription>Calls to equals on a final class that doesn't override Object's version</LongDescription>
+    <ShortDescription>Calls to equals on a final class that doesn't override Object's equals method</ShortDescription>
+    <LongDescription>Calls to equals on a final class that doesn't override Object's equals method</LongDescription>
     <Details>
 <![CDATA[
 <p>
