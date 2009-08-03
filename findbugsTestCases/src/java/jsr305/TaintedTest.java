@@ -2,12 +2,13 @@ package jsr305;
 
 import javax.annotation.Tainted;
 import javax.annotation.Untainted;
+import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public abstract class TaintedTest {
-	@Untainted Object sanitize(Object o) {
+	@Untainted Object sanitize(@Untainted(when=When.UNKNOWN) Object o) {
 		return o;
 	}
 	

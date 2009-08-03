@@ -17,6 +17,8 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2539590 {
 
+	@ExpectWarning("SF_SWITCH_NO_DEFAULT")
+	
 	public static void noFallthroughMethodNoDefault(int which) {
 		switch (which) {
 		case 0:
@@ -25,7 +27,7 @@ public class Bug2539590 {
 		}
 	}
 
-	@NoWarning("SF")
+	@NoWarning("SF_SWITCH_NO_DEFAULT")
 	public static void noFallthroughMethod(int which) {
 		switch (which) {
 		case 0:
@@ -34,6 +36,7 @@ public class Bug2539590 {
 		default:
 		}
 	}
+	@NoWarning("SF_SWITCH_NO_DEFAULT")	
 	public static void noFallthroughMethod2(int which) {
 		switch (which) {
 		case 0:
@@ -62,7 +65,7 @@ public class Bug2539590 {
 	}
 
 
-
+	@NoWarning("SF_SWITCH_NO_DEFAULT")
 	public static void fallthroughMethod(int which) {
 		switch (which) {
 		case 0:
@@ -72,7 +75,7 @@ public class Bug2539590 {
 		}
 	}
 
-	@ExpectWarning("SF")
+	@ExpectWarning("SF_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT")
 	public static int fallthroughMethodNoDefaultClobber(int which) {
 		int result = 0;
 		switch (which) {
@@ -84,8 +87,7 @@ public class Bug2539590 {
 		return result;
 	}
 
-
-	@ExpectWarning("SF")
+	@ExpectWarning("SF_SWITCH_FALLTHROUGH")
 	public static int fallthroughMethodClobber(int which) {
 		int result = 0;
 		switch (which) {
@@ -99,7 +101,7 @@ public class Bug2539590 {
 	}
 
 
-	@ExpectWarning("SF")
+	@ExpectWarning("SF_SWITCH_FALLTHROUGH")
 	public static int fallthroughMethodToss(int which) {
 		int result;
 		switch (which) {

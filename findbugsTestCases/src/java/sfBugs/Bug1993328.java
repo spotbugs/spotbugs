@@ -12,6 +12,7 @@ package sfBugs;
  * Test case based on example code from bug report
  * **************************************** */
 
+import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1993328 {
@@ -22,7 +23,7 @@ public class Bug1993328 {
 	 * Behavior at filing:
 	 *   no warning thrown
 	 * ******************** */
-	@ExpectWarning("EI2")
+	@DesireWarning("EI2")
 	public void assign_conditional(Object[] args) {
 		this.args1 = args == null ? NO_ARGS : args;
 	};

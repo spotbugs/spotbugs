@@ -93,7 +93,6 @@ public class Bug2475589 {
      *   No warning thrown despite use of unchecked,
      *   non-constant input in prepared statement
      * ******************** */
-    @ExpectWarning("SQL")
     public void runUserQuery4(String userQuery) {
         PreparedStatement pstmt = null;
         try {
@@ -118,7 +117,6 @@ public class Bug2475589 {
      *   A prepared statement is generated from a nonconstant String at \
      *   sfBugs.Bug2475589.runUserQuery5(String)   At Bug2475589.java:[line 120]
      * ******************** */
-    @ExpectWarning("SQL")
     public void runUserQuery5(String userQuery) {
         PreparedStatement pstmt = null;
         try {
