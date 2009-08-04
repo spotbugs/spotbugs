@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Descriptor uniquely identifying a method in a class.
@@ -58,7 +59,7 @@ public class MethodDescriptor
      * @param isBridged             true if method is bridged, false otherwise
      * @deprecated Use {@link #MethodDescriptor(String,String,String,String,boolean)} instead
      */
-    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, String bridgeMethodSignature, boolean isStatic, boolean isBridged) {
+    public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, @CheckForNull String bridgeMethodSignature, boolean isStatic, boolean isBridged) {
         this(className, methodName, methodSignature, bridgeMethodSignature, isStatic);
     }
 
@@ -71,7 +72,7 @@ public class MethodDescriptor
 	 * @param bridgeMethodSignature the bridge method signature or null
 	 * @param isStatic              true if method is static, false otherwise
 	 */
-	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature, String bridgeMethodSignature, boolean isStatic) {
+	public MethodDescriptor(@SlashedClassName String className, String methodName, String methodSignature,  @CheckForNull String bridgeMethodSignature, boolean isStatic) {
 		super(className, methodName, methodSignature, isStatic);
 		assert methodSignature.charAt(0) == '(';
 		assert methodSignature.indexOf(')') > 0;

@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -29,7 +31,8 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 	final String bridgeMethodSignature;
 
 
-	protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, String bridgeMethodSig, int accessFlags) {
+	protected AbstractMethod(@DottedClassName String className, String methodName, String methodSig, 
+			@CheckForNull String bridgeMethodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 		this.bridgeMethodSignature = DescriptorFactory.canonicalizeString(bridgeMethodSig);
 	}

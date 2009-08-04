@@ -151,7 +151,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod, AnnotatedOb
 	 * @param isStub TODO
 	 * @param isStatic
 	 */
-	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,  String bridgeMethodSignature,
+	 MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature, 
+			 @CheckForNull String bridgeMethodSignature,
 	        int accessFlags, boolean isUnconditionalThrower,
 	        boolean isUnsupported, boolean usesConcurrency, boolean isStub, @CheckForNull String[] exceptions,
 	        Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations) {
