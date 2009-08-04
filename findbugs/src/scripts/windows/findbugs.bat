@@ -11,7 +11,7 @@ setlocal
 :: ----------------------------------------------------------------------
 set appjar=findbugs.jar
 set javahome=
-set launcher=javaw.exe
+set launcher=java.exe
 set start=start "FindBugs"
 set jvmargs=
 set debugArg=
@@ -50,6 +50,92 @@ shift
 :: Remove surrounding quotes from %1 and %2
 set firstArg=%~1
 set secondArg=%~2
+
+if "%firstArg%"=="" goto launch
+
+:: AddMessages
+if not "%firstArg%"=="-addMessages" goto notAddMessages
+set fb_mainclass=edu.umd.cs.findbugs.AddMessages
+goto shift1
+:notAddMessages
+
+:: computeBugHistory
+if not "%firstArg%"=="-computeBugHistory" goto notUpdate
+set fb_mainclass=edu.umd.cs.findbugs.workflow.Update
+goto shift1
+:notUpdate
+
+:: convertXmlToText
+if not "%firstArg%"=="-xmltotext" goto notXmlToText
+set fb_mainclass=edu.umd.cs.findbugs.PrintingBugReporter
+goto shift1
+:notXmlToText
+
+:: copyBuggySource
+if not "%firstArg%"=="-copyBS" goto notCopyBS
+set fb_mainclass=edu.umd.cs.findbugs.workflow.CopyBuggySource
+goto shift1
+:notCopyBS
+
+:: defectDensity
+if not "%firstArg%"=="-defectDensity" goto notDefectDensity
+set fb_mainclass=edu.umd.cs.findbugs.workflow.DefectDensity
+goto shift1
+:notDefectDensity
+
+:: filterBugs
+if not "%firstArg%"=="-filterBugs" goto notFilterBugs
+set fb_mainclass=edu.umd.cs.findbugs.workflow.Filter
+goto shift1
+:notFilterBugs
+
+:: listBugDatabaseInfo
+if not "%firstArg%"=="-listBugDatabaseInfo" goto notListBugDatabaseInfo
+set fb_mainclass=edu.umd.cs.findbugs.workflow.ListBugDatabaseInfo
+goto shift1
+:notListBugDatabaseInfo
+
+:: mineBugHistory
+if not "%firstArg%"=="-mineBugHistory" goto notMineBugHistory
+set fb_mainclass=edu.umd.cs.findbugs.workflow.MineBugHistory
+goto shift1
+:notMineBugHistory
+
+:: printAppVersion
+if not "%firstArg%"=="-printAppVersion" goto notPrintAppVersion
+set fb_mainclass=edu.umd.cs.findbugs.workflow.PrintAppVersion
+goto shift1
+:notPrintAppVersion
+
+:: printClass
+if not "%firstArg%"=="-printClass" goto notPrintClass
+set fb_mainclass=edu.umd.cs.findbugs.workflow.PrintClass
+goto shift1
+:notPrintClass
+
+:: rejarForAnalysis
+if not "%firstArg%"=="-rejar" goto notRejar
+set fb_mainclass=edu.umd.cs.findbugs.workflow.RejarClassesForAnalysis
+goto shift1
+:notRejar
+
+:: setBugDatabaseInfo
+if not "%firstArg%"=="-setInfo" goto notSetBugDatabaseInfo
+set fb_mainclass=edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo
+goto shift1
+:notSetBugDatabaseInfo
+
+:: unionBugs
+if not "%firstArg%"=="-unionBugs" goto notUnionBugs
+set fb_mainclass=edu.umd.cs.findbugs.workflow.UnionResults
+goto shift1
+:notUnionBugs
+
+:: xpathFind
+if not "%firstArg%"=="-xpathFind" goto notXPathFind
+set fb_mainclass=edu.umd.cs.findbugs.workflow.XPathFind
+goto shift1
+:notXPathFind
 
 if not "%firstArg%"=="-gui" goto notGui
 set launchUI=2
@@ -135,6 +221,10 @@ if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
+if "%fb_mainclass%"=="" goto runJar
+"%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -cp "%FINDBUGS_HOME%\lib\%appjar%" %fb_mainclass% %args%
+goto end
+:runjar
 %start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
