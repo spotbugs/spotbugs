@@ -146,6 +146,7 @@
 						source="1.5"
 						target="1.5"
                                                 includeantruntime="false"
+						encoding="ISO-8859-1"
 						deprecation="off"
 						debug="on">
 					<compilerarg value="-Xlint:unchecked"/>
@@ -190,6 +191,7 @@
 				source="1.5"
 				target="1.5"
                                 includeantruntime="false"
+                                encoding="ISO-8859-1"
 				debug="on"
 				deprecation="off"
 				excludes="${pkg.base}/tools/patcomp/">
@@ -202,6 +204,7 @@
 			source="1.5"
 			target="1.5"
                         includeantruntime="false"
+			encoding="ISO-8859-1"
 			deprecation="off"
 			debug="on">
 			<classpath>
@@ -492,6 +495,7 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
+
 <!--
 <findbugs home="${findbugs.home}"
               output="xml"
