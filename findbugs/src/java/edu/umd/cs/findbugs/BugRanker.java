@@ -23,9 +23,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 
@@ -151,13 +153,17 @@ public class BugRanker {
 		}
     }
     public static int rankBug(BugInstance bug, BugRanker... rankers) {
-    	int rankBugPattern = rankBugPattern(bug.getBugPattern(), rankers);
-		int priorityAdjustment = priorityAdjustment(bug.getPriority());
+    	return rankBugPatternWithPriorityAdustment(bug.getBugPattern(), bug.getPriority(), rankers);
+    }
+
+    private static int rankBugPatternWithPriorityAdustment(BugPattern bugPattern, int priority, BugRanker... rankers) {
+    	int rankBugPattern = rankBugPattern(bugPattern, rankers);
+		int priorityAdjustment = priorityAdjustment(priority);
 		if (rankBugPattern > 20)
 			return rankBugPattern + priorityAdjustment;
 		return Math.min(rankBugPattern + priorityAdjustment, 20);
     }
-    
+
     private static int rankBugPattern(BugPattern bugPattern, BugRanker... rankers) {
 	   String type = bugPattern.getType();
 	   int rank = 0;
@@ -209,16 +215,26 @@ public class BugRanker {
 		BugRanker coreRanker = getCoreRanker();
 
 		if (pluginRanker == coreRanker)
-			return rankBugPattern(pattern, adjustmentRanker, coreRanker);
+			return rankBugPatternWithPriorityAdustment(pattern, priority, adjustmentRanker, coreRanker);
 		else
-			return rankBugPattern(pattern, adjustmentRanker, pluginRanker, coreRanker);
+			return rankBugPatternWithPriorityAdustment(pattern, priority, adjustmentRanker, pluginRanker, coreRanker);
 	}
 
-	public static int findRank(BugPattern pattern,  int priority) {
-		BugRanker adjustmentRanker = getAdjustmentBugRanker();
-		BugRanker coreRanker = getCoreRanker();
 
-		return rankBugPattern(pattern, adjustmentRanker, coreRanker);
+	public static int findRank(BugPattern pattern,  int priority) {
+          DetectorFactoryCollection factory = DetectorFactoryCollection.instance();
+          Plugin corePlugin = factory.getCorePlugin();
+
+          List<BugRanker> rankers = new ArrayList<BugRanker>();
+          rankers.add(getAdjustmentBugRanker());
+          for (Plugin plugin : factory.plugins()) {
+            if (plugin != corePlugin) {
+              rankers.add(plugin.getBugRanker());
+            }
+          }
+          rankers.add(getCoreRanker());
+
+          return rankBugPatternWithPriorityAdustment(pattern, priority, rankers.toArray(new BugRanker[] {}));
 	}
 
 
