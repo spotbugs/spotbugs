@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.DesireWarning;
+
 
 public class ArrayToString {
 	
@@ -11,19 +13,23 @@ public class ArrayToString {
 		a.print3();
 	}
 	
+	@DesireWarning("DMI")
 	public void print0(String args[]) {
 		System.out.println(args.toString());
 	}
 
+	@DesireWarning("DMI")
 	public void print1() {
 		String [] args2 = new String[] {"Hello", "there"};
 		System.out.println(args2.toString());
 	}
 
+	@DesireWarning("DMI")
 	public void print2() {
 		System.out.println((new String[] {"one","two"}).toString());		
 	}
 
+	@DesireWarning("DMI")
 	public void print3() {
 		System.out.println(gargs.toString());
 	}

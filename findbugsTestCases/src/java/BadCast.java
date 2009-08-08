@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 class BadCast {
 
 	Object myField;
@@ -28,6 +30,7 @@ class BadCast {
 	}
 	List a;
 
+	@ExpectWarning("BC")
 	public Vector swap(List b) {
 		Vector v = (Vector) a;
 		a = (Vector) b;
@@ -60,6 +63,7 @@ class BadCast {
 		return ((Hashtable) foo()).size();
 	}
 
+	@ExpectWarning("BC")
 	int f2() {
 		Object o = faz();
 		return ((Hashtable[]) o).length;
@@ -102,6 +106,7 @@ class BadCast {
 		return b ? (Integer) i : (String) s;
 	}
 
+	@ExpectWarning("BC")
 	public static int first(Object o) {
 		if (o instanceof Byte[]) {
 			byte b[] = (byte[])o;
@@ -129,6 +134,7 @@ class BadCast {
 	public static Serializable[] doNotReport4(List<Serializable[]> x) {
 		return x.get(0);
 	}
+	@ExpectWarning("BC")
 	public static int[] report(Object x) {
 		if (x instanceof Object[])
 			return (int[]) x;

@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 abstract class AbstractMissingHashCode {
 	int x;
 
@@ -8,6 +10,7 @@ abstract class AbstractMissingHashCode {
 		return x == ((AbstractMissingHashCode) o).x;
 	}
 
+	@ExpectWarning("HE")
 	static class StillMissingHashCode extends AbstractMissingHashCode {
 		int y;
 	}
