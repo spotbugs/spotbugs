@@ -35,7 +35,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
@@ -76,7 +75,6 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
-import edu.umd.cs.findbugs.util.Archive;
 
 /**
 	* Utility methods for converting FindBugs BugInstance objects
@@ -413,13 +411,14 @@ public final class MarkerUtil {
 	@SuppressWarnings("restriction")
 	private static char[] getContent(IType source) throws JavaModelException {
 		char [] charContent = null;
-		String content = source.getSource();
-		if(content != null){
-			charContent = content.toCharArray();
-		} else {
-			IOpenable op = source.getOpenable();
-			if (op instanceof CompilationUnit) {
-				charContent = ((CompilationUnit)(op)).getContents();
+		IOpenable op = source.getOpenable();
+		if (op instanceof CompilationUnit) {
+			charContent = ((CompilationUnit)(op)).getContents();
+		}
+		if(charContent == null){
+			String content = source.getSource();
+			if(content != null){
+				charContent = content.toCharArray();
 			}
 		}
 		return charContent;
