@@ -1,6 +1,10 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class BinarySearch {
 
 	// This one is buggy
+	@ExpectWarning("IM")
 	public static int binarySearchUsingDivision(int a[], int x) {
 		int low = 0;
 		int high = a.length - 1;
@@ -18,6 +22,7 @@ public class BinarySearch {
 	}
 
 	// This one is also buggy
+	@ExpectWarning("IM")
 	public static int binarySearchUsingRightShift(int a[], int x) {
 		int low = 0;
 		int high = a.length - 1;
@@ -35,6 +40,7 @@ public class BinarySearch {
 	}
 
 	// This one is fine
+	@NoWarning("IM")
 	public static int binarySearchUsingUnsignedRightShift(int a[], int x) {
 		int low = 0;
 		int high = a.length - 1;

@@ -1,5 +1,8 @@
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 
 public class BadShift {
+	@ExpectWarning("BSHIFT")
 	public static void main(String args[]) {
 		short s = (short)0xffff;
 		s >>>= 1;
