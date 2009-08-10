@@ -36,6 +36,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -317,18 +318,37 @@ public final class MarkerUtil {
 	}
 
 	private static void completeFieldInfo(String qualifiedClassName, String innerName,
-			IType type, BugInstance bug)  throws JavaModelException  {
+			IType type, BugInstance bug) {
 		FieldAnnotation field = bug.getPrimaryField();
 		if (field == null || type == null) {
 			return;
 		}
 
 		IField ifield = type.getField(field.getFieldName());
-		ISourceRange sourceRange = ifield.getNameRange();
-		if (sourceRange == null) {
-			sourceRange = ifield.getSourceRange();
+		ISourceRange sourceRange = null;
+		IScanner scanner = null;
+		try {
+			sourceRange = ifield.getNameRange();
+		} catch (JavaModelException e) {
+			FindbugsPlugin.getDefault().logMessage(
+					IStatus.WARNING,
+					"Can not complete field annotation " + field + " for the field: "
+							+ ifield + " in class: " + qualifiedClassName + ", type "
+							+ type + ", bug " + bug, e);
 		}
-		IScanner scanner = initScanner(type, sourceRange);
+		try {
+			// second try...
+			if (sourceRange == null) {
+				sourceRange = ifield.getSourceRange();
+			}
+			scanner = initScanner(type, sourceRange);
+		} catch (JavaModelException e) {
+			FindbugsPlugin.getDefault().logMessage(
+					IStatus.WARNING,
+					"Can not complete field annotation " + field + " for the field: "
+							+ ifield + " in class: " + qualifiedClassName + ", type "
+							+ type + ", bug " + bug, e);
+		}
 		if(scanner == null || sourceRange == null){
 			return;
 		}
