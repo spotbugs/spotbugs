@@ -183,6 +183,10 @@ public final class MarkerUtil {
 			FieldAnnotation primaryField = bug.getPrimaryField();
 			if (primaryField != null && primaryField.getSourceLines() != null) {
 				startLine = primaryField.getSourceLines().getStartLine();
+				if(startLine < 0){
+					// We have to provide line number, otherwise editor wouldn't show it
+					startLine = 1;
+				}
 			} else {
 				// We have to provide line number, otherwise editor wouldn't show it
 				startLine = 1;
@@ -327,14 +331,11 @@ public final class MarkerUtil {
 		IField ifield = type.getField(field.getFieldName());
 		ISourceRange sourceRange = null;
 		IScanner scanner = null;
+		JavaModelException ex = null;
 		try {
 			sourceRange = ifield.getNameRange();
 		} catch (JavaModelException e) {
-			FindbugsPlugin.getDefault().logMessage(
-					IStatus.WARNING,
-					"Can not complete field annotation " + field + " for the field: "
-							+ ifield + " in class: " + qualifiedClassName + ", type "
-							+ type + ", bug " + bug, e);
+			ex = e;
 		}
 		try {
 			// second try...
@@ -343,17 +344,19 @@ public final class MarkerUtil {
 			}
 			scanner = initScanner(type, sourceRange);
 		} catch (JavaModelException e) {
-			FindbugsPlugin.getDefault().logMessage(
-					IStatus.WARNING,
-					"Can not complete field annotation " + field + " for the field: "
-							+ ifield + " in class: " + qualifiedClassName + ", type "
-							+ type + ", bug " + bug, e);
+			String message = "Can not complete field annotation " + field + " for the field: "
+					+ ifield + " in class: " + qualifiedClassName + ", type "
+					+ type + ", bug " + bug;
+			if(ex != null){
+				// report only first one
+				e = ex;
+			}
+			FindbugsPlugin.getDefault().logMessage(IStatus.WARNING, message, e);
 		}
 		if(scanner == null || sourceRange == null){
 			return;
 		}
-		int offset = sourceRange.getOffset();
-		int lineNbr = scanner.getLineNumber(offset);
+		int lineNbr = scanner.getLineNumber(sourceRange.getOffset());
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
 		String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
 		field.setSourceLines(new SourceLineAnnotation(qualifiedClassName, sourceFileStr,
