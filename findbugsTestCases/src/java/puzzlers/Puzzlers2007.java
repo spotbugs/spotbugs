@@ -12,8 +12,11 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Puzzlers2007 {
 
+	@ExpectWarning("GC")
 	public static void shortSet() {
 		Set<Short> s = new HashSet<Short>();
 		for (short i = 0; i < 100; i++) {
@@ -26,6 +29,7 @@ public class Puzzlers2007 {
 	private static final String[] URL_NAMES = { "http://javapuzzlers.com", "http://apache2-snort.skybar.dreamhost.com",
 	        "http://www.google.com", "http://javapuzzlers.com", "http://findbugs.sourceforge.net", "http://www.cs.umd.edu" };
 
+	@ExpectWarning("Dm")
 	public static void urlSet() throws MalformedURLException {
 		Set<URL> favorites = new HashSet<URL>();
 		for (String urlName : URL_NAMES)
@@ -39,6 +43,7 @@ public class Puzzlers2007 {
 		public void test() throws InterruptedException {
 			number = 0;
 			Thread t = new Thread(new Runnable() {
+				@ExpectWarning("IJU")
 				public void run() {
 					assertEquals(2, number);
 				}
@@ -52,6 +57,7 @@ public class Puzzlers2007 {
 
 	public static class Elvis {
 		// Singleton pattern: there's only one Elvis
+		@ExpectWarning("SI")
 		public static final Elvis ELVIS = new Elvis();
 
 		private Elvis() {
@@ -72,6 +78,7 @@ public class Puzzlers2007 {
 
 	private static final int GAP_SIZE = 10 * 1024;
 
+	@ExpectWarning("RR")
 	public static void gap() throws IOException {
 		File tmp = File.createTempFile("gap", ".txt");
 		FileOutputStream out = new FileOutputStream(tmp);
@@ -88,6 +95,7 @@ public class Puzzlers2007 {
 
 	private static final String[] words = { "I", "recommend", "polygene", "lubricants" };
 
+	@ExpectWarning("RV")
 	public static void histogram() {
 		int[] histogram = new int[5];
 		for (String word1 : words) {
@@ -103,6 +111,7 @@ public class Puzzlers2007 {
 		System.out.println('C' + pairCount);
 	}
 
+	@ExpectWarning("Bx")
 	public static void hamlet() {
 		Random rnd = new Random();
 		boolean toBe = rnd.nextBoolean();
@@ -114,6 +123,7 @@ public class Puzzlers2007 {
 		return (x != null) ? x : 0;
 	}
 
+	@ExpectWarning("ICAST")
 	public static void round() {
 		Random rnd = new Random();
 		int i = rnd.nextInt();

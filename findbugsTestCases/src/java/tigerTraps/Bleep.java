@@ -1,4 +1,7 @@
 package tigerTraps;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class Bleep {
 	String name = "Bleep";
 	void setName(String name) {
@@ -6,7 +9,7 @@ public class Bleep {
     }
 	void backgroundSetName() throws Exception {
 		Thread t = new Thread() {
-			@Override public void run() { setName("Blat"); }
+			@Override @ExpectWarning("IA") public void run() { setName("Blat"); }
         };
 		t.start();
 		t.join();

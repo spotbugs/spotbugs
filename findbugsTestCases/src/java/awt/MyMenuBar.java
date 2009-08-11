@@ -3,10 +3,13 @@ package awt;
 import java.awt.Menu;
 import java.awt.MenuBar;
 
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
 public class MyMenuBar extends MenuBar {
 	Menu helpMenu;
 
 	@Override
+	@ExpectWarning("RCN")
 	public void setHelpMenu(Menu m) {
 		synchronized (getTreeLock()) {
 			if (helpMenu == m) {
