@@ -241,7 +241,7 @@ public class FindSqlInjection implements Detector {
 		return false;
 	}
 
-	private boolean isExecuteDatabaseSink(Instruction ins, ConstantPoolGen cpg) {
+	private boolean isExecuteDatabaseSink(InvokeInstruction ins, ConstantPoolGen cpg) {
 		if (!(ins instanceof INVOKEINTERFACE)) {
 			return false;
 		}
@@ -257,7 +257,7 @@ public class FindSqlInjection implements Detector {
 		return false;
 	}
 
-	private boolean isDatabaseSink(Instruction ins, ConstantPoolGen cpg) {
+	private boolean isDatabaseSink(InvokeInstruction ins, ConstantPoolGen cpg) {
 		return isPreparedStatementDatabaseSink(ins, cpg) || isExecuteDatabaseSink(ins, cpg);
 	}
 
@@ -411,7 +411,7 @@ public class FindSqlInjection implements Detector {
 		}
 
 		String description = "UNKNOWN";
-		if (isExecuteDatabaseSink(instruction, cpg)) {
+		if (instruction instanceof InvokeInstruction && isExecuteDatabaseSink((InvokeInstruction) instruction, cpg)) {
 			description = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE";
 		} else if (isPreparedStatementDatabaseSink(instruction, cpg)) {
 			description = "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING";
@@ -443,9 +443,13 @@ public class FindSqlInjection implements Detector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			Instruction ins = location.getHandle().getInstruction();
-			if (isDatabaseSink(ins, cpg)) {
+			if (!(ins instanceof InvokeInstruction))
+				continue;
+			InvokeInstruction invoke = (InvokeInstruction) ins;
+			if (isDatabaseSink(invoke, cpg)) {
 				ConstantFrame frame = dataflow.getFactAtLocation(location);
-				Constant value = frame.getStackValue(0);
+				int numArguments =  frame.getNumArguments(invoke,  cpg);
+				Constant value = frame.getStackValue(numArguments-1);
 
 				if (!value.isConstantString()) {
 					// TODO: verify it's the same string represented by
