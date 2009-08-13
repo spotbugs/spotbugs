@@ -3,9 +3,11 @@ Create a directory that contains exactly all the files to upload. For example:
   edu.umd.cs.findbugs.plugin.eclipse_1.3.6.20081104.zip  findbugs-1.3.6-rc3.tar.gz
 
 cd to that directory
-sftp username@frs.sourceforge.net
-sftp> cd uploads
-sftp> mput *
+sftp username,findbugs@frs.sourceforge.net
+sftp> cd /home/frs/project/f/fi/findbugs/findbugs/RELEASE
+sftp> mput findbugs-*
+sftp> cd "../../findbugs eclipse plugin/RELEASE
+fstp> mput edu.* eclipsePlugin*
 fstp> quit
 
 Add releases via:
