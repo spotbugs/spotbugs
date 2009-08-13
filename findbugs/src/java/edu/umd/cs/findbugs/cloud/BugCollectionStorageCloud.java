@@ -88,6 +88,8 @@ import edu.umd.cs.findbugs.BugInstance;
 	public long getFirstSeen(BugInstance b) {
 	    long firstVersion = b.getFirstVersion();
 	    AppVersion v = bugCollection.getAppVersionFromSequenceNumber(firstVersion);
+	    if (v == null)
+	    	return bugCollection.getTimestamp();
 	    return v.getTimestamp();
     }
 
