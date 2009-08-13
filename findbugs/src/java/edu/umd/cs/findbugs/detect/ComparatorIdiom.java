@@ -43,41 +43,36 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 		classContext.getJavaClass().accept(this);
 	}
 
-
 	@Override
 	public void visit(JavaClass obj) {
 
-			if (Subtypes2.instanceOf(obj, "java.util.Comparator")
-					&& !ClassName.isAnonymous(getClassName())
-					&& !Subtypes2.instanceOf(obj, "java.io.Serializable")) {
-				int priority = NORMAL_PRIORITY;
-				if (obj.isInterface() || obj.isAbstract()) {
-					priority = LOW_PRIORITY;
-				} else {
-				double easilySerializable = 1.0;
-				for(Field f : obj.getFields()) {
-					try {
+		if (Subtypes2.instanceOf(obj, "java.util.Comparator") && !ClassName.isAnonymous(getClassName())
+		        && !Subtypes2.instanceOf(obj, "java.io.Serializable")) {
+			int priority = NORMAL_PRIORITY;
+			if (obj.isInterface() || obj.isAbstract())
+				return;
+
+			double easilySerializable = 1.0;
+			for (Field f : obj.getFields()) {
+				try {
+					if (f.getName().startsWith("this$"))
+						return;
 					String signature = f.getSignature();
 					char firstChar = signature.charAt(0);
 					if (firstChar == 'L' || firstChar == '[')
 						easilySerializable *= DeepSubtypeAnalysis.isDeepSerializable(signature);
-					} catch (ClassNotFoundException e) {
-						easilySerializable = 0.0;
-						break;
-					}
+				} catch (ClassNotFoundException e) {
+					easilySerializable = 0.0;
+					break;
 				}
-
-				if (easilySerializable < 0.9) priority = LOW_PRIORITY;
-				int lastDollar = getClassName().lastIndexOf('$');
-				if (lastDollar > 0 && Character.isDigit(getClassName().charAt(lastDollar+1)))
-					priority = LOW_PRIORITY;
-				}
-				bugReporter
-						.reportBug(new BugInstance(this,
-								"SE_COMPARATOR_SHOULD_BE_SERIALIZABLE",
-								priority).addClass(this));
-
 			}
+
+			if (easilySerializable < 0.9)
+				priority = LOW_PRIORITY;
+
+			bugReporter.reportBug(new BugInstance(this, "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", priority).addClass(this));
+
+		}
 
 	}
 
