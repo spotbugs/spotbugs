@@ -229,6 +229,10 @@ public class ClassContext {
 		}
 		return null;
 	}
+	
+	public String getFullyQualifiedMethodName(Method method) {
+		return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
+	}
 
 	@CheckForNull List<Method> methodsInCallOrder = null;
 	public @NonNull List<Method> getMethodsInCallOrder() {

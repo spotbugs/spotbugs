@@ -156,13 +156,11 @@ public class FindSqlInjection implements Detector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("FindSqlInjection caught exception while analyzing " + methodGen, e);
+				bugReporter.logError("FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError("FindSqlInjection caught exception while analyzing " + methodGen, e);
+				bugReporter.logError("FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 			} catch (RuntimeException e) {
-				System.out.println("Exception while checking for SQL injection in " + methodGen + " in "
-						+ javaClass.getSourceFileName());
-				e.printStackTrace(System.out);
+				bugReporter.logError("FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method), e);
 			}
 		}
 	}
@@ -233,8 +231,9 @@ public class FindSqlInjection implements Detector {
 		INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
 
 		String methodName = invoke.getMethodName(cpg);
+		String methodSignature = invoke.getSignature(cpg);
 		String interfaceName = invoke.getClassName(cpg);
-		if (methodName.equals("prepareStatement") && interfaceName.equals("java.sql.Connection")) {
+		if (methodName.equals("prepareStatement") && interfaceName.equals("java.sql.Connection")  && methodSignature.startsWith("(Ljava/lang/String;")) {
 			return true;
 		}
 
@@ -249,8 +248,9 @@ public class FindSqlInjection implements Detector {
 		INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
 
 		String methodName = invoke.getMethodName(cpg);
+		String methodSignature = invoke.getSignature(cpg);
 		String interfaceName = invoke.getClassName(cpg);
-		if (methodName.startsWith("execute") && interfaceName.equals("java.sql.Statement")) {
+		if (methodName.startsWith("execute") && interfaceName.equals("java.sql.Statement") && methodSignature.startsWith("(Ljava/lang/String;")) {
 			return true;
 		}
 
