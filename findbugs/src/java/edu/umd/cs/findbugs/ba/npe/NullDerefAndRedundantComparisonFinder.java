@@ -744,9 +744,11 @@ public class NullDerefAndRedundantComparisonFinder {
 			if (ePosition == position 
 					|| table != null && line == table.getSourceLine(ePosition)) {
 			
-				
+			IsNullValueFrame frame2 = invDataflow.getStartFact(bb);
+			if (!frame2.isValid())
+				continue;
 			// apparent clone
-			IsNullValue rv = frame.getInstance(eth.getInstruction(), classContext.getConstantPoolGen());
+			IsNullValue rv = frame2.getInstance(eth.getInstruction(), classContext.getConstantPoolGen());
 			if (!rv.equals(refValue))
 				isConsistent = false;
 			}
