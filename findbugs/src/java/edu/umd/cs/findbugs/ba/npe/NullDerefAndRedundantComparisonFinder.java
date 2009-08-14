@@ -138,7 +138,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			if (DEBUG_DEREFS) {
 				System.out.println(
 						"Checking for guaranteed derefs in " +
-						method.getName());
+						classContext.getClassDescriptor().getDottedClassName()+"."+method.getName() + method.getSignature());
 			}
 			this.uvdDataflow = classContext.getUnconditionalValueDerefDataflow(method);
 		}
@@ -153,8 +153,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		}  catch (MissingClassException e) {
 			AnalysisContext.reportMissingClass(e.getClassNotFoundException());
 		}  catch (CheckedAnalysisException e) {
-			AnalysisContext.logError("Error while for guaranteed derefs in " +
-					method.getName(), e);
+			AnalysisContext.logError("Error while checking guaranteed derefs in " +
+					classContext.getClassDescriptor().getDottedClassName()+"."+method.getName() + method.getSignature(), e);
 		} finally {
 			profiler.end(this.getClass());
 		}
