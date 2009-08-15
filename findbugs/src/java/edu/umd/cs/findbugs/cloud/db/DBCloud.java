@@ -248,6 +248,21 @@ public  class DBCloud extends AbstractCloud {
 	
 	public DBCloud(BugCollection bugs) {
 		super(bugs);
+		sqlDriver = getProperty("dbDriver");
+		url = getProperty("dbUrl");
+		dbName = getProperty("dbName");
+		dbUser = getProperty("dbUser");
+		dbPassword = getProperty("dbPassword");
+		findbugsUser = getProperty("findbugsUser");
+	}
+	
+	public boolean availableForInitialization() {
+		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
+			if (THROW_EXCEPTION_IF_CANT_CONNECT)
+				throw new RuntimeException("Unable to load database properties");
+			return false;
+		}
+		return true;
 	}
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
 	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.db.promptForUserName", false);
@@ -515,7 +530,8 @@ public  class DBCloud extends AbstractCloud {
 	}
 
 	final static int MAX_DB_RANK = SystemProperties.getInt("findbugs.db.maxrank", 12);
-	String url, dbUser, dbPassword, findbugsUser, dbName;
+	final String url, dbUser, dbPassword, dbName;
+	String findbugsUser;
 	@CheckForNull Pattern sourceFileLinkPattern;
 	String sourceFileLinkFormat;
 	String sourceFileLinkFormatWithLine;
@@ -523,12 +539,16 @@ public  class DBCloud extends AbstractCloud {
 	String sourceFileLinkToolTip;
 	ProjectPackagePrefixes projectMapping = new ProjectPackagePrefixes();
 	Map<String,String> prefixBugComponentMapping = new HashMap<String,String>();
+	private final String sqlDriver;
 
 	Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, dbUser, dbPassword);
 	}
 
+
 	public boolean initialize() {
+		if (!availableForInitialization())
+			return false;
 		
 		String mode = getProperty("votingmode");
 		if (mode != null)
@@ -551,17 +571,7 @@ public  class DBCloud extends AbstractCloud {
 					throw e;
 			}
 		}
-		String sqlDriver = getProperty("dbDriver");
-		url = getProperty("dbUrl");
-		dbName = getProperty("dbName");
-		dbUser = getProperty("dbUser");
-		dbPassword = getProperty("dbPassword");
-		findbugsUser = getProperty("findbugsUser");
-		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
-			if (THROW_EXCEPTION_IF_CANT_CONNECT)
-				throw new RuntimeException("Unable to load database properties");
-			return false;
-		}
+		
 		
 		if (findbugsUser == null) {
 			if (PROMPT_FOR_USER_NAME) {

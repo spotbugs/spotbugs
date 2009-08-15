@@ -30,19 +30,32 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class CloudFactory {
 	
+	
+    private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
+
+
 	public static Cloud getCloud(BugCollection bc) {
-		String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname","edu.umd.cs.findbugs.cloud.db.DBCloud");
+		String cloudClassName = SystemProperties.getProperty("findbugs.cloud.classname");
+		boolean cloudClassSpecified = cloudClassName != null;
+		if (!cloudClassSpecified)
+			cloudClassName = DEFAULT_CLOUD_CLASS;
 		try {
 	        Class<? extends Cloud> cloudClass 
 	        = Class.forName(cloudClassName).asSubclass(Cloud.class);
 	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(BugCollection.class);
-	        Cloud cloud =  constructor.newInstance(bc);
-	        if (cloud.initialize()) 
-	        	return cloud;
-	        bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to cloud");
-	    	if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
-	    		System.exit(1);
-			
+			Cloud cloud = constructor.newInstance(bc);
+			if (cloud.availableForInitialization()) {
+				if (cloud.initialize())
+					return cloud;
+				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
+				if (SystemProperties.getBoolean("findbugs.failIfUnableToConnectToDB"))
+					System.exit(1);
+			} else if (cloudClassSpecified) {
+				bc.getProject().getGuiCallback().showMessageDialog("Bad configuration for " + cloudClass.getSimpleName());
+			}
+		} catch (ClassNotFoundException e) {
+			if (cloudClassSpecified)
+				bc.getProject().getGuiCallback().showMessageDialog("Unable to load cloud " + cloudClassName);
         } catch (Exception e) {
 	      assert true;
         }

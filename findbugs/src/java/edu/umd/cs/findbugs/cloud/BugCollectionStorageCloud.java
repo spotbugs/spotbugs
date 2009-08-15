@@ -101,9 +101,9 @@ import edu.umd.cs.findbugs.BugInstance;
 	    
     }
 
-	/* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.cloud.Cloud#initialize()
-     */
+	public boolean availableForInitialization() {
+		return true;
+	}
     public boolean initialize() {
 	    return true;
 	    

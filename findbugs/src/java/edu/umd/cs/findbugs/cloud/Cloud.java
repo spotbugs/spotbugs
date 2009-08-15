@@ -134,8 +134,10 @@ public interface Cloud {
 
 	public void removeListener(CloudListener listener);
 
+	public boolean availableForInitialization();
+	
 	public boolean initialize();
-
+	
 	public void bugsPopulated();
 
 	public void shutdown();
