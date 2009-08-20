@@ -175,6 +175,7 @@ public class Hierarchy2 {
 		Set<XMethod> result = new HashSet<XMethod>();
 		
 		findSuperMethods(m.getClassDescriptor(), m,result);
+		result.remove(m);
 		return result;
 		
 	}

@@ -158,12 +158,17 @@ public class Naming extends PreorderVisitor implements Detector {
 						propertySet.addProperty(NamingProperty.METHOD_IS_DEPRECATED);
 
 					if (!m.getName().equals(m2.getName()) && m.getName().equalsIgnoreCase(m2.getName())) {
-						if (m.getName().substring(1).equals(m2.getName().substring(1)))
-								priority++;
 						String pattern = intentional ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
 						Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
 						if (!overrides.isEmpty()) {
 							if (intentional) 
+								break;
+							boolean allAbstract = true;
+							for(XMethod m4 : overrides) {
+								if (!m4.isAbstract())
+									allAbstract = false;
+							}
+							if (allAbstract)
 								break;
 							priority++;
 						}
