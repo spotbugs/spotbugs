@@ -580,7 +580,7 @@ public class CommentsArea {
 		if (designationKey.equals(oldValue))
 			return;
 		Cloud plugin = bugCollection != null? bugCollection.getCloud() : null;
-		if (plugin != null && designationKey.equals("I_WILL_FIX")) {
+		if (plugin != null && designationKey.equals("I_WILL_FIX") && plugin.supportsClaims()) {
 			String claimedBy = plugin.claimedBy(bug);
 			if (claimedBy != null && !plugin.getUser().equals(claimedBy)) {
 				int result = JOptionPane.showConfirmDialog(null, 
