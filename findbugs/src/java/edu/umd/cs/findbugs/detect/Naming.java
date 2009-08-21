@@ -161,14 +161,7 @@ public class Naming extends PreorderVisitor implements Detector {
 						String pattern = intentional ? "NM_VERY_CONFUSING_INTENTIONAL" : "NM_VERY_CONFUSING";
 						Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
 						if (!overrides.isEmpty()) {
-							if (intentional) 
-								break;
-							boolean allAbstract = true;
-							for(XMethod m4 : overrides) {
-								if (!m4.isAbstract())
-									allAbstract = false;
-							}
-							if (allAbstract)
+							if (intentional || allAbstract(overrides))
 								break;
 							priority++;
 						}
@@ -183,7 +176,7 @@ public class Naming extends PreorderVisitor implements Detector {
 						String pattern = intentional ? "NM_WRONG_PACKAGE_INTENTIONAL" : "NM_WRONG_PACKAGE";
 						Set<XMethod> overrides = Hierarchy2.findSuperMethods(m);
 						if (!overrides.isEmpty()) {
-							if (intentional) 
+							if (intentional || allAbstract(overrides))
 								break;
 							priority++;
 						}
@@ -213,6 +206,19 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 		return false;
 	}
+
+	/**
+     * @param overrides
+     * @return
+     */
+    private boolean allAbstract(Set<XMethod> overrides) {
+	    boolean allAbstract = true;
+	    for(XMethod m4 : overrides) {
+	    	if (!m4.isAbstract())
+	    		allAbstract = false;
+	    }
+	    return allAbstract;
+    }
 
 	@SuppressWarnings("unchecked")
     private boolean checkNonSuper(XMethod m, Set<XMethod> others) {
