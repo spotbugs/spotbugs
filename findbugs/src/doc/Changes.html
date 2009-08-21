@@ -16,9 +16,48 @@
 
 
 					<h1>
-						FindBugs Change Log, Version 1.3.8
+						FindBugs Change Log, Version 1.3.9
 					</h1>
 
+
+                                        <p> Changes since version 1.3.8</p>
+					<ul>
+                                          <li>New bug patterns; in some cases, bugs previous reported as other bug patterns are reported as instances
+                                          of these new bug patterns in order to make it easier for developers to understand the bug reports</li>
+                                          <ul>
+                                          <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST ">BC_IMPOSSIBLE_DOWNCAST </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY ">BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#EC_INCOMPATIBLE_ARRAY_COMPARE ">EC_INCOMPATIBLE_ARRAY_COMPARE </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER ">JLM_JSR166_UTILCONCURRENT_MONITORENTER </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE ">LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE </a>
+                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#NP_CLOSING_NULL ">NP_CLOSING_NULL </a>                              
+                                  <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE ">RC_REF_COMPARISON_BAD_PRACTICE </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN ">RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED ">RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#SIC_THREADLOCAL_DEADLY_EMBRACE ">SIC_THREADLOCAL_DEADLY_EMBRACE </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR ">UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR </a>                                <li><a href="http://findbugs.sourceforge.net/bugDescriptions.html#VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED ">VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED </a>
+                                          </ul>
+                                          <li>Providing a bug rank (1-20), and the ability to filter by bug rank. Eventually, 
+                                              it will be possible to specify your own rules for ranking bugs, but the procedure for doing so hasn't been specified yet.
+                                          <li>Fixed about <a href="https://sourceforge.net/search/index.php?group_id=96405&search_summary=1&search_details=1&type_of_search=artifact&group_artifact_id%5B%5D=614693&open_date_start=2009-03-16&open_date_end=2009-08-20&form_submit=Search">45 bugs filed</a> through SourceForge
+                                          <li>Various reclassifications and priority tweaks
+                                          <li>Added more bug annotations to a variety of bug reports.
+                                            This provides more context for understanding bug reports
+                                            (e.g., if the value in question was is the return value
+                                            of a method, the method is described as the source of
+                                            the value in a bug annotation). This also provide more
+                                            accurate tracking of issues across versions of the code
+                                            being analyzed, but has the downside that when comparing
+                                            results from FindBugs 1.3.8 and FindBugs 1.3.9 on the
+                                            same version of code being analyzed, 
+                                            FindBugs may think that mistakenly believe that the 
+                                            issue reported by 1.3.8 was fixed and a new issue was
+                                            introduced that was reported by FindBugs 1.3.9. While 
+                                            annoying, it would be unusual for more than a dozen 
+                                            issues per million
+                                            lines of codes to be mistracked. 
+                                           <li> Lots of internal changes moving towards FindBugs 2.0, but these
+                                           features are undocumented, not yet officially supported, and subject to
+                                           radical changes before FindBugs 2.0 is released.
+                                  
+             
+             </ul>
                                         <p> Changes since version 1.3.7</p>
 					<ul>
                                           <li>Primarily another small bugfix release.</li>
