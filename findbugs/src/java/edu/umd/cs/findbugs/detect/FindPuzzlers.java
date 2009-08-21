@@ -493,29 +493,35 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			} else ternaryConversionState = 0;
 		}
 
+		AssertInvokedFromRun: 
 		if (seen == INVOKESTATIC)
 			if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail")) && getMethodName().equals("run")
 					&& implementsRunnable(getThisClass())) {
-				try {
-					 int size1 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
-                    								"java/lang/Throwable", getPC());
-					int size2 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
-                    										"java/lang/Error", getPC());
-					int size3 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
-                    												"java/lang/AssertionFailureError", getPC());
-					int size = Math.min(Math.min( size1, size2), size3);
-					 if (size == Integer.MAX_VALUE) {
-					JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
-					if (targetClass.getSuperclassName().startsWith("junit")) {
-						bugAccumulator.accumulateBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
-						.addClassAndMethod(this), this);
-						
-
+					int size1 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
+					        "java/lang/Throwable", getPC());
+					int size2 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(), "java/lang/Error",
+					        getPC());
+				int size3 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
+				        "java/lang/AssertionFailureError", getPC());
+				int size = Math.min(Math.min(size1, size2), size3);
+				if (size == Integer.MAX_VALUE) {
+					String dottedClassName = getClassConstantOperand().replace('/', '.');
+					if (!dottedClassName.startsWith("junit")) {
+						try {
+							JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(dottedClassName);
+							if (!targetClass.getSuperclassName().startsWith("junit"))
+								break AssertInvokedFromRun;
+						} catch (ClassNotFoundException e) {
+							AnalysisContext.reportMissingClass(e);
+							break AssertInvokedFromRun;
+						}
 					}
-					 }
-				} catch (ClassNotFoundException e) {
-					AnalysisContext.reportMissingClass(e);
-				}
+
+					bugAccumulator.accumulateBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD",
+					        NORMAL_PRIORITY).addClassAndMethod(this), this);
+						
+					}
+				
 
 			}
 		if (seen == INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")  && getNameConstantOperand().equals("<init>")
