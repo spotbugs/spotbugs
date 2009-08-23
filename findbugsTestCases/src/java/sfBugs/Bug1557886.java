@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 /*
  * Pattern that can be found in various NetBeans sources
  is to find ancestor of some component in AWT hierarchy
@@ -16,6 +18,7 @@ import javax.swing.SwingUtilities;
 
  */
 public class Bug1557886 {
+	@NoWarning("BC")
 	public void actionPerformed(ActionEvent e) {
 		Component c = (Component) e.getSource();
 		JPopupMenu jpm = (JPopupMenu) SwingUtilities.getAncestorOfClass(JPopupMenu.class, c);

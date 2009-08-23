@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 /**
  * Submitted By: Len Trigg
  * Summary:
@@ -21,6 +23,7 @@ public class Bug1356076 {
     PrintWriter[] mWriters = new PrintWriter[1];
     PrintWriter mWriter = null;
 
+    @NoWarning("OS")
     public void writeString1(final String s) throws IOException {
       if (mWriters[0] == null) {
         final File ff = File.createTempFile("sfq", ".lst");
@@ -34,6 +37,7 @@ public class Bug1356076 {
 
     // FindBugs fails to notice that this nWriters escapes too
     //// grep -A 1 OS_OPEN_STREAM | grep Bug1356076
+    @NoWarning("OS")
     public void writeString2(final String s) throws IOException {
         if (mWriters[0] == null) {
           final File ff = File.createTempFile("sfq", ".lst");

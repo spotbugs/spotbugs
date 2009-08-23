@@ -1,7 +1,10 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1524063 {
 
+	@NoWarning("SBSC")
 	void fizzBuzz() {
 		String x;
         

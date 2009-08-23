@@ -1,5 +1,6 @@
 package sfBugs;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
 import junit.framework.TestCase;
 
 public class Bug1551726 extends TestCase {
@@ -14,6 +15,7 @@ public class Bug1551726 extends TestCase {
     int f() { 
 		return 42;
 	}
+    @NoWarning("NP")
 	public void testFalsePositive2()
     {
 		int i = f();

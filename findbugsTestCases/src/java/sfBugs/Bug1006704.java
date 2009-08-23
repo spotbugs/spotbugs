@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1006704 {
+	@NoWarning("OBL")
 	void f(Connection con, Integer key) throws SQLException {
 		StringBuffer sql = new StringBuffer("SELECT * FROM xxx  WHERE xxx_id = ?");
 		PreparedStatement ps = con.prepareStatement(sql.toString());

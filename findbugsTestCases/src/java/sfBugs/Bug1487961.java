@@ -3,6 +3,8 @@ package sfBugs;
 import java.util.Comparator;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.NoWarning;
+
 public class Bug1487961 {
 	static class DateMgr {
 		String getName() {
@@ -12,6 +14,7 @@ public class Bug1487961 {
 
 	void sort(List<DateMgr>[] aDateMgr) {
 		Comparator<List<DateMgr>> c = new Comparator<List<DateMgr>>() {
+			@NoWarning("UMAC")
 			public int compare(List<DateMgr> o1, List<DateMgr> o2) {
                 String a = o1.get(0).getName();
 				String b = o2.get(0).getName();
