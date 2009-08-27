@@ -7,11 +7,6 @@
 <project name="findbugsTestCases" default="build">
 
 	<property file="build.properties" />
-	<property file="local.properties" />
-	<property name="findbugs.home" value="../findbugs"/>
-	<property name="history.dir" value="history"/>
-	<property file="build.properties" />
-
 	<!-- 
 	        The local.properties properties file contains the location of findbugs.home 
 
@@ -20,8 +15,26 @@
 	        
 	-->
 	<property file="local.properties" />
+        <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
+        <property name="fb-baseline-ant.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar" />
+	<property name="history.dir" value="history"/>
+
 
 	<target name="build" depends="classes,runfindbugs" />
+
+         <target name="init">
+                <!-- true to recompile FB core (if findbugs.jar is not there) -->
+                <condition property="fb.recompile" >
+                  <not><available file="${fb-ant.jar}" /></not>
+		</condition>
+        </target>
+
+        <target name="fbcompile" if="fb.recompile" >
+                <echo message="Building Findbugs core libraries"/>
+                <ant dir="${findbugs.home}" inheritall="false" target="build" />
+        </target>
+
+
 
 	<target name="classes">
 		<mkdir dir="build/classes"/>
@@ -55,21 +68,38 @@
                 <delete file="build/all.jar"/>
         </target>
 
-	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
 
 
-	<target name="runfindbugs" depends="classes">	
-		<echo>Home is ${findbugs.home}/lib/findbugs-ant.jar</echo>
+	<target name="runfindbugs" depends="init,fbcompile,classes">	
+	<echo>Home is ${fb-ant.jar}</echo>
+	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
+           classpath="${fb-ant.jar}"/>
 		<parallel threadsPerProcessor="1">
 			<antcall target="historyNormal"/> <!--   run findbugs effort=default, then merge or copy results -->       <!-- run findbugs effort=max, then merge or copy results -->
 		</parallel>
 	</target>
 
+	<target name="runBaseline" depends="classes">
+	<echo>Home is ${findbugs-baseline.home}</echo>
+	<echo>fb-ant jar is ${fb-baseline-ant.jar}</echo>
+	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
+           classpath="${fb-baseline-ant.jar}"/>
+	<findbugs home="${findbugs-baseline.home}"  jvmargs="-ea -Xmx600m"
+                         output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/baseline.xml">
+			<sourcePath path="${basedir}/src/java" />
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
+			<class location="${basedir}/build/classes" />
+		</findbugs>
+	</target>
+
+	
 	<target name="runNormal" depends="classes">
+	 <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" 
+           classpath="${fb-ant.jar}"/>
 		<findbugs home="${findbugs.home}"  jvmargs="-ea -Xmx600m"
                          output="xml" timestampNow="true" reportLevel="low" chooseVisitors="+CheckExpectedWarnings" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
-			<auxclasspath location="${junit.home}/junit.jar"/>
+			<auxclasspath location="${junit.home}/junit.jar:lib/j2ee.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
 	</target>
