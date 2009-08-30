@@ -879,7 +879,9 @@
   <BugPattern abbrev="NOISE" type="NOISE_OPERATION" category="NOISE" />
   <BugPattern abbrev="TEST" type="UNKNOWN" category="EXPERIMENTAL" />
   <BugPattern abbrev="TEST" type="TESTING" category="EXPERIMENTAL" />
+  <BugPattern abbrev="TEST" type="TESTING1" category="EXPERIMENTAL" />
   <BugPattern abbrev="TEST" type="TESTING2" category="EXPERIMENTAL" />
+  <BugPattern abbrev="TEST" type="TESTING3" category="EXPERIMENTAL" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />

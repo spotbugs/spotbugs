@@ -19,10 +19,13 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * @author David Hovemeyer
  */
 public class DefaultNullnessAnnotations {
+	public static final boolean ICSE10_NULLNESS_PAPER = SystemProperties.getBoolean("icse10");
 	/**
 	 * Add default NullnessAnnotations to given INullnessAnnotationDatabase.
 	 * 
@@ -105,7 +108,15 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
-		//database.addMethodAnnotation("java.util.Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		
+		if (ICSE10_NULLNESS_PAPER) {
+		database.addMethodAnnotation("java.util.HashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.util.Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.util.Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.util.SortedMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.util.TreeMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		}
+		
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);

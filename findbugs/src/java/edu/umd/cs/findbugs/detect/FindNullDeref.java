@@ -40,6 +40,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -50,6 +51,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.jaxen.expr.DefaultAbsoluteLocationPath;
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -73,7 +75,9 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
+import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -564,12 +568,40 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 	        return false;
         }
 	}
+
+	private boolean catchesNull(Location location) {
+		int position = location.getHandle().getPosition();
+
+		ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
+		Code code = method.getCode();
+
+		int catchSize;
+
+		catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/NullPointerException", position);
+		if (catchSize < Integer.MAX_VALUE)
+			return true;
+		catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/RuntimeException", position);
+		if (catchSize < Integer.MAX_VALUE)
+			return true;
+		catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code, "java/lang/Exception", position);
+		if (catchSize < Integer.MAX_VALUE)
+			return true;
+
+		return false;
+	}
+
 	private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
+		int position = location.getHandle().getPosition();
+		
 		if (calledMethod.getClassName().equals("java.lang.Integer")) {
-			int position = location.getHandle().getPosition();
+			
 			ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
 			Code code = method.getCode();
-			int catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+			
+			int catchSize;
+			
+			
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
 					"java/lang/NumberFormatException", position);
 			if (catchSize < Integer.MAX_VALUE)
 				return true;
@@ -577,8 +609,14 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 					"java/lang/IllegalArgumentException", position);
 			if (catchSize < Integer.MAX_VALUE)
 				return true;
+			
+			
 			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
 					"java/lang/RuntimeException", position);
+			if (catchSize < Integer.MAX_VALUE)
+				return true;
+			catchSize = Util.getSizeOfSurroundingTryBlock(constantPool, code,
+					"java/lang/Exception", position);
 			if (catchSize < Integer.MAX_VALUE)
 				return true;
 		}
@@ -1319,7 +1357,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 		MethodAnnotation invokedMethod = null;
 		XMethod invokedXMethod = null;
 		int parameterNumber = -1;
-		if (derefLocationSet.size() == 1) {
+			if (derefLocationSet.size() == 1) {
 			Location loc = derefLocationSet.iterator().next();
 
 			PointerUsageRequiringNonNullValue pu = null;
@@ -1371,23 +1409,103 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase,
 			else
 				bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
 
-			if (deref.isReadlineValue())
-				bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
-			else if (deref.isMethodReturnValue())
-				bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
+			isDerefOfReturnValue: {
+				if (deref.isReadlineValue())
+					bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
+				else if (deref.isMethodReturnValue()) {
+					bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
+					if (DefaultNullnessAnnotations.ICSE10_NULLNESS_PAPER)
+					checkNullSource: if (doomedLocations.size() == 1) {
+						try {
+							CFG cfg = classContext.getCFG(method);
+							Location doomed = doomedLocations.iterator().next();
+							InstructionHandle handle = doomed.getHandle();
+
+							while (handle != null && handle.getInstruction() instanceof CHECKCAST) {
+								InstructionHandle first = doomed.getBasicBlock().getFirstInstruction();
+								findSourceOfDoom: if (first.equals(handle)) {
+									BasicBlock prevBlock = doomed.getBasicBlock();
+
+									do {
+										prevBlock = cfg.getPredecessorWithEdgeType(prevBlock, EdgeTypes.FALL_THROUGH_EDGE);
+										if (prevBlock == null) {
+											handle = doomed.getHandle();
+											break findSourceOfDoom;
+										}
+										handle = prevBlock.getLastInstruction();
+									} while (handle == null);
+
+									doomed = new Location(handle, prevBlock);
+								} else {
+									handle = handle.getPrev();
+									doomed = new Location(handle, doomed.getBasicBlock());
+
+								}
+							}
+							Instruction ins = handle.getInstruction();
+							if (!(ins instanceof InvokeInstruction))
+								break checkNullSource;
+
+							InvokeInstruction iins = (InvokeInstruction) ins;
+							ConstantPoolGen cpg = classContext.getConstantPoolGen();
+							XMethod invoked = XFactory.createXMethod(iins, cpg);
+							if (!invoked.getName().equals("get")
+							        || !invoked.getSignature().equals("(Ljava/lang/Object;)Ljava/lang/Object;"))
+								break checkNullSource;
+
+							ValueNumberFrame vnFrame = vna.getFactAtLocation(doomed);
+							ValueNumber vn = vnFrame.getStackValue(1);
+							ValueNumber vnKey = vnFrame.getStackValue(0);
+
+							for (Location l2 : classContext.getCFG(method).locations()) {
+								InstructionHandle h2 = l2.getHandle();
+								Instruction i2 = h2.getInstruction();
+								int pos = handle.getPosition();
+								if (h2.getPosition() < pos && i2 instanceof InvokeInstruction) {
+									XMethod invoked2 = XFactory.createXMethod((InvokeInstruction) i2, cpg);
+									ValueNumberFrame vnFrame2 = vna.getFactAtLocation(l2);
+									ValueNumber vn2 = vnFrame2.getInstance(i2, cpg);
+									ValueNumber vn2Key = vnFrame2.getStackValue(0);
+									if (vn.equals(vn2) || true) {
+										if (invoked2.getName().equals("keySet") || invoked2.getName().equals("keys")) {
+											bugType = "TESTING1";
+											break;
+										} else if (invoked2.getName().equals("containsKey") && (true || vnKey.equals(vn2Key)))
+											bugType = "TESTING2";
+										else if (invoked2.getName().equals("get") && (true || vnKey.equals(vn2Key)))
+											bugType = "TESTING3";
+
+									}
+								}
+							}
+						} catch (DataflowAnalysisException e) {
+							AnalysisContext.logError("huh", e);
+						} catch (CFGBuilderException e) {
+							AnalysisContext.logError("huh", e);
+						}
+
+					}
+				} else
+					break isDerefOfReturnValue;
+				for (Location derefLoc : derefLocationSet)
+					if (catchesNull(derefLoc))
+						return;
+			}
 
 		}
 
+		if (invokedXMethod != null)
+			for (Location derefLoc : derefLocationSet)
+				if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc))
+					return;
 
-		if (invokedXMethod != null) for (Location derefLoc : derefLocationSet) 
-			if (safeCallToPrimateParseMethod(invokedXMethod, derefLoc)) return;
 		boolean hasManyNullTests = true;
 		for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
 			if (!hasManyPreceedingNullTests(sourceLineAnnotation.getStartBytecode()))
 					hasManyNullTests = false;
 		}
 		if (hasManyNullTests) {
-			if (bugType.equals("NP_NULL_ON_SOME_PATH"))
+			if (bugType.equals("NP_NULL_ON_SOME_PATH") || bugType.equals("NP_GUARANTEED_DEREF"))
 					bugType = "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE";
 			else priority++;
 		}
