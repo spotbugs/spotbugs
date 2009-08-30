@@ -234,14 +234,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 						&& mInfo.getSignature().equals(methodSig)
 						&& mInfo.isStatic() == isStatic) 
 					return mInfo;
-		if (true) return null;
-		try {
-			if (getSuperclassDescriptor() == null) return null;
-			XClass superClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,  getSuperclassDescriptor());
-			return superClass.findMethod(methodName, methodSig, isStatic);
-        } catch (CheckedAnalysisException e) {
-        	return null;
-        }
+		return null;
 	}
 	
 	/* (non-Javadoc)

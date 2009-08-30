@@ -199,9 +199,7 @@ public class AnalysisCache implements IAnalysisCache {
 		Object analysisResult = descriptorMap.get(classDescriptor);
 		if (analysisResult == null) {
 			// No cached result - compute (or recompute)
-			if (false && analysisClass == ClassContext.class) {
-	            System.out.println("ZZZ Generating " + analysisClass.getSimpleName() + " for " + classDescriptor);
-            }
+
 			IAnalysisEngine<ClassDescriptor, E> engine = (IAnalysisEngine<ClassDescriptor, E>) classAnalysisEngineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
@@ -236,9 +234,6 @@ public class AnalysisCache implements IAnalysisCache {
 				profiler.end(engine.getClass());
 			}
 
-			if (false && analysisClass == ClassContext.class) {
-	            System.out.println("ZZZ Generated " + hex(analysisResult) + " for " + classDescriptor);
-            }
 
 			// Save the result
 			descriptorMap.put(classDescriptor, analysisResult);
@@ -290,10 +285,7 @@ public class AnalysisCache implements IAnalysisCache {
 			}
 
 			classContext.putMethodAnalysis(analysisClass, methodDescriptor, object);
-			if (false) {
-	            System.out.println("ZZZ updated to " + classContext.getObjectMap(analysisClass).keySet()
-	            		+ " in " + Integer.toString(System.identityHashCode(classContext.getObjectMap(analysisClass)),16));
-            }
+
 
 		}
 		if (Debug.VERIFY_INTEGRITY && object == null) {
@@ -355,9 +347,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
 		try {
-			if (false) {
-	            System.out.println("ZZZ purging analysis for " + methodDescriptor);
-            }
+
 	        ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
 	        classContext.purgeMethodAnalyses(methodDescriptor);
         } catch (CheckedAnalysisException e) {

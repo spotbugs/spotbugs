@@ -248,12 +248,12 @@ public  class DBCloud extends AbstractCloud {
 	
 	public DBCloud(BugCollection bugs) {
 		super(bugs);
-		sqlDriver = getProperty("dbDriver");
-		url = getProperty("dbUrl");
-		dbName = getProperty("dbName");
-		dbUser = getProperty("dbUser");
-		dbPassword = getProperty("dbPassword");
-		findbugsUser = getProperty("findbugsUser");
+		sqlDriver = getJDBCProperty("dbDriver");
+		url = getJDBCProperty("dbUrl");
+		dbName = getJDBCProperty("dbName");
+		dbUser = getJDBCProperty("dbUser");
+		dbPassword = getJDBCProperty("dbPassword");
+		findbugsUser = getCloudProperty("findbugsUser");
 	}
 	
 	public boolean availableForInitialization() {
@@ -265,7 +265,7 @@ public  class DBCloud extends AbstractCloud {
 		return true;
 	}
 	static final Pattern FORBIDDEN_PACKAGE_PREFIXES = Pattern.compile(SystemProperties.getProperty("findbugs.forbiddenPackagePrefixes", " none ").replace(',','|'));
-	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.db.promptForUserName", false);
+	static final boolean PROMPT_FOR_USER_NAME = SystemProperties.getBoolean("findbugs.cloud.promptForUserName", false);
 	int sessionId = -1;
 	final CountDownLatch initialSyncDone = new CountDownLatch(1);
 	public void bugsPopulated() {
@@ -525,7 +525,10 @@ public  class DBCloud extends AbstractCloud {
 		return s.substring(0, maxLength);
 	}
 
-	private String getProperty(String propertyName) {
+	private String getCloudProperty(String propertyName) {
+		return SystemProperties.getProperty("findbugs.cloud." + propertyName);
+	}
+	private String getJDBCProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
@@ -550,7 +553,7 @@ public  class DBCloud extends AbstractCloud {
 		if (!availableForInitialization())
 			return false;
 		
-		String mode = getProperty("votingmode");
+		String mode = getCloudProperty("votingmode");
 		if (mode != null)
 			setMode(Mode.valueOf(mode.toUpperCase()));
 		
@@ -1383,7 +1386,8 @@ public  class DBCloud extends AbstractCloud {
 					lineNumber++;
 				}
 				in.close();
-				
+				if (commonWhiteSpace == null)
+					commonWhiteSpace = "";
 				out.println("\nRelevant source code:");
 				for(SourceLine s : source) {
 					if (s.text.length() == 0)

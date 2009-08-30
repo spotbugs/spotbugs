@@ -265,6 +265,17 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	}
 	
 	/**
+	 * Get an Iterator over the Locations in the control flow graph.
+	 */
+	public Iterable<Location> locations() {
+		return new Iterable<Location>() {
+			public Iterator<Location> iterator() {
+				return locationIterator();
+            }
+		};
+	}
+	
+	/**
 	 * Returns a collection of locations, ordered according to the compareTo ordering over locations.
 	 * If you want to list all the locations in a CFG for debugging purposes, this is a good order to do so in.
 	 * 

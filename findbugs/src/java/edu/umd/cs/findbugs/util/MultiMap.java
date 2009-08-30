@@ -71,5 +71,8 @@ public class MultiMap<K,  V> {
 		if (s != null) return s;
 		return Collections.<V>emptySet();
 		}
+	public Map<K, Collection<V>> asMap() {
+		return map;
+	}
 
 }

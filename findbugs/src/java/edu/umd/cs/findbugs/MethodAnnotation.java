@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -184,10 +185,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(className, methodName, methodSig, isStatic);
 
-		SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(
-				className, methodName, methodSig);
+		if (AnalysisContext.currentAnalysisContext() != null) {
+			SourceLineAnnotation sourceLines = SourceLineAnnotation
+			        .getSourceAnnotationForMethod(className, methodName, methodSig);
 
-		methodAnnotation.setSourceLines(sourceLines);
+			methodAnnotation.setSourceLines(sourceLines);
+		}
 
 		return methodAnnotation;
 	}

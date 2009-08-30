@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Location;
@@ -50,17 +51,13 @@ public class UsagesRequiringNonNullValues {
 		}
 	}
 
-	MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
+	MultiMap<Integer, Pair> map = new MultiMap<Integer, Pair>(LinkedList.class);
 
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
-		for(Location loc : map.keySet()) {
-			buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
-			for(Pair p : getPairs(loc)) {
-				buf.append("  ").append(p.vn).append("\n");
-			}
-		}
+		for(Map.Entry<Integer, Collection<Pair>> e : map.asMap().entrySet())
+				buf.append(e).append("\n");
 		return buf.toString();
 	}
 
@@ -69,14 +66,14 @@ public class UsagesRequiringNonNullValues {
 		if (DerefFinder.DEBUG)
 			System.out.println("At " + loc + " adding dereference " + p);
 
-		map.add(loc, p);
+		map.add(loc.getHandle().getPosition(), p);
 	}
 
 	public @CheckForNull
 	PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
 		// PointerUsageRequiringNonNullValue secondBest = null;
 		MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
-		for (Pair p : map.get(loc)) {
+		for (Pair p : map.get(loc.getHandle().getPosition())) {
 			if (p.vn.equals(vn))
 				return p.pu;
 			if (!p.vn.hasFlag(ValueNumber.PHI_NODE)) continue;
@@ -86,7 +83,7 @@ public class UsagesRequiringNonNullValues {
 		return null;
 	}
 
-	public Collection<? extends Pair> getPairs(Location loc) {
+	public Collection<? extends Pair> getPairs(Integer loc) {
 		return map.get(loc);
 	}
 

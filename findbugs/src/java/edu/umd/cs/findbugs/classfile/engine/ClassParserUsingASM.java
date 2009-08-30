@@ -235,18 +235,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								variable = var;
 							} else visitSomeInsn();
 						}
-						@Override
-						public void visitFieldInsn(int opcode,
-			                    String owner,
-			                    String name,
-			                    String desc) {
-							if (false && state == State.VARIABLE_LOADED && methodName.equals("<init>")
-									&& owner.equals(slashedClassName) && name.indexOf('$') >= 0) {
 
-
-								System.out.println("Parameter " + (variable-1) + " to new " + slashedClassName + methodDesc +  " is synthetic");
-							}
-							}
 						public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
 							AnnotationValue value = new AnnotationValue(desc);
 							mBuilder.addAnnotation(desc, value);
@@ -329,15 +318,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
 						public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
 								boolean visible) {
-							if (false)
-								for(Iterator<String> i = new SignatureParser(methodDesc).parameterSignatureIterator(); i.hasNext(); )
-								System.out.println("   " + i.next());
 							AnnotationValue value = new AnnotationValue(desc);
-							if (false &&  isInnerClass && methodName.equals("<init>")) {
-								parameter++;
- 							}
-							if (false) 
-								System.out.println(isInnerClass + " parameter " + parameter + " of " + slashedClassName+"." + methodName +methodDesc + " is annotated " + desc);
 							mBuilder.addParameterAnnotation(parameter, desc, value);
 							return value.getAnnotationVisitor();
 						}};

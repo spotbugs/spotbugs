@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.classfile.ClassFormatException;
 import org.dom4j.DocumentException;
 
@@ -769,7 +771,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	 */
 	public static void createAnalysisContext(
 			Project project,
-			List<ClassDescriptor> appClassList, String sourceInfoFileName)
+			List<ClassDescriptor> appClassList, 
+			@CheckForNull String sourceInfoFileName)
 			throws CheckedAnalysisException, IOException {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();

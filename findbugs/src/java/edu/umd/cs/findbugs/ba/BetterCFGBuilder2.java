@@ -29,13 +29,20 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ExceptionThrower;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.IF_ACMPEQ;
+import org.apache.bcel.generic.IF_ACMPNE;
 import org.apache.bcel.generic.INSTANCEOF;
+import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -535,8 +542,36 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		this.subroutineWorkList = new LinkedList<Subroutine>();
 	}
 
+	public void optimize(InstructionList instructionList) {
+		InstructionHandle head = instructionList.getStart();
+		while (head != null) {
+			Instruction i = head.getInstruction();
+			
+			if (i instanceof ACONST_NULL) {
+				InstructionHandle next = head.getNext();
+				assert next != null;
+				InstructionHandle next2 = next.getNext();
+				if (next2 != null && next.getInstruction() instanceof ALOAD) {
+						Instruction check = next2.getInstruction();
+						if ( check instanceof IF_ACMPNE || check instanceof IF_ACMPEQ) {
+							// need to update
+							head.swapInstruction(new NOP());
+							 IfInstruction ifTest = (IfInstruction) check;
+							if (check instanceof IF_ACMPNE)
+								next2.swapInstruction(new IFNONNULL(ifTest.getTarget()));
+							else 
+								next2.swapInstruction(new IFNULL(ifTest.getTarget()));
+						}
+				}
+			}
+			head = head.getNext();
+		}
+		
+	}
 	public void build() throws CFGBuilderException {
-		topLevelSubroutine = new Subroutine(methodGen.getInstructionList().getStart());
+		InstructionList instructionList = methodGen.getInstructionList();
+		optimize(instructionList);
+		topLevelSubroutine = new Subroutine(instructionList.getStart());
 		subroutineWorkList.add(topLevelSubroutine);
 
 		// Build top level subroutine and all JSR subroutines

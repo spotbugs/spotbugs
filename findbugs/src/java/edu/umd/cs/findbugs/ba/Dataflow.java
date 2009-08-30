@@ -108,21 +108,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	static class ForwardProgramOrder implements Comparator<BasicBlock>, Serializable  {
 
         public int compare(BasicBlock o1, BasicBlock o2) {
-        	try {
         	int p1 = o1.getLabel();
 			int p2 = o2.getLabel();
         	return p1 - p2;
-        	} catch (RuntimeException e) {
-        		if (false) {
-        			e.printStackTrace(System.out);
-
-        		try {
-        		int p1 = o1.pos();
-    			int p2 = o2.pos();
-        		} catch (RuntimeException e2) {}
-        		}
-        		return o1.getLabel() - o2.getLabel();
-        	}
         }
 		
 	}
@@ -274,23 +262,6 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					if (predCount == 0) needToRecompute = true;
 
 					if (!needToRecompute) {
-						if (false && DEBUG) {
-							debug(block, "Skipping: predecessors haven't changed");
-							System.out.println(" curr timestamp: " + timestamp);
-							System.out.println(" last timestamp: " + lastCalculated);
-							predEdgeIter = logicalPredecessorEdgeIterator(block);
-
-							while (predEdgeIter.hasNext()) {
-								Edge edge = predEdgeIter.next();
-								BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
-
-								// Get the predecessor result fact
-								Fact predFact = analysis.getResultFact(logicalPred);
-								int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
-								System.out.println(" pred timestamp: " + predLastUpdated);
-								}
-							System.out.println("Fact: " + analysis.factToString(start));
-						}
 						continue;
 					}
 

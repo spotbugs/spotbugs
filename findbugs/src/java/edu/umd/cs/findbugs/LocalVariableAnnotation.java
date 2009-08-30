@@ -73,7 +73,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 
 
-	final private String value;
+	final private String name;
 	final int register, pc;
 	final int line;
 	 private String description;
@@ -87,7 +87,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	 *                 this local variable
 	 */
 	public LocalVariableAnnotation(String name, int register, int pc) {
-		this.value = name;
+		this.name = name;
 		this.register = register;
 		this.pc = pc;
 		this.line = -1;
@@ -103,7 +103,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	 *                 this local variable
 	 */
 	public LocalVariableAnnotation(String name, int register, int pc, int line) {
-		this.value = name;
+		this.name = name;
 		this.register = register;
 		this.pc = pc;
 		this.line = line;
@@ -182,13 +182,13 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		// System.out.println("format: " + key + " reg: " + register + " name: " + value);
 		if (key.equals("hash")) {
 			if (register < 0) return "??";
-			return value;
+			return name;
 		}
 		if (register < 0) return "?";
 		if (key.equals("register")) return String.valueOf(register);
 		else if (key.equals("pc")) return String.valueOf(pc);
-		else if (key.equals("name") || key.equals("givenClass")) return value;
-		else if (!value.equals("?")) return value;
+		else if (key.equals("name") || key.equals("givenClass")) return name;
+		else if (!name.equals("?")) return name;
 		return "$L"+register;
 	}
 
@@ -202,20 +202,20 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 	@Override
 	public int hashCode() {
-		return value.hashCode();
+		return name.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof LocalVariableAnnotation))
 			return false;
-		return value.equals(((LocalVariableAnnotation) o).value);
+		return name.equals(((LocalVariableAnnotation) o).name);
 	}
 
 	public int compareTo(BugAnnotation o) {
 		if (!(o instanceof LocalVariableAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
 			return this.getClass().getName().compareTo(o.getClass().getName());
-		return value.compareTo(((LocalVariableAnnotation) o).value);
+		return name.compareTo(((LocalVariableAnnotation) o).name);
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean isPrimary) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("name", value)
+			.addAttribute("name", name)
 		.addAttribute("register", String.valueOf(register))
 		.addAttribute("pc", String.valueOf(pc));
 
@@ -249,13 +249,13 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	}
 
 	public boolean isNamed() {
-		return register >= 0 && !value.equals("?");
+		return register >= 0 && !name.equals("?");
 	}
 	/**
 	 * @return name of local variable
 	 */
 	public String getName() {
-		return value;
+		return name;
 	}
 
 	public int getPC() {
@@ -266,7 +266,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	}
 
 	public boolean isSignificant() {
-		return !value.equals("?");
+		return !name.equals("?");
 	}
 
 	/**

@@ -123,9 +123,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	 public Set<String> getSurroundingCaughtExceptions(int pc) {
+		 return getSurroundingCaughtExceptions(pc, Integer.MAX_VALUE);
+	 }
+	 public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
 		 HashSet<String> result = new HashSet<String>();
 			if (code == null) throw new IllegalStateException("Not visiting Code");
-			int size = Integer.MAX_VALUE;
+			int size = maxTryBlockSize;
 			if (code.getExceptionTable() == null) return result;
 			for (CodeException catchBlock : code.getExceptionTable()) {
 				int startPC = catchBlock.getStartPC();
@@ -135,6 +138,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 					if (size > thisSize) {
 						result.clear();
 						size = thisSize;
+						Constant kind = constantPool.getConstant(catchBlock.getCatchType());
 						result.add("C" + catchBlock.getCatchType());
 					} else if (size == thisSize)
 						result.add("C" + catchBlock.getCatchType());

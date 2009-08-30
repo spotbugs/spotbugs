@@ -129,20 +129,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 						if (prevInstruction instanceof GETSTATIC
 								&& lastInstruction instanceof IFNE) {
 							GETSTATIC getStatic = (GETSTATIC) prevInstruction;
-							if (false) {
-								System.out.println(prev);
 
-								System.out.println(getStatic
-										.getClassName(methodGen
-												.getConstantPool()));
-								System.out.println(getStatic
-										.getFieldName(methodGen
-												.getConstantPool()));
-								System.out.println(getStatic
-										.getSignature(methodGen
-												.getConstantPool()));
-								System.out.println(last);
-							}
 							if (getStatic.getFieldName(
 									methodGen.getConstantPool()).equals(
 											"$assertionsDisabled")
