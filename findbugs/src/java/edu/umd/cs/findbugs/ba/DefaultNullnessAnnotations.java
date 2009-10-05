@@ -164,6 +164,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.Hashtable", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.Hashtable", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.NONNULL);
 		
+		database.addMethodParameterAnnotation("javax.swing.UIDefaults", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		
 		database.addMethodParameterAnnotation("java.util.Properties", "getProperty", "(Ljava/lang/String;)Ljava/lang/String;", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.Properties", "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false, 1, NullnessAnnotation.NONNULL);
