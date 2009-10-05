@@ -156,6 +156,20 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.SortedSet", "add", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.SortedSet", "remove", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.SortedSet", "contains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		
+		database.addMethodParameterAnnotation("java.util.Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Hashtable", "containsKey", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Hashtable", "containsValue", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Hashtable", "contains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Hashtable", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Hashtable", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.NONNULL);
+		
+		
+		database.addMethodParameterAnnotation("java.util.Properties", "getProperty", "(Ljava/lang/String;)Ljava/lang/String;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Properties", "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false, 1, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.Properties", "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false, 0, NullnessAnnotation.NONNULL);
+		
+
 
 		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false, NullnessAnnotation.CHECK_FOR_NULL);
