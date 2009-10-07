@@ -150,10 +150,13 @@ public class Hierarchy2 {
         }
 	}
 
+	/**
+     * @throws ClassNotFoundException  never
+     */
 	public static @CheckForNull XMethod findInvocationLeastUpperBound(
 			XClass jClass, String methodName, String methodSig, 
 			boolean invokeStatic,
-			boolean invokeInterface) {
+			boolean invokeInterface) throws ClassNotFoundException {
 		XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
 		if (result != null) return result;
 		if (invokeInterface )
