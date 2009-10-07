@@ -1141,11 +1141,14 @@ public class OpcodeStack implements Constants2
 				 {
 					 String castTo = dbc.getClassConstantOperand();
 
-					 if (castTo.charAt(0) != '[') castTo = "L" + castTo + ";";
-					 it = new Item(pop());
-					 it.signature = castTo;
+					 if (castTo.charAt(0) != '[') 
+						 castTo = "L" + castTo + ";";
+					 it = pop();
+					 if (!it.signature.equals(castTo)) {
+						 it = new Item(it);
+						 it.signature = castTo;
+					 }
 					 push(it);
-
 					 break;
 
 
