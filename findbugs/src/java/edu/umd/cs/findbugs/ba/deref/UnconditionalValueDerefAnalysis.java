@@ -888,9 +888,19 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	private boolean isExceptionEdge(Edge edge) {
 		boolean isExceptionEdge = edge.isExceptionEdge();
-		if (DEBUG && isExceptionEdge)
-			System.out.println("Ignoring " + edge);
-		return isExceptionEdge;
+		if (isExceptionEdge) {
+			if (DEBUG)
+				System.out.println("Ignoring " + edge);
+			return true;
+			}
+		if (edge.getType() != EdgeTypes.FALL_THROUGH_EDGE)
+			return false;
+		InstructionHandle h = edge.getSource().getLastInstruction();
+		if (h != null && h.getInstruction() instanceof IFNONNULL && isNullCheck(h,  methodGen.getConstantPool()))
+			return true;
+		
+		return false;
+	
 	}
 
 	/* (non-Javadoc)
