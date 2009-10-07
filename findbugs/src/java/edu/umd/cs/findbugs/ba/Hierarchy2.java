@@ -153,14 +153,14 @@ public class Hierarchy2 {
 	public static @CheckForNull XMethod findInvocationLeastUpperBound(
 			XClass jClass, String methodName, String methodSig, 
 			boolean invokeStatic,
-			boolean invokeInterface)
-			throws ClassNotFoundException {
+			boolean invokeInterface) {
 		XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
 		if (result != null) return result;
-		if (invokeInterface) 
+		if (invokeInterface )
 			for(ClassDescriptor i : jClass.getInterfaceDescriptorList()) {
 				result = findInvocationLeastUpperBound(i, methodName, methodSig, invokeStatic, invokeInterface);
-				if (result != null) return null;
+				if (result != null) 
+					return result;
 		}
 		else {
 			ClassDescriptor sClass = jClass.getSuperclassDescriptor();
