@@ -545,6 +545,34 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		assert handle != null;
 		return new Location(handle, getEntry());
 	}
+	
+	
+	public Location getPreviousLocation(Location loc) {
+		 InstructionHandle handle = loc.getHandle();
+
+		BasicBlock basicBlock = loc.getBasicBlock();
+		if (basicBlock.getFirstInstruction().equals(handle)) {
+			BasicBlock prevBlock = basicBlock;
+
+			while (true) {
+				prevBlock = getPredecessorWithEdgeType(prevBlock, EdgeTypes.FALL_THROUGH_EDGE);
+				if (prevBlock == null) 
+					return loc;
+				
+				handle = prevBlock.getLastInstruction();
+				if (handle != null) 
+					return new Location(handle, prevBlock);
+			}
+
+			
+		} else {
+			handle = handle.getPrev();
+			return new Location(handle, basicBlock);
+
+		}
+
+	}
+    
 }
 
 // vim:ts=4
