@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -264,7 +265,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					location,
 					bugStatementLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
+					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location), false);
 		}
 		HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
 		Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap =
@@ -288,11 +289,11 @@ public class NullDerefAndRedundantComparisonFinder {
 
 			IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
 
-				IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
-				IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
-				UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(edge.getSource());
-				UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
-				Location location = Location.getLastLocation(edge.getSource());
+			IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
+			IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
+			UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(edge.getSource());
+			UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
+			Location location = Location.getLastLocation(edge.getSource());
 
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
 			// UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
@@ -314,7 +315,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					location,
 					bugEdgeLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaFact, invFact, uvdFact);
+					vnaFact, invFact, uvdFact, true);
 			}
 		}
 		Map<ValueNumber, SortedSet<Location>> bugLocationMap = bugEdgeLocationMap;
@@ -383,13 +384,15 @@ public class NullDerefAndRedundantComparisonFinder {
 
 
 			if (PRUNE_GUARANTEED_DEREFERENCES) {
-				PostDominatorsAnalysis postDomAnalysis =
-					classContext.getNonExceptionPostDominatorsAnalysis(method);
-			removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
-
-			removeStrictlyPostDominatedLocations(knownNullAndDoomedAt, postDomAnalysis);
-
-			removeStrictlyPostDominatedLocations(assignedNullLocationSet, postDomAnalysis);
+				PostDominatorsAnalysis postDomAnalysis = 
+				    classContext.getNonExceptionPostDominatorsAnalysis(method);
+				
+				removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
+				
+				removeStrictlyPostDominatedLocations(assignedNullLocationSet, postDomAnalysis);
+				DominatorsAnalysis domAnalysis = classContext.getNonExceptionDominatorsAnalysis(method);
+				removeStrictlyDominatedLocations(knownNullAndDoomedAt, domAnalysis);
+				
 			}
 
 
@@ -425,6 +428,29 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 		}
 	}
+	private void removeStrictlyDominatedLocations(Set<Location> locations, DominatorsAnalysis domAnalysis) {
+		BitSet strictlyDominated = new BitSet();
+		for(Location loc : locations) {
+			BitSet allDominatedBy = domAnalysis.getAllDominatedBy(loc.getBasicBlock());
+			allDominatedBy.clear(loc.getBasicBlock().getLabel());
+			strictlyDominated.or(allDominatedBy);
+		}
+		LinkedList<Location> locations2 = new LinkedList<Location>(locations);
+
+		for(Iterator<Location> i = locations.iterator(); i.hasNext(); ) {
+			Location loc = i.next();
+			if (strictlyDominated.get(loc.getBasicBlock().getLabel())) { 
+				i.remove();
+				continue;
+			}
+			for(Location loc2 : locations2) {
+				if (loc.getBasicBlock().equals(loc2.getBasicBlock()) && loc.getHandle().getPosition() > loc2.getHandle().getPosition()) {
+					i.remove();
+					break;
+				}
+			}
+		}
+	}
 
 	private static final boolean MY_DEBUG = false;
 	/**
@@ -436,12 +462,13 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param vnaFrame                    value number frame to check
 	 * @param invFrame                    null-value frame to check
 	 * @param derefSet                    set of unconditionally derefed values at this location 
+	 * @param isEdge TODO
 	 */
 	private void checkForUnconditionallyDereferencedNullValues(
 			Location thisLocation,
 			Map<ValueNumber, SortedSet<Location>> knownNullAndDoomedAt,
 			Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
-			ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet) {
+			ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet, boolean isEdge) {
 
 		if (DEBUG_DEREFS) {
 			System.out.println("vna *** " + vnaFrame);
@@ -463,6 +490,7 @@ public class NullDerefAndRedundantComparisonFinder {
 				if (MY_DEBUG) {
 					System.out.println("Found NP bug");
 					System.out.println("Location: " + thisLocation);
+					System.out.println("Value number frame: " + vnaFrame);
 					System.out.println("Value number: " + valueNumber);
 					System.out.println("IsNullValue frame: " + invFrame);
 					System.out.println("IsNullValue value: " + isNullValue);
@@ -470,8 +498,16 @@ public class NullDerefAndRedundantComparisonFinder {
 					System.out.println("Unconditionally dereferenced: " + derefSet.isUnconditionallyDereferenced(valueNumber) );
 
 				}
+				Location where = thisLocation;
+				if (!isEdge && isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) {
+					try {
+	                    where = classContext.getCFG(method).getPreviousLocation(where);
+                    } catch (CFGBuilderException e) {
+	                    AnalysisContext.logError("Error looking for previous instruction to " + where + " in " + classContext.getFullyQualifiedMethodName(method), e);
+                    }
+				}
 				noteUnconditionallyDereferencedNullValue(
-						thisLocation,
+						where,
 						knownNullAndDoomedAt,
 						nullValueGuaranteedDerefMap,
 						derefSet, isNullValue, valueNumber);
