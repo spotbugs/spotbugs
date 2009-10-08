@@ -30,12 +30,17 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
 public abstract class PointerUsageRequiringNonNullValue {
 
 	public abstract String getDescription();
+	
+	@Override
+	public String toString() {
+		return getDescription();
+	}
 
 	public boolean isDirect() {
 		return false;
 	}
 
-	public boolean getReturnFromNonNullMethod() {
+	public boolean isReturnFromNonNullMethod() {
 		return false;
 	}
 
@@ -63,7 +68,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 
 	private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
 		@Override
-		public boolean getReturnFromNonNullMethod() {
+		public boolean isReturnFromNonNullMethod() {
 			return true;
 		}
 
