@@ -71,6 +71,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static final String METHOD_OVERRIDDEN = "METHOD_OVERRIDDEN";
 	public static final String METHOD_DID_YOU_MEAN_TO_OVERRIDE = "METHOD_DID_YOU_MEAN_TO_OVERRIDE";
 
+	public static final String METHOD_COMPUTED_IN = "METHOD_COMPUTED_IN";
 
 	/**
 	 * Constructor.
@@ -488,7 +489,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (METHOD_DANGEROUS_TARGET.equals(role) 
 				|| METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role) 
 				|| METHOD_SAFE_TARGET.equals(role)
-				|| METHOD_EQUALS_USED.equals(role)) return false;
+				|| METHOD_EQUALS_USED.equals(role)
+				|| METHOD_COMPUTED_IN.equals(role)
+				) return false;
 		return true;
 	}
 }
