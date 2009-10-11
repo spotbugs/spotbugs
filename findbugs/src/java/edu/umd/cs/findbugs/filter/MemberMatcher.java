@@ -28,16 +28,21 @@ import edu.umd.cs.findbugs.util.Util;
 public class MemberMatcher {
 
 	protected final NameMatch name;
+	
+	@CheckForNull protected final String role;
 
 	@CheckForNull
 	protected final String signature;
 
 	public MemberMatcher(String name) {
-		this.name = new NameMatch(name);
-		this.signature = null;
+		this(name, null, null);
 	}
 
 	public MemberMatcher(String name, String signature) {
+		this(name, signature, null);
+	}
+
+	public MemberMatcher(String name, String signature, String role) {
 
 		if (name == null) {
 			if (signature == null)
@@ -48,6 +53,7 @@ public class MemberMatcher {
 
 		this.name = new NameMatch(name);
 		this.signature = signature;
+		this.role = role;
 
 	}
 

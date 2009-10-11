@@ -22,22 +22,38 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class MethodMatcher extends MemberMatcher implements Matcher {
+	
 	public MethodMatcher(String name) {
 		super(name);
+	}
+	public MethodMatcher(String name, String role) {
+		super(name, null, role);
 	}
 
 	public MethodMatcher(String name, String params, String returns) {
 		super(name,  SignatureUtil.createMethodSignature(params, returns));
 	}
+	public MethodMatcher(String name, String params, String returns, String role) {
+		super(name,  SignatureUtil.createMethodSignature(params, returns), role);
+	}
 
 	public boolean match(BugInstance bugInstance) {
-		MethodAnnotation methodAnnotation = bugInstance.getPrimaryMethod();
+		
+		MethodAnnotation methodAnnotation = null;
+		if (role == null || role.equals(""))
+			methodAnnotation = bugInstance.getPrimaryMethod();
+		else for(BugAnnotation a : bugInstance.getAnnotations()) 
+			if (a instanceof MethodAnnotation && role.equals(a.getDescription())) {
+				methodAnnotation = (MethodAnnotation) a;
+				break;
+			}
 		if (methodAnnotation == null)
 			return false;
 		if (!name.match(methodAnnotation.getMethodName()))
@@ -52,7 +68,7 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
 		return "Method(" + super.toString() + ")";
 	}
 	public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
-		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute("signature",signature);
+		XMLAttributeList attributes = new XMLAttributeList().addAttribute("name", name.getSpec()).addOptionalAttribute("signature",signature).addOptionalAttribute("role", role);
 		if (disabled) attributes.addAttribute("disabled", "true");
 		xmlOutput.openCloseTag("Method", attributes);
 	}

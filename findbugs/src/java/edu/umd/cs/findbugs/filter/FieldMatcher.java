@@ -21,8 +21,10 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -43,7 +45,14 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
 		return "Method(" + super.toString() + ")";
 	}
 	public boolean match(BugInstance bugInstance) {
-		FieldAnnotation fieldAnnotation = bugInstance.getPrimaryField();
+		FieldAnnotation fieldAnnotation = null;
+		if (role == null || role.equals(""))
+			fieldAnnotation = bugInstance.getPrimaryField();
+		else for(BugAnnotation a : bugInstance.getAnnotations()) 
+			if (a instanceof FieldAnnotation && role.equals(a.getDescription())) {
+				fieldAnnotation = (FieldAnnotation) a;
+				break;
+			}
 		if(fieldAnnotation == null) {
 			return false;
 		}

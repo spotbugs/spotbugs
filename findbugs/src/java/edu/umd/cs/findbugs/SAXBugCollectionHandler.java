@@ -382,7 +382,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	String name = getOptionalAttribute(attributes, "name");
 	    	String params = getOptionalAttribute(attributes, "params");
 	    	String returns = getOptionalAttribute(attributes, "returns");
-	    	addMatcher(new MethodMatcher(name, params, returns));
+	    	String role = getOptionalAttribute(attributes, "role");
+	    	addMatcher(new MethodMatcher(name, params, returns, role));
 	    } else if (qName.equals("Field")) {
 	    	String name = getOptionalAttribute(attributes, "name");
 			String type = getOptionalAttribute(attributes, "type");

@@ -287,6 +287,7 @@ public class Filter extends OrMatcher {
 			String nameValue;
 			Attribute paramsAttr = element.attribute("params");
 			Attribute returnsAttr = element.attribute("returns");
+			Attribute roleAttr = element.attribute("role");
 
 			if (nameAttr == null)
 				if(paramsAttr == null || returnsAttr == null)
@@ -300,9 +301,15 @@ public class Filter extends OrMatcher {
 				throw new FilterException("Method element must have both params and returns attributes if either is used");
 
 			if (paramsAttr == null)
-				return new MethodMatcher(nameValue);
-			else
+				if (roleAttr == null)
+					return new MethodMatcher(nameValue);
+				else
+					return new MethodMatcher(nameValue, roleAttr.getValue());
+			else if (roleAttr == null)
 				return new MethodMatcher(nameValue, paramsAttr.getValue(), returnsAttr.getValue());
+			else
+				return new MethodMatcher(nameValue, paramsAttr.getValue(), returnsAttr.getValue(), roleAttr.getValue());
+			
 		} else if (name.equals("Field")) {
 			Attribute nameAttr = element.attribute("name");
 			String nameValue;
