@@ -68,7 +68,8 @@ public class MultiMap<K,  V> {
 	}
 	public Collection<V> get(K k) {
 		Collection<V> s = map.get(k);
-		if (s != null) return s;
+		if (s != null) 
+			return s;
 		return Collections.<V>emptySet();
 		}
 	public Map<K, Collection<V>> asMap() {
