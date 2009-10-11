@@ -356,6 +356,8 @@ public class UnconditionalValueDerefAnalysis extends
 			// Compute the intersection of all properties
 			ParameterNullnessProperty derefParamSet = null;
 			for (XMethod target : targetSet) {
+				if (target.isStub()) 
+					continue;
 				if (DEBUG_CHECK_CALLS) 
 					System.out.print("Checking: " + target + ": ");
 
