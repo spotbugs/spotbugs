@@ -50,6 +50,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.workflow.FileBugHash;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -159,7 +160,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * @deprecated Use {@link #addClass(String,String,boolean,int)} instead
      */
 	@Deprecated
-    public void addClass(String className, boolean isInterface, int size) {
+    public void addClass(@DottedClassName String className, boolean isInterface, int size) {
         addClass(className, null, isInterface, size);
     }
 
@@ -172,7 +173,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * @param size        a normalized class size value;
 	 *                    see detect/FindBugsSummaryStats.
 	 */
-	public void addClass(String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
+	public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
@@ -190,7 +191,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 *
 	 * @param className   the full name of the class
 	 */
-	public @CheckForNull ClassStats getClassStats(String className) {
+	public @CheckForNull ClassStats getClassStats(@DottedClassName String className) {
 		String packageName;
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot < 0)
