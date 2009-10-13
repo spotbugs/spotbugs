@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.List;
+
+import javax.annotation.CheckForNull;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -37,7 +38,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
-//import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -239,26 +239,52 @@ public abstract class AnalysisContext {
 	
 	public abstract DirectlyRelevantTypeQualifiersDatabase getDirectlyRelevantTypeQualifiersDatabase();
 	
+	private static boolean skipReportingMissingClass(String missing) {
+		return missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+	}
+	private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
+		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
+		if (currentAnalysisContext2 == null) 
+			return null;
+		if (currentAnalysisContext2.missingClassWarningsSuppressed) 
+			return null;
+		return currentAnalysisContext2.getLookupFailureCallback();
+	}
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
-		if (e == null) throw new NullPointerException("argument is null");
+		if (e == null) 
+			throw new NullPointerException("argument is null");
 		String missing = AbstractBugReporter.getMissingClassName(e);
-		if (missing.length() == 0) {
-			// AnalysisContext.logError("Empty missing class name", new RuntimeException(e));
+		if (skipReportingMissingClass(missing))
 			return;
-		}
-		if (missing.charAt(0) == '[') return;
-		if (missing.endsWith("package-info")) return;
-		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
-		if (currentAnalysisContext2 == null) return;
-		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;
-		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
-		if (lookupFailureCallback != null) lookupFailureCallback.reportMissingClass(e);
+		
+		RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();
+		if (lookupFailureCallback != null) 
+			lookupFailureCallback.reportMissingClass(e);
 	}
-
+	static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
+		if (e == null) 
+			throw new NullPointerException("argument is null");
+		reportMissingClass(e.getClassDescriptor());
+	}
+	static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
+		if (e == null) 
+			throw new NullPointerException("argument is null");
+		reportMissingClass(e.getClassDescriptor());
+	}
+	static public void reportMissingClass(ClassDescriptor c) {
+		if (c == null) 
+			throw new NullPointerException("argument is null");
+		String missing = c.getDottedClassName();
+		if (skipReportingMissingClass(missing))
+			return;
+		RepositoryLookupFailureCallback lookupFailureCallback = getCurrentLookupFailureCallback();
+		if (lookupFailureCallback != null) 
+			lookupFailureCallback.reportMissingClass(c);
+	}
 	/**
 	 * Report an error
 	 */
