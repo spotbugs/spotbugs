@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
 /**
  * DataflowAnalysisException variant to report a class lookup failure
  * that caused dataflow analysis to abort.
@@ -28,7 +32,7 @@ package edu.umd.cs.findbugs.ba;
 public class MissingClassException extends DataflowAnalysisException {
 	private static final long serialVersionUID = 1L;
 
-	private String className;
+	private @DottedClassName String className;
 
 	private MissingClassException(String className) {
 		super("Missing class" + (className != null ? ": " + className : ""));
@@ -54,6 +58,9 @@ public class MissingClassException extends DataflowAnalysisException {
 		return className;
 	}
 
+	public ClassDescriptor getClassDescriptor() {
+		return DescriptorFactory.createClassDescriptorFromDottedClassName(className);
+	}
 	/**
 	 * Get the ClassNotFoundException that caused this exception.
 	 * 
