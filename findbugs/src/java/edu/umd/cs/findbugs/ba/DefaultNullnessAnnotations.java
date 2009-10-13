@@ -173,6 +173,8 @@ public class DefaultNullnessAnnotations {
 		
 		database.addMethodParameterAnnotation("org.w3c.dom.Element", "setAttribute", "(Ljava/lang/String;Ljava/lang/String;)V", false, 0, NullnessAnnotation.NONNULL);
 		
+		database.addMethodParameterAnnotation("java.text.DateFormat", "parse", "(Ljava/lang/String;Ljava/text/ParsePosition;)Ljava/util/Date;", true, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.text.DateFormat", "parse", "(Ljava/lang/String;)Ljava/util/Date;", true, 0, NullnessAnnotation.NONNULL);
 		
 		
 		}
