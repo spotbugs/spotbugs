@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -42,7 +43,6 @@ import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -55,7 +55,6 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Visitor which models the effects of bytecode instructions
@@ -471,6 +470,24 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
+	@Override
+	public void visitACONST_NULL(ACONST_NULL obj) {
+		// Get the input operands to this instruction.
+		ValueNumber[] inputValueList = popInputValues(0);
+
+		// See if we have the output operands in the cache.
+		// If not, push default (fresh) values for the output,
+		// and add them to the cache.
+		ValueNumber[] outputValueList = getOutputValues(inputValueList, 1, ValueNumber.CONSTANT_VALUE);
+
+		if (VERIFY_INTEGRITY) {
+			checkConsumedAndProducedValues(obj, inputValueList, outputValueList);
+		}
+
+		// Push output operands on stack.
+		pushOutputValues(outputValueList);
+	}
+		
 	@Override
 	public void visitLDC(LDC obj) {
 		Object constantValue = obj.getValue(cpg);
