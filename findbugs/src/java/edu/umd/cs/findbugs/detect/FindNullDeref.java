@@ -1211,13 +1211,15 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
 		addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
 
-		int distance1 = minPC(derefLocationSet) - maxPC(assignedNullLocationSet);
-		int distance2 = minPC(derefLocationSet) - maxPC(doomedLocations);
+		
+		int minDereferencePC = minPC(derefLocationSet);
+		int distance1 = minDereferencePC - maxPC(assignedNullLocationSet);
+		int distance2 = minDereferencePC - maxPC(doomedLocations);
 		int distance = Math.max(distance1, distance2);
 		if (false)
 			System.out.printf("%9d %9d %9d RANGE %s.%s%s\n", distance, distance1, distance2, classContext.getClassDescriptor()
 			        .toDottedClassName(), method.getName(), method.getSignature());
-
+		
 		// Create BugInstance
 
 		BitSet knownNull = new BitSet();
@@ -1405,11 +1407,22 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 			for (Location loc : derefLocationSet)
 				bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
 
+			if (sourceLocations == doomedLocations && assignedNullLocationSet.size() == 1)  {
+				Location assignedNull = assignedNullLocationSet.iterator().next();
+				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method, assignedNull);
+				if (sourceLineAnnotation != null) {
+				int startLine = sourceLineAnnotation.getStartLine();
+				if (startLine > 0 && !knownNull.get(startLine)) 
+					bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
+				}
+				
+			}
 			for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations) {
 				bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_KNOWN_NULL");
 			}
 
 			// Report it
+//			System.out.println(bugInstance.getMessage());
 			bugReporter.reportBug(bugInstance);
 		}
 	}
