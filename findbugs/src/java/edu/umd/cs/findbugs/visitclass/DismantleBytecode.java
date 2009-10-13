@@ -43,6 +43,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -173,8 +174,14 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	public @CheckForNull
 	XMethod getXMethodOperand() {
-		if (referencedXClass != null && referencedXMethod == null) 
-			referencedXMethod = referencedXClass.findMethod(nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC);
+		if (referencedXClass != null && referencedXMethod == null) {
+			try {
+	            referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(referencedXClass, nameConstantOperand, sigConstantOperand, opcode == INVOKESTATIC, opcode == INVOKEINTERFACE);
+            } catch (ClassNotFoundException e) {
+	            AnalysisContext.reportMissingClass(e);
+            }
+
+		}
 		
 		return referencedXMethod;
 	}
