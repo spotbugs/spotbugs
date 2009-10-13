@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -159,7 +160,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 						vnaDataflow
 				);
 			} catch (MissingClassException e) {
-				bugReporter.reportMissingClass(e.getClassDescriptor());
+				AnalysisContext.reportMissingClass(e);
 			} catch (CheckedAnalysisException e) {
 				bugReporter.logError(
 						"Exception checking type qualifier " + typeQualifierValue.toString() +
