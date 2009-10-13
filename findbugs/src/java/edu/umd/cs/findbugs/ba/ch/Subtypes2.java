@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -160,6 +161,10 @@ public class Subtypes2 {
 	 * @param appXClass application XClass to add to the inheritance graph
 	 */
 	public void addApplicationClass(XClass appXClass) {
+		for(XMethod m : appXClass.getXMethods()) {
+			if (m.isStub())
+				return;
+		}
 		ClassVertex vertex = addClassAndGetClassVertex(appXClass);
 		vertex.markAsApplicationClass();
 
