@@ -6,37 +6,37 @@ import javax.annotation.CheckForNull;
 
 public class Ideas_2009_08_27 {
 
-	static @CheckForNull
-	Object foo() {
-		return System.getProperty("foo");
-	}
-
-	static public void checkDereferenceInsideCatchException() {
-
-		try {
-			foo().hashCode();
-		} catch (Exception e) {
-			assert true;
-		}
-	}
-
-	static public void checkDereferenceInsideCatchRuntimeException() {
-
-		try {
-			foo().hashCode();
-		} catch (RuntimeException e) {
-			assert true;
-		}
-	}
-
-	static public void checkDereferenceInsideCatchNullPointerException() {
-
-		try {
-			foo().hashCode();
-		} catch (NullPointerException e) {
-			assert true;
-		}
-	}
+//	static @CheckForNull
+//	Object foo() {
+//		return System.getProperty("foo");
+//	}
+//
+//	static public void checkDereferenceInsideCatchException() {
+//
+//		try {
+//			foo().hashCode();
+//		} catch (Exception e) {
+//			assert true;
+//		}
+//	}
+//
+//	static public void checkDereferenceInsideCatchRuntimeException() {
+//
+//		try {
+//			foo().hashCode();
+//		} catch (RuntimeException e) {
+//			assert true;
+//		}
+//	}
+//
+//	static public void checkDereferenceInsideCatchNullPointerException() {
+//
+//		try {
+//			foo().hashCode();
+//		} catch (NullPointerException e) {
+//			assert true;
+//		}
+//	}
 	
 	static public <K,V> int sumValueHashes(Map<K,V> m) {
 		int sum = 0;
