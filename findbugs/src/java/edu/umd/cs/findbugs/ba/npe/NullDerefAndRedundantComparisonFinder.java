@@ -352,8 +352,8 @@ public class NullDerefAndRedundantComparisonFinder {
 				}
 				// TODO: figure out why this is failing
 				if (false) 
-				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet()
-				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
+					assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet()
+					+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
 				assignedNullLocationSet = Collections.<Location>emptySet();
 			}
 			SortedSet<Location> knownNullAndDoomedAt = bugLocationMap.get(valueNumber);
