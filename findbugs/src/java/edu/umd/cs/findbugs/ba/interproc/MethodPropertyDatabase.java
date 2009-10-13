@@ -24,6 +24,7 @@ import java.io.Writer;
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -69,6 +70,9 @@ public abstract class MethodPropertyDatabase<Property>
 		writer.write(",");
 		writer.write(method.getSignature());
 		writer.write(",");
-		writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
+		if (method instanceof XMethod) 
+			writer.write(Integer.toString(((XMethod)method).getAccessFlags() & 0xf));
+		else
+			writer.write(String.valueOf(method.isStatic() ? Constants.ACC_STATIC : 0));
 	}
 }

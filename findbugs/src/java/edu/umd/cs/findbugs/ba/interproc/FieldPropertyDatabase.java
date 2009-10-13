@@ -25,6 +25,7 @@ import java.io.Writer;
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -76,7 +77,12 @@ extends PropertyDatabase<FieldDescriptor, Property> {
 		writer.write(",");
 		writer.write(key.getSignature());
 		writer.write(",");
-		writer.write(String.valueOf(key.isStatic() ? Constants.ACC_STATIC : 0));
+		int flags = 0;
+		if (key instanceof XField) {
+			flags = ((XField)key).getAccessFlags() & 0xf;
+		} else if ( key.isStatic() )
+			flags = Constants.ACC_STATIC;
+		writer.write(String.valueOf(flags));
 	}
 
 }

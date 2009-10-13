@@ -38,7 +38,10 @@ import java.util.TreeSet;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -198,10 +201,11 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
 			TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
-				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor().toDottedClassName())) {
+				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor())) {
 
 					ValueType property = propertyMap.get(key);
-					writeKey(writer, key/*intern(xFactory, key)*/);
+					
+					writeKey(writer, key);
 					writer.write("|");
 					writer.write(encodeProperty(property));
 					writer.write("\n");
