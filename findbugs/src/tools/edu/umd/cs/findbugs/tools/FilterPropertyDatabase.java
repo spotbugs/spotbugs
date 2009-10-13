@@ -1,8 +1,10 @@
 package edu.umd.cs.findbugs.tools;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,33 +32,45 @@ import edu.umd.cs.findbugs.util.Util;
  */
 
 /**
- * Filter a property database, only passing through the annotations on public or protected methods
+ * Filter a property database, only passing through the annotations on public or
+ * protected methods
  */
 public class FilterPropertyDatabase {
 
 	final static int FLAGS = Constants.ACC_PROTECTED | Constants.ACC_PUBLIC;
+
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		InputStream inSource = System.in;
-	   if (args.length > 0)
+		if (args.length > 0)
 			inSource = new FileInputStream(args[0]);
-		BufferedReader in = new BufferedReader(Util.getReader(inSource));
+		process(inSource);
+
+	}
+
+	/**
+     * @param inSource
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     */
+    private static void process(InputStream inSource) throws UnsupportedEncodingException, IOException {
+	    BufferedReader in = new BufferedReader(Util.getReader(inSource));
 		Pattern p = Pattern.compile(",([0-9]+)\\|");
-	   while (true) {
+		while (true) {
 			String s = in.readLine();
-			if (s == null) break;
+			if (s == null)
+				break;
 			Matcher m = p.matcher(s);
-		   if (m.find()) {
+			if (m.find()) {
 				int value = Integer.parseInt(m.group(1));
 				if ((value & FLAGS) != 0)
 					System.out.println(s);
-		   }
+			}
 
 		}
-
-	}
+    }
 
 }
