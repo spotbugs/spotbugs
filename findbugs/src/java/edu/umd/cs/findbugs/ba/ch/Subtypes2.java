@@ -177,7 +177,7 @@ public class Subtypes2 {
 	        return resolveClassVertex(descriptor).isApplicationClass();
         } catch (ClassNotFoundException e) {
 	        AnalysisContext.reportMissingClass(e);
-	        return true;
+	        return false;
         }
 	}
 
