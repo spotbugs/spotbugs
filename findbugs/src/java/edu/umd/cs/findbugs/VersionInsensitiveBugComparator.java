@@ -93,7 +93,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 	}
 
 	private boolean isBoring(BugAnnotation annotation) {
-		return !annotation.isSignificant();
+		return !(annotation instanceof LocalVariableAnnotation || annotation.isSignificant());
 	}
 
 	private static int compareNullElements(Object a, Object b) {
@@ -112,6 +112,14 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		return pattern.substring(0, sep);
 	}
 
+	private void dump(BugInstance bug) {
+		System.out.println(bug.getMessage());
+		Iterator<BugAnnotation> i = bug.annotationIterator();
+		while (i.hasNext()) {
+			System.out.println("  " + i.next());
+		}
+		
+	}
 	public int compare(BugInstance lhs, BugInstance rhs) {
 		// Attributes of BugInstance.
 		// Compare abbreviation 
@@ -157,19 +165,30 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		}
 
 
+		
 		Iterator<BugAnnotation> lhsIter = new FilteringAnnotationIterator(lhs.annotationIterator());
 		Iterator<BugAnnotation> rhsIter = new FilteringAnnotationIterator(rhs.annotationIterator());
 
+		annotationLoop:
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
 			BugAnnotation lhsAnnotation = lhsIter.next();
 			BugAnnotation rhsAnnotation = rhsIter.next();
-
+			Class<? extends BugAnnotation> lhsClass;
+			while (true) {
 			// Different annotation types obviously cannot be equal,
 			// so just compare by class name.
-			if (lhsAnnotation.getClass() != rhsAnnotation.getClass())
-				return lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
+			lhsClass = lhsAnnotation.getClass();
+			Class<? extends BugAnnotation> rhsClass = rhsAnnotation.getClass();
+			if (lhsClass == rhsClass) break;
+			if (lhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation)lhsAnnotation).isSignificant() && lhsIter.hasNext()) 
+				lhsAnnotation = lhsIter.next();
+			else if (rhsClass == LocalVariableAnnotation.class && !((LocalVariableAnnotation)rhsAnnotation).isSignificant() && rhsIter.hasNext()) 
+					rhsAnnotation = rhsIter.next();
+			else 
+				return lhsClass.getName().compareTo(rhsClass.getName());
+			}
 
-			if (lhsAnnotation.getClass() == ClassAnnotation.class) {
+			if (lhsClass == ClassAnnotation.class) {
 				// ClassAnnotations should have their class names rewritten to
 				// handle moved and renamed classes.
 
@@ -179,75 +198,76 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 						((ClassAnnotation)rhsAnnotation).getClassName());
 
 				cmp = lhsClassName.compareTo(rhsClassName);
-				if (cmp != 0)
-					return cmp;
-			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ) {
+				
+			} else if(lhsClass == MethodAnnotation.class ) {
 				// Rewrite class names in MethodAnnotations
 				MethodAnnotation lhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
 						classNameRewriter, (MethodAnnotation) lhsAnnotation);
 				MethodAnnotation rhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
 						classNameRewriter, (MethodAnnotation) rhsAnnotation);
-
 				cmp = lhsMethod.compareTo(rhsMethod);
-				if (cmp != 0)
-					return cmp;
+				
 
-			} else if(lhsAnnotation.getClass() == FieldAnnotation.class) {
+			} else if(lhsClass == FieldAnnotation.class) {
 				// Rewrite class names in FieldAnnotations
 				FieldAnnotation lhsField = ClassNameRewriterUtil.convertFieldAnnotation(
 						classNameRewriter, (FieldAnnotation) lhsAnnotation);
 				FieldAnnotation rhsField = ClassNameRewriterUtil.convertFieldAnnotation(
 						classNameRewriter, (FieldAnnotation) rhsAnnotation);
-
 				cmp = lhsField.compareTo(rhsField);
-				if (cmp != 0)
-					return cmp;
-			} else if(lhsAnnotation.getClass() == StringAnnotation.class) {
-				// Rewrite class names in FieldAnnotations
+				
+			} else if(lhsClass == StringAnnotation.class) {
 				String lhsString = ((StringAnnotation)lhsAnnotation).getValue();
 				String rhsString = ((StringAnnotation)rhsAnnotation).getValue();
 				cmp = lhsString.compareTo(rhsString);
-				if (cmp != 0)
-					return cmp;
-			} else if(lhsAnnotation.getClass() == LocalVariableAnnotation.class) {
-				// Rewrite class names in FieldAnnotations
+				
+			} else if(lhsClass == LocalVariableAnnotation.class) {
 				String lhsName = ((LocalVariableAnnotation)lhsAnnotation).getName();
 				String rhsName = ((LocalVariableAnnotation)rhsAnnotation).getName();
-				if (lhsName.equals("?") && rhsName.equals("?"))
+				if (lhsName.equals("?") || rhsName.equals("?")) 
 					continue;
 				cmp = lhsName.compareTo(rhsName);
-				if (cmp != 0)
-					return cmp;
-			} else if(lhsAnnotation.getClass() == TypeAnnotation.class) {
-				// Rewrite class names in FieldAnnotations
+				
+			} else if(lhsClass == TypeAnnotation.class) {
 				String lhsType = ((TypeAnnotation)lhsAnnotation).getTypeDescriptor();
 				String rhsType = ((TypeAnnotation)rhsAnnotation).getTypeDescriptor();
 				lhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, lhsType);
 				rhsType = ClassNameRewriterUtil.rewriteSignature(classNameRewriter, rhsType);
 				cmp = lhsType.compareTo(rhsType);
-				if (cmp != 0)
-					return cmp;
-			} else if(lhsAnnotation.getClass() == IntAnnotation.class) {
-				// Rewrite class names in FieldAnnotations
+				
+			} else if(lhsClass == IntAnnotation.class) {
 				int lhsValue = ((IntAnnotation)lhsAnnotation).getValue();
 				int rhsValue = ((IntAnnotation)rhsAnnotation).getValue();
 				cmp = lhsValue - rhsValue;
-				if (cmp != 0)
-					return cmp;
+				
 			} else if (isBoring(lhsAnnotation)) {
 				throw new IllegalStateException("Impossible");
 			} else
-				throw new IllegalStateException("Unknown annotation type: " + lhsAnnotation.getClass().getName());
+				throw new IllegalStateException("Unknown annotation type: " +lhsClass.getName());
+			if (cmp != 0)
+				return cmp;
 		}
 
-		if (rhsIter.hasNext())
+		if (interestingNext(rhsIter))
 			return -1;
-		else if (lhsIter.hasNext())
+		else if (interestingNext(lhsIter))
 			return 1;
 		else
 			return 0;
 	}
 
+	private boolean interestingNext(Iterator<BugAnnotation> i) {
+		while (i.hasNext()) {
+			BugAnnotation a = i.next();
+			if (isBoring(a))
+				continue;
+			if (!(a instanceof LocalVariableAnnotation))
+				return true;
+			if (((LocalVariableAnnotation)a).isSignificant())
+				return true;
+		}
+		return false;
+	}
 	/**
 	 * @param exactBugPatternMatch The exactBugPatternMatch to set.
 	 */
