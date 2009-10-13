@@ -91,6 +91,10 @@
 	</SplitPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindReturnRef"/>
 	</SplitPass>
 	<SplitPass>
@@ -584,7 +588,9 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" 
             speed="moderate"
-            reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC" />
+            reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC"
+		disabled="true"
+		 />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" 
             speed="moderate" 
