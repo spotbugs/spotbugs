@@ -1136,7 +1136,7 @@ public class Subtypes2 {
 		missingClassVertex.setFinished(true);
 		addVertexToGraph(missingClassDescriptor, missingClassVertex);
 
-		AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(missingClassDescriptor);
+		AnalysisContext.currentAnalysisContext().reportMissingClass(missingClassDescriptor);
 
 		return missingClassVertex;
 	}
