@@ -107,6 +107,10 @@ public class ClassContext {
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
 
+	@Override
+	public String toString() {
+		return jclass.getClassName();
+	}
 	/**
 	 * Constructor.
 	 *
