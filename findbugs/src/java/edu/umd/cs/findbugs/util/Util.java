@@ -55,8 +55,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * @author William Pugh
  */
 public class Util {
-	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
-
+	
 	/**
 	 * return sign of x - y
 	 * @param x
@@ -114,8 +113,13 @@ public class Util {
 	}
 	static Collection<Runnable> runAtShutdown;
 	
+	static class ShutdownLogging {
+		public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
+	}
+
+	
 	public static synchronized void runLogAtShutdown(Runnable r) {
-		if (LOGGING) {
+		if (ShutdownLogging.LOGGING) {
 			if (runAtShutdown == null) {
 				runAtShutdown = new LinkedList<Runnable>();
 				Runtime.getRuntime().addShutdownHook(new Thread() {
