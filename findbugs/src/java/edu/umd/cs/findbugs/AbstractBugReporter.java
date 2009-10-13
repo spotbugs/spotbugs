@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * An abstract class which provides much of the functionality
@@ -183,7 +184,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		}
 	}
 
-	public static String getMissingClassName(ClassNotFoundException ex) {
+	public static @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
 		String message = ex.getMessage();
 		if (message == null) {
 			message = "";
