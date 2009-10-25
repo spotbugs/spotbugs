@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import java.util.BitSet;
 import java.util.Iterator;
 
@@ -27,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
@@ -36,6 +36,8 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -44,21 +46,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
- * Find places where ordinary (balanced) synchronization is performed
- * on JSR166 Lock objects.  Suggested by Doug Lea.
- *
+ * Find places where ordinary (balanced) synchronization is performed on JSR166
+ * Lock objects. Suggested by Doug Lea.
+ * 
  * @author David Hovemeyer
  */
 public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 	/**
      * 
      */
-    private static final String UTIL_CONCURRRENT_SIG_PREFIX = "Ljava/util/concurrent/";
+	private static final String UTIL_CONCURRRENT_SIG_PREFIX = "Ljava/util/concurrent/";
 
 	private BugReporter bugReporter;
 
@@ -87,18 +92,17 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
 			// We can ignore methods that don't contain a monitorenter
 			BitSet bytecodeSet = classContext.getBytecodeSet(method);
-			if (bytecodeSet == null) continue;
-			if (!bytecodeSet.get(Constants.MONITORENTER))
+			if (bytecodeSet == null)
 				continue;
-
+			if (false && !bytecodeSet.get(Constants.MONITORENTER))
+				continue;
 
 			analyzeMethod(classContext, method);
 
 		}
 	}
 
-	private void analyzeMethod(ClassContext classContext, Method method) 
-			 {
+	private void analyzeMethod(ClassContext classContext, Method method) {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		CFG cfg;
 		try {
@@ -121,14 +125,50 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			InstructionHandle handle = location.getHandle();
 			Instruction ins = handle.getInstruction();
 
+			if (ins.getOpcode() == Constants.INVOKEVIRTUAL) {
+				INVOKEVIRTUAL iv = (INVOKEVIRTUAL) ins;
+
+				String methodName = iv.getMethodName(cpg);
+				String methodSig = iv.getSignature(cpg);
+				if (methodName.equals("wait")
+				        && (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"))
+				        || (methodName.equals("notify") || methodName.equals("notifyAll")) && methodSig.equals("()V")) {
+					try {
+						TypeFrame frame = typeDataflow.getFactAtLocation(location);
+						if (!frame.isValid())
+							continue;
+						Type type = frame.getInstance(ins, cpg);
+						if (!(type instanceof ReferenceType)) {
+							// Something is deeply wrong if a non-reference type
+							// is used for a method invocation. But, that's
+							// really a
+							// verification problem.
+							continue;
+						}
+						XClass c = Lookup.getXClass(DescriptorFactory.createClassDescriptorFromSignature(type.getSignature()));
+						XMethod m = c.findMethod("await", "()V", false);
+						if (m != null)
+							bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(
+							        classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addSourceLine(classContext,
+							        method, location));
+
+					} catch (CheckedAnalysisException e) {
+						AnalysisContext.logError("Coult not get Type dataflow", e);
+						continue;
+					}
+
+				}
+
+			}
+
 			if (ins.getOpcode() != Constants.MONITORENTER)
 				continue;
 			Type type;
 			try {
-			TypeFrame frame = typeDataflow.getFactAtLocation(location);
-			if (!frame.isValid())
-				continue;
-			 type = frame.getInstance(ins, cpg);
+				TypeFrame frame = typeDataflow.getFactAtLocation(location);
+				if (!frame.isValid())
+					continue;
+				type = frame.getInstance(ins, cpg);
 			} catch (CheckedAnalysisException e) {
 				AnalysisContext.logError("Coult not get Type dataflow", e);
 				continue;
@@ -136,9 +176,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
 			if (!(type instanceof ReferenceType)) {
 				// Something is deeply wrong if a non-reference type
-				// is used for a monitorenter.  But, that's really a
+				// is used for a monitorenter. But, that's really a
 				// verification problem.
-				return;
+				continue;
 			}
 
 			boolean isSubtype = false;
@@ -149,25 +189,18 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			}
 			String sig = type.getSignature();
 			boolean isUtilConcurrentSig = sig.startsWith(UTIL_CONCURRRENT_SIG_PREFIX);
-            
-			if (isSubtype) {				
-				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", 
-							isUtilConcurrentSig ? HIGH_PRIORITY : NORMAL_PRIORITY)
-						.addClassAndMethod(classContext.getJavaClass(), method)
-						.addType(sig)
-						.addSourceForTopStackValue(classContext, method, location)
-						.addSourceLine(classContext,method, location)
-						);
-			} else if (isUtilConcurrentSig) { 
-	            		int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
-	            		bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-	            				.addClassAndMethod(classContext.getJavaClass(), method)
-	            				.addType(sig)
-	            				.addSourceForTopStackValue(classContext, method, location)
-	            				.addSourceLine(classContext,method, location));
 
-	            
-            }
+			if (isSubtype) {
+				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", isUtilConcurrentSig ? HIGH_PRIORITY
+				        : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
+				        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+			} else if (isUtilConcurrentSig) {
+				int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
+				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
+				        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig).addSourceForTopStackValue(
+				                classContext, method, location).addSourceLine(classContext, method, location));
+
+			}
 		}
 	}
 

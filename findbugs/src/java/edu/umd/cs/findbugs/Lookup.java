@@ -32,9 +32,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup
@@ -45,8 +47,11 @@ public class Lookup
 		return AnalysisContext.currentAnalysisContext().getSubtypes2();
 	}
 
-	private static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
+	public static XClass getXClass(ClassDescriptor c) throws CheckedAnalysisException {
 		return Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+	}
+	public  static XClass getXClass(@SlashedClassName String className) throws CheckedAnalysisException {
+		return Global.getAnalysisCache().getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptor(className));
 	}
 
 	public static XClass findSuperImplementor(XClass clazz, String name, String signature, boolean isStatic,
