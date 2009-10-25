@@ -127,7 +127,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			if (item0.getSignature().charAt(0) == '[')
 				bugReporter.reportBug(new BugInstance(this, "DMI_INVOKING_HASHCODE_ON_ARRAY", NORMAL_PRIORITY).addClassAndMethod(this)
-						.addValueSource(item0, getMethod(), getPC())
+						.addValueSource(item0, this)
 						.addSourceLine(this));
 		}
 		if (seen != RETURN && isReturn(seen) && isRegisterStore(getPrevOpcode(1))) {
@@ -158,7 +158,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
 		if (prevOpCode == IMUL && seen == I2L) {
 			int priority = adjustPriority(imul_constant, NORMAL_PRIORITY);
-			if (priority >= LOW_PRIORITY && imul_constant != 1000 && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
+			if (priority >= LOW_PRIORITY && imul_constant != 1000 && imul_constant != 60 && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
 			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
 				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
 				bugAccumulator.accumulateBug(new BugInstance(this, 
@@ -263,7 +263,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
 										: (valueOfConstantArgumentToShift == 32 && getMethodName().equals("hashCode") 
 												? NORMAL_PRIORITY : HIGH_PRIORITY))
 						.addClassAndMethod(this)
-						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT), this);
+						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT)
+						.addValueSource(stack.getStackItem(1), this), this);
 				}
 				if (leftHandSide != null 
 						&& leftHandSide instanceof Integer
@@ -273,6 +274,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 					constantArgumentToShift = true;
 					valueOfConstantArgumentToShift = 8;
 				}
+				
 			}
 		}
 
