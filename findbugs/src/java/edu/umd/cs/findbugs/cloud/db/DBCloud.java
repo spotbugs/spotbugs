@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -196,7 +197,7 @@ public  class DBCloud extends AbstractCloud {
 	Date lastUpdate = new Date();
 	Date resync;
 	Date attemptedResync;
-	
+	IPAddressLookup ipAddressLookup;
 	int resyncCount;
 	Map<String, BugData> instanceMap = new HashMap<String, BugData>();
 
@@ -254,6 +255,8 @@ public  class DBCloud extends AbstractCloud {
 		dbUser = getJDBCProperty("dbUser");
 		dbPassword = getJDBCProperty("dbPassword");
 		findbugsUser = getCloudProperty("findbugsUser");
+		if (PROMPT_FOR_USER_NAME)
+			ipAddressLookup = new IPAddressLookup();
 	}
 	
 	public boolean availableForInitialization() {
@@ -370,7 +373,7 @@ public  class DBCloud extends AbstractCloud {
 					String bugReportId = rs.getString(col++);
 					String whoFiled = rs.getString(col++);
 					Timestamp whenFiled = rs.getTimestamp(col++);
-					String status = rs.getString(col++);
+					String status = rs.getString(col++); 
 					String assignedTo = rs.getString(col++);
 					String componentName = rs.getString(col++);
 
@@ -425,11 +428,13 @@ public  class DBCloud extends AbstractCloud {
 						os = os +" " + osVersion;
 					PreparedStatement insertSession = c
 					        .prepareStatement(
-					                "INSERT INTO findbugs_invocation (who, entryPoint, dataSource, fbVersion, os, jvmVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
-					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+					                "INSERT INTO findbugs_invocation (who, ipAddress, entryPoint, dataSource, fbVersion, os, jvmVersion, jvmLoadTime, findbugsLoadTime, analysisLoadTime, initialSyncTime, numIssues, startTime, commonPrefix)"
+					                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 					Timestamp now = new Timestamp(startTime);
 					int col = 1;
 					insertSession.setString(col++, findbugsUser);
+					String ipAddress = PROMPT_FOR_USER_NAME ? ipAddressLookup.get() : "self-authenticated";
+					insertSession.setString(col++, ipAddress);
 					insertSession.setString(col++, limitToMaxLength(loadURL, 128));
 					insertSession.setString(col++, limitToMaxLength(sbc.getDataSource(), 128));
 					insertSession.setString(col++, Version.RELEASE);
@@ -865,12 +870,13 @@ public  class DBCloud extends AbstractCloud {
 					bd.setAnnotationText("");
 				
 				PreparedStatement insertEvaluation =  
-				        c.prepareStatement("INSERT INTO findbugs_evaluation (issueId, who, designation, comment, time) VALUES (?,?,?,?,?)",  
+				        c.prepareStatement("INSERT INTO findbugs_evaluation (issueId, who, invocationId, designation, comment, time) VALUES (?,?,?,?,?,?)",  
 				        		Statement.RETURN_GENERATED_KEYS);
 				Timestamp date = new Timestamp(bd.getTimestamp());
 				int col = 1;
 				insertEvaluation.setInt(col++, data.id);
 				insertEvaluation.setString(col++, bd.getUser());
+				insertEvaluation.setInt(col++, sessionId);
 				insertEvaluation.setString(col++, bd.getDesignationKey());
 				insertEvaluation.setString(col++, bd.getAnnotationText());
 				insertEvaluation.setTimestamp(col++, date);
