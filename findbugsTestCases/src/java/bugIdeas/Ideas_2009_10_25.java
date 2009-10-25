@@ -7,7 +7,7 @@ public class Ideas_2009_10_25 {
 	int x;
 	
 	public void set(int x) {
-		latch.countDown();
+		latch.notifyAll();
 		this.x = x;
 	}
 	
