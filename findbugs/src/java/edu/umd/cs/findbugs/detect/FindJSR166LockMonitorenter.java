@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /**
@@ -145,9 +146,14 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 							// verification problem.
 							continue;
 						}
-						XClass c = Lookup.getXClass(DescriptorFactory.createClassDescriptorFromSignature(type.getSignature()));
+						ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromSignature(type.getSignature());
+						if (classDescriptor.equals(classContext.getClassDescriptor()))
+							continue;
+						if (!classDescriptor.getClassName().startsWith("java/util/concurrent"))
+							continue;
+						XClass c = Lookup.getXClass(classDescriptor);
 						XMethod m = c.findMethod("await", "()V", false);
-						if (m != null)
+						if (m != null && m.isPublic() && c.isPublic())
 							bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(
 							        classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addSourceLine(classContext,
 							        method, location));
