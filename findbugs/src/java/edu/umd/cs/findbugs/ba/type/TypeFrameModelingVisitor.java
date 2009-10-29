@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
@@ -45,70 +46,74 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * Visitor to model the effects of bytecode instructions on the
- * types of the values (local and operand stack) in Java stack frames.
- * This visitor does not verify that the types are sensible
- * for the bytecodes executed.  In other words, this isn't a bytecode
- * verifier, although it wouldn't be too hard to turn it into
- * something vaguely verifier-like.
- *
+ * Visitor to model the effects of bytecode instructions on the types of the
+ * values (local and operand stack) in Java stack frames. This visitor does not
+ * verify that the types are sensible for the bytecodes executed. In other
+ * words, this isn't a bytecode verifier, although it wouldn't be too hard to
+ * turn it into something vaguely verifier-like.
+ * 
  * @author David Hovemeyer
  * @see TypeFrame
  * @see TypeAnalysis
  */
-public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
-		implements Constants, Debug {
+public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Constants, Debug {
 
-	static private final  ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
+	static private final ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
 
 	private ValueNumberDataflow valueNumberDataflow;
 
 	// Fields for precise modeling of instanceof instructions.
 	private boolean instanceOfFollowedByBranch;
+
 	private ReferenceType instanceOfType;
+
 	private ValueNumber instanceOfValueNumber;
-    private FieldSummary fieldSummary;
+
+	private FieldSummary fieldSummary;
+
 	private FieldStoreTypeDatabase database;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param cpg the ConstantPoolGen of the method whose instructions we are examining
+	 * 
+	 * @param cpg
+	 *            the ConstantPoolGen of the method whose instructions we are
+	 *            examining
 	 */
 	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {
 		super(cpg);
-		fieldSummary =  AnalysisContext.currentAnalysisContext().getFieldSummary();
-		
+		fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+
 	}
 
 	/**
-	 * Set ValueNumberDataflow for the method being analyzed.
-	 * This is optional; if set, we will use the information to more
-	 * accurately model the effects of instanceof instructions.
+	 * Set ValueNumberDataflow for the method being analyzed. This is optional;
+	 * if set, we will use the information to more accurately model the effects
+	 * of instanceof instructions.
 	 * 
-	 * @param valueNumberDataflow the ValueNumberDataflow
+	 * @param valueNumberDataflow
+	 *            the ValueNumberDataflow
 	 */
 	public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
 		this.valueNumberDataflow = valueNumberDataflow;
 	}
 
-
 	/**
-	 * Return whether an instanceof instruction was followed by a branch.
-	 * The TypeAnalysis may use this to get more precise types in
-	 * the resulting frame.
+	 * Return whether an instanceof instruction was followed by a branch. The
+	 * TypeAnalysis may use this to get more precise types in the resulting
+	 * frame.
 	 * 
-	 * @return true if an instanceof instruction was followed by a branch,
-	 *         false if not
+	 * @return true if an instanceof instruction was followed by a branch, false
+	 *         if not
 	 */
 	public boolean isInstanceOfFollowedByBranch() {
 		return instanceOfFollowedByBranch;
 	}
 
 	/**
-	 * Get the type of the most recent instanceof instruction modeled.
-	 * The TypeAnalysis may use this to get more precise types in
-	 * the resulting frame.
+	 * Get the type of the most recent instanceof instruction modeled. The
+	 * TypeAnalysis may use this to get more precise types in the resulting
+	 * frame.
 	 * 
 	 * @return the Type checked by the most recent instanceof instruction
 	 */
@@ -118,8 +123,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	/**
 	 * Get the value number of the most recent instanceof instruction modeled.
-	 * The TypeAnalysis may use this to get more precise types in
-	 * the resulting frame.
+	 * The TypeAnalysis may use this to get more precise types in the resulting
+	 * frame.
 	 * 
 	 * @return the ValueNumber checked by the most recent instanceof instruction
 	 */
@@ -128,11 +133,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	/**
-	 * Set the field store type database.
-	 * We can use this to get more accurate types for values loaded
-	 * from fields.
+	 * Set the field store type database. We can use this to get more accurate
+	 * types for values loaded from fields.
 	 * 
-	 * @param database the FieldStoreTypeDatabase
+	 * @param database
+	 *            the FieldStoreTypeDatabase
 	 */
 	public void setFieldStoreTypeDatabase(FieldStoreTypeDatabase database) {
 		this.database = database;
@@ -144,8 +149,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	boolean sawEffectiveInstanceOf;
+
 	boolean previousWasEffectiveInstanceOf;
-	
+
 	@Override
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
 		instanceOfFollowedByBranch = false;
@@ -155,9 +161,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	/**
-	 * This method must be called at the beginning of modeling
-	 * a basic block in order to clear information cached
-	 * for instanceof modeling.
+	 * This method must be called at the beginning of modeling a basic block in
+	 * order to clear information cached for instanceof modeling.
 	 */
 	public void startBasicBlock() {
 		instanceOfType = null;
@@ -165,8 +170,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	/**
-	 * Consume stack.  This is a convenience method for instructions
-	 * where the types of popped operands can be ignored.
+	 * Consume stack. This is a convenience method for instructions where the
+	 * types of popped operands can be ignored.
 	 */
 	protected void consumeStack(Instruction ins) {
 		ConstantPoolGen cpg = getCPG();
@@ -185,10 +190,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	/**
-	 * Work around some weirdness in BCEL (inherited from JVM Spec 1):
-	 * BCEL considers long and double types to consume two slots on the
-	 * stack.  This method ensures that we push two types for
-	 * each double or long value.
+	 * Work around some weirdness in BCEL (inherited from JVM Spec 1): BCEL
+	 * considers long and double types to consume two slots on the stack. This
+	 * method ensures that we push two types for each double or long value.
 	 */
 	protected void pushValue(Type type) {
 		TypeFrame frame = getFrame();
@@ -213,8 +217,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	/**
-	 * This is overridden only to ensure that we don't rely on the
-	 * base class to handle instructions that produce stack operands.
+	 * This is overridden only to ensure that we don't rely on the base class to
+	 * handle instructions that produce stack operands.
 	 */
 	@Override
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
@@ -231,16 +235,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	// NOTES:
 	// - Instructions that only consume operands need not be overridden,
-	//   because the base class visit methods handle them correctly.
+	// because the base class visit methods handle them correctly.
 	// - Instructions that simply move values around in the frame,
-	//   such as DUP, xLOAD, etc., do not need to be overridden because
-	//   the base class handles them.
+	// such as DUP, xLOAD, etc., do not need to be overridden because
+	// the base class handles them.
 	// - Instructions that consume and produce should call
-	//   consumeStack(Instruction) and then explicitly push produced operands.
+	// consumeStack(Instruction) and then explicitly push produced operands.
 
 	@Override
 	public void visitATHROW(ATHROW obj) {
-		// do nothing. The same value remains on the stack (but we jump to a new location)
+		// do nothing. The same value remains on the stack (but we jump to a new
+		// location)
 	}
 
 	@Override
@@ -294,7 +299,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	@Override
-		 public void visitGETFIELD(GETFIELD obj) {
+	public void visitGETFIELD(GETFIELD obj) {
 		modelFieldLoad(obj);
 	}
 
@@ -324,11 +329,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (loadType == originalLoadType && summary != null && !summary.getSignature().equals("Ljava/lang/Object;")) {
 					loadType = Type.getType(summary.getSignature());
 				}
-				
+
 				// [Added: Support for Generics]
-				// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
-				// we can assume, that the signature for obj is still relevant. This should
-				// be updated by inserting generic information in the FieldStoreTypeDatabase
+				// XXX If the loadType was not changed by the
+				// FieldStoreTypeDatabase, then
+				// we can assume, that the signature for obj is still relevant.
+				// This should
+				// be updated by inserting generic information in the
+				// FieldStoreTypeDatabase
 
 				// find the field and its signature
 				Field field = Hierarchy.findField(xfield.getClassName(), xfield.getName());
@@ -340,17 +348,17 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					}
 				}
 
-				// replace loadType with information from field signature (conservative)
-				if (signature != null && 
-						(loadType instanceof ObjectType)
-				) {
-					loadType = GenericUtilities.merge(GenericUtilities.getType( signature ), (ObjectType) loadType);
+				// replace loadType with information from field signature
+				// (conservative)
+				if (signature != null && (loadType instanceof ObjectType)) {
+					loadType = GenericUtilities.merge(GenericUtilities.getType(signature), (ObjectType) loadType);
 				}
 
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
-		} catch (RuntimeException e) {} // degrade gracefully
+		} catch (RuntimeException e) {
+		} // degrade gracefully
 
 		pushValue(loadType);
 	}
@@ -360,7 +368,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		String methodName = obj.getMethodName(cpg);
 		String signature = obj.getSignature(cpg);
 		String className = obj.getClassName(cpg);
-		if (methodName.equals("asList") && className.equals("java.util.Arrays") && signature.equals("([Ljava/lang/Object;)Ljava/util/List;")) {
+		if (methodName.equals("asList") && className.equals("java.util.Arrays")
+		        && signature.equals("([Ljava/lang/Object;)Ljava/util/List;")) {
 			consumeStack(obj);
 			Type returnType = Type.getType("Ljava/util/Arrays$ArrayList;");
 			pushValue(returnType);
@@ -378,40 +387,111 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	@Override
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
-		if (handleToArray(obj)) return;
-		consumeStack(obj);
-		pushReturnType(obj);
+		visitInvokeInstructionCommon(obj);
 	}
 
 	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		visitInvokeInstructionCommon(obj);
+	}
+
+	private boolean getResultTypeFromGenericType(TypeFrame frame, int index, int expectedParameters) {
+		try {
+			Type mapType = frame.getStackValue(0);
+			if (mapType instanceof GenericObjectType) {
+				GenericObjectType genericMapType = (GenericObjectType) mapType;
+				List<? extends ReferenceType> parameters = genericMapType.getParameters();
+				if (parameters.size() == expectedParameters) {
+					ReferenceType resultType = parameters.get(index);
+					frame.popValue();
+					frame.pushValue(resultType);
+					return true;
+				}
+			}
+
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("oops", e);
+		}
+
+		return false;
+	}
+
+	
+	private boolean handleGetMapView(TypeFrame frame, String typeName, int index, int expectedNumberOfTypeParameters) {
+		try {
+			Type mapType = frame.getStackValue(0);
+			if (mapType instanceof GenericObjectType) {
+				GenericObjectType genericMapType = (GenericObjectType) mapType;
+				List<? extends ReferenceType> parameters = genericMapType.getParameters();
+				if (parameters.size() == expectedNumberOfTypeParameters) {
+					ReferenceType keyType = parameters.get(index);
+					frame.popValue();
+					
+					GenericObjectType keySetType = GenericUtilities.getType(typeName,
+							Collections.singletonList(keyType));
+					frame.pushValue(keySetType);
+					return true;
+				}
+			}
+
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("oops", e);
+		}
+		return false;
+
+	}
+	public void visitInvokeInstructionCommon(InvokeInstruction obj) {
 		TypeFrame frame = getFrame();
-		
+
 		String methodName = obj.getMethodName(cpg);
 		String signature = obj.getSignature(cpg);
 		String className = obj.getClassName(cpg);
-		
-		if (methodName.equals("cast") 
-				&& className.equals("java.lang.Class")) {
+
+		if (methodName.equals("cast") && className.equals("java.lang.Class")) {
 			try {
-	            Type resultType = frame.popValue();
-	            frame.popValue();
-	            frame.pushValue(resultType);
-            } catch (DataflowAnalysisException e) {
-            	AnalysisContext.logError("oops", e);
-            }
-			
+				Type resultType = frame.popValue();
+				frame.popValue();
+				frame.pushValue(resultType);
+			} catch (DataflowAnalysisException e) {
+				AnalysisContext.logError("oops", e);
+			}
+
 			return;
 		}
-		
+
+		if (methodName.equals("get") && signature.equals("(Ljava/lang/Object;)Ljava/lang/Object;") && className.endsWith("Map")) {
+			try {
+				Type mapType = frame.getStackValue(1);
+				if (mapType instanceof GenericObjectType) {
+					GenericObjectType genericMapType = (GenericObjectType) mapType;
+					List<? extends ReferenceType> parameters = genericMapType.getParameters();
+					if (parameters.size() == 2) {
+						ReferenceType valueType = parameters.get(1);
+						consumeStack(obj);
+						frame.pushValue(valueType);
+						return;
+					}
+				}
+
+			} catch (DataflowAnalysisException e) {
+				AnalysisContext.logError("oops", e);
+			}
+
+		}
+
+		if (className.equals("java.util.Map$Entry"))
+			if (methodName.equals("getKey") && getResultTypeFromGenericType(frame, 0, 2) || methodName.equals("getValue")
+			        && getResultTypeFromGenericType(frame, 1, 2))
+				return;
+
 		if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") && className.endsWith("Map")) {
 			Type argType;
-            try {
-	            argType = frame.popValue();
-            } catch (DataflowAnalysisException e) {
-	            AnalysisContext.logError("oops", e);
-	            return;
-            }
+			try {
+				argType = frame.popValue();
+			} catch (DataflowAnalysisException e) {
+				AnalysisContext.logError("oops", e);
+				return;
+			}
 			ObjectType mapType;
 			if (argType instanceof GenericObjectType) {
 				GenericObjectType genericArgType = (GenericObjectType) argType;
@@ -421,22 +501,35 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			GenericObjectType entrySetType = GenericUtilities.getType("java.util.Set", Collections.singletonList(mapType));
 			frame.pushValue(entrySetType);
 			return;
-            
+
 		}
-	
+		if (className.endsWith("Map")) 
+			if (methodName.equals("keySet") && signature.equals("()Ljava/util/Set;") && handleGetMapView(frame, "java.util.Set", 0,2 )
+					|| methodName.equals("values") && signature.equals("()Ljava/util/Collection;") 
+					&& handleGetMapView(frame, "java.util.Collection", 1,2 ))
+					return;
+
+		if (methodName.equals("iterator") && signature.equals("()Ljava/util/Iterator;") && handleGetMapView(frame, "java.util.Iterator", 0,1 ))
+					return;
+		if (className.equals("java.util.Iterator") &&methodName.equals("next") 
+				&& signature.equals("()Ljava/lang/Object;") && getResultTypeFromGenericType(frame, 0, 1))
+			return;
+
+
 		if (methodName.equals("isInstance")) {
 			if (className.equals("java.lang.Class") && valueNumberDataflow != null) {
-				// Record the value number of the value checked by this instruction,
+				// Record the value number of the value checked by this
+				// instruction,
 				// and the type the value was compared to.
 				try {
 					ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
 					if (vnaFrame.isValid()) {
-						 ValueNumber stackValue = vnaFrame.getStackValue(1);
-						 if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
+						ValueNumber stackValue = vnaFrame.getStackValue(1);
+						if (stackValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
 							String c = valueNumberDataflow.getClassName(stackValue);
 							if (c != null) {
 								if (c.charAt(0) != '[' && !c.endsWith(";"))
-									c = "L" + c.replace('.','/') +";";
+									c = "L" + c.replace('.', '/') + ";";
 								Type type = Type.getType(c);
 								if (type instanceof ReferenceType) {
 									instanceOfValueNumber = vnaFrame.getTopValue();
@@ -452,7 +545,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				}
 			}
 		}
-		if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && className.endsWith("Exception")) {
+		if (methodName.equals("initCause") && signature.equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;")
+		        && className.endsWith("Exception")) {
 			try {
 
 				frame.popValue();
@@ -461,34 +555,36 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				AnalysisContext.logError("Ooops", e);
 			}
 		}
-		if (handleToArray(obj)) return;
+		if (handleToArray(obj))
+			return;
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
 	private boolean handleToArray(InvokeInstruction obj) {
 		try {
-		TypeFrame frame = getFrame();
-		Type topValue = frame.getTopValue();
-		if (obj.getName(getCPG()).equals("toArray")) {
-			ReferenceType target = obj.getReferenceType(getCPG());
-			String signature = obj.getSignature(getCPG());
-			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollection(target)) {
+			TypeFrame frame = getFrame();
+			Type topValue = frame.getTopValue();
+			if (obj.getName(getCPG()).equals("toArray")) {
+				ReferenceType target = obj.getReferenceType(getCPG());
+				String signature = obj.getSignature(getCPG());
+				if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && isCollection(target)) {
 
-				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
-				Type resultType = frame.popValue();
-				frame.popValue();
-				frame.pushValue(resultType);
-				frame.setExact(frame.getStackLocation(0), topIsExact);
-				return true;
-			} else if (signature.equals("()[Ljava/lang/Object;")  && isCollection(target) && !topValue.getSignature().equals("Ljava/util/Arrays$ArrayList;")) {
-				consumeStack(obj);
-				pushReturnType(obj);
-				frame.setExact(frame.getStackLocation(0), true);
-				return true;
+					boolean topIsExact = frame.isExact(frame.getStackLocation(0));
+					Type resultType = frame.popValue();
+					frame.popValue();
+					frame.pushValue(resultType);
+					frame.setExact(frame.getStackLocation(0), topIsExact);
+					return true;
+				} else if (signature.equals("()[Ljava/lang/Object;") && isCollection(target)
+				        && !topValue.getSignature().equals("Ljava/util/Arrays$ArrayList;")) {
+					consumeStack(obj);
+					pushReturnType(obj);
+					frame.setExact(frame.getStackLocation(0), true);
+					return true;
+				}
 			}
-		}
-		return false;
+			return false;
 		} catch (DataflowAnalysisException e) {
 			return false;
 		} catch (ClassNotFoundException e) {
@@ -500,25 +596,26 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	@Override
 	public void handleStoreInstruction(StoreInstruction obj) {
 		int numConsumed = obj.consumeStack(cpg);
-		if ( numConsumed == 1) {
+		if (numConsumed == 1) {
 			try {
-			boolean isExact = isTopOfStackExact();
-			TypeFrame frame = getFrame();
-			int index = obj.getIndex();
-			Type value = frame.popValue();
-			frame.setValue(index, value);
-			frame.setExact(index, isExact);
+				boolean isExact = isTopOfStackExact();
+				TypeFrame frame = getFrame();
+				int index = obj.getIndex();
+				Type value = frame.popValue();
+				frame.setValue(index, value);
+				frame.setExact(index, isExact);
 			} catch (DataflowAnalysisException e) {
 				throw new InvalidBytecodeException(e.toString());
 			}
 		} else
 			super.handleStoreInstruction(obj);
-		
+
 	}
+
 	/**
-	 * Handler for all instructions which load values from a local variable
-	 * and push them on the stack.  Note that two locals are loaded for
-	 * long and double loads.
+	 * Handler for all instructions which load values from a local variable and
+	 * push them on the stack. Note that two locals are loaded for long and
+	 * double loads.
 	 */
 	public void handleLoadInstruction(LoadInstruction obj) {
 		int numProduced = obj.produceStack(cpg);
@@ -537,27 +634,28 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (isExact)
 			setTopOfStackIsExact();
 	}
-	
-    private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
-    	if (Subtypes2.ENABLE_SUBTYPES2) {
-    		Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-    		return subtypes2.isSubtype(target, COLLECTION_TYPE);
-    	} else {
-    		return target.isAssignmentCompatibleWith(COLLECTION_TYPE);
-    	}
-    }
-    
+
+	private boolean isCollection(ReferenceType target) throws ClassNotFoundException {
+		if (Subtypes2.ENABLE_SUBTYPES2) {
+			Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+			return subtypes2.isSubtype(target, COLLECTION_TYPE);
+		} else {
+			return target.isAssignmentCompatibleWith(COLLECTION_TYPE);
+		}
+	}
+
 	@Override
 	public void visitCHECKCAST(CHECKCAST obj) {
-		
-        try {
-        	Type t = getFrame().popValue();
-	        if (t instanceof NullType)
+
+		try {
+			Type t = getFrame().popValue();
+			if (t instanceof NullType)
 				pushValue(t);
-			else pushValue(obj.getType(getCPG()));
-        } catch (DataflowAnalysisException e) {
-        	throw new InvalidBytecodeException("Stack underflow for " + obj + ": " + e.getMessage());
-        }
+			else
+				pushValue(obj.getType(getCPG()));
+		} catch (DataflowAnalysisException e) {
+			throw new InvalidBytecodeException("Stack underflow for " + obj + ": " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -580,7 +678,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			}
 		}
 
-
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
@@ -592,8 +689,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			// Record the value number of the value checked by this instruction,
 			// and the type the value was compared to.
 			try {
-				ValueNumberFrame vnaFrame = valueNumberDataflow
-						.getFactAtLocation(getLocation());
+				ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
 				if (vnaFrame.isValid()) {
 					instanceOfValueNumber = vnaFrame.getTopValue();
 
@@ -607,6 +703,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 		consumeStack(obj);
 	}
+
 	@Override
 	public void visitIFNONNULL(IFNONNULL obj) {
 
@@ -614,8 +711,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			// Record the value number of the value checked by this instruction,
 			// and the type the value was compared to.
 			try {
-				ValueNumberFrame vnaFrame = valueNumberDataflow
-						.getFactAtLocation(getLocation());
+				ValueNumberFrame vnaFrame = valueNumberDataflow.getFactAtLocation(getLocation());
 				if (vnaFrame.isValid()) {
 					instanceOfValueNumber = vnaFrame.getTopValue();
 
@@ -629,6 +725,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 		consumeStack(obj);
 	}
+
 	@Override
 	public void visitFCMPL(FCMPL obj) {
 		consumeStack(obj);
@@ -865,7 +962,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			throw new InvalidBytecodeException(e.toString());
 		}
 	}
-	
+
 	@Override
 	public void visitFSUB(FSUB obj) {
 		consumeStack(obj);
