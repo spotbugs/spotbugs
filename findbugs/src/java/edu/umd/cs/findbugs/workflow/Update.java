@@ -598,7 +598,7 @@ public class Update {
 							continue;
 					}
 					if (matchedBug.isDead()) {
-							System.out.println("Resurrecting " + bug.getMessageWithoutPrefix());
+							// System.out.println("Resurrecting " + bug.getMessageWithoutPrefix());
 							resurrected.add(bug.getInstanceKey());
 						
 					}
