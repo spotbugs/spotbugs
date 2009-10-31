@@ -505,13 +505,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			return;
 
 		}
-		if (className.endsWith("Map")) 
+		if (className.startsWith("java.util") && className.endsWith("Map")) 
 			if (methodName.equals("keySet") && signature.equals("()Ljava/util/Set;") && handleGetMapView(frame, "java.util.Set", 0,2 )
 					|| methodName.equals("values") && signature.equals("()Ljava/util/Collection;") 
 					&& handleGetMapView(frame, "java.util.Collection", 1,2 ))
 					return;
 
-		if (methodName.equals("iterator") && signature.equals("()Ljava/util/Iterator;") && handleGetMapView(frame, "java.util.Iterator", 0,1 ))
+		if (methodName.equals("iterator") && signature.equals("()Ljava/util/Iterator;") && className.startsWith("java.util")
+				&& handleGetMapView(frame, "java.util.Iterator", 0,1 ))
 					return;
 		if (className.equals("java.util.Iterator") &&methodName.equals("next") 
 				&& signature.equals("()Ljava/lang/Object;") && getResultTypeFromGenericType(frame, 0, 1))
