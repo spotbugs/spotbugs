@@ -874,7 +874,7 @@ public class ClassContext {
 	 * @throws DataflowAnalysisException
 	 */
 	public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
-		System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName());
+		System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName() + method.getSignature());
 		TreeSet<Location> tree = new TreeSet<Location>();
 
 		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {

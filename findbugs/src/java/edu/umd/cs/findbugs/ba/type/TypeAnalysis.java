@@ -922,6 +922,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 		return exceptionTypeSet;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + "(" + methodGen.getClassName() + "." + methodGen.getMethod().getName()
+					+ methodGen.getMethod().getSignature() + ")";
+	}
 
 //	public static void main(String[] argv) throws Exception {
 //		if (argv.length != 1) {

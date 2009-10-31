@@ -495,7 +495,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	
 	
 	public void dumpDataflow(AnalysisType analysis) {
-		System.out.println(this.getClass().getName() + " analysis for " + getCFG().getMethodName() + " { ");
+		System.out.println(this.getClass().getName() + " analysis for " + getCFG().getMethodName() + getCFG().getMethodSig() + " { ");
     	try {
     		
     	for(Location loc : getCFG().orderedLocations()) {

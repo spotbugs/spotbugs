@@ -162,6 +162,9 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		return methodName;
 	}
 
+	public String getMethodSig() {
+		return methodGen.getSignature();
+	}
 	public void setFlags(int flags) {
 		this.flags = flags;
 	}
