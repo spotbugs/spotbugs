@@ -50,8 +50,12 @@ public class GenericObjectType extends ObjectType {
 
 	final @CheckForNull String variable;
 
-	final @CheckForNull Type extension;
+	final @CheckForNull ReferenceType extension;
 
+	
+	public ReferenceType produce() {
+		 return getTypeCategory().produce(this);
+	}
 	@Override
 	public int hashCode() {
 		return 13*super.hashCode() 
@@ -146,7 +150,7 @@ public class GenericObjectType extends ObjectType {
 	 * @param variable the type variable e.g. <code>T</code>
 	 */
 	GenericObjectType(@NonNull String variable) {
-		this(variable, (Type) null);
+		this(variable, (ReferenceType) null);
 	}
 
 	/**
@@ -154,7 +158,7 @@ public class GenericObjectType extends ObjectType {
 	 * with extensions
 	 * @param variable the type variable e.g. <code>T</code>
 	 */
-	GenericObjectType(@NonNull String wildcard, Type extension) {
+	GenericObjectType(@NonNull String wildcard, ReferenceType extension) {
 		super(Type.OBJECT.getClassName());
 		this.variable = wildcard;
 		this.extension = extension;

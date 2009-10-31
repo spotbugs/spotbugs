@@ -41,19 +41,14 @@ public class GenericUtilities {
 
 	public static enum TypeCategory {
 		
-		/** anything that is not a reference */
-		NON_REFERENCE_TYPE {
-			@Override
-			public String asString(GenericObjectType obj) {
-				// obj.getTypeCategory() does not return NON_REFERENCE_TYPE
-				return GenericUtilities.getString(obj);
-			}
-		},
-		
 
 		/** A simple (non-generic ObjectType) */
 		 PLAIN_OBJECT_TYPE 
 		 {
+			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return obj;
+			}
 			@Override
 			public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return PLAIN_OBJECT_TYPE
@@ -65,6 +60,10 @@ public class GenericUtilities {
 		ARRAY_TYPE
 		 {
 			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return obj;
+			}
+			@Override
 			public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return ARRAY_TYPE
 				return GenericUtilities.getString(obj);
@@ -74,6 +73,10 @@ public class GenericUtilities {
 		/** A parameterized class e.g. <code>List&lt;String&gt;</code> */
 		PARAMETERIZED 
 		 {
+			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return obj;
+			}
 			@Override
 			public String asString(GenericObjectType obj) {
 				StringBuilder b = new StringBuilder(obj.toPlainString());
@@ -95,6 +98,10 @@ public class GenericUtilities {
 		TYPE_VARIABLE 
 		 {
 			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return ObjectType.OBJECT;
+			}
+			@Override
 			public String asString(GenericObjectType obj) {				
 				return obj.variable;				
 			}
@@ -104,6 +111,10 @@ public class GenericUtilities {
 		 *  Underlying ObjectType is <code>java.lang.Object</code> */
 		 WILDCARD 
 		 {
+			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return ObjectType.OBJECT;
+			}
 			@Override
 			public String asString(GenericObjectType obj) {				
 				return "?";				
@@ -115,6 +126,10 @@ public class GenericUtilities {
 		 *  The extended type can be an ObjectType or a GenericObjectType */
 		WILDCARD_EXTENDS 
 		 {
+			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return obj.extension;
+			}
 			@Override
 			public String asString(GenericObjectType obj) {				
 				Type extension = obj.extension;
@@ -129,6 +144,10 @@ public class GenericUtilities {
 		 WILDCARD_SUPER 
 		 {
 			@Override
+			public ReferenceType produce(GenericObjectType obj) {
+				return ObjectType.OBJECT;
+			}
+			@Override
 			public String asString(GenericObjectType obj) {	
 				Type extension = obj.extension;
 				assert extension != null;
@@ -137,6 +156,7 @@ public class GenericUtilities {
 		};
 
 		public abstract String asString(GenericObjectType obj);
+		public abstract ReferenceType produce(GenericObjectType obj);
 
 		public static String asString(ArrayType atype) {
 			Type obj = atype.getBasicType();
@@ -159,7 +179,7 @@ public class GenericUtilities {
 		if (type instanceof ArrayType)
 			return TypeCategory.ARRAY_TYPE;
 
-		return TypeCategory.NON_REFERENCE_TYPE;
+		throw new IllegalArgumentException("Not a reference type: " + type);
 	}
 
 	public static final boolean isPlainObject(Type type) {
@@ -243,7 +263,7 @@ public class GenericUtilities {
 		} else if (signature.startsWith("+") || signature.startsWith("-")) {
 			return new GenericObjectType(
 					signature.substring(0,1), 
-					getType(signature.substring(1)) );
+					(ReferenceType) getType(signature.substring(1)) );
 
 		} else
 			// assert signature contains no generic information
