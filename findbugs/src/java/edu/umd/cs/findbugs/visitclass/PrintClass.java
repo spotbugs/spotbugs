@@ -136,6 +136,7 @@ public class PrintClass {
 					java_class = java_class.getSuperClass();
 				}
 			} catch (ClassNotFoundException e) {
+					System.out.println(e.getMessage());
 
 			}
 			System.out.println();
