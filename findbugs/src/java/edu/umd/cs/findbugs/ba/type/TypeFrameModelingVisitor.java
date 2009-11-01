@@ -486,7 +486,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			        && getResultTypeFromGenericType(frame, 1, 2))
 				return;
 
-		if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") && className.endsWith("Map")) {
+		if (methodName.equals("entrySet") && signature.equals("()Ljava/util/Set;") 
+				&& className.startsWith("java.util") && className.endsWith("Map")) {
 			Type argType;
 			try {
 				argType = frame.popValue();
