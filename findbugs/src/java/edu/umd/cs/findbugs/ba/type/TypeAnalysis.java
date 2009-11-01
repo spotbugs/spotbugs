@@ -174,7 +174,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private ExceptionSetFactory exceptionSetFactory;
 	private ValueNumberDataflow valueNumberDataflow;
 	private Map<BasicBlock, InstanceOfCheck> instanceOfCheckMap;
-
 	/**
 	 * Constructor.
 	 * @param method TODO
@@ -929,6 +928,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					+ methodGen.getMethod().getSignature() + ")";
 	}
 
+	public boolean isImpliedByGenericTypes(ReferenceType t) {
+		return visitor.isImpliedByGenericTypes(t);
+	}
+	
 //	public static void main(String[] argv) throws Exception {
 //		if (argv.length != 1) {
 //			System.err.println("Usage: " + TypeAnalysis.class.getName() + " <class file>");

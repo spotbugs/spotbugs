@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
@@ -44,6 +46,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Visitor to model the effects of bytecode instructions on the types of the
@@ -72,6 +75,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private FieldSummary fieldSummary;
 
 	private FieldStoreTypeDatabase database;
+	  
+	private Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
+	
 
 	/**
 	 * Constructor.
@@ -79,6 +85,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * @param cpg
 	 *            the ConstantPoolGen of the method whose instructions we are
 	 *            examining
+	 * @param typesComputerFromGenerics TODO
 	 */
 	public TypeFrameModelingVisitor(ConstantPoolGen cpg) {
 		super(cpg);
@@ -405,6 +412,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					ReferenceType resultType = parameters.get(index);
 					if (resultType instanceof GenericObjectType)
 						resultType = ((GenericObjectType)resultType).produce();
+					typesComputedFromGenerics.add(resultType);
 					frame.popValue();
 					frame.pushValue(resultType);
 					return true;
@@ -428,9 +436,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				if (parameters.size() == expectedNumberOfTypeParameters) {
 					ReferenceType keyType = parameters.get(index);
 					frame.popValue();
-					
+					typesComputedFromGenerics.add(keyType);
 					GenericObjectType keySetType = GenericUtilities.getType(typeName,
 							Collections.singletonList(keyType));
+					typesComputedFromGenerics.add(keySetType);
 					frame.pushValue(keySetType);
 					return true;
 				}
@@ -1240,6 +1249,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		super.visitIFNE(obj);
 	}
 
+	public boolean isImpliedByGenericTypes(ReferenceType t) {
+		return typesComputedFromGenerics.contains(t);
+	}
 }
 
 // vim:ts=4
