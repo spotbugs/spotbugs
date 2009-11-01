@@ -895,17 +895,18 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle)
 				);
 			}
+			if (lhsType.equals(ObjectType.OBJECT)
+					&& rhsType.equals(ObjectType.OBJECT))
+				return;
 			String lhs = SignatureConverter.convert(lhsType.getSignature());
 			String rhs = SignatureConverter.convert(rhsType.getSignature());
 
-			if (!lhs.equals(rhs)) {
-	            return;
-            }
-
-			if (lhs.equals("java.lang.String")) {
+			if (lhs.equals("java.lang.String") || rhs.equals("java.lang.String")) {
 				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
-			} else if (suspiciousSet.contains(lhs)) {
+			} else if (suspiciousSet.contains(lhs) ) {
 				handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
+			} else if ( suspiciousSet.contains(rhs)) {
+				handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, rhs, (ReferenceType) lhsType, (ReferenceType)rhsType);
 			}
 		}
 	}
