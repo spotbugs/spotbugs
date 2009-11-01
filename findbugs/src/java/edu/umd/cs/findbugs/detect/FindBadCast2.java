@@ -256,7 +256,10 @@ public class FindBadCast2 implements Detector {
 				continue;
 			}
 			ReferenceType refType = (ReferenceType) operandType;
-
+			boolean impliesByGenerics = typeDataflow.getAnalysis().isImpliedByGenericTypes(refType);
+			
+			if (impliesByGenerics && !isCast)
+				continue;
 
 			if (isCast && refType.equals(castType)) {
 				// System.out.println("self-cast to " + castType.getSignature());
@@ -285,6 +288,7 @@ public class FindBadCast2 implements Detector {
 				int priority = HIGH_PRIORITY;
 				if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
 					priority = LOW_PRIORITY;
+				
 				bugReporter.reportBug(
 						new BugInstance(this,
 						isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF",  priority)
