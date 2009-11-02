@@ -433,6 +433,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			if (mapType instanceof GenericObjectType) {
 				GenericObjectType genericMapType = (GenericObjectType) mapType;
 				List<? extends ReferenceType> parameters = genericMapType.getParameters();
+				if (parameters == null)
+					return false;
 				if (parameters.size() == expectedNumberOfTypeParameters) {
 					ReferenceType keyType = parameters.get(index);
 					frame.popValue();
