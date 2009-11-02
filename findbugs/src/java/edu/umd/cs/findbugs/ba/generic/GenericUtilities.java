@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -173,7 +174,7 @@ public class GenericUtilities {
 		if (type instanceof GenericObjectType)
 			return ((GenericObjectType) type).getTypeCategory();
 
-		if (type instanceof ObjectType)
+		if (type instanceof ObjectType || type instanceof NullType)
 			return TypeCategory.PLAIN_OBJECT_TYPE;
 
 		if (type instanceof ArrayType)
