@@ -197,17 +197,20 @@ public class BugRanker {
     }
 	public static int findRank(BugInstance bug) {
 		DetectorFactory detectorFactory = bug.getDetectorFactory();
-		Plugin plugin = detectorFactory == null ? null : detectorFactory.getPlugin();
+		if (null == detectorFactory) {
+		  // Unknown detector / plugin (e.g. happens when reading a bug
+		  // collection from its XML representation).
+		  return findRank(bug.getBugPattern(), bug.getPriority());
+		}
+		Plugin plugin = detectorFactory.getPlugin();
 		BugRanker adjustmentRanker = getAdjustmentBugRanker();
-		BugRanker pluginRanker = plugin == null ? null : plugin.getBugRanker();
+		BugRanker pluginRanker = plugin.getBugRanker();
 		BugRanker coreRanker = getCoreRanker();
 		if (pluginRanker == coreRanker)
 			return rankBug(bug, adjustmentRanker, coreRanker);
 		else
 			return rankBug(bug, adjustmentRanker, pluginRanker, coreRanker);
 	}
-	
-	
 
 	public static int findRank(BugPattern pattern, Plugin plugin, int priority) {
 		BugRanker adjustmentRanker = getAdjustmentBugRanker();
@@ -237,8 +240,6 @@ public class BugRanker {
           return rankBugPatternWithPriorityAdustment(pattern, priority, rankers.toArray(new BugRanker[] {}));
 	}
 
-
-
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
 	    if (maxRank < 20) 
 	    	for(Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext(); ) {
@@ -248,5 +249,4 @@ public class BugRanker {
 
 	    	}
     }
-
 }
