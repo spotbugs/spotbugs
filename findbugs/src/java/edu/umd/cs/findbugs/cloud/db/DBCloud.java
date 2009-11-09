@@ -1320,11 +1320,6 @@ public  class DBCloud extends AbstractCloud {
 		return "Bug pattern explanation:\n" + detailPlainText + "\n\n";
 	}
 
-	String getBugPatternExplanationLink(BugInstance b) {
-		return "Bug pattern explanation: http://findbugs.sourceforge.net/bugDescriptions.html#" + b.getBugPattern().getType()
-		        + "\n";
-	}
-
 	private String getLineTerminatedUserEvaluation(BugInstance b) {
 		UserDesignation designation = getUserDesignation(b);
 		
@@ -1340,12 +1335,6 @@ public  class DBCloud extends AbstractCloud {
 	}
 	String getBugReport(BugInstance b) {
 		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b) + getBugReportTail(b);
-	}
-	String getBugReportShorter(BugInstance b) {
-		return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) +  getBugPatternExplanationLink(b) + getBugReportTail(b);
-	}
-	String getBugReportAbridged(BugInstance b) {
-		return getBugReportHead(b) + getBugPatternExplanationLink(b) + getBugReportTail(b);
 	}
 
 	String getBugReportSourceCode(BugInstance b) {
@@ -1704,59 +1693,86 @@ public  class DBCloud extends AbstractCloud {
 	       return null;
         }
     }
+
+  private void displaySupplementalBugReport(String supplemental) {
+    supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
+                          +" please cut and paste into the bug report as appropriate]\n\n"
+                          + supplemental;
+    bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
+        "Cut and paste as needed into bug entry",
+        supplemental);
+  }
+
 	/**
      * @param b
      * @return
      * @throws MalformedURLException
      */
     private URL getBugFilingLink(BugInstance b) throws MalformedURLException {
-	    {
+      if (BUG_LINK_FORMAT == null)
+        return null;
 
-	    	if (BUG_LINK_FORMAT == null)
-	    		return null;
-	    	String report = getBugReport(b);
-	    	String component;
-	    	if (getUserDesignation(b) == UserDesignation.BAD_ANALYSIS 
-	    			&& COMPONENT_FOR_BAD_ANALYSIS != null)
-	    		component = COMPONENT_FOR_BAD_ANALYSIS;
-	    	else
-	    		component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
-	    	String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
-	    	
-	    	int maxURLLength = MAX_URL_LENGTH;
-	    	if (firstBugRequest) {
-	    		if (BUG_LOGIN_LINK != null && BUG_LOGIN_MSG != null) {
-	    			URL u = new URL(String.format(BUG_LOGIN_LINK));
-	    			if (!bugCollection.getProject().getGuiCallback().showDocument(u))
-	    				return null;
-	    			int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
-	    			if (r == JOptionPane.CANCEL_OPTION)
-	    				return null;
-	    		}
-	    		else 
-	    			maxURLLength = maxURLLength *2/3;
-	    	}
-	    	firstBugRequest = false;
-	    	String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-	    	if (u.length() > maxURLLength) {
-	    		report = getBugReportShorter(b);
-	    		u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-	    		if (u.length() > maxURLLength) {
-	    			report = getBugReportAbridged(b);
-	    			u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
-	    			String supplemental = "[Can't squeeze this information into the URL used to prepopulate the bug entry\n"
-	    				                   +" please cut and paste into the bug report as appropriate]\n\n"
-	    				                   + getBugReportSourceCode(b) 
-	    								 +  getLineTerminatedUserEvaluation(b)
-	    								 + getBugPatternExplanation(b);
-	    			bugCollection.getProject().getGuiCallback().displayNonmodelMessage(
-	    					"Cut and paste as needed into bug entry",
-	    					supplemental);
-	    			
-	    		}
-	    	}
-	    	return new URL(u);
-	    }
+      int maxURLLength = MAX_URL_LENGTH;
+      if (firstBugRequest) {
+        if (BUG_LOGIN_LINK != null && BUG_LOGIN_MSG != null) {
+          URL u = new URL(String.format(BUG_LOGIN_LINK));
+          if (!bugCollection.getProject().getGuiCallback().showDocument(u))
+            return null;
+          int r = bugCollection.getProject().getGuiCallback().showConfirmDialog(BUG_LOGIN_MSG, "Logging into bug tracker...", JOptionPane.OK_CANCEL_OPTION);
+          if (r == JOptionPane.CANCEL_OPTION)
+            return null;
+        }
+        else
+          maxURLLength = maxURLLength *2/3;
+      }
+      firstBugRequest = false;
+
+      String component;
+      if (getUserDesignation(b) == UserDesignation.BAD_ANALYSIS 
+          && COMPONENT_FOR_BAD_ANALYSIS != null)
+        component = COMPONENT_FOR_BAD_ANALYSIS;
+      else
+        component = getBugComponent(b.getPrimaryClass().getClassName().replace('.', '/'));
+      String summary = b.getMessageWithoutPrefix() + " in " + b.getPrimaryClass().getSourceFileName();
+      String report = getBugReport(b);
+      String u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+      if (u.length() > maxURLLength) {
+        report = getBugReportHead(b) + getBugReportSourceCode(b) + getBugReportTail(b);
+        String supplemental = getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
+        u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+        if (u.length() > maxURLLength) {
+          report = getBugReportHead(b) + getBugReportTail(b);
+          supplemental = getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
+          u = String.format(BUG_LINK_FORMAT, component, urlEncode(summary), urlEncode(report));
+          if (u.length() > maxURLLength) {
+            // Last resort: Just make the link work with a minimal report and by shortening the summary
+            supplemental = getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b);
+            report = getBugReportTail(b);
+            // (assuming BUG_URL_FORMAT + component + report tail is always < maxUrlLength)
+            String urlEncodedSummary = urlEncode(summary);
+            String urlEncodedReport = urlEncode(report);
+            String urlEncodedComponent = urlEncode(component);
+            int maxSummaryLength = maxURLLength
+                                   - BUG_LINK_FORMAT.length()
+                                   + 6 /* 3 %s placeholders */
+                                   - urlEncodedReport.length()
+                                   - urlEncodedComponent.length();
+            if (urlEncodedSummary.length() > maxSummaryLength) {
+              urlEncodedSummary = urlEncodedSummary.substring(0, maxSummaryLength - 1);
+              // Chop of any incomplete trailing percent encoded part
+              if ("%".equals(urlEncodedSummary.substring(urlEncodedSummary.length() - 1))) {
+                urlEncodedSummary = urlEncodedSummary.substring(0, urlEncodedSummary.length() - 2);
+              } else if ("%".equals(urlEncodedSummary.substring(urlEncodedSummary.length() - 2,
+                                                                urlEncodedSummary.length() - 1))) {
+                urlEncodedSummary = urlEncodedSummary.substring(0, urlEncodedSummary.length() - 3);
+              }
+            }
+            u = String.format(BUG_LINK_FORMAT, urlEncodedComponent, urlEncodedSummary, urlEncodedReport);
+          }
+        }
+        displaySupplementalBugReport(supplemental);
+      }
+      return new URL(u);
     }
     
     @Override
