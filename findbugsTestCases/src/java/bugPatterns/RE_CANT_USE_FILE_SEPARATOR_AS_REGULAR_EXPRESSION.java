@@ -26,7 +26,13 @@ public class RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION {
 	void notBug() {
 		Pattern.compile(File.separator, Pattern.LITERAL);
 	}
+	void bug4() {
+		Pattern.compile(File.separator, Pattern.DOTALL);
+	}
 	void notBug2 () {
 		Pattern.compile(File.separator, Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
+	}
+	void notBug3 () {
+		Pattern.compile(File.separator, Pattern.LITERAL | Pattern.DOTALL);
 	}
 }

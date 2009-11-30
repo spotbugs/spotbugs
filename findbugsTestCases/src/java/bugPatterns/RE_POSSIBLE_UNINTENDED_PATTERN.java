@@ -1,10 +1,13 @@
 package bugPatterns;
 
+import java.util.regex.Pattern;
+
 public class RE_POSSIBLE_UNINTENDED_PATTERN {
 	
 	void bug1(String any) {
 		any.split(".");
 	}
+
 
 	void bug2(String any, String any2) {
 		any.replaceAll(".", any2);
