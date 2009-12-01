@@ -3,6 +3,8 @@ package bugPatterns;
 public class BIT_SIGNED_CHECK {
 	
 	static final long HIGH_LONG = 0x8000000000000000L;
+	static final int HIGH_INT = 0x80000000;
+	
 	static final int LOW = 0x1;
 	
 	public boolean bugHighGT(long x) {
@@ -47,22 +49,22 @@ public class BIT_SIGNED_CHECK {
 	}
 	
 	public boolean bugHighGT(int x) {
-		if ((x & HIGH_LONG) > 0)
+		if ((x & HIGH_INT) > 0)
 			return true;
 		return false;
 	}
 	public boolean bugHighGE(int x) {
-		if ((x & HIGH_LONG) > 0)
+		if ((x & HIGH_INT) > 0)
 			return true;
 		return false;
 	}
 	public boolean bugHighLT(int x) {
-		if ((x & HIGH_LONG) < 0)
+		if ((x & HIGH_INT) < 0)
 			return true;
 		return false;
 	}
 	public boolean bugHighLE(int x) {
-		if ((x & HIGH_LONG) > 0)
+		if ((x & HIGH_INT) > 0)
 			return true;
 		return false;
 	}
