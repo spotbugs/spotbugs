@@ -83,7 +83,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 
 	@Override
 		 public void sawOpcode(int seen) {
-		// System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
+//		System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
 
 		switch (seen) {
 		case ICONST_M1:
@@ -150,8 +150,9 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case IFLT:
 		case IFGT:
 		case IFGE: 
-		if (state == 3){
-			boolean highbit = !isLong && (arg0 & 0x80000000) != 0;
+		if (state == 3 && isLong || state == 2 & !isLong){
+			boolean highbit = !isLong && (arg0 & 0x80000000) != 0
+							|| isLong && arg0 < 0;
 			BugInstance bug;
 			if (highbit)
 				bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY : NORMAL_PRIORITY);
