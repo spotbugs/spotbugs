@@ -115,6 +115,11 @@ public class BugRanker {
 		while (true) {
 			String s = in.readLine();
 			if (s == null) break;
+			
+			s = s.trim();
+			if (s.length() == 0)
+				continue;
+			
 			String parts [] = s.split(" ");
 			String rank = parts[0];
 			String kind = parts[1];
