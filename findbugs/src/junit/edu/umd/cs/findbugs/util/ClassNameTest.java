@@ -27,6 +27,14 @@ import junit.framework.TestCase;
  */
 public class ClassNameTest extends TestCase {
 
+	public void testExtractPackagePrefix() {
+		assertEquals("", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 0));
+		assertEquals("org", ClassName.extractPackagePrefix("org", 1));
+		assertEquals("org.apache.ant", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 3));
+		assertEquals("org.apache.ant.subpkg.sub2", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 5));
+		assertEquals("org.apache.ant.subpkg.sub2", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 6));
+	}
+	
 	public void testExtractClassName() {
 		assertEquals("java/lang/Integer", ClassName.extractClassName("Ljava/lang/Integer;"));
 		assertEquals("java/lang/Integer", ClassName.extractClassName("[Ljava/lang/Integer;"));
