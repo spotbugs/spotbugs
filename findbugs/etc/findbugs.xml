@@ -589,7 +589,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LazyInit" 
             speed="moderate"
             reports="LI_LAZY_INIT_STATIC,LI_LAZY_INIT_UPDATE_STATIC"
-		disabled="true"
+		disabled="false"
 		 />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" 
@@ -817,8 +817,10 @@
   <Detector class="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass"
       reports="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR" 
 	/>
+  <Detector class="edu.umd.cs.findbugs.detect.AtomicityProblem" 
+	reports="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"/>
 
-  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="true"/>
+  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="false"/>
 
 <!-- Bug Codes -->
 
@@ -844,12 +846,15 @@
  <BugCode abbrev="STCAL" cweid="366"/>
  <BugCode abbrev="ICAST" cweid="192"/>
  <BugCode abbrev="FB" />
+ <BugCode abbrev="AT" />
           
           
  
  <!-- Bug patterns -->
  
  
+       <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION" 
+			category="MT_CORRECTNESS" />
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" />
        <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="STYLE" />
        <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER" category="SECURITY" />
