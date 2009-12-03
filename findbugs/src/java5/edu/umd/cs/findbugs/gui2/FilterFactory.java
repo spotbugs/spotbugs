@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.filter.RelationalOp;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
+import edu.umd.cs.findbugs.util.NotImplementedYetException;
 
 /**
  * @author pugh
@@ -109,9 +110,7 @@ public class FilterFactory {
 		case DIVIDER:
 		default:
 			throw new IllegalArgumentException();
-
 		}
-
 	}
 
 	private static Matcher makeMatcher(SortableValue sv) {
@@ -135,13 +134,19 @@ public class FilterFactory {
 			return new ClassMatcher("~" + value + "\\.[^.]+");
 		case PRIORITY:
 			return new PriorityMatcher(value);
+		case PROJECT:
+			throw new NotImplementedYetException("Matchers for Projects not supported yet");
+		
 			
 		case TYPE:
 			return new BugMatcher(null, value, null);
 
+		
+			
+			
 		case DIVIDER:
 		default:
-			throw new IllegalArgumentException();
+			throw new NotImplementedYetException("No matcher for " + s);
 
 		}
 

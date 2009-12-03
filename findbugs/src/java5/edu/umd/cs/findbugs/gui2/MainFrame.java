@@ -644,6 +644,8 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				//However, it is still somewhat of a hack, because if we ever add more tree listeners than simply the bugtreemodel,
 				//They will not be called by this code.  Using FilterActivity to notify all listeners will however destroy any
 				//benefit of using the smarter deletion method.
+				
+				try {
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				int startCount;
 				TreePath path=MainFrame.getInstance().getTree().getSelectionPath();
@@ -685,6 +687,9 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				setProjectChanged(true);
 				
 				MainFrame.getInstance().getTree().setSelectionRow(0);//Selects the top of the Jtree so the CommentsArea syncs up.
+				} catch (RuntimeException e) {
+					MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
+				}
 			}
 		});
 
@@ -2869,6 +2874,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 				SortedBugCollection bc;
 
 				bc = BugLoader.loadBugs(MainFrame.this, project, url);
+				project.getSourceFinder(); // force source finder to be initialized
 				setProjectAndBugCollectionInSwingThread(project, bc);
 			}
 		};

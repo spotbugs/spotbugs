@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.MethodMatcher;
 import edu.umd.cs.findbugs.filter.OrMatcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
+import edu.umd.cs.findbugs.filter.RankMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Strings;
@@ -374,6 +375,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	    	addMatcher(new BugMatcher("",getOptionalAttribute(attributes, "name"),""));
 	    } else if (qName.equals("Priority")) {
 	    	addMatcher(new PriorityMatcher(getOptionalAttribute(attributes, "value")));
+	    } else if (qName.equals("Rank")) {
+	    	addMatcher(new RankMatcher(getOptionalAttribute(attributes, "value")));
 	    } else if (qName.equals("Package")) {
 	    	String pName = getOptionalAttribute(attributes, "name");
 	    	pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			

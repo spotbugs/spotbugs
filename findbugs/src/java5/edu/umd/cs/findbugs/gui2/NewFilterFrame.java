@@ -154,7 +154,13 @@ public class NewFilterFrame extends FBDialog
 				{
 					filterMe.add(new BugAspects.SortableValue(key,values[i]));
 				}
-				MainFrame.getInstance().getProject().getSuppressionFilter().addChild(FilterFactory.makeOrMatcher(filterMe));
+				try {
+					MainFrame.getInstance().getProject().getSuppressionFilter().addChild(FilterFactory.makeOrMatcher(filterMe));
+				} catch (RuntimeException e) {
+					MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
+					close();
+					return;
+				}
 				FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
 				PreferencesFrame.getInstance().updateFilterPanel();
 				MainFrame.getInstance().setProjectChanged(true);
