@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -38,7 +39,7 @@ public class BugDesignation implements XMLWriteable, Serializable, Comparable<Bu
 
 	/** The default key for the user designation.
 	 *  Bad things could happen if this key isn't in getUserDesignations() */
-	public static final String UNCLASSIFIED = "UNCLASSIFIED";
+	public static final String UNCLASSIFIED = UserDesignation.UNCLASSIFIED.name();
 
 
 	/** user designation -- value should be one of the keys
