@@ -555,7 +555,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 	
 	@NonNull public int getUserDesignationKeyIndex() {
-		return I18N.instance().getUserDesignationKeys().indexOf(getUserDesignationKey());
+		return I18N.instance().getUserDesignationKeys(true).indexOf(getUserDesignationKey());
 	}
 
 	/**
