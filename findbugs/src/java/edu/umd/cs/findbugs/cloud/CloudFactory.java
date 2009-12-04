@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class CloudFactory {
 	
+	public static boolean DEBUG = false;
 	
     private static final String DEFAULT_CLOUD_CLASS = "edu.umd.cs.findbugs.cloud.db.DBCloud";
 
@@ -40,11 +41,18 @@ public class CloudFactory {
 		if (!cloudClassSpecified)
 			cloudClassName = DEFAULT_CLOUD_CLASS;
 		try {
+			if (DEBUG)
+				bc.getProject().getGuiCallback().showMessageDialog("Cloud: " + cloudClassName);
 	        Class<? extends Cloud> cloudClass 
 	        = Class.forName(cloudClassName).asSubclass(Cloud.class);
 	        Constructor<? extends Cloud> constructor = cloudClass.getConstructor(BugCollection.class);
 			Cloud cloud = constructor.newInstance(bc);
+			if (DEBUG)
+				bc.getProject().getGuiCallback().showMessageDialog("constructed " + cloudClassName);
 			if (cloud.availableForInitialization()) {
+				if (DEBUG)
+					bc.getProject().getGuiCallback().showMessageDialog("attempting to initialize " + cloudClassName);
+				
 				if (cloud.initialize())
 					return cloud;
 				bc.getProject().getGuiCallback().showMessageDialog("Unable to connect to " + cloudClass.getSimpleName());
