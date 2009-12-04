@@ -53,6 +53,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
 		add("Long");
 		add("Object");
 		add("Ref");
+		add("RowId");
 		add("Short");
 		add("String");
 		add("Time");
