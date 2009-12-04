@@ -1930,7 +1930,7 @@ public class OpcodeStack implements Constants2
 			 }
 		 }
 		 else if (seen == INVOKESPECIAL && clsName.equals("java/io/FileOutputStream") && methodName.equals("<init>") 
-					&& (signature.equals("(Ljava/io/File;Z)V") || signature.equals("(Ljava/lang/String;Z)V"))) {
+					&& (signature.equals("(Ljava/io/File;Z)V") || signature.equals("(Ljava/lang/String;Z)V")) && stack.size() > 3) {
 			 	OpcodeStack.Item item = getStackItem(0);
 				Object value = item.getConstant();
 				if ( value instanceof Integer && ((Integer)value).intValue() == 1) {
