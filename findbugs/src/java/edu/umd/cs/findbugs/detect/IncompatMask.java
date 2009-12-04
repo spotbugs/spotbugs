@@ -151,8 +151,8 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case IFGT:
 		case IFGE: 
 		if (state == 3 && isLong || state == 2 & !isLong){
-			boolean highbit = !isLong && (arg0 & 0x80000000) != 0
-							|| isLong && arg0 < 0;
+			boolean highbit = !isLong && (arg0 & 0x80000000) != 0 && (arg0 & ~0x80000000) == 0
+							|| isLong && arg0 < 0 && arg0 << 1 == 0;
 			BugInstance bug;
 			if (highbit)
 				bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY : NORMAL_PRIORITY);
