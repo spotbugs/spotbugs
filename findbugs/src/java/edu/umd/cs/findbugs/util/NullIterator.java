@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An Iterator that returns no elements.
@@ -39,7 +40,7 @@ public class NullIterator<E> implements Iterator<E> {
 	 * @see java.util.Iterator#next()
 	 */
 	public E next() {
-		throw new UnsupportedOperationException();
+		throw new NoSuchElementException();
 	}
 
 	/* (non-Javadoc)
