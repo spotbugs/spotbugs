@@ -28,19 +28,20 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
- *	if we get from a ConcurrentHashMap and assign to a variable...
- * 		and don't do anything else
- * 			and perform a null check on it...
- * 				and then do a set on it... (or anything else inside the if that modifies it?)
- * 					then we have a bug.
+ * if we get from a ConcurrentHashMap and assign to a variable... and don't do
+ * anything else and perform a null check on it... and then do a set on it...
+ * (or anything else inside the if that modifies it?) then we have a bug.
  * 
  * @author Michael Midgley-Biggs
  */
 public class AtomicityProblem extends OpcodeStackDetector {
 
 	int priority = IGNORE_PRIORITY;
+
 	int lastQuestionableCheckTarget = -1;
+
 	private BugReporter bugReporter;
+
 	final static boolean DEBUG = false;
 
 	public AtomicityProblem(BugReporter bugReporter) {
@@ -57,7 +58,8 @@ public class AtomicityProblem extends OpcodeStackDetector {
 	}
 
 	/**
-	 * This is the "dumb" version of the detector.  It may generate false positives, and/or not detect all instances of the bug.
+	 * This is the "dumb" version of the detector. It may generate false
+	 * positives, and/or not detect all instances of the bug.
 	 * 
 	 * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
 	 */
@@ -66,7 +68,27 @@ public class AtomicityProblem extends OpcodeStackDetector {
 		if (DEBUG) {
 			System.out.println(getPC() + " " + OPCODE_NAMES[seen]);
 		}
-		if (seen == IFNULL || seen == IFNONNULL) {
+		switch (seen) {
+		case IFNE:
+		case IFEQ: {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			if (DEBUG) {
+				System.out.println("Stack top: " + top);
+			}
+			XMethod m = top.getReturnValueOf();
+			if (m != null && m.getClassName().equals("java.util.concurrent.ConcurrentHashMap")
+			        && m.getName().equals("containsKey")) {
+				lastQuestionableCheckTarget = getBranchTarget();
+				if (seen == IFEQ) {
+					priority = LOW_PRIORITY;
+				} else if (seen == IFNE) {
+					priority = NORMAL_PRIORITY;
+				}
+			}
+			break;
+		}
+		case IFNULL:
+		case IFNONNULL: {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			if (DEBUG) {
 				System.out.println("Stack top: " + top);
@@ -79,21 +101,26 @@ public class AtomicityProblem extends OpcodeStackDetector {
 				lastQuestionableCheckTarget = getBranchTarget();
 				if (seen == IFNULL) {
 					priority = LOW_PRIORITY;
-				}
-				else if (seen == IFNONNULL) {
+				} else if (seen == IFNONNULL) {
 					priority = NORMAL_PRIORITY;
 				}
 			}
+			break;
 		}
-		if (seen == INVOKEVIRTUAL) {
-			if(getDottedClassConstantOperand().equals("java.util.concurrent.ConcurrentHashMap")) {
+		case INVOKEVIRTUAL:
+		case INVOKEINTERFACE: {
+			if (getDottedClassConstantOperand().equals("java.util.concurrent.ConcurrentHashMap")) {
 				String methodName = getNameConstantOperand();
 				if (methodName.equals("put")) {
-					if((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
-						bugReporter.reportBug(new BugInstance(this, "AT_CONCURRENTHASHMAP_GET_PUT", priority).addClassAndMethod(this).addSourceLine(this));
+					if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
+						bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
+						        .addClassAndMethod(this).addType(getXClassOperand().getClassDescriptor()).addCalledMethod(this)
+						        .addSourceLine(this));
 					}
 				}
 			}
+			break;
+		}
 		}
 	}
 }
