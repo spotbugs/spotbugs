@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs.classfile.engine;
 
 import edu.umd.cs.findbugs.asm.FBClassReader;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
@@ -52,9 +54,21 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine<XClass> {
 	public ClassInfo analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
-		if (descriptor instanceof ClassInfo) return (ClassInfo) descriptor;
-		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
+		if (descriptor instanceof ClassInfo)
+			return (ClassInfo) descriptor;
+		ClassData classData;
+		try {
+			classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
+		} catch (edu.umd.cs.findbugs.classfile.MissingClassException e) {
+			if (!descriptor.getSimpleName().equals("package-info"))
+				throw e;
 
+			ClassInfo.Builder builder = new ClassInfo.Builder();
+			builder.setClassDescriptor(descriptor);
+			builder.setAccessFlags(1536);
+			return builder.build();
+		}
+		
 		
 		// Read the class info
 
