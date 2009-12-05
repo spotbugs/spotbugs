@@ -721,9 +721,7 @@ public class TypeQualifierApplications {
 		} else {
 			if (DEBUG) {
 				System.out.println("Looking up application of " + typeQualifierValue + " on " + xmethod + " parameter " + parameter);
-				if (false && xmethod.getName().equals("assertIncreasing"))
-					System.out.println("Found it");
-			}
+				}
 
 //			String desc = xmethod.toString()+":"+parameter+":"+typeQualifierValue;
 //			if (checked.containsKey(desc)) {
@@ -756,7 +754,7 @@ public class TypeQualifierApplications {
 				tqa = getInheritedTypeQualifierAnnotation(xmethod, parameter, typeQualifierValue);
 				if (DEBUG) {
 					if (tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) 
-						System.out.println("Overridden, no annotation inherited");
+						System.out.println("Overrides, no annotation inherited");
 					else if (tqa != null)
 						System.out.println("Inherited " + tqa.when);
 					else System.out.println("Nothing inherited");
