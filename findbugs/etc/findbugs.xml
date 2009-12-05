@@ -820,7 +820,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.AtomicityProblem" 
 	reports="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"/>
 
-  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" disabled="true" hidden="false"/>
+  <Detector class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"
+	reports="FB_UNEXPECTED_WARNING,FB_MISSING_EXPECTED_WARNING"
+	 disabled="true" hidden="false"/>
 
 <!-- Bug Codes -->
 
