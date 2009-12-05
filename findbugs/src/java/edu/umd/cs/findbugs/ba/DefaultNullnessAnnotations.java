@@ -157,7 +157,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.util.SortedSet", "remove", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.SortedSet", "contains", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		
-		if (true) {
+		
 		database.addMethodParameterAnnotation("java.util.Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.Hashtable", "containsKey", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
 		database.addMethodParameterAnnotation("java.util.Hashtable", "containsValue", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
@@ -177,7 +177,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodParameterAnnotation("java.text.DateFormat", "parse", "(Ljava/lang/String;)Ljava/util/Date;", true, 0, NullnessAnnotation.NONNULL);
 		
 		
-		}
+		
 
 
 		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
