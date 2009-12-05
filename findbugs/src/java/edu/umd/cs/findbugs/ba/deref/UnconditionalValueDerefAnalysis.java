@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.deref;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -525,7 +526,12 @@ public class UnconditionalValueDerefAnalysis extends
 		int numParams = sigParser.getNumParameters();
 		
 		Set<ValueNumber> result = new HashSet<ValueNumber>();
+		Iterator<String> parameterIterator = sigParser.parameterSignatureIterator();
 		for (int i = 0; i < numParams; i++) {
+			String parameterSignature = parameterIterator.next();
+			char firstChar = parameterSignature.charAt(0);
+			if (firstChar != 'L' && firstChar != '[')
+				continue;
 			int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
 			if (invFrame != null) {
 				int slot = invFrame.getStackLocation(offset);
