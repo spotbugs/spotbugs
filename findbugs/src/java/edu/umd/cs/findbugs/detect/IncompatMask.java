@@ -81,6 +81,16 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		noteVal(val);
 	}
 
+	static int populationCount(long i) {
+        int result = 0;
+        while (i != 0) {
+                if ((i & 1) == 1)
+                        result++;
+                i >>>= 1;
+        }
+        return result;
+}
+
 	@Override
 		 public void sawOpcode(int seen) {
 //		System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
@@ -151,13 +161,15 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case IFGT:
 		case IFGE: 
 		if (state == 3 && isLong || state == 2 & !isLong){
-			boolean highbit = !isLong && (arg0 & 0x80000000) != 0 && (arg0 & ~0x80000000) == 0
-							|| isLong && arg0 < 0 && arg0 << 1 == 0;
+			long bits = getFlagBits(isLong, arg0);
+			boolean highbit = !isLong && (bits & 0x80000000) != 0
+							|| isLong && bits < 0 && bits << 1 == 0;
+			boolean onlyLowBits = bits >>> 12 == 0;
 			BugInstance bug;
 			if (highbit)
 				bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY : NORMAL_PRIORITY);
 			else
-				bug = new BugInstance(this, "BIT_SIGNED_CHECK", NORMAL_PRIORITY);
+				bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
 			bugReporter.reportBug(bug.addClassAndMethod(this).addSourceLine(this));
 		}
 		state = 0;
@@ -218,6 +230,22 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		}
 		state = 0;
 	}
+
+
+
+	/**
+     * @return
+     */
+    static long getFlagBits(boolean isLong, long arg0) {
+	    long bits = arg0;
+	    if (isLong) {
+	    	if (populationCount(bits) > populationCount(~bits))
+	    		bits = ~bits;
+	    } else 
+	    	if (populationCount(0xffffffffL & bits) > populationCount(0xffffffffL & ~bits))
+	    		bits = 0xffffffffL & ~bits;
+	    return bits;
+    }
 }
 
 // vim:ts=4
