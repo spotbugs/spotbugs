@@ -1879,6 +1879,18 @@ public class OpcodeStack implements Constants2
 		 if (getStackDepth() > 0)
 			 topItem = getStackItem(0);
 		 
+		 int numberArguments = PreorderVisitor.getNumberArguments(signature);
+		 int firstArgument = seen == INVOKESTATIC ? 0 : 1;
+		 for(int i = firstArgument; i < firstArgument + numberArguments; i++) {
+			 if (i >= getStackDepth()) 
+				 break;
+			 Item item = getStackItem(i);
+			 String itemSignature = item.getSignature();
+			 if (itemSignature.equals("Ljava/lang/StringBuilder;")
+					 || itemSignature.equals("Ljava/lang/StringBuffer;"))
+				 item.constValue = null;
+		 }
+			 
 		 boolean topIsTainted = topItem!= null && topItem.isServletParameterTainted();
 		 HttpParameterInjection injection = null;
 		 if (topIsTainted)
