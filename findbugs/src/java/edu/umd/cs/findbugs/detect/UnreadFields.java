@@ -309,7 +309,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 		previousPreviousOpcode = -1;
 		nullTested.clear();
 		seenInvokeStatic = false;
-		
+		seenMonitorEnter = getMethod().isSynchronized();
 		staticFieldsReadInThisMethod.clear();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
@@ -337,12 +337,15 @@ public class UnreadFields extends OpcodeStackDetector  {
 	}
 
 	boolean seenInvokeStatic;
+	boolean seenMonitorEnter;
 
 	XField pendingGetField;
 	int saState = 0;
 	@Override
 		 public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
+		if (seen == MONITORENTER)
+			seenMonitorEnter = true;
 		switch(saState) {
 		case 0:
 			if (seen == ALOAD_0)
@@ -423,10 +426,12 @@ public class UnreadFields extends OpcodeStackDetector  {
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
-					if (!staticFieldsReadInThisMethod.contains(f)) {
+					if (f.getName().indexOf("class$") != 0) {
 				int priority = LOW_PRIORITY;				
 				if (!publicOrProtectedConstructor)
 					priority--;
+				if (seenMonitorEnter)
+					priority++;
 				if (!seenInvokeStatic 
 					 && staticFieldsReadInThisMethod.isEmpty())
 					priority--;
