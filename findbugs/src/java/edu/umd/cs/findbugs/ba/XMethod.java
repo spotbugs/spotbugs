@@ -153,4 +153,27 @@ public interface XMethod extends ClassMember, AnnotatedObject {
 	 *         to the method
 	 */
     public Collection<AnnotationValue> getAnnotations();
+    
+	/**
+	 * Destructively add a parameter annotation.
+	 * 
+	 * @param param           parameter (0 == first parameter)
+	 * @param annotationValue an AnnotationValue representing a parameter annotation
+	 */
+    public void addParameterAnnotation(int param, AnnotationValue annotationValue);
+    
+    /**
+	 * Destructively add an annotation.
+	 * We do this for "built-in" annotations that might not
+	 * be directly evident in the code.
+	 * It's not a great idea in general, but we can
+	 * get away with it as long as it's done early
+	 * enough (i.e., before anyone asks what annotations
+	 * this method has.) 
+	 * 
+	 * @param annotationValue an AnnotationValue representing a method annotation
+	 */
+	public void addAnnotation(AnnotationValue annotationValue);
+
+    
 }

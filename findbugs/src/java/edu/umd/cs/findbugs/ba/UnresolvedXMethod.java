@@ -3,8 +3,11 @@ package edu.umd.cs.findbugs.ba;
 import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -50,48 +53,8 @@ class UnresolvedXMethod extends AbstractMethod  {
 		throw new ClassCastException("Don't know how to compare " + this.getClass().getName() + " to " + o.getClass().getName());
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getAnnotation(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-	 */
-	public AnnotationValue getAnnotation(ClassDescriptor desc) {
-		return null;
-	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getAnnotationDescriptors()
-	 */
-	public Collection<ClassDescriptor> getAnnotationDescriptors() {
-		return Collections.<ClassDescriptor>emptyList();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getAnnotations()
-	 */
-	public Collection<AnnotationValue> getAnnotations() {
-		return Collections.<AnnotationValue>emptyList();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getParameterAnnotation(int, edu.umd.cs.findbugs.classfile.ClassDescriptor)
-	 */
-	public AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getParameterAnnotationDescriptors(int)
-	 */
-	public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
-		return Collections.<ClassDescriptor>emptyList();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.XMethod#getParameterAnnotations(int)
-	 */
-	public Collection<AnnotationValue> getParameterAnnotations(int param) {
-		return Collections.<AnnotationValue>emptyList();
-	}
-
+	
 	public ElementType getElementType() {
 		if (getName().equals("<init>")) return ElementType.CONSTRUCTOR;
 		return ElementType.METHOD;
@@ -166,4 +129,63 @@ class UnresolvedXMethod extends AbstractMethod  {
 	    // TODO Auto-generated method stub
 	    return false;
     }
+    
+    Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = Collections.emptyMap();
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#addParameterAnnotation(int, edu.umd.cs.findbugs.classfile.analysis.AnnotationValue)
+     */
+    public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
+    	HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations =
+			new HashMap<Integer, Map<ClassDescriptor,AnnotationValue>>(methodParameterAnnotations);
+		Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.get(param);
+		if (paramMap == null) {
+			paramMap = new HashMap<ClassDescriptor, AnnotationValue>();
+			updatedAnnotations.put(param, paramMap);
+		}
+		paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
+		
+		methodParameterAnnotations = updatedAnnotations;
+	    
+    }
+    
+    public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return Collections.<ClassDescriptor>emptySet();
+		return map.keySet();
+	}
+	
+	public @Nullable AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return null;
+		return map.get(desc);
+	}
+	
+	public Collection<AnnotationValue> getParameterAnnotations(int param) {
+		Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
+		if (map == null) return Collections.<AnnotationValue>emptySet();
+		return map.values();
+	}
+	
+	Map<ClassDescriptor, AnnotationValue> methodAnnotations = Collections.emptyMap();
+
+	/* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.XMethod#addAnnotation(edu.umd.cs.findbugs.classfile.analysis.AnnotationValue)
+     */
+	public void addAnnotation(AnnotationValue annotationValue) {
+		HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(methodAnnotations);
+		updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
+		methodAnnotations = updatedAnnotations;
+	}
+	public Collection<ClassDescriptor> getAnnotationDescriptors() {
+		return methodAnnotations.keySet();
+	}
+	
+	public AnnotationValue getAnnotation(ClassDescriptor desc) {
+		return methodAnnotations.get(desc);
+	}
+	
+	public Collection<AnnotationValue> getAnnotations() {
+		return methodAnnotations.values();
+	}
 }

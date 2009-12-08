@@ -256,7 +256,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		((FieldInfo)xfield).addAnnotation(annotationValue);
 	}
 
-	
 	public @CheckForNull XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
 		ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
 		ClassInfo xclass;
@@ -281,14 +280,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		
 		if (xmethod == null) 
 			xmethod = XFactory.createXMethod(cName, mName, sig, isStatic);
-		if (xmethod == null || !xmethod.isResolved()) {
-			if (DEBUG) {
-				for(XMethod mm : xclass.getXMethods())
-					if (mm.getName().equals(mName)) System.out.println(mm);
-				System.out.println("  Method not found!");
-			}
-			return null;
-		}
 		return xmethod;
 
 	}
@@ -308,7 +299,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
 		
 		// Destructively add the annotation to the MethodInfo object
-		((MethodInfo)xmethod).addAnnotation(annotationValue);
+		xmethod.addAnnotation(annotationValue);
 	}
 
 	/* (non-Javadoc)
@@ -321,24 +312,20 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
 		}
 		XMethod xmethod = getXMethod( cName,  mName,  sig,  isStatic);
 		if (xmethod == null) return;
-		
-		if (!(xmethod instanceof MethodInfo)) {
-			if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
-			return;
-		}
-		if (!xmethod.getClassName().equals(cName)) {
-			if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
-			return;
-		}
-			
 		// Get JSR-305 nullness annotation type
 		ClassDescriptor nullnessAnnotationType = getNullnessAnnotationClassDescriptor(annotation);
 		
 		// Create an AnnotationValue
 		AnnotationValue annotationValue = new AnnotationValue(nullnessAnnotationType);
+	
+				
+		if (!xmethod.getClassName().equals(cName)) {
+				if (false) AnalysisContext.logError("Could not fully resolve method " + cName + "." + mName + sig + " to apply annotation " + annotation);
+				return;
+		}
 		
 		// Destructively add the annotation to the MethodInfo object
-		((MethodInfo) xmethod).addParameterAnnotation(param, annotationValue);
+		xmethod.addParameterAnnotation(param, annotationValue);
 	}
 
 	/* (non-Javadoc)

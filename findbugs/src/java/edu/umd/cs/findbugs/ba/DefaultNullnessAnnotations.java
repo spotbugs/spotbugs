@@ -97,7 +97,13 @@ public class DefaultNullnessAnnotations {
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue$QNode", NullnessAnnotation.UNKNOWN_NULLNESS);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferStack", NullnessAnnotation.UNKNOWN_NULLNESS);
 		database.addDefaultAnnotation(AnnotationDatabase.Target.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
-
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "containsKey", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "containsValue", "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NONNULL);
+		database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 1, NullnessAnnotation.NONNULL);
+		
 
 		database.addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodParameterAnnotation("java.util.concurrent.Executors", "callable", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Callable;", true, 1, NullnessAnnotation.CHECK_FOR_NULL);
@@ -120,6 +126,7 @@ public class DefaultNullnessAnnotations {
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		database.addMethodAnnotation("java.util.concurrent.ConcurrentMap", "replace", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		database.addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
