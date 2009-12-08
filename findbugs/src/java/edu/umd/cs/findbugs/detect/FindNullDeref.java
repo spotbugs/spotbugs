@@ -31,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -94,6 +95,9 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
+import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -584,6 +588,23 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 			return;
 
 		// See what methods might be called here
+		XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
+		if (true) {
+			// If a parameter is already marked as nonnull, don't complain about it here.
+			nullArgSet = (BitSet) nullArgSet.clone();
+			definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
+			ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+			TypeQualifierValue nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
+			for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
+				TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,
+				        nonnullTypeQualifierValue);
+				if (tqa != null && tqa.when == When.ALWAYS) {
+					nullArgSet.clear(i);
+					definitelyNullArgSet.clear(i);
+				}
+
+			}
+		}
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
 		if (DEBUG_NULLARG) {
@@ -662,7 +683,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 			propertySet.addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
 		XMethod calledFrom = XFactory.createXMethod(classContext.getJavaClass(), method);
 
-		XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
 		if (safeCallToPrimateParseMethod(calledMethod, location))
 			return;
 		BugInstance warning = new BugInstance(this, bugType, priority).addClassAndMethod(classContext.getJavaClass(), method)
