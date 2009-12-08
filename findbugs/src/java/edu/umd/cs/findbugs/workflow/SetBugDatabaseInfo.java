@@ -66,6 +66,7 @@ public class SetBugDatabaseInfo {
 		
 		boolean resetSource = false;
 		boolean resetProject = false;
+		boolean purgeDesignations = false;
 
 		long revisionTimestamp = 0L;
 
@@ -81,6 +82,8 @@ public class SetBugDatabaseInfo {
 			addSwitch("-resetProject", "remove all source search paths, analysis and auxilary classpath entries");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
+			addSwitch("-uploadDesignations", "upload all designations to cloud");
+			addSwitch("-purgeDesignations", "purge/delete user designations (e.g., MUST_FIX or NOT_A_BUG");
 			addSwitch("-purgeClassStats", "purge/delete information about sizes of analyzed class files, but retain class stats");
 			addSwitch("-purgeMissingClasses", "purge list of missing classes");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
@@ -98,6 +101,8 @@ public class SetBugDatabaseInfo {
 				resetProject = true;
 			else if (option.equals("-purgeStats"))
 				purgeStats = true;
+			else if (option.equals("-purgeDesignations"))
+				purgeDesignations = true;
 			else if (option.equals("-purgeClassStats"))
 				purgeClassStats = true;
 			else if (option.equals("-purgeMissingClasses"))
@@ -153,6 +158,10 @@ public class SetBugDatabaseInfo {
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
 		origCollection.setWithMessages(commandLine.withMessages);
 
+		if (commandLine.purgeDesignations) 
+			for(BugInstance b : origCollection) {
+				b.setUserDesignation(null);
+			}
 		if (commandLine.exclusionFilterFile != null) {
 			project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
 		}
