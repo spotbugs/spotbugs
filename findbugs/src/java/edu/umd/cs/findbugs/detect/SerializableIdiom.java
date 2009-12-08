@@ -259,6 +259,27 @@ public class SerializableIdiom extends OpcodeStackDetector
 		writeObjectIsSynchronized = false;
 
 		sawReadExternal = sawWriteExternal = sawReadObject = sawReadResolve = sawWriteObject = false;
+		if (isSerializable) {
+			for (Method m : obj.getMethods()) {
+
+				if (m.getName().equals("readObject") && m.getSignature().equals("(Ljava/io/ObjectInputStream;)V"))
+					sawReadObject = true;
+				else if (m.getName().equals("readResolve") && m.getSignature().startsWith("()"))
+					sawReadResolve = true;
+				else if (m.getName().equals("readObjectNoData") && m.getSignature().equals("()V"))
+					sawReadObject = true;
+				else if (m.getName().equals("writeObject") && m.getSignature().equals("(Ljava/io/ObjectOutputStream;)V"))
+					sawWriteObject = true;
+			}
+			for (Field f : obj.getFields()) {
+				if (f.isTransient())
+					seenTransientField = true;
+			}
+		}
+	}
+	
+	private boolean strongEvidenceForIntendedSerialization() {
+		return implementsSerializableDirectly ||  sawReadObject || sawReadResolve || sawWriteObject || seenTransientField;
 	}
 
 	@Override
@@ -574,15 +595,18 @@ public class SerializableIdiom extends OpcodeStackDetector
 					// HIGH if the class directly implements Serializable,
 					// NORMAL otherwise.
 					int priority = computePriority(isSerializable, 0);
-					if (priority > NORMAL_PRIORITY
-							&& obj.getName().startsWith("this$"))
-							priority = NORMAL_PRIORITY;
-					else if (innerClassHasOuterInstance) {
-						if (isAnonymousInnerClass) priority+=2;
-						else priority+=1;
+					if (!strongEvidenceForIntendedSerialization()) {
+						if (obj.getName().startsWith("this$"))
+							priority = Math.max(priority, NORMAL_PRIORITY);
+						else if (innerClassHasOuterInstance) {
+							if (isAnonymousInnerClass) 
+								priority+=2;
+							else 
+								priority+=1;
+						}
+						if (isGUIClass || isEjbImplClass) 
+							priority++;
 					}
-					if (isGUIClass) priority++;
-					if (isEjbImplClass) priority++;
 					if (DEBUG)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
@@ -643,10 +667,10 @@ public class SerializableIdiom extends OpcodeStackDetector
 	private int computePriority(double isSerializable, double bias) {
 		int priority = (int)(1.9+isSerializable*3 + bias);
 
-		if (implementsSerializableDirectly || sawSerialVersionUID || sawReadObject)
+		if (strongEvidenceForIntendedSerialization())
 			priority--;
-		if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)
-			priority = NORMAL_PRIORITY;
+		else if (sawSerialVersionUID && priority > NORMAL_PRIORITY)
+			priority--;
 		return priority;
 	}
 
