@@ -271,6 +271,7 @@ public class ExceptionSet implements Serializable {
 		explicitSet.clear();
 		universalHandler = false;
 		commonSupertype = null;
+		size = 0;
 	}
 
 	/**
