@@ -322,6 +322,14 @@ public abstract class AbstractFindBugsTask extends Task {
 	protected void addArg(String arg) {
 		findbugsEngine.createArg().setValue(arg);
 	}
+	
+	/**
+	 * Sets the given string to be piped to standard input of the FindBugs 
+	 * JVM upon launching.
+	 */
+	protected void setInputString(String input) {
+		findbugsEngine.setInputString(input);
+	}
 
 	/**
 	 * Create a new JVM to do the work.

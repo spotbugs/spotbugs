@@ -644,8 +644,14 @@ public class FindBugsTask extends AbstractFindBugsTask {
 				// has an invalid path entry, so we complain
 				// and tolerate it.
 				String unreadReference = auxClasspath.toString();
-				addArg("-auxclasspath");
-				addArg(auxClasspath.toString());
+				String auxClasspathString = auxClasspath.toString();
+				if (auxClasspathString.length() > 100) {
+					addArg("-auxclasspathFromInput");
+					setInputString(auxClasspathString);
+				} else {
+					addArg("-auxclasspath");
+					addArg(auxClasspathString);
+				}
 			}
 			catch (Throwable t) {
 				log("Warning: auxClasspath "+t+" not found.");
