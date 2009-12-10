@@ -38,7 +38,7 @@ import org.apache.tools.ant.types.Reference;
  */
 public abstract class AbstractFindBugsTask extends Task {
 	public static final String FINDBUGS_JAR = "findbugs.jar";
-	public static final long DEFAULT_TIMEOUT = 600000; // ten minutes
+	public static final long DEFAULT_TIMEOUT = 1200000; // twenty minutes
 
 	public static final String RESULT_PROPERTY_SUFFIX = "executeReturnCode";
 
