@@ -21,13 +21,16 @@ package de.tobject.findbugs.builder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
@@ -70,16 +73,36 @@ public class PDEClassPathGenerator {
 	}
 
 	private static String[] createJavaClasspath(IJavaProject javaProject) {
-		String[] classPath = new String[0];
+		LinkedHashSet<String> classPath = new LinkedHashSet<String>();
 		try {
 			// doesn't return jre libraries
-			classPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+			String[] defaultClassPath = JavaRuntime
+					.computeDefaultRuntimeClassPath(javaProject);
+			classPath.addAll(Arrays.asList(defaultClassPath));
+
+			// add CPE_CONTAINER classpathes
+			IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
+			for (IClasspathEntry entry : rawClasspath) {
+				if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+					IClasspathContainer classpathContainer = JavaCore
+							.getClasspathContainer(entry.getPath(), javaProject);
+					if (classpathContainer != null) {
+						IClasspathEntry[] classpathEntries = classpathContainer
+								.getClasspathEntries();
+						for (IClasspathEntry iClasspathEntry : classpathEntries) {
+							classPath.add(iClasspathEntry.getPath().toOSString());
+						}
+					}
+				}
+			}
+
 		} catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e,
 					"Could not compute aux. classpath for project " + javaProject);
 		}
-		return classPath;
+		return classPath.toArray(new String[classPath.size()]);
 	}
+
 
 	private static String[] createPluginClassPath(IJavaProject javaProject) throws CoreException {
 		String[] javaClassPath = createJavaClasspath(javaProject);
