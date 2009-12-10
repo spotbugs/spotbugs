@@ -38,10 +38,6 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.CheckForNull;
 
 /**
  * Helper class to parse the command line and configure
@@ -159,6 +155,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 		startOptionGroup("Project configuration options:");
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
+		addSwitch("-auxclasspathFromInput", "read aux classpath from standard input");
 		addOption("-sourcepath", "source path", "set source path for analyzed classes");
 		addSwitch("-exitcode", "set exit code of process");
 		addSwitch("-noClassOk", "output empty warning file if no classes are specified");
@@ -267,6 +264,18 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				optionExtraPart.equals("") || Boolean.valueOf(optionExtraPart).booleanValue();
 		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
+		} else if (option.equals("-auxclasspathFromInput")) {
+			try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			while (true) {
+				String s = in.readLine();
+				if (s == null) break;
+				addAuxClassPathEntries(s);
+			}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			
 		} else if (option.equals("-noClassOk")) {
 			noClassOk = true;
 		} else if (option.equals("-xargs")) {
@@ -409,9 +418,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		} else if (option.equals("-include")) {
 			includeFilterFile.add(argument);
 		} else if (option.equals("-auxclasspath")) {
-			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
-			while (tok.hasMoreTokens())
-				project.addAuxClasspathEntry(tok.nextToken());
+			addAuxClassPathEntries(argument);
 		} else if (option.equals("-sourcepath")) {
 			StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
 			while (tok.hasMoreTokens())
@@ -420,6 +427,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			super.handleOptionWithArgument(option, argument);
 		}
 	}
+
+	/**
+	 * Parse the argument as auxclasspath entries and add them
+     * @param argument
+     */
+    private void addAuxClassPathEntries(String argument) {
+	    StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
+	    while (tok.hasMoreTokens())
+	    	project.addAuxClasspathEntry(tok.nextToken());
+    }
 
 	/**
 	 * Common handling code for -chooseVisitors and -choosePlugins options.
