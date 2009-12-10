@@ -47,20 +47,17 @@ public class UnionBugs2 extends AbstractFindBugsTask {
 
 	private ArrayList<FileSet> fileSets = new ArrayList<FileSet>();
 
+	public UnionBugs2() {
+		super("edu.umd.cs.findbugs.workflow.UnionResults");
+		setFailOnError(true);
+	}
+
 	public void setTo(String arg) {
 		this.to = arg;
 	}
 
-	public void setFileset(FileSet arg) {
+	public void addFileset(FileSet arg) {
 		this.fileSets.add(arg);
-	}
-
-	/**
-	 * @param mainClass
-	 */
-	protected UnionBugs2() {
-		super("edu.umd.cs.findbugs.workflow.UnionResults");
-		setFailOnError(true);
 	}
 
 	@Override
