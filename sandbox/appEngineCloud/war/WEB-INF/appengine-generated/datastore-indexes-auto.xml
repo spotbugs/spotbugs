@@ -1,0 +1,11 @@
+<!-- Indices written at Tue, 8 Dec 2009 22:47:49 UTC -->
+
+<datastore-indexes>
+
+    <!-- Used 2 times in query history -->
+    <datastore-index kind="SqlCloudSession" ancestor="false" source="auto">
+        <property name="randomID" direction="asc"/>
+        <property name="date" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
