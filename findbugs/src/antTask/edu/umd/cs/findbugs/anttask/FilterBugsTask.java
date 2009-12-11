@@ -267,7 +267,7 @@ public class FilterBugsTask extends AbstractFindBugsTask {
 		
 		addArg(inputFile.getName());
 		
-		getFindbugsEngine().setOutput(outputFile);
+		addArg(outputFile.getPath());
 	}
 
 	/* (non-Javadoc)
