@@ -64,7 +64,7 @@ public class PDEClassPathGenerator {
 		}
 
 		if(false){
-			System.out.println("classpath: " + classPath.length);
+			System.out.println("aux classpath: " + classPath.length);
 			for (String string : classPath) {
 				System.out.println(string);
 			}
@@ -80,6 +80,7 @@ public class PDEClassPathGenerator {
 					.computeDefaultRuntimeClassPath(javaProject);
 			classPath.addAll(Arrays.asList(defaultClassPath));
 
+			if (false) {
 			// add CPE_CONTAINER classpathes
 			IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
 			for (IClasspathEntry entry : rawClasspath) {
@@ -94,6 +95,7 @@ public class PDEClassPathGenerator {
 						}
 					}
 				}
+			}
 			}
 
 		} catch (CoreException e) {
