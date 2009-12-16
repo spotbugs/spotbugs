@@ -96,6 +96,7 @@ public class FilterAndCombineBitfieldPropertyDatabase {
     private static void process(InputStream inSource, Map<String, Integer> properties,  Map<String, Integer> accessFlags) throws UnsupportedEncodingException, IOException {
 	    BufferedReader in = new BufferedReader(Util.getReader(inSource));
 		Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|([0-9]+)$");
+		try {
 		while (true) {
 			String s = in.readLine();
 			if (s == null)
@@ -117,6 +118,9 @@ public class FilterAndCombineBitfieldPropertyDatabase {
 				}
 			}
 
+		}
+		} finally {
+			Util.closeSilently(in);
 		}
     }
 
