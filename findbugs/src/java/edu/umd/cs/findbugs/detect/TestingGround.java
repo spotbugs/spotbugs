@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.math.BigDecimal;
+
 import org.apache.bcel.classfile.Code;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
@@ -45,11 +48,7 @@ public class TestingGround extends OpcodeStackDetector {
 			super.visit(code); // make callbacks to sawOpcode for all opcodes
 		}
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.findbugs.bcel.OpcodeStackDetector#sawOpcode(int)
-	 */
+
 	@Override
 	public void sawOpcode(int seen) {
 		if (seen == INVOKESPECIAL 
@@ -59,12 +58,19 @@ public class TestingGround extends OpcodeStackDetector {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			Object value = top.getConstant();
 			if (value instanceof Double) {
-				System.out.println(value);
+				double arg = ((Double) value).doubleValue();
+				String dblString = Double.toString(arg);
+				String bigDecimalString = new BigDecimal(arg).toString();
+				if (!(dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0"))) {
+					bugReporter.reportBug(new BugInstance(this, "TESTING", 2)
+							.addClassAndMethod(this).addString(dblString).addSourceLine(this));
+				}
 			}
 			
 		}
 				
 	}
+
 
 	
 
