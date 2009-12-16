@@ -61,8 +61,11 @@ public class TestingGround extends OpcodeStackDetector {
 				double arg = ((Double) value).doubleValue();
 				String dblString = Double.toString(arg);
 				String bigDecimalString = new BigDecimal(arg).toString();
-				if (!(dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0"))) {
-					bugReporter.reportBug(new BugInstance(this, "TESTING", 2)
+				boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0");
+				
+				if (!ok) {
+					boolean scary = dblString.length() <= 6 && dblString.toUpperCase().indexOf("E") == -1;
+					bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY )
 							.addClassAndMethod(this).addString(dblString).addSourceLine(this));
 				}
 			}
