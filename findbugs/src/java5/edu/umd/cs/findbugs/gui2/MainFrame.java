@@ -523,7 +523,7 @@ public class MainFrame extends FBFrame implements LogSync, IGuiCallback
 			if (plugin != null) {
 				userAnnotationListener = new CloudListener() {
 
-					public void issueUpdate(BugInstance bug) {
+					public void issueUpdated(BugInstance bug) {
 						if (currentSelectedBugLeaf != null
 								&& currentSelectedBugLeaf.getBug() == bug)
 							comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);

@@ -97,15 +97,8 @@ public  class DBCloud extends AbstractCloud {
 	/**
      * 
      */
-    private static final String USER_NAME = "user.name";
-	Mode mode = Mode.COMMUNAL;
+    static final String USER_NAME = "user.name";
 	
-	public Mode getMode() {
-		return mode;
-	}
-	public void setMode(Mode mode) {
-		this.mode = mode;
-	}
 	
 	class BugData {
 		final String instanceHash;
@@ -177,7 +170,7 @@ public  class DBCloud extends AbstractCloud {
 		}
 
         public boolean canSeeCommentsByOthers() {
-	       switch(mode) {
+	       switch(getMode()) {
 	       case SECRET: return false;
 	       case COMMUNAL : return true;
 	       case VOTING : return hasVoted();
@@ -254,7 +247,6 @@ public  class DBCloud extends AbstractCloud {
 		dbName = getJDBCProperty("dbName");
 		dbUser = getJDBCProperty("dbUser");
 		dbPassword = getJDBCProperty("dbPassword");
-		findbugsUser = getCloudProperty("findbugsUser");
 		if (PROMPT_FOR_USER_NAME)
 			ipAddressLookup = new IPAddressLookup();
 	}
@@ -287,6 +279,9 @@ public  class DBCloud extends AbstractCloud {
 	static boolean invocationRecorded;
 	
 	class PopulateBugs implements Update {
+		/** True if this is the initial load from the database,
+		 * false if we are getting updates for an already loaded database.
+		 */
 		final boolean performFullLoad;
 		
 		PopulateBugs(boolean performFullLoad) {
@@ -530,10 +525,10 @@ public  class DBCloud extends AbstractCloud {
 		return s.substring(0, maxLength);
 	}
 
-	private String getCloudProperty(String propertyName) {
+	 static String getCloudProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.cloud." + propertyName);
 	}
-	private String getJDBCProperty(String propertyName) {
+	static String getJDBCProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
@@ -581,27 +576,10 @@ public  class DBCloud extends AbstractCloud {
 		}
 		
 		
-		if (findbugsUser == null) {
-			if (PROMPT_FOR_USER_NAME) {
-				Preferences prefs = Preferences.userNodeForPackage(DBCloud.class);
-				findbugsUser = prefs.get(USER_NAME,  null);
-				findbugsUser = bugCollection.getProject().getGuiCallback().showQuestionDialog(
-						 "Name/handle/email for recording your evaluations?\n"
-						 + "(sorry, no authentication or confidentiality currently provided)",
-						 "Name for recording your evaluations", 
-						 findbugsUser == null ? "" : findbugsUser);
-				if (findbugsUser != null)
-					prefs.put(USER_NAME, findbugsUser);
-			}
-			else if (findbugsUser == null)
-				findbugsUser = System.getProperty(USER_NAME, "");
-			
-			if (findbugsUser == null) {
-				if (THROW_EXCEPTION_IF_CANT_CONNECT)
-					throw new RuntimeException("Unable to get reviewer user name for database");
-				return false;
-			}
-		}
+		findbugsUser = new AppEngineNameLookup().getUserName(bugCollection);
+		
+		if (findbugsUser == null)
+			return false;
 		
 		loadBugComponents();
 		Connection c = null;
@@ -779,7 +757,7 @@ public  class DBCloud extends AbstractCloud {
 			String msg = "Classification and comments have been sent to database.\n"
 				+ "You'll only see this message the first time your classifcations/comments are sent\n"
 				+ "to the database.";
-			   if (mode == Mode.VOTING) 
+			   if (getMode() == Mode.VOTING) 
 				  msg += "\nOnce you've classified an issue, you can see how others have classified it.";
 				msg += "\nYour classification and comments are independent from filing a bug using an external\n"
 				      + "bug reporting system.";

@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public interface Cloud {
 
 	public interface CloudListener {
-		void issueUpdate(BugInstance bug);
+		void issueUpdated(BugInstance bug);
 		void statusUpdated();
 	}
 	public enum UserDesignation {

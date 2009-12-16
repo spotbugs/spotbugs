@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 
 
 /**
@@ -35,6 +36,14 @@ public abstract class AbstractCloud implements Cloud {
 
 	protected final BugCollection bugCollection;
 	
+	Mode mode = Mode.COMMUNAL;
+	
+	public Mode getMode() {
+		return mode;
+	}
+	public void setMode(Mode mode) {
+		this.mode = mode;
+	}
 	protected AbstractCloud(BugCollection bugs) {
 		this.bugCollection = bugs;
 	}
@@ -109,7 +118,7 @@ public abstract class AbstractCloud implements Cloud {
 
 	protected void updatedIssue(BugInstance bug) {
 		for (CloudListener listener : listeners)
-			listener.issueUpdate(bug);
+			listener.issueUpdated(bug);
 	}
 	
     public String getStatusMsg() {
