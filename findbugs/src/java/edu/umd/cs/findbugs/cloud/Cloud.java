@@ -81,19 +81,28 @@ public interface Cloud {
 	};
 
 	public static enum BugFilingStatus {
+		/** No bug yet filed */
 		FILE_BUG(SystemProperties.getProperty("findbugs.filebug.label", "File bug")) {
 			@Override
 			public boolean bugIsFiled() {
 				return false;
 			}
 		},
-		FILE_AGAIN("File again"), BUG_PENDING("Bug pending") {
+		/** URL was sent to browser, but request has expired */
+		FILE_AGAIN("File again"), 
+		
+		/** Sent a URL to a browser to file a bug, no information yet */
+		BUG_PENDING("Bug pending") {
 			@Override
 			public boolean linkEnabled() {
 				return false;
 			}
 		},
-		VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label", "View bug")), NA("") {
+		/** synchronized bug instance with bug database */
+		VIEW_BUG(SystemProperties.getProperty("findbugs.viewbug.label", "View bug")), 
+		
+		/* Not applicable, bug linking not supported */
+		NA("") {
 			@Override
 			public boolean linkEnabled() {
 				return false;
@@ -128,63 +137,114 @@ public interface Cloud {
 
 	BugCollection getBugCollection();
 
+	/** Get a status message for the cloud; information about any errors, and
+	 * information about database synchronization 
+	 */
 	String getStatusMsg();
 
 	public void addListener(CloudListener listener);
 
 	public void removeListener(CloudListener listener);
 
+	/** Do we have the configuration information needed to try initializing the cloud;
+	 * calling this method should have no side effects and not display any dialogs
+	 * or make any network connections. 
+	 * @return true if we have the needed information
+	 */
 	public boolean availableForInitialization();
 	
+	/** Attempt to initialize the cloud
+	 * @return true if successful
+	 */
 	public boolean initialize();
+	
+	/** Called after the bugs in the bug collection are loaded; 
+	 * synchronizes them with the database */
 	
 	public void bugsPopulated();
 
+	/** Shutdown the cloud, note termination of session, close connections */
 	public void shutdown();
 
+	/** Get voting mode */
 	Mode getMode();
 
+	/** Set voting mode */
 	void setMode(Mode m);
 
+	/** has the user said they will fix this bug */
 	boolean getIWillFix(BugInstance b);
 
+	/** Does the cloud support source lines  (e.g., to FishEye) */
 	boolean supportsSourceLinks();
 
-	String getUser();
-
+	/** Tool tip text for "view source" button */
 	String getSourceLinkToolTip(@CheckForNull BugInstance b);
 
+	/** URL to view the source for a bug instance */
 	URL getSourceLink(BugInstance b);
 
+	/** Get user name */
+	String getUser();
+
+	/* Supports links to a bug database */ 
 	boolean supportsBugLinks();
 
+	/* get the bug filing status for a bug instance */ 
 	BugFilingStatus getBugLinkStatus(BugInstance b);
 
+	/** Get link for bug, either to file one or to view it */
 	URL getBugLink(BugInstance b);
 
+	/** Note that we've initiated or completed a request to file a bug;
+	 * @param b bug against which bug was filed
+	 * @param bugLink if we have any information about the result of filing the bug, it should go here
+	 */
 	void bugFiled(BugInstance b, @CheckForNull Object bugLink);
 
+	/** Supports textual summaries about the status of a bug */
 	boolean supportsCloudReports();
 
+	/**
+	 * 
+	 * Get the cloud report for a bug 
+	 */
 	String getCloudReport(BugInstance b);
 
+	/** Supports allowing users to claim a bug */
 	boolean supportsClaims();
 
+	/** Get the user who has claimed a bug; null if no one has */
 	@CheckForNull
 	String claimedBy(BugInstance b);
 
+	/**
+	 * Claim the bug; true if no one else has already done so */
+	
 	boolean claim(BugInstance b);
 
+	
+	/** Return the time the user last changed their evaluation of this bug */
+	
 	long getUserTimestamp(BugInstance b);
-
-	void setUserTimestamp(BugInstance b, long timestamp);
-
 	Date getUserDate(BugInstance b);
 
+	/** Set the time the user last changed their evaluation of this bug */
+	void setUserTimestamp(BugInstance b, long timestamp);
+
+	/** Get the user's designation for the bug */
 	UserDesignation getUserDesignation(BugInstance b);
 
+	/** Set the user's designation for the bug */
 	void setUserDesignation(BugInstance b, UserDesignation u, long timestamp);
 
+	/** Get free text evaluation of the bug */
+	String getUserEvaluation(BugInstance b);
+
+	/** Set free text evaluation of the bug */
+	void setUserEvaluation(BugInstance b, String e, long timestamp);
+
+	
 	double getClassificationScore(BugInstance b);
 
 	double getClassificationVariance(BugInstance b);
@@ -195,18 +255,16 @@ public interface Cloud {
 
 	int getNumberReviewers(BugInstance b);
 
-	String getUserEvaluation(BugInstance b);
-
-	void setUserEvaluation(BugInstance b, String e, long timestamp);
-
 	long getFirstSeen(BugInstance b);
 
 	boolean overallClassificationIsNotAProblem(BugInstance b);
 
-	/**
-	 * @param bugInstance
-	 */
+	/** Update user designation and evaluation from information in bug instance and push to database */
 	void storeUserAnnotation(BugInstance bugInstance);
+
+	/** Is this bug one that gets persisted to the cloud?
+	 * We may decide that we don't persist low confidence issues to the 
+	 * database to avoid overloading it */
 
 	boolean canStoreUserAnnotation(BugInstance bugInstance);
 
