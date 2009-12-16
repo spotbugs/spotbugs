@@ -115,18 +115,15 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 */
 	@Override
 	protected void doReportBug(BugInstance bug) {
-		synchronized(bugCollection){
-			if(!bugCollection.contains(bug)) {
-				bugCollection.add(bug);
-			} else {
-				if(DEBUG){
-					System.out.println("Duplicated bug added: " + bug);
-				}
-				return;
+		synchronized (bugCollection) {
+			if (bugCollection.add(bug)) {
+				notifyObservers(bug);
+				bugCount++;
+			} else if (DEBUG) {
+				System.out.println("Duplicated bug added: " + bug);
 			}
 		}
-		bugCount++;
-//		printToStream("found new bug: " + bug);
+
 	}
 
 	/* (non-Javadoc)
