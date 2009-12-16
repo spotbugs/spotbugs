@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -111,10 +112,11 @@ public class AtomicityProblem extends OpcodeStackDetector {
 		case INVOKEINTERFACE: {
 			if (getDottedClassConstantOperand().equals("java.util.concurrent.ConcurrentHashMap")) {
 				String methodName = getNameConstantOperand();
-				if (methodName.equals("put")) {
+				XClass xClass = getXClassOperand();
+				if (xClass != null && methodName.equals("put")) {
 					if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
 						bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
-						        .addClassAndMethod(this).addType(getXClassOperand().getClassDescriptor()).addCalledMethod(this)
+						        .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
 						        .addSourceLine(this));
 					}
 				}
