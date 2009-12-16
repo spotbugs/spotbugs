@@ -64,7 +64,7 @@ public class TestingGround extends OpcodeStackDetector {
 				boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0");
 				
 				if (!ok) {
-					boolean scary = dblString.length() <= 6 && dblString.toUpperCase().indexOf("E") == -1;
+					boolean scary = dblString.length() <= 8 && dblString.toUpperCase().indexOf("E") == -1;
 					bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY )
 							.addClassAndMethod(this).addString(dblString).addSourceLine(this));
 				}
