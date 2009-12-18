@@ -1,0 +1,36 @@
+package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
+
+message HashList {
+  repeated string hashes = 1;
+}
+
+message IssueList {
+	repeated string missingIssues = 1;
+	repeated Issue foundIssues = 2;
+}
+
+message Issue {
+  required string hash = 1;
+  required string bugPattern = 2;
+  required int32 priority = 3;
+  required int32 rank = 8;
+  required string primaryClass = 4;
+  optional int64 firstSeen = 5;
+  optional int64 lastSeen = 6;
+  repeated Evaluation evaluations = 7;
+}
+
+message Evaluation {
+  required string who = 1;
+  required string designation = 2;
+  required string comment = 3;
+  required int64 when = 5;
+  optional Invocation invocation = 6;
+}
+
+message Invocation {
+  required string who = 1;
+  required int64 startTime = 2;
+  required int64 endTime = 3;
+}
+
