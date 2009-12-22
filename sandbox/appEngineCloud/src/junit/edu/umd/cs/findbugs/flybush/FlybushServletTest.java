@@ -12,6 +12,7 @@ import com.google.apphosting.api.ApiProxy;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,18 +21,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class FlybushServletTest extends TestCase {
 
@@ -115,38 +123,136 @@ public class FlybushServletTest extends TestCase {
 	}
 	
 	public void testFindIssuesSomeFound() throws IOException {
+		DbIssue foundIssue = createDbIssue("OLD_BUG");
+		pmf.getPersistenceManager().makePersistent(foundIssue);
+		
+		HashList hashesToFind = HashList.newBuilder().addHashes("NEW_BUG").addHashes("OLD_BUG").build();
+		executeServlet("/find-issues", hashesToFind.toByteArray());
+		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
+		assertEquals(1, result.getFoundIssuesCount());
+		
+		checkIssuesEqual(foundIssue, result.getFoundIssues(0));
+		
+		assertEquals(1, result.getMissingIssuesCount());
+		assertEquals("NEW_BUG", result.getMissingIssues(0));
+	}
+
+	public void testFindLotsOfIssues() throws IOException {
+		PersistenceManager persistenceManager = pmf.getPersistenceManager();
+		persistenceManager.makePersistentAll(createDbIssue("2"), createDbIssue("5"), createDbIssue("12"));
+		PersistenceManagerFactory spyPmf = spy(pmf);
+		PersistenceManager spyPersistenceManager = spy(persistenceManager);
+		when(spyPmf.getPersistenceManager()).thenReturn(spyPersistenceManager);
+		final List<String> queries = new ArrayList<String>();
+		when(spyPersistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
+			public Query answer(InvocationOnMock invocation) throws Throwable {
+				queries.add((String) invocation.getArguments()[0]);
+				return (Query) invocation.callRealMethod();
+			}
+		});
+		servlet.setPmf(spyPmf);
+		
+		HashList.Builder hashes = HashList.newBuilder();
+		for (int i = 0; i < 15; i++) {
+			hashes.addHashes(Integer.toString(i));
+		}
+		executeServlet("/find-issues", hashes.build().toByteArray());
+		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
+		assertEquals(3, result.getFoundIssuesCount());
+		assertEquals(12, result.getMissingIssuesCount());
+		
+		assertEquals(2, queries.size());
+		assertTrue(queries.get(0).contains("\"1\""));
+		assertTrue(queries.get(0).contains("\"2\""));
+		assertTrue(queries.get(0).contains("\"9\""));
+		assertFalse(queries.get(0).contains("\"10\""));
+		assertFalse(queries.get(0).contains("\"15\""));
+		
+		assertTrue(queries.get(1).contains("\"10\""));
+		assertTrue(queries.get(1).contains("\"11\""));
+		assertTrue(queries.get(1).contains("\"14\""));
+		assertFalse(queries.get(1).contains("\"1\""));
+		assertFalse(queries.get(1).contains("\"19\""));
+	}
+	
+	public void testUploadIssue() throws IOException {
+		Issue issue = createProtoIssue();
+		IssueList issuesToUpload = IssueList.newBuilder().addFoundIssues(issue).build();
+		executeServlet("/upload-issues", issuesToUpload.toByteArray());
+		expectOutput(200, "");
+		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
+				.newQuery("select from " + DbIssue.class.getName()).execute();
+		assertEquals(1, dbIssues.size());
+		
+		checkIssuesEqual(dbIssues.get(0), issue);
+	}
+
+	public void testUploadIssuesWhichAlreadyExist() throws IOException {
+		DbIssue oldDbIssue = createDbIssue("OLD_BUG");
+		pmf.getPersistenceManager().makePersistent(oldDbIssue);
+		Issue oldIssue = createProtoIssue("OLD_BUG");
+		Issue newIssue = createProtoIssue("NEW_BUG");
+		IssueList issuesToUpload = IssueList.newBuilder()
+				.addFoundIssues(oldIssue)
+				.addFoundIssues(newIssue)
+				.build();
+		executeServlet("/upload-issues", issuesToUpload.toByteArray());
+		expectOutput(200, "");
+		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
+				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
+		assertEquals(2, dbIssues.size());
+		
+		assertEquals("NEW_BUG", dbIssues.get(0).getHash());
+		assertEquals("OLD_BUG", dbIssues.get(1).getHash());
+	}
+
+	// ========================= end of tests ================================
+
+	private DbIssue createDbIssue() {
+		return createDbIssue("MY_BUG");
+	}
+
+	private DbIssue createDbIssue(String patternAndHash) {
 		DbIssue foundIssue = new DbIssue();
-		foundIssue.setHash("DEF");
-		foundIssue.setBugPattern("MY_BUG");
+		foundIssue.setHash(patternAndHash);
+		foundIssue.setBugPattern(patternAndHash);
 		foundIssue.setPriority(2);
 		foundIssue.setRank(8);
 		foundIssue.setPrimaryClass("my.class");
 		foundIssue.setFirstSeen(100);
 		foundIssue.setLastSeen(200);
 		foundIssue.setTimestamp(600);
-		pmf.getPersistenceManager().makePersistent(foundIssue);
-		
-		HashList hashesToFind = HashList.newBuilder().addHashes("ABC").addHashes("DEF").build();
-		executeServlet("/find-issues", hashesToFind.toByteArray());
-		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
-		assertEquals(1, result.getFoundIssuesCount());
-		
-		Issue foundIssueResult = result.getFoundIssues(0);
-		assertEquals(foundIssue.getHash(), foundIssueResult.getHash());
-		assertEquals(foundIssue.getBugPattern(), foundIssueResult.getBugPattern());
-		assertEquals(foundIssue.getPriority(), foundIssueResult.getPriority());
-		assertEquals(foundIssue.getRank(), foundIssueResult.getRank());
-		assertEquals(foundIssue.getPrimaryClass(), foundIssueResult.getPrimaryClass());
-		assertEquals(foundIssue.getFirstSeen(), foundIssueResult.getFirstSeen());
-		assertEquals(foundIssue.getLastSeen(), foundIssueResult.getLastSeen());
-		
-		assertEquals(1, result.getMissingIssuesCount());
-		assertEquals("ABC", result.getMissingIssues(0));
+		return foundIssue;
 	}
 
-	// ========================= end of tests ================================
+	private Issue createProtoIssue() {
+		return createProtoIssue("MY_BUG");
+	}
 
-    /**
+	private Issue createProtoIssue(String hashAndPattern) {
+		Issue.Builder issueBuilder = Issue.newBuilder();
+		issueBuilder.setHash(hashAndPattern);
+		issueBuilder.setBugPattern(hashAndPattern);
+		issueBuilder.setPriority(2);
+		issueBuilder.setRank(8);
+		issueBuilder.setPrimaryClass("my.class");
+		issueBuilder.setFirstSeen(100);
+		issueBuilder.setLastSeen(200);
+
+		return issueBuilder.build();
+	}
+
+	private void checkIssuesEqual(DbIssue dbIssue, Issue protoIssue) {
+		assertEquals(dbIssue.getHash(), protoIssue.getHash());
+		assertEquals(dbIssue.getBugPattern(), protoIssue.getBugPattern());
+		assertEquals(dbIssue.getPriority(), protoIssue.getPriority());
+		assertEquals(dbIssue.getRank(), protoIssue.getRank());
+		assertEquals(dbIssue.getPrimaryClass(), protoIssue.getPrimaryClass());
+		assertEquals(dbIssue.getFirstSeen(), protoIssue.getFirstSeen());
+		assertEquals(dbIssue.getLastSeen(), protoIssue.getLastSeen());
+	}
+
+	/**
      * Creates a PersistenceManagerFactory on the fly, with the exact same information
      * stored in the /WEB-INF/META-INF/jdoconfig.xml file.
      */

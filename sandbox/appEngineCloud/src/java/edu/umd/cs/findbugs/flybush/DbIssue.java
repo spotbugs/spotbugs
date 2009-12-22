@@ -16,7 +16,7 @@ public class DbIssue {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-	@Persistent private String hash;
+	@Persistent private String hash; // TODO make this unique
     @Persistent private String bugPattern;
     @Persistent private int priority;
     @Persistent private int rank;
