@@ -9,6 +9,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
@@ -32,6 +33,7 @@ import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -85,56 +87,122 @@ public class FlybushServletTest extends TestCase {
     }
 
     public void testBrowserAuthLoginRedirect() throws IOException {
-    	executeServlet("/browser-auth/100");
+    	executeGet("/browser-auth/100");
     	verify(mockResponse).sendRedirect(anyString());
     }
-    
+
     public void testBrowserAuthWhenLoggedIn() throws IOException {
     	testEnvironment.setEmail("my@email.com");
-    	executeServlet("/browser-auth/100");
+    	executeGet("/browser-auth/100");
     	verify(mockResponse).setStatus(200);
     	verify(mockResponse).setContentType("text/html");
     	String outputString = new String(outputCollector.toByteArray(), "UTF-8");
-		assertTrue("Should contain 'now signed in': " + outputString, 
+		assertTrue("Should contain 'now signed in': " + outputString,
 				   outputString.contains("now signed in"));
     }
 
 	public void testCheckAuthForValidId() throws IOException {
 		SqlCloudSession session = new SqlCloudSession(new User("my", "email.com"), 100, new Date(200));
 		pmf.getPersistenceManager().makePersistent(session);
-		
-		executeServlet("/check-auth/100");
 
-		expectOutput(200, "OK\n100\nmy\n");
+		executeGet("/check-auth/100");
+
+		checkResponse(200, "OK\n100\nmy\n");
 	}
 
 	public void testCheckAuthForNonexistentId() throws IOException {
-		executeServlet("/check-auth/100");
+		executeGet("/check-auth/100");
 
-		expectOutput(418, "FAIL\n");
+		checkResponse(418, "FAIL\n");
 	}
-	
+
 	public void testFindIssuesNoneFound() throws IOException {
-		executeServlet("/find-issues", HashList.newBuilder().addHashes("ABC").build().toByteArray());
+		executeGet("/find-issues", HashList.newBuilder().addHashes("ABC").build().toByteArray());
 		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 		assertEquals(1, result.getMissingIssuesCount());
 		assertEquals("ABC", result.getMissingIssues(0));
 	}
-	
+
 	public void testFindIssuesSomeFound() throws IOException {
 		DbIssue foundIssue = createDbIssue("OLD_BUG");
 		pmf.getPersistenceManager().makePersistent(foundIssue);
-		
+
 		HashList hashesToFind = HashList.newBuilder().addHashes("NEW_BUG").addHashes("OLD_BUG").build();
-		executeServlet("/find-issues", hashesToFind.toByteArray());
+		executeGet("/find-issues", hashesToFind.toByteArray());
 		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
-		
+
 		checkIssuesEqual(foundIssue, result.getFoundIssues(0));
-		
+
 		assertEquals(1, result.getMissingIssuesCount());
 		assertEquals("NEW_BUG", result.getMissingIssues(0));
+	}
+
+	public void testFindIssuesWithEvaluations() throws IOException {
+		DbIssue foundIssue = createDbIssue("OLD_BUG");
+		DbEvaluation eval = createEvaluation(foundIssue);
+		foundIssue.addEvaluation(eval);
+
+		// apparently the evaluation is automatically persisted. throws
+		// exception when attempting to persist the eval with the issue.
+		pmf.getPersistenceManager().makePersistent(foundIssue);
+
+		HashList hashesToFind = HashList.newBuilder().addHashes("NEW_BUG").addHashes("OLD_BUG").build();
+		executeGet("/find-issues", hashesToFind.toByteArray());
+		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
+		assertEquals(1, result.getFoundIssuesCount());
+
+		// check issues
+		Issue foundissueProto = result.getFoundIssues(0);
+		checkIssuesEqual(foundIssue, foundissueProto);
+
+		// check evaluations
+		assertEquals(1, foundissueProto.getEvaluationsCount());
+		checkEvaluationsEqual(eval, foundissueProto.getEvaluations(0));
+
+		// check missing issues
+		assertEquals(1, result.getMissingIssuesCount());
+		assertEquals("NEW_BUG", result.getMissingIssues(0));
+	}
+
+	public void testGetRecentEvaluations() throws IOException {
+		DbIssue issue = createDbIssue("OLD_BUG");
+		DbEvaluation eval1 = createEvaluation(issue, 100);
+		DbEvaluation eval2 = createEvaluation(issue, 200);
+		DbEvaluation eval3 = createEvaluation(issue, 300);
+		issue.addEvaluations(eval1, eval2, eval3);
+
+		pmf.getPersistenceManager().makePersistent(issue);
+		
+		executeGet("/get-evaluations/100");
+		checkResponseCode(200);
+		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
+		assertEquals(1, result.getFoundIssuesCount());
+
+		// check issues
+		Issue foundissueProto = result.getFoundIssues(0);
+		checkIssuesEqual(issue, foundissueProto);
+
+		// check evaluations
+		assertEquals(2, foundissueProto.getEvaluationsCount());
+		checkEvaluationsEqual(eval2, foundissueProto.getEvaluations(0));
+		checkEvaluationsEqual(eval3, foundissueProto.getEvaluations(1));
+	}
+	
+	public void testGetRecentEvaluationsNoneFound() throws IOException {
+		DbIssue issue = createDbIssue("OLD_BUG");
+		DbEvaluation eval1 = createEvaluation(issue, 100);
+		DbEvaluation eval2 = createEvaluation(issue, 200);
+		DbEvaluation eval3 = createEvaluation(issue, 300);
+		issue.addEvaluations(eval1, eval2, eval3);
+
+		pmf.getPersistenceManager().makePersistent(issue);
+		
+		executeGet("/get-evaluations/300");
+		checkResponseCode(200);
+		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
+		assertEquals(0, result.getFoundIssuesCount());
 	}
 
 	public void testFindLotsOfIssues() throws IOException {
@@ -151,39 +219,39 @@ public class FlybushServletTest extends TestCase {
 			}
 		});
 		servlet.setPmf(spyPmf);
-		
+
 		HashList.Builder hashes = HashList.newBuilder();
 		for (int i = 0; i < 15; i++) {
 			hashes.addHashes(Integer.toString(i));
 		}
-		executeServlet("/find-issues", hashes.build().toByteArray());
+		executeGet("/find-issues", hashes.build().toByteArray());
 		IssueList result = IssueList.parseFrom(outputCollector.toByteArray());
 		assertEquals(3, result.getFoundIssuesCount());
 		assertEquals(12, result.getMissingIssuesCount());
-		
+
 		assertEquals(2, queries.size());
 		assertTrue(queries.get(0).contains("\"1\""));
 		assertTrue(queries.get(0).contains("\"2\""));
 		assertTrue(queries.get(0).contains("\"9\""));
 		assertFalse(queries.get(0).contains("\"10\""));
 		assertFalse(queries.get(0).contains("\"15\""));
-		
+
 		assertTrue(queries.get(1).contains("\"10\""));
 		assertTrue(queries.get(1).contains("\"11\""));
 		assertTrue(queries.get(1).contains("\"14\""));
 		assertFalse(queries.get(1).contains("\"1\""));
 		assertFalse(queries.get(1).contains("\"19\""));
 	}
-	
+
 	public void testUploadIssue() throws IOException {
 		Issue issue = createProtoIssue();
 		IssueList issuesToUpload = IssueList.newBuilder().addFoundIssues(issue).build();
-		executeServlet("/upload-issues", issuesToUpload.toByteArray());
-		expectOutput(200, "");
+		executePost("/upload-issues", issuesToUpload.toByteArray());
+		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
 				.newQuery("select from " + DbIssue.class.getName()).execute();
 		assertEquals(1, dbIssues.size());
-		
+
 		checkIssuesEqual(dbIssues.get(0), issue);
 	}
 
@@ -196,17 +264,38 @@ public class FlybushServletTest extends TestCase {
 				.addFoundIssues(oldIssue)
 				.addFoundIssues(newIssue)
 				.build();
-		executeServlet("/upload-issues", issuesToUpload.toByteArray());
-		expectOutput(200, "");
+		executePost("/upload-issues", issuesToUpload.toByteArray());
+		checkResponse(200, "");
 		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
 				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
 		assertEquals(2, dbIssues.size());
-		
+
 		assertEquals("NEW_BUG", dbIssues.get(0).getHash());
 		assertEquals("OLD_BUG", dbIssues.get(1).getHash());
 	}
 
 	// ========================= end of tests ================================
+
+	private void checkEvaluationsEqual(DbEvaluation dbEval, Evaluation protoEval) {
+		assertEquals(dbEval.getComment(), protoEval.getComment());
+		assertEquals(dbEval.getDesignation(), protoEval.getDesignation());
+		assertEquals(dbEval.getWhen(), protoEval.getWhen());
+		assertEquals(dbEval.getWho(), protoEval.getWho());
+	}
+
+	private DbEvaluation createEvaluation(DbIssue issue) {
+		return createEvaluation(issue, 100);
+	}
+
+	private DbEvaluation createEvaluation(DbIssue issue, int when) {
+		DbEvaluation eval = new DbEvaluation();
+		eval.setComment("my comment");
+		eval.setDesignation("MUST_FIX");
+		eval.setIssue(issue);
+		eval.setWhen(when);
+		eval.setWho("someone");
+		return eval;
+	}
 
 	private DbIssue createDbIssue() {
 		return createDbIssue("MY_BUG");
@@ -221,7 +310,6 @@ public class FlybushServletTest extends TestCase {
 		foundIssue.setPrimaryClass("my.class");
 		foundIssue.setFirstSeen(100);
 		foundIssue.setLastSeen(200);
-		foundIssue.setTimestamp(600);
 		return foundIssue;
 	}
 
@@ -267,16 +355,30 @@ public class FlybushServletTest extends TestCase {
         newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
         pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
     }
-    
 
-	private void executeServlet(String requestUri) throws IOException {
-		executeServlet(requestUri, null);
+
+	private void executeGet(String requestUri) throws IOException {
+		executeGet(requestUri, null);
 	}
-	
-	private void executeServlet(String requestUri, byte[] input) throws IOException {
+
+	private void executeGet(String requestUri, byte[] input) throws IOException {
+		prepareRequestAndResponse(requestUri, input);
+
+		servlet.doGet(mockRequest, mockResponse);
+	}
+
+	private void executePost(String requestUri, byte[] input) 
+			throws IOException {
+		prepareRequestAndResponse(requestUri, input);
+
+		servlet.doPost(mockRequest, mockResponse);
+	}
+
+	private void prepareRequestAndResponse(String requestUri, byte[] input)
+			throws IOException {
 		when(mockRequest.getRequestURI()).thenReturn(requestUri);
 		if (input != null) {
-			final ByteArrayInputStream inputStream = new ByteArrayInputStream(input); 
+			final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
 			when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
 				public int read() throws IOException {
 					// TODO Auto-generated method stub
@@ -284,16 +386,18 @@ public class FlybushServletTest extends TestCase {
 				}
 			});
 		}
-
-		servlet.doGet(mockRequest, mockResponse);
 	}
-	
-	private void expectOutput(int responseCode, String expectedOutput) 
-		throws UnsupportedEncodingException {
+
+	private void checkResponse(int responseCode, String expectedOutput)
+			throws UnsupportedEncodingException {
+		checkResponseCode(responseCode);
 		verify(mockResponse).setContentType("text/plain");
-		verify(mockResponse).setStatus(responseCode);
 		String output = new String(outputCollector.toByteArray(), "UTF-8");
 		assertEquals(expectedOutput, output.replaceAll("\r", ""));
+	}
+
+	private void checkResponseCode(int responseCode) {
+		verify(mockResponse).setStatus(responseCode);
 	}
 
 }

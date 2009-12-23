@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.flybush;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -7,6 +8,7 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -16,15 +18,15 @@ public class DbIssue {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
 
-	@Persistent private String hash; // TODO make this unique
+	@Persistent @Unique private String hash;
     @Persistent private String bugPattern;
     @Persistent private int priority;
     @Persistent private int rank;
     @Persistent private String primaryClass;
     @Persistent private long firstSeen;
     @Persistent private long lastSeen;
-    @Persistent(mappedBy = "issue") private List<Evaluation> evaluations;
-    @Persistent private long timestamp;
+    @Persistent(mappedBy = "issue") private List<DbEvaluation> evaluations;
+
 	public Key getKey() {
 		return key;
 	}
@@ -73,17 +75,22 @@ public class DbIssue {
 	public void setLastSeen(long lastSeen) {
 		this.lastSeen = lastSeen;
 	}
-	public List<Evaluation> getEvaluations() {
+	public List<DbEvaluation> getEvaluations() {
 		return evaluations;
 	}
-	public void setEvaluations(List<Evaluation> evaluations) {
+	public void setEvaluations(List<DbEvaluation> evaluations) {
 		this.evaluations = evaluations;
 	}
-	public long getTimestamp() {
-		return timestamp;
+	public void addEvaluation(DbEvaluation eval) {
+		if (evaluations == null) {
+			evaluations = new ArrayList<DbEvaluation>();
+		}
+		evaluations.add(eval);
 	}
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void addEvaluations(DbEvaluation... evals) {
+		for (DbEvaluation eval : evals) {
+			addEvaluation(eval);
+		}
 	}
 
 }

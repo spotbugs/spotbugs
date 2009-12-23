@@ -4,25 +4,29 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.servlet.http.*;
-
-import org.mockito.internal.matchers.Find;
+import javax.jdo.Query;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.Builder;
 
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
@@ -55,7 +59,7 @@ public class FlybushServlet extends HttpServlet {
 	            Date date = new Date();
 	            SqlCloudSession session = new SqlCloudSession(user, id, date);
 
-	            PersistenceManager pm = getPMF().getPersistenceManager();
+	            PersistenceManager pm = getPersistenceManager();
 	            try {
 	                pm.makePersistent(session);
 	            } finally {
@@ -66,7 +70,8 @@ public class FlybushServlet extends HttpServlet {
 	            resp.setContentType("text/html");
 	            PrintWriter writer = resp.getWriter();
 				writer.println("<h1>You are now signed in</h1>");
-	            writer.println("<p style='font-size: large; font-weight: bold'>Please return to the FindBugs application window to continue.</p>");
+	            writer.println("<p style='font-size: large; font-weight: bold'>"
+	            		+ "Please return to the FindBugs application window to continue.</p>");
 	            writer.println("<p style='font-style: italic'>Signed in as " + user.getNickname()
 	            		       + " (" + user.getEmail() + ")</p>");
 
@@ -76,8 +81,9 @@ public class FlybushServlet extends HttpServlet {
 
 		} else if (uri.startsWith("/check-auth/")) {
 			long id = Long.parseLong(uri.substring("/check-auth/".length()));
-			PersistenceManager pm = getPMF().getPersistenceManager();
-		    String query = "select from " + SqlCloudSession.class.getName() + " where randomID == " + id + " order by date desc range 0,1";
+			PersistenceManager pm = getPersistenceManager();
+		    String query = "select from " + SqlCloudSession.class.getName() 
+		    		+ " where randomID == " + id + " order by date desc range 0,1";
 		    List<SqlCloudSession> sessions = (List<SqlCloudSession>) pm.newQuery(query).execute();
             PrintWriter writer = resp.getWriter();
             resp.setContentType("text/plain");
@@ -98,30 +104,54 @@ public class FlybushServlet extends HttpServlet {
 			IssueList.Builder issueProtos = IssueList.newBuilder();
 		    for (DbIssue issue : lookupIssues(hashSet)) {
 				hashSet.remove(issue.getHash());
-				issueProtos.addFoundIssues(Issue.newBuilder()
-						.setBugPattern(issue.getBugPattern())
-						.setPriority(issue.getPriority())
-						.setRank(issue.getRank())
-						.setHash(issue.getHash())
-						.setFirstSeen(issue.getFirstSeen())
-						.setLastSeen(issue.getLastSeen())
-						.setPrimaryClass(issue.getPrimaryClass())
-						.build());
+				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+				issueProtos.addFoundIssues(issueProto);
 			}
 		    issueProtos.addAllMissingIssues(hashSet);
 		    issueProtos.build().writeTo(resp.getOutputStream());
-		    
-		} else if (uri.equals("/upload-issues")) {
-			PersistenceManager pm = getPMF().getPersistenceManager();
+
+		} else if (uri.startsWith("/get-evaluations/")) {
+			long startTime = Long.parseLong(uri.substring("/get-evaluations/".length()));
+			List<DbEvaluation> evaluations = (List<DbEvaluation>) getPersistenceManager().newQuery(
+					"select from " + DbEvaluation.class.getName()
+					+ " where when > " + startTime + " order by when"
+					).execute();
+			IssueList.Builder issueProtos = IssueList.newBuilder();
+			Map<String, List<DbEvaluation>> issues = groupEvaluationsByIssue(evaluations);
+			for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
+				DbIssue issue = evaluations.get(0).getIssue();
+				Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
+				issueProtos.addFoundIssues(issueProto);
+			}
+			resp.setStatus(200);
+			issueProtos.build().writeTo(resp.getOutputStream());
+
+
+		} else {
+			show404(resp);
+		}
+	}
+
+	private void show404(HttpServletResponse resp) throws IOException {
+		resp.setStatus(404);
+		resp.setContentType("text/plain");
+		resp.getWriter().println("Not Found");
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		if (req.getRequestURI().equals("/upload-issues")) {
+			PersistenceManager pm = getPersistenceManager();
 			IssueList issues = IssueList.parseFrom(req.getInputStream());
 			List<String> hashes = new ArrayList<String>();
 			for (Issue issue : issues.getFoundIssuesList()) {
 				hashes.add(issue.getHash());
 			}
-			HashSet<String> existingIssues = getHashes(lookupIssues(hashes));
+			HashSet<String> existingIssueHashes = lookupHashes(hashes);
 			List<DbIssue> newDbIssues = new ArrayList<DbIssue>();
 			for (Issue issue : issues.getFoundIssuesList()) {
-				if (!existingIssues.contains(issue.getHash())) {
+				if (!existingIssueHashes.contains(issue.getHash())) {
 					DbIssue dbIssue = new DbIssue();
 					dbIssue.setHash(issue.getHash());
 					dbIssue.setBugPattern(issue.getBugPattern());
@@ -136,12 +166,48 @@ public class FlybushServlet extends HttpServlet {
 			pm.makePersistentAll(newDbIssues);
 			resp.setStatus(200);
 			resp.setContentType("text/plain");
-
 		} else {
-			resp.setStatus(404);
-			resp.setContentType("text/plain");
-			resp.getWriter().println("Not Found");
+			show404(resp);
 		}
+	}
+
+	private Issue buildIssueProto(DbIssue issue, List<DbEvaluation> evaluations) {
+		Issue.Builder issueBuilder = Issue.newBuilder()
+				.setBugPattern(issue.getBugPattern())
+				.setPriority(issue.getPriority())
+				.setRank(issue.getRank())
+				.setHash(issue.getHash())
+				.setFirstSeen(issue.getFirstSeen())
+				.setLastSeen(issue.getLastSeen())
+				.setPrimaryClass(issue.getPrimaryClass());
+		for (DbEvaluation dbEval : evaluations) {
+			issueBuilder.addEvaluations(Evaluation.newBuilder()
+					.setComment(dbEval.getComment())
+					.setDesignation(dbEval.getDesignation())
+					.setWhen(dbEval.getWhen())
+					.setWho(dbEval.getWho()).build());
+		}
+		Issue issueProto = issueBuilder.build();
+		return issueProto;
+	}
+
+	private Map<String, List<DbEvaluation>> groupEvaluationsByIssue(
+			List<DbEvaluation> evaluations) {
+		Map<String,List<DbEvaluation>> issues = new HashMap<String, List<DbEvaluation>>();
+		for (DbEvaluation dbEvaluation : evaluations) {
+			String issueHash = dbEvaluation.getIssue().getHash();
+			List<DbEvaluation> evaluationsForIssue = issues.get(issueHash);
+			if (evaluationsForIssue == null) {
+				evaluationsForIssue = new ArrayList<DbEvaluation>();
+				issues.put(issueHash, evaluationsForIssue);
+			}
+			evaluationsForIssue.add(dbEvaluation);
+		}
+		return issues;
+	}
+
+	private PersistenceManager getPersistenceManager() {
+		return getPMF().getPersistenceManager();
 	}
 
 	private HashSet<String> getHashes(List<DbIssue> lookupIssues) {
@@ -153,14 +219,25 @@ public class FlybushServlet extends HttpServlet {
 	}
 
 	private List<DbIssue> lookupIssues(Iterable<String> hashes) {
-		List<List<String>> partitions = partition(hashes, 10);
 		List<DbIssue> allIssues = new ArrayList<DbIssue>();
-		PersistenceManager pm = getPMF().getPersistenceManager();
-		for (List<String> partition : partitions) {
+		PersistenceManager pm = getPersistenceManager();
+		for (List<String> partition : partition(hashes, 10)) {
 			allIssues.addAll((List<DbIssue>) pm.newQuery("select from " + DbIssue.class.getName()
 					+ " where " + formatStrings("hash", partition)).execute());
 		}
 		return allIssues;
+	}
+
+	private HashSet<String> lookupHashes(Iterable<String> hashes) {
+		HashSet<String> allHashes = new HashSet<String>();
+		PersistenceManager pm = getPersistenceManager();
+		for (List<String> partition : partition(hashes, 10)) {
+			Query query = pm.newQuery("select from " + DbIssue.class.getName()
+					+ " where " + formatStrings("hash", partition));
+			query.setResult("hash");
+			allHashes.addAll((List<String>) query.execute());
+		}
+		return allHashes;
 	}
 
 	private <E> List<List<E>> partition(Iterable<E> collection, int partitionSize) {
