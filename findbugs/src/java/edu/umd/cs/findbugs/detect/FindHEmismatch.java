@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class FindHEmismatch extends OpcodeStackDetector implements
 		StatelessDetector {
@@ -501,7 +502,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 				new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
 		.addClassAndMethod(this)
 		.addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE)
-		.addTypeOfNamedClass(getClassConstantOperand())
+		.addTypeOfNamedClass(getDottedClassConstantOperand())
 		.addSourceLine(this));
 	}
 
@@ -509,7 +510,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements
 	static final Pattern hashTablePattern = Pattern.compile("Hashtable<L([^;<]*);");
 
 	static final Pattern setPattern = Pattern.compile("[^y]HashSet<L([^;<]*);");
-	@CheckForNull String findHashedClassInSignature(String sig) {
+	@CheckForNull @DottedClassName String findHashedClassInSignature(String sig) {
 		Matcher m = mapPattern.matcher(sig);
 		if (m.find())
 			return m.group(1).replace('/','.');
