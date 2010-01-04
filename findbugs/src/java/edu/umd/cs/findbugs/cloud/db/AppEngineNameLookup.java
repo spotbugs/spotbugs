@@ -58,11 +58,10 @@ public class AppEngineNameLookup implements NameLookup {
 				if (responseCode == 200) {
 					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String status = in.readLine();
-					System.out.println(status);
 					String idString = in.readLine();
 					String name = in.readLine();
 					Util.closeSilently(in);
-					if (status.equals("OK"))
+					if ("OK".equals(status))
 						return name;
 
 				}
