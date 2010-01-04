@@ -233,6 +233,8 @@ public class IncompatibleTypes {
      */
     public static IncompatibleTypes getPriorityForAssumingCompatible(boolean pointerEquality, ClassDescriptor lhsDescriptor,
             ClassDescriptor rhsDescriptor) throws CheckedAnalysisException, ClassNotFoundException {
+    	if (lhsDescriptor.equals(rhsDescriptor)) return SEEMS_OK;
+
     	AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
  	   Subtypes2 subtypes2 = analysisContext.getSubtypes2();
 		
