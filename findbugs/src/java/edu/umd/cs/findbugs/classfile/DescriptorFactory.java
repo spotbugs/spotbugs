@@ -278,7 +278,7 @@ public class DescriptorFactory {
     	}
     	signature = signature.substring(first);
     	if (signature.endsWith(";"))
-    		signature = signature.substring(1, length-1);
+    		signature = signature.substring(1, signature.length()-1);
     	return createClassDescriptor(signature);
     }
 	public static ClassDescriptor createClassOrObjectDescriptorFromSignature(String signature) {
