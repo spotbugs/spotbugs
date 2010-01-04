@@ -72,6 +72,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static final String METHOD_DID_YOU_MEAN_TO_OVERRIDE = "METHOD_DID_YOU_MEAN_TO_OVERRIDE";
 
 	public static final String METHOD_COMPUTED_IN = "METHOD_COMPUTED_IN";
+	public static final String METHOD_ALTERNATIVE_TARGET = "METHOD_ALTERNATIVE_TARGET";
+
 
 	/**
 	 * Constructor.
@@ -450,6 +452,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 	private static final String ELEMENT_NAME = "Method";
 
+	
 
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
