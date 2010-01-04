@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -36,9 +37,9 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final String className;
+	private final @SlashedClassName String className;
 	private static final Pattern ANONYMOUS_CLASS_NAME = Pattern.compile(".*\\$[0-9]*$");
-
+	
 	public static final ClassDescriptor[] EMPTY_ARRAY = new ClassDescriptor[0];
 	/**
 	 * Constructor.
@@ -113,6 +114,17 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	public   String getSimpleName() {
 		return ClassName.extractSimpleName(ClassName.toDottedClassName(className));
 	}
+	
+	public   String getSignature() {
+		if (isArray())
+			return className;
+		return "L"+className +";";
+	}
+	public boolean isArray() {
+		return className.charAt(0) == '[';
+	}
+	
+	
 	/**
      * Create a class descriptor from a resource name.
      * 
