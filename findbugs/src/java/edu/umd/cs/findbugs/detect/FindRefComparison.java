@@ -1099,6 +1099,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				);
 			} 
 		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) {
+			String lhsSig = lhsType_.getSignature();
+			String rhsSig = rhsType_.getSignature();
+			boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, new HashSet<XMethod>());
+			if (!allOk)
 			bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addFoundAndExpectedType(rhsType_, lhsType_)
@@ -1114,22 +1118,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				priorityModifier = 0;
 			}
 			if (!looksLikeTestCase) {
-				ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(lhsSig);
-				ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(rhsSig);
-				ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
-				Set<XMethod> targets = null;
-				try {
-					targets = Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
-							false, false);
-					boolean allOk = targets.size() > 0;
-					for(XMethod m2 : targets) 
-						if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
-							allOk = false;
-					if (allOk) 
-						priorityModifier+=2;
-				} catch (ClassNotFoundException e) {
-					AnalysisContext.reportMissingClass(e);
-				}
+				Set<XMethod> targets = new HashSet<XMethod>();
+				boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
+				if (allOk) 
+					priorityModifier+=2;
 				bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addFoundAndExpectedType(rhsType_, lhsType_)
@@ -1165,6 +1157,33 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 	}
+
+	/**
+     * @param lhsSig
+     * @param rhsSig
+     * @param targets
+     * @return
+     */
+    private boolean checkForWeirdEquals(String lhsSig, String rhsSig, Set<XMethod> targets) {
+	    boolean allOk = false;
+	    try {
+	    	ClassSummary classSummary = AnalysisContext.currentAnalysisContext().getClassSummary();
+	    	
+	    	ClassDescriptor expectedClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(lhsSig);
+	    	ClassDescriptor actualClassDescriptor = DescriptorFactory.createClassDescriptorFromSignature(rhsSig);
+	    	
+	    	targets .addAll(Hierarchy2.resolveVirtualMethodCallTargets(expectedClassDescriptor, "equals", "(Ljava/lang/Object;)Z",
+	    			false, false));
+	    	allOk = targets.size() > 0;
+	    	for(XMethod m2 : targets) 
+	    		if (!classSummary.mightBeEqualTo(m2.getClassDescriptor(), actualClassDescriptor))
+	    			allOk = false;
+	    	
+	    } catch (ClassNotFoundException e) {
+	    	AnalysisContext.reportMissingClass(e);
+	    }
+	    return allOk;
+    }
 
 
 

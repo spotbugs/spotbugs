@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.util.ClassName;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.Type;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -111,10 +112,12 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 	    	if (c.equals(thisClassDescriptor)) return;
 	    	Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 	    	try {
-	            if (subtypes2.isSubtype(c, thisClassDescriptor)) return;
+	            if (!c.isArray() 
+	            		&& (subtypes2.isSubtype(c, thisClassDescriptor) || subtypes2.isSubtype(thisClassDescriptor,c))) return;
 	        
-	            if (subtypes2.isSubtype(thisClassDescriptor,c)) return;
-	            IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(false, thisClassDescriptor, c);
+	            Type thisType = Type.getType(thisClassDescriptor.getSignature());
+	            Type cType = Type.getType(c.getSignature());
+	            IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
 	            int priority = check.getPriority();
 	            if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName()))
 	            		priority++;
@@ -125,9 +128,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 	    		
 	    	} catch (ClassNotFoundException e) {
 	            bugReporter.reportMissingClass(e);
-	        } catch (CheckedAnalysisException e) {
-	            bugReporter.logError("error", e);
-	        }
+	        } 
 	    	
 	    	
 	    	
