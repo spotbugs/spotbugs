@@ -79,7 +79,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 		        && getMethodSig().equals(EQUALS_SIGNATURE)) {
 			sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals = sawGoodEqualsClass = sawBadEqualsClass = dangerDanger 
 			= sawInstanceOfSupertype
-				= alwaysTrue = alwaysFalse = sawStaticDelegate = false;
+				= alwaysTrue = alwaysFalse = sawStaticDelegate = sawEqualsBuilder = false;
 			sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
 			equalsCalls = 0;
 			super.visit(obj);
@@ -98,7 +98,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 				kind = getThisClass().isAbstract() ? EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS : EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS;
 			else if (sawGetClass && sawBadEqualsClass) 
 					kind = EqualsKindSummary.KindOfEquals.GETCLASS_BAD_EQUALS;
-			else if (equalsCalls == 1 || sawStaticDelegate)
+			else if (equalsCalls == 1 || sawStaticDelegate || sawEqualsBuilder)
 				kind = EqualsKindSummary.KindOfEquals.DELEGATE_EQUALS;
 			else if (sawInitialIdentityCheck)
 				kind = EqualsKindSummary.KindOfEquals.TRIVIAL_EQUALS;
@@ -172,6 +172,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 	boolean sawCompare;
 	boolean dangerDanger = false;
 	boolean sawStaticDelegate;
+	boolean sawEqualsBuilder;
+
 
 	private EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<EqualsKindSummary.KindOfEquals, Integer> (EqualsKindSummary.KindOfEquals.class);
 	
@@ -190,6 +192,10 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector  impleme
 				&& (getPrevOpcode(1) == ALOAD_0 && getPrevOpcode(2) == ALOAD_1
 						|| getPrevOpcode(1) == ALOAD_1 && getPrevOpcode(2) == ALOAD_0))
 			sawStaticDelegate = true;
+		
+		if ((seen == INVOKESTATIC  || seen == INVOKESPECIAL || seen == INVOKEVIRTUAL) 
+				&& getClassConstantOperand().equals("org/apache/commons/lang/builder/EqualsBuilder"))
+			sawEqualsBuilder = true;
 			
 		if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_0 ) {
 			alwaysFalse = true;
