@@ -532,4 +532,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return dottedFieldSig;
 	}
 
+	@Override
+    public String toString() {
+		return this.getClass().getSimpleName() + " analyzing " + getClassName();
+	}
 }
