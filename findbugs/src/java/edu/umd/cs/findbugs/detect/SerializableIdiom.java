@@ -671,6 +671,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 			priority--;
 		else if (sawSerialVersionUID && priority > NORMAL_PRIORITY)
 			priority--;
+		else 
+		    priority = Math.max(priority, NORMAL_PRIORITY);
 		return priority;
 	}
 
