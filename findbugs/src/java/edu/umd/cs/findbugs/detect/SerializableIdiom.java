@@ -606,7 +606,8 @@ public class SerializableIdiom extends OpcodeStackDetector
 						}
 						if (isGUIClass || isEjbImplClass) 
 							priority++;
-					}
+					} else if (isGUIClass || isEjbImplClass) 
+						priority = Math.max(priority, NORMAL_PRIORITY);
 					if (DEBUG)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
