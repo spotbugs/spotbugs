@@ -287,12 +287,10 @@ public class DescriptorFactory {
 		return createClassDescriptorFromSignature(signature);
     }
 	public static ClassDescriptor createClassDescriptor(Class aClass) {
-		String className = ClassName.fromSignature(aClass.getName().replace('.','/'));
-    	return instance().getClassDescriptor(className);
+    	return instance().getClassDescriptor(ClassName.toSlashedClassName(aClass.getName()));
     }
 
 	public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
-		className = ClassName.fromSignature(className);
     	return instance().getClassDescriptor(className);
     }
 

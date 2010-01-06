@@ -54,6 +54,7 @@ public abstract class ClassName {
 	 * @return for reference types: class name without bytecode characters, otherwise
 	 * unchanged signature
 	 */
+	@Deprecated
 	public static String fromSignature(String signature) {
 		if (signature.charAt(0) == '[') {
 			if (signature.charAt(signature.length() - 1) == ';') {

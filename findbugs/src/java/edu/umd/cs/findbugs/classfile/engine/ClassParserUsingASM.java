@@ -258,7 +258,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
 								// primitive array
 								return;
 							}
-							owner = ClassName.fromSignature(owner);
 							if (opcode == Opcodes.INVOKESTATIC && owner.equals("java/lang/System") && name.equals("exit") && !sawReturn)
 								sawSystemExit = true;
 							justSawInitializationOfUnsupportedOperationException 
