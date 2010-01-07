@@ -1679,6 +1679,23 @@ factory pattern to create these objects.</p>
 
 
 
+  <BugPattern type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE">
+    <ShortDescription>BigDecimal constructed from double that isn't represented precisely</ShortDescription>
+    <LongDescription>BigDecimal constructed from {4} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+	<p>
+This code creates a BigDecimal from a double value that doesn't translate well to a 
+decimal number.
+For example, one might assume that writing new BigDecimal(0.1) in Java creates a BigDecimal which is exactly equal to 0.1 (an unscaled value of 1, with a scale of 1), but it is actually equal to 0.1000000000000000055511151231257827021181583404541015625.
+You probably want to use the BigDecimal.valueOf(double d) method, which uses the String representation
+of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1).
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
     <ShortDescription>Useless/vacuous call to EasyMock method</ShortDescription>
     <LongDescription>Useless/vacuous call to {2} in {1}</LongDescription>
@@ -1690,6 +1707,9 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS">
     <ShortDescription>Creation of ScheduledThreadPoolExecutor with zero core threads</ShortDescription>
     <LongDescription>Creation of ScheduledThreadPoolExecutor with zero core threads in {1}</LongDescription>

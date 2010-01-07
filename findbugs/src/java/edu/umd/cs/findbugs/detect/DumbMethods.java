@@ -903,8 +903,8 @@ public class DumbMethods extends OpcodeStackDetector  {
 				boolean ok = dblString.equals(bigDecimalString) || dblString.equals(bigDecimalString + ".0");
 				
 				if (!ok) {
-					boolean scary = dblString.length() <= 8 && bigDecimalString.length() > 8 && dblString.toUpperCase().indexOf("E") == -1;
-					bugReporter.reportBug(new BugInstance(this, "TESTING", scary ? NORMAL_PRIORITY : LOW_PRIORITY )
+					boolean scary = dblString.length() <= 8 && bigDecimalString.length() > 12 && dblString.toUpperCase().indexOf("E") == -1;
+					bugReporter.reportBug(new BugInstance(this, "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE", scary ? NORMAL_PRIORITY : LOW_PRIORITY )
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addMethod("java.math.BigDecimal","valueOf","(D)Ljava/math/BigDecimal;", true).describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET)
