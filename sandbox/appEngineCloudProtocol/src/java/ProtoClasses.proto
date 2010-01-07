@@ -3,11 +3,11 @@ package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
 // sent to server on login
 message LogIn {
   required int64 sessionId = 1;
-  required string who = 2;
+  //required string who = 2;
   required int64 analysisTimestamp = 3;
   repeated string myIssueHashes = 4;
-  }
-  
+}
+
 // response from login
 message LogInResponse {
     // all issues that match provided hashes
@@ -24,6 +24,10 @@ message UploadEvaluation {
     required int64 sessionId = 1;
     required string hash = 2;
 	required Evaluation evaluation = 3;
+}
+
+message RecentEvaluations {
+	repeated Issue issues = 1;
 }
 
 message LogOff {

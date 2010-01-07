@@ -24,9 +24,11 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
@@ -81,33 +83,27 @@ public class FlybushServlet extends HttpServlet {
 
 		} else if (uri.startsWith("/check-auth/")) {
 			long id = Long.parseLong(uri.substring("/check-auth/".length()));
-			PersistenceManager pm = getPersistenceManager();
-		    String query = "select from " + SqlCloudSession.class.getName() 
-		    		+ " where randomID == " + id + " order by date desc range 0,1";
-		    List<SqlCloudSession> sessions = (List<SqlCloudSession>) pm.newQuery(query).execute();
-            PrintWriter writer = resp.getWriter();
             resp.setContentType("text/plain");
-		    if (sessions.isEmpty()) {
+            PrintWriter writer = resp.getWriter();
+			SqlCloudSession sqlCloudSession = lookupCloudSessionById(id);
+		    if (sqlCloudSession == null) {
 		    	resp.setStatus(418);
 				writer.println("FAIL");
 		    } else {
 		    	resp.setStatus(200);
-		    	writer.println("OK\n"
-		    			+ sessions.get(0).getRandomID() + "\n"
-		    			+ sessions.get(0).getAuthor().getEmail());
+				writer.println("OK\n"
+		    			+ sqlCloudSession.getRandomID() + "\n"
+		    			+ sqlCloudSession.getAuthor().getEmail());
 		    }
 		    resp.flushBuffer();
 
 		} else if (uri.equals("/find-issues")) {
-			HashList hashes = HashList.parseFrom(req.getInputStream());
-			Set<String> hashSet = new LinkedHashSet<String>(hashes.getHashesList());
-			IssueList.Builder issueProtos = IssueList.newBuilder();
-		    for (DbIssue issue : lookupIssues(hashSet)) {
-				hashSet.remove(issue.getHash());
+			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
+			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
+		    for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList())) {
 				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
 				issueProtos.addFoundIssues(issueProto);
 			}
-		    issueProtos.addAllMissingIssues(hashSet);
 		    issueProtos.build().writeTo(resp.getOutputStream());
 
 		} else if (uri.startsWith("/get-evaluations/")) {
@@ -116,12 +112,12 @@ public class FlybushServlet extends HttpServlet {
 					"select from " + DbEvaluation.class.getName()
 					+ " where when > " + startTime + " order by when"
 					).execute();
-			IssueList.Builder issueProtos = IssueList.newBuilder();
+			RecentEvaluations.Builder issueProtos = RecentEvaluations.newBuilder();
 			Map<String, List<DbEvaluation>> issues = groupEvaluationsByIssue(evaluations);
 			for (List<DbEvaluation> evaluationsForIssue : issues.values()) {
 				DbIssue issue = evaluations.get(0).getIssue();
 				Issue issueProto = buildIssueProto(issue, evaluationsForIssue);
-				issueProtos.addFoundIssues(issueProto);
+				issueProtos.addIssues(issueProto);
 			}
 			resp.setStatus(200);
 			issueProtos.build().writeTo(resp.getOutputStream());
@@ -130,6 +126,15 @@ public class FlybushServlet extends HttpServlet {
 		} else {
 			show404(resp);
 		}
+	}
+
+	private SqlCloudSession lookupCloudSessionById(long id) {
+		PersistenceManager pm = getPersistenceManager();
+		String query = "select from " + SqlCloudSession.class.getName()
+				+ " where randomID == " + id + " order by date desc range 0,1";
+		List<SqlCloudSession> sessions = (List<SqlCloudSession>) pm.newQuery(query).execute();
+		SqlCloudSession sqlCloudSession = sessions.isEmpty() ? null : sessions.get(0);
+		return sqlCloudSession;
 	}
 
 	private void show404(HttpServletResponse resp) throws IOException {
@@ -143,20 +148,24 @@ public class FlybushServlet extends HttpServlet {
 			throws IOException {
 		if (req.getRequestURI().equals("/upload-issues")) {
 			PersistenceManager pm = getPersistenceManager();
-			IssueList issues = IssueList.parseFrom(req.getInputStream());
+			UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
+			SqlCloudSession session = lookupCloudSessionById(issues.getSessionId());
+			if (session == null) {
+				resp.setStatus(403);
+				return;
+			}
 			List<String> hashes = new ArrayList<String>();
-			for (Issue issue : issues.getFoundIssuesList()) {
+			for (Issue issue : issues.getNewIssuesList()) {
 				hashes.add(issue.getHash());
 			}
 			HashSet<String> existingIssueHashes = lookupHashes(hashes);
 			List<DbIssue> newDbIssues = new ArrayList<DbIssue>();
-			for (Issue issue : issues.getFoundIssuesList()) {
+			for (Issue issue : issues.getNewIssuesList()) {
 				if (!existingIssueHashes.contains(issue.getHash())) {
 					DbIssue dbIssue = new DbIssue();
 					dbIssue.setHash(issue.getHash());
 					dbIssue.setBugPattern(issue.getBugPattern());
 					dbIssue.setPriority(issue.getPriority());
-					dbIssue.setRank(issue.getRank());
 					dbIssue.setPrimaryClass(issue.getPrimaryClass());
 					dbIssue.setFirstSeen(issue.getFirstSeen());
 					dbIssue.setLastSeen(issue.getLastSeen());
@@ -175,7 +184,6 @@ public class FlybushServlet extends HttpServlet {
 		Issue.Builder issueBuilder = Issue.newBuilder()
 				.setBugPattern(issue.getBugPattern())
 				.setPriority(issue.getPriority())
-				.setRank(issue.getRank())
 				.setHash(issue.getHash())
 				.setFirstSeen(issue.getFirstSeen())
 				.setLastSeen(issue.getLastSeen())
@@ -208,14 +216,6 @@ public class FlybushServlet extends HttpServlet {
 
 	private PersistenceManager getPersistenceManager() {
 		return getPMF().getPersistenceManager();
-	}
-
-	private HashSet<String> getHashes(List<DbIssue> lookupIssues) {
-		HashSet<String> hashes = new HashSet<String>();
-		for (DbIssue dbIssue : lookupIssues) {
-			hashes.add(dbIssue.getHash());
-		}
-		return hashes;
 	}
 
 	private List<DbIssue> lookupIssues(Iterable<String> hashes) {

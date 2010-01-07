@@ -5,25 +5,20 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.BugAnnotationVisitor;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.Builder;
-import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 public class AppEngineCloud extends AbstractCloud {
 
@@ -39,7 +34,7 @@ public class AppEngineCloud extends AbstractCloud {
 	void setUsername(String user) {
 		this.user = user;
 	}
-	
+
 	@Override
 	public boolean availableForInitialization() {
 		// TODO Auto-generated method stub
@@ -62,12 +57,11 @@ public class AppEngineCloud extends AbstractCloud {
 
 		// send all instance hashes to server
 		try {
-			IssueList response = submitHashes(bugsByHash);
+			LogInResponse response = submitHashes(bugsByHash);
 			for (Issue issue : response.getFoundIssuesList()) {
 				issuesByHash.put(issue.getHash(), issue);
+				bugsByHash.remove(issue.getHash());
 			}
-			List<String> missingHashes = response.getMissingIssuesList();
-			bugsByHash.keySet().retainAll(missingHashes);
 			sendIssues(bugsByHash.values());
 
 		} catch (Exception e1) {
@@ -76,11 +70,11 @@ public class AppEngineCloud extends AbstractCloud {
 		}
 	}
 
-	private @CheckForNull IssueList submitHashes(Map<String, BugInstance> bugsByHash)
+	private @CheckForNull LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
 		HttpURLConnection conn = openConnection("/find-issues");
 		conn.connect();
-		HashList hashList = HashList.newBuilder().addAllHashes(bugsByHash.keySet()).build();
+		LogIn hashList = LogIn.newBuilder().addAllMyIssueHashes(bugsByHash.keySet()).build();
 		OutputStream stream = conn.getOutputStream();
 		hashList.writeTo(stream);
 		stream.close();
@@ -88,20 +82,19 @@ public class AppEngineCloud extends AbstractCloud {
 			// TODO error
 			return null;
 		}
-		IssueList response = IssueList.parseFrom(conn.getInputStream());
+		LogInResponse response = LogInResponse.parseFrom(conn.getInputStream());
 		conn.disconnect();
 		return response;
 	}
 
 	/** package-private for testing */
 	void sendIssues(Collection<BugInstance> bugsToSend) throws MalformedURLException, IOException {
-		IssueList.Builder issueList = IssueList.newBuilder();
+		UploadIssues.Builder issueList = UploadIssues.newBuilder();
 		for (BugInstance bug: bugsToSend) {
-			issueList.addFoundIssues(ProtoClasses.Issue.newBuilder()
+			issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
 					.setHash(bug.getInstanceHash())
 					.setBugPattern(bug.getType())
 					.setPriority(bug.getPriority())
-					.setRank(bug.getBugRank())
 					.setPrimaryClass(bug.getPrimaryClass().getClassName())
 					.setFirstSeen(bug.getFirstVersion())
 					.setLastSeen(bug.getLastVersion())

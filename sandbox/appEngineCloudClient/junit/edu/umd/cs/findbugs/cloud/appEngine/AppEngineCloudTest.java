@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.cloud.appEngine;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,9 +17,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
-import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 public class AppEngineCloudTest extends TestCase {
 	private BugInstance missingIssue = new BugInstance("MISSING", 2).addClass("MissingClass");
@@ -32,7 +35,6 @@ public class AppEngineCloudTest extends TestCase {
 		Issue foundIssueProto = Issue.newBuilder()
 				.setBugPattern("FOUND")
 				.setPriority(2)
-				.setRank(7)
 				.setFirstSeen(100)
 				.setLastSeen(200)
 				.setHash(foundIssue.getInstanceHash())
@@ -56,8 +58,7 @@ public class AppEngineCloudTest extends TestCase {
 						.setDesignation("MUST_FIX")
 						.build())
 				.build();
-		IssueList issueList = IssueList.newBuilder()
-				.addMissingIssues(missingIssue.getInstanceHash())
+		LogInResponse issueList = LogInResponse.newBuilder()
 				.addFoundIssues(foundIssueProto)
 				.build();
 		InputStream inputStream = new ByteArrayInputStream(issueList.toByteArray());
@@ -81,12 +82,12 @@ public class AppEngineCloudTest extends TestCase {
 
 		// verify uploaded hashes
 		verify(findConnection).connect();
-		HashList hashes = HashList.parseFrom(outputCollector.toByteArray());
-		assertEquals("hash ", 2, hashes.getHashesCount());
+		LogIn hashes = LogIn.parseFrom(outputCollector.toByteArray());
+		assertEquals("hash ", 2, hashes.getMyIssueHashesCount());
 		assertEquals("hash did not encode correctly",
-				 foundIssue.getInstanceHash(), hashes.getHashes(0));
+				 foundIssue.getInstanceHash(), hashes.getMyIssueHashes(0));
 		assertEquals("hash did not encode correctly",
-				 missingIssue.getInstanceHash(), hashes.getHashes(1));
+				 missingIssue.getInstanceHash(), hashes.getMyIssueHashes(1));
 
 		// verify processing of existing issues
 		assertEquals(100, cloud.getFirstSeen(foundIssue));
@@ -95,15 +96,14 @@ public class AppEngineCloudTest extends TestCase {
 		assertEquals(UserDesignation.MUST_FIX, cloud.getUserDesignation(foundIssue));
 
 		// verify uploaded issues
-		IssueList uploadedIssues = IssueList.parseFrom(uploadIssuesBuffer.toByteArray());
-		assertEquals(1, uploadedIssues.getFoundIssuesCount());
-		Issue uploadedIssue = uploadedIssues.getFoundIssues(0);
+		UploadIssues uploadedIssues = UploadIssues.parseFrom(uploadIssuesBuffer.toByteArray());
+		assertEquals(1, uploadedIssues.getNewIssuesCount());
+		Issue uploadedIssue = uploadedIssues.getNewIssues(0);
 		assertEquals(missingIssue.getInstanceHash(), uploadedIssue.getHash());
 		assertEquals(missingIssue.getType(), uploadedIssue.getBugPattern());
 		assertEquals(missingIssue.getPriority(), uploadedIssue.getPriority());
 		assertEquals(missingIssue.getFirstVersion(), uploadedIssue.getFirstSeen());
 		assertEquals(missingIssue.getLastVersion(), uploadedIssue.getLastSeen());
 		assertEquals(missingIssue.getPrimaryClass().getClassName(), uploadedIssue.getPrimaryClass());
-		assertEquals(missingIssue.getBugRank(), uploadedIssue.getRank());
 	}
 }

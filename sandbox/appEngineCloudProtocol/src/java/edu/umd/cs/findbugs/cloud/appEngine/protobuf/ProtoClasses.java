@@ -7,50 +7,72 @@ public final class ProtoClasses {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public static final class HashList extends
+  public static final class LogIn extends
       com.google.protobuf.GeneratedMessage {
-    // Use HashList.newBuilder() to construct.
-    private HashList() {}
+    // Use LogIn.newBuilder() to construct.
+    private LogIn() {}
     
-    private static final HashList defaultInstance = new HashList();
-    public static HashList getDefaultInstance() {
+    private static final LogIn defaultInstance = new LogIn();
+    public static LogIn getDefaultInstance() {
       return defaultInstance;
     }
     
-    public HashList getDefaultInstanceForType() {
+    public LogIn getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_descriptor;
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_fieldAccessorTable;
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_fieldAccessorTable;
     }
     
-    // repeated string hashes = 1;
-    public static final int HASHES_FIELD_NUMBER = 1;
-    private java.util.List<java.lang.String> hashes_ =
+    // required int64 sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private boolean hasSessionId;
+    private long sessionId_ = 0L;
+    public boolean hasSessionId() { return hasSessionId; }
+    public long getSessionId() { return sessionId_; }
+    
+    // required int64 analysisTimestamp = 3;
+    public static final int ANALYSISTIMESTAMP_FIELD_NUMBER = 3;
+    private boolean hasAnalysisTimestamp;
+    private long analysisTimestamp_ = 0L;
+    public boolean hasAnalysisTimestamp() { return hasAnalysisTimestamp; }
+    public long getAnalysisTimestamp() { return analysisTimestamp_; }
+    
+    // repeated string myIssueHashes = 4;
+    public static final int MYISSUEHASHES_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.String> myIssueHashes_ =
       java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getHashesList() {
-      return hashes_;
+    public java.util.List<java.lang.String> getMyIssueHashesList() {
+      return myIssueHashes_;
     }
-    public int getHashesCount() { return hashes_.size(); }
-    public java.lang.String getHashes(int index) {
-      return hashes_.get(index);
+    public int getMyIssueHashesCount() { return myIssueHashes_.size(); }
+    public java.lang.String getMyIssueHashes(int index) {
+      return myIssueHashes_.get(index);
     }
     
     public final boolean isInitialized() {
+      if (!hasSessionId) return false;
+      if (!hasAnalysisTimestamp) return false;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (java.lang.String element : getHashesList()) {
-        output.writeString(1, element);
+      if (hasSessionId()) {
+        output.writeInt64(1, getSessionId());
+      }
+      if (hasAnalysisTimestamp()) {
+        output.writeInt64(3, getAnalysisTimestamp());
+      }
+      for (java.lang.String element : getMyIssueHashesList()) {
+        output.writeString(4, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -61,71 +83,79 @@ public final class ProtoClasses {
       if (size != -1) return size;
     
       size = 0;
+      if (hasSessionId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, getSessionId());
+      }
+      if (hasAnalysisTimestamp()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, getAnalysisTimestamp());
+      }
       {
         int dataSize = 0;
-        for (java.lang.String element : getHashesList()) {
+        for (java.lang.String element : getMyIssueHashesList()) {
           dataSize += com.google.protobuf.CodedOutputStream
             .computeStringSizeNoTag(element);
         }
         size += dataSize;
-        size += 1 * getHashesList().size();
+        size += 1 * getMyIssueHashesList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
     
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(byte[] data)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(java.io.InputStream input)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseDelimitedFrom(java.io.InputStream input)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeDelimitedFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseDelimitedFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -135,25 +165,25 @@ public final class ProtoClasses {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList prototype) {
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList result;
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn result;
       
-      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.newBuilder()
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.newBuilder()
       private Builder() {}
       
       private static Builder create() {
         Builder builder = new Builder();
-        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn();
         return builder;
       }
       
-      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList internalGetResult() {
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn internalGetResult() {
         return result;
       }
       
@@ -162,7 +192,7 @@ public final class ProtoClasses {
           throw new IllegalStateException(
             "Cannot call clear() after build().");
         }
-        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList();
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn();
         return this;
       }
       
@@ -172,24 +202,24 @@ public final class ProtoClasses {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.getDescriptor();
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.getDescriptor();
       }
       
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList getDefaultInstanceForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.getDefaultInstance();
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.getDefaultInstance();
       }
       
       public boolean isInitialized() {
         return result.isInitialized();
       }
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList build() {
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return buildPartial();
       }
       
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList buildParsed()
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         if (!isInitialized()) {
           throw newUninitializedMessageException(
@@ -198,36 +228,42 @@ public final class ProtoClasses {
         return buildPartial();
       }
       
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList buildPartial() {
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
             "build() has already been called on this Builder.");
         }
-        if (result.hashes_ != java.util.Collections.EMPTY_LIST) {
-          result.hashes_ =
-            java.util.Collections.unmodifiableList(result.hashes_);
+        if (result.myIssueHashes_ != java.util.Collections.EMPTY_LIST) {
+          result.myIssueHashes_ =
+            java.util.Collections.unmodifiableList(result.myIssueHashes_);
         }
-        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList returnMe = result;
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn returnMe = result;
         result = null;
         return returnMe;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList) {
-          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList)other);
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList other) {
-        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.getDefaultInstance()) return this;
-        if (!other.hashes_.isEmpty()) {
-          if (result.hashes_.isEmpty()) {
-            result.hashes_ = new java.util.ArrayList<java.lang.String>();
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
+        }
+        if (other.hasAnalysisTimestamp()) {
+          setAnalysisTimestamp(other.getAnalysisTimestamp());
+        }
+        if (!other.myIssueHashes_.isEmpty()) {
+          if (result.myIssueHashes_.isEmpty()) {
+            result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
           }
-          result.hashes_.addAll(other.hashes_);
+          result.myIssueHashes_.addAll(other.myIssueHashes_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -254,8 +290,16 @@ public final class ProtoClasses {
               }
               break;
             }
-            case 10: {
-              addHashes(input.readString());
+            case 8: {
+              setSessionId(input.readInt64());
+              break;
+            }
+            case 24: {
+              setAnalysisTimestamp(input.readInt64());
+              break;
+            }
+            case 34: {
+              addMyIssueHashes(input.readString());
               break;
             }
           }
@@ -263,43 +307,79 @@ public final class ProtoClasses {
       }
       
       
-      // repeated string hashes = 1;
-      public java.util.List<java.lang.String> getHashesList() {
-        return java.util.Collections.unmodifiableList(result.hashes_);
+      // required int64 sessionId = 1;
+      public boolean hasSessionId() {
+        return result.hasSessionId();
       }
-      public int getHashesCount() {
-        return result.getHashesCount();
+      public long getSessionId() {
+        return result.getSessionId();
       }
-      public java.lang.String getHashes(int index) {
-        return result.getHashes(index);
-      }
-      public Builder setHashes(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.hashes_.set(index, value);
+      public Builder setSessionId(long value) {
+        result.hasSessionId = true;
+        result.sessionId_ = value;
         return this;
       }
-      public Builder addHashes(java.lang.String value) {
+      public Builder clearSessionId() {
+        result.hasSessionId = false;
+        result.sessionId_ = 0L;
+        return this;
+      }
+      
+      // required int64 analysisTimestamp = 3;
+      public boolean hasAnalysisTimestamp() {
+        return result.hasAnalysisTimestamp();
+      }
+      public long getAnalysisTimestamp() {
+        return result.getAnalysisTimestamp();
+      }
+      public Builder setAnalysisTimestamp(long value) {
+        result.hasAnalysisTimestamp = true;
+        result.analysisTimestamp_ = value;
+        return this;
+      }
+      public Builder clearAnalysisTimestamp() {
+        result.hasAnalysisTimestamp = false;
+        result.analysisTimestamp_ = 0L;
+        return this;
+      }
+      
+      // repeated string myIssueHashes = 4;
+      public java.util.List<java.lang.String> getMyIssueHashesList() {
+        return java.util.Collections.unmodifiableList(result.myIssueHashes_);
+      }
+      public int getMyIssueHashesCount() {
+        return result.getMyIssueHashesCount();
+      }
+      public java.lang.String getMyIssueHashes(int index) {
+        return result.getMyIssueHashes(index);
+      }
+      public Builder setMyIssueHashes(int index, java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  if (result.hashes_.isEmpty()) {
-          result.hashes_ = new java.util.ArrayList<java.lang.String>();
+  result.myIssueHashes_.set(index, value);
+        return this;
+      }
+      public Builder addMyIssueHashes(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  if (result.myIssueHashes_.isEmpty()) {
+          result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
         }
-        result.hashes_.add(value);
+        result.myIssueHashes_.add(value);
         return this;
       }
-      public Builder addAllHashes(
+      public Builder addAllMyIssueHashes(
           java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.hashes_.isEmpty()) {
-          result.hashes_ = new java.util.ArrayList<java.lang.String>();
+        if (result.myIssueHashes_.isEmpty()) {
+          result.myIssueHashes_ = new java.util.ArrayList<java.lang.String>();
         }
-        super.addAll(values, result.hashes_);
+        super.addAll(values, result.myIssueHashes_);
         return this;
       }
-      public Builder clearHashes() {
-        result.hashes_ = java.util.Collections.emptyList();
+      public Builder clearMyIssueHashes() {
+        result.myIssueHashes_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -313,44 +393,32 @@ public final class ProtoClasses {
     }
   }
   
-  public static final class IssueList extends
+  public static final class LogInResponse extends
       com.google.protobuf.GeneratedMessage {
-    // Use IssueList.newBuilder() to construct.
-    private IssueList() {}
+    // Use LogInResponse.newBuilder() to construct.
+    private LogInResponse() {}
     
-    private static final IssueList defaultInstance = new IssueList();
-    public static IssueList getDefaultInstance() {
+    private static final LogInResponse defaultInstance = new LogInResponse();
+    public static LogInResponse getDefaultInstance() {
       return defaultInstance;
     }
     
-    public IssueList getDefaultInstanceForType() {
+    public LogInResponse getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_descriptor;
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_fieldAccessorTable;
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_fieldAccessorTable;
     }
     
-    // repeated string missingIssues = 1;
-    public static final int MISSINGISSUES_FIELD_NUMBER = 1;
-    private java.util.List<java.lang.String> missingIssues_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.String> getMissingIssuesList() {
-      return missingIssues_;
-    }
-    public int getMissingIssuesCount() { return missingIssues_.size(); }
-    public java.lang.String getMissingIssues(int index) {
-      return missingIssues_.get(index);
-    }
-    
-    // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue foundIssues = 2;
-    public static final int FOUNDISSUES_FIELD_NUMBER = 2;
+    // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue foundIssues = 1;
+    public static final int FOUNDISSUES_FIELD_NUMBER = 1;
     private java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> foundIssues_ =
       java.util.Collections.emptyList();
     public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getFoundIssuesList() {
@@ -370,11 +438,8 @@ public final class ProtoClasses {
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (java.lang.String element : getMissingIssuesList()) {
-        output.writeString(1, element);
-      }
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getFoundIssuesList()) {
-        output.writeMessage(2, element);
+        output.writeMessage(1, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -385,75 +450,66 @@ public final class ProtoClasses {
       if (size != -1) return size;
     
       size = 0;
-      {
-        int dataSize = 0;
-        for (java.lang.String element : getMissingIssuesList()) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * getMissingIssuesList().size();
-      }
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getFoundIssuesList()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, element);
+          .computeMessageSize(1, element);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
     
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(byte[] data)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(java.io.InputStream input)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseDelimitedFrom(java.io.InputStream input)
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeDelimitedFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseDelimitedFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList parseFrom(
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -463,25 +519,25 @@ public final class ProtoClasses {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList prototype) {
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList result;
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse result;
       
-      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.newBuilder()
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.newBuilder()
       private Builder() {}
       
       private static Builder create() {
         Builder builder = new Builder();
-        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse();
         return builder;
       }
       
-      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList internalGetResult() {
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse internalGetResult() {
         return result;
       }
       
@@ -490,7 +546,7 @@ public final class ProtoClasses {
           throw new IllegalStateException(
             "Cannot call clear() after build().");
         }
-        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList();
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse();
         return this;
       }
       
@@ -500,24 +556,24 @@ public final class ProtoClasses {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.getDescriptor();
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.getDescriptor();
       }
       
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList getDefaultInstanceForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.getDefaultInstance();
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.getDefaultInstance();
       }
       
       public boolean isInitialized() {
         return result.isInitialized();
       }
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList build() {
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return buildPartial();
       }
       
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList buildParsed()
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         if (!isInitialized()) {
           throw newUninitializedMessageException(
@@ -526,41 +582,31 @@ public final class ProtoClasses {
         return buildPartial();
       }
       
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList buildPartial() {
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
             "build() has already been called on this Builder.");
-        }
-        if (result.missingIssues_ != java.util.Collections.EMPTY_LIST) {
-          result.missingIssues_ =
-            java.util.Collections.unmodifiableList(result.missingIssues_);
         }
         if (result.foundIssues_ != java.util.Collections.EMPTY_LIST) {
           result.foundIssues_ =
             java.util.Collections.unmodifiableList(result.foundIssues_);
         }
-        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList returnMe = result;
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse returnMe = result;
         result = null;
         return returnMe;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList) {
-          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList)other);
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList other) {
-        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.getDefaultInstance()) return this;
-        if (!other.missingIssues_.isEmpty()) {
-          if (result.missingIssues_.isEmpty()) {
-            result.missingIssues_ = new java.util.ArrayList<java.lang.String>();
-          }
-          result.missingIssues_.addAll(other.missingIssues_);
-        }
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.getDefaultInstance()) return this;
         if (!other.foundIssues_.isEmpty()) {
           if (result.foundIssues_.isEmpty()) {
             result.foundIssues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
@@ -593,10 +639,6 @@ public final class ProtoClasses {
               break;
             }
             case 10: {
-              addMissingIssues(input.readString());
-              break;
-            }
-            case 18: {
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addFoundIssues(subBuilder.buildPartial());
@@ -607,47 +649,7 @@ public final class ProtoClasses {
       }
       
       
-      // repeated string missingIssues = 1;
-      public java.util.List<java.lang.String> getMissingIssuesList() {
-        return java.util.Collections.unmodifiableList(result.missingIssues_);
-      }
-      public int getMissingIssuesCount() {
-        return result.getMissingIssuesCount();
-      }
-      public java.lang.String getMissingIssues(int index) {
-        return result.getMissingIssues(index);
-      }
-      public Builder setMissingIssues(int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.missingIssues_.set(index, value);
-        return this;
-      }
-      public Builder addMissingIssues(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  if (result.missingIssues_.isEmpty()) {
-          result.missingIssues_ = new java.util.ArrayList<java.lang.String>();
-        }
-        result.missingIssues_.add(value);
-        return this;
-      }
-      public Builder addAllMissingIssues(
-          java.lang.Iterable<? extends java.lang.String> values) {
-        if (result.missingIssues_.isEmpty()) {
-          result.missingIssues_ = new java.util.ArrayList<java.lang.String>();
-        }
-        super.addAll(values, result.missingIssues_);
-        return this;
-      }
-      public Builder clearMissingIssues() {
-        result.missingIssues_ = java.util.Collections.emptyList();
-        return this;
-      }
-      
-      // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue foundIssues = 2;
+      // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue foundIssues = 1;
       public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getFoundIssuesList() {
         return java.util.Collections.unmodifiableList(result.foundIssues_);
       }
@@ -708,6 +710,1324 @@ public final class ProtoClasses {
     }
   }
   
+  public static final class UploadIssues extends
+      com.google.protobuf.GeneratedMessage {
+    // Use UploadIssues.newBuilder() to construct.
+    private UploadIssues() {}
+    
+    private static final UploadIssues defaultInstance = new UploadIssues();
+    public static UploadIssues getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public UploadIssues getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_fieldAccessorTable;
+    }
+    
+    // required int64 sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private boolean hasSessionId;
+    private long sessionId_ = 0L;
+    public boolean hasSessionId() { return hasSessionId; }
+    public long getSessionId() { return sessionId_; }
+    
+    // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue newIssues = 2;
+    public static final int NEWISSUES_FIELD_NUMBER = 2;
+    private java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> newIssues_ =
+      java.util.Collections.emptyList();
+    public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getNewIssuesList() {
+      return newIssues_;
+    }
+    public int getNewIssuesCount() { return newIssues_.size(); }
+    public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue getNewIssues(int index) {
+      return newIssues_.get(index);
+    }
+    
+    public final boolean isInitialized() {
+      if (!hasSessionId) return false;
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getNewIssuesList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasSessionId()) {
+        output.writeInt64(1, getSessionId());
+      }
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getNewIssuesList()) {
+        output.writeMessage(2, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasSessionId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, getSessionId());
+      }
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getNewIssuesList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues result;
+      
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.newBuilder()
+      private Builder() {}
+      
+      private static Builder create() {
+        Builder builder = new Builder();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues();
+        return builder;
+      }
+      
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "Cannot call clear() after build().");
+        }
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.getDescriptor();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.getDefaultInstance();
+      }
+      
+      public boolean isInitialized() {
+        return result.isInitialized();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues build() {
+        if (result != null && !isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return buildPartial();
+      }
+      
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");
+        }
+        if (result.newIssues_ != java.util.Collections.EMPTY_LIST) {
+          result.newIssues_ =
+            java.util.Collections.unmodifiableList(result.newIssues_);
+        }
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
+        }
+        if (!other.newIssues_.isEmpty()) {
+          if (result.newIssues_.isEmpty()) {
+            result.newIssues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+          }
+          result.newIssues_.addAll(other.newIssues_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setSessionId(input.readInt64());
+              break;
+            }
+            case 18: {
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addNewIssues(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required int64 sessionId = 1;
+      public boolean hasSessionId() {
+        return result.hasSessionId();
+      }
+      public long getSessionId() {
+        return result.getSessionId();
+      }
+      public Builder setSessionId(long value) {
+        result.hasSessionId = true;
+        result.sessionId_ = value;
+        return this;
+      }
+      public Builder clearSessionId() {
+        result.hasSessionId = false;
+        result.sessionId_ = 0L;
+        return this;
+      }
+      
+      // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue newIssues = 2;
+      public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getNewIssuesList() {
+        return java.util.Collections.unmodifiableList(result.newIssues_);
+      }
+      public int getNewIssuesCount() {
+        return result.getNewIssuesCount();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue getNewIssues(int index) {
+        return result.getNewIssues(index);
+      }
+      public Builder setNewIssues(int index, edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.newIssues_.set(index, value);
+        return this;
+      }
+      public Builder setNewIssues(int index, edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder builderForValue) {
+        result.newIssues_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addNewIssues(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        if (result.newIssues_.isEmpty()) {
+          result.newIssues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        result.newIssues_.add(value);
+        return this;
+      }
+      public Builder addNewIssues(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder builderForValue) {
+        if (result.newIssues_.isEmpty()) {
+          result.newIssues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        result.newIssues_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllNewIssues(
+          java.lang.Iterable<? extends edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> values) {
+        if (result.newIssues_.isEmpty()) {
+          result.newIssues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        super.addAll(values, result.newIssues_);
+        return this;
+      }
+      public Builder clearNewIssues() {
+        result.newIssues_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.getDescriptor();
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internalForceInit();
+    }
+  }
+  
+  public static final class UploadEvaluation extends
+      com.google.protobuf.GeneratedMessage {
+    // Use UploadEvaluation.newBuilder() to construct.
+    private UploadEvaluation() {}
+    
+    private static final UploadEvaluation defaultInstance = new UploadEvaluation();
+    public static UploadEvaluation getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public UploadEvaluation getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_fieldAccessorTable;
+    }
+    
+    // required int64 sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private boolean hasSessionId;
+    private long sessionId_ = 0L;
+    public boolean hasSessionId() { return hasSessionId; }
+    public long getSessionId() { return sessionId_; }
+    
+    // required string hash = 2;
+    public static final int HASH_FIELD_NUMBER = 2;
+    private boolean hasHash;
+    private java.lang.String hash_ = "";
+    public boolean hasHash() { return hasHash; }
+    public java.lang.String getHash() { return hash_; }
+    
+    // required .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Evaluation evaluation = 3;
+    public static final int EVALUATION_FIELD_NUMBER = 3;
+    private boolean hasEvaluation;
+    private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation evaluation_ = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.getDefaultInstance();
+    public boolean hasEvaluation() { return hasEvaluation; }
+    public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation getEvaluation() { return evaluation_; }
+    
+    public final boolean isInitialized() {
+      if (!hasSessionId) return false;
+      if (!hasHash) return false;
+      if (!hasEvaluation) return false;
+      if (!getEvaluation().isInitialized()) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasSessionId()) {
+        output.writeInt64(1, getSessionId());
+      }
+      if (hasHash()) {
+        output.writeString(2, getHash());
+      }
+      if (hasEvaluation()) {
+        output.writeMessage(3, getEvaluation());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasSessionId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, getSessionId());
+      }
+      if (hasHash()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(2, getHash());
+      }
+      if (hasEvaluation()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getEvaluation());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation result;
+      
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.newBuilder()
+      private Builder() {}
+      
+      private static Builder create() {
+        Builder builder = new Builder();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation();
+        return builder;
+      }
+      
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "Cannot call clear() after build().");
+        }
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.getDescriptor();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.getDefaultInstance();
+      }
+      
+      public boolean isInitialized() {
+        return result.isInitialized();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation build() {
+        if (result != null && !isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return buildPartial();
+      }
+      
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");
+        }
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
+        }
+        if (other.hasHash()) {
+          setHash(other.getHash());
+        }
+        if (other.hasEvaluation()) {
+          mergeEvaluation(other.getEvaluation());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setSessionId(input.readInt64());
+              break;
+            }
+            case 18: {
+              setHash(input.readString());
+              break;
+            }
+            case 26: {
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.newBuilder();
+              if (hasEvaluation()) {
+                subBuilder.mergeFrom(getEvaluation());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setEvaluation(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required int64 sessionId = 1;
+      public boolean hasSessionId() {
+        return result.hasSessionId();
+      }
+      public long getSessionId() {
+        return result.getSessionId();
+      }
+      public Builder setSessionId(long value) {
+        result.hasSessionId = true;
+        result.sessionId_ = value;
+        return this;
+      }
+      public Builder clearSessionId() {
+        result.hasSessionId = false;
+        result.sessionId_ = 0L;
+        return this;
+      }
+      
+      // required string hash = 2;
+      public boolean hasHash() {
+        return result.hasHash();
+      }
+      public java.lang.String getHash() {
+        return result.getHash();
+      }
+      public Builder setHash(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasHash = true;
+        result.hash_ = value;
+        return this;
+      }
+      public Builder clearHash() {
+        result.hasHash = false;
+        result.hash_ = getDefaultInstance().getHash();
+        return this;
+      }
+      
+      // required .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Evaluation evaluation = 3;
+      public boolean hasEvaluation() {
+        return result.hasEvaluation();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation getEvaluation() {
+        return result.getEvaluation();
+      }
+      public Builder setEvaluation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.hasEvaluation = true;
+        result.evaluation_ = value;
+        return this;
+      }
+      public Builder setEvaluation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder builderForValue) {
+        result.hasEvaluation = true;
+        result.evaluation_ = builderForValue.build();
+        return this;
+      }
+      public Builder mergeEvaluation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation value) {
+        if (result.hasEvaluation() &&
+            result.evaluation_ != edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.getDefaultInstance()) {
+          result.evaluation_ =
+            edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.newBuilder(result.evaluation_).mergeFrom(value).buildPartial();
+        } else {
+          result.evaluation_ = value;
+        }
+        result.hasEvaluation = true;
+        return this;
+      }
+      public Builder clearEvaluation() {
+        result.hasEvaluation = false;
+        result.evaluation_ = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.getDefaultInstance();
+        return this;
+      }
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.getDescriptor();
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internalForceInit();
+    }
+  }
+  
+  public static final class RecentEvaluations extends
+      com.google.protobuf.GeneratedMessage {
+    // Use RecentEvaluations.newBuilder() to construct.
+    private RecentEvaluations() {}
+    
+    private static final RecentEvaluations defaultInstance = new RecentEvaluations();
+    public static RecentEvaluations getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public RecentEvaluations getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_fieldAccessorTable;
+    }
+    
+    // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue issues = 1;
+    public static final int ISSUES_FIELD_NUMBER = 1;
+    private java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> issues_ =
+      java.util.Collections.emptyList();
+    public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getIssuesList() {
+      return issues_;
+    }
+    public int getIssuesCount() { return issues_.size(); }
+    public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue getIssues(int index) {
+      return issues_.get(index);
+    }
+    
+    public final boolean isInitialized() {
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getIssuesList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getIssuesList()) {
+        output.writeMessage(1, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue element : getIssuesList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations result;
+      
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.newBuilder()
+      private Builder() {}
+      
+      private static Builder create() {
+        Builder builder = new Builder();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations();
+        return builder;
+      }
+      
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "Cannot call clear() after build().");
+        }
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.getDescriptor();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.getDefaultInstance();
+      }
+      
+      public boolean isInitialized() {
+        return result.isInitialized();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations build() {
+        if (result != null && !isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return buildPartial();
+      }
+      
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");
+        }
+        if (result.issues_ != java.util.Collections.EMPTY_LIST) {
+          result.issues_ =
+            java.util.Collections.unmodifiableList(result.issues_);
+        }
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.getDefaultInstance()) return this;
+        if (!other.issues_.isEmpty()) {
+          if (result.issues_.isEmpty()) {
+            result.issues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+          }
+          result.issues_.addAll(other.issues_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addIssues(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // repeated .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Issue issues = 1;
+      public java.util.List<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> getIssuesList() {
+        return java.util.Collections.unmodifiableList(result.issues_);
+      }
+      public int getIssuesCount() {
+        return result.getIssuesCount();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue getIssues(int index) {
+        return result.getIssues(index);
+      }
+      public Builder setIssues(int index, edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.issues_.set(index, value);
+        return this;
+      }
+      public Builder setIssues(int index, edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder builderForValue) {
+        result.issues_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addIssues(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        if (result.issues_.isEmpty()) {
+          result.issues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        result.issues_.add(value);
+        return this;
+      }
+      public Builder addIssues(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder builderForValue) {
+        if (result.issues_.isEmpty()) {
+          result.issues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        result.issues_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllIssues(
+          java.lang.Iterable<? extends edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue> values) {
+        if (result.issues_.isEmpty()) {
+          result.issues_ = new java.util.ArrayList<edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue>();
+        }
+        super.addAll(values, result.issues_);
+        return this;
+      }
+      public Builder clearIssues() {
+        result.issues_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.getDescriptor();
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internalForceInit();
+    }
+  }
+  
+  public static final class LogOff extends
+      com.google.protobuf.GeneratedMessage {
+    // Use LogOff.newBuilder() to construct.
+    private LogOff() {}
+    
+    private static final LogOff defaultInstance = new LogOff();
+    public static LogOff getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public LogOff getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_fieldAccessorTable;
+    }
+    
+    // required int64 sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private boolean hasSessionId;
+    private long sessionId_ = 0L;
+    public boolean hasSessionId() { return hasSessionId; }
+    public long getSessionId() { return sessionId_; }
+    
+    public final boolean isInitialized() {
+      if (!hasSessionId) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasSessionId()) {
+        output.writeInt64(1, getSessionId());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasSessionId()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, getSessionId());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff result;
+      
+      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.newBuilder()
+      private Builder() {}
+      
+      private static Builder create() {
+        Builder builder = new Builder();
+        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff();
+        return builder;
+      }
+      
+      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "Cannot call clear() after build().");
+        }
+        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.getDescriptor();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff getDefaultInstanceForType() {
+        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.getDefaultInstance();
+      }
+      
+      public boolean isInitialized() {
+        return result.isInitialized();
+      }
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff build() {
+        if (result != null && !isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return buildPartial();
+      }
+      
+      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");
+        }
+        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff) {
+          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff other) {
+        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              setSessionId(input.readInt64());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required int64 sessionId = 1;
+      public boolean hasSessionId() {
+        return result.hasSessionId();
+      }
+      public long getSessionId() {
+        return result.getSessionId();
+      }
+      public Builder setSessionId(long value) {
+        result.hasSessionId = true;
+        result.sessionId_ = value;
+        return this;
+      }
+      public Builder clearSessionId() {
+        result.hasSessionId = false;
+        result.sessionId_ = 0L;
+        return this;
+      }
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.getDescriptor();
+    }
+    
+    static {
+      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internalForceInit();
+    }
+  }
+  
   public static final class Issue extends
       com.google.protobuf.GeneratedMessage {
     // Use Issue.newBuilder() to construct.
@@ -753,13 +2073,6 @@ public final class ProtoClasses {
     public boolean hasPriority() { return hasPriority; }
     public int getPriority() { return priority_; }
     
-    // required int32 rank = 8;
-    public static final int RANK_FIELD_NUMBER = 8;
-    private boolean hasRank;
-    private int rank_ = 0;
-    public boolean hasRank() { return hasRank; }
-    public int getRank() { return rank_; }
-    
     // required string primaryClass = 4;
     public static final int PRIMARYCLASS_FIELD_NUMBER = 4;
     private boolean hasPrimaryClass;
@@ -797,7 +2110,6 @@ public final class ProtoClasses {
       if (!hasHash) return false;
       if (!hasBugPattern) return false;
       if (!hasPriority) return false;
-      if (!hasRank) return false;
       if (!hasPrimaryClass) return false;
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation element : getEvaluationsList()) {
         if (!element.isInitialized()) return false;
@@ -827,9 +2139,6 @@ public final class ProtoClasses {
       }
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation element : getEvaluationsList()) {
         output.writeMessage(7, element);
-      }
-      if (hasRank()) {
-        output.writeInt32(8, getRank());
       }
       getUnknownFields().writeTo(output);
     }
@@ -867,10 +2176,6 @@ public final class ProtoClasses {
       for (edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation element : getEvaluationsList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, element);
-      }
-      if (hasRank()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(8, getRank());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1034,9 +2339,6 @@ public final class ProtoClasses {
         if (other.hasPriority()) {
           setPriority(other.getPriority());
         }
-        if (other.hasRank()) {
-          setRank(other.getRank());
-        }
         if (other.hasPrimaryClass()) {
           setPrimaryClass(other.getPrimaryClass());
         }
@@ -1107,10 +2409,6 @@ public final class ProtoClasses {
               addEvaluations(subBuilder.buildPartial());
               break;
             }
-            case 64: {
-              setRank(input.readInt32());
-              break;
-            }
           }
         }
       }
@@ -1173,24 +2471,6 @@ public final class ProtoClasses {
       public Builder clearPriority() {
         result.hasPriority = false;
         result.priority_ = 0;
-        return this;
-      }
-      
-      // required int32 rank = 8;
-      public boolean hasRank() {
-        return result.hasRank();
-      }
-      public int getRank() {
-        return result.getRank();
-      }
-      public Builder setRank(int value) {
-        result.hasRank = true;
-        result.rank_ = value;
-        return this;
-      }
-      public Builder clearRank() {
-        result.hasRank = false;
-        result.rank_ = 0;
         return this;
       }
       
@@ -1357,28 +2637,18 @@ public final class ProtoClasses {
     public boolean hasComment() { return hasComment; }
     public java.lang.String getComment() { return comment_; }
     
-    // required int64 when = 5;
-    public static final int WHEN_FIELD_NUMBER = 5;
+    // required int64 when = 4;
+    public static final int WHEN_FIELD_NUMBER = 4;
     private boolean hasWhen;
     private long when_ = 0L;
     public boolean hasWhen() { return hasWhen; }
     public long getWhen() { return when_; }
-    
-    // optional .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Invocation invocation = 6;
-    public static final int INVOCATION_FIELD_NUMBER = 6;
-    private boolean hasInvocation;
-    private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation invocation_ = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDefaultInstance();
-    public boolean hasInvocation() { return hasInvocation; }
-    public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation getInvocation() { return invocation_; }
     
     public final boolean isInitialized() {
       if (!hasWho) return false;
       if (!hasDesignation) return false;
       if (!hasComment) return false;
       if (!hasWhen) return false;
-      if (hasInvocation()) {
-        if (!getInvocation().isInitialized()) return false;
-      }
       return true;
     }
     
@@ -1394,10 +2664,7 @@ public final class ProtoClasses {
         output.writeString(3, getComment());
       }
       if (hasWhen()) {
-        output.writeInt64(5, getWhen());
-      }
-      if (hasInvocation()) {
-        output.writeMessage(6, getInvocation());
+        output.writeInt64(4, getWhen());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1422,11 +2689,7 @@ public final class ProtoClasses {
       }
       if (hasWhen()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(5, getWhen());
-      }
-      if (hasInvocation()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, getInvocation());
+          .computeInt64Size(4, getWhen());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1589,9 +2852,6 @@ public final class ProtoClasses {
         if (other.hasWhen()) {
           setWhen(other.getWhen());
         }
-        if (other.hasInvocation()) {
-          mergeInvocation(other.getInvocation());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1629,17 +2889,8 @@ public final class ProtoClasses {
               setComment(input.readString());
               break;
             }
-            case 40: {
+            case 32: {
               setWhen(input.readInt64());
-              break;
-            }
-            case 50: {
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.Builder subBuilder = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.newBuilder();
-              if (hasInvocation()) {
-                subBuilder.mergeFrom(getInvocation());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setInvocation(subBuilder.buildPartial());
               break;
             }
           }
@@ -1710,7 +2961,7 @@ public final class ProtoClasses {
         return this;
       }
       
-      // required int64 when = 5;
+      // required int64 when = 4;
       public boolean hasWhen() {
         return result.hasWhen();
       }
@@ -1727,394 +2978,6 @@ public final class ProtoClasses {
         result.when_ = 0L;
         return this;
       }
-      
-      // optional .edu.umd.cs.findbugs.cloud.appEngine.protobuf.Invocation invocation = 6;
-      public boolean hasInvocation() {
-        return result.hasInvocation();
-      }
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation getInvocation() {
-        return result.getInvocation();
-      }
-      public Builder setInvocation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result.hasInvocation = true;
-        result.invocation_ = value;
-        return this;
-      }
-      public Builder setInvocation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.Builder builderForValue) {
-        result.hasInvocation = true;
-        result.invocation_ = builderForValue.build();
-        return this;
-      }
-      public Builder mergeInvocation(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation value) {
-        if (result.hasInvocation() &&
-            result.invocation_ != edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDefaultInstance()) {
-          result.invocation_ =
-            edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.newBuilder(result.invocation_).mergeFrom(value).buildPartial();
-        } else {
-          result.invocation_ = value;
-        }
-        result.hasInvocation = true;
-        return this;
-      }
-      public Builder clearInvocation() {
-        result.hasInvocation = false;
-        result.invocation_ = edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDefaultInstance();
-        return this;
-      }
-    }
-    
-    static {
-      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.getDescriptor();
-    }
-    
-    static {
-      edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internalForceInit();
-    }
-  }
-  
-  public static final class Invocation extends
-      com.google.protobuf.GeneratedMessage {
-    // Use Invocation.newBuilder() to construct.
-    private Invocation() {}
-    
-    private static final Invocation defaultInstance = new Invocation();
-    public static Invocation getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public Invocation getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_fieldAccessorTable;
-    }
-    
-    // required string who = 1;
-    public static final int WHO_FIELD_NUMBER = 1;
-    private boolean hasWho;
-    private java.lang.String who_ = "";
-    public boolean hasWho() { return hasWho; }
-    public java.lang.String getWho() { return who_; }
-    
-    // required int64 startTime = 2;
-    public static final int STARTTIME_FIELD_NUMBER = 2;
-    private boolean hasStartTime;
-    private long startTime_ = 0L;
-    public boolean hasStartTime() { return hasStartTime; }
-    public long getStartTime() { return startTime_; }
-    
-    // required int64 endTime = 3;
-    public static final int ENDTIME_FIELD_NUMBER = 3;
-    private boolean hasEndTime;
-    private long endTime_ = 0L;
-    public boolean hasEndTime() { return hasEndTime; }
-    public long getEndTime() { return endTime_; }
-    
-    public final boolean isInitialized() {
-      if (!hasWho) return false;
-      if (!hasStartTime) return false;
-      if (!hasEndTime) return false;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (hasWho()) {
-        output.writeString(1, getWho());
-      }
-      if (hasStartTime()) {
-        output.writeInt64(2, getStartTime());
-      }
-      if (hasEndTime()) {
-        output.writeInt64(3, getEndTime());
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (hasWho()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getWho());
-      }
-      if (hasStartTime()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, getStartTime());
-      }
-      if (hasEndTime()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, getEndTime());
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input).buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation result;
-      
-      // Construct using edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation();
-        return builder;
-      }
-      
-      protected edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation internalGetResult() {
-        return result;
-      }
-      
-      public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation();
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(result);
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDescriptor();
-      }
-      
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation getDefaultInstanceForType() {
-        return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDefaultInstance();
-      }
-      
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation build() {
-        if (result != null && !isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return buildPartial();
-      }
-      
-      private edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return buildPartial();
-      }
-      
-      public edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
-        }
-        edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation returnMe = result;
-        result = null;
-        return returnMe;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation) {
-          return mergeFrom((edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation other) {
-        if (other == edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.getDefaultInstance()) return this;
-        if (other.hasWho()) {
-          setWho(other.getWho());
-        }
-        if (other.hasStartTime()) {
-          setStartTime(other.getStartTime());
-        }
-        if (other.hasEndTime()) {
-          setEndTime(other.getEndTime());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                return this;
-              }
-              break;
-            }
-            case 10: {
-              setWho(input.readString());
-              break;
-            }
-            case 16: {
-              setStartTime(input.readInt64());
-              break;
-            }
-            case 24: {
-              setEndTime(input.readInt64());
-              break;
-            }
-          }
-        }
-      }
-      
-      
-      // required string who = 1;
-      public boolean hasWho() {
-        return result.hasWho();
-      }
-      public java.lang.String getWho() {
-        return result.getWho();
-      }
-      public Builder setWho(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.hasWho = true;
-        result.who_ = value;
-        return this;
-      }
-      public Builder clearWho() {
-        result.hasWho = false;
-        result.who_ = getDefaultInstance().getWho();
-        return this;
-      }
-      
-      // required int64 startTime = 2;
-      public boolean hasStartTime() {
-        return result.hasStartTime();
-      }
-      public long getStartTime() {
-        return result.getStartTime();
-      }
-      public Builder setStartTime(long value) {
-        result.hasStartTime = true;
-        result.startTime_ = value;
-        return this;
-      }
-      public Builder clearStartTime() {
-        result.hasStartTime = false;
-        result.startTime_ = 0L;
-        return this;
-      }
-      
-      // required int64 endTime = 3;
-      public boolean hasEndTime() {
-        return result.hasEndTime();
-      }
-      public long getEndTime() {
-        return result.getEndTime();
-      }
-      public Builder setEndTime(long value) {
-        result.hasEndTime = true;
-        result.endTime_ = value;
-        return this;
-      }
-      public Builder clearEndTime() {
-        result.hasEndTime = false;
-        result.endTime_ = 0L;
-        return this;
-      }
     }
     
     static {
@@ -2127,15 +2990,35 @@ public final class ProtoClasses {
   }
   
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_descriptor;
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_fieldAccessorTable;
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_descriptor;
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_fieldAccessorTable;
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_descriptor;
   private static
@@ -2146,11 +3029,6 @@ public final class ProtoClasses {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Evaluation_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2161,67 +3039,97 @@ public final class ProtoClasses {
   static {
     java.lang.String[] descriptorData = {
       "\n\022ProtoClasses.proto\022,edu.umd.cs.findbug" +
-      "s.cloud.appEngine.protobuf\"\032\n\010HashList\022\016" +
-      "\n\006hashes\030\001 \003(\t\"l\n\tIssueList\022\025\n\rmissingIs" +
-      "sues\030\001 \003(\t\022H\n\013foundIssues\030\002 \003(\01323.edu.um" +
+      "s.cloud.appEngine.protobuf\"L\n\005LogIn\022\021\n\ts" +
+      "essionId\030\001 \002(\003\022\031\n\021analysisTimestamp\030\003 \002(" +
+      "\003\022\025\n\rmyIssueHashes\030\004 \003(\t\"Y\n\rLogInRespons" +
+      "e\022H\n\013foundIssues\030\001 \003(\01323.edu.umd.cs.find" +
+      "bugs.cloud.appEngine.protobuf.Issue\"i\n\014U" +
+      "ploadIssues\022\021\n\tsessionId\030\001 \002(\003\022F\n\tnewIss" +
+      "ues\030\002 \003(\01323.edu.umd.cs.findbugs.cloud.ap" +
+      "pEngine.protobuf.Issue\"\201\001\n\020UploadEvaluat" +
+      "ion\022\021\n\tsessionId\030\001 \002(\003\022\014\n\004hash\030\002 \002(\t\022L\n\n",
+      "evaluation\030\003 \002(\01328.edu.umd.cs.findbugs.c" +
+      "loud.appEngine.protobuf.Evaluation\"X\n\021Re" +
+      "centEvaluations\022C\n\006issues\030\001 \003(\01323.edu.um" +
       "d.cs.findbugs.cloud.appEngine.protobuf.I" +
-      "ssue\"\323\001\n\005Issue\022\014\n\004hash\030\001 \002(\t\022\022\n\nbugPatte" +
-      "rn\030\002 \002(\t\022\020\n\010priority\030\003 \002(\005\022\014\n\004rank\030\010 \002(\005" +
-      "\022\024\n\014primaryClass\030\004 \002(\t\022\021\n\tfirstSeen\030\005 \001(" +
-      "\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013evaluations\030\007 \003(\013" +
-      "28.edu.umd.cs.findbugs.cloud.appEngine.p",
-      "rotobuf.Evaluation\"\233\001\n\nEvaluation\022\013\n\003who" +
-      "\030\001 \002(\t\022\023\n\013designation\030\002 \002(\t\022\017\n\007comment\030\003" +
-      " \002(\t\022\014\n\004when\030\005 \002(\003\022L\n\ninvocation\030\006 \001(\01328" +
-      ".edu.umd.cs.findbugs.cloud.appEngine.pro" +
-      "tobuf.Invocation\"=\n\nInvocation\022\013\n\003who\030\001 " +
-      "\002(\t\022\021\n\tstartTime\030\002 \002(\003\022\017\n\007endTime\030\003 \002(\003"
+      "ssue\"\033\n\006LogOff\022\021\n\tsessionId\030\001 \002(\003\"\305\001\n\005Is" +
+      "sue\022\014\n\004hash\030\001 \002(\t\022\022\n\nbugPattern\030\002 \002(\t\022\020\n" +
+      "\010priority\030\003 \002(\005\022\024\n\014primaryClass\030\004 \002(\t\022\021\n" +
+      "\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013ev" +
+      "aluations\030\007 \003(\01328.edu.umd.cs.findbugs.cl" +
+      "oud.appEngine.protobuf.Evaluation\"M\n\nEva",
+      "luation\022\013\n\003who\030\001 \002(\t\022\023\n\013designation\030\002 \002(" +
+      "\t\022\017\n\007comment\030\003 \002(\t\022\014\n\004when\030\004 \002(\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_descriptor =
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_fieldAccessorTable = new
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_HashList_descriptor,
-              new java.lang.String[] { "Hashes", },
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.class,
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.HashList.Builder.class);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_descriptor =
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogIn_descriptor,
+              new java.lang.String[] { "SessionId", "AnalysisTimestamp", "MyIssueHashes", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_fieldAccessorTable = new
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_IssueList_descriptor,
-              new java.lang.String[] { "MissingIssues", "FoundIssues", },
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.class,
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.IssueList.Builder.class);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_descriptor =
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogInResponse_descriptor,
+              new java.lang.String[] { "FoundIssues", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadIssues_descriptor,
+              new java.lang.String[] { "SessionId", "NewIssues", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_descriptor =
+            getDescriptor().getMessageTypes().get(3);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_UploadEvaluation_descriptor,
+              new java.lang.String[] { "SessionId", "Hash", "Evaluation", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_descriptor =
+            getDescriptor().getMessageTypes().get(4);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_RecentEvaluations_descriptor,
+              new java.lang.String[] { "Issues", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_descriptor =
+            getDescriptor().getMessageTypes().get(5);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_LogOff_descriptor,
+              new java.lang.String[] { "SessionId", },
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.class,
+              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogOff.Builder.class);
+          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_descriptor =
+            getDescriptor().getMessageTypes().get(6);
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Issue_descriptor,
-              new java.lang.String[] { "Hash", "BugPattern", "Priority", "Rank", "PrimaryClass", "FirstSeen", "LastSeen", "Evaluations", },
+              new java.lang.String[] { "Hash", "BugPattern", "Priority", "PrimaryClass", "FirstSeen", "LastSeen", "Evaluations", },
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.class,
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue.Builder.class);
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Evaluation_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Evaluation_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Evaluation_descriptor,
-              new java.lang.String[] { "Who", "Designation", "Comment", "When", "Invocation", },
+              new java.lang.String[] { "Who", "Designation", "Comment", "When", },
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.class,
               edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Evaluation.Builder.class);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_descriptor =
-            getDescriptor().getMessageTypes().get(4);
-          internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Invocation_descriptor,
-              new java.lang.String[] { "Who", "StartTime", "EndTime", },
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.class,
-              edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Invocation.Builder.class);
           return null;
         }
       };

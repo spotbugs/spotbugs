@@ -21,7 +21,6 @@ public class DbIssue {
 	@Persistent @Unique private String hash;
     @Persistent private String bugPattern;
     @Persistent private int priority;
-    @Persistent private int rank;
     @Persistent private String primaryClass;
     @Persistent private long firstSeen;
     @Persistent private long lastSeen;
@@ -50,12 +49,6 @@ public class DbIssue {
 	}
 	public void setPriority(int priority) {
 		this.priority = priority;
-	}
-	public int getRank() {
-		return rank;
-	}
-	public void setRank(int rank) {
-		this.rank = rank;
 	}
 	public String getPrimaryClass() {
 		return primaryClass;
