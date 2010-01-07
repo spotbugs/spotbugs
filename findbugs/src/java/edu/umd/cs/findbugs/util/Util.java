@@ -427,4 +427,19 @@ public class Util {
 		return result;
 
 	}
+	
+	public static <K> Set<K> addTo(Set<K> s, K k) {
+		if (s.isEmpty())
+			return Collections.singleton(k);
+		if (s.contains(k))
+			return s;
+		if (s instanceof HashSet) {
+			s.add(k);
+			return s;
+		}
+		HashSet<K> result = makeSmallHashSet(s);
+		result.add(k);
+		return result;
+
+	}
 }

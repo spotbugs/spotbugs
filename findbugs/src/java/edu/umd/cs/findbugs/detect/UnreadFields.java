@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,6 +68,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector  {
@@ -75,8 +77,8 @@ public class UnreadFields extends OpcodeStackDetector  {
 	public boolean isContainerField(XField f) {
 		return containerFields.contains(f);
 	}
-	Map<XField,HashSet<ProgramPoint> >
-		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
+	Map<XField,Set<ProgramPoint> >
+		assumedNonNull = new HashMap<XField,Set<ProgramPoint>>();
 	Map<XField,ProgramPoint >
 		threadLocalAssignedInConstructor = new HashMap<XField,ProgramPoint>();
 
@@ -588,12 +590,12 @@ public class UnreadFields extends OpcodeStackDetector  {
 						 && writtenNonNullFields.contains(f))
 					) {
 				ProgramPoint p = new ProgramPoint(this);
-				HashSet <ProgramPoint> s = assumedNonNull.get(f);
-				if (s == null) {
-					s = new HashSet<ProgramPoint>();
-					assumedNonNull.put(f,s);
-					}
-				s.add(p);
+				Set <ProgramPoint> s = assumedNonNull.get(f);
+				if (s == null)
+					s = Collections.singleton(p);
+				else 
+					s = Util.addTo(s, p);
+				assumedNonNull.put(f,s);
 				if (DEBUG)
 				System.out.println(f + " assumed non-null in " +
 					getFullyQualifiedMethodName());
@@ -855,7 +857,7 @@ public class UnreadFields extends OpcodeStackDetector  {
 			if (assumedNonNull.containsKey(f)) {
 				int npPriority = priority;
 			
-				HashSet<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
+				Set<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
 				if (assumedNonNullAt.size() > 14) {
 					npPriority+=2;
 				} else if (assumedNonNullAt.size() > 6) {

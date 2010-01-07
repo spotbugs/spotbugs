@@ -161,8 +161,8 @@ public class GenericObjectType extends ObjectType {
 	 * @param variable the type variable e.g. <code>T</code>
 	 */
 	GenericObjectType(@NonNull String wildcard, ReferenceType extension) {
-		super(Type.OBJECT.getClassName());
-		this.variable = wildcard;
+		super(DescriptorFactory.canonicalizeString(Type.OBJECT.getClassName()));
+		this.variable = DescriptorFactory.canonicalizeString(wildcard);
 		this.extension = extension;
 		parameters = null;
 	}
