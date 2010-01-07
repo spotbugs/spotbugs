@@ -1,36 +1,51 @@
 package edu.umd.cs.findbugs.cloud.appEngine.protobuf;
 
-message HashList {
-  repeated string hashes = 1;
+// sent to server on login
+message LogIn {
+  required int64 sessionId = 1;
+  required string who = 2;
+  required int64 analysisTimestamp = 3;
+  repeated string myIssueHashes = 4;
+  }
+  
+// response from login
+message LogInResponse {
+    // all issues that match provided hashes
+	repeated Issue foundIssues = 1;
 }
 
-message IssueList {
-	repeated string missingIssues = 1;
-	repeated Issue foundIssues = 2;
+message UploadIssues {
+    required int64 sessionId = 1;
+    // all issues that match provided hashes
+	repeated Issue newIssues = 2;
+}
+
+message UploadEvaluation {
+    required int64 sessionId = 1;
+    required string hash = 2;
+	required Evaluation evaluation = 3;
+}
+
+message LogOff {
+  required int64 sessionId = 1;
 }
 
 message Issue {
   required string hash = 1;
   required string bugPattern = 2;
   required int32 priority = 3;
-  required int32 rank = 8;
   required string primaryClass = 4;
   optional int64 firstSeen = 5;
   optional int64 lastSeen = 6;
   repeated Evaluation evaluations = 7;
 }
 
+// part of an issue
 message Evaluation {
   required string who = 1;
   required string designation = 2;
   required string comment = 3;
-  required int64 when = 5;
-  optional Invocation invocation = 6;
+  required int64 when = 4;
 }
 
-message Invocation {
-  required string who = 1;
-  required int64 startTime = 2;
-  required int64 endTime = 3;
-}
 
