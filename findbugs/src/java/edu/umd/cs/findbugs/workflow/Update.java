@@ -71,6 +71,7 @@ public class Update {
 	boolean noPackageMoves = false;
 	boolean useAnalysisTimes = false;
 
+	boolean noResurrections = false;
 	boolean preciseMatch = false;
 	boolean precisePriorityMatch = false;
 	int mostRecent = -1;
@@ -88,6 +89,9 @@ public class Update {
 			addSwitch(
 					"-noPackageMoves",
 			"if a class seems to have moved from one package to another, treat warnings in that class as two seperate warnings");
+			addSwitch(
+					"-noResurrections",
+			"if an issue had been detected in two versions but not in an intermediate version, record as two separate issues");
 			addSwitch("-preciseMatch",
 			"require bug patterns to match precisely");
 			addSwitch("-precisePriorityMatch",
@@ -121,6 +125,12 @@ public class Update {
 					noPackageMoves = true;
 				else
 					noPackageMoves = Boolean
+					.parseBoolean(optionExtraPart);
+			} else if (option.equals("-noResurrections")) {
+				if (optionExtraPart.length() == 0)
+					noResurrections = true;
+				else
+					noResurrections = Boolean
 					.parseBoolean(optionExtraPart);
 			} else if (option.equals("-preciseMatch")) {
 				preciseMatch = true;
@@ -593,15 +603,17 @@ public class Update {
 					continue;
 				for(Iterator<BugInstance> i = q.iterator(); i.hasNext(); ) {
 					BugInstance matchedBug = i.next();
-					if (matchedBug.isDead() && matchedBug.isRemovedByChangeOfPersistingClass()) {
-						if (newVersion - matchedBug.getLastVersion() > maxResurrection)
-							continue;
-					}
+					
+					
 					if (matchedBug.isDead()) {
-							// System.out.println("Resurrecting " + bug.getMessageWithoutPrefix());
-							resurrected.add(bug.getInstanceKey());
-						
+						if (noResurrections || matchedBug.isRemovedByChangeOfPersistingClass() 
+								&& newVersion - matchedBug.getLastVersion() > maxResurrection)
+							continue;
+						resurrected.add(bug.getInstanceKey());
+//						System.out.println("in version " + newCollection.getReleaseName());
+//						System.out.println("  resurrected " + bug.getMessageWithoutPrefix());
 					}
+					
 					matchedBugs++;
 					mapFromNewToOldBug.put(bug, matchedBug);
 					matchedOldBugs.put(matchedBug, null);
