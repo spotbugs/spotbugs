@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.log.Profiler;
+import edu.umd.cs.findbugs.log.YourKitController;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -99,6 +100,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private Collection<ClassDescriptor> referencedClassSet;
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
+	private YourKitController yourkitController = new YourKitController();
 	
 	private String currentClassName;
 
@@ -889,9 +891,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
 			
 			referencedClassSet.removeAll(badClasses);
 			bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
-			for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext();) {
-				AnalysisPass pass = i.next();
-
+			for (Iterator<AnalysisPass> passIterator = executionPlan.passIterator(); passIterator.hasNext();) {
+				AnalysisPass pass = passIterator.next();
+				yourkitController.advanceGeneration("Pass " + passCount);
+				
 				// The first pass is generally a non-reporting pass which
 				// gathers information about referenced classes.
 				boolean isNonReportingFirstPass = multiplePasses && passCount == 0;
@@ -998,6 +1001,8 @@ public class FindBugs2 implements IFindBugsEngine2 {
 					progress.finishClass();
 				}
 
+				if (!passIterator.hasNext())
+					yourkitController.captureMemorySnapshot();
 				// Call finishPass on each detector
 				for (Detector2 detector : detectorList) {
 					detector.finishPass();
