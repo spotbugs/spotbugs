@@ -51,7 +51,7 @@ public class FlybushServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		String uri = req.getRequestURI();
+		String uri = req.getServletPath();
 		if (uri.startsWith("/browser-auth/")) {
 	        UserService userService = UserServiceFactory.getUserService();
 	        User user = userService.getCurrentUser();
@@ -146,7 +146,7 @@ public class FlybushServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		if (req.getRequestURI().equals("/upload-issues")) {
+		if (req.getServletPath().equals("/upload-issues")) {
 			PersistenceManager pm = getPersistenceManager();
 			UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
 			SqlCloudSession session = lookupCloudSessionById(issues.getSessionId());

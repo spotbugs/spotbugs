@@ -382,7 +382,7 @@ public class FlybushServletTest extends TestCase {
 
 	private void prepareRequestAndResponse(String requestUri, byte[] input)
 			throws IOException {
-		when(mockRequest.getRequestURI()).thenReturn(requestUri);
+		when(mockRequest.getServletPath()).thenReturn(requestUri);
 		if (input != null) {
 			final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
 			when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
