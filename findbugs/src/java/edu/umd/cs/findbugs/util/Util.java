@@ -38,6 +38,8 @@ import java.util.AbstractSet;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -411,4 +413,18 @@ public class Util {
 
 	}
 
+	static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
+	public static <K, V> HashMap<K, V> makeSmallHashMap(Map<K, V> m) {
+		HashMap<K, V> result = new HashMap<K, V>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
+		result.putAll(m);
+		return result;
+
+	}
+	public static <K> HashSet<K> makeSmallHashSet(Collection<K> m) {
+		HashSet<K> result = new HashSet<K>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
+		result.addAll(m);
+		return result;
+
+	}
 }
