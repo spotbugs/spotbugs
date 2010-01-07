@@ -35,6 +35,7 @@ import javax.annotation.CheckForNull;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -82,7 +83,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
 	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
-	public static final boolean PROGRESS = SystemProperties.getBoolean("findbugs.progress");
+	public static final boolean PROGRESS = DEBUG || SystemProperties.getBoolean("findbugs.progress");
 	private static final boolean SCREEN_FIRST_PASS_CLASSES = SystemProperties.getBoolean("findbugs.screenFirstPass");
 	
 	private static final boolean DEBUG_UA = SystemProperties.getBoolean("ua.debug");
@@ -589,7 +590,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 		appClassList = builder.getAppClassList();
 
-		if (DEBUG) {
+		if (PROGRESS) {
 	        System.out.println(appClassList.size() + " classes scanned");
         }
 
@@ -615,7 +616,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 	private void buildReferencedClassSet() throws CheckedAnalysisException, InterruptedException {
 		// XXX: should drive progress dialog (scanning phase)?
 
-		if (DEBUG) {
+		if (PROGRESS) {
 	        System.out.println("Adding referenced classes");
         }
 		Set<String> referencedPackageSet = new HashSet<String>();
@@ -672,7 +673,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 			if (!knownDescriptors.contains(classDesc)) {
 				count++;
-				if (DEBUG && count % 5000 == 0) {
+				if (PROGRESS && count % 5000 == 0) {
 					System.out.println("Adding referenced class " + classDesc);
 				}
 			}
@@ -723,7 +724,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 
 		// Based on referenced packages, add any resolvable package-info classes
 		// to the set of referenced classes.
-		if (DEBUG) {
+		if (PROGRESS) {
 		referencedPackageSet.remove("");
 		System.out.println("Added " + count + " referenced classes");
 		System.out.println("Total of " + referencedPackageSet.size() + " packages");
@@ -845,7 +846,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 		// Stash the ExecutionPlan in the AnalysisCache.
 		Global.getAnalysisCache().eagerlyPutDatabase(ExecutionPlan.class, executionPlan);
 
-		if (DEBUG) {
+		if (PROGRESS) {
 			System.out.println(executionPlan.getNumPasses() + " passes in execution plan");
 		}
 	}
@@ -905,7 +906,7 @@ public class FindBugs2 implements IFindBugsEngine2 {
 					? referencedClassSet
 					: appClassList;
 				AnalysisContext.currentXFactory().canonicalizeAll();
-				if (DEBUG || LIST_ORDER) {
+				if (PROGRESS || LIST_ORDER) {
 					System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 					XFactory.profile();
 				}
@@ -942,9 +943,10 @@ public class FindBugs2 implements IFindBugsEngine2 {
 				progress.startAnalysis(classCollection.size());
 				int count = 0;
 				Global.getAnalysisCache().purgeAllMethodAnalysis();
+				Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
 				for (ClassDescriptor classDescriptor : classCollection) {
-					if (DEBUG) {
-						System.out.println(count + "/" + classCollection.size() + ": Class " + classDescriptor);
+					if (PROGRESS) {
+						System.out.printf("%d/%d  %d/%d %s\n", passCount, executionPlan.getNumPasses(), count,  classCollection.size(),  classDescriptor);
 						count++;
 					}
 

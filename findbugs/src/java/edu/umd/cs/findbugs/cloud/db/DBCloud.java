@@ -83,6 +83,7 @@ import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.cloud.AbstractCloud;
+import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Multiset;
@@ -93,6 +94,10 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public  class DBCloud extends AbstractCloud {
 
+	/**
+     * 
+     */
+    public static final String FINDBUGS_USER_PROPERTY = "findbugsUser";
 	static final boolean THROW_EXCEPTION_IF_CANT_CONNECT = false;
 	/**
      * 
@@ -247,12 +252,16 @@ public  class DBCloud extends AbstractCloud {
 		dbName = getJDBCProperty("dbName");
 		dbUser = getJDBCProperty("dbUser");
 		dbPassword = getJDBCProperty("dbPassword");
+		findbugsUser = getCloudProperty(FINDBUGS_USER_PROPERTY);
 		if (PROMPT_FOR_USER_NAME)
 			ipAddressLookup = new IPAddressLookup();
 	}
 	
 	public boolean availableForInitialization() {
 		if (sqlDriver == null || dbUser == null || url == null || dbPassword == null) {
+			if (CloudFactory.DEBUG) 
+				bugCollection.getProject().getGuiCallback().showMessageDialog(String.format("%s %s %s %s", sqlDriver, dbUser, url, dbPassword));
+			
 			if (THROW_EXCEPTION_IF_CANT_CONNECT)
 				throw new RuntimeException("Unable to load database properties");
 			return false;
@@ -525,10 +534,15 @@ public  class DBCloud extends AbstractCloud {
 		return s.substring(0, maxLength);
 	}
 
+
 	 static String getCloudProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.cloud." + propertyName);
 	}
-	static String getJDBCProperty(String propertyName) {
+
+	public static void setCloudProperty(String propertyName, String value) {
+		SystemProperties.setProperty("findbugs.cloud." + propertyName, value);
+	}
+	private static String getJDBCProperty(String propertyName) {
 		return SystemProperties.getProperty("findbugs.jdbc." + propertyName);
 	}
 
@@ -1200,13 +1214,12 @@ public  class DBCloud extends AbstractCloud {
      * @see edu.umd.cs.findbugs.cloud.Cloud#setUserDesignation(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.cloud.UserDesignation, long)
      */
     public void setUserDesignation(BugInstance b, UserDesignation u, long timestamp) {
-    		
+    	if (u == UserDesignation.UNCLASSIFIED)
+    		   return;
     	BugData data = getBugData(b);
     	
 	    BugDesignation bd = data.getUserDesignation();
 	    if (bd == null) {
-	    	if (u == UserDesignation.UNCLASSIFIED) 
-	    		return;
 	    	bd = data.getNonnullUserDesignation();
 	    }
 	    bd.setDesignationKey(u.name());

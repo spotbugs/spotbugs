@@ -65,14 +65,12 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			constantOnTOS = true;			
 			return;
 		case INVOKEVIRTUAL:
-			String refConstantOperand = getRefConstantOperand();
-			if(false){
-				System.out.println(refConstantOperand);
-			}
-			if (refConstantOperand.equals("java.lang.String.intern : ()Ljava.lang.String;"))
+			if (!getClassConstantOperand().equals("java/lang/String"))
+				break;
+			if (getNameConstantOperand().equals("intern"))
 				callToInternSeen = true;
-			if (refConstantOperand.equals("java.lang.String.equals : (Ljava.lang.Object;)Z")
-				    || refConstantOperand.equals("java.lang.String.compareTo : (Ljava.lang.String;)I"))
+			if (getNameConstantOperand().equals("equals")
+				    || getNameConstantOperand().equals("compareTo"))
 				callToEqualsSeen = true;
 			break;
 		case IF_ACMPEQ:

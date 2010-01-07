@@ -122,9 +122,8 @@ public class FieldSummary {
 			fieldsWritten.put(method, Collections.singleton(Util.first(fields)));
 			return;
 		}
-		 HashSet<XField> set = new HashSet<XField>(10*fields.size()/7 + 1);
-		 set.addAll(fields);
-		fieldsWritten.put(method, set);
+
+		fieldsWritten.put(method, Util.makeSmallHashSet(fields));
 	}
 	
 	public Set<XField> getFieldsWritten(XMethod method) {

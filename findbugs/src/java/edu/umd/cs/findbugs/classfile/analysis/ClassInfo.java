@@ -38,7 +38,11 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
+import edu.umd.cs.findbugs.util.MultiMap;
+import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
  * ClassInfo represents important metadata about a loaded class, such as its
@@ -50,6 +54,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	private final FieldInfo[] xFields;
 
 	private final MethodInfo[] xMethods;
+	private final MethodInfo[] methodsInCallOrder;
 
 	private final ClassDescriptor immediateEnclosingClass;
 
@@ -61,9 +66,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 
 	public static class Builder extends ClassNameAndSuperclassInfo.Builder {
-		private List<FieldInfo>fieldDescriptorList = new LinkedList<FieldInfo>();
+		private List<FieldInfo>fieldInfoList = new LinkedList<FieldInfo>();
 
-		private List<MethodInfo> methodDescriptorList  = new LinkedList<MethodInfo>();
+		private List<MethodInfo> methodInfoList  = new LinkedList<MethodInfo>();
 
 		/**
 		 * Mapping from one method signature to its bridge method signature
@@ -81,11 +86,11 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
         public ClassInfo build() {
 			FieldInfo fields [];
 			MethodInfo methods[];
-			if (fieldDescriptorList.size() == 0)
+			if (fieldInfoList.size() == 0)
 				fields = FieldInfo.EMPTY_ARRAY;
-			else fields = fieldDescriptorList.toArray(new FieldInfo[fieldDescriptorList.size()]);
+			else fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
 
-			for (ListIterator<MethodInfo> mths = methodDescriptorList.listIterator(); mths.hasNext();) {
+			for (ListIterator<MethodInfo> mths = methodInfoList.listIterator(); mths.hasNext();) {
 				MethodInfo method = mths.next();
 				String signature = method.getSignature();
 				String bridgeSignature = bridgedSignatures.get(signature);
@@ -94,9 +99,9 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 					mths.set(bridgeMethod);
 				}
 			}
-			if (methodDescriptorList.size() == 0)
+			if (methodInfoList.size() == 0)
 				methods = MethodInfo.EMPTY_ARRAY;
-			else methods = methodDescriptorList.toArray(new MethodInfo[methodDescriptorList.size()]);
+			else methods = methodInfoList.toArray(new MethodInfo[methodInfoList.size()]);
 			
 			return new ClassInfo(classDescriptor,classSourceSignature, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, source, majorVersion, minorVersion, 
 					referencedClassDescriptorList,calledClassDescriptorList,
@@ -127,10 +132,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		 *            The fieldDescriptorList to set.
 		 */
 		public void setFieldDescriptorList(FieldInfo [] fieldDescriptorList) {
-			this.fieldDescriptorList = Arrays.asList(fieldDescriptorList);
+			this.fieldInfoList = Arrays.asList(fieldDescriptorList);
 		}
 		public void addFieldDescriptor(FieldInfo field) {
-			fieldDescriptorList.add(field);
+			fieldInfoList.add(field);
 		}
 
 		/**
@@ -138,10 +143,10 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 		 *            The methodDescriptorList to set.
 		 */
 		public void setMethodDescriptorList(MethodInfo[] methodDescriptorList) {
-			this.methodDescriptorList = Arrays.asList(methodDescriptorList);
+			this.methodInfoList = Arrays.asList(methodDescriptorList);
 		}
 		public void addMethodDescriptor(MethodInfo method) {
-			methodDescriptorList.add(method);
+			methodInfoList.add(method);
 		}
 		public void addBridgeMethodDescriptor(MethodInfo method, String bridgedSignature) {
 			if (bridgedSignature != null) {
@@ -167,6 +172,24 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 
 
 	}
+	  private MethodInfo[] computeMethodsInCallOrder() {
+		   final Map<String, MethodInfo> map = new HashMap<String, MethodInfo>();
+			
+			for (MethodInfo m : xMethods) {
+				map.put(m.getName() + m.getSignature() + m.isStatic(), m);
+			}
+			final MultiMap<MethodInfo, MethodInfo> multiMap =
+				SelfMethodCalls.getSelfCalls(getClassDescriptor(), map);
+			OutEdges<MethodInfo> edges1 = new OutEdges<MethodInfo>() {
+
+				public Collection<MethodInfo> getOutEdges(MethodInfo method) {
+					return multiMap.get(method);
+				}
+			};
+			List<MethodInfo> result = TopologicalSort.sortByCallGraph(Arrays.asList(xMethods), edges1);
+			assert xMethods.length == result.size();
+		    return result.toArray(new MethodInfo[result.size()]);
+	    }
 
 	/**
 	 * 
@@ -186,7 +209,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 * @param calledClassDescriptors TODO
 	 * @param fieldDescriptorList
 	 *            FieldDescriptors of fields defined in the class
-	 * @param methodDescriptorList
+	 * @param methodInfoList
 	 *            MethodDescriptors of methods defined in the class
 	 * @param usesConcurrency TODO
 	 * @param hasStubs TODO
@@ -196,18 +219,19 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 			Collection<ClassDescriptor> referencedClassDescriptorList,
 			Collection<ClassDescriptor> calledClassDescriptors,
 			Map<ClassDescriptor, AnnotationValue> classAnnotations, FieldInfo[] fieldDescriptorList,
-			MethodInfo[] methodDescriptorList, ClassDescriptor immediateEnclosingClass, boolean usesConcurrency, boolean hasStubs) {
+			MethodInfo[] methodInfoList, ClassDescriptor immediateEnclosingClass, boolean usesConcurrency, boolean hasStubs) {
 		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags, referencedClassDescriptorList, calledClassDescriptors,   majorVersion,  minorVersion);
 		this.source = source;
 		this.classSourceSignature = classSourceSignature;
 		if (fieldDescriptorList.length == 0) 
 			fieldDescriptorList = FieldInfo.EMPTY_ARRAY;
 		this.xFields = fieldDescriptorList;
-		this.xMethods = methodDescriptorList;
+		this.xMethods = methodInfoList;
 		this.immediateEnclosingClass = immediateEnclosingClass;
 		this.classAnnotations = Util.immutableMap(classAnnotations);
 		this.usesConcurrency = usesConcurrency;
 		this.hasStubs = hasStubs;
+		this.methodsInCallOrder = computeMethodsInCallOrder();
 	}
 
 	/**
@@ -222,6 +246,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass, Ann
 	 */
 	public List<? extends XMethod> getXMethods() {
 		return Arrays.asList(xMethods);
+	}
+	/**
+	 * @return Returns the methodDescriptorList.
+	 */
+	public List<? extends XMethod> getXMethodsInCallOrder() {
+		return Arrays.asList(methodsInCallOrder);
 	}
 
 	/* (non-Javadoc)

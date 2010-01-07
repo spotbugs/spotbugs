@@ -80,6 +80,9 @@ public class SystemProperties {
             }
 		}
 	
+	public static Properties getProperties() {
+		return properties;
+	}
 	/**
 	 * This method is public to allow clients to set system properties via any {@link URL}
 	 * 
@@ -178,6 +181,13 @@ public class SystemProperties {
 		
 	}
 
+	/**
+	 * @param name property name
+	 * @return string value (or null if the property does not exist)
+	 */
+	public static void setProperty(String name, String value) {
+		 properties.setProperty(name, value);
+	}
 	/**
 	 * @param name property name
 	 * @param defaultValue default value

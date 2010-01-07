@@ -111,10 +111,15 @@ public interface IAnalysisCache {
 	public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor);
 
 	/**
-	 * Purge all analysis results for all methods.
+	 * Purge all method analysis results for all methods.
 	 */
 	public void purgeAllMethodAnalysis();
 
+	/**
+	 * Purge all class analysis results of a particular kind
+	 */
+	 public void purgeClassAnalysis(Class<?> analysisClass);
+	 
 	/**
 	 * Register a database factory.
 	 * 

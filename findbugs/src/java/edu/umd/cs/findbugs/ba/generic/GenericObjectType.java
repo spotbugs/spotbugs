@@ -28,6 +28,8 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -170,8 +172,8 @@ public class GenericObjectType extends ObjectType {
 	 * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
 	 * @param parameters the parameters of this class, must be at least 1 parameter
 	 */
-	GenericObjectType(String class_name, List<? extends ReferenceType> parameters) {
-		super(class_name);
+	GenericObjectType(@DottedClassName String class_name, List<? extends ReferenceType> parameters) {
+		super(DescriptorFactory.canonicalizeString(class_name));
 		variable = null;
 		extension = null;
 		if (parameters == null || parameters.size() == 0)

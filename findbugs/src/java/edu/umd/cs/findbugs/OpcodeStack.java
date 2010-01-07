@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -396,13 +397,13 @@ public class OpcodeStack implements Constants2
 			 this.registerNumber = reg;
 		 }
 		 public Item(String signature, FieldAnnotation f) {
-			this.signature = signature;
+			this.signature = DescriptorFactory.canonicalizeString(signature);
 			if (f != null)
 				source = XFactory.createXField(f);
 			fieldLoadedFromRegister = -1;
 		 }
 		public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
-			this.signature = signature;
+			this.signature = DescriptorFactory.canonicalizeString(signature);
 			if (f != null)
 				source = XFactory.createXField(f);
 			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
@@ -429,7 +430,7 @@ public class OpcodeStack implements Constants2
 		}
 
 		 public Item(String signature, Object constantValue) {
-			 this.signature = signature;
+			 this.signature = DescriptorFactory.canonicalizeString(signature);
 			 constValue = constantValue;
 			 if (constantValue instanceof Integer) {
 				 int value = ((Integer) constantValue).intValue();

@@ -181,6 +181,10 @@ public class AnalysisCache implements IAnalysisCache {
 		return (Map<ClassDescriptor, E>) descriptorMap;
 	}
 
+
+	 public void purgeClassAnalysis(Class<?> analysisClass) {
+		classAnalysisMap.remove(analysisClass);
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */

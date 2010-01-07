@@ -500,6 +500,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
 	}
 
+	/** clear the user designation. */
+	public void clearUserDesignation() {
+		userDesignation = null;
+	}
 	/** set the user designation object. This will clobber any
 	 *  existing annotationText (or any other BugDesignation field). */
 	@Deprecated
@@ -541,7 +545,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  @return the user designation key
 	 */
 	@NonNull public String getUserDesignationKey() {
-		if (userDesignation == null) return BugDesignation.UNCLASSIFIED;
+		if (userDesignation == null) 
+			return BugDesignation.UNCLASSIFIED;
 		return userDesignation.getDesignationKey();
 	}
 	

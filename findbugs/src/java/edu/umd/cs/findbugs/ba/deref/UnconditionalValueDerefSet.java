@@ -65,7 +65,7 @@ public class UnconditionalValueDerefSet {
 	public UnconditionalValueDerefSet(int numValueNumbersInMethod) {
 		this.numValueNumbersInMethod = numValueNumbersInMethod;
 		this.valueNumbersUnconditionallyDereferenced = new BitSet();
-	   this.derefLocationSetMap = new HashMap<ValueNumber, Set<Location>>();
+	   this.derefLocationSetMap = new HashMap<ValueNumber, Set<Location>>(3);
 
 	}
 

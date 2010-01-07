@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
@@ -39,9 +40,6 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -66,7 +64,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.SelfMethodCalls;
 import edu.umd.cs.findbugs.classfile.engine.bcel.NonExceptionPostdominatorsAnalysis;
@@ -122,7 +119,7 @@ public class ClassContext {
 		this.methodAnalysisObjectMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
 		try {
 	        classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, DescriptorFactory.createClassDescriptor(jclass));
-        } catch (CheckedAnalysisException e) {
+	     } catch (CheckedAnalysisException e) {
 	       throw new AssertionError("No ClassInfo for " + jclass);
         }
 	}
@@ -238,11 +235,37 @@ public class ClassContext {
 		return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
 	}
 
-	@CheckForNull List<Method> methodsInCallOrder = null;
 	public @NonNull List<Method> getMethodsInCallOrder() {
+		Map<XMethod,Method> map = new HashMap<XMethod, Method>();
+		for(Method m : getJavaClass().getMethods()) {
+			XMethod xMethod = classInfo.findMethod(m.getName(), m.getSignature(), m.isStatic());
+			map.put(xMethod, m);
+		}
+		List<? extends XMethod> xmethodsInCallOrder = classInfo.getXMethodsInCallOrder();
+		List<Method> methodsInCallOrder = new ArrayList<Method>(xmethodsInCallOrder.size());
+		for(XMethod x : xmethodsInCallOrder) {
+			Method m = map.get(x);
+			if (m != null)
+				methodsInCallOrder.add(m);
+		}
+		return methodsInCallOrder;
+	}
+	
+	@CheckForNull List<Method> methodsInCallOrder = null;
+	public @NonNull List<Method> getMethodsInCallOrder2() {
 		if (methodsInCallOrder != null) 
 			return methodsInCallOrder;
-		List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
+		List<Method> result = computeMethodsInCallOrder();
+		
+		methodsInCallOrder = result;
+		
+		return methodsInCallOrder;
+	}
+	/**
+     * @return
+     */
+    private List<Method> computeMethodsInCallOrder() {
+	    List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
 		final Map<String, Method> map = new HashMap<String, Method>();
 		
 		for (Method m : methodList) {
@@ -256,41 +279,10 @@ public class ClassContext {
 				return multiMap.get(method);
 			}
 		};
-		if (false) {
-		OutEdges<Method> edges2 =  new OutEdges<Method>() {
-			final ConstantPoolGen cpg = getConstantPoolGen();
-			final String thisClassName = getJavaClass().getClassName();
-		
-			public Collection<Method> getOutEdges(Method method) {
-				HashSet<Method> result = new HashSet<Method>();
-				try {
-					CFG cfg = getCFG(method);
-					for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-						Instruction ins = i.next().getHandle().getInstruction();
-						if (ins instanceof InvokeInstruction) {
-							InvokeInstruction inv = (InvokeInstruction) ins;
-							String className = inv.getClassName(cpg);
-							if (!thisClassName.equals(className)) continue;
-							String signature = inv.getSignature(cpg);
-							if (signature.indexOf('L') < 0 && signature.indexOf('[') < 0) continue;
-							String methodKey = inv.getMethodName(cpg) + signature + (inv instanceof INVOKESTATIC);
-							Method method2 = map.get(methodKey);
-							if (method2 != null) result.add(method2);
-						}
-					}
-				} catch (CFGBuilderException e) {
-					AnalysisContext.logError("Error getting methods called by " + thisClassName + "." + method.getName() + ":"
-							+ method.getSignature(), e);
-				}
-				return result;
-			}
-		};
-		}
-		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, edges1);
-		
-		assert methodList.size() == methodsInCallOrder.size();
-		return methodsInCallOrder;
-	}
+		List<Method> result = TopologicalSort.sortByCallGraph(methodList, edges1);
+		assert methodList.size() == result.size();
+	    return result;
+    }
 
 	/**
 	 * Get the AnalysisContext.

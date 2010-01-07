@@ -205,7 +205,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		super.copyFrom(other);
 		decision = ((IsNullValueFrame)other).decision;
 		if (trackValueNumbers) {
-			knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
+			knownValueMap = Util.makeSmallHashMap(((IsNullValueFrame)other).knownValueMap);
+			;
+			
 		}
 	}
 
