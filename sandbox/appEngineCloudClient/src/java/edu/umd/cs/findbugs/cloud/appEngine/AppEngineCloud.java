@@ -22,6 +22,9 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 public class AppEngineCloud extends AbstractCloud {
 
+	// private static final String HOST = "http://theflybush.appspot.com";
+	private static final String HOST = "http://localhost:8080";
+	
 	private Map<String, Issue> issuesByHash = new HashMap<String, Issue>();
 	private String user;
 
@@ -111,7 +114,8 @@ public class AppEngineCloud extends AbstractCloud {
 	/** package-private for testing */
 	HttpURLConnection openConnection(String url)
 			throws IOException, MalformedURLException {
-		return (HttpURLConnection) new URL("http://theflybush.appspot.com" + url).openConnection();
+		URL u = new URL(HOST + url);
+		return (HttpURLConnection) u.openConnection();
 	}
 
 
