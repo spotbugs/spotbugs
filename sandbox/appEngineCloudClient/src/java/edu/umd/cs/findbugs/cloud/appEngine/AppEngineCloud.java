@@ -25,7 +25,7 @@ public class AppEngineCloud extends AbstractCloud {
 	private Map<String, Issue> issuesByHash = new HashMap<String, Issue>();
 	private String user;
 
-	protected AppEngineCloud(BugCollection bugs) {
+	public AppEngineCloud(BugCollection bugs) {
 		super(bugs);
 
 	}
@@ -43,8 +43,8 @@ public class AppEngineCloud extends AbstractCloud {
 
 	@Override
 	public boolean initialize() {
-		// TODO Auto-generated method stub
-		return false;
+		bugsPopulated();
+		return true;
 	}
 
 	@Override
@@ -73,14 +73,15 @@ public class AppEngineCloud extends AbstractCloud {
 	private @CheckForNull LogInResponse submitHashes(Map<String, BugInstance> bugsByHash)
 			throws IOException, MalformedURLException {
 		HttpURLConnection conn = openConnection("/find-issues");
+		conn.setDoOutput(true);
 		conn.connect();
-		LogIn hashList = LogIn.newBuilder().addAllMyIssueHashes(bugsByHash.keySet()).build();
+		LogIn hashList = LogIn.newBuilder().setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
+		.setSessionId(0).addAllMyIssueHashes(bugsByHash.keySet()).build();
 		OutputStream stream = conn.getOutputStream();
 		hashList.writeTo(stream);
 		stream.close();
 		if (conn.getResponseCode() != 200) {
-			// TODO error
-			return null;
+			throw new IOException("Response code " + conn.getResponseCode() + " : " + conn.getResponseMessage());
 		}
 		LogInResponse response = LogInResponse.parseFrom(conn.getInputStream());
 		conn.disconnect();
@@ -110,7 +111,7 @@ public class AppEngineCloud extends AbstractCloud {
 	/** package-private for testing */
 	HttpURLConnection openConnection(String url)
 			throws IOException, MalformedURLException {
-		return (HttpURLConnection) new URL("http://localhost:8080" + url).openConnection();
+		return (HttpURLConnection) new URL("http://theflybush.appspot.com" + url).openConnection();
 	}
 
 
