@@ -51,7 +51,7 @@ public class FlybushServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		String uri = req.getServletPath();
+		String uri = req.getPathInfo();
 		if (uri.startsWith("/browser-auth/")) {
 	        UserService userService = UserServiceFactory.getUserService();
 	        User user = userService.getCurrentUser();
@@ -97,16 +97,7 @@ public class FlybushServlet extends HttpServlet {
 		    }
 		    resp.flushBuffer();
 
-		} else if (uri.equals("/find-issues")) {
-			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
-			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
-		    for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList())) {
-				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
-				issueProtos.addFoundIssues(issueProto);
-			}
-		    issueProtos.build().writeTo(resp.getOutputStream());
-
-		} else if (uri.startsWith("/get-evaluations/")) {
+		}  else if (uri.startsWith("/get-evaluations/")) {
 			long startTime = Long.parseLong(uri.substring("/get-evaluations/".length()));
 			List<DbEvaluation> evaluations = (List<DbEvaluation>) getPersistenceManager().newQuery(
 					"select from " + DbEvaluation.class.getName()
@@ -146,7 +137,9 @@ public class FlybushServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		if (req.getServletPath().equals("/upload-issues")) {
+		String uri = req.getPathInfo();
+		
+		if (uri.equals("/upload-issues")) {
 			PersistenceManager pm = getPersistenceManager();
 			UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
 			SqlCloudSession session = lookupCloudSessionById(issues.getSessionId());
@@ -175,6 +168,15 @@ public class FlybushServlet extends HttpServlet {
 			pm.makePersistentAll(newDbIssues);
 			resp.setStatus(200);
 			resp.setContentType("text/plain");
+		} else if (uri.equals("/find-issues")) {
+			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
+			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
+		    for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList())) {
+				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+				issueProtos.addFoundIssues(issueProto);
+			}
+		    issueProtos.build().writeTo(resp.getOutputStream());
+
 		} else {
 			show404(resp);
 		}
