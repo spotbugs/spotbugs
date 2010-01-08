@@ -19,14 +19,17 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.db.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
 	// private static final String HOST = "http://theflybush.appspot.com";
 	private static final String HOST = "http://localhost:8080";
-	
+
 	private Map<String, Issue> issuesByHash = new HashMap<String, Issue>();
 	private String user;
+
+	private String findbugsUser;
 
 	public AppEngineCloud(BugCollection bugs) {
 		super(bugs);
@@ -38,19 +41,20 @@ public class AppEngineCloud extends AbstractCloud {
 		this.user = user;
 	}
 
-	@Override
 	public boolean availableForInitialization() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
-	@Override
 	public boolean initialize() {
+		findbugsUser = new AppEngineNameLookup().getUserName(bugCollection);
+		
+		if (findbugsUser == null)
+			return false;
 		bugsPopulated();
 		return true;
 	}
 
-	@Override
 	public void bugsPopulated() {
 		Map<String, BugInstance> bugsByHash = new HashMap<String, BugInstance>();
 
@@ -65,7 +69,7 @@ public class AppEngineCloud extends AbstractCloud {
 				issuesByHash.put(issue.getHash(), issue);
 				bugsByHash.remove(issue.getHash());
 			}
-			sendIssues(bugsByHash.values());
+			uploadIssues(bugsByHash.values());
 
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -78,13 +82,17 @@ public class AppEngineCloud extends AbstractCloud {
 		HttpURLConnection conn = openConnection("/find-issues");
 		conn.setDoOutput(true);
 		conn.connect();
-		LogIn hashList = LogIn.newBuilder().setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
-		.setSessionId(0).addAllMyIssueHashes(bugsByHash.keySet()).build();
+		LogIn hashList = LogIn.newBuilder()
+				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
+				.setSessionId(0)
+				.addAllMyIssueHashes(bugsByHash.keySet())
+				.build();
 		OutputStream stream = conn.getOutputStream();
 		hashList.writeTo(stream);
 		stream.close();
 		if (conn.getResponseCode() != 200) {
-			throw new IOException("Response code " + conn.getResponseCode() + " : " + conn.getResponseMessage());
+			throw new IOException("Response code " + conn.getResponseCode()
+					+ " : " + conn.getResponseMessage());
 		}
 		LogInResponse response = LogInResponse.parseFrom(conn.getInputStream());
 		conn.disconnect();
@@ -92,7 +100,8 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	/** package-private for testing */
-	void sendIssues(Collection<BugInstance> bugsToSend) throws MalformedURLException, IOException {
+	void uploadIssues(Collection<BugInstance> bugsToSend)
+			throws MalformedURLException, IOException {
 		UploadIssues.Builder issueList = UploadIssues.newBuilder();
 		for (BugInstance bug: bugsToSend) {
 			issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
@@ -105,6 +114,7 @@ public class AppEngineCloud extends AbstractCloud {
 					.build());
 		}
 		HttpURLConnection conn = openConnection("/upload-issues");
+		conn.setDoOutput(true);
 		conn.connect();
 		OutputStream stream = conn.getOutputStream();
 		issueList.build().writeTo(stream);
@@ -119,29 +129,24 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 
-	@Override
 	public String getUser() {
 		return user;
 	}
 
-	@Override
 	public void bugFiled(BugInstance b, Object bugLink) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public long getUserTimestamp(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
 		if (e == null) return Long.MAX_VALUE;
 		return e.getWhen();
 	}
 
-	@Override
 	public void setUserTimestamp(BugInstance b, long timestamp) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public UserDesignation getUserDesignation(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
 		if (e == null)
@@ -165,26 +170,22 @@ public class AppEngineCloud extends AbstractCloud {
 		return mostRecent;
 	}
 
-	@Override
 	public void setUserDesignation(BugInstance b, UserDesignation u,
 			long timestamp) {
 		throw new UnsupportedOperationException();
 
 	}
 
-	@Override
 	public String getUserEvaluation(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
 		if (e == null) return null;
 		return e.getComment();
 	}
 
-	@Override
 	public void setUserEvaluation(BugInstance b, String e, long timestamp) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public long getFirstSeen(BugInstance b) {
 		Issue issue = issuesByHash.get(b.getInstanceHash());
 		if (issue == null)
@@ -193,7 +194,6 @@ public class AppEngineCloud extends AbstractCloud {
 
 	}
 
-	@Override
 	public void storeUserAnnotation(BugInstance bugInstance) {
 		throw new UnsupportedOperationException();
 	}
