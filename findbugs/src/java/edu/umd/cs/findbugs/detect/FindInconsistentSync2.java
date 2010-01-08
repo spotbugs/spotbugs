@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,7 +54,6 @@ import edu.umd.cs.findbugs.CallGraphEdge;
 import edu.umd.cs.findbugs.CallGraphNode;
 import edu.umd.cs.findbugs.CallSite;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SelfCalls;
@@ -85,6 +85,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Find instance fields which are sometimes accessed (read or written)
@@ -203,8 +204,8 @@ public class FindInconsistentSync2 implements Detector {
 		private final int[] countList = new int[6];
 		private int numLocalLocks = 0;
 		private int numGetterMethodAccesses = 0;
-		private List<FieldAccess> unsyncAccessList = new ArrayList<FieldAccess>();
-		private List<FieldAccess> syncAccessList = new ArrayList<FieldAccess>();
+		private List<FieldAccess> unsyncAccessList = Collections.emptyList();
+		private List<FieldAccess> syncAccessList = Collections.emptyList();
 		boolean interesting = true;
 		final boolean  servletField;
 
@@ -256,7 +257,11 @@ public class FindInconsistentSync2 implements Detector {
 				unsyncAccessList = null;
 				return;
 			}
-			(isLocked ? syncAccessList : unsyncAccessList).add(new FieldAccess(method, handle.getPosition()));
+			FieldAccess fa = new FieldAccess(method, handle.getPosition());
+			if (isLocked) 
+				syncAccessList = Util.addTo(syncAccessList, fa);
+			else
+				unsyncAccessList = Util.addTo(unsyncAccessList, fa);
 		}
 		
 		public Iterator<SourceLineAnnotation> unsyncAccessIterator() {

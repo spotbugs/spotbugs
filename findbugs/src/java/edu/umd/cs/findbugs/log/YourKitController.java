@@ -37,7 +37,6 @@ public class YourKitController {
 			controller = c.newInstance();
 			advanceGeneration = c.getMethod("advanceGeneration", String.class);
 			captureMemorySnapshot = c.getMethod("captureMemorySnapshot");
-			System.out.println("Yourkit controller created");
 		} catch (Exception e) {
 			controller = null;
 		}

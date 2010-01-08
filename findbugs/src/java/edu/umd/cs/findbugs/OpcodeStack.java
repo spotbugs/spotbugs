@@ -392,6 +392,10 @@ public class OpcodeStack implements Constants2
 			this.specialKind = it.specialKind;
 			this.pc = it.pc;
 		 }
+		  public Item(Item it, String signature) {
+			  this(it);
+			  this.signature =  DescriptorFactory.canonicalizeString(signature);
+			 }
 		 public Item(Item it, int reg) {
 			 this(it);
 			 this.registerNumber = reg;
@@ -1146,8 +1150,7 @@ public class OpcodeStack implements Constants2
 						 castTo = "L" + castTo + ";";
 					 it = pop();
 					 if (!it.signature.equals(castTo)) {
-						 it = new Item(it);
-						 it.signature = castTo;
+						 it = new Item(it, castTo);
 					 }
 					 push(it);
 					 break;

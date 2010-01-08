@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -427,6 +429,12 @@ public class Util {
 		return result;
 
 	}
+	public static <K> ArrayList<K> makeSmallArrayList(List<K> m) {
+		ArrayList<K> result = new ArrayList<K>(m.size()+2);
+		result.addAll(m);
+		return result;
+
+	}
 	
 	public static <K> Set<K> addTo(Set<K> s, K k) {
 		if (s.isEmpty())
@@ -441,5 +449,13 @@ public class Util {
 		result.add(k);
 		return result;
 
+	}
+	public static <K> List<K> addTo(List<K> s, K k) {
+		if (s.isEmpty())
+			return Collections.singletonList(k);
+		if (!(s instanceof ArrayList))
+		  s = makeSmallArrayList(s);
+		s.add(k);
+		return s;
 	}
 }
