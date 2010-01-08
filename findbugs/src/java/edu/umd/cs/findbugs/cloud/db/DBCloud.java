@@ -590,7 +590,11 @@ public  class DBCloud extends AbstractCloud {
 		}
 		
 		
-		findbugsUser = new AppEngineNameLookup().getUserName(bugCollection);
+		AppEngineNameLookup appEngineNameLookup = new AppEngineNameLookup();
+		if (!appEngineNameLookup.init()) {
+			return false;
+		}
+		findbugsUser = appEngineNameLookup.getUsername();
 		
 		if (findbugsUser == null)
 			return false;
