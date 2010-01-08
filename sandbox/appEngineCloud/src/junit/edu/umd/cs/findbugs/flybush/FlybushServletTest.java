@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.Builder;
 
 public class FlybushServletTest extends TestCase {
 
@@ -108,18 +109,28 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(418, "FAIL\n");
 	}
 
+	public void testFindIssuesUnauthenticated() throws IOException {
+		executePost("/find-issues", createAuthenticatedLogInMsg()
+				.addMyIssueHashes("ABC").build().toByteArray());
+		checkResponse(403, "not authenticated");
+	}
+
 	public void testFindIssuesNoneFound() throws IOException {
-		executeGet("/find-issues", LogIn.newBuilder().addMyIssueHashes("ABC").build().toByteArray());
+    	createCloudSession(555);
+		executePost("/find-issues", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		checkResponseCode(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 	}
 
 	public void testFindIssuesSomeFound() throws IOException {
+    	createCloudSession(555);
+
 		DbIssue foundIssue = createDbIssue("OLD_BUG");
 		pmf.getPersistenceManager().makePersistent(foundIssue);
 
-		LogIn loginMsg = LogIn.newBuilder().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
-		executeGet("/find-issues", loginMsg.toByteArray());
+		LogIn loginMsg = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
+		executePost("/find-issues", loginMsg.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
@@ -127,6 +138,8 @@ public class FlybushServletTest extends TestCase {
 	}
 
 	public void testFindIssuesWithEvaluations() throws IOException {
+    	createCloudSession(555);
+
 		DbIssue foundIssue = createDbIssue("OLD_BUG");
 		DbEvaluation eval = createEvaluation(foundIssue);
 		foundIssue.addEvaluation(eval);
@@ -135,8 +148,8 @@ public class FlybushServletTest extends TestCase {
 		// exception when attempting to persist the eval with the issue.
 		pmf.getPersistenceManager().makePersistent(foundIssue);
 
-		LogIn hashesToFind = LogIn.newBuilder().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
-		executeGet("/find-issues", hashesToFind.toByteArray());
+		LogIn hashesToFind = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
+		executePost("/find-issues", hashesToFind.toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getFoundIssuesCount());
 
@@ -151,25 +164,13 @@ public class FlybushServletTest extends TestCase {
 
 	public void testFindLotsOfIssues() throws IOException {
 		createCloudSession(555);
-		PersistenceManager persistenceManager = pmf.getPersistenceManager();
-		persistenceManager.makePersistentAll(createDbIssue("2"), createDbIssue("5"), createDbIssue("12"));
-		PersistenceManagerFactory spyPmf = spy(pmf);
-		PersistenceManager spyPersistenceManager = spy(persistenceManager);
-		when(spyPmf.getPersistenceManager()).thenReturn(spyPersistenceManager);
-		final List<String> queries = new ArrayList<String>();
-		when(spyPersistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
-			public Query answer(InvocationOnMock invocation) throws Throwable {
-				queries.add((String) invocation.getArguments()[0]);
-				return (Query) invocation.callRealMethod();
-			}
-		});
-		servlet.setPmf(spyPmf);
+		List<String> queries = installQueryCollector(DbIssue.class.getName());
 
-		LogIn.Builder loginMsg = LogIn.newBuilder().setSessionId(555);
+		LogIn.Builder loginMsg = createAuthenticatedLogInMsg();
 		for (int i = 0; i < 15; i++) {
 			loginMsg.addMyIssueHashes(Integer.toString(i));
 		}
-		executeGet("/find-issues", loginMsg.build().toByteArray());
+		executePost("/find-issues", loginMsg.build().toByteArray());
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(3, result.getFoundIssuesCount());
 
@@ -269,6 +270,39 @@ public class FlybushServletTest extends TestCase {
 
 	// ========================= end of tests ================================
 
+
+	private Builder createAuthenticatedLogInMsg() {
+		return LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100);
+	}
+
+	/**
+	 * Intercepts database queries made during the servlet execution, adding
+	 * adds all query strings to the returned list.
+	 *
+	 * @param regex a regular expression to filter the collected queries
+	 * @return a list which will be populated with query strings as the
+	 * 		   servlet runs
+	 */
+	private List<String> installQueryCollector(final String regex) {
+		PersistenceManager persistenceManager = pmf.getPersistenceManager();
+		persistenceManager.makePersistentAll(createDbIssue("2"), createDbIssue("5"), createDbIssue("12"));
+		PersistenceManagerFactory spyPmf = spy(pmf);
+		PersistenceManager spyPersistenceManager = spy(persistenceManager);
+		when(spyPmf.getPersistenceManager()).thenReturn(spyPersistenceManager);
+		final List<String> queries = new ArrayList<String>();
+		when(spyPersistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
+			public Query answer(InvocationOnMock invocation) throws Throwable {
+				String query = (String) invocation.getArguments()[0];
+				if (query.matches(".*" + regex + ".*")) {
+					queries.add(query);
+				}
+				return (Query) invocation.callRealMethod();
+			}
+		});
+		servlet.setPmf(spyPmf);
+		return queries;
+	}
+
 	private void initServletAndMocks() throws IOException {
 		servlet = new FlybushServlet(pmf);
 		mockRequest = mock(HttpServletRequest.class);
@@ -288,7 +322,7 @@ public class FlybushServletTest extends TestCase {
     	executeGet("/browser-auth/" + sessionId);
     	initServletAndMocks();
 	}
-	
+
 	private void checkEvaluationsEqual(DbEvaluation dbEval, Evaluation protoEval) {
 		assertEquals(dbEval.getComment(), protoEval.getComment());
 		assertEquals(dbEval.getDesignation(), protoEval.getDesignation());
@@ -382,7 +416,7 @@ public class FlybushServletTest extends TestCase {
 
 	private void prepareRequestAndResponse(String requestUri, byte[] input)
 			throws IOException {
-		when(mockRequest.getServletPath()).thenReturn(requestUri);
+		when(mockRequest.getPathInfo()).thenReturn(requestUri);
 		if (input != null) {
 			final ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
 			when(mockRequest.getInputStream()).thenReturn(new ServletInputStream() {
@@ -398,7 +432,7 @@ public class FlybushServletTest extends TestCase {
 		checkResponseCode(responseCode);
 		verify(mockResponse).setContentType("text/plain");
 		String output = new String(outputCollector.toByteArray(), "UTF-8");
-		assertEquals(expectedOutput, output.replaceAll("\r", ""));
+		assertEquals(expectedOutput.trim(), output.replaceAll("\r", "").trim());
 	}
 
 	private void checkResponseCode(int responseCode) {

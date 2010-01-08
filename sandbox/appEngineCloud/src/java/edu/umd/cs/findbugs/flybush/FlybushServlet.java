@@ -6,15 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -138,8 +135,25 @@ public class FlybushServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		String uri = req.getPathInfo();
-		
-		if (uri.equals("/upload-issues")) {
+
+		if (uri.equals("/find-issues")) {
+			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
+			SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId());
+			if (session == null) {
+				resp.setStatus(403);
+				resp.setContentType("text/plain");
+				resp.getWriter().println("not authenticated");
+				return;
+			}
+			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
+		    for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList())) {
+				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
+				issueProtos.addFoundIssues(issueProto);
+			}
+		    resp.setStatus(200);
+		    issueProtos.build().writeTo(resp.getOutputStream());
+
+		} else if (uri.equals("/upload-issues")) {
 			PersistenceManager pm = getPersistenceManager();
 			UploadIssues issues = UploadIssues.parseFrom(req.getInputStream());
 			SqlCloudSession session = lookupCloudSessionById(issues.getSessionId());
@@ -168,15 +182,7 @@ public class FlybushServlet extends HttpServlet {
 			pm.makePersistentAll(newDbIssues);
 			resp.setStatus(200);
 			resp.setContentType("text/plain");
-		} else if (uri.equals("/find-issues")) {
-			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
-			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
-		    for (DbIssue issue : lookupIssues(loginMsg.getMyIssueHashesList())) {
-				Issue issueProto = buildIssueProto(issue, issue.getEvaluations());
-				issueProtos.addFoundIssues(issueProto);
-			}
-		    issueProtos.build().writeTo(resp.getOutputStream());
-
+			
 		} else {
 			show404(resp);
 		}
