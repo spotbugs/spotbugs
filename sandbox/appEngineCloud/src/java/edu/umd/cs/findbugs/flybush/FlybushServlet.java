@@ -6,16 +6,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
+import javax.jdo.Transaction;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.datanucleus.store.query.QueryResult;
+
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetResponse.SetStatusCode;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -25,10 +31,13 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 
 @SuppressWarnings("serial")
 public class FlybushServlet extends HttpServlet {
+	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("[0-9A-Za-z_-]+");
+
 	private PersistenceManagerFactory pmf;
 
 	public FlybushServlet() {
@@ -80,15 +89,13 @@ public class FlybushServlet extends HttpServlet {
 
 		} else if (uri.startsWith("/check-auth/")) {
 			long id = Long.parseLong(uri.substring("/check-auth/".length()));
-            resp.setContentType("text/plain");
             PrintWriter writer = resp.getWriter();
 			SqlCloudSession sqlCloudSession = lookupCloudSessionById(id);
 		    if (sqlCloudSession == null) {
-		    	resp.setStatus(418);
-				writer.println("FAIL");
+		    	setResponse(resp, 418, "FAIL");
 		    } else {
-		    	resp.setStatus(200);
-				writer.println("OK\n"
+		    	setResponse(resp, 200,
+		    			"OK\n"
 		    			+ sqlCloudSession.getRandomID() + "\n"
 		    			+ sqlCloudSession.getAuthor().getEmail());
 		    }
@@ -126,9 +133,7 @@ public class FlybushServlet extends HttpServlet {
 	}
 
 	private void show404(HttpServletResponse resp) throws IOException {
-		resp.setStatus(404);
-		resp.setContentType("text/plain");
-		resp.getWriter().println("Not Found");
+		setResponse(resp, 404, "Not Found");
 	}
 
 	@Override
@@ -140,9 +145,7 @@ public class FlybushServlet extends HttpServlet {
 			LogIn loginMsg = LogIn.parseFrom(req.getInputStream());
 			SqlCloudSession session = lookupCloudSessionById(loginMsg.getSessionId());
 			if (session == null) {
-				resp.setStatus(403);
-				resp.setContentType("text/plain");
-				resp.getWriter().println("not authenticated");
+				setResponse(resp, 403, "not authenticated");
 				return;
 			}
 			LogInResponse.Builder issueProtos = LogInResponse.newBuilder();
@@ -180,12 +183,74 @@ public class FlybushServlet extends HttpServlet {
 				}
 			}
 			pm.makePersistentAll(newDbIssues);
-			resp.setStatus(200);
-			resp.setContentType("text/plain");
+			setResponse(resp, 200, "");
+
+		} else if (uri.equals("/upload-evaluation")) {
+			PersistenceManager pm = getPersistenceManager();
+			UploadEvaluation uploadEvalMsg = UploadEvaluation.parseFrom(req.getInputStream());
+			SqlCloudSession session = lookupCloudSessionById(uploadEvalMsg.getSessionId());
+			if (session == null) {
+				setResponse(resp, 403, "not authenticated");
+				return;
+			}
 			
+			DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
+			dbEvaluation.setWho(session.getAuthor().getNickname());
+
+	        Transaction tx = pm.currentTransaction();
+			try {
+	            tx.begin();
+
+				String hash = uploadEvalMsg.getHash();
+				DbIssue issue = findIssue(pm, hash);
+				if (issue == null) {
+					setResponse(resp, 404, "no such issue " + uploadEvalMsg.getHash());
+					return;
+				}
+				dbEvaluation.setIssue(issue);
+				issue.addEvaluation(dbEvaluation);
+				pm.makePersistentAll(issue, dbEvaluation);
+
+	            tx.commit();
+	        } finally {
+	            if (tx.isActive()) {
+	                tx.rollback();
+	                setResponse(resp, 403, "Transaction failed");
+	            }
+	        }
+
+			resp.setStatus(200);
 		} else {
 			show404(resp);
 		}
+	}
+
+	private DbEvaluation createDbEvaluation(Evaluation protoEvaluation) {
+		DbEvaluation dbEvaluation = new DbEvaluation();
+		dbEvaluation.setComment(protoEvaluation.getComment());
+		dbEvaluation.setDesignation(protoEvaluation.getDesignation());
+		dbEvaluation.setInvocation(null); // TODO : fix
+		dbEvaluation.setWhen(protoEvaluation.getWhen());
+		dbEvaluation.setWho(protoEvaluation.getWho()); // TODO : fix
+		return dbEvaluation;
+	}
+
+	private DbIssue findIssue(PersistenceManager pm, String hash) {
+		Query query = pm.newQuery(DbIssue.class, "hash == hashParam");
+		query.declareParameters("String hashParam");
+
+		Iterator<DbIssue> it = ((QueryResult) query.execute(hash)).iterator();
+		if (!it.hasNext()) {
+			return null;
+		}
+		return it.next();
+	}
+
+	private void setResponse(HttpServletResponse resp, int statusCode, String textResponse)
+			throws IOException {
+		resp.setStatus(statusCode);
+		resp.setContentType("text/plain");
+		resp.getWriter().println(textResponse);
 	}
 
 	private Issue buildIssueProto(DbIssue issue, List<DbEvaluation> evaluations) {
@@ -231,7 +296,7 @@ public class FlybushServlet extends HttpServlet {
 		PersistenceManager pm = getPersistenceManager();
 		for (List<String> partition : partition(hashes, 10)) {
 			allIssues.addAll((List<DbIssue>) pm.newQuery("select from " + DbIssue.class.getName()
-					+ " where " + formatStrings("hash", partition)).execute());
+					+ " where " + makeSqlHashList("hash", partition)).execute());
 		}
 		return allIssues;
 	}
@@ -241,7 +306,7 @@ public class FlybushServlet extends HttpServlet {
 		PersistenceManager pm = getPersistenceManager();
 		for (List<String> partition : partition(hashes, 10)) {
 			Query query = pm.newQuery("select from " + DbIssue.class.getName()
-					+ " where " + formatStrings("hash", partition));
+					+ " where " + makeSqlHashList("hash", partition));
 			query.setResult("hash");
 			allHashes.addAll((List<String>) query.execute());
 		}
@@ -262,10 +327,13 @@ public class FlybushServlet extends HttpServlet {
 		return partitions;
 	}
 
-	private String formatStrings(String fieldName, Iterable<String> hashesList) {
+	private String makeSqlHashList(String fieldName, Iterable<String> hashesList) {
 		StringBuilder str = new StringBuilder();
 		boolean first = true;
 		for (String hash : hashesList) {
+			if (!ALPHANUMERIC_PATTERN.matcher(hash).matches()) {
+				continue;
+			}
 			if (!first) str.append(" || ");
 
 			str.append(fieldName);

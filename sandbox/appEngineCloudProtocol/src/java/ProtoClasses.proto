@@ -46,7 +46,8 @@ message Issue {
 
 // part of an issue
 message Evaluation {
-  required string who = 1;
+  // who is ignored during evaluation upload
+  optional string who = 1;
   required string designation = 2;
   required string comment = 3;
   required int64 when = 4;

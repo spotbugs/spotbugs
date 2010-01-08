@@ -23,13 +23,12 @@ import edu.umd.cs.findbugs.cloud.db.AppEngineNameLookup;
 
 public class AppEngineCloud extends AbstractCloud {
 
-	// private static final String HOST = "http://theflybush.appspot.com";
-	private static final String HOST = "http://localhost:8080";
-
 	private Map<String, Issue> issuesByHash = new HashMap<String, Issue>();
 	private String user;
 
 	private String findbugsUser;
+
+	private long sessionId;
 
 	public AppEngineCloud(BugCollection bugs) {
 		super(bugs);
@@ -47,10 +46,13 @@ public class AppEngineCloud extends AbstractCloud {
 	}
 
 	public boolean initialize() {
-		findbugsUser = new AppEngineNameLookup().getUserName(bugCollection);
-		
-		if (findbugsUser == null)
+		AppEngineNameLookup lookerupper = new AppEngineNameLookup();
+		if (!lookerupper.init()) {
 			return false;
+		}
+		sessionId = lookerupper.getSessionId();
+		findbugsUser = lookerupper.getUsername();
+
 		bugsPopulated();
 		return true;
 	}
@@ -84,7 +86,7 @@ public class AppEngineCloud extends AbstractCloud {
 		conn.connect();
 		LogIn hashList = LogIn.newBuilder()
 				.setAnalysisTimestamp(bugCollection.getAnalysisTimestamp())
-				.setSessionId(0)
+				.setSessionId(sessionId)
 				.addAllMyIssueHashes(bugsByHash.keySet())
 				.build();
 		OutputStream stream = conn.getOutputStream();
@@ -103,6 +105,7 @@ public class AppEngineCloud extends AbstractCloud {
 	void uploadIssues(Collection<BugInstance> bugsToSend)
 			throws MalformedURLException, IOException {
 		UploadIssues.Builder issueList = UploadIssues.newBuilder();
+		issueList.setSessionId(sessionId);
 		for (BugInstance bug: bugsToSend) {
 			issueList.addNewIssues(ProtoClasses.Issue.newBuilder()
 					.setHash(bug.getInstanceHash())
@@ -124,7 +127,7 @@ public class AppEngineCloud extends AbstractCloud {
 	/** package-private for testing */
 	HttpURLConnection openConnection(String url)
 			throws IOException, MalformedURLException {
-		URL u = new URL(HOST + url);
+		URL u = new URL(AppEngineNameLookup.HOST + url);
 		return (HttpURLConnection) u.openConnection();
 	}
 
@@ -176,14 +179,18 @@ public class AppEngineCloud extends AbstractCloud {
 
 	}
 
+	public void setUserEvaluation(BugInstance b, String e, long timestamp) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void storeUserAnnotation(BugInstance bugInstance) {
+		
+	}
+
 	public String getUserEvaluation(BugInstance b) {
 		Evaluation e = getMostRecentEvaluation(b);
 		if (e == null) return null;
 		return e.getComment();
-	}
-
-	public void setUserEvaluation(BugInstance b, String e, long timestamp) {
-		throw new UnsupportedOperationException();
 	}
 
 	public long getFirstSeen(BugInstance b) {
@@ -192,10 +199,6 @@ public class AppEngineCloud extends AbstractCloud {
 			return Long.MAX_VALUE;
 		return issue.getFirstSeen();
 
-	}
-
-	public void storeUserAnnotation(BugInstance bugInstance) {
-		throw new UnsupportedOperationException();
 	}
 
 }

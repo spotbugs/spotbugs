@@ -33,48 +33,53 @@ import edu.umd.cs.findbugs.util.Util;
 /**
  * @author pugh
  */
-public class AppEngineNameLookup implements NameLookup {
+public class AppEngineNameLookup {
+	// private static final String HOST = "http://theflybush.appspot.com";
+    public static final String HOST = "http://localhost:8080";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.umd.cs.findbugs.cloud.NameLookup#getUserName(edu.umd.cs.findbugs.
-	 * BugCollection)
-	 */
-	public String getUserName(BugCollection bugCollection) {
+	private long sessionId;
+	private String username;
+	
+	public boolean init() {
 		try {
+			
 			SecureRandom r = new SecureRandom();
 			long id = r.nextLong();
-			URL u = new URL("http://theflybush.appspot.com/browser-auth/" + id);
+			URL u = new URL(HOST + "/browser-auth/" + id);
 			LaunchBrowser.showDocument(u);
-			URL response = new URL("http://theflybush.appspot.com/check-auth/" + id);
+			URL response = new URL(HOST + "/check-auth/" + id);
 			for (int i = 0; i < 60; i++) {
 				System.out.println("Connecting");
 				HttpURLConnection connection = (HttpURLConnection) response.openConnection();
-
+	
 				int responseCode = connection.getResponseCode();
 				System.out.println(responseCode);
 				if (responseCode == 200) {
 					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String status = in.readLine();
-					String idString = in.readLine();
-					String name = in.readLine();
+					sessionId = Long.parseLong(in.readLine());
+					username = in.readLine();
 					Util.closeSilently(in);
 					if ("OK".equals(status))
-						return name;
-
+						return true;
+	
 				}
 				connection.disconnect();
 				Thread.sleep(1000);
 			}
+			return false;
 
-			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			throw new IllegalStateException(e);
 		}
-
 	}
+
+	public long getSessionId() {
+    	return sessionId;
+    }
+
+	public String getUsername() {
+    	return username;
+    }
 
 }

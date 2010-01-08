@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.Issue;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogInResponse;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.RecentEvaluations;
+import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadEvaluation;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.UploadIssues;
 import edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.LogIn.Builder;
 
@@ -268,8 +269,58 @@ public class FlybushServletTest extends TestCase {
 		assertEquals("OLD_BUG", dbIssues.get(1).getHash());
 	}
 
+	public void testUploadEvaluationNoAuth() throws IOException {
+		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+				.setSessionId(555)
+				.setHash("MY_HASH")
+				.setEvaluation(createProtoEvaluation())
+				.build().toByteArray());
+		checkResponse(403, "not authenticated");
+	}
+
+	public void testUploadEvaluation() throws IOException {
+		createCloudSession(555);
+
+		DbIssue dbIssue = createDbIssue("MY_HASH");
+		PersistenceManager persistenceManager = pmf.getPersistenceManager();
+		persistenceManager.makePersistent(dbIssue);
+		Evaluation protoEval = createProtoEvaluation();
+		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+				.setSessionId(555)
+				.setHash("MY_HASH")
+				.setEvaluation(protoEval)
+				.build().toByteArray());
+		checkResponseCode(200);
+		persistenceManager.refresh(dbIssue);
+		assertEquals(1, dbIssue.getEvaluations().size());
+		Evaluation protoEvalToCompare = Evaluation.newBuilder(protoEval).setWho("my@email.com").build();
+		checkEvaluationsEqual(dbIssue.getEvaluations().get(0), protoEvalToCompare);
+	}
+
+	public void testUploadEvaluationNonexistentIssue() throws IOException {
+		createCloudSession(555);
+
+		Evaluation protoEval = createProtoEvaluation();
+		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+				.setSessionId(555)
+				.setHash("NONEXISTENT")
+				.setEvaluation(protoEval)
+				.build().toByteArray());
+		checkResponseCode(404);
+		
+	}
+
 	// ========================= end of tests ================================
 
+
+	private Evaluation createProtoEvaluation() {
+		Evaluation protoEval = Evaluation.newBuilder()
+				.setDesignation("MUST_FIX")
+				.setComment("my comment")
+				.setWhen(100)
+				.build();
+		return protoEval;
+	}
 
 	private Builder createAuthenticatedLogInMsg() {
 		return LogIn.newBuilder().setSessionId(555).setAnalysisTimestamp(100);

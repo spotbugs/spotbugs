@@ -2616,7 +2616,7 @@ public final class ProtoClasses {
       return edu.umd.cs.findbugs.cloud.appEngine.protobuf.ProtoClasses.internal_static_edu_umd_cs_findbugs_cloud_appEngine_protobuf_Evaluation_fieldAccessorTable;
     }
     
-    // required string who = 1;
+    // optional string who = 1;
     public static final int WHO_FIELD_NUMBER = 1;
     private boolean hasWho;
     private java.lang.String who_ = "";
@@ -2645,7 +2645,6 @@ public final class ProtoClasses {
     public long getWhen() { return when_; }
     
     public final boolean isInitialized() {
-      if (!hasWho) return false;
       if (!hasDesignation) return false;
       if (!hasComment) return false;
       if (!hasWhen) return false;
@@ -2898,7 +2897,7 @@ public final class ProtoClasses {
       }
       
       
-      // required string who = 1;
+      // optional string who = 1;
       public boolean hasWho() {
         return result.hasWho();
       }
@@ -3058,7 +3057,7 @@ public final class ProtoClasses {
       "\tfirstSeen\030\005 \001(\003\022\020\n\010lastSeen\030\006 \001(\003\022M\n\013ev" +
       "aluations\030\007 \003(\01328.edu.umd.cs.findbugs.cl" +
       "oud.appEngine.protobuf.Evaluation\"M\n\nEva",
-      "luation\022\013\n\003who\030\001 \002(\t\022\023\n\013designation\030\002 \002(" +
+      "luation\022\013\n\003who\030\001 \001(\t\022\023\n\013designation\030\002 \002(" +
       "\t\022\017\n\007comment\030\003 \002(\t\022\014\n\004when\030\004 \002(\003"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
