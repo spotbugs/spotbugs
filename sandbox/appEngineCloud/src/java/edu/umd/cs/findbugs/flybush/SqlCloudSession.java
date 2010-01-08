@@ -25,6 +25,9 @@ public class SqlCloudSession {
     @Persistent
     private Date date;
 
+    @Persistent
+    private long invocation;
+
     public SqlCloudSession(User author, long randomID, Date date) {
         this.user = author;
         this.randomID = randomID;
@@ -58,4 +61,12 @@ public class SqlCloudSession {
     public void setDate(Date date) {
         this.date = date;
     }
+
+	public void setInvocation(long invocation) {
+		this.invocation = invocation;
+	}
+
+	public long getInvocation() {
+		return invocation;
+	}
 }

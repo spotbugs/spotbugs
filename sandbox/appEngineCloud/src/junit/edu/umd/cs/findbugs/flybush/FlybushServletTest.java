@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.atLeastOnce;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -119,7 +121,7 @@ public class FlybushServletTest extends TestCase {
 	public void testFindIssuesNoneFound() throws IOException {
     	createCloudSession(555);
 		executePost("/find-issues", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
-		checkResponseCode(200);
+		checkResponse(200);
 		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getFoundIssuesCount());
 	}
@@ -199,7 +201,7 @@ public class FlybushServletTest extends TestCase {
 		pmf.getPersistenceManager().makePersistent(issue);
 
 		executeGet("/get-evaluations/100");
-		checkResponseCode(200);
+		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(1, result.getIssuesCount());
 
@@ -223,7 +225,7 @@ public class FlybushServletTest extends TestCase {
 		pmf.getPersistenceManager().makePersistent(issue);
 
 		executeGet("/get-evaluations/300");
-		checkResponseCode(200);
+		checkResponse(200);
 		RecentEvaluations result = RecentEvaluations.parseFrom(outputCollector.toByteArray());
 		assertEquals(0, result.getIssuesCount());
 	}
@@ -232,7 +234,7 @@ public class FlybushServletTest extends TestCase {
 		Issue issue = createProtoIssue();
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
-		checkResponseCode(403);
+		checkResponse(403);
 	}
 
 	public void testUploadIssue() throws IOException {
@@ -290,7 +292,7 @@ public class FlybushServletTest extends TestCase {
 				.setHash("MY_HASH")
 				.setEvaluation(protoEval)
 				.build().toByteArray());
-		checkResponseCode(200);
+		checkResponse(200);
 		persistenceManager.refresh(dbIssue);
 		assertEquals(1, dbIssue.getEvaluations().size());
 		Evaluation protoEvalToCompare = Evaluation.newBuilder(protoEval).setWho("my@email.com").build();
@@ -306,8 +308,7 @@ public class FlybushServletTest extends TestCase {
 				.setHash("NONEXISTENT")
 				.setEvaluation(protoEval)
 				.build().toByteArray());
-		checkResponseCode(404);
-		
+		checkResponse(404, "no such issue NONEXISTENT\n");
 	}
 
 	// ========================= end of tests ================================
@@ -480,13 +481,13 @@ public class FlybushServletTest extends TestCase {
 
 	private void checkResponse(int responseCode, String expectedOutput)
 			throws UnsupportedEncodingException {
-		checkResponseCode(responseCode);
-		verify(mockResponse).setContentType("text/plain");
+		checkResponse(responseCode);
+		verify(mockResponse, atLeastOnce()).setContentType("text/plain");
 		String output = new String(outputCollector.toByteArray(), "UTF-8");
 		assertEquals(expectedOutput.trim(), output.replaceAll("\r", "").trim());
 	}
 
-	private void checkResponseCode(int responseCode) {
+	private void checkResponse(int responseCode) {
 		verify(mockResponse).setStatus(responseCode);
 	}
 

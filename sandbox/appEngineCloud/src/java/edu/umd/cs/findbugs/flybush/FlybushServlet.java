@@ -193,11 +193,12 @@ public class FlybushServlet extends HttpServlet {
 				setResponse(resp, 403, "not authenticated");
 				return;
 			}
-			
+
 			DbEvaluation dbEvaluation = createDbEvaluation(uploadEvalMsg.getEvaluation());
 			dbEvaluation.setWho(session.getAuthor().getNickname());
 
 	        Transaction tx = pm.currentTransaction();
+			boolean setStatusAlready = false;
 			try {
 	            tx.begin();
 
@@ -205,6 +206,7 @@ public class FlybushServlet extends HttpServlet {
 				DbIssue issue = findIssue(pm, hash);
 				if (issue == null) {
 					setResponse(resp, 404, "no such issue " + uploadEvalMsg.getHash());
+					setStatusAlready  = true;
 					return;
 				}
 				dbEvaluation.setIssue(issue);
@@ -212,10 +214,13 @@ public class FlybushServlet extends HttpServlet {
 				pm.makePersistentAll(issue, dbEvaluation);
 
 	            tx.commit();
+
 	        } finally {
 	            if (tx.isActive()) {
-	                tx.rollback();
-	                setResponse(resp, 403, "Transaction failed");
+	            	tx.rollback();
+	            	if (!setStatusAlready) {
+	            		setResponse(resp, 403, "Transaction failed");
+	            	}
 	            }
 	        }
 
