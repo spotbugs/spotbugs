@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * A set of values unconditionally dereferenced in the future.
@@ -128,8 +129,7 @@ public class UnconditionalValueDerefSet {
 		derefLocationSetMap.clear();
 		if (source.derefLocationSetMap.size() > 0)
 		for (Map.Entry<ValueNumber, Set<Location>> sourceEntry : source.derefLocationSetMap.entrySet()) {
-			Set<Location> derefLocationSet = new HashSet<Location>();
-			derefLocationSet.addAll(sourceEntry.getValue());
+			Set<Location> derefLocationSet = Util.makeSmallHashSet(sourceEntry.getValue());
 			derefLocationSetMap.put(sourceEntry.getKey(), derefLocationSet);
 		}
 	}

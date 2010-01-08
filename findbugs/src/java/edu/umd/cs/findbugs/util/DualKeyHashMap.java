@@ -27,36 +27,49 @@ import java.util.Set;
 /**
  * @author William Pugh
  */
-public class DualKeyHashMap<K1, K2, V>  {
+public class DualKeyHashMap<K1, K2, V> {
 	Map<K1, Map<K2, V>> map = new HashMap<K1, Map<K2, V>>();
-	
-	
+
 	public V get(K1 k1, K2 k2) {
 		Map<K2, V> m = map.get(k1);
-		if (m == null) return null;
+		if (m == null)
+			return null;
 		return m.get(k2);
 	}
+
 	public boolean containsKey(K1 k1, K2 k2) {
 		Map<K2, V> m = map.get(k1);
-		if (m == null) return false;
+		if (m == null)
+			return false;
 		return m.containsKey(k2);
 	}
+
 	public Map<K2, V> get(K1 k1) {
 		Map<K2, V> m = map.get(k1);
-		if (m == null) return Collections.<K2, V>emptyMap();
+		if (m == null)
+			return Collections.<K2, V> emptyMap();
 		return m;
 	}
-	
+
 	public Set<K1> keySet() {
 		return map.keySet();
 	}
+
 	public V put(K1 k1, K2 k2, V v) {
 		Map<K2, V> m = map.get(k1);
 		if (m == null) {
-			m = new HashMap<K2, V>(3);
+			m = Collections.singletonMap(k2, v);
 			map.put(k1, m);
+			return null;
+		} else if (m instanceof HashMap)
+			return m.put(k2, v);
+		else {
+			m = Util.makeSmallHashMap(m);
+			map.put(k1, m);
+			return m.put(k2, v);
+
 		}
-		return m.put(k2,v);
+
 	}
 
 }
