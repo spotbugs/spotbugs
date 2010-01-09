@@ -19,7 +19,7 @@ public class DbEvaluation {
 	@Persistent private String comment;
 	@Persistent private DbIssue issue;
 	@Persistent private long when;
-	@Persistent private Invocation invocation;
+	@Persistent private Key invocation;
 
 	public Key getKey() {
 		return key;
@@ -57,10 +57,10 @@ public class DbEvaluation {
 	public void setWhen(long when) {
 		this.when = when;
 	}
-	public Invocation getInvocation() {
+	public Key getInvocation() {
 		return invocation;
 	}
-	public void setInvocation(Invocation invocation) {
+	public void setInvocation(Key invocation) {
 		this.invocation = invocation;
 	}
 

@@ -26,7 +26,7 @@ public class SqlCloudSession {
     private Date date;
 
     @Persistent
-    private long invocation;
+    private Key invocation;
 
     public SqlCloudSession(User author, long randomID, Date date) {
         this.user = author;
@@ -38,20 +38,12 @@ public class SqlCloudSession {
         return key;
     }
 
-    public User getAuthor() {
-        return user;
-    }
-
     public long getRandomID() {
         return randomID;
     }
 
     public Date getDate() {
         return date;
-    }
-
-    public void setAuthor(User author) {
-        this.user = author;
     }
 
     public void setRandomID(long randomID) {
@@ -62,11 +54,30 @@ public class SqlCloudSession {
         this.date = date;
     }
 
-	public void setInvocation(long invocation) {
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Key getInvocation() {
+		return invocation;
+	}
+
+	public void setInvocation(Key invocation) {
 		this.invocation = invocation;
 	}
 
-	public long getInvocation() {
-		return invocation;
+	public void setKey(Key key) {
+		this.key = key;
+	}
+
+	@Override
+	public String toString() {
+		return "SqlCloudSession [date=" + date + ", invocation=" + invocation
+				+ ", key=" + key + ", randomID=" + randomID + ", user=" + user
+				+ "]";
 	}
 }

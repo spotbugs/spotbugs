@@ -1,11 +1,7 @@
 package edu.umd.cs.findbugs.flybush;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,10 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.TestCase;
 
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.api.users.User;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
@@ -57,6 +53,8 @@ public class FlybushServletTest extends TestCase {
 	private HttpServletResponse mockResponse;
 	private ByteArrayOutputStream outputCollector;
 	private TestEnvironment testEnvironment;
+	private PersistenceManager persistenceManager;
+	private PersistenceManager actualPersistenceManager;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -66,13 +64,14 @@ public class FlybushServletTest extends TestCase {
 		ApiProxy.setDelegate(new ApiProxyLocalImpl(new File(".")){});
         ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
         proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY, Boolean.TRUE.toString());
-        initPersistenceManagerFactory();
+        initPersistenceManager();
 
 		initServletAndMocks();
 	}
 
     @Override
     public void tearDown() throws Exception {
+    	actualPersistenceManager.close();
         ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
         LocalDatastoreService datastoreService =
             (LocalDatastoreService) proxy.getService(LocalDatastoreService.PACKAGE);
@@ -99,7 +98,7 @@ public class FlybushServletTest extends TestCase {
 
 	public void testCheckAuthForValidId() throws IOException {
 		SqlCloudSession session = new SqlCloudSession(new User("my", "email.com"), 100, new Date(200));
-		pmf.getPersistenceManager().makePersistent(session);
+		persistenceManager.makePersistent(session);
 
 		executeGet("/check-auth/100");
 
@@ -126,11 +125,25 @@ public class FlybushServletTest extends TestCase {
 		assertEquals(0, result.getFoundIssuesCount());
 	}
 
+	@SuppressWarnings("unchecked")
+	public void testFindIssuesStoresInvocation() throws IOException {
+    	createCloudSession(555);
+		executePost("/find-issues", createAuthenticatedLogInMsg().addMyIssueHashes("ABC").build().toByteArray());
+		checkResponse(200);
+		LogInResponse result = LogInResponse.parseFrom(outputCollector.toByteArray());
+		assertEquals(0, result.getFoundIssuesCount());
+		Query query = persistenceManager.newQuery("select from " + DbInvocation.class.getName());
+		List<DbInvocation> invocations = (List<DbInvocation>) query.execute();
+		assertEquals(1, invocations.size());
+		assertEquals("my@email.com", invocations.get(0).getWho());
+		query.closeAll();
+	}
+
 	public void testFindIssuesSomeFound() throws IOException {
     	createCloudSession(555);
 
 		DbIssue foundIssue = createDbIssue("OLD_BUG");
-		pmf.getPersistenceManager().makePersistent(foundIssue);
+		persistenceManager.makePersistent(foundIssue);
 
 		LogIn loginMsg = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
 		executePost("/find-issues", loginMsg.toByteArray());
@@ -149,7 +162,7 @@ public class FlybushServletTest extends TestCase {
 
 		// apparently the evaluation is automatically persisted. throws
 		// exception when attempting to persist the eval with the issue.
-		pmf.getPersistenceManager().makePersistent(foundIssue);
+		persistenceManager.makePersistent(foundIssue);
 
 		LogIn hashesToFind = createAuthenticatedLogInMsg().addMyIssueHashes("NEW_BUG").addMyIssueHashes("OLD_BUG").build();
 		executePost("/find-issues", hashesToFind.toByteArray());
@@ -198,7 +211,7 @@ public class FlybushServletTest extends TestCase {
 		DbEvaluation eval3 = createEvaluation(issue, 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
-		pmf.getPersistenceManager().makePersistent(issue);
+		persistenceManager.makePersistent(issue);
 
 		executeGet("/get-evaluations/100");
 		checkResponse(200);
@@ -222,7 +235,7 @@ public class FlybushServletTest extends TestCase {
 		DbEvaluation eval3 = createEvaluation(issue, 300);
 		issue.addEvaluations(eval1, eval2, eval3);
 
-		pmf.getPersistenceManager().makePersistent(issue);
+		persistenceManager.makePersistent(issue);
 
 		executeGet("/get-evaluations/300");
 		checkResponse(200);
@@ -237,23 +250,25 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(403);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testUploadIssue() throws IOException {
     	createCloudSession(555);
 		Issue issue = createProtoIssue();
 		UploadIssues issuesToUpload = UploadIssues.newBuilder().setSessionId(555).addNewIssues(issue).build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
-		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
+		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
 				.newQuery("select from " + DbIssue.class.getName()).execute();
 		assertEquals(1, dbIssues.size());
 
 		checkIssuesEqual(dbIssues.get(0), issue);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testUploadIssuesWhichAlreadyExist() throws IOException {
     	createCloudSession(555);
 		DbIssue oldDbIssue = createDbIssue("OLD_BUG");
-		pmf.getPersistenceManager().makePersistent(oldDbIssue);
+		persistenceManager.makePersistent(oldDbIssue);
 		Issue oldIssue = createProtoIssue("OLD_BUG");
 		Issue newIssue = createProtoIssue("NEW_BUG");
 		UploadIssues issuesToUpload = UploadIssues.newBuilder()
@@ -263,7 +278,7 @@ public class FlybushServletTest extends TestCase {
 				.build();
 		executePost("/upload-issues", issuesToUpload.toByteArray());
 		checkResponse(200, "");
-		List<DbIssue> dbIssues = (List<DbIssue>) pmf.getPersistenceManager()
+		List<DbIssue> dbIssues = (List<DbIssue>) persistenceManager
 				.newQuery("select from " + DbIssue.class.getName() + " order by hash").execute();
 		assertEquals(2, dbIssues.size());
 
@@ -280,11 +295,10 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(403, "not authenticated");
 	}
 
-	public void testUploadEvaluation() throws IOException {
+	public void testUploadEvaluationWithoutFindIssuesFirst() throws IOException {
 		createCloudSession(555);
 
 		DbIssue dbIssue = createDbIssue("MY_HASH");
-		PersistenceManager persistenceManager = pmf.getPersistenceManager();
 		persistenceManager.makePersistent(dbIssue);
 		Evaluation protoEval = createProtoEvaluation();
 		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
@@ -295,8 +309,44 @@ public class FlybushServletTest extends TestCase {
 		checkResponse(200);
 		persistenceManager.refresh(dbIssue);
 		assertEquals(1, dbIssue.getEvaluations().size());
-		Evaluation protoEvalToCompare = Evaluation.newBuilder(protoEval).setWho("my@email.com").build();
-		checkEvaluationsEqual(dbIssue.getEvaluations().get(0), protoEvalToCompare);
+		DbEvaluation dbEval = dbIssue.getEvaluations().get(0);
+		assertEquals(protoEval.getComment(), dbEval.getComment());
+		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
+		assertEquals(protoEval.getWhen(), dbEval.getWhen());
+		assertEquals("my@email.com", dbEval.getWho());
+		assertNull(dbEval.getInvocation());
+	}
+
+	public void testUploadEvaluationWithFindIssuesFirst() throws IOException {
+		createCloudSession(555);
+		executePost("/find-issues", LogIn.newBuilder()
+				.setSessionId(555)
+				.setAnalysisTimestamp(100)
+				.addMyIssueHashes("ABC")
+				.build().toByteArray());
+		checkResponse(200);
+		initServletAndMocks();
+
+		DbIssue dbIssue = createDbIssue("MY_HASH");
+		persistenceManager.makePersistent(dbIssue);
+		Evaluation protoEval = createProtoEvaluation();
+		executePost("/upload-evaluation", UploadEvaluation.newBuilder()
+				.setSessionId(555)
+				.setHash("MY_HASH")
+				.setEvaluation(protoEval)
+				.build().toByteArray());
+		checkResponse(200);
+		assertEquals(1, dbIssue.getEvaluations().size());
+		DbEvaluation dbEval = dbIssue.getEvaluations().get(0);
+		assertEquals(protoEval.getComment(), dbEval.getComment());
+		assertEquals(protoEval.getDesignation(), dbEval.getDesignation());
+		assertEquals(protoEval.getWhen(), dbEval.getWhen());
+		assertEquals("my@email.com", dbEval.getWho());
+		Key invocationId = dbEval.getInvocation();
+		assertNotNull(invocationId);
+		DbInvocation invocation = (DbInvocation) persistenceManager.getObjectById(DbInvocation.class, invocationId);
+		assertEquals("my@email.com", invocation.getWho());
+		assertEquals(100, invocation.getStartTime());
 	}
 
 	public void testUploadEvaluationNonexistentIssue() throws IOException {
@@ -336,13 +386,9 @@ public class FlybushServletTest extends TestCase {
 	 * 		   servlet runs
 	 */
 	private List<String> installQueryCollector(final String regex) {
-		PersistenceManager persistenceManager = pmf.getPersistenceManager();
 		persistenceManager.makePersistentAll(createDbIssue("2"), createDbIssue("5"), createDbIssue("12"));
-		PersistenceManagerFactory spyPmf = spy(pmf);
-		PersistenceManager spyPersistenceManager = spy(persistenceManager);
-		when(spyPmf.getPersistenceManager()).thenReturn(spyPersistenceManager);
 		final List<String> queries = new ArrayList<String>();
-		when(spyPersistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
+		when(persistenceManager.newQuery(anyString())).thenAnswer(new Answer<Query>() {
 			public Query answer(InvocationOnMock invocation) throws Throwable {
 				String query = (String) invocation.getArguments()[0];
 				if (query.matches(".*" + regex + ".*")) {
@@ -351,12 +397,12 @@ public class FlybushServletTest extends TestCase {
 				return (Query) invocation.callRealMethod();
 			}
 		});
-		servlet.setPmf(spyPmf);
+		servlet.setPersistenceManager(persistenceManager);
 		return queries;
 	}
 
 	private void initServletAndMocks() throws IOException {
-		servlet = new FlybushServlet(pmf);
+		servlet = new FlybushServlet(persistenceManager);
 		mockRequest = mock(HttpServletRequest.class);
 		mockResponse = mock(HttpServletResponse.class);
 		outputCollector = new ByteArrayOutputStream();
@@ -436,7 +482,7 @@ public class FlybushServletTest extends TestCase {
      * Creates a PersistenceManagerFactory on the fly, with the exact same information
      * stored in the /WEB-INF/META-INF/jdoconfig.xml file.
      */
-    private void initPersistenceManagerFactory() {
+    private void initPersistenceManager() {
         Properties newProperties = new Properties();
         newProperties.put("javax.jdo.PersistenceManagerFactoryClass",
                 "org.datanucleus.store.appengine.jdo.DatastoreJDOPersistenceManagerFactory");
@@ -446,6 +492,10 @@ public class FlybushServletTest extends TestCase {
         newProperties.put("javax.jdo.option.RetainValues", "true");
         newProperties.put("datanucleus.appengine.autoCreateDatastoreTxns", "true");
         pmf = JDOHelper.getPersistenceManagerFactory(newProperties);
+		actualPersistenceManager = pmf.getPersistenceManager();
+		persistenceManager = spy(actualPersistenceManager);
+
+		doNothing().when(persistenceManager).close();
     }
 
 
