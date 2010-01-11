@@ -76,7 +76,7 @@ public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataf
 				Location loc = locs.next();
 				tree.add(loc);
 			}
-			System.out.println("\n\nValue number analysis for " + descriptor.getName() + " {");
+			System.out.println("\n\nValue number analysis for " + descriptor.getName() + descriptor.getSignature() + " {");
 			for(Location loc : tree) {
 				System.out.println("\nBefore: " + vnaDataflow.getFactAtLocation(loc));
 				System.out.println("Location: " + loc);

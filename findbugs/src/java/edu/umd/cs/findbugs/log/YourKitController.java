@@ -33,7 +33,7 @@ public class YourKitController {
 
 	public YourKitController() {
 		try {
-			Class c = Class.forName("com.yourkit.api.Controller");
+			Class<?> c = Class.forName("com.yourkit.api.Controller");
 			controller = c.newInstance();
 			advanceGeneration = c.getMethod("advanceGeneration", String.class);
 			captureMemorySnapshot = c.getMethod("captureMemorySnapshot");
